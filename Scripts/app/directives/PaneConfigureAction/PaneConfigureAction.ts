@@ -187,8 +187,8 @@ module dockyard.directives.paneConfigureAction {
             private $window: ng.IWindowService, private $http: ng.IHttpService,
             private $q: ng.IQService, private LayoutService: services.ILayoutService)
         {
-            
             $scope.collapsed = false;
+            $scope.showAdvisoryPopup = false;
 
             $scope.$on("onChange", <() => void>angular.bind(this, this.onControlChange));
             $scope.$on("onClick", <() => void>angular.bind(this, this.onClickEvent));
@@ -202,8 +202,6 @@ module dockyard.directives.paneConfigureAction {
             $scope.setSolutionMode = <() => void>angular.bind(this, this.setSolutionMode);
             $scope.populateAllActivities = <() => void>angular.bind(this, this.populateAllActivities);
             $scope.allActivities = Array<model.ActivityDTO>();
-
-            $scope.showAdvisoryPopup = false;
 
             $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], (event: ng.IAngularEvent, reConfigureActionEventArgs: ActionReconfigureEventArgs) => {
                 //this might be a general reconfigure command
@@ -545,8 +543,7 @@ module dockyard.directives.paneConfigureAction {
                         // emit ConfigureCallResponse for RouteBuilderController be able to reload actions with AgressiveReloadTag
                         this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ConfigureCallResponse], new CallConfigureResponseEventArgs(this.$scope.currentAction, this.$scope.currentActiveElement));
                     });
-
-                return deferred.promise;
+                    return deferred.promise;
             };
 
             public setJumpTargets(targets: Array<model.ActivityJumpTarget>) {
@@ -664,7 +661,7 @@ module dockyard.directives.paneConfigureAction {
                         true);
                 }, 1000);
 
-        }
+        } 
 
             private setSolutionMode() {
                 this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_SetSolutionMode]);

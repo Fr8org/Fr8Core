@@ -221,6 +221,7 @@ namespace HubWeb.App_Start
                 .Include("~/bower_components/angular-ivh-treeview/dist/ivh-treeview.min.js")//not found on cdn
                 .Include("~/bower_components/angular-resizable/angular-resizable.min.js")//not found on cdn
                 .Include("~/bower_components/tinycolor/dist/tinycolor-min.js")//not found on cdn
+                .Include("~/bower_components/angular-popover-toggle/popover-toggle.js")//not found on cdn
                 .Include("~/bower_components/md-color-picker/dist/mdColorPicker.min.js")//not found on cdn
                 .Include("~/bower_components/angular-material-data-table/dist/md-data-table.min.js")
             );

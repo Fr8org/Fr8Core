@@ -452,12 +452,8 @@ module dockyard.controllers {
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ExecutePlan], () => this.PaneConfigureAction_ExecutePlan());
 
             // Handles Response from Configure call from PaneConfiguration
-            this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ConfigureCallResponse],
-                (event: ng.IAngularEvent, callConfigureResponseEventArgs: pca.CallConfigureResponseEventArgs) => this.PaneConfigureAction_ConfigureCallResponse(callConfigureResponseEventArgs));
-            
-            // Handles Advisory Messages from Configure call for Activity and render some context-sensitive help/suggestions
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ShowAdvisoryMessages],
-            (event: ng.IAngularEvent, showAdvisoryMessagesEventArgs: pca.ShowAdvisoryMessagesEventArgs) => this.PaneConfigureAction_ShowAdvisoryMessages(showAdvisoryMessagesEventArgs));
+                (event: ng.IAngularEvent, eventArgs: pca.ShowAdvisoryMessagesEventArgs) => this.PaneConfigureAction_ShowAdvisoryMessage(eventArgs));
         }
 
 
@@ -799,6 +795,28 @@ module dockyard.controllers {
                 });
         }
 
+        private PaneConfigureAction_ShowAdvisoryMessage(eventArgs : pca.ShowAdvisoryMessagesEventArgs) {
+            for (var i = 0; i < this.$scope.processedSubPlans.length; ++i) {
+                var subPlan = this.$scope.processedSubPlans[i];
+                if (!subPlan.actionGroups) {
+                    continue;
+                }
+                for (var j = 0; j < subPlan.actionGroups.length; ++j) {
+                    var actionGroup = subPlan.actionGroups[j];
+                    if (!actionGroup.envelopes) {
+                        continue;
+                    }
+                    for (var k = 0; k < actionGroup.envelopes.length; ++k) {
+                        var envelope = actionGroup.envelopes[k];
+                        if (envelope.activity.id === eventArgs.id) {
+                            envelope.activity.showAdvisoryPopup = true;
+                            envelope.activity.advisoryMessages = eventArgs.advisories;
+                        } 
+                    }
+                }
+            }
+        }
+
         // This should handle everything that should be done when a configure call response arrives from server.
         private PaneConfigureAction_ConfigureCallResponse(callConfigureResponseEventArgs: pca.CallConfigureResponseEventArgs) {
             
@@ -840,18 +858,6 @@ module dockyard.controllers {
                     this.$scope.$broadcast(<any>planEvents.ON_FIELD_FOCUS, callConfigureResponseEventArgs);
                 }
             }, 300);
-        }
-
-        private PaneConfigureAction_ShowAdvisoryMessages(showAdvisoryMessagesEventArgs: pca.ShowAdvisoryMessagesEventArgs) {
-
-            this.$modal.open({
-                animation: true,
-                templateUrl: 'AngularTemplate/AdvisoryMessagesPopup',
-                controller: 'AdvisoryMessagesPopupController',
-                resolve: {
-                    advisories: showAdvisoryMessagesEventArgs.advisories
-                }
-            });
         }
 
         private getActionSubPlan(activity: interfaces.IActivityDTO): any {
@@ -914,13 +920,5 @@ module dockyard.controllers {
             $modalInstance.dismiss();
         };
 
-    }]);
-
-    app.controller('AdvisoryMessagesPopupController', ['$scope', '$window', 'advisories', ($scope: any, $modalInstance: any, advisories: model.AdvisoryMessages): void => {
-        $scope.advisories = advisories;
-
-        $scope.close = () => {
-            $modalInstance.close();
-        };
     }]);
 }

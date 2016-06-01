@@ -1,8 +1,21 @@
-﻿<div class="popover {{placement}}" ng-class="{ in: isOpen(), fade: animation() }">
-    <div class="arrow"></div>
-
-    <div class="popover-inner">
-        <h3 class="popover-title" ng-bind="title" ng-show="title"></h3>
-        <div class="popover-content" ng-bind-html="content"></div>
+﻿<div>
+    <span class="glyphicon glyphicon-info-sign advisory-glyphicon"></span>
+    <a href="#" class="pull-right margin-top-10" ng-click="envelope.activity.showAdvisoryPopup = false">X</a>
+    @*<h3 class="popover-title" ng-if="!envelope.activity.label">
+        {{envelope.activity.name}}
+    </h3>
+    <h3 class="popover-title" ng-if="envelope.activity.label !== null">
+        {{envelope.activity.label}}
+    </h3>*@
+    <div class="popover-content">
+        <div ng-repeat="advisory in envelope.activity.advisoryMessages.advisories track by $index">
+            <div class="title">
+                <b>{{advisory.name}}</b>
+            </div>
+            <br/>
+            <div class="content" ng-bind="advisory.content">
+            </div>
+        </div>       
     </div>
+    <br>
 </div>

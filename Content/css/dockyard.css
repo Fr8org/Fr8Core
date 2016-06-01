@@ -1371,3 +1371,9 @@ md-checkbox.md-checked.green .md-icon {
     margin-bottom: 5px;
     font-size: 15px;
 }
+
+.advisory-glyphicon {
+    font-size: 2em;
+    color: rgb(38, 166, 154);
+    margin-top:10px            
+}
