@@ -130,6 +130,9 @@ namespace Fr8Data.Control
         [JsonProperty("hasRefreshButton")]
         public bool HasRefreshButton { get; set; }
 
+        [JsonProperty("selectedItem")]
+        public FieldDTO SelectedItem { get; set; }
+
         public DropDownList() : base()
         {
             ListItems = new List<ListItem>();
@@ -443,6 +446,9 @@ namespace Fr8Data.Control
         [JsonProperty("valueSource")]
         public string ValueSource;
 
+        [JsonIgnore]
+        public FieldDTO UpstreamField => SelectedItem;
+
         public TextSource()
         {
             Type = ControlTypes.TextSource;
@@ -471,7 +477,12 @@ namespace Fr8Data.Control
                     {
                         throw new Exception("Can't resolve upstream value without payload crate storage provided");
                     }
-                    return payloadCrateStorage.FindField(this.selectedKey);
+                    //This is for backward compatibility as controls in existing activites may not be reconfigured to use full field information
+                    if (SelectedItem == null)
+                    {
+                        return payloadCrateStorage.FindField(this.selectedKey);
+                    }
+                    return payloadCrateStorage.FindField(SelectedItem);
                 default:
                     return null;
             }

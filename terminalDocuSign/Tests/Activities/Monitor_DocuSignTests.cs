@@ -22,7 +22,7 @@ namespace terminalDocuSign.Tests.Actions
 
             TerminalDocuSignMapBootstrapper.ConfigureDependencies(Hub.StructureMap.StructureMapBootStrapper.DependencyType.TEST);
 
-            _monitor_DocuSign = new Monitor_DocuSign_Envelope_Activity_v1();
+            _monitor_DocuSign = New<Monitor_DocuSign_Envelope_Activity_v1>();
         }
 
         [Test]
@@ -93,7 +93,7 @@ namespace terminalDocuSign.Tests.Actions
             object[] parameters = new object[] { curPayloadDTO, "EnvelopeId" };
 
             //Act
-            var result = (string)ClassMethod.Invoke(typeof(Monitor_DocuSign_Envelope_Activity_v1), "GetValueForKey", parameters);
+            var result = (string)Invoke<Monitor_DocuSign_Envelope_Activity_v1>("GetValueForKey", parameters);
 
             //Assert
             Assert.AreEqual("EnvelopeIdValue", result);

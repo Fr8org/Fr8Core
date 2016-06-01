@@ -6,10 +6,7 @@ namespace Fr8Data.Crates
     [JsonConverter(typeof(DenySerializationConverter), "Crate can't be directly serialized to JSON. Convert it to CrateDTO.")]
     public class Crate<T> : Crate
     {
-        public T Content
-        {
-            get { return Get<T>(); }
-        }
+        public T Content => Get<T>();
 
         public Crate(Crate crate)
             : base(crate.ManifestType, crate.Id, crate.Availability)
@@ -28,5 +25,4 @@ namespace Fr8Data.Crates
             return new Crate<T>(FromContentUnsafe(label, content, availability));
         }     
     }
-
 }

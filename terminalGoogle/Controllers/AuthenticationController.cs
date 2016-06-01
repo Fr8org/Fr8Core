@@ -3,7 +3,9 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using Fr8Data.DataTransferObjects;
+using Fr8Infrastructure.Interfaces;
 using Newtonsoft.Json;
+using StructureMap;
 using terminalGoogle.Interfaces;
 using terminalGoogle.Services.Authorization;
 using TerminalBase.BaseClasses;
@@ -20,7 +22,7 @@ namespace terminalGoogle.Controllers
 
         public AuthenticationController()
         {
-            _googleIntegration = new GoogleIntegration();
+            _googleIntegration = new GoogleIntegration(ObjectFactory.GetInstance<IRestfulServiceClient>());
         }
 
         [HttpPost]

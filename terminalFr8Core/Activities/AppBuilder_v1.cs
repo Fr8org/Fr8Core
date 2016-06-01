@@ -7,10 +7,12 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using terminalUtilities.Excel;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 using Utilities.Configuration.Azure;
 
 namespace terminalFr8Core.Activities
@@ -64,7 +66,7 @@ namespace terminalFr8Core.Activities
             AddFileDescriptionToStorage(Storage, controls.Get<StandardConfigurationControlsCM>().Controls.Where(a => a.Type == ControlTypes.FilePicker).ToList());
             Storage.Add(controls);
 
-            await SaveToHub(ActivityContext.ActivityPayload);
+            await HubCommunicator.SaveActivity(ActivityContext.ActivityPayload);
             await PushLaunchURLNotification();
         }
 
@@ -165,7 +167,7 @@ namespace terminalFr8Core.Activities
 
         private async Task<byte[]> ProcessExcelFile(string filePath)
         {
-            var byteArray = await new ExcelUtils(HubCommunicator, CurrentUserId).GetExcelFileAsByteArray(filePath);
+            var byteArray = await new ExcelUtils().GetExcelFileAsByteArray(filePath);
             var payloadCrate = Crate.FromContent(RuntimeCrateLabelPrefix, ExcelUtils.GetExcelFile(byteArray, filePath, false), AvailabilityType.RunTime);
             Payload.Add(payloadCrate);
             return byteArray;
@@ -289,7 +291,8 @@ namespace terminalFr8Core.Activities
             return PackControlsCrate(Label,infoText, cc);
         }
 
-        public AppBuilder_v1() : base(false)
+        public AppBuilder_v1(ICrateManager crateManager)
+            : base(false, crateManager)
         {
         }
 
@@ -354,7 +357,7 @@ namespace terminalFr8Core.Activities
                         AvailabilityType.RunTime);
                     var payload = new List<CrateDTO>() { CrateManager.ToDto(flagCrate) };
                     //we need to start the process - run current plan - that we belong to
-                    await HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, payload, CurrentUserId);
+                    HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, payload);
                     //after running the plan - let's reset button state
                     //so next configure calls will be made with a fresh state
                     UnClickSubmitButton();

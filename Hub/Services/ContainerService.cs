@@ -2,31 +2,37 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using StructureMap;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
 using Fr8Data.Crates;
 using Fr8Data.Managers;
 using Fr8Data.Manifests;
+using Hub.Exceptions;
 using Hub.Interfaces;
+using StructureMap;
+using Utilities.Interfaces;
 
 namespace Hub.Services
 {
-    public partial class Container : Interfaces.IContainer
+    public partial class ContainerService : IContainerService
     {
         private readonly IUtilizationMonitoringService _utilizationMonitoringService;
         private readonly IActivityExecutionRateLimitingService _activityRateLimiter;
+        private readonly IPusherNotifier _pusher;
         private readonly IActivity _activity;
         private readonly ICrateManager _crate;
 
-        public Container(IActivity activity, 
+        public ContainerService(IActivity activity, 
                          ICrateManager crateManager, 
                          IUtilizationMonitoringService utilizationMonitoringService,
-                         IActivityExecutionRateLimitingService activityRateLimiter)
+                         IActivityExecutionRateLimitingService activityRateLimiter,
+                         IPusherNotifier pusher)
         {
             _utilizationMonitoringService = utilizationMonitoringService;
             _activityRateLimiter = activityRateLimiter;
+            _pusher = pusher;
             _activity = activity;
             _crate = crateManager;
         }
@@ -35,15 +41,74 @@ namespace Hub.Services
         {
             return uow.ContainerRepository.GetQuery().Where(x => x.PlanId == plan.Id).ToList();
         }
-        
-        public async Task Run(IUnitOfWork uow, ContainerDO curContainerDO)
+
+        /// <summary>
+        /// New Process object
+        /// </summary>
+        /// <param name="planId"></param>
+        /// <param name="envelopeId"></param>
+        /// <returns></returns>
+        public ContainerDO Create(IUnitOfWork uow, PlanDO curPlan, params Crate[] curPayload)
         {
-            if (curContainerDO == null)
+            var containerDO = new ContainerDO { Id = Guid.NewGuid() };
+
+            containerDO.PlanId = curPlan.Id;
+            containerDO.Name = curPlan.Name;
+            containerDO.State = State.Unstarted;
+
+            using (var crateStorage = _crate.UpdateStorage(() => containerDO.CrateStorage))
+            {
+                if (curPayload?.Length > 0)
+                {
+                    foreach (var crate in curPayload)
+                    {
+                        if (crate != null && !crate.IsOfType<OperationalStateCM>())
+                        {
+                            crateStorage.Add(crate);
+                        }
+                    }
+                }
+
+                var operationalState = new OperationalStateCM();
+
+                operationalState.CallStack.PushFrame(new OperationalStateCM.StackFrame
+                {
+                    NodeName = "Starting subplan",
+                    NodeId = curPlan.StartingSubPlanId,
+                });
+
+                crateStorage.Add(Crate.FromContent("Operational state", operationalState));
+            }
+
+            uow.ContainerRepository.Add(containerDO);
+
+            uow.SaveChanges();
+
+            EventManager.ContainerCreated(containerDO);
+
+            return containerDO;
+        }
+
+        public async Task Run(IUnitOfWork uow, ContainerDO container)
+        {
+            if (container == null)
             {
                 throw new ArgumentNullException("ContainerDO is null");
             }
 
-            var storage = _crate.GetStorage(curContainerDO.CrateStorage);
+            if (container.State == State.Failed
+               || container.State == State.Completed)
+            {
+                throw new ApplicationException("Attempted to Launch a Container that was Failed or Completed");
+            }
+
+            var plan = uow.PlanRepository.GetById<PlanDO>(container.PlanId);
+            if (plan.PlanState == PlanState.Deleted)
+            {
+                throw new InvalidOperationException("Can't executue container that belongs to deleted plan");
+            }
+
+            var storage = _crate.GetStorage(container.CrateStorage);
             var operationalState = storage.CrateContentsOfType<OperationalStateCM>().Single();
 
             if (operationalState == null)
@@ -57,20 +122,55 @@ namespace Hub.Services
             if (callStack == null || callStack.Count == 0)
             {
                 // try to convert old CurrentPlanNodeId driven logic into call stack
-                if (curContainerDO.CurrentActivityId == null)
+                if (container.CurrentActivityId == null)
                 {
                     throw new InvalidOperationException("Current container has empty call stack that usually means that execution is completed. We can't run it again.");
                 }
 
-                callStack = RecoverCallStack(uow, curContainerDO);
+                callStack = RecoverCallStack(uow, container);
             }
 
-            curContainerDO.State = State.Executing;
+            container.State = State.Executing;
             uow.SaveChanges();
 
-            var executionSession = new ExecutionSession(uow, callStack, curContainerDO, _activity, _crate, _utilizationMonitoringService, _activityRateLimiter);
+            var executionSession = new ExecutionSession(uow, callStack, container, _activity, _crate, _utilizationMonitoringService, _activityRateLimiter);
 
-            await executionSession.Run();
+            EventManager.ContainerLaunched(container);
+
+            try
+            {
+                await executionSession.Run();
+            }
+            catch (InvalidTokenRuntimeException ex)
+            {
+                var user = uow.UserRepository.GetByKey(plan.Fr8AccountId);
+                ReportAuthError(user, ex);
+                EventManager.ContainerFailed(plan, ex, container.Id.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                EventManager.ContainerFailed(plan, ex, container.Id.ToString());
+                throw;
+            }
+
+            EventManager.ContainerExecutionCompleted(container);
+        }
+
+        public async Task Continue(IUnitOfWork uow, ContainerDO container)
+        {
+            if (container == null)
+            {
+                throw new ArgumentNullException(nameof(container));
+            }
+
+            if (container.State != State.Suspended)
+            {
+                throw new ApplicationException($"Attempted to Continue a Container {container.Id} that wasn't in pending state. Container state is {container.State}.");
+            }
+
+            //continue from where we left
+            await Run(uow, container);
         }
 
         // Previously we were using CurrentActivityId to track container execution. 
@@ -101,9 +201,9 @@ namespace Hub.Services
                     nodeName = "Activity: " + ((ActivityDO)node).Name;
                 }
 
-                if (node is SubPlanDO)
+                if (node is SubplanDO)
                 {
-                    nodeName = "Subplan: " + ((SubPlanDO)node).Name;
+                    nodeName = "Subplan: " + ((SubplanDO)node).Name;
                 }
 
                 pathToRoot.Add(new OperationalStateCM.StackFrame
@@ -149,6 +249,25 @@ namespace Hub.Services
 
 
             return (id == null ? containerRepository.Where(container => container.Plan.Fr8Account.Id == account.Id) : containerRepository.Where(container => container.Id == id && container.Plan.Fr8Account.Id == account.Id)).ToList();
+        }
+        
+        private void ReportAuthError(Fr8AccountDO user, InvalidTokenRuntimeException ex)
+        {
+            string errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with " +
+                    $"{ex?.FailedActivityDTO.ActivityTemplate.WebService.Name}. ";
+
+            errorMessage += $"Please re-authorize Fr8 to connect to {ex?.FailedActivityDTO.ActivityTemplate.WebService.Name} " +
+                    $"by clicking on the Settings dots in the upper " +
+                    $"right corner of the activity and then selecting Choose Authentication. ";
+
+            // Try getting specific the instructions provided by the terminal.
+            if (!String.IsNullOrEmpty(ex.Message))
+            {
+                errorMessage += "Additional instructions from the terminal: ";
+                errorMessage += ex.Message;
+            }
+
+            _pusher.NotifyUser(errorMessage, NotificationChannel.GenericFailure, user.UserName);
         }
     }
 }

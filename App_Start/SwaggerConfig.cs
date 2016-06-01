@@ -161,7 +161,7 @@ namespace HubWeb
                         // the Swagger 2.0 spec. - https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md
                         // before using this option.
                         //
-                        //c.DocumentFilter<ApplyDocumentVendorExtensions>();
+                        c.DocumentFilter<RemoveDuplicatesDocumentFilter>();
 
                         //Removing duplicates filter
                         c.DocumentFilter<RemoveDuplicatesDocumentFilter>();
@@ -172,6 +172,7 @@ namespace HubWeb
                         // custom strategy to pick a winner or merge the descriptions for the purposes of the Swagger docs 
                         //
                         //c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+                        c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
 
                         // Wrap the default SwaggerGenerator with additional behavior (e.g. caching) or provide an
                         // alternative implementation for ISwaggerProvider with the CustomProvider option.

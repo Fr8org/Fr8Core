@@ -9,6 +9,7 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Hub.Interfaces;
@@ -150,11 +151,10 @@ namespace terminalDocuSign.Activities
             "Correct"
         };
         
-        private readonly IPlan _plan;
-        public Generate_DocuSign_Report_v1() : base(true)
+        public Generate_DocuSign_Report_v1(ICrateManager crateManager, IDocuSignManager docuSignManager)
+            : base(true, crateManager)
         {
-            _plan = ObjectFactory.GetInstance<IPlan>();
-            _docuSignManager = ObjectFactory.GetInstance<IDocuSignManager>();
+            _docuSignManager = docuSignManager;
             InitQueryBuilderFields();
         }
 
@@ -196,9 +196,9 @@ namespace terminalDocuSign.Activities
         public override async Task Run()
         {
             Success();
-            }
+        }
 
-        protected override async Task RunChildActivities()
+        public override async Task RunChildActivities()
         {
             if (ConfigurationControls == null)
             {

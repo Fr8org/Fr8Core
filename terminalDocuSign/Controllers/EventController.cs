@@ -37,7 +37,11 @@ namespace terminalDocuSign.Controllers
         [Route("polling_notifications")]
         public async Task<IHttpActionResult> ProcessPollingRequest(string job_id, string fr8_account_id, string polling_interval)
         {
-            var result = await _polling.Poll(job_id, fr8_account_id, polling_interval);
+            var hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
+
+            hubCommunicator.Configure("terminalDocuSign", fr8_account_id);
+
+            var result = await _polling.Poll(hubCommunicator, job_id, polling_interval);
             if (result)
                 return Ok();
             else

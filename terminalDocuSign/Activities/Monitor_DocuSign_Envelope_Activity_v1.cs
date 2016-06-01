@@ -10,6 +10,7 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Hub.Managers;
@@ -42,6 +43,11 @@ namespace terminalDocuSign.Actions
 
         private const string AllFieldsCrateName = "DocuSign Envelope Fields";
 
+        public Monitor_DocuSign_Envelope_Activity_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+            : base(crateManager, docuSignManager)
+        {
+        }
+
         private void GetTemplateRecipientPickerValue(out string selectedOption, out string selectedValue, out string selectedTemplate)
         {
             ActivityUi activityUi = ConfigurationControls;
@@ -61,13 +67,13 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        protected override Task<bool> Validate()
+        protected override Task Validate()
         {
             ActivityUi activityUi = ConfigurationControls;
             if (activityUi == null)
             {
                 ValidationManager.SetError(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
-                return Task.FromResult(false);
+                return Task.FromResult(0);
             }
 
             if (!AtLeastOneNotificationIsSelected(activityUi))
@@ -97,7 +103,7 @@ namespace terminalDocuSign.Actions
                 ValidationManager.ValidateTemplateList(activityUi.TemplateList);
             }
 
-            return Task.FromResult(true);
+            return Task.FromResult(0);
         }
 
         protected override string ActivityUserFriendlyName => "Monitor DocuSign Envelope Activity";

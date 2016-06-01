@@ -14,6 +14,7 @@ using StructureMap;
 using terminalUtilities;
 using terminalUtilities.Excel;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalExcel.Activities
 {
@@ -71,18 +72,19 @@ namespace terminalExcel.Activities
         private const string ColumnHeadersCrateLabel = "Spreadsheet Column Headers";
         private const string ExternalObjectHandlesLabel = "External Object Handles";
 
-        public Load_Excel_File_v1() : base(false)
+        public Load_Excel_File_v1(ICrateManager crateManager)
+            : base(crateManager)
         {
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
-            var excelUtils = new ExcelUtils(HubCommunicator, CurrentUserId);
+            var excelUtils = new ExcelUtils();
             Storage.RemoveByLabel(ColumnHeadersCrateLabel);
             //If file is not uploaded we hide file description
             if (string.IsNullOrEmpty(ActivityUI.FilePicker.Value))
@@ -161,7 +163,7 @@ namespace terminalExcel.Activities
             return crates;
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             if (string.IsNullOrEmpty(ActivityUI.FilePicker.Value))
             {
@@ -169,7 +171,7 @@ namespace terminalExcel.Activities
                 return;
             }
 
-            var byteArray = await new ExcelUtils(HubCommunicator, CurrentUserId).GetExcelFileAsByteArray(ActivityUI.FilePicker.Value);
+            var byteArray = await new ExcelUtils().GetExcelFileAsByteArray(ActivityUI.FilePicker.Value);
             var tableCrates = GetExcelFileDescriptionCrates(byteArray, ActivityUI.FilePicker.Value, true, null, true);
 
             var fileDescription = new StandardFileDescriptionCM
@@ -253,5 +255,11 @@ namespace terminalExcel.Activities
     }
 
     // For backward compatibility
-    public class Extract_Data_v1 : Load_Excel_File_v1 { }
+    public class Extract_Data_v1 : Load_Excel_File_v1
+    {
+        public Extract_Data_v1(ICrateManager crateManager) 
+            : base(crateManager)
+        {
+        }
+    }
 }

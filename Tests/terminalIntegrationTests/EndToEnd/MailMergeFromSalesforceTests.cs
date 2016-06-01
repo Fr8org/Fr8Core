@@ -49,7 +49,7 @@ namespace terminalIntegrationTests.EndToEnd
         [Test, Category("Integration.terminalSalesforce")]
         public async Task MailMergeFromSalesforceEndToEnd()
         {
-            /*
+          
             await RevokeTokens("terminalDocuSign");
             var salesforceAuthToken = await HealthMonitor_FixtureData.CreateSalesforceAuthToken();
             //Create Case object in Salesforce
@@ -105,7 +105,7 @@ namespace terminalIntegrationTests.EndToEnd
                 //    await HttpDeleteAsync($"{_baseUrl}plans?id={plan.Plan.Id}");
                 //}
             }
-            */
+            
         }
 
         private void AssertEnvelopeContents(Guid docuSignTokenId, string expectedName)

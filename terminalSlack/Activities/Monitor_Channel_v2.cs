@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using StructureMap;
@@ -89,13 +90,14 @@ namespace terminalSlack.Activities
         private readonly ISlackIntegration _slackIntegration;
         private readonly ISlackEventManager _slackEventManager;
 
-        public Monitor_Channel_v2() : base(true)
+        public Monitor_Channel_v2(ICrateManager crateManager)
+            : base(crateManager)
         {
             _slackIntegration = ObjectFactory.GetInstance<ISlackIntegration>();
             _slackEventManager = ObjectFactory.GetInstance<ISlackEventManager>();
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             ActivityUI.ChannelList.ListItems = (await _slackIntegration.GetChannelList(AuthorizationToken.Token).ConfigureAwait(false))
                 .OrderBy(x => x.Key)
@@ -123,31 +125,30 @@ namespace terminalSlack.Activities
             return CrateManager.CreateStandardEventSubscriptionsCrate(EventSubscriptionsCrateLabel, "Slack", "Slack Outgoing Message");
         }
 
-        protected override Task ConfigureETA()
+        public override Task FollowUp()
         {
             //No extra configuration is required
             return Task.FromResult(0);
         }
 
-        protected override Task<bool> ValidateETA()
+        protected override Task Validate()
         {
             if (!IsMonitoringDirectMessages && (!IsMonitoringChannels || (!IsMonitoringAllChannels && !IsMonitoringSpecificChannels)))
             {
                 ValidationManager.SetError("At least one of the monitoring options must be selected", ActivityUI.MonitorDirectMessagesOption, ActivityUI.MonitorChannelsOption);
-                return Task.FromResult(false);
             }
 
-            return Task.FromResult(true);
+            return Task.FromResult(0);
         }
 
-        protected override Task RunETA()
+        public override Task Run()
         {
             var incomingMessageContents = ExtractIncomingMessageContentFromPayload();
             var hasIncomingMessage = incomingMessageContents?.Fields?.Count > 0;
 
             if (!hasIncomingMessage)
             {
-                RequestHubExecutionTermination("Incoming message is missing.");
+                TerminateHubExecution("Incoming message is missing.");
                 return Task.FromResult(0);
             }
 
@@ -156,7 +157,7 @@ namespace terminalSlack.Activities
 
             if (string.IsNullOrEmpty(incomingChannelId))
             {
-                RequestHubExecutionTermination("Incoming message doesn't contain information about source channel");
+                TerminateHubExecution("Incoming message doesn't contain information about source channel");
             }
             else
             {
@@ -173,19 +174,19 @@ namespace terminalSlack.Activities
                 }
                 else
                 {
-                    RequestHubExecutionTermination("Incoming message doesn't pass filter criteria. No downstream activities are executed");
+                    TerminateHubExecution("Incoming message doesn't pass filter criteria. No downstream activities are executed");
                 }
             }
 
             return Task.FromResult(0);
         }
 
-        protected override async Task ActivateETA()
+        public override async Task Activate()
         {
             await _slackEventManager.Subscribe(AuthorizationToken, ActivityPayload.RootPlanNodeId.Value).ConfigureAwait(false);
         }
 
-        protected override Task DeactivateETA()
+        public override Task Deactivate()
         {
             _slackEventManager.Unsubscribe(ActivityPayload.RootPlanNodeId.Value);
             return Task.FromResult(0);

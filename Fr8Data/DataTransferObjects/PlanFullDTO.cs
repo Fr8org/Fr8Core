@@ -11,7 +11,7 @@ namespace Fr8Data.DataTransferObjects
         /// <summary>
         /// List of SubPlan DTOs.
         /// </summary>
-        public IEnumerable<FullSubPlanDTO> SubPlans { get; set; }
+        public IEnumerable<FullSubplanDto> SubPlans { get; set; }
 
         public string Fr8UserId { get; set; }
     }
@@ -19,7 +19,7 @@ namespace Fr8Data.DataTransferObjects
     /// <summary>
     /// SubPlan DTO that contains full graph of other DTO objects.
     /// </summary>
-    public class FullSubPlanDTO : SubPlanDTO
+    public class FullSubplanDto : SubplanDTO
     {
         /// <summary>
         /// List of ActionList DTOs.

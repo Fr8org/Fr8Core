@@ -1,0 +1,60 @@
+﻿<!-- TODO: FR-2347 remove this. -->
+<!--
+<div>
+    <div ng-class="{'noclick-background': isDisabled}">
+        <table class="table query-builder-table" stop-click-propagation>
+            <thead>
+                <tr>
+                    <th class="col-md-5">Field</th>
+                    <th class="col-md-3">Operator</th>
+                    <th class="col-md-3">Value</th>
+                    <th class="col-md-1"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat-start="row in rows track by $index">
+                    <td width="125">
+                        <select class="form-control" ng-options="f.key as f.name for f in fields" ng-model="row.field">
+                            <option value="">Select a Field</option>
+                        </select>
+                    </td>
+                    <td width="60">
+                        <select class="form-control" ng-options="op.value as op.text for op in operators" ng-model="row.operator" ng-disabled="!row.field"></select>
+                    </td>
+                    <td>
+                        <div>
+                            <input
+                                type="text"
+                                class="form-control"
+                                ng-required="true"
+                                ng-model="row.value"
+                                ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 } }"
+                                ng-change="valueChanged(row)"
+                                ng-disabled="!row.field"
+                                ng-class="{ invalid: !!row.valueError }"
+                            />
+                            !--
+                            <configuration-control current-action="currentAction" field="row.control" />
+                            --
+                        </div>
+                    </td>
+                    <td>
+                        <img src="/Content/img/PlanBuilder/delete-icon.png" width="15" height="15"
+                             ng-show="rows.length > 1"
+                             ng-click="removeRow($index)"
+                             class="query-builder-delete-button" />
+                    </td>
+                </tr>
+                <tr ng-repeat-end ng-if="row.valueError" class="no-border">
+                    <td colspan="3">
+                        <div class="invalid-hint">{{row.valueError}}</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div>
+            <a href class="btn btn-primary query-builder-add-button" ng-click="addRow()" stop-click-propagation>Add Row</a>
+        </div>
+    </div>
+</div>
+-->

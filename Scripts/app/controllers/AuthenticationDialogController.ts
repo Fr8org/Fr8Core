@@ -3,6 +3,7 @@
     export interface IAuthenticationDialogScope extends ng.IScope {
         activities: Array<model.ActivityDTO>;
         terminals: Array<model.AuthenticationTokenTerminalDTO>;
+        isWaitingForResponse: boolean;
 
         isLoading: () => boolean;
         isAllSelected: () => boolean;
@@ -32,9 +33,12 @@
             var _activities: Array<model.ActivityDTO> = [];
             var _loading = false;
 
+            $scope.isWaitingForResponse = false;
+
             $scope.terminals = [];
 
             $scope.linkAccount = (terminal) => {
+                $scope.isWaitingForResponse = true;
                 if (terminal.authenticationType === 2 || terminal.authenticationType === 4) {
                     _authenticateInternal(terminal);
                 }
@@ -105,23 +109,29 @@
                         scope: modalScope
                     })
                     .result
-                    .then(data => {
+                    .then((data) => {
+                        $scope.isWaitingForResponse = false;
+
                         var selectedAuthTokens = [];
-                        if (data.terminalId && data.authTokenId) {
-                            selectedAuthTokens.push({
-                                terminalName: data.terminalName,
-                                authTokenId: data.authTokenId
-                            });
+                        if (typeof data != 'undefined') {
+                            if (data.terminalId && data.authTokenId) {
+                                selectedAuthTokens.push({
+                                    terminalName: data.terminalName,
+                                    authTokenId: data.authTokenId
+                                });
+                            }
                         }
 
                         _reloadTerminals(selectedAuthTokens);
-                    });
+                    }, () => { $scope.isWaitingForResponse = false; });
             };
 
             var _authenticateExternal = function (terminal: model.AuthenticationTokenTerminalDTO) {
                 var self = this;
                 var childWindow;
-                
+                $scope.isWaitingForResponse = true;
+
+
                 var messageListener = function (event) {
                     if (!event.data || event.data.type != 'external-auth-success') {
                         return;
@@ -137,6 +147,7 @@
                             authTokenId: event.data.authTokenId
                         });
                     }
+                    
 
                     _reloadTerminals(selectedAuthTokens);
                 };
@@ -146,11 +157,27 @@
                     .then(res => {
                         var url = (<any>res.data).url;
                         childWindow = $window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');
+
+                        //var _closeSplash = function () {
+                        //    $scope.isWaitingForResponse = false;    
+                        //    alert('!');
+                        //    $scope.$apply();
+                        //}
+
+                        //if (typeof childWindow.attachEvent != "undefined") {
+                        //    childWindow.attachEvent("onunload", _closeSplash);
+                        //} else if (typeof childWindow.addEventListener != "undefined") {
+                        //    childWindow.addEventListener("unload", _closeSplash, false);
+                        //}
+
+                       
                         window.addEventListener('message', messageListener);
                 
                         var isClosedHandler = function () {
                             if (childWindow.closed) {
                                 window.removeEventListener('message', messageListener);
+                                $scope.isWaitingForResponse = false;  
+                                $scope.$apply();
                             }
                             else {
                                 setTimeout(isClosedHandler, 500);

@@ -40,7 +40,7 @@ namespace terminalBaseTests.BaseClasses
             base.SetUp();
             TerminalBootstrapper.ConfigureTest();
             ObjectFactory.Configure(x => x.For<IRestfulServiceClient>().Use<RestfulServiceClient>().SelectConstructor(() => new RestfulServiceClient()));
-            _baseTerminalActivity = new BaseTerminalActivityMock();
+            _baseTerminalActivity = New<BaseTerminalActivityMock>();
 
             //_baseTerminalActivity.HubCommunicator.Configure("terminal");
             _coreServer = terminalBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
@@ -130,6 +130,7 @@ namespace terminalBaseTests.BaseClasses
                 var curAction = FixtureData.TestAction257();
                 var activityContext = new ActivityContext
                 {
+                    HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                     ActivityPayload = curAction
                 };
                 //this initializes the class
@@ -156,6 +157,7 @@ namespace terminalBaseTests.BaseClasses
                 var curAction = FixtureData.TestAction257();
                 var activityContext = new ActivityContext
                 {
+                    HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                     ActivityPayload = curAction
                 };
                 //this initializes the class

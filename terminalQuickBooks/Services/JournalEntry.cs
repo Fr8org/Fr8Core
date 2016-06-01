@@ -111,11 +111,10 @@ namespace terminalQuickBooks.Services
         public void Create(
             StandardAccountingTransactionDTO curAccountingTransactionDto, 
             AuthorizationToken authToken,
-            string userId,
             IHubCommunicator hubCommunicator)
         {
             var curJournalEntry = CreateQbJournalEntry(curAccountingTransactionDto);
-            var curDataService = _serviceWorker.GetDataService(authToken, userId, hubCommunicator);
+            var curDataService = _serviceWorker.GetDataService(authToken, hubCommunicator);
             try
             {
                 curDataService.Add(curJournalEntry);
