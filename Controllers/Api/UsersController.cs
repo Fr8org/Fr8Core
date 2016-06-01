@@ -104,7 +104,7 @@ namespace HubWeb.Controllers
         {
             if (string.IsNullOrEmpty(oldPassword))
                 throw new Exception("Old password is required.");
-            
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var user = uow.UserRepository.FindOne(u => u.EmailAddress.Address == User.Identity.Name);
@@ -123,17 +123,19 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult UpdateUserProfile(string userId, Guid profileId, string userClass)
+        //public IHttpActionResult UpdateUserProfile(string userId, Guid profileId, string userClass = "", bool canManagePageDefinitions = false)
+        public IHttpActionResult UpdateUserProfile(UserDTO userDTO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 bool hasChanged = false;
-                var user = uow.UserRepository.FindOne(u => u.Id == userId);
+                var user = uow.UserRepository.FindOne(u => u.Id == userDTO.Id);
 
                 if (_securityServices.UserHasPermission(PermissionType.ManageFr8Users, nameof(Fr8AccountDO)))
                 {
-                    user.ProfileId = profileId;
-                    user.Class = userClass;
+                    user.CanManagePageDefinitions = userDTO.CanManagePageDefinitions;
+                    user.Class = userDTO.Class;
+                    user.ProfileId = userDTO.ProfileId;
                     uow.SaveChanges();
                     return Ok();
                 }
@@ -141,7 +143,7 @@ namespace HubWeb.Controllers
                 if (_securityServices.UserHasPermission(PermissionType.ManageInternalUsers, nameof(Fr8AccountDO)))
                 {
                     //security check if user is from same organization
-                    user.ProfileId = profileId;
+                    user.ProfileId = userDTO.ProfileId;
                     hasChanged = true;
                 }
 
