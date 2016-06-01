@@ -13,7 +13,7 @@ namespace terminalDocuSign.Activities
         protected readonly IDocuSignManager DocuSignManager;
       
         protected EnhancedDocuSignActivity(ICrateManager crateManager, IDocuSignManager docuSignManager)
-            : base(true, crateManager)
+            : base(crateManager)
         {
             if (docuSignManager == null)
             {

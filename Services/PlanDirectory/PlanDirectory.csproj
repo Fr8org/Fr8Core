@@ -226,12 +226,14 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\AuthTokenManager.cs" />
+    <Compile Include="Infrastructure\ISearchProvider.cs" />
     <Compile Include="Infrastructure\PlanDirectoryHMACAuthenticateAttribute.cs" />
     <Compile Include="Infrastructure\IAuthTokenManager.cs" />
     <Compile Include="Infrastructure\PlanDirectoryAuthorizeAttribute.cs" />
     <Compile Include="Infrastructure\PlanDirectoryBootStrapper.cs" />
+    <Compile Include="Infrastructure\SearchProvider.Impl.cs" />
     <Compile Include="Interfaces\CreatePlanDTO.cs" />
-    <Compile Include="Interfaces\PublishPlanTemplateDTO.cs" />
+    <Compile Include="Interfaces\SearchItemDTO.cs" />
     <Compile Include="Interfaces\SearchRequestDTO.cs" />
     <Compile Include="Interfaces\SearchResultDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -114,6 +114,7 @@
     <Compile Include="DataTransferObjects\CrateStorageDTO.cs" />
     <Compile Include="DataTransferObjects\CredentialsDTO.cs" />
     <Compile Include="DataTransferObjects\EmailAddressDTO.cs" />
+    <Compile Include="DataTransferObjects\PublishPlanTemplateDTO.cs" />
     <Compile Include="DataTransferObjects\RecipientDTO.cs" />
     <Compile Include="DataTransferObjects\EmailDTO.cs" />
     <Compile Include="DataTransferObjects\DocuSignEnvelopeDTO.cs" />

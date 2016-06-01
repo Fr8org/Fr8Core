@@ -55,9 +55,13 @@
                 <div class="label">Name:</div>
                 <div class="value">{{pt.Name}}</div>
             </div>
-            <div class="info-row">
+            <div class="info-row" ng-if="pt.Description">
                 <div class="label">Description:</div>
                 <div class="value">{{pt.Description}}</div>
+            </div>
+            <div class="info-row" ng-if="pt.Owner">
+                <div class="label">Created by:</div>
+                <div class="value">{{pt.Owner}}</div>
             </div>
         </div>
 
@@ -80,10 +84,10 @@
 
     <script type="text/ng-template" id="/PlanCreatedDialog.html">
         <div class="modal-body">
-            <div>Plan was successfully created. To be implemented...</div>
+            <div>Plan was successfully created.</div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-default" ng-click="$dismiss()">Close</button>
+            <button type="button" class="btn btn-default" ng-click="$dismiss()">Go to created plan</button>
         </div>        
     </script>
 </body>

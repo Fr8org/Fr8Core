@@ -12,6 +12,7 @@ module dockyard.directives.designerHeader {
         runPlan(): void;
         deactivatePlan(): void;
         resetPlanStatus(): void;
+        sharePlan(): void;
         plan: model.PlanDTO;
         kioskMode: boolean;
     }
@@ -25,6 +26,7 @@ module dockyard.directives.designerHeader {
             $scope: IDesignerHeaderScope,
             element: ng.IAugmentedJQuery,
             attrs: ng.IAttributes,
+            $http: ng.IHttpService,
             ngToast: any,
             PlanService: services.IPlanService
         ) => void;
@@ -50,6 +52,7 @@ module dockyard.directives.designerHeader {
                 $scope: IDesignerHeaderScope,
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes,
+                $http: ng.IHttpService,
                 ngToast: any,
                 PlanService: services.IPlanService) => {
 
@@ -61,6 +64,16 @@ module dockyard.directives.designerHeader {
                     $scope.editing = false;
                     var result = PlanService.update({ id: $scope.plan.id, name: $scope.plan.name });
                     result.$promise.then(() => { });
+                };
+
+                $scope.sharePlan = () => {
+                    PlanService.share($scope.plan.id)
+                        .then(() => {
+                            console.log('sharePlan: Success');
+                        })
+                        .catch(() => {
+                            console.log('sharePlan: Failure');
+                        });
                 };
 
                 $scope.runPlan = () => {
@@ -130,7 +143,7 @@ module dockyard.directives.designerHeader {
                 };
             };
 
-            DesignerHeader.prototype.controller['$inject'] = ['$rootScope', '$scope', '$element', '$attrs', 'ngToast', 'PlanService'];
+            DesignerHeader.prototype.controller['$inject'] = ['$rootScope', '$scope', '$element', '$attrs', '$http', 'ngToast', 'PlanService'];
         }
 
         //The factory function returns Directive object as per Angular requirements

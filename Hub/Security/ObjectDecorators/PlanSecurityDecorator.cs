@@ -141,12 +141,12 @@ namespace Hub.Security.ObjectDecorators
         {
             return _target.MatchEvents(curPlans, curEventReport);
         }
-
-        public Task<ContainerDO> Run(IUnitOfWork uow, PlanDO plan, params Crate[] curPayload)
+        
+        public Task<ContainerDTO> Run(Guid planId, Crate[] payload, Guid? containerId)
         {
-            if (_securityServices.AuthorizeActivity(PermissionType.RunObject, plan.Id.ToString(), nameof(PlanNodeDO)))
+            if (_securityServices.AuthorizeActivity(PermissionType.RunObject, planId.ToString(), nameof(PlanNodeDO)))
             {
-                return _target.Run(uow, plan, curPayload);
+                return _target.Run(planId, payload, containerId);
             }
 
             throw new HttpException(403, "You are not authorized to perform this activity!");
