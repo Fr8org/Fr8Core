@@ -254,7 +254,7 @@ namespace terminalFr8Core.Activities
         #endregion Configuration.
 
         public BuildQuery_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
         public override async Task Run()

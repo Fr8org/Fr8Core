@@ -101,7 +101,7 @@ namespace terminalFr8Core.Activities
         }
 
         public SearchFr8Warehouse_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 
