@@ -5,7 +5,7 @@ Terminals can be written in any language, and only need to support a handful of 
 
 
 Basic Topics
-===
+=====
 
 Before proceeding, make sure you're famililar with the following basic topics:
 *  Fr8 Architecture
@@ -15,7 +15,13 @@ Before proceeding, make sure you're famililar with the following basic topics:
 *  Fr8 Plans
 *  Fr8 Authentication
 
+General Information
+This is platform-independent.
 
+Platform-Specific Information
+*  .NET 
+*  Java
+*  Ruby
 
 
  
