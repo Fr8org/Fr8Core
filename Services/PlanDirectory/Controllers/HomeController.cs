@@ -26,21 +26,32 @@ namespace PlanDirectory.Controllers
         [HttpGet]
         public ActionResult AuthenticateByToken(string token)
         {
-            var fr8AccountId = _authTokenManager.GetFr8AccountId(token);
-            if (!fr8AccountId.HasValue)
+            try
             {
-                return Redirect(VirtualPathUtility.ToAbsolute("~/Reauthenticate"));
+                var fr8AccountId = _authTokenManager.GetFr8AccountId(token);
+                if (!fr8AccountId.HasValue)
+                {
+                    return Redirect(VirtualPathUtility.ToAbsolute("~/Reauthenticate"));
+                }
+
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var fr8AccountDO = uow.UserRepository.GetByKey(fr8AccountId.Value.ToString());
+
+                    var securityServices = ObjectFactory.GetInstance<ISecurityServices>();
+                    securityServices.Logout();
+                    securityServices.Login(uow, fr8AccountDO);
+
+                    return Redirect(VirtualPathUtility.ToAbsolute("~/"));
+                }
             }
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            catch (System.Exception ex)
             {
-                var fr8AccountDO = uow.UserRepository.GetByKey(fr8AccountId.Value.ToString());
+                var sb = new System.Text.StringBuilder();
+                sb.AppendLine(ex.Message);
+                sb.AppendLine(ex.StackTrace);
 
-                var securityServices = ObjectFactory.GetInstance<ISecurityServices>();
-                securityServices.Logout();
-                securityServices.Login(uow, fr8AccountDO);
-
-                return Redirect(VirtualPathUtility.ToAbsolute("~/"));
+                return Content(sb.ToString());
             }
         }
 
