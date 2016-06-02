@@ -19,6 +19,7 @@ General Information
 =====
 
 This is platform-independent.
+
 [API Endpoints](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Terminals/TerminalEndpoints.md)
 
 Platform-Specific Information
