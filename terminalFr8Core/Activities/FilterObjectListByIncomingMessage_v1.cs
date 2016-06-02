@@ -94,7 +94,7 @@ namespace terminalFr8Core.Activities
         private static readonly TimeSpan CacheExpirationTime = TimeSpan.FromHours(1.0);
 
         public FilterObjectListByIncomingMessage_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
             //ActivityName = "Match Incoming Text and Build Object List";
         }

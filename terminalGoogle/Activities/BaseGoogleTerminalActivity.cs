@@ -20,7 +20,7 @@ namespace terminalGoogle.Actions
         private readonly IGoogleIntegration _googleIntegration;
 
         protected BaseGoogleTerminalActivity(ICrateManager crateManager, IGoogleIntegration googleIntegration)
-            : base(true, crateManager)
+            : base(crateManager)
         {
             _googleIntegration = googleIntegration;
 

@@ -118,6 +118,11 @@ module dockyard.controllers {
 
             this.$scope.view = $stateParams['view'];
             this.$scope.viewMode = $stateParams['viewMode'];
+
+
+            this.$scope.$on('$stateChangeStart', (event, toState, toParams, fromState, fromParams, options) => {
+                this.handleBackButton(event, toState, toParams, fromState, fromParams, options);
+            });
             
             this.$scope.addAction = (group: model.ActionGroup) => {
                 this.addAction(group);
@@ -232,6 +237,13 @@ module dockyard.controllers {
             };
 
             this.processState($state);
+        }
+
+        private handleBackButton(event, toState, toParams, fromState, fromParams, options) {
+            if (fromParams.viewMode === "plan" && toParams.viewMode === undefined && fromState.name === "planBuilder" && toState.name === "planBuilder") {
+                event.preventDefault();
+                this.$state.go("planList");
+            }
         }
 
         private startLoader() {
@@ -401,6 +413,12 @@ module dockyard.controllers {
             planPromise.$promise.then(this.onPlanLoad.bind(this, mode));
         }
 
+        private reloadFirstActions() {
+            this.$timeout(() => {
+                this.$scope.current.plan.subPlans.forEach(plan => this.$scope.reConfigureAction(plan.activities[0]));
+            }, 1500);
+        }
+
         private onPlanLoad(mode: string, curPlan: interfaces.IPlanFullDTO) {
             this.AuthService.setCurrentPlan(<interfaces.IPlanVM>curPlan.plan);
             this.AuthService.clear();
@@ -412,7 +430,7 @@ module dockyard.controllers {
                 this.setAdvancedEditingMode();
             }
             this.renderPlan(<interfaces.IPlanVM>curPlan.plan);
-            this.$state.go('planBuilder', { id: curPlan.plan.id,  viewMode: mode });
+            this.$state.go('planBuilder', { id: curPlan.plan.id, viewMode: mode }).then(this.reloadFirstActions.bind(this));
         }
 
         /*
