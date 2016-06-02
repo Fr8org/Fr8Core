@@ -18,3 +18,12 @@ The table below lists the endpoints on which terminals are expected to reply wit
 | POST | /activities/executeChildActivities | [Example](JsonExamples/TerminalActivitiesExecuteChildActivities.md)|
 | POST | /activities/documentation | [Example](JsonExamples/TerminalActivitiesDocumentation.md)|
 | POST | /terminals/&lt;terminal-name&gt;/events | [Example](JsonExamples/TerminalEvents.md)|
+
+this material was written on another page:
+Requent |	Parameters |	Notes
+--- | --- | ---
+/configure |	ActionDTO |	The terminal mainly just routes this to the appropriate Action class
+/activate |	ActionDTO |	The terminal mainly just routes this to the appropriate Action class, although many activation behaviors will be shared between actions (such as authenticating against an underlying web service like DocuSign) and so much of the code should be shared
+/execute |	ActionDTO |	The terminal mainly just routes this to the appropriate Action class
+/discover |	none |	The terminal responds with information about itself and its ActivityTemplates
+/polling_notifications | [See Scheduling](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Services/Scheduling.md) | The endpoint is required to enable scheduling through /alarms/polling
