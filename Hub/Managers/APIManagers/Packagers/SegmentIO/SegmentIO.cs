@@ -60,10 +60,11 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
 
         public void Identify(Fr8AccountDO fr8AccountDO)
         {
+            if (Analytics.Client == null)
+                return;
             var props = new Traits();
             foreach (var prop in GetProperties(fr8AccountDO))
                 props.Add(prop.Key, prop.Value);
-
             Analytics.Client.Identify(fr8AccountDO.Id, props);
             Track(fr8AccountDO, "User Logged In", props);
         }
@@ -79,6 +80,8 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
 
         public void Track(Fr8AccountDO fr8AccountDO, String eventName, Dictionary<String, object> properties = null)
         {
+            if (Analytics.Client == null)
+                return;
             var props = new Segment.Model.Properties();
             foreach (var prop in GetProperties(fr8AccountDO))
                 props.Add(prop.Key, prop.Value);
@@ -93,6 +96,8 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
         }
         public void Track(IUnitOfWork uow, string userId, string eventName, Segment.Model.Properties properties)
         {
+            if (Analytics.Client == null)
+                return;
             Fr8AccountDO fr8AccountDO;
             using (uow) { fr8AccountDO = uow.UserRepository.GetByKey(userId); }
 
@@ -104,10 +109,14 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
         }
         public void Track(string eventName, Segment.Model.Properties properties)
         {
+            if (Analytics.Client == null)
+                return;
             Analytics.Client.Track(null, eventName, properties);
         }
         public void Track(string userId, string eventName, Segment.Model.Properties properties)
         {
+            if (Analytics.Client == null)
+                return;
             Analytics.Client.Track(userId, eventName, properties);
         }
     }
