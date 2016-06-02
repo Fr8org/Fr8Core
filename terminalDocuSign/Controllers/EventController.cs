@@ -39,9 +39,9 @@ namespace terminalDocuSign.Controllers
         {
             var hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
 
-            hubCommunicator.Configure("terminalDocuSign", job_id);
+            hubCommunicator.Configure("terminalDocuSign", fr8_account_id);
 
-            var result = await _polling.Poll(hubCommunicator, fr8_account_id, polling_interval);
+            var result = await _polling.Poll(hubCommunicator, job_id, polling_interval);
             if (result)
                 return Ok();
             else
