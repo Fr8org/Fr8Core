@@ -1,67 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Data.Entities;
-using Data.States;
+using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Hub.Managers;
-using StructureMap;
+using Fr8Data.Managers;
+using Fr8Data.States;
+using terminalUtilities.Infrastructure;
+using terminalUtilities.Interfaces;
+using terminalUtilities.Models;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Utilities;
-using terminalUtilities.SendGrid;
 
-namespace terminalSendGrid.Actions
+namespace terminalSendGrid.Activities
 {
     public class SendEmailViaSendGrid_v1 : BaseTerminalActivity
     {
-        // moved the EmailPackager ObjectFactory here since the basepluginAction will be called by others and the dependency is defiend in pluginsendGrid
-        private IConfigRepository _configRepository;
-        private IEmailPackager _emailPackager;
+        private readonly IConfigRepository _configRepository;
+        private readonly IEmailPackager _emailPackager;
 
-        public SendEmailViaSendGrid_v1()
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-            _emailPackager = ObjectFactory.GetInstance<IEmailPackager>();
+            Name = "SendEmailViaSendGrid",
+            Label = "Send Email",
+            Version = "1",
+            Tags = string.Join(",", Tags.Notifier, Tags.EmailDeliverer),
+            Terminal = TerminalData.TerminalDTO,
+            Category = ActivityCategory.Forwarders,
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
+        public SendEmailViaSendGrid_v1(ICrateManager crateManager, IConfigRepository configRepository, IEmailPackager emailPackager)
+            : base(crateManager)
+        {
+            _configRepository = configRepository;
+            _emailPackager = emailPackager;
         }
 
-        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+
+        public override async Task Initialize()
         {
-            return await ProcessConfigurationRequest(curActivityDO, EvaluateReceivedRequest, authTokenDO);
-        }
-
-        /// <summary>
-        /// this entire function gets passed as a delegate to the main processing code in the base class
-        /// currently many actions have two stages of configuration, and this method determines which stage should be applied
-        /// </summary>
-        private ConfigurationRequestType EvaluateReceivedRequest(ActivityDO curActivityDO)
-        {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            return ConfigurationRequestType.Followup;
-        }
-
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.Clear();
-                crateStorage.Add(CreateControlsCrate());
-            }
-
-            return await Task.FromResult(curActivityDO);
-        }
-
-        protected async override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            return await Task.FromResult(curActivityDO);
+            Storage.Clear();
+            Storage.Add(CreateControlsCrate());
+            await Task.FromResult(0);
         }
 
         /// <summary>
@@ -70,7 +54,7 @@ namespace terminalSendGrid.Actions
         /// <returns></returns>
         private ControlDefinitionDTO CreateEmailAddressTextSourceControl()
         {
-            var control = CreateSpecificOrUpstreamValueChooser(
+            var control = ControlHelper.CreateSpecificOrUpstreamValueChooser(
                 "Email Address",
                 "EmailAddress",
                 addRequestConfigEvent: true,
@@ -86,7 +70,7 @@ namespace terminalSendGrid.Actions
         /// <returns></returns>
         private ControlDefinitionDTO CreateEmailSubjectTextSourceControl()
         {
-            var control = CreateSpecificOrUpstreamValueChooser(
+            var control = ControlHelper.CreateSpecificOrUpstreamValueChooser(
                 "Email Subject",
                 "EmailSubject",
                 addRequestConfigEvent: true,
@@ -102,7 +86,7 @@ namespace terminalSendGrid.Actions
         /// <returns></returns>
         private ControlDefinitionDTO CreateEmailBodyTextSourceControl()
         {
-            var control = CreateSpecificOrUpstreamValueChooser(
+            var control = ControlHelper.CreateSpecificOrUpstreamValueChooser(
                 "Email Body",
                 "EmailBody",
                 addRequestConfigEvent: true,
@@ -132,82 +116,66 @@ namespace terminalSendGrid.Actions
             return htmlText;
         }
 
-        public override Task ValidateActivity(ActivityDO activityDo, ICrateStorage currActivityCrateStorage, ValidationManager validationManager)
+        protected override Task Validate()
         {
-            var configurationControls = GetConfigurationControls(activityDo);
-            var emailAddressField = (TextSource)GetControl(configurationControls, "EmailAddress", ControlTypes.TextSource);
-            var emailSubjectField = (TextSource)GetControl(configurationControls, "EmailSubject", ControlTypes.TextSource);
-            var emailBodyField = (TextSource)GetControl(configurationControls, "EmailBody", ControlTypes.TextSource);
-
-
-            validationManager.ValidateTextSourceNotEmpty(emailAddressField, "Email address can't be empty");
-            validationManager.ValidateTextSourceNotEmpty(emailSubjectField, "Email subject can't be empty");
-            validationManager.ValidateTextSourceNotEmpty(emailBodyField, "Email body can't be empty");
-
+            var emailAddressField = GetControl<TextSource>("EmailAddress");
+            var emailSubjectField = GetControl<TextSource>("EmailSubject");
+            var emailBodyField = GetControl<TextSource>("EmailBody");
+            ValidationManager.ValidateTextSourceNotEmpty(emailAddressField, "Email address can't be empty");
+            ValidationManager.ValidateTextSourceNotEmpty(emailSubjectField, "Email subject can't be empty");
+            ValidationManager.ValidateTextSourceNotEmpty(emailBodyField, "Email body can't be empty");
 
             return Task.FromResult(0);
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public override async Task Run()
         {
-            var payloadCrates = await GetPayload(curActivityDO, containerId);
+            var fromAddress = _configRepository.Get("OutboundFromAddress");
 
-            using (var payloadCrateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            using (var validationScope = new RuntimeValidationScope(this, payloadCrateStorage))
+            var emailAddressField = GetControl<TextSource>("EmailAddress");
+            var emailSubjectField = GetControl<TextSource>("EmailSubject");
+            var emailBodyField = GetControl<TextSource>("EmailBody");
+
+            var emailAddress = emailAddressField.GetValue(Payload);
+            var emailSubject = emailSubjectField.GetValue(Payload);
+            var emailBody = emailBodyField.GetValue(Payload);
+
+            var userData = await HubCommunicator.GetCurrentUser();
+            var footerMessage = string.Format("<hr> <p> This email was generated by The Fr8 Company as part of the processing of Fr8 Container {0} on behalf of Fr8 User {1}." +
+                                             "For questions about Fr8, go to www.fr8.co </p>", ExecutionContext.ContainerId, userData.FirstName + " " + userData.LastName);
+
+            var mailerDO = new TerminalMailerDO()
             {
-                await ValidateActivity(curActivityDO, crateStorage, validationScope.ValidationManager);
-
-                if (validationScope.HasErrors)
+                Email = new EmailDTO()
                 {
-                    // errors will be written during validationScope disposal
-                    return payloadCrates;
-                }
-                
-                var fromAddress = _configRepository.Get("OutboundFromAddress");
-                
-                StandardConfigurationControlsCM configurationControls = GetConfigurationControls(curActivityDO);
-
-                var emailAddressField = (TextSource) GetControl(configurationControls, "EmailAddress", ControlTypes.TextSource);
-                var emailSubjectField = (TextSource) GetControl(configurationControls, "EmailSubject", ControlTypes.TextSource);
-                var emailBodyField = (TextSource) GetControl(configurationControls, "EmailBody", ControlTypes.TextSource);
-
-                var emailAddress = emailAddressField.GetValue(payloadCrateStorage);
-                var emailSubject = emailSubjectField.GetValue(payloadCrateStorage);
-                var emailBody = emailBodyField.GetValue(payloadCrateStorage);
-
-                var userData = await GetCurrentUserData(curActivityDO, containerId);
-                var footerMessage = string.Format("<hr> <p> This email was generated by The Fr8 Company as part of the processing of Fr8 Container {0} on behalf of Fr8 User {1}." +
-                                                  "For questions about this email or other Fr8 matters, go to www.fr8.co </p>", containerId, userData.FirstName + " " + userData.LastName);
-
-                var mailerDO = new MailerDO()
-                {
-                    Email = new EmailDO()
+                    From = new EmailAddressDTO
                     {
-                        From = new EmailAddressDO
-                        {
-                            Address = fromAddress,
-                            Name = "Fr8 Operations"
-                        },
-
-                        Recipients = new List<RecipientDO>()
-                        {
-                            new RecipientDO()
-                            {
-                                EmailAddress = new EmailAddressDO(emailAddress),
-                                EmailParticipantType = EmailParticipantType.To
-                            }
-                        },
-                        Subject = emailSubject,
-                        HTMLText = CreateEmailHTMLText(emailBody)
+                        Address = fromAddress,
+                        Name = "Fr8 Operations"
                     },
-                    Footer = footerMessage,
-                };
 
-                await _emailPackager.Send(mailerDO);
+                    Recipients = new List<RecipientDTO>()
+                    {
+                        new RecipientDTO()
+                        {
+                            EmailAddress = new EmailAddressDTO(emailAddress),
+                            EmailParticipantType = EmailParticipantType.To
+                        }
+                    },
+                    Subject = emailSubject,
+                    HTMLText = CreateEmailHTMLText(emailBody)
+                },
+                Footer = footerMessage,
+            };
 
-                return Success(payloadCrates);
-            }
+            await _emailPackager.Send(mailerDO);
+
+            Success();
+        }
+
+        public override Task FollowUp()
+        {
+            return Task.FromResult(0);
         }
     }
 }

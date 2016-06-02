@@ -3,7 +3,7 @@ using Data.Interfaces;
 
 namespace Data.Repositories
 {
-    public class SubPlanRepository : GenericRepository<SubPlanDO>, ISubPlanRepository
+    public class SubPlanRepository : GenericRepository<SubplanDO>, ISubPlanRepository
     {
         internal SubPlanRepository(IUnitOfWork uow)
             : base(uow)
@@ -11,7 +11,7 @@ namespace Data.Repositories
         }
     }
 
-    public interface ISubPlanRepository : IGenericRepository<SubPlanDO>
+    public interface ISubPlanRepository : IGenericRepository<SubplanDO>
     {
     }
 }

@@ -439,7 +439,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
         })
 
         .state('manifestregistry', {
-            url: "/manifestregistry",
+            url: "/manifest_registries",
             templateUrl: "/AngularTemplate/ManifestRegistryList",
             data: { pageTitle: 'Manifest Registry', pageSubTitle: '' }
         })

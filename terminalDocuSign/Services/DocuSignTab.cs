@@ -93,7 +93,7 @@ namespace terminalDocuSign.Services.NewApi
             {
                 string tab_type = item.Name;
                 var fields = fieldList.Where(a => a.Tags.Contains(tab_type) && a.Tags.Contains("recipientId:" + corresponding_template_recipient.RecipientId));
-                foreach (JObject tab in item.Value)
+                foreach (JObject tab in item.Value) 
                 {
                     FieldDTO corresponding_field = null;
                     switch (tab_type)
@@ -102,10 +102,9 @@ namespace terminalDocuSign.Services.NewApi
                             corresponding_field = fields.Where(a => a.Key.Contains(tab.Property("groupName").Value.ToString())).FirstOrDefault();
                             if (corresponding_field == null)
                                 break;
-                            tab["radios"].Where(a => a["value"].ToString() == corresponding_field.Value).FirstOrDefault()["selected"] = "true";
-                            foreach (var radioItem in tab["radios"].Where(a => a["value"].ToString() != corresponding_field.Value).ToList())
+                            foreach (var radioItem in tab["radios"])
                             {
-                                radioItem["selected"] = "false";
+                                radioItem["selected"] = radioItem["value"].ToString() == corresponding_field.Value ? "true" : "false";
                             }
                             break;
 
@@ -113,13 +112,11 @@ namespace terminalDocuSign.Services.NewApi
                             corresponding_field = fields.Where(a => a.Key.Contains(tab.Property("tabLabel").Value.ToString())).FirstOrDefault();
                             if (corresponding_field == null)
                                 break;
-                            tab["listItems"].Where(a => a["value"].ToString() == corresponding_field.Value.Trim()).FirstOrDefault()["selected"] = "true";
-                            foreach (var listItem in tab["listItems"].Where(a => a["value"].ToString() != corresponding_field.Value.Trim()))
+                            var trimmedValue = corresponding_field.Value?.Trim();
+                            foreach (var listItem in tab["listItems"])
                             {
-                                //set all other to false
-                                listItem["selected"] = "false";
+                                listItem["selected"] = listItem["value"].ToString() == trimmedValue ? "true" : "false";
                             }
-                            //["selected"] = "true";
                             tab["value"] = corresponding_field.Value;
                             break;
                         case "checkboxTabs":

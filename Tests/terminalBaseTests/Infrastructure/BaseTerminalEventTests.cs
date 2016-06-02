@@ -1,11 +1,11 @@
 ﻿using System;
 using Moq;
 using NUnit.Framework;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using UtilitiesTesting;
 using Utilities.Configuration.Azure;
 using System.Collections.Generic;
 using Fr8Data.DataTransferObjects;
+using Fr8Infrastructure.Interfaces;
 
 namespace terminalBaseTests.Infrastructure
 {

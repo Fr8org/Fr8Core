@@ -12,6 +12,8 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using System.Web.Http.Dispatcher;
 using terminalBox;
+using terminalBox.Actions;
+using TerminalBase.Services;
 
 [assembly: OwinStartup(typeof(terminalBox.Startup))]
 
@@ -38,6 +40,12 @@ namespace terminalBox
             {
                 StartHosting("terminalAzure");
             }
+        }
+
+        protected override void RegisterActivities()
+        {
+            ActivityStore.RegisterActivity<GenerateTableActivity_v1>(GenerateTableActivity_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<SaveToFile_v1>(SaveToFile_v1.ActivityTemplateDTO);
         }
 
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)

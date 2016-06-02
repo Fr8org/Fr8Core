@@ -12,7 +12,6 @@ using Hub.Managers.APIManagers.Authorizers.Google;
 using Hub.Managers.APIManagers.Packagers;
 using Hub.Managers.APIManagers.Packagers.SegmentIO;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 // This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
 using InternalClass = Hub.Services;
 using Hub.Services;
@@ -35,7 +34,9 @@ using Castle.DynamicProxy;
 using Data.Interfaces;
 using Data.Repositories.Utilization;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Hub.Security.ObjectDecorators;
+using Hub.Services.Timers;
 
 namespace Hub.StructureMap
 {
@@ -58,7 +59,7 @@ namespace Hub.StructureMap
                     ObjectFactory.Initialize(x => x.AddRegistry<TestMode>());
                     break;
                 case DependencyType.LIVE:
-                    ObjectFactory.Initialize(x => x.AddRegistry<LiveMode>());
+                    ObjectFactory.Configure(x => x.AddRegistry<LiveMode>());
                     break;
             }
             return ObjectFactory.Container;
@@ -92,19 +93,16 @@ namespace Hub.StructureMap
                 For<IOAuthAuthorizer>().Use<GoogleAuthorizer>().Named("Google");
 
                 For<IImapClient>().Use<ImapClientWrapper>();
-
-                For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
-                For<IRestfulServiceClient>().Singleton().Use<RestfulServiceClient>().SelectConstructor(() => new RestfulServiceClient());
                 For<ITerminalTransmitter>().Use<TerminalTransmitter>();
 
                 For<IPlan>().Use<Hub.Services.Plan>().DecorateWith((context, service) => new PlanSecurityDecorator(service, ObjectFactory.GetInstance<ISecurityServices>()));
-                For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
+                For<InternalInterfaces.IContainerService>().Use<InternalClass.ContainerService>();
                 For<InternalInterfaces.IFact>().Use<InternalClass.Fact>();
                 var dynamicProxy = new ProxyGenerator();
                 For<IActivity>().Use<Activity>().Singleton().DecorateWith(z => dynamicProxy.CreateInterfaceProxyWithTarget(z, new AuthorizeActivityInterceptor(ObjectFactory.GetInstance<ISecurityServices>())));
                 For<IPlanNode>().Use<PlanNode>();
                 For<ISubscription>().Use<Subscription>();
-                For<ISubPlan>().Use<SubPlan>();
+                For<ISubplan>().Use<Subplan>();
                 For<IField>().Use<Field>();
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Hub.Services.Event>();
@@ -121,15 +119,14 @@ namespace Hub.StructureMap
                 For<ITag>().Use<Tag>();
                 For<IOrganization>().Use<Organization>();
 
-                For<IHMACAuthenticator>().Use<HMACAuthenticator>();
-                For<IHMACService>().Use<Fr8HMACService>();
-
                 For<TelemetryClient>().Use<TelemetryClient>();
                 For<IJobDispatcher>().Use<HangfireJobDispatcher>();
                 // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
                 For<IPlanTemplates>().Use<PlanTemplates>();
                 For<IUtilizationMonitoringService>().Use<UtilizationMonitoringService>().Singleton();
                 For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
+                For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
+                For<ITimer>().Use<Win32Timer>();
             }
         }
 
@@ -154,12 +151,9 @@ namespace Hub.StructureMap
 
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
 
-                var restfulServiceClientMock = new Mock<RestfulServiceClient>(MockBehavior.Default);
-                For<IRestfulServiceClient>().Use(restfulServiceClientMock.Object).Singleton();
-
                 var mockSegment = new Mock<ITracker>();
                 For<ITracker>().Use(mockSegment.Object);
-                For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
+                For<InternalInterfaces.IContainerService>().Use<InternalClass.ContainerService>();
                 For<InternalInterfaces.IFact>().Use<InternalClass.Fact>();
 
                 For<ISubscription>().Use<Subscription>();
@@ -168,7 +162,7 @@ namespace Hub.StructureMap
 
                 For<IPlan>().Use<Hub.Services.Plan>();
 
-                For<ISubPlan>().Use<SubPlan>();
+                For<ISubplan>().Use<Subplan>();
                 For<IField>().Use<Field>();
                 //var mockProcess = new Mock<IProcessService>();
                 //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
@@ -183,6 +177,7 @@ namespace Hub.StructureMap
                 For<IFile>().Use<InternalClass.File>();
 
                 For<ICrateManager>().Use<CrateManager>();
+
                 For<IManifest>().Use<Manifest>();
                 For<IFindObjectsPlan>().Use<FindObjectsPlan>();
                 For<IAuthorization>().Use<Authorization>();
@@ -195,16 +190,6 @@ namespace Hub.StructureMap
 
                 For<ITag>().Use<Tag>();
                 For<IOrganization>().Use<Organization>();
-
-                var fr8HMACAuthenticator = new Mock<IHMACAuthenticator>();
-                fr8HMACAuthenticator.Setup(x => x.IsValidRequest(It.IsAny<HttpRequestMessage>(), It.IsAny<string>())).ReturnsAsync(true);
-                var outTerminalId = "testTerminal";
-                var outUserId = "testUser";
-                fr8HMACAuthenticator.Setup(s => s.ExtractTokenParts(It.IsAny<HttpRequestMessage>(), out outTerminalId, out outUserId));
-                For<IHMACAuthenticator>().Use(fr8HMACAuthenticator.Object);
-
-                var fr8HMACService = new Mock<IHMACService>();
-                For<IHMACService>().Use(fr8HMACService.Object);
                 For<TelemetryClient>().Use<TelemetryClient>();
                 For<ITerminal>().Use(new TerminalServiceForTests()).Singleton();
                 For<IJobDispatcher>().Use<MockJobDispatcher>();
@@ -212,6 +197,7 @@ namespace Hub.StructureMap
                 For<IPlanTemplates>().Use<PlanTemplates>();
                 For<IUtilizationMonitoringService>().Use<UtilizationMonitoringService>().Singleton();
                 For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
+                For<ITimer>().Use<Win32Timer>();
             }
         }
 

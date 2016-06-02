@@ -1,15 +1,14 @@
-﻿using Hub.Managers;
-using StructureMap;
+﻿using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using terminalGoogle.Infrastructure;
-using Hub.Managers;
 using System.Threading.Tasks;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
+using Fr8Data.Managers;
 
 namespace terminalGoogle.Services
 {

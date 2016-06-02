@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Data.Entities;
-using Data.Infrastructure;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Newtonsoft.Json;
 using StructureMap;
@@ -20,20 +19,21 @@ namespace terminalGoogle.Actions
     {
         private readonly IGoogleIntegration _googleIntegration;
 
-        protected BaseGoogleTerminalActivity() : base(true)
+        protected BaseGoogleTerminalActivity(ICrateManager crateManager, IGoogleIntegration googleIntegration)
+            : base(crateManager)
         {
-            _googleIntegration = ObjectFactory.GetInstance<IGoogleIntegration>();
+            _googleIntegration = googleIntegration;
 
         }
 
-        protected override bool IsTokenInvalidation(Exception ex)
+        protected override bool IsInvalidTokenException(Exception ex)
         {
             return GoogleAuthHelper.IsTokenInvalidation(ex);
         }
 
-        public GoogleAuthDTO GetGoogleAuthToken(AuthorizationTokenDO authTokenDO = null)
+        public GoogleAuthDTO GetGoogleAuthToken()
         {
-            return JsonConvert.DeserializeObject<GoogleAuthDTO>((authTokenDO ?? AuthorizationToken).Token);
+            return JsonConvert.DeserializeObject<GoogleAuthDTO>(AuthorizationToken.Token);
         }
 
         /// <summary>
@@ -41,14 +41,13 @@ namespace terminalGoogle.Actions
         /// </summary>
         /// <param name="authTokenDO"></param>
         /// <returns></returns>
-        public override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
+        public override bool NeedsAuthentication()
         {
-            if (base.NeedsAuthentication(authTokenDO))
+            if (base.NeedsAuthentication())
             {
                 return true;
             }
-            var token = GetGoogleAuthToken(authTokenDO);
-
+            var token = GetGoogleAuthToken();
             // Post token to google api to check its validity
             // Variable needs for more readability.
             var result = Task.Run(async () => await _googleIntegration.IsTokenInfoValid(token)).Result;
@@ -60,18 +59,18 @@ namespace terminalGoogle.Actions
                     var newToken = _googleIntegration.RefreshToken(token);
                     var tokenDTO = new AuthorizationTokenDTO()
                     {
-                        Id = authTokenDO.Id.ToString(),
-                        ExternalAccountId = authTokenDO.ExternalAccountId,
+                        Id = AuthorizationToken.Id,
+                        ExternalAccountId = AuthorizationToken.ExternalAccountId,
                         Token = JsonConvert.SerializeObject(newToken)
                     };
-                    authTokenDO.Token = tokenDTO.Token;
-                    HubCommunicator.RenewToken(tokenDTO, CurrentFr8UserId);
+                    AuthorizationToken.Token = tokenDTO.Token;
+                    HubCommunicator.RenewToken(tokenDTO);
                     return false;
                 }
                 catch (Exception exception)
                 {
                     var message = "Token is invalid and refresh failed with exception: " + exception.Message;
-                    EventManager.TokenValidationFailed(authTokenDO.Token, message);
+                    //EventManager.TokenValidationFailed(authTokenDO.Token, message);
                     Logger.LogError(message);
                     return true;
                 }

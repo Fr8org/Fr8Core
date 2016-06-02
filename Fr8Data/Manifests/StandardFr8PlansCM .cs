@@ -21,7 +21,7 @@ namespace Fr8Data.Manifests
 
         public String PlanState { get; set; }
 
-        public List<SubPlanDTO> SubPlans { get; set; }
+        public List<SubplanDTO> SubPlans { get; set; }
 
         public StandardFr8PlansCM()
             : base(Constants.MT.StandardFr8Plans)

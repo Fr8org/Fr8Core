@@ -17,22 +17,10 @@ namespace Data.Entities
         {
             Recipients = new List<RecipientDO>();
             Attachments = new List<AttachmentDO>();
-            //Events = new List<EventDO>();
             DateReceived = DateTimeOffset.UtcNow;
-            //Envelopes = new List<EnvelopeDO>();
-
             //By default, the MessageID is a random GUID. This is so we can match our sent emails to replies
             SetMessageID(Guid.NewGuid().ToString());
         }
-
-
-        //public void TagEmailToBookingRequest(BookingRequestDO bookingRequestDO, bool linkToConversation = true)
-        //{
-        //    SetReplyTo(bookingRequestDO.Id);
-        //    AddReference(bookingRequestDO.MessageID);
-        //    if (linkToConversation)
-        //        ConversationId = bookingRequestDO.Id;
-        //}
 
         private void SetReplyTo(int bookingRequestID)
         {

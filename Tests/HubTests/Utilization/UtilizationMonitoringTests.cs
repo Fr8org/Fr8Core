@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories.Utilization;
 using Data.States;
@@ -19,6 +20,8 @@ namespace HubTests.Utilization
     [Category("UtilizationMonitoring")]
     public class UtilizationMonitoringTests : ContainerExecutionTestBase
     {
+        private readonly ManualyTriggeredTimerService _timerService = new ManualyTriggeredTimerService();
+
         public class UtilizationDataProviderMock : MockedUtilizationDataProvider
         {
             private readonly Dictionary<string, ActivityExecutionRate> _rates = new Dictionary<string, ActivityExecutionRate>();
@@ -59,16 +62,23 @@ namespace HubTests.Utilization
 
         private UtilizationDataProviderMock _provider;
 
+        public override void TearDown()
+        {
+            _timerService.Clear();
+            base.TearDown();
+        }
+
         protected override void InitializeContainer()
         {
             _provider = new UtilizationDataProviderMock();
 
             CloudConfigurationManager.RegisterApplicationSettings(new ConfigurationOverride(CloudConfigurationManager.AppSettings).Set("UtilizationReportAggregationUnit", "1"));
             ObjectFactory.Container.Inject(typeof(IUtilizationDataProvider), _provider);
+            ObjectFactory.Container.Inject<ITimer>(_timerService);
         }
 
         [Test]
-        public async Task CanMonitorActivityExecution()
+        public void CanMonitorActivityExecution()
         {
             var monitoringService = ObjectFactory.Container.GetInstance<IUtilizationMonitoringService>();
 
@@ -98,7 +108,8 @@ namespace HubTests.Utilization
                 monitoringService.TrackActivityExecution(activity, fr8Container);
             }
 
-            await Task.Delay(2000);
+            _timerService.Tick();
+            _timerService.Tick();
 
             _provider.AssertRates("1", 100);
             _provider.AssertRates("2", 57);
@@ -117,17 +128,18 @@ namespace HubTests.Utilization
                 uow.SaveChanges();
             }
 
+            PlanDO plan;
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                PlanDO plan;
-
+                
                 uow.PlanRepository.Add(plan = new PlanDO
                 {
                     Name = "TestPlan",
                     Id = FixtureData.GetTestGuidById(0),
                     ChildNodes =
                     {
-                        new SubPlanDO(true)
+                        new SubplanDO(true)
                         {
                             Id = FixtureData.GetTestGuidById(1),
                             ChildNodes =
@@ -167,16 +179,17 @@ namespace HubTests.Utilization
                 });
 
                 plan.PlanState = PlanState.Running;
-                plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
+                plan.StartingSubplan = (SubplanDO)plan.ChildNodes[0];
                 plan.Fr8Account = userAcct;
 
                 uow.SaveChanges();
 
-                await Plan.Run(plan.Id, null);
-                await Task.Delay(2000);
+                await Plan.Run(plan.Id, null, null);
+
+                _timerService.Tick();
+                _timerService.Tick();
 
                 _provider.AssertRates(userAcct.Id, 4);
-
             }
         }
     }

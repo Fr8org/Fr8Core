@@ -5,7 +5,6 @@ using Segment;
 using StructureMap;
 using Utilities;
 using Data.Infrastructure.AutoMapper;
-using Hub.StructureMap;
 using PlanDirectory.App_Start;
 using PlanDirectory.Infrastructure;
 
@@ -19,16 +18,18 @@ namespace PlanDirectory
             RouteConfig.RegisterRoutes(RouteTable.Routes);
 
             ObjectFactory.Initialize();
-            ObjectFactory.Configure(StructureMapBootStrapper.LiveConfiguration);
+            ObjectFactory.Configure(Fr8Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
+            ObjectFactory.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
             ObjectFactory.Configure(PlanDirectoryBootStrapper.LiveConfiguration);
 
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
 
             Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
-            var segmentWriteKey = new ConfigRepository().Get("SegmentWriteKey");
-            Analytics.Initialize(segmentWriteKey);
+            var segmentWriteKey = Utilities.Configuration.Azure.CloudConfigurationManager.GetSetting("SegmentWriteKey");
+            if (!segmentWriteKey.IsNullOrEmpty())
+                Analytics.Initialize(segmentWriteKey);
 
-            await ObjectFactory.GetInstance<IPlanTemplate>().Initialize();
+            await ObjectFactory.GetInstance<ISearchProvider>().Initialize(false);
         }
     }
 }

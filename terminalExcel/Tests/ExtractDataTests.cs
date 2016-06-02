@@ -1,15 +1,14 @@
 ﻿using AutoMapper;
 using NUnit.Framework;
 using StructureMap;
-using Data.Entities;
-using Data.Interfaces;
 using Fr8Data.DataTransferObjects;
-using Hub.Interfaces;
-using Hub.Managers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using terminalExcel.Actions;
 using TerminalBase.Infrastructure;
+using TerminalBase.Interfaces;
+using Fr8Data.Managers;
+using terminalExcel.Activities;
 
 namespace terminalExcel.PluginExcelTests
 {
@@ -31,7 +30,7 @@ namespace terminalExcel.PluginExcelTests
             base.SetUp();
             TerminalBootstrapper.ConfigureTest();
 
-            _fixtureData = new FixtureData(ObjectFactory.GetInstance<IUnitOfWork>());
+            //_fixtureData = new FixtureData(ObjectFactory.GetInstance<IUnitOfWork>());
             _activity = ObjectFactory.GetInstance<IActivity>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
@@ -47,10 +46,10 @@ namespace terminalExcel.PluginExcelTests
         {
             
             var curActionDTO = new ActivityDTO();
-            var curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
-            var result = new Load_Excel_File_v1().ConfigurationEvaluator(curActivityDO);
+            //var curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
+            //var result = new Load_Excel_File_v1().ConfigurationEvaluator(curActivityDO);
 
-            Assert.AreEqual(result, TerminalBase.Infrastructure.ConfigurationRequestType.Initial);
+            //Assert.AreEqual(result, TerminalBase.Infrastructure.ConfigurationRequestType.Initial);
         }
 
         //[Test]

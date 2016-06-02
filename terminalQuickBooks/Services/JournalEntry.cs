@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using Data.Entities;
 using Fr8Data.DataTransferObjects;
 using Intuit.Ipp.Data;
 using Intuit.Ipp.DataService;
 using StructureMap;
 using terminalQuickBooks.Interfaces;
 using TerminalBase.Infrastructure;
+using TerminalBase.Models;
 
 namespace terminalQuickBooks.Services
 {
@@ -110,12 +110,11 @@ namespace terminalQuickBooks.Services
         /// </summary>
         public void Create(
             StandardAccountingTransactionDTO curAccountingTransactionDto, 
-            AuthorizationTokenDO authTokenDO,
-            string userId,
+            AuthorizationToken authToken,
             IHubCommunicator hubCommunicator)
         {
             var curJournalEntry = CreateQbJournalEntry(curAccountingTransactionDto);
-            var curDataService = _serviceWorker.GetDataService(authTokenDO, userId, hubCommunicator);
+            var curDataService = _serviceWorker.GetDataService(authToken, hubCommunicator);
             try
             {
                 curDataService.Add(curJournalEntry);

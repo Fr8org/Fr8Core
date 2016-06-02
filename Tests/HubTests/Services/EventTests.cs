@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using NUnit.Framework;
 using StructureMap;
 using Data.Entities;
@@ -17,6 +18,7 @@ using Fr8Data.Manifests;
 using Fr8Data.States;
 using Hub.Managers;
 using Event = Hub.Services.Event;
+using Fr8Data.Managers;
 
 namespace HubTests.Services
 {
@@ -45,35 +47,6 @@ namespace HubTests.Services
             await eventService.ProcessInboundEvents(curCrateStandardEventReport);
             Assert.AreEqual(2, activity.Processed);
         }
-        //[Test]
-        //[ExpectedException(ExpectedException = typeof(System.ArgumentNullException))]
-        //public void ProcessInbound_EmptyUserID()
-        //{
-        //    IDockyardEvent curDockyardEvent = ObjectFactory.GetInstance<IDockyardEvent>();
-
-        //    curDockyardEvent.ProcessInbound("", new EventReportMS());
-        //}
-
-        //[Test]
-        //public void ProcessInbound_CorrectStandardEventReportLabel_CallLaunchProcess()
-        //{
-        //    var processTemplateDO = FixtureData.TestPlanWithSubscribeEvent();
-        //    var resultRoutes = new List<RouteDO>() { processTemplateDO };
-        //    IRoute curPlan = ObjectFactory.GetInstance<IRoute>();
-        //    EventReportMS curEventReport = FixtureData.StandardEventReportFormat();
-
-        //    Mock<IRoute> processTemplateMock = new Mock<IRoute>();
-        //    processTemplateMock.Setup(a => a.LaunchProcess(It.IsAny<IUnitOfWork>(), It.IsAny<RouteDO>(), null));
-        //    processTemplateMock.Setup(a => a.GetMatchingRoutes(It.IsAny<string>(), It.IsAny<EventReportMS>()))
-        //        .Returns(resultRoutes);
-        //    ObjectFactory.Configure(cfg => cfg.For<IRoute>().Use(processTemplateMock.Object));
-
-        //    IDockyardEvent curDockyardEvent = ObjectFactory.GetInstance<IDockyardEvent>();
-
-        //    curDockyardEvent.ProcessInbound("testuser1", curEventReport);
-
-        //    processTemplateMock.Verify(l => l.LaunchProcess(It.IsAny<IUnitOfWork>(), It.IsAny<RouteDO>(), null));
-        //}
     }
 
     public class ActivityMock : IActivity
@@ -104,7 +77,7 @@ namespace HubTests.Services
             return _activity.GetById(uow, id);
         }
 
-       
+
 
         public Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
         {
@@ -125,12 +98,12 @@ namespace HubTests.Services
 
         public Task<ActivityDTO> Activate(ActivityDO curActivityDO)
         {
-            return _activity.Activate(curActivityDO);
+            return Task.FromResult(Mapper.Map<ActivityDTO>(curActivityDO));
         }
 
         public Task Deactivate(ActivityDO curActivityDO)
         {
-            return _activity.Deactivate(curActivityDO);
+            return Task.FromResult(Mapper.Map<ActivityDTO>(curActivityDO));
         }
 
         Task<T> IActivity.GetActivityDocumentation<T>(ActivityDTO curActivityDTO, bool isSolution)

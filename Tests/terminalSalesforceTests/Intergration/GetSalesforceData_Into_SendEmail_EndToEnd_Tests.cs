@@ -4,7 +4,6 @@ using NUnit.Framework;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.Generic;
-using Hub.Managers;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using terminalSalesforce.Actions;
@@ -13,6 +12,7 @@ using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
+using Fr8Data.Managers;
 
 namespace terminalSalesforceTests.Intergration
 {
@@ -54,8 +54,6 @@ namespace terminalSalesforceTests.Intergration
                 (configControls.Content.Controls.Single(c => c.Name.Equals(nameof(Get_Data_v1.ActivityUi.SalesforceObjectFilter))) as QueryBuilder).Value = JsonConvert.SerializeObject(conditionQuery);
                 }
                 getData = await ConfigureActivity(getData);
-            Assert.IsTrue(getData.CrateStorage.Crates.Any(c => c.Label.Equals(Get_Data_v1.SalesforceObjectFieldsCrateLabel)), 
-                              "Follow up configuration is not getting any Salesforce Object Fields");
                 Debug.WriteLine("Get Lead using condition is successful in the Follow Up Configure");
 
                 //prepare the send email activity controls.
@@ -96,7 +94,7 @@ namespace terminalSalesforceTests.Intergration
         private async Task<Guid> CreatePlan_GetSalesforceDataIntoSendEmail(AuthorizationTokenDO authToken)
         {
             //get required activity templates
-            var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(_baseUrl + "plannodes/available");
+            var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(_baseUrl + "activity_templates");
             var getData = activityTemplates.Single(at => at.Name.Equals("Receivers")).Activities.Single(a => a.Name.Equals("Get_Data"));
             var sendEmail = activityTemplates.Single(at => at.Name.Equals("Forwarders")).Activities.Single(a => a.Name.Equals("SendEmailViaSendGrid"));
             Assert.IsNotNull(getData, "Get Salesforce Data activity is not available");
@@ -141,7 +139,7 @@ namespace terminalSalesforceTests.Intergration
 
             if (authTokenDO != null)
             {
-                await HttpPostAsync<string>(_baseUrl + "manageauthtoken/revoke?id=" + authTokenDO.Id.ToString(), null);
+                await HttpPostAsync<string>(_baseUrl + "authentication/tokens/revoke?id=" + authTokenDO.Id.ToString(), null);
             }
         }
     }

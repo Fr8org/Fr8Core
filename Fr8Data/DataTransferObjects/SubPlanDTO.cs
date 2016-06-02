@@ -7,7 +7,7 @@ namespace Fr8Data.DataTransferObjects
     /// <summary>
     /// Data transfer object for SubPlanDO entity.
     /// </summary>
-    public class SubPlanDTO
+    public class SubplanDTO
     {
         public Guid? SubPlanId { get; set; }
 

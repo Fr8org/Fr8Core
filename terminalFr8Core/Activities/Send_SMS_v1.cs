@@ -1,24 +1,38 @@
-﻿using Data.Infrastructure;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Hub.Managers;
-using PhoneNumbers;
-using StructureMap;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Infrastructure;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
+using Fr8Data.Manifests;
+using Fr8Data.States;
+using PhoneNumbers;
+using StructureMap;
+using terminalUtilities.Twilio;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using terminalUtilities.Twilio;
 using Twilio;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class Send_SMS_v1 : EnhancedTerminalActivity<Send_SMS_v1.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Send_SMS",
+            Label = "Send SMS using Fr8 core account",
+            Version = "1",
+            Category = ActivityCategory.Forwarders,
+            NeedsAuthentication = false,
+            MinPaneWidth = 400,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         private ITwilioService _twilio;
 
         public class ActivityUi : StandardConfigurationControlsCM
@@ -56,27 +70,43 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        public Send_SMS_v1() : base(false)
+        public Send_SMS_v1(ICrateManager crateManager)
+            : base(crateManager)
         {
-            ActivityName = "Send SMS";
             _twilio = ObjectFactory.GetInstance<ITwilioService>();
         }
 
-        protected override async Task Initialize(CrateSignaller crateSignaller)
+        public override async Task Initialize()
         {
-            CurrentActivityStorage.Add(await CreateAvailableFieldsCrate(CurrentActivity));
+            Storage.Add(await CreateAvailableFieldsCrate());
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
+        public override async Task FollowUp()
         {
-            CurrentActivityStorage.RemoveByLabel("Upstream Terminal-Provided Fields");
-            CurrentActivityStorage.Add(await CreateAvailableFieldsCrate(CurrentActivity));
+            Storage.RemoveByLabel("Upstream Terminal-Provided Fields");
+            Storage.Add(await CreateAvailableFieldsCrate());
         }
 
-        protected override async Task RunCurrentActivity()
+        /// <summary>
+        /// Creates a crate with available design-time fields.
+        /// </summary>
+        /// <param name="terminalActivity">ActionDO.</param>
+        /// <returns></returns>
+        protected async Task<Crate> CreateAvailableFieldsCrate()
+        {
+            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(ActivityId, CrateDirection.Upstream, AvailabilityType.RunTime) ?? new FieldDescriptionsCM();
+
+            var availableFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(
+                    "Upstream Terminal-Provided Fields",
+                    curUpstreamFields.Fields,
+                    AvailabilityType.Configuration);
+
+            return availableFieldsCrate;
+        }
+
+        public override async Task Run()
         {
             Message curMessage;
-
             try
             {
                 FieldDTO smsFieldDTO = ParseSMSNumberAndMsg();
@@ -88,24 +118,24 @@ namespace terminalFr8Core.Actions
                     curMessage = _twilio.SendSms(smsNumber, smsBody);
                     EventManager.TwilioSMSSent(smsNumber, smsBody);
                     var curFieldDTOList = CreateKeyValuePairList(curMessage);
-                    CurrentPayloadStorage.Add(Crate.FromContent("Message Data", new StandardPayloadDataCM(curFieldDTOList)));
+                    Payload.Add(Crate.FromContent("Message Data", new StandardPayloadDataCM(curFieldDTOList)));
                 }
                 catch (Exception ex)
                 {
                     EventManager.TwilioSMSSendFailure(smsNumber, smsBody, ex.Message);
-                    Error( "Twilio Service Failure due to " + ex.Message);
+                    RaiseError( "Twilio Service Failure due to " + ex.Message);
                 }
             }
             catch (ArgumentException appEx)
             {
-                Error(appEx.Message);
+                RaiseError(appEx.Message);
             }
         }
 
         public FieldDTO ParseSMSNumberAndMsg()
         {
-            var smsNumber = GeneralisePhoneNumber(ConfigurationControls.SmsNumber.GetValue(CurrentPayloadStorage).Trim());
-            var smsBody = ConfigurationControls.SmsBody.GetValue(CurrentPayloadStorage);
+            var smsNumber = GeneralisePhoneNumber(ActivityUI.SmsNumber.GetValue(Payload).Trim());
+            var smsBody = ActivityUI.SmsBody.GetValue(Payload);
 
             return new FieldDTO(smsNumber, smsBody);
         }

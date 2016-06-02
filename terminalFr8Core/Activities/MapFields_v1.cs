@@ -2,82 +2,44 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Data.Entities;
-using Data.States;
+using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using Hub.Managers;
-using StructureMap;
-using TerminalBase.Infrastructure;
+using Newtonsoft.Json;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class MapFields_v1 : BaseTerminalActivity
     {
-        public MapFields_v1() : base("terminalFr8Core.MapFields v1")
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            
-        }
-        /// <summary>
-        /// Action processing infrastructure.
-        /// </summary>
-        public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+            Name = "MapFields",
+            Label = "Map Fields",
+            Category = ActivityCategory.Processors,
+            Terminal = TerminalData.TerminalDTO,
+            Tags = $"{Tags.AggressiveReload},{Tags.Internal}",
+            Version = "1",
+            MinPaneWidth = 380,
+            WebService = TerminalData.WebServiceDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
+        public MapFields_v1(ICrateManager crateManager)
+            : base(crateManager)
         {
-            var processPayload = await GetPayload(activityDO, containerId);
 
-            var curControlsMS = CrateManager.GetStorage(activityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-
-            if (curControlsMS == null)
-            {
-                return Error(processPayload, "No controls crate found.");
-            }
-
-            var curMappingControl = curControlsMS.Controls.FirstOrDefault(x => x.Name == "Selected_Mapping");
-
-            if (curMappingControl == null || string.IsNullOrEmpty(curMappingControl.Value))
-            {
-                return Error(processPayload, "No Selected_Mapping control found.");
-            }
-
-            var mappedFields = JsonConvert.DeserializeObject<List<FieldDTO>>(curMappingControl.Value);
-            mappedFields = mappedFields.Where(x => x.Key != null && x.Value != null).ToList();
-            var storage = CrateManager.FromDto(processPayload.CrateStorage);
-
-            //IEnumerable<FieldDTO> processedMappedFields;
-            try
-            {
-               // processedMappedFields = mappedFields.Select(a => { return new FieldDTO(a.Value, ExtractPayloadFieldValue(storage, a.Key, activityDO)); });
-
-                using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => processPayload.CrateStorage))
-                {
-                    //crateStorage.Add(Fr8Data.Crates.Crate.FromContent("MappedFields", new StandardPayloadDataCM(processedMappedFields)));
-                    return Success(processPayload);
-                }
-            }
-            catch (ApplicationException exception)
-            {
-                //in case of problem with extract payload field values raise and Error alert to the user
-                return Error(processPayload, exception.Message, null, "Map Fields", "Fr8Core");
-            }
-        }
-
-        /// <summary>
-        /// Configure infrastructure.
-        /// </summary>
-        public override async Task<ActivityDO> Configure(ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
-        {
-            return await ProcessConfigurationRequest(activityDO, ConfigurationEvaluator, authTokenDO);
         }
 
         /// <summary>
         /// Create configuration controls crate.
         /// </summary>
-        private void AddMappingPane(ICrateStorage storage)
+        private void AddMappingPane()
         {
             var mappingPane = new MappingPane()
             {
@@ -85,62 +47,10 @@ namespace terminalFr8Core.Actions
                 Required = true
             };
 
-            AddControl(storage, mappingPane);
+            AddControl(mappingPane);
         }
 
-        /// <summary>
-        /// Looks for upstream and downstream Creates.
-        /// </summary>
-        protected override async Task<ActivityDO> InitialConfigurationResponse(
-            ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            //Filter the upstream fields by Availability flag as this action takes the run time data (left DDLBs) to the fidles (right DDLBs)
-            var curUpstreamFieldsTask = GetDesignTimeFields(curActivityDO, CrateDirection.Upstream);
-
-            //Get all the downstream fields to be mapped (right DDLBs)
-            var curDownstreamFieldsTask = GetDesignTimeFields(curActivityDO, CrateDirection.Downstream);
-
-            var curUpstreamFields = (await curUpstreamFieldsTask)
-                .Fields
-                .Where(field => field.Availability != AvailabilityType.Configuration)
-                .ToArray();
-
-            var curDownstreamFields = (await curDownstreamFieldsTask)
-                .Fields
-                .Where(field => field.Availability != AvailabilityType.Configuration)
-                .ToArray();
-
-
-            if (!(NeedsConfiguration(curActivityDO, curUpstreamFields, curDownstreamFields)))
-            {
-                return curActivityDO;
-            }
-
-            //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
-            var downstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Downstream Terminal-Provided Fields", curDownstreamFields.ToList().Select(a => { a.Availability = AvailabilityType.Configuration; return a; }).ToArray());
-            var upstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields.ToList().Select(a => { a.Availability = AvailabilityType.Configuration; return a; }).ToArray());
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.Clear();
-                if (curUpstreamFields.Length == 0 || curDownstreamFields.Length == 0)
-                {
-                    AddErrorTextBlock(crateStorage);
-                }
-                else
-                {
-                    AddInitialTextBlock(crateStorage);
-                    AddMappingPane(crateStorage);
-                }
-
-                crateStorage.Add(downstreamFieldsCrate);
-                crateStorage.Add(upstreamFieldsCrate);
-            }
-
-            return curActivityDO;
-        }
-
-        private void AddInitialTextBlock(ICrateStorage storage)
+        private void AddInitialTextBlock()
         {
             var textBlock = new TextBlock()
             {
@@ -149,26 +59,24 @@ namespace terminalFr8Core.Actions
                 CssClass = "well well-lg"
             };
 
-            AddControl(storage, textBlock);
+            AddControl(textBlock);
         }
 
-        private void AddErrorTextBlock(ICrateStorage storage)
+        private void AddErrorTextBlock()
         {
-            var textBlock = GenerateTextBlock("Attention",
+            var textBlock = ControlHelper.GenerateTextBlock("Attention",
                 "In order to work this Action needs upstream and downstream Actions configured",
                 "well well-lg", "MapFieldsErrorMessage");
-            AddControl(storage, textBlock);
+            AddControl(textBlock);
         }
 
         /// <summary>
         /// Check if initial configuration was requested.
         /// </summary>
-        private bool NeedsConfiguration(ActivityDO curAction, FieldDTO[] curUpstreamFields, FieldDTO[] curDownstreamFields)
+        private bool NeedsConfiguration(FieldDTO[] curUpstreamFields, FieldDTO[] curDownstreamFields)
         {
-            ICrateStorage storage = storage = CrateManager.GetStorage(curAction.CrateStorage);
-
-            var upStreamFields = storage.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Upstream Terminal-Provided Fields").FirstOrDefault();
-            var downStreamFields = storage.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Downstream Terminal-Provided Fields").FirstOrDefault();
+            var upStreamFields = Storage.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Upstream Terminal-Provided Fields").FirstOrDefault();
+            var downStreamFields = Storage.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Downstream Terminal-Provided Fields").FirstOrDefault();
 
             if (upStreamFields == null
                 || upStreamFields.Fields == null
@@ -183,22 +91,84 @@ namespace terminalFr8Core.Actions
             else
             {
                 // true if current up/downstream fields don't match saved up/downstream fields
-                bool upstreamMatch = curUpstreamFields.Where(a => upStreamFields.Fields.Any(b => b.Key == a.Key)).Count() == curUpstreamFields.Count();
-                bool downstreamMatch = curDownstreamFields.Where(a => downStreamFields.Fields.Any(b => b.Key == a.Key)).Count() == curDownstreamFields.Count();
+                bool upstreamMatch = curUpstreamFields.Count(a => upStreamFields.Fields.Any(b => b.Key == a.Key)) == curUpstreamFields.Count();
+                bool downstreamMatch = curDownstreamFields.Count(a => downStreamFields.Fields.Any(b => b.Key == a.Key)) == curDownstreamFields.Count();
 
                 return !(upstreamMatch & downstreamMatch);
             }
         }
 
-
-        /// <summary>
-        /// ConfigurationEvaluator always returns Initial,
-        /// since Initial and FollowUp phases are the same for current action.
-        /// </summary>
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public override async Task Run()
         {
-            return ConfigurationRequestType.Initial;
+            var curMappingControl = GetControl<MappingPane>("Selected_Mapping");
+            if (string.IsNullOrEmpty(curMappingControl?.Value))
+            {
+                RaiseError("No Selected_Mapping control found.");
+                return;
+            }
 
+            var mappedFields = JsonConvert.DeserializeObject<List<FieldDTO>>(curMappingControl.Value);
+            mappedFields = mappedFields.Where(x => x.Key != null && x.Value != null).ToList();
+            try
+            {
+                //var processedMappedFields = mappedFields.Select(a => new FieldDTO(a.Value, ExtractPayloadFieldValue(a.Key)));
+                //Payload.Add(Crate.FromContent("MappedFields", new StandardPayloadDataCM(processedMappedFields)));
+                Success();
+            }
+            catch (ApplicationException exception)
+            {
+                //in case of problem with extract payload field values raise and Error alert to the user
+                RaiseError(exception.Message, null, "Map Fields", "Fr8Core");
+            }
+        }
+
+        public override async Task Initialize()
+        {
+            //Filter the upstream fields by Availability flag as this action takes the run time data (left DDLBs) to the fidles (right DDLBs)
+            var curUpstreamFieldsTask = GetDesignTimeFields(CrateDirection.Upstream);
+
+            //Get all the downstream fields to be mapped (right DDLBs)
+            var curDownstreamFieldsTask = GetDesignTimeFields(CrateDirection.Downstream);
+
+            var curUpstreamFields = (await curUpstreamFieldsTask)
+                .Fields
+                .Where(field => field.Availability != AvailabilityType.Configuration)
+                .ToArray();
+
+            var curDownstreamFields = (await curDownstreamFieldsTask)
+                .Fields
+                .Where(field => field.Availability != AvailabilityType.Configuration)
+                .ToArray();
+
+
+            if (!(NeedsConfiguration(curUpstreamFields, curDownstreamFields)))
+            {
+                return;
+            }
+
+            //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
+            var downstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Downstream Terminal-Provided Fields", curDownstreamFields.ToList().Select(a => { a.Availability = AvailabilityType.Configuration; return a; }).ToArray());
+            var upstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields.ToList().Select(a => { a.Availability = AvailabilityType.Configuration; return a; }).ToArray());
+
+            Storage.Clear();
+            if (curUpstreamFields.Length == 0 || curDownstreamFields.Length == 0)
+            {
+                AddErrorTextBlock();
+            }
+            else
+            {
+                AddInitialTextBlock();
+                AddMappingPane();
+            }
+
+            Storage.Add(downstreamFieldsCrate);
+            Storage.Add(upstreamFieldsCrate);
+
+        }
+
+        public override Task FollowUp()
+        {
+            return Task.FromResult(0);
         }
     }
 }

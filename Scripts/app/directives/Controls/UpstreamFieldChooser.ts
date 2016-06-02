@@ -8,10 +8,10 @@ module dockyard.directives.upstreamDataChooser {
         tableParams: any;
         selectedFieldValue: any;
         change: () => (field: model.ControlDefinitionDTO) => void;
-        setItem: (item: any) => void;
-        selectField: (field: model.FieldDTO) => void;
+        selectItem: (field: model.FieldDTO) => void;
         openModal: () => void;
         createModal: () => void;
+        getGroupValue: (item: model.FieldDTO) => string;
     }
 
     export class UpstreamFieldChooserController {
@@ -49,15 +49,23 @@ module dockyard.directives.upstreamDataChooser {
                     var alertMessage = new model.AlertDTO();
                     alertMessage.title = "Notification";
                     alertMessage.body = error.message;
+                    alertMessage.isOkCancelVisible = false;
                     uiHelperService.openConfirmationModal(alertMessage);
                 });
             }
-            $scope.setItem = (item) => {
-                $scope.field.value = item;
+            $scope.selectItem = (item) => {
+                $scope.field.selectedItem = item;
+                $scope.field.value = item.key;
                 modalInstance.close($scope.field.value);
                 if ($scope.change != null && angular.isFunction($scope.change)) {
                     $scope.change()($scope.field);
                 }
+            };
+            $scope.getGroupValue = (item) => {
+                if (item.sourceActivityId == null) {
+                    return item.sourceCrateLabel;
+                }
+                return item.sourceCrateLabel + " (Id - " + item.sourceActivityId + ")";
             };
 
             var getUpstreamFields = () => {
@@ -67,19 +75,7 @@ module dockyard.directives.upstreamDataChooser {
                         var listItems: Array<model.DropDownListItem> = [];
 
                         angular.forEach(data.availableCrates, crate => {
-                            angular.forEach(crate.fields, it => {
-                                var i, j;
-                                var found = false;
-                                for (i = 0; i < listItems.length; ++i) {
-                                    if (listItems[i].key === it.key) {
-                                        found = true;
-                                        break;
-                                    }
-                                }
-                                if (!found) {
-                                    listItems.push(<model.DropDownListItem>it);
-                                }
-                            });
+                            angular.forEach(crate.fields, it => { listItems.push(<model.DropDownListItem>it); });
                             listItems.sort((x, y) => {
                                 if (x.key < y.key) {
                                     return -1;
@@ -104,7 +100,7 @@ module dockyard.directives.upstreamDataChooser {
                         }
                         else {
                             $scope.field.listItems = listItems;
-                            $scope.tableParams = new NgTableParams({ count: $scope.field.listItems.length }, { data: $scope.field.listItems, counts: [], groupBy: 'sourceCrateLabel' });
+                            $scope.tableParams = new NgTableParams({ count: $scope.field.listItems.length }, { data: $scope.field.listItems, counts: [], groupBy: $scope.getGroupValue });
                         }
                     });
             };

@@ -223,6 +223,7 @@ module dockyard.directives.paneConfigureAction {
             });
 
             $scope.$on(MessageType[MessageType.PaneConfigureAction_ResetValidationMessages], (event: ng.IAngularEvent, e: ResetValidationMessagesEventArgs) => {
+                this.ignoreConfigurationChange = true;
                crateHelper.resetValidationErrors($scope.currentAction.configurationControls.fields);
             });
 
@@ -579,7 +580,7 @@ module dockyard.directives.paneConfigureAction {
                     this.$scope.currentAction.configurationControls = new model.ControlsList();
                     // startAuthentication($scope.currentAction.id);
                     if (!(<any>authCrate.contents).Revocation) {
-                        this.AuthService.enqueue(this.$scope.currentAction.id);
+                        this.AuthService.enqueue(this.$scope.currentAction);
 
                         var errorText = 'Please provide credentials to access your desired account.';
                         var control = new model.TextBlock(errorText, '');
