@@ -83,7 +83,28 @@ namespace HubWeb.Controllers
         //    }
         //}
 
+        public class PlansPostParams
+        {
+            public bool update_registrations { get; set; }  = false;
+            public string solution_name { get; set; }
+            
+        }
+
+
+        [Fr8HubWebHMACAuthenticate]
+        [Fr8ApiAuthorize]
+        public IHttpActionResult Post([FromBody] PlanEmptyDTO planDto,[FromUri] PlansPostParams parameters)
+        {
+            if (!parameters.solution_name.IsNullOrEmpty())
+            {
+                return CreateSolution(parameters.solution_name).Result;
+            }
+
+            return Post(planDto, parameters.update_registrations);
+        }
+
         [HttpPost]
+        [NonAction]
         public async Task<IHttpActionResult> CreateSolution(string solutionName)
         {
             var userId = User.Identity.GetUserId();
@@ -106,6 +127,7 @@ namespace HubWeb.Controllers
 
         [Fr8HubWebHMACAuthenticate]
         [ResponseType(typeof(PlanDTO))]
+        [NonAction]
         public IHttpActionResult Post(PlanEmptyDTO planDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -162,8 +184,6 @@ namespace HubWeb.Controllers
             }
         }
 
-
-        
 
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
