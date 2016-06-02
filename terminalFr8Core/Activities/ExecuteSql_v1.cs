@@ -126,7 +126,7 @@ namespace terminalFr8Core.Activities
         #endregion Execution
 
         public ExecuteSql_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 

@@ -40,7 +40,7 @@ namespace terminaBaselTests.BaseClasses
     class BaseTerminalActivityMock : BaseTerminalActivity
     {
         public BaseTerminalActivityMock(ICrateManager crateManager) 
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 

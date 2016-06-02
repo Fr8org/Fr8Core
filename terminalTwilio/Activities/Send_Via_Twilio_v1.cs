@@ -37,7 +37,7 @@ namespace terminalTwilio.Activities
         protected ITwilioService Twilio;
 
         public Send_Via_Twilio_v1(ICrateManager crateManager, ITwilioService twilioService)
-            : base(false, crateManager)
+            : base(crateManager)
         {
             Twilio = twilioService;
         }
