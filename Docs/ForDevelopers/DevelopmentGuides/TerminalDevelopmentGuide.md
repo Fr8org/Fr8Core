@@ -19,7 +19,7 @@ General Information
 This is platform-independent.
 
 Platform-Specific Information
-*  .NET 
+*  [.NET] (https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Terminals/DevGuide_DotNet)
 *  Java
 *  Ruby
 
