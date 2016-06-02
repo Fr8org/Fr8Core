@@ -34,7 +34,7 @@ namespace terminalFr8Core.Activities
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
         public TestIncomingData_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 
