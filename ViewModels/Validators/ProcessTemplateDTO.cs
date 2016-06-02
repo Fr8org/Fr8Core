@@ -4,7 +4,7 @@ using Fr8Data.DataTransferObjects;
 
 namespace HubWeb.ViewModels.Validators
 {
-    public class PlanDTOValidator : AbstractValidator<PlanEmptyDTO>
+    public class PlanDTOValidator : AbstractValidator<PlanNoChildrenDTO>
     {
         public PlanDTOValidator()
         {

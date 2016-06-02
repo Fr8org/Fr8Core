@@ -102,7 +102,7 @@ namespace terminalSalesforceTests.Intergration
             Debug.WriteLine("Got required activity templates.");
 
             //create initial plan
-            var initialPlan = await HttpPostAsync<PlanEmptyDTO, PlanDTO>(_baseUrl + "plans", new PlanEmptyDTO()
+            var initialPlan = await HttpPostAsync<PlanNoChildrenDTO, PlanDTO>(_baseUrl + "plans", new PlanNoChildrenDTO()
             {
                 Name = "GetSalesforceData_Into_SendEmail_EndToEnd_Test"
             });

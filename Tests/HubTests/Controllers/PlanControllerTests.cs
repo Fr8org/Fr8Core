@@ -157,7 +157,7 @@ namespace HubTests.Controllers
                 PlanController.Post(PlanDto);
             }
             //Act
-            var actionResult = PlanController.Get() as OkNegotiatedContentResult<IList<PlanEmptyDTO>>;
+            var actionResult = PlanController.Get() as OkNegotiatedContentResult<IList<PlanNoChildrenDTO>>;
 
             //Assert
             Assert.NotNull(actionResult);
@@ -173,7 +173,7 @@ namespace HubTests.Controllers
             var resultPlan = (PlanController.Post(PlanDto) as OkNegotiatedContentResult<PlanDTO>).Content;
 
             //Act
-            var actionResult = PlanController.Get(resultPlan.Plan.Id) as OkNegotiatedContentResult<PlanEmptyDTO>;
+            var actionResult = PlanController.Get(resultPlan.Plan.Id) as OkNegotiatedContentResult<PlanNoChildrenDTO>;
 
             //Assert
             Assert.NotNull(actionResult);
@@ -192,7 +192,7 @@ namespace HubTests.Controllers
             var PlanDto = FixtureData.CreateTestPlanDTO();
 
             var PlanController = CreatePlanController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
-            var postResult = PlanController.Post(PlanDto) as OkNegotiatedContentResult<PlanEmptyDTO>;
+            var postResult = PlanController.Post(PlanDto) as OkNegotiatedContentResult<PlanNoChildrenDTO>;
 
             Assert.NotNull(postResult);
 
@@ -204,7 +204,7 @@ namespace HubTests.Controllers
             //Assert
             //After delete, if we get the same process template, it should be null
             var afterDeleteAttemptResult =
-                PlanController.Get(postResult.Content.Id) as OkNegotiatedContentResult<PlanEmptyDTO>;
+                PlanController.Get(postResult.Content.Id) as OkNegotiatedContentResult<PlanNoChildrenDTO>;
             Assert.IsNull(afterDeleteAttemptResult);
         }
 
@@ -244,7 +244,7 @@ namespace HubTests.Controllers
             Assert.NotNull(postResult);
 
             //Then Get
-            var getResult = PlanController.Get(postResult.Content.Plan.Id) as OkNegotiatedContentResult<PlanEmptyDTO>;
+            var getResult = PlanController.Get(postResult.Content.Plan.Id) as OkNegotiatedContentResult<PlanNoChildrenDTO>;
             Assert.NotNull(getResult);
 
             //Then Edit
@@ -254,7 +254,7 @@ namespace HubTests.Controllers
             Assert.NotNull(editResult);
 
             //Then Get
-            var postEditGetResult = PlanController.Get(editResult.Content.Plan.Id) as OkNegotiatedContentResult<PlanEmptyDTO>;
+            var postEditGetResult = PlanController.Get(editResult.Content.Plan.Id) as OkNegotiatedContentResult<PlanNoChildrenDTO>;
             Assert.NotNull(postEditGetResult);
 
             //Assert 

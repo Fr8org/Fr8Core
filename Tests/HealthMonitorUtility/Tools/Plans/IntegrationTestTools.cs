@@ -22,7 +22,7 @@ namespace terminaBaselTests.Tools.Plans
         {
             var newPlan = FixtureData.CreateTestPlanDTO();
 
-            var planDTO = await _baseHubITest.HttpPostAsync<PlanEmptyDTO, PlanDTO>(_baseHubITest.GetHubApiBaseUrl() + "plans", newPlan);
+            var planDTO = await _baseHubITest.HttpPostAsync<PlanNoChildrenDTO, PlanDTO>(_baseHubITest.GetHubApiBaseUrl() + "plans", newPlan);
 
             Assert.AreNotEqual(planDTO.Plan.Id, Guid.Empty, "New created Plan doesn't have a valid Id. Plan failed to be crated.");
             Assert.True(planDTO.Plan.SubPlans.Any(), "New created Plan doesn't have an existing sub plan.");

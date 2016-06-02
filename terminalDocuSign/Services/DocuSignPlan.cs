@@ -224,7 +224,7 @@ namespace terminalDocuSign.Services
 
         private async Task CreateAndActivateNewMADSEPlan(IHubCommunicator hubCommunicator, AuthorizationToken authToken)
         {
-            var emptyMonitorPlan = new PlanEmptyDTO
+            var emptyMonitorPlan = new PlanNoChildrenDTO
             {
                 Name = "MonitorAllDocuSignEvents",
                 Description = "MonitorAllDocuSignEvents",

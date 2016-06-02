@@ -33,7 +33,7 @@ namespace Data.Infrastructure.AutoMapper
                     return pntDTO;
                 }).ToList();
 
-            var result = Mapper.Map<PlanFullDTO>(Mapper.Map<PlanEmptyDTO>(plan));
+            var result = Mapper.Map<PlanFullDTO>(Mapper.Map<PlanNoChildrenDTO>(plan));
             result.SubPlans = subPlanDTOList;
             result.Fr8UserId = plan.Fr8Account.Id;
 

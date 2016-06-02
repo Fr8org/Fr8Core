@@ -6,7 +6,7 @@ namespace Fr8Data.DataTransferObjects
     /// Plan DTO that contains full graph of other DTO objects
     /// Specifically used in Workflow Designer to draw entire process.
     /// </summary>
-    public class PlanFullDTO : PlanEmptyDTO
+    public class PlanFullDTO : PlanNoChildrenDTO
     {
         /// <summary>
         /// List of SubPlan DTOs.

@@ -267,11 +267,11 @@ namespace TerminalBase.Services
             return Mapper.Map<ActivityPayload>(resultActivityDTO);
         }
 
-        public async Task<PlanDTO> CreatePlan(PlanEmptyDTO planDTO)
+        public async Task<PlanDTO> CreatePlan(PlanNoChildrenDTO planDTO)
         {
             var url = $"{GetHubUrlWithApiVersion()}/plans";
             var uri = new Uri(url);
-            return await _restfulServiceClient.PostAsync<PlanEmptyDTO, PlanDTO>(uri, planDTO, null, await GetHMACHeader(uri, planDTO));
+            return await _restfulServiceClient.PostAsync<PlanNoChildrenDTO, PlanDTO>(uri, planDTO, null, await GetHMACHeader(uri, planDTO));
         }
 
         public async Task RunPlan(Guid planId, List<CrateDTO> payload)
@@ -295,7 +295,7 @@ namespace TerminalBase.Services
             return await _restfulServiceClient.GetAsync<PlanDTO>(uri, null, await GetHMACHeader(uri));
         }
 
-        public async Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan)
+        public async Task<PlanDTO> UpdatePlan(PlanNoChildrenDTO plan)
         {
             var jsonObject = JsonConvert.SerializeObject(plan);
             HttpContent jsonContent = new StringContent(jsonObject, Encoding.UTF8, "application/json");

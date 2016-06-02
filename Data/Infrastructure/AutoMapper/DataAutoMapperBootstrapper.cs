@@ -100,9 +100,9 @@ namespace Data.Infrastructure.AutoMapper
             //                .ForMember(x => x.ActionListType, opts => opts.ResolveUsing(x => x.ActionListType))
             //                .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name));
 
-            Mapper.CreateMap<PlanDO, PlanEmptyDTO>();
-            Mapper.CreateMap<PlanEmptyDTO, PlanDO>();
-            Mapper.CreateMap<PlanDO, PlanEmptyDTO>();
+            Mapper.CreateMap<PlanDO, PlanNoChildrenDTO>();
+            Mapper.CreateMap<PlanNoChildrenDTO, PlanDO>();
+            Mapper.CreateMap<PlanDO, PlanNoChildrenDTO>();
             Mapper.CreateMap<SubplanDTO, SubplanDO>()
                 .ForMember(x => x.Name, opts => opts.MapFrom(e => e.Name))
                 .ForMember(x => x.NodeTransitions, opts => opts.MapFrom(e => e.TransitionKey))
@@ -134,7 +134,7 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<PlanDO, PlanFullDTO>().ConvertUsing<PlanDOFullConverter>();
 
-            Mapper.CreateMap<PlanEmptyDTO, PlanFullDTO>();
+            Mapper.CreateMap<PlanNoChildrenDTO, PlanFullDTO>();
 
 
             //  Mapper.CreateMap<ActionListDO, FullActionListDTO>();

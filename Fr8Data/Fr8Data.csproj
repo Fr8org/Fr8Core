@@ -150,7 +150,7 @@
     <Compile Include="DataTransferObjects\OrganizationDTO.cs" />
     <Compile Include="DataTransferObjects\PayloadDTO.cs" />
     <Compile Include="DataTransferObjects\PlanDTO.cs" />
-    <Compile Include="DataTransferObjects\PlanEmptyDTO.cs" />
+    <Compile Include="DataTransferObjects\PlanNoChildrenDTO.cs" />
     <Compile Include="DataTransferObjects\PlanFullDTO.cs" />
     <Compile Include="DataTransferObjects\ProfileDTO.cs" />
     <Compile Include="DataTransferObjects\QueryDTO.cs" />

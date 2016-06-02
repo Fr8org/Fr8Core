@@ -20,7 +20,7 @@ namespace TerminalBase.Helpers
             return await _hubCommunicator.GetPlansByActivity(activityId);
         }
 
-        protected async Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan)
+        protected async Task<PlanDTO> UpdatePlan(PlanNoChildrenDTO plan)
         {
             return await _hubCommunicator.UpdatePlan(plan);
         }
@@ -40,7 +40,7 @@ namespace TerminalBase.Helpers
                 {
                     plan.Plan.Name = NewPlanName;
 
-                    var emptyPlanDTO = Mapper.Map<PlanEmptyDTO>(plan.Plan);
+                    var emptyPlanDTO = Mapper.Map<PlanNoChildrenDTO>(plan.Plan);
                     plan = await UpdatePlan(emptyPlanDTO);
                 }
 
@@ -60,7 +60,7 @@ namespace TerminalBase.Helpers
             {
                 plan.Plan.Category = category;
 
-                var emptyPlanDTO = Mapper.Map<PlanEmptyDTO>(plan.Plan);
+                var emptyPlanDTO = Mapper.Map<PlanNoChildrenDTO>(plan.Plan);
                 plan = await UpdatePlan(emptyPlanDTO);
             }
 

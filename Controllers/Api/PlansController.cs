@@ -104,7 +104,7 @@ namespace HubWeb.Controllers
 
         [Fr8HubWebHMACAuthenticate]
         [ResponseType(typeof(PlanDTO))]
-        public IHttpActionResult Post(PlanEmptyDTO planDto, bool updateRegistrations = false)
+        public IHttpActionResult Post(PlanNoChildrenDTO planDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -117,7 +117,7 @@ namespace HubWeb.Controllers
                 {
                     return BadRequest("Some of the request data is invalid");
                 }
-                var curPlanDO = Mapper.Map<PlanEmptyDTO, PlanDO>(planDto, opts => opts.Items.Add("ptid", planDto.Id));
+                var curPlanDO = Mapper.Map<PlanNoChildrenDTO, PlanDO>(planDto, opts => opts.Items.Add("ptid", planDto.Id));
 
                 _plan.CreateOrUpdate(uow, curPlanDO);
 
@@ -409,7 +409,7 @@ namespace HubWeb.Controllers
             try
             {
                 var planDO = _planTemplates.LoadPlan(dto, User.Identity.GetUserId());
-                return Ok(Mapper.Map<PlanEmptyDTO>(planDO));
+                return Ok(Mapper.Map<PlanNoChildrenDTO>(planDO));
             }
             catch (Exception ex)
             {

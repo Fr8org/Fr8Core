@@ -33,7 +33,7 @@ namespace TerminalBase.Infrastructure
         Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload);
         Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload);
         Task<ActivityPayload> CreateAndConfigureActivity(Guid templateId, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null);
-        Task<PlanDTO> CreatePlan(PlanEmptyDTO planDTO);
+        Task<PlanDTO> CreatePlan(PlanNoChildrenDTO planDTO);
         Task RunPlan(Guid planId, List<CrateDTO> payload);
         Task<List<CrateDTO>> GetStoredManifests(List<CrateDTO> cratesForMTRequest);
         Task<IEnumerable<PlanDTO>> GetPlansByName(string name, PlanVisibility visibility = PlanVisibility.Standard);
@@ -45,7 +45,7 @@ namespace TerminalBase.Infrastructure
         Task DeleteActivity(Guid curActivityId);
         Task DeleteExistingChildNodesFromActivity(Guid curActivityId);
         Task<PlanDTO> GetPlansByActivity(string activityId);
-        Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan);
+        Task<PlanDTO> UpdatePlan(PlanNoChildrenDTO plan);
         Task NotifyUser(TerminalNotificationDTO notificationMessage);
         Task RenewToken(AuthorizationTokenDTO token);
     }

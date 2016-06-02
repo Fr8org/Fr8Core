@@ -246,7 +246,7 @@ namespace TerminalBase.Services
             throw new NotImplementedException();
         }
 
-        public Task<PlanDTO> CreatePlan(PlanEmptyDTO planDTO)
+        public Task<PlanDTO> CreatePlan(PlanNoChildrenDTO planDTO)
         {
             throw new NotImplementedException();
         }
@@ -266,7 +266,7 @@ namespace TerminalBase.Services
             throw new NotImplementedException();
         }
 
-        public Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan)
+        public Task<PlanDTO> UpdatePlan(PlanNoChildrenDTO plan)
         {
             throw new NotImplementedException();
         }

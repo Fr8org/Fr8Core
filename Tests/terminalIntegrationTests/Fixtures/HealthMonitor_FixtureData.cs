@@ -15,9 +15,9 @@ namespace terminalIntegrationTests.Fixtures
 {
     public class HealthMonitor_FixtureData
     {
-        public static PlanEmptyDTO TestPlanEmptyDTO()
+        public static PlanNoChildrenDTO TestPlanNoChildrenDTO()
         {
-            return new PlanEmptyDTO()
+            return new PlanNoChildrenDTO()
             {
                 Name = "Integratin Test Plan",
                 Description = "Create a new Integration test Plan and configure with custom activities"

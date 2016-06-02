@@ -85,7 +85,7 @@ namespace PlanDirectory.Controllers
                 planTemplateDTO.PlanContents
             );
 
-            var plan = await client.PostAsync<JToken, Fr8Data.DataTransferObjects.PlanEmptyDTO>(
+            var plan = await client.PostAsync<JToken, Fr8Data.DataTransferObjects.PlanNoChildrenDTO>(
                 uri, planTemplateDTO.PlanContents, headers: headers);
 
             return Ok(new { RedirectUrl = CloudConfigurationManager.GetSetting("HubUrl") + "/dashboard/plans/" + plan.Id.ToString() + "/builder?viewMode=plan" });

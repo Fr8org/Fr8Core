@@ -4,9 +4,9 @@ namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
-        public static PlanEmptyDTO CreateTestPlanDTO()
+        public static PlanNoChildrenDTO CreateTestPlanDTO()
         {
-            return new PlanEmptyDTO()
+            return new PlanNoChildrenDTO()
             {
                 Name = "plan1",
                 Description = "Description for test plan",
