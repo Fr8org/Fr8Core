@@ -76,7 +76,7 @@ namespace Hub.Services
                 {
                     Id = Guid.NewGuid(),
                     Fr8AccountId = fr8UserId,
-                    Name = planTemplate.Name + " — from PlanDirectory",
+                    Name = planTemplate.Name,// + " — from PlanDirectory",
                     PlanState = 1,
                     ChildNodes = new List<PlanNodeDO>(),
                     Description = planTemplate.Description
