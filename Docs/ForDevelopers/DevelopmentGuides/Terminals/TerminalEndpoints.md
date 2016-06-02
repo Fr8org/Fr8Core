@@ -12,3 +12,9 @@ The table below lists the endpoints on which terminals are expected to reply wit
 | POST | /authentication/initial_url | [Example](JsonExamples/TerminalAuthInitialUrl.md)|
 | POST | /authentication/token | [Example](JsonExamples/TerminalAuthToken.md)|
 | POST | /activities/configure | [Example](JsonExamples/TerminalActivitiesConfigure.md)|
+| POST | /activities/activate | [Example](JsonExamples/TerminalActivitiesActivate.md)|
+| POST | /activities/deactivate | [Example](JsonExamples/TerminalActivitiesDeactivate.md)|
+| POST | /activities/run | [Example](JsonExamples/TerminalActivitiesRun.md)|
+| POST | /activities/executeChildActivities | [Example](JsonExamples/TerminalActivitiesExecuteChildActivities.md)|
+| POST | /activities/documentation | [Example](JsonExamples/TerminalActivitiesDocumentation.md)|
+| POST | /terminals/&lt;terminal-name&gt;/events | [Example](JsonExamples/TerminalEvents.md)|
