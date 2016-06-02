@@ -50,7 +50,7 @@ namespace HubWeb.Controllers
             }
             if (curDocSupport.Contains("MainPage", StringComparison.InvariantCultureIgnoreCase))
             {
-                var solutionPageDTO = await _activity.GetActivityDocumentation<SolutionPageDTO>(curActivityDTO, true);
+                var solutionPageDTO = await _activity.GetActivityDocumentation<DocumentationResponseDTO>(curActivityDTO, true);
                 return Ok(solutionPageDTO);
             }
             return BadRequest("Unknown activity documentation request type");

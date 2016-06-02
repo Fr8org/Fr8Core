@@ -630,7 +630,7 @@ namespace Hub.Services
         /// <param name="activityDTO"></param>
         /// <param name="isSolution">This parameter controls the access level: if it is a solution case
         /// we allow calls without CurrentAccount; if it is not - we need a User to get the list of available activities</param>
-        /// <returns>Task<SolutionPageDTO/> or Task<ActivityResponceDTO/></returns>
+        /// <returns>Task<DocumentationResponseDTO></returns>
         public async Task<T> GetActivityDocumentation<T>(ActivityDTO activityDTO, bool isSolution = false) where T : class
         {
             //activityResponce can be either of type SolutoinPageDTO or ActivityRepsonceDTO

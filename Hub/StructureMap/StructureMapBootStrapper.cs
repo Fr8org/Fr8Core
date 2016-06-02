@@ -254,7 +254,7 @@ namespace Hub.StructureMap
 
             }
 
-            public Task<List<SolutionPageDTO>> GetSolutionDocumentations(string terminalName)
+            public Task<List<DocumentationResponseDTO>> GetSolutionDocumentations(string terminalName)
             {
                 return _terminal.GetSolutionDocumentations(terminalName);
             }

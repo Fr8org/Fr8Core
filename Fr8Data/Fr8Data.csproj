@@ -156,7 +156,7 @@
     <Compile Include="DataTransferObjects\ProfileDTO.cs" />
     <Compile Include="DataTransferObjects\QueryDTO.cs" />
     <Compile Include="DataTransferObjects\SlackPayloadDTO.cs" />
-    <Compile Include="DataTransferObjects\SolutionPageDTO.cs" />
+    <Compile Include="DataTransferObjects\DocumentationResponseDTO.cs" />
     <Compile Include="DataTransferObjects\StandardAccountingTransactionDTO.cs" />
     <Compile Include="DataTransferObjects\SubPlanDTO.cs" />
     <Compile Include="DataTransferObjects\TerminalDiscoveryDTO.cs" />
