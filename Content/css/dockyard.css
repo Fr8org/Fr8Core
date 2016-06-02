@@ -1371,3 +1371,23 @@ md-checkbox.md-checked.green .md-icon {
     margin-bottom: 5px;
     font-size: 15px;
 }
+
+.activity-stream md-progress-linear {
+    height: 10px;
+}
+
+.activity-stream md-progress-linear .md-container {
+    height: 10px;
+}
+
+.activity-stream md-progress-linear.md-default-theme .md-container, md-progress-linear .md-container {
+    background-color: #fff;
+}
+
+.activity-stream md-progress-linear .md-container .md-bar {
+    height: 10px;
+}
+
+.activity-stream md-progress-linear.md-default-theme .md-bar, md-progress-linear .md-bar {
+
+}
