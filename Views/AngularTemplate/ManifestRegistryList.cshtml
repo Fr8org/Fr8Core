@@ -9,7 +9,7 @@
                         <span class="caption-subject font-green-haze bold uppercase">Manifest Registry</span>
                     </div>
                     <div class="actions">
-                        <a class="btn green" target="_blank" href="http://goo.gl/forms/anx5jS8CzfBz7lgF3">Add Manifest Description</a>
+                        <a class="btn green" ng-click="goToManifestSubmissionForm()">Add Manifest Description</a>
                     </div>
                 </div>
 
@@ -33,7 +33,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="manifestDescription in manifestRegistry" ng-click="goToPrefilledManifestSubmissionForm(manifestDescription)">
+                                <tr ng-repeat="manifestDescription in manifestRegistry">
                                     <td>{{manifestDescription.id}}</td>
                                     <td>{{manifestDescription.name}}</td>
                                     <td>{{manifestDescription.version}}</td>
