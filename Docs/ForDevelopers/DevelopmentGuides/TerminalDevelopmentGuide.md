@@ -16,9 +16,13 @@ Before proceeding, make sure you're famililar with the following basic topics:
 *  Fr8 Authentication
 
 General Information
+=====
+
 This is platform-independent.
+[API Endpoints](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Terminals/TerminalEndpoints.md)
 
 Platform-Specific Information
+=====
 *  [.NET] (https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Terminals/DevGuide_DotNet)
 *  Java
 *  Ruby
