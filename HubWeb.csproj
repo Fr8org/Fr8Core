@@ -391,7 +391,6 @@
     <Compile Include="Controllers\Api\ConfigurationController.cs" />
     <Compile Include="Controllers\Api\ManifestRegistriesController.cs" />
     <Compile Include="Controllers\Api\ManifestsController.cs" />
-    <Compile Include="Controllers\Api\PlanTemplatesController.cs" />
     <Compile Include="Controllers\Api\SubPlansController.cs" />
     <Compile Include="Controllers\Api\PlansController.cs" />
     <Compile Include="Controllers\Api\TerminalsController.cs" />
@@ -533,6 +532,7 @@
     <Content Include="Content\img\logo-fr8.svg" />
     <Content Include="Content\img\Management\Alexei_Avrutin.png" />
     <Content Include="Content\img\Management\Alex_Edelstein_Round.png" />
+    <Content Include="Content\img\Management\Andrew_Cantino.png" />
     <Content Include="Content\img\Management\Bahadir_Bozdag.png" />
     <Content Include="Content\img\Management\Benjamin_Black.png" />
     <Content Include="Content\css\additionalcss\bootstrap23\css\bootstrap2.3.css" />

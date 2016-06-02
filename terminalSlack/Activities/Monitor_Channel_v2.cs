@@ -91,7 +91,7 @@ namespace terminalSlack.Activities
         private readonly ISlackEventManager _slackEventManager;
 
         public Monitor_Channel_v2(ICrateManager crateManager)
-            : base(true, crateManager)
+            : base(crateManager)
         {
             _slackIntegration = ObjectFactory.GetInstance<ISlackIntegration>();
             _slackEventManager = ObjectFactory.GetInstance<ISlackEventManager>();

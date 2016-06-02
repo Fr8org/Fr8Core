@@ -23,24 +23,12 @@ namespace PlanDirectory
                 OwinInitializer.ConfigureAuth(app, "/Reauthenticate");
                 app.UseWebApi(configuration);
 
-                // if (!selfHost)
-                // {
-                //     RouteConfig.RegisterRoutes(RouteTable.Routes);
-                // 
-                //     var segmentWriteKey = new ConfigRepository().Get("SegmentWriteKey");
-                //     Analytics.Initialize(segmentWriteKey);
-                // }
-                // 
                 ObjectFactory.Initialize();
                 ObjectFactory.Configure(Fr8Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
                 ObjectFactory.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
                 ObjectFactory.Configure(PlanDirectoryBootStrapper.LiveConfiguration);
-                // 
-                // DataAutoMapperBootStrapper.ConfigureAutoMapper();
-                // 
-                // Utilities.Server.ServerPhysicalPath = selfHost ? "/" : HttpContext.Current.Server.MapPath("~");
-                // 
-                // ObjectFactory.GetInstance<IPlanTemplate>().Initialize().Wait();
+
+                ObjectFactory.GetInstance<ISearchProvider>().Initialize(true).Wait();
 
             }
         }

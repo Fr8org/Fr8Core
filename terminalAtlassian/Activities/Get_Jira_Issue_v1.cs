@@ -59,7 +59,7 @@ namespace terminalAtlassian.Actions
         private readonly AtlassianService _atlassianService;
 
         public Get_Jira_Issue_v1(ICrateManager crateManager, AtlassianService atlassianService) 
-            : base(true, crateManager)
+            : base(crateManager)
         {
             _atlassianService = atlassianService;
         }

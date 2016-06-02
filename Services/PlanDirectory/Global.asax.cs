@@ -27,7 +27,7 @@ namespace PlanDirectory
             var segmentWriteKey = new ConfigRepository().Get("SegmentWriteKey");
             Analytics.Initialize(segmentWriteKey);
 
-            await ObjectFactory.GetInstance<IPlanTemplate>().Initialize();
+            await ObjectFactory.GetInstance<ISearchProvider>().Initialize(false);
         }
     }
 }
