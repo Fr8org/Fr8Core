@@ -240,6 +240,7 @@
     <Compile Include="Entities\AspNetUserClaimDO.cs" />
     <Compile Include="Entities\EncryptedAuthorizationData.cs" />
     <Compile Include="Entities\OrganizationDO.cs" />
+    <Compile Include="Entities\PageDefinitionDO.cs" />
     <Compile Include="Entities\PlanTemplates\ActivityDescriptionDO.cs" />
     <Compile Include="Entities\PlanTemplates\NodeTransitionDO.cs" />
     <Compile Include="Entities\PlanTemplates\PlanTemplateDO.cs" />
@@ -644,6 +645,10 @@
     <Compile Include="Migrations\201605231150066_AddOrganizationAndAccountToObjectRolePermissions.cs" />
     <Compile Include="Migrations\201605231150066_AddOrganizationAndAccountToObjectRolePermissions.Designer.cs">
       <DependentUpon>201605231150066_AddOrganizationAndAccountToObjectRolePermissions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606011034503_AddCanManagePageDefinitionsToFr8Account.cs" />
+    <Compile Include="Migrations\201606011034503_AddCanManagePageDefinitionsToFr8Account.Designer.cs">
+      <DependentUpon>201606011034503_AddCanManagePageDefinitionsToFr8Account.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1233,6 +1238,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201605231150066_AddOrganizationAndAccountToObjectRolePermissions.resx">
       <DependentUpon>201605231150066_AddOrganizationAndAccountToObjectRolePermissions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606011034503_AddCanManagePageDefinitionsToFr8Account.resx">
+      <DependentUpon>201606011034503_AddCanManagePageDefinitionsToFr8Account.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

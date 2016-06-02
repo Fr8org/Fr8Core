@@ -226,6 +226,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AngularTemplateController.cs" />
     <Compile Include="Controllers\Api\AuthenticationController.cs" />
+    <Compile Include="Controllers\Api\PageDefinitionsController.cs" />
     <Compile Include="Controllers\Api\PlanTemplatesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
@@ -239,6 +240,7 @@
     <Compile Include="Infrastructure\PlanDirectoryBootStrapper.cs" />
     <Compile Include="Infrastructure\SearchProvider.Impl.cs" />
     <Compile Include="Interfaces\CreatePlanDTO.cs" />
+    <Compile Include="Interfaces\PageDefinitionDTO.cs" />
     <Compile Include="Interfaces\SearchItemDTO.cs" />
     <Compile Include="Interfaces\SearchRequestDTO.cs" />
     <Compile Include="Interfaces\SearchResultDTO.cs" />

@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Microsoft.AspNet.Identity;
-using Newtonsoft.Json.Linq;
-using StructureMap;
 using Fr8Data.DataTransferObjects;
 using Fr8Infrastructure.Interfaces;
 using Hub.Infrastructure;
+using Microsoft.AspNet.Identity;
+using Newtonsoft.Json.Linq;
 using PlanDirectory.Infrastructure;
 using PlanDirectory.Interfaces;
+using StructureMap;
 using Utilities.Configuration.Azure;
 
-namespace PlanDirectory.Controllers
+namespace PlanDirectory.Controllers.Api
 {
     public class PlanTemplatesController : ApiController
     {
