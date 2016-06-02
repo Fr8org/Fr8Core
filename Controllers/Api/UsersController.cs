@@ -123,7 +123,6 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        //public IHttpActionResult UpdateUserProfile(string userId, Guid profileId, string userClass = "", bool canManagePageDefinitions = false)
         public IHttpActionResult UpdateUserProfile(UserDTO userDTO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
