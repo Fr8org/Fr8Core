@@ -430,7 +430,7 @@ module dockyard.controllers {
                 this.setAdvancedEditingMode();
             }
             this.renderPlan(<interfaces.IPlanVM>curPlan.plan);
-            this.$state.go('planBuilder', { id: curPlan.plan.id, viewMode: mode }).then(this.reloadFirstActions.bind(this));
+            this.$state.go('planBuilder', { id: curPlan.plan.id, viewMode: mode });
         }
 
         /*
