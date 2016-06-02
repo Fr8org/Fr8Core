@@ -531,25 +531,25 @@ notificationMessage |	TerminalNotificationDTO			| | |
 **Return Values**	IHttpActionResult   
 **Description:**	Takes the message, checks whether it is a terminal call or client call, and sets channel accordingly. Then notifies the selected channel.
 
-### OrganizationController
+### OrganizationsController
 ------------------------------------
-#### **Path:**	*/organization/get*
+#### **Path:**	*/organizations/get*
 **Type:**	*GET*   
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
 id	| int	| | |		 id of the organization
-**Return Values**	OrganizationDTO   
+**Return Values**	 [OrganizationDTO](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Organizations.md)
 **Description:**	Takes the id and returns the Organization   
-#### **Path:**	*/organization/put*
+#### **Path:**	*/organizations/put*
 **Type:**	*PUT*   
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
 dto |	OrganizationDTO			| | |
-**Return Values**	OrganizationDTO   
+**Return Values**	[OrganizationDTO](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Organizations.md)   
 **Description:**	Updates organization   
 
 ### PlanNodesController
