@@ -40,8 +40,8 @@
                                                         {{envelope.activity.label}}
                                                         <md-tooltip>{{envelope.activity.label}}</md-tooltip>
                                                     </h2>
+                                                    <span flex></span>
                                                 </div>
-                                                <span flex></span>
                                                 <!-- Right Corner Header -->
                                                 <div class="action-reconfigure-status" ng-show="isReConfiguring === true">
                                                     updating
@@ -79,6 +79,12 @@
                                                             <md-button ng-click="deleteAction(envelope.activity);">
                                                                 <md-icon style="padding-top: 3px" md-font-icon="fa fa-trash"></md-icon>
                                                                 Delete
+                                                            </md-button>
+                                                        </md-menu-item>
+                                                        <md-menu-item ng-if="hasHelpMenuItem(envelope.activity)">
+                                                            <md-button ng-if="showActivityHelpDocumentation(envelope.activity);">
+                                                                <md-icon style="padding-top: 3px" md-font-icon="fa fa-info"></md-icon>
+                                                                Help
                                                             </md-button>
                                                         </md-menu-item>
                                                     </md-menu-content>

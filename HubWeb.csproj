@@ -1018,6 +1018,7 @@
     <TypeScriptCompile Include="Scripts\app\controllers\ManageAuthTokenController.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IManifestRegistry.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IProfile.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\ActivityResponseDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\AdvisoryMessages.ts" />
     <TypeScriptCompile Include="Scripts\app\model\AlertDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ValidationResults.ts" />
@@ -1033,7 +1034,7 @@
     <TypeScriptCompile Include="Scripts\app\services\FileDetailsService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\FileService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ManifestRegistryService.ts" />
-    <TypeScriptCompile Include="Scripts\app\model\SolutionDTO.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\DocumentationResponseDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\services\AuthService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ConfigureTrackerService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\FileDetailsService.ts" />

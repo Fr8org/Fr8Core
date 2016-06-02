@@ -45,6 +45,8 @@ module dockyard.controllers {
         view: string;
         viewMode: string;
         hasAnyActivity: (pSubPlan: any) => boolean;
+        hasHelpMenuItem: (activity: model.ActivityDTO) => boolean;
+        showActivityHelpDocumentation: (activity: model.ActivityDTO) => void;
 }
 
 
@@ -63,6 +65,7 @@ module dockyard.controllers {
 
         public static $inject = [
             '$scope',
+            '$window',
             'LocalIdentityGenerator',
             '$state',
             'ActionService',
@@ -86,6 +89,7 @@ module dockyard.controllers {
 
         constructor(
             private $scope: IPlanBuilderScope,
+            private $window: ng.IWindowService,
             private LocalIdentityGenerator: services.ILocalIdentityGenerator,
             private $state: ng.ui.IStateService,
             private ActionService: services.IActionService,
@@ -101,7 +105,8 @@ module dockyard.controllers {
             private AuthService: services.AuthService,
             private ConfigureTrackerService: services.ConfigureTrackerService,
             private SubPlanService: services.ISubPlanService,
-            private $stateParams: ng.ui.IStateParamsService
+            private $stateParams: ng.ui.IStateParamsService,
+            private documentationService: services.ISolutionDocumentationService
         ) {
 
             this.LayoutService.resetLayout();
@@ -130,6 +135,33 @@ module dockyard.controllers {
                     return actionGroup.envelopes.length > 0;
                 });
             };
+
+            this.$scope.hasHelpMenuItem = (activity) => {
+                if (activity.activityTemplate.showDocumentation != null) {
+                    if (activity.activityTemplate.showDocumentation.body.displayMechanism != undefined &&
+                        activity.activityTemplate.showDocumentation.body.displayMechanism.contains("HelpMenu")) {
+                        return true;
+                    }                    
+                }
+
+                return false;
+            }
+
+            this.$scope.showActivityHelpDocumentation = (activity) => {
+
+                var activityDTO = new model.ActivityDTO("", "", "");
+                activityDTO.toActionVM();
+                activityDTO.documentation = "HelpMenu";
+                activityDTO.activityTemplate = activity.activityTemplate;
+
+                documentationService.getDocumentationResponseDTO(activityDTO).$promise.then(data => {
+
+                    if (data) {
+                        var newWindow = this.$window.open();
+                        newWindow.document.writeln(data.body);
+                    }
+                });
+            }
 
             this.$scope.isBusy = () => {
                 return this._longRunningActionsCounter > 0 || this._loading;
