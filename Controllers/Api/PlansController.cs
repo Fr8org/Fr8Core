@@ -93,8 +93,11 @@ namespace HubWeb.Controllers
 
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
-        public IHttpActionResult Post([FromBody] PlanEmptyDTO planDto,[FromUri] PlansPostParams parameters)
+        [HttpPost]
+        public IHttpActionResult Post([FromBody] PlanEmptyDTO planDto,[FromUri] PlansPostParams parameters = null)
         {
+            parameters = parameters ?? new PlansPostParams();
+
             if (!parameters.solution_name.IsNullOrEmpty())
             {
                 return CreateSolution(parameters.solution_name).Result;
@@ -128,7 +131,7 @@ namespace HubWeb.Controllers
         [Fr8HubWebHMACAuthenticate]
         [ResponseType(typeof(PlanDTO))]
         [NonAction]
-        public IHttpActionResult Post(PlanEmptyDTO planDto, bool updateRegistrations = false)
+        private IHttpActionResult Post(PlanEmptyDTO planDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

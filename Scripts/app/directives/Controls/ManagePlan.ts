@@ -21,19 +21,19 @@ module dockyard.directives {
             });
         };
 
-        var copyPlan = function ($q, $http, planId, planName): ng.IPromise<any> {
-            var url = '/api/plans/copy?id=' + planId + '&name=' + planName;
+        //var copyPlan = function ($q, $http, planId, planName): ng.IPromise<any> {
+        //    var url = '/api/plans/copy?id=' + planId + '&name=' + planName;
 
-            return $q(function (resolve, reject) {
-                $http.post(url)
-                    .then(function (res) {
-                        resolve(res.data.id);
-                    })
-                    .catch(function (err) {
-                        reject(err);
-                    });
-            });
-        };
+        //    return $q(function (resolve, reject) {
+        //        $http.post(url)
+        //            .then(function (res) {
+        //                resolve(res.data.id);
+        //            })
+        //            .catch(function (err) {
+        //                reject(err);
+        //            });
+        //    });
+        //};
 
         return {
             restrict: 'E',
@@ -60,21 +60,22 @@ module dockyard.directives {
 
                         getPlan($q, $http, $scope.currentAction.id)
                             .then(function (plan) {
-                                copyPlan($q, $http, plan.plan.id, $scope.savePlanName)
-                                    .then(function (id) {
-                                        $scope.copySuccess = {
-                                            id: id,
-                                            name: $scope.savePlanName
-                                        };
+                                // seems it was never worked
+                                //copyPlan($q, $http, plan.plan.id, $scope.savePlanName)
+                                //    .then(function (id) {
+                                //        $scope.copySuccess = {
+                                //            id: id,
+                                //            name: $scope.savePlanName
+                                //        };
 
-                                        $scope.savePlanName = null;
-                                    })
-                                    .catch(function (err) {
-                                        $scope.error = err;
-                                    })
-                                    .finally(function () {
-                                        $scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_LongRunningOperation], new pwd.LongRunningOperationEventArgs(pwd.LongRunningOperationFlag.Stopped));
-                                    });
+                                //        $scope.savePlanName = null;
+                                //    })
+                                //    .catch(function (err) {
+                                //        $scope.error = err;
+                                //    })
+                                //    .finally(function () {
+                                //        $scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_LongRunningOperation], new pwd.LongRunningOperationEventArgs(pwd.LongRunningOperationFlag.Stopped));
+                                //    });
                             })
                             .catch(function (err) {
                                 $scope.error = err;
