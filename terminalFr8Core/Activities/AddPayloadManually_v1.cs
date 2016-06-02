@@ -32,7 +32,7 @@ namespace terminalFr8Core.Activities
         private const string CrateSignalLabel = "Available Run Time Crates";
 
         public AddPayloadManually_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
 
         }

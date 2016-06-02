@@ -24,7 +24,7 @@ namespace terminalDocuSign.Activities
 
 
         protected BaseDocuSignActivity(ICrateManager crateManager, IDocuSignManager docuSignManager)
-            : base(true, crateManager)
+            : base(crateManager)
         {
             DocuSignManager = docuSignManager;
         }

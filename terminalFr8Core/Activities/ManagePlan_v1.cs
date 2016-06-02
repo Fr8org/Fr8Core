@@ -51,7 +51,7 @@ namespace terminalFr8Core.Activities
         #endregion Configuration.
 
         public ManagePlan_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
 
         }

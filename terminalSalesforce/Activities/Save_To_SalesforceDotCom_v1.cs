@@ -39,7 +39,7 @@ namespace terminalSalesforce.Actions
         readonly ISalesforceManager _salesforce = new SalesforceManager();
         
         public Save_To_SalesforceDotCom_v1(ICrateManager crateManager)
-            : base(true, crateManager)
+            : base(crateManager)
         {
         }
 

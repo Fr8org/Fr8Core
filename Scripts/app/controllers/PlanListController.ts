@@ -20,6 +20,8 @@ module dockyard.controllers {
         updatePlansLastUpdated: (id: any, date: any) => void;
         doesOrganizationExists: boolean;
 
+        createTemplate: (plan: interfaces.IPlanVM)=>void;
+
         filter: any;
 
         inActiveQuery: model.PlanQueryDTO;
@@ -45,6 +47,7 @@ module dockyard.controllers {
         // See http://docs.angularjs.org/guide/di
         public static $inject = [
             '$scope',
+            '$rootScope',
             'PlanService',
             '$modal',
             '$state',
@@ -55,6 +58,7 @@ module dockyard.controllers {
 
         constructor(
             private $scope: IPlanListScope,
+            private $rootScope: IPlanListScope,
             private PlanService: services.IPlanService,
             private $modal,
             private $state: ng.ui.IStateService,
@@ -104,6 +108,7 @@ module dockyard.controllers {
             $scope.getActivePlans = <() => void>angular.bind(this, this.getActivePlans);
             $scope.removeInactiveFilter = <() => void>angular.bind(this, this.removeInactiveFilter);
             $scope.removeActiveFilter = <() => void>angular.bind(this, this.removeActiveFilter);
+
 
             $scope.$watch('inActiveQuery.filter', (newValue, oldValue) => {
                 var bookmark: number = 1;
@@ -175,6 +180,7 @@ module dockyard.controllers {
         }
 
         private reArrangePlans(plan) {
+            
             var planIndex = null;
             if (plan.planState === 1) {
                 planIndex = this.$scope.activePlans.plans.map(function (r) { return r.id }).indexOf(plan.id);
@@ -192,6 +198,12 @@ module dockyard.controllers {
                     this.$scope.inActivePlans.plans.splice(planIndex, 1);
                     --this.$scope.inActivePlans.totalPlanCount;
                 }
+            }
+            if (this.$scope.activePlans.plans.length == 0 && this.$scope.inActivePlans.plans.length > 0) {
+                this.$rootScope.$broadcast(<any>designHeaderEvents.PLAN_EXECUTION_STOPPED);
+            }
+            if (this.$scope.inActivePlans.plans.length == 0 && this.$scope.activePlans.plans.length > 0) {
+                this.$rootScope.$broadcast(<any>designHeaderEvents.PLAN_EXECUTION_STARTED);
             }
         }
         
@@ -256,6 +268,7 @@ module dockyard.controllers {
                     });
             }
         }
+
 
         private goToPlanPage(planId) {
             this.$state.go('planBuilder', { id: planId });

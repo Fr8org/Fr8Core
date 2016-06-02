@@ -12,7 +12,7 @@ module dockyard.directives.designerHeader {
         runPlan(): void;
         deactivatePlan(): void;
         resetPlanStatus(): void;
-        sharePlan(): void;
+        //sharePlan(): void;
         plan: model.PlanDTO;
         kioskMode: boolean;
     }
@@ -56,6 +56,23 @@ module dockyard.directives.designerHeader {
                 ngToast: any,
                 PlanService: services.IPlanService) => {
 
+                $scope.$watch('plan.planState', function (newValue, oldValue) {
+                    switch (newValue) {
+                        case 1:
+                            // emit evet to control liner-progress bar
+                            $rootScope.$broadcast(<any>designHeaderEvents.PLAN_EXECUTION_STOPPED);
+                            break;
+                        case 2:
+                            // emit evet to control liner-progress bar
+                            $rootScope.$broadcast(<any>designHeaderEvents.PLAN_EXECUTION_STARTED);
+                            break;
+                        default:
+                            // emit evet to control liner-progress bar
+                            $rootScope.$broadcast(<any>designHeaderEvents.PLAN_EXECUTION_STOPPED);
+                            break;
+                    }
+                });
+
                 $scope.editTitle = () => {
                     $scope.editing = true;
                 };
@@ -66,20 +83,23 @@ module dockyard.directives.designerHeader {
                     result.$promise.then(() => { });
                 };
 
-                $scope.sharePlan = () => {
-                    PlanService.share($scope.plan.id)
-                        .then(() => {
-                            console.log('sharePlan: Success');
-                        })
-                        .catch(() => {
-                            console.log('sharePlan: Failure');
-                        });
-                };
+
+                //moved to PlanDetailsController
+                //$scope.sharePlan = () => {
+                //    PlanService.share($scope.plan.id)
+                //        .then(() => {
+                //            console.log('sharePlan: Success');
+                //        })
+                //        .catch(() => {
+                //            console.log('sharePlan: Failure');
+                //        });
+                //};
 
                 $scope.runPlan = () => {
                     // mark plan as Active
-                    $scope.plan.planState = 2;
+                    $scope.plan.planState = 2;                   
                     var promise = PlanService.runAndProcessClientAction($scope.plan.id);
+                    
                     promise.then((container: model.ContainerDTO) => {
                         //if we have validation errors - reset plan state to Inactive. Plans with errors can't be activated    
                         if (container.validationErrors && container.validationErrors != null) {
@@ -130,7 +150,8 @@ module dockyard.directives.designerHeader {
 
                 $scope.deactivatePlan = () => {
                     var result = PlanService.deactivate({ planId: $scope.plan.id });
-                    result.$promise.then((data) => {
+                    result.$promise.then((data) => {                        
+
                         // mark plan as inactive
                         $scope.plan.planState = 1;
                         var messageToShow = "Plan successfully deactivated";

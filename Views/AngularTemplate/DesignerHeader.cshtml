@@ -10,8 +10,6 @@
     </div>
     <div class="designer-header-status" ng-if="!kioskMode">
         <span class="h4">
-            <button class="btn btn-primary" title="Publish to Plan Directory" style="margin-right: 20px;" ng-click="sharePlan()">Publish</button>
-
             <strong> 
                 <span class="plan-state-text" ng-if="plan.planState === 2">{{plan.planState | PlanState}}</span>   
                 <span ng-if="plan.planState === 1">Ready</span>   

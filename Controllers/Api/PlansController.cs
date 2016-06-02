@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -15,6 +18,7 @@ using Data.Interfaces;
 using Data.States;
 using Hub.Interfaces;
 using System.Threading.Tasks;
+using System.Web;
 using HubWeb.ViewModels;
 using Newtonsoft.Json;
 using Hub.Infrastructure;
@@ -277,6 +281,32 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [Fr8ApiAuthorize]
+        public async Task<IHttpActionResult> LoadPlan(string planName)
+        {
+            IHttpActionResult result = InternalServerError();
+            await Request.Content.ReadAsMultipartAsync<MultipartMemoryStreamProvider>(new MultipartMemoryStreamProvider()).ContinueWith((tsk) =>
+            {
+                MultipartMemoryStreamProvider prvdr = tsk.Result;
+
+                foreach (HttpContent ctnt in prvdr.Contents)
+                {
+                    Stream stream = ctnt.ReadAsStreamAsync().Result;
+
+                    var content = new StreamReader(stream).ReadToEnd();
+
+                    var planTemplateDTO = JsonConvert.DeserializeObject<PlanTemplateDTO>(content);
+                    planTemplateDTO.Name = planName;
+
+                    result = this.Load(planTemplateDTO);
+                }
+            });
+
+            return result;
+        }
+
+
+        [HttpPost]
+        [Fr8ApiAuthorize]
         public IHttpActionResult CreateFindObjectsPlan()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -326,6 +356,17 @@ namespace HubWeb.Controllers
             }
 
             return Ok(result);
+        }
+
+        [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
+        [Fr8HubWebHMACAuthenticate]
+        [ResponseType(typeof(PlanTemplateDTO))]
+        [HttpPost]
+        public async Task<IHttpActionResult> CreateTemplate(Guid planId)
+        {
+            var planTemplateDTO = _planTemplates.GetPlanTemplate(planId, User.Identity.GetUserId());
+
+            return Ok(planTemplateDTO);
         }
 
         [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]

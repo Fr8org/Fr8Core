@@ -34,7 +34,7 @@ namespace terminalSendGrid.Activities
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
         public SendEmailViaSendGrid_v1(ICrateManager crateManager, IConfigRepository configRepository, IEmailPackager emailPackager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
             _configRepository = configRepository;
             _emailPackager = emailPackager;
