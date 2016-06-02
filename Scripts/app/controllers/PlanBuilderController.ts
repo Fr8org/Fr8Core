@@ -118,6 +118,11 @@ module dockyard.controllers {
 
             this.$scope.view = $stateParams['view'];
             this.$scope.viewMode = $stateParams['viewMode'];
+
+
+            this.$scope.$on('$stateChangeStart', (event, toState, toParams, fromState, fromParams, options) => {
+                this.handleBackButton(event, toState, toParams, fromState, fromParams, options);
+            });
             
             this.$scope.addAction = (group: model.ActionGroup) => {
                 this.addAction(group);
@@ -232,6 +237,13 @@ module dockyard.controllers {
             };
 
             this.processState($state);
+        }
+
+        private handleBackButton(event, toState, toParams, fromState, fromParams, options) {
+            if (fromParams.viewMode === "plan" && toParams.viewMode === undefined && fromState.name === "planBuilder" && toState.name === "planBuilder") {
+                event.preventDefault();
+                this.$state.go("planList");
+            }
         }
 
         private startLoader() {
