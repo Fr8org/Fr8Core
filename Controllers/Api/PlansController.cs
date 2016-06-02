@@ -83,13 +83,6 @@ namespace HubWeb.Controllers
         //    }
         //}
 
-        public class PlansPostParams
-        {
-            public bool update_registrations { get; set; }  = false;
-            public string solution_name { get; set; }
-            
-        }
-
 
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
@@ -157,7 +150,7 @@ namespace HubWeb.Controllers
         
 
         [Fr8ApiAuthorize]
-        [ActionName("query")]
+        //[ActionName("query")]
         [HttpGet]
         //formerly  GetByQuery
         public IHttpActionResult Query([FromUri] PlanQueryDTO planQuery)
@@ -239,7 +232,7 @@ namespace HubWeb.Controllers
         //[Route("getByAction/{id:guid}")]
         [Fr8HubWebHMACAuthenticate]
         [ResponseType(typeof(PlanDTO))]
-        [HttpGet]
+        //[HttpGet]
         [NonAction]
         public IHttpActionResult GetByActivity(Guid id)
         {
@@ -254,7 +247,7 @@ namespace HubWeb.Controllers
 
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
-        [HttpGet]
+        //[HttpGet]
         [ResponseType(typeof(IEnumerable<PlanDTO>))]
         [NonAction]
         public IHttpActionResult GetByName(string name, PlanVisibility visibility = PlanVisibility.Standard)
