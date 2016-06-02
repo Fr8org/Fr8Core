@@ -9,7 +9,11 @@ module dockyard.controllers.NotifierController {
     }
     export interface INotifierControllerScope extends ng.IScope {
         eventList: Array<Fr8InternalEvent>;
+        planIsRunning: Boolean;
     }
+
+    import designHeaderEvents = dockyard.Fr8Events.DesignerHeader;
+
     class NotifierController {
         // $inject annotation.
         // It provides $injector with information about dependencies to be injected into constructor
@@ -29,6 +33,22 @@ module dockyard.controllers.NotifierController {
             private ngToast: any,
             private $mdSidenav: any,
             private $scope: INotifierControllerScope) {
+
+
+            // liner-progress-bar controll
+            $scope.planIsRunning = false;
+
+            this.$scope.$on(<any>designHeaderEvents.PLAN_EXECUTION_STARTED,
+                (event: ng.IAngularEvent) => {
+                    $scope.planIsRunning = true;
+                });
+
+            this.$scope.$on(<any>designHeaderEvents.PLAN_EXECUTION_STOPPED,
+                (event: ng.IAngularEvent) => {
+                    $scope.planIsRunning = false;
+                });
+
+
 
             UserService.getCurrentUser().$promise.then(data => {
                 $scope.eventList = [];
