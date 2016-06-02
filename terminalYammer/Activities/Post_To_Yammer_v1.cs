@@ -76,7 +76,7 @@ namespace terminalYammer.Actions
         }
 
         public Post_To_Yammer_v1(ICrateManager crateManager)
-            : base(true, crateManager)
+            : base(crateManager)
         {
             _yammer = new Yammer();
         }

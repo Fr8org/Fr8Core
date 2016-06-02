@@ -72,7 +72,7 @@ namespace terminalFr8Core.Activities
         }
 
         public StoreFile_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 
