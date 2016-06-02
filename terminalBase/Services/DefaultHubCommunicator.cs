@@ -283,14 +283,14 @@ namespace TerminalBase.Services
         
         public async Task<IEnumerable<PlanDTO>> GetPlansByName(string name, PlanVisibility visibility = PlanVisibility.Standard)
         {
-            var url = $"{GetHubUrlWithApiVersion()}/plans/getbyname?name={name}&visibility={visibility}";
+            var url = $"{GetHubUrlWithApiVersion()}/plans?name={name}&visibility={visibility}";
             var uri = new Uri(url);
             return await _restfulServiceClient.GetAsync<IEnumerable<PlanDTO>>(uri, null, await GetHMACHeader(uri));
         }
 
         public async Task<PlanDTO> GetPlansByActivity(string activityId)
         {
-            var url = $"{GetHubUrlWithApiVersion()}/plans/getByActivity?id={activityId}";
+            var url = $"{GetHubUrlWithApiVersion()}/plans?activity_id={activityId}";
             var uri = new Uri(url);
             return await _restfulServiceClient.GetAsync<PlanDTO>(uri, null, await GetHMACHeader(uri));
         }

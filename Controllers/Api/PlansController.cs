@@ -38,6 +38,7 @@ using HubWeb.Infrastructure_HubWeb;
 using Fr8Infrastructure.Interfaces;
 using Utilities.Configuration.Azure;
 using Newtonsoft.Json.Linq;
+using Utilities;
 
 namespace HubWeb.Controllers
 {
@@ -169,10 +170,27 @@ namespace HubWeb.Controllers
         [HttpGet]
         public IHttpActionResult Get([FromUri] PlansGetParams parameters)
         {
+            if ((!parameters.name.IsNullOrEmpty() && parameters.id.HasValue)
+                || (parameters.activity_id.HasValue && parameters.id.HasValue)
+                || (parameters.activity_id.HasValue && !parameters.name.IsNullOrEmpty()))
+            {
+                return BadRequest("Multiple parameters are defined");
+            }
+
 
             if (parameters.include_children && parameters.id.HasValue)
             {
                 return GetFullPlan((Guid)parameters.id);
+            }
+
+            if (parameters.activity_id.HasValue)
+            {
+                return GetByActivity((Guid)parameters.activity_id);
+            }
+
+            if (!parameters.name.IsNullOrEmpty())
+            {
+                return GetByName(parameters.name, parameters.visibility);
             }
 
             return Get(parameters.id);
@@ -199,6 +217,7 @@ namespace HubWeb.Controllers
         [Fr8HubWebHMACAuthenticate]
         [ResponseType(typeof(PlanDTO))]
         [HttpGet]
+        [NonAction]
         public IHttpActionResult GetByActivity(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -214,6 +233,7 @@ namespace HubWeb.Controllers
         [Fr8HubWebHMACAuthenticate]
         [HttpGet]
         [ResponseType(typeof(IEnumerable<PlanDTO>))]
+        [NonAction]
         public IHttpActionResult GetByName(string name, PlanVisibility visibility = PlanVisibility.Standard)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
