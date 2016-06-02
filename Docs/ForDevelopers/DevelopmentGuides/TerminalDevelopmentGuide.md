@@ -8,12 +8,12 @@ Basic Topics
 ===
 
 Before proceeding, make sure you're famililar with the following basic topics:
-*Fr8 Architecture
-*Fr8 Events
-*Fr8 Crates and Containers
-*Fr8 Activities
-*Fr8 Plans
-*Fr8 Authentication
+*  Fr8 Architecture
+*  Fr8 Events
+*  Fr8 Crates and Containers
+*  Fr8 Activities
+*  Fr8 Plans
+*  Fr8 Authentication
 
 
 
