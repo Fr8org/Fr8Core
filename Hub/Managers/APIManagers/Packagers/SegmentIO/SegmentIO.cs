@@ -65,7 +65,7 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
                 props.Add(prop.Key, prop.Value);
 
             Analytics.Client.Identify(fr8AccountDO.Id, props);
-            Analytics.Client.Track(fr8AccountDO.Id, "User Logged In");
+            Track(fr8AccountDO, "User Logged In", props);
         }
 
         public void Track(Fr8AccountDO fr8AccountDO, String eventName, String action, Dictionary<String, object> properties = null)

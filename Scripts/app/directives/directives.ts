@@ -278,7 +278,7 @@ app.directive('stickyFooter', [
     }
 ]);
 
-app.directive('eventAddPlan', ['$timeout', '$window', function ($timeout, $window) {
+app.directive('eventAdd', ['$timeout', '$window', function ($timeout, $window) {
     return {
         restrict: 'A',
         link: function (scope, element) {
@@ -289,7 +289,7 @@ app.directive('eventAddPlan', ['$timeout', '$window', function ($timeout, $windo
     };
 }]);
 
-app.directive('eventRunPlan', ['$timeout', '$window', function ($timeout, $window) {
+app.directive('eventRun', ['$timeout', '$window', function ($timeout, $window) {
     return {
         restrict: 'A',
         link: function (scope, element) {
@@ -309,3 +309,11 @@ app.directive('eventAuthDialog', ['$timeout', '$window', function ($timeout, $wi
     };
 }]);
 
+app.directive('eventPlanbuilder', ['$timeout', '$window', function ($timeout, $window) {
+    return {
+        restrict: 'A',
+        link: function (scope, element) {
+            $window.analytics.page("Visited Page - Plan Builder");
+        }
+    };
+}]);
