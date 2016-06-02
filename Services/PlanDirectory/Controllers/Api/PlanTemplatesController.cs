@@ -30,11 +30,29 @@ namespace PlanDirectory.Controllers
         [PlanDirectoryHMACAuthenticate]
         public async Task<IHttpActionResult> Post(PublishPlanTemplateDTO dto)
         {
-            var fr8AccountId = User.Identity.GetUserId();
-            var planTemplateCM = await _planTemplate.CreateOrUpdate(fr8AccountId, dto);
-            await _searchProvider.CreateOrUpdate(planTemplateCM);
+            try
+            {
+                var fr8AccountId = User.Identity.GetUserId();
 
-            return Ok();
+                var planTemplateCM = await _planTemplate.CreateOrUpdate(fr8AccountId, dto);
+                await _searchProvider.CreateOrUpdate(planTemplateCM);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                var sb = new System.Text.StringBuilder();
+
+                while (ex != null)
+                {
+                    sb.AppendLine(ex.Message);
+                    sb.AppendLine(ex.StackTrace);
+
+                    ex = ex.InnerException;
+                }
+
+                return Ok(new { exception = sb.ToString() });
+            }
         }
 
         [HttpGet]
