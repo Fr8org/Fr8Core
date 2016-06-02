@@ -218,7 +218,7 @@ namespace TerminalBase.Services
 
             var token = new[] { applyToken };
 
-            var url = $"{GetHubUrlWithApiVersion()}/ManageAuthToken/apply";
+            var url = $"{GetHubUrlWithApiVersion()}/authentication/tokens/grant";
             var uri = new Uri(url);
             await _restfulServiceClient.PostAsync(uri, token, null, await GetHMACHeader(uri, token));
         }
@@ -321,14 +321,16 @@ namespace TerminalBase.Services
 
         public async Task DeleteExistingChildNodesFromActivity(Guid curActivityId)
         {
-            var hubAlarmsUrl = $"{GetHubUrlWithApiVersion()}/activities/deletechildnodes?activityId={curActivityId}";
+            //var hubAlarmsUrl = $"{GetHubUrlWithApiVersion()}/activities/deletechildnodes?activityId={curActivityId}";
+            var hubAlarmsUrl = $"{GetHubUrlWithApiVersion()}/activities?id={curActivityId}&delete_child_nodes=true";
             var uri = new Uri(hubAlarmsUrl);
             await _restfulServiceClient.DeleteAsync(uri, null, await GetHMACHeader(uri));
         }
 
         public async Task DeleteActivity(Guid curActivityId)
         {
-            var hubDeleteUrl = $"{GetHubUrlWithApiVersion()}/activities/deleteactivity?id={curActivityId}";
+            //var hubDeleteUrl = $"{GetHubUrlWithApiVersion()}/activities/deleteactivity?id={curActivityId}";
+            var hubDeleteUrl = $"{GetHubUrlWithApiVersion()}/activities?id={curActivityId}";
             var uri = new Uri(hubDeleteUrl);
             var headers = await GetHMACHeader(uri);
             await _restfulServiceClient.DeleteAsync(uri, null, headers);
@@ -381,7 +383,7 @@ namespace TerminalBase.Services
 
         public async Task<AuthorizationToken> GetAuthToken(string externalAccountId)
         {
-            var url = $"{GetHubUrlWithApiVersion()}/authentication/GetAuthToken?curFr8UserId={_userId}&externalAccountId={externalAccountId}&terminalId={TerminalId}";
+            var url = $"{GetHubUrlWithApiVersion()}/authentication/GetAuthToken?externalAccountId={externalAccountId}&terminalId={TerminalId}";
             var uri = new Uri(url);
             var authTokenDTO = await _restfulServiceClient.GetAsync<AuthorizationTokenDTO>(uri, null, await GetHMACHeader(uri));
             return Mapper.Map<AuthorizationToken>(authTokenDTO);

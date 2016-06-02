@@ -23,7 +23,7 @@
                 <ul class="nav navbar-nav pull-right">
                     <!-- BEGIN USER LOGIN DROPDOWN -->
                     @using Data.States
-@using HubWeb.Infrastructure_HubWeb
+                    @using HubWeb.Infrastructure_HubWeb
                     @using Microsoft.AspNet.Identity
                     @if (Request.IsAuthenticated) {
                         <li class="dropdown dropdown-user dropdown-dark">
@@ -115,7 +115,9 @@
                         <a data-toggle="dropdown" href="#" class="dropdown-toggle">Plans <i class="fa fa-angle-down"></i></a>
                         <ul class="dropdown-menu">
                             <li><a ui-sref="planList">Show All</a></li>
-                            <li><a ui-sref="planForm" event-Addplan>Add</a></li>
+                            <li><a ui-sref="planForm" event-add-plan>Add</a></li>
+                            <li ng-controller="PlanDetailsController" ng-show="$state.is('planDetails')" ><a href="{{href}}"  download='{{ptvm.plan.name}}.json'  type='application/json'  ng-click="sharePlan()">Share Plan</a></li>
+                            <li ng-controller="PlanUploadController"><a ng-click="showModal()" >Load from JSON file</a></li>
                         </ul>
                     </li>
 
@@ -141,7 +143,7 @@
                     <li class="menu-dropdown classic-menu-dropdown">
                         <a data-toggle="dropdown" href="javascript:;" class="dropdown-toggle">Developer <i class="fa fa-angle-down"></i></a>
                         <ul class="dropdown-menu">
-                            <li><a href="http://documentation.fr8.co">Developer Home</a></li>
+                            <li><a href="https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md">Developer Home</a></li>
                             <li><a href="/Documentation/RestAPIGuide.html">Fr8 Development Resources - DocuSign</a></li>
                             <li><a ng-click="goToPlanDirectory('@System.Configuration.ConfigurationManager.AppSettings["PlanDirectoryUrl"]')">Plan Directory</a></li>
                         </ul>

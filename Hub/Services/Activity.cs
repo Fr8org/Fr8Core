@@ -500,7 +500,7 @@ namespace Hub.Services
             bool skipDeactivation = false;
             var template = _activityTemplate.GetByKey(curActivityDO.ActivityTemplateId);
 
-            if (curActivityDO.AuthorizationToken != null || !template.NeedsAuthentication)
+            if (curActivityDO.AuthorizationTokenId != null || !template.NeedsAuthentication)
             {
                 try
                 {

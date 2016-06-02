@@ -109,7 +109,7 @@
                     scope: modalScope
                 })
                     .result
-                    .then(data => {
+                    .then((data) => {
                         $scope.isWaitingForResponse = false;
 
                         var selectedAuthTokens = [];
@@ -123,7 +123,7 @@
                         }
 
                         _reloadTerminals(selectedAuthTokens);
-                    });
+                    }, () => { $scope.isWaitingForResponse = false; });
             };
 
             var _authenticateExternal = function (terminal: model.AuthenticationTokenTerminalDTO) {

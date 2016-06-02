@@ -278,7 +278,7 @@ app.directive('stickyFooter', [
     }
 ]);
 
-app.directive('eventAddplan', ['$timeout', '$window', function ($timeout, $window) {
+app.directive('eventAddPlan', ['$timeout', '$window', function ($timeout, $window) {
     return {
         restrict: 'A',
         link: function (scope, element) {
@@ -289,7 +289,7 @@ app.directive('eventAddplan', ['$timeout', '$window', function ($timeout, $windo
     };
 }]);
 
-app.directive('eventRunplan', ['$timeout', '$window', function ($timeout, $window) {
+app.directive('eventRunPlan', ['$timeout', '$window', function ($timeout, $window) {
     return {
         restrict: 'A',
         link: function (scope, element) {

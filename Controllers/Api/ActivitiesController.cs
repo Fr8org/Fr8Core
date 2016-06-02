@@ -79,31 +79,50 @@ namespace HubWeb.Controllers
             }
         }
 
+        /// <summary>
+        /// DELETE: if flag withChldNodes seted to true Remove all child Nodes and clear activity values
+        /// Oterwise delete activity with 'id'
+        /// </summary>
         [HttpDelete]
-        public async Task<IHttpActionResult> Delete(Guid id, bool confirmed = false)
+        [Fr8HubWebHMACAuthenticate]
+        public async Task<IHttpActionResult> Delete([FromUri] Guid id, [FromUri(Name = "delete_child_nodes")] bool deleteChildNodes = false)
         {
-            await _activity.Delete(id);
+            if (deleteChildNodes)
+            {
+                await _activity.DeleteChildNodes(id);
+            }
+            else
+            {
+                await _activity.Delete(id);
+            }
             return Ok();
         }
 
-        [HttpDelete]
-        [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> DeleteActivity(Guid id)
-        {
-            await _activity.Delete(id);
-            return Ok();
-        }
+        //[HttpDelete]
+        //public async Task<IHttpActionResult> Delete(Guid id, bool confirmed = false)
+        //{
+        //    await _activity.Delete(id);
+        //    return Ok();
+        //}
+
+        //[HttpDelete]
+        //[Fr8HubWebHMACAuthenticate]
+        //public async Task<IHttpActionResult> DeleteActivity(Guid id)
+        //{
+        //    await _activity.Delete(id);
+        //    return Ok();
+        //}
 
         /// <summary>
         /// DELETE: Remove all child Nodes and clear activity values
         /// </summary>
-        [HttpDelete]
-        [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> DeleteChildNodes(Guid activityId)
-        {
-            await _activity.DeleteChildNodes(activityId);
-            return Ok();
-        }
+        //[HttpDelete]
+        //[Fr8HubWebHMACAuthenticate]
+        //public async Task<IHttpActionResult> DeleteChildNodes(Guid activityId)
+        //{
+        //    await _activity.DeleteChildNodes(activityId);
+        //    return Ok();
+        //}
 
         /// <summary>
         /// POST : Saves or updates the given action

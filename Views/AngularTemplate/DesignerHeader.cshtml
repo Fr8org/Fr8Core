@@ -14,7 +14,7 @@
                 <span class="plan-state-text" ng-if="plan.planState === 2">{{plan.planState | PlanState}}</span>   
                 <span ng-if="plan.planState === 1">Ready</span>   
             </strong>
-            <md-button class="md-icon-button" ng-click="runPlan()" ng-show="plan.planState === 1" event-Runplan>
+            <md-button class="md-icon-button" ng-click="runPlan()" ng-show="plan.planState === 1" event-run-plan>
                 <md-icon md-font-icon="fa-play" class="fa fa-2x" style="color:green"></md-icon>
             </md-button>
             <md-button class="md-icon-button" ng-click="deactivatePlan()" ng-show="plan.planState === 2">

@@ -50,7 +50,7 @@ namespace terminalSlack.Activities
 
 
         public Publish_To_Slack_v2(ICrateManager crateManager)
-            : base(true, crateManager)
+            : base(crateManager)
         {
             _slackIntegration = new SlackIntegration();
             DisableValidationOnFollowup = true;

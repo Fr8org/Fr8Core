@@ -10,11 +10,11 @@ namespace Fr8Data.DataTransferObjects.PlanTemplates
 {
     public class PlanNodeDescriptionDTO
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
+
+        public Guid? ParentNodeId { get; set; }
 
         public string Name { get; set; }
-
-        public int ParentNodeId { get; set; }
 
         public List<NodeTransitionDTO> Transitions { get; set; }
 

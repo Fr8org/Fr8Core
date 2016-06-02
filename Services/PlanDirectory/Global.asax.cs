@@ -29,7 +29,7 @@ namespace PlanDirectory
             if (!segmentWriteKey.IsNullOrEmpty())
                 Analytics.Initialize(segmentWriteKey);
 
-            await ObjectFactory.GetInstance<IPlanTemplate>().Initialize();
+            await ObjectFactory.GetInstance<ISearchProvider>().Initialize(false);
         }
     }
 }
