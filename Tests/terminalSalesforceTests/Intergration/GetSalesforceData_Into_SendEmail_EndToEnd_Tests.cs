@@ -139,7 +139,7 @@ namespace terminalSalesforceTests.Intergration
 
             if (authTokenDO != null)
             {
-                await HttpPostAsync<string>(_baseUrl + "manageauthtoken/revoke?id=" + authTokenDO.Id.ToString(), null);
+                await HttpPostAsync<string>(_baseUrl + "authentication/tokens/revoke?id=" + authTokenDO.Id.ToString(), null);
             }
         }
     }
