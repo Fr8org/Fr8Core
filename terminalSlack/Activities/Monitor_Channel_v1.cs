@@ -94,7 +94,7 @@ namespace terminalSlack.Actions
         
 
         public Monitor_Channel_v1(ICrateManager crateManager)
-            : base(true, crateManager)
+            : base(crateManager)
         {
             _slackIntegration = new SlackIntegration();
         }

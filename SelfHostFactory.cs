@@ -80,7 +80,7 @@ namespace HubWeb
                     typeof(FilesController),
                     typeof(ManifestsController),
                     typeof(ReportController),
-                    typeof(PlanTemplatesController),
+                    // typeof(PlanTemplatesController),
                     typeof(PlanNodesController),
                     typeof(PlansController),
                     typeof(TerminalsController),

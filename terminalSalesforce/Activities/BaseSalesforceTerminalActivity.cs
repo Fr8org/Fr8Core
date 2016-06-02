@@ -11,7 +11,7 @@ namespace terminalSalesforce.Actions
         where T : StandardConfigurationControlsCM
     {
         protected BaseSalesforceTerminalActivity(ICrateManager crateManager)
-            : base(true, crateManager)
+            : base(crateManager)
         {
         }
 

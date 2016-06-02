@@ -72,13 +72,11 @@
                 </div>
             </div>
             <div class="hero-buttons">
-                <a href="#about" id="btn-about" class="btn btn-outline btn-lg"><i class="fa fa-arrow-circle-o-down"></i> READ MORE</a>
+                <a href="/Services/HowItWorks" id="btn-about" class="btn btn-danger btn-lg"><i class="fa fa-arrow-circle-o-down"></i> READ MORE</a>
                 @if (Request.IsAuthenticated)
                 {
                     <a href="/Welcome" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT NOW</a>
-                }
-                else
-                {
+                } else {
                     <a href="/DockyardAccount/ProcessGuestUserMode" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT NOW</a>
                 }
             </div>
@@ -89,6 +87,7 @@
         <span id="#inner" class="fa fa-arrow-down"></span>
     </div>
     <!-- END HERO UNIT -->
+
     <!-- MAIN CONTENT -->
     <div id="main-content" class="main-content">
         <!-- ABOUT -->
@@ -107,7 +106,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col-sm-4">
                         <div class="one-connect demo-card-square demo-card-square-connect mdl-card mdl-shadow--2dp">
@@ -143,22 +141,21 @@
             </div>
         </div>
         <!-- END ABOUT -->
+
         <!-- FULL-WIDTH PARALLAX -->
         <div id="social-network" class="section full-width-parallax parallax">
             <div class="container">
                 <h2 class="section-heading">Automate Your Work. Connect Your Cloud Services.</h2>
-                @if (Request.IsAuthenticated)
-                {
+                @if (Request.IsAuthenticated) {
                     <a href="/Welcome" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT FREE</a>
-                }
-                else
-                {
+                } else {
                     <a href="/DockyardAccount/ProcessGuestUserMode" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT FREE</a>
                 }
                 <p style="color:#F2F4F5;padding-top:10px;">`</p>
             </div>
         </div>
         <!-- END FULL-WIDTH PARALLAX -->
+
         <!-- SERVICES -->
         <div id="services" class="section darker services">
             <div class="container">
@@ -172,7 +169,6 @@
                         <div class="col-md-6">
                             <div class="service-item">
                                 <span class="docusign"></span>
-                                <!-- <img src="assets/img/logo-fr8.svg" alt="Loop Logo" class="service-icon "/> -->
                                 <div class="service-text">
                                     <h3>Docusign</h3>
                                     <p>Accelerate your DocuSign work with Mail Merge, Data Extraction, Conditional Approval Flows, and more.</p>
@@ -217,75 +213,17 @@
             </div>
         </div>
         <!-- END SERVICES -->
+
         <!-- CONTACT -->
         <div id="contact" class="section contact">
             <div class="section-heading">
-                <h2>GET IN TOUCH</h2>
-                <p></p>
-                <hr />
-            </div>
-            <div class="section-content">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-8 col-md-offset-2">
-                            <div class="contact-form">
-                                <div class="alert"></div>
-                                <form id="contact-form" method="post" role="form" novalidate>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label class="sr-only" for="name">Name:</label>
-                                                <input type="text" id="name" class="form-control" name="name" placeholder="Name*" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label class="sr-only" for="email">Email:</label>
-                                                <input type="email" id="email" class="form-control" name="email" placeholder="Email*" required>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="sr-only" for="subject">Subject:</label>
-                                        <input type="text" id="subject" class="form-control" name="subject" placeholder="Subject">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="sr-only" for="message">Message:</label>
-                                        <textarea id="message" name="message" class="form-control" placeholder="Message*" required></textarea>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary btn-lg" id="submit-button">
-                                        <i class="fa loading-icon"></i> <span>Send Message</span>
-                                    </button>
-                                    <input type="hidden" name="msg-submitted" id="msg-submitted" value="true">
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <a href="/Support" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-envelope-o"></i> Contact Us</a>
             </div>
         </div>
         <!-- END CONTACT -->
-        <!-- TWITTER STREAM -->
-        @*<div id="twitter-stream" class="section twitter-stream">
-            <div class="container">
-                <div class="row">
-                    <div class="col-sm-4">
-                        <h4>Contact</h4>
-                    </div>
-                    <div class="col-sm-4">
-                        <h4>About</h4>
-                        <p>Fr8 is the open standard for cloud workflow.</p>
-                    </div>
-                    <div class="col-sm-4">
-                        <h4>Company Updates</h4>
-                    </div>
-                </div>
-            </div>
-        </div>*@
-        <!-- TWITTER STREAM -->
-
     </div>
     <!-- END MAIN CONTENT -->
+
     <!-- FOOTER -->
     <footer id="footer" class="section">
         <div class="container">

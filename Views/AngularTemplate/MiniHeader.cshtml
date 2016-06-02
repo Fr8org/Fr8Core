@@ -51,8 +51,8 @@
                         <ul class="dropdown-menu">
                             <li><a ui-sref="planList">Show All</a></li>
                             <li><a ui-sref="planForm">Add</a></li>
-                            <li><a ui-sref="findObjects">Find Objects</a></li>
-
+                            
+                            <li ng-controller="PlanUploadController"><a ng-click="showModal()">Load from JSON file</a></li>
                         </ul>
                     </li>
 
@@ -78,7 +78,7 @@
                     <li class="menu-dropdown classic-menu-dropdown">
                         <a data-toggle="dropdown" href="javascript:;" class="dropdown-toggle">Developer <i class="fa fa-angle-down"></i></a>
                         <ul class="dropdown-menu">
-                            <li><a href="http://documentation.fr8.co">Developer Home</a></li>
+                            <li><a href="https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md">Developer Home</a></li>
                             <li><a href="/Documentation/RestAPIGuide.html">Fr8 Development Resources - DocuSign</a></li>
                             <li><a ng-click="goToPlanDirectory('@System.Configuration.ConfigurationManager.AppSettings["PlanDirectoryUrl"]')">Plan Directory</a></li>
                         </ul>

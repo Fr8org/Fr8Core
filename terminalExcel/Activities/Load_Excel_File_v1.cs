@@ -73,7 +73,7 @@ namespace terminalExcel.Activities
         private const string ExternalObjectHandlesLabel = "External Object Handles";
 
         public Load_Excel_File_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 

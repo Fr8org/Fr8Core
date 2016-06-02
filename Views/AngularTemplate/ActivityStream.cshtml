@@ -4,6 +4,7 @@
             <h1 class="md-toolbar-tools">Activity</h1>
         </md-toolbar>
         <md-content>
+            <md-progress-linear md-mode="indeterminate" ng-show="planIsRunning"></md-progress-linear>
             <md-list flex>    
                 <md-list-item class="md-2-line fr8-collapse-heading"
                     ng-repeat="event in eventList"
