@@ -75,8 +75,8 @@
       <HintPath>..\packages\Fr8Infrastructure.1.0.0.3\lib\net45\Fr8Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="fr8TerminalBase, Version=1.0.0.8, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\fr8TerminalBase.1.0.0.8\lib\net45\fr8TerminalBase.dll</HintPath>
+    <Reference Include="fr8TerminalBase, Version=1.0.0.9, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\fr8TerminalBase.1.0.0.9\lib\net45\fr8TerminalBase.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="fr8Utilities, Version=1.0.0.4, Culture=neutral, processorArchitecture=MSIL">
