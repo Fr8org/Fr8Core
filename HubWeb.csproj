@@ -95,8 +95,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Utilities\Fr8.AI.DependencyCollector.dll</HintPath>
     </Reference>
-    <Reference Include="Fr8Data, Version=1.0.0.6, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Fr8Data.1.0.0.6\lib\net45\Fr8Data.dll</HintPath>
+    <Reference Include="Fr8Data, Version=1.0.0.8, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Fr8Data.1.0.0.8\lib\net45\Fr8Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Fr8Infrastructure, Version=1.0.0.2, Culture=neutral, processorArchitecture=MSIL">

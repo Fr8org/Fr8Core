@@ -34,7 +34,6 @@ namespace terminalDocuSign.Actions
             Tags = Tags.UsesReconfigureList,
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
-            ShowDocumentation = ActivityResponseDTO.CreateDocumentationResponse("MenuItem", "HelpMenu_ExplainMailMerge")
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

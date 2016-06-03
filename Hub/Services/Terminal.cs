@@ -307,7 +307,7 @@ namespace Hub.Services
                 if (solutionPageDTO != null)
                 {
                     solutionPages.Add(solutionPageDTO);
-    }
+                }
             }
             return solutionPages;
         }
