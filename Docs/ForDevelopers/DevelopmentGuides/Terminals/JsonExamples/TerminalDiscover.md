@@ -1,36 +1,44 @@
+#JSON Payload for Discover Terminal request
+
+##URL /terminals/discover
+
+##Request
+__N/A__
+
+##Response
 ```json
-`{
+{
   "crateManifestType": {
     "type": "Standard Fr8 Terminal",
     "id": 23
   },
   "definition": {
-    "name": "terminalGithub",
-    "label": "GitHub",
+    "name": "terminalName",
+    "label": "Terminal Label",
     "version": "1",
     "terminalStatus": 0,
-    "endpoint": "http:\/\/localhost:9000",
-    "description": "GitHub Terminal which monitors commits to a repository",
+    "endpoint": "http:\/\/exmaple.com:9000",
+    "description": "Terminal Description",
     "authenticationType": 3
   },
   "activities": [
     {
       "id": null,
-      "name": "GitHub Subscribe",
-      "label": "Subscribe to GitHub Repository",
+      "name": "First Activity",
+      "label": "Activity One Label",
       "version": "1",
       "webService": {
-        "name": "GitHub",
-        "iconPath": "https:\/\/assets-cdn.github.com\/favicon.ico",
+        "name": "Web Service Name",
+        "iconPath": "https:\/\/www.example.com\/favicon.ico",
         "id": 0
       },
       "terminal": {
-        "name": "terminalGithub",
-        "label": "GitHub",
+        "name": "terminalName",
+        "label": "Terminal Label",
         "version": "1",
         "terminalStatus": 0,
-        "endpoint": "http:\/\/localhost:9000",
-        "description": "GitHub Terminal which monitors commits to a repository",
+        "endpoint": "http:\/\/example.com:9000",
+        "description": "Terminal Description",
         "authenticationType": 3
       },
       "tags": null,
@@ -41,21 +49,21 @@
     },
     {
       "id": null,
-      "name": "GitHub Pull",
-      "label": "Pull from GitHub Repository",
+      "name": "Second Activity",
+      "label": "Activity Two label",
       "version": "1",
       "webService": {
-        "name": "GitHub",
-        "iconPath": "https:\/\/assets-cdn.github.com\/favicon.ico",
+        "name": "Web Service Name",
+        "iconPath": "https:\/\/www.example.com\/favicon.ico",
         "id": 0
       },
       "terminal": {
-        "name": "terminalGithub",
-        "label": "GitHub",
+        "name": "terminalName",
+        "label": "Terminal Label",
         "version": "1",
         "terminalStatus": 0,
-        "endpoint": "http:\/\/localhost:9000",
-        "description": "GitHub Terminal which monitors commits to a repository",
+        "endpoint": "http:\/\/example.com:9000",
+        "description": "Terminal Description",
         "authenticationType": 3
       },
       "tags": null,

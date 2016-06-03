@@ -4,7 +4,7 @@ Terminals reply to requests on specific endpoints. The replies are always in JSO
 
 The table below lists the endpoints on which terminals are expected to reply with sample JSON.
 
-| HTTP Method | Endpoint | JSON |
+| HTTP Method | Endpoint | JSON Payloads |
 |:-----------:|:--------:|:----:|
 |GET | /terminals/discover | [Example](JsonExamples/TerminalDiscover.md)|
 | POST | /terminals/activity/&lt;activity-name&gt; | [Example](JsonExamples/TerminalActivity.md)|
