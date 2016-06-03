@@ -8,11 +8,11 @@ using Hub.Interfaces;
 namespace HubWeb.Controllers
 {
     [Fr8ApiAuthorize]
-    public class OrganizationController: ApiController
+    public class OrganizationsController: ApiController
 	{
         private readonly IOrganization _organization;
 
-        public OrganizationController()
+        public OrganizationsController()
         {
             _organization = ObjectFactory.GetInstance<IOrganization>();
         }
