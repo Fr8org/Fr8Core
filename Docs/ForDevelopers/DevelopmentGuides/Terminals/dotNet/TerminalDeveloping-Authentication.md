@@ -6,6 +6,7 @@ First of all, if you don't know what oAuth2 is, then read this short article htt
 Keep in mind, that different services follow this specification in their own way
 
 In short words there are 6 steps:
+
 1. Fr8 checks that Activity needs authentication and doesn't have a token; asks Terminal for **initialOAuthUrl**
 2. Terminal passes **initialOAuthUrl** to Fr8.
 3. Fr8 redirects user to this **initialOAuthUrl** via authentication window and receives a response from a 3rd party service
