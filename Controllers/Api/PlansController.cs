@@ -18,24 +18,19 @@ using Data.Interfaces;
 using Data.States;
 using Hub.Interfaces;
 using System.Threading.Tasks;
-using System.Web;
-using HubWeb.ViewModels;
 using Newtonsoft.Json;
 using Hub.Infrastructure;
-using Hub.Managers;
 using Utilities.Interfaces;
-using Data.Infrastructure;
-using Fr8Data.Constants;
+
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
-using Fr8Data.DataTransferObjects.Helpers;
-using Fr8Data.DataTransferObjects.RequestParameters;
+
 using Fr8Data.DataTransferObjects.PlanTemplates;
 using Fr8Data.Managers;
-using Fr8Data.Manifests;
 using Fr8Data.States;
 using HubWeb.Infrastructure_HubWeb;
 using Fr8Infrastructure.Interfaces;
+using HubWeb.ViewModels.RequestParameters;
 using Utilities.Configuration.Azure;
 using Newtonsoft.Json.Linq;
 using Utilities;

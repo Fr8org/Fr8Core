@@ -7,13 +7,12 @@ using StructureMap;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.States;
 using Fr8Data.DataTransferObjects;
-using Fr8Data.DataTransferObjects.RequestParameters;
 using HubTests.Controllers.Api;
 using HubWeb.Controllers;
 using UtilitiesTesting.Fixtures;
 using Fr8Data.States;
+using HubWeb.ViewModels.RequestParameters;
 
 namespace HubTests.Controllers
 {

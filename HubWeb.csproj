@@ -512,6 +512,8 @@
     <Compile Include="ViewModels\NavLinksShared.cs" />
     <Compile Include="ViewModels\ProcessCreateEventVM.cs" />
     <Compile Include="ViewModels\RegisterVM.cs" />
+    <Compile Include="ViewModels\RequestParameters\PlansGetParams.cs" />
+    <Compile Include="ViewModels\RequestParameters\PlansPostParams.cs" />
     <Compile Include="ViewModels\ResetPasswordVM.cs" />
     <Compile Include="ViewModels\SendEmailVM.cs" />
     <Compile Include="ViewModels\UserProfilesVM.cs" />
