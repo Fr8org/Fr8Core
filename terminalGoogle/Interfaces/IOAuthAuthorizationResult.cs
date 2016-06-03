@@ -1,4 +1,4 @@
-namespace Hub.Managers.APIManagers.Authorizers
+namespace terminalGoogle.Interfaces
 {
     public interface IOAuthAuthorizationResult
     {
