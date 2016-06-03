@@ -673,6 +673,10 @@
     <Compile Include="Migrations\201605231150066_AddOrganizationAndAccountToObjectRolePermissions.Designer.cs">
       <DependentUpon>201605231150066_AddOrganizationAndAccountToObjectRolePermissions.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201606031753092_FillManifestRegistry.cs" />
+    <Compile Include="Migrations\201606031753092_FillManifestRegistry.Designer.cs">
+      <DependentUpon>201606031753092_FillManifestRegistry.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -1250,6 +1254,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201605231150066_AddOrganizationAndAccountToObjectRolePermissions.resx">
       <DependentUpon>201605231150066_AddOrganizationAndAccountToObjectRolePermissions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606031753092_FillManifestRegistry.resx">
+      <DependentUpon>201606031753092_FillManifestRegistry.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
