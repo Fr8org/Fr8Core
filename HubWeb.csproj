@@ -493,7 +493,6 @@
     <Compile Include="ViewModels\AuthenticationErrorVM.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />
     <Compile Include="ViewModels\HomeVM.cs" />
-    <Compile Include="ViewModels\JsonConverters\RelatedItemShowVM.cs" />
     <Compile Include="ViewModels\EventVM.cs" />
     <Compile Include="Filters\RequestParamsEncryptedFilter.cs" />
     <Compile Include="Global.asax.cs">
@@ -510,7 +509,6 @@
     <Compile Include="ViewModels\ResetPasswordVM.cs" />
     <Compile Include="ViewModels\UserProfilesVM.cs" />
     <Compile Include="ViewModels\UserVM.cs" />
-    <Compile Include="ViewModels\Validators\ProcessTemplateDTO.cs" />
     <Compile Include="ExceptionHandling\WebApiExceptionFilterAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
