@@ -33,7 +33,7 @@ namespace terminalDocuSign.Actions
             MinPaneWidth = 500,
             Tags = Tags.UsesReconfigureList,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

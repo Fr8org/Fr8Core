@@ -53,6 +53,8 @@ namespace Fr8Data.Infrastructure.JsonNet
             writer.WriteValue(item.NeedsAuthentication);
             writer.WritePropertyName("webService");
             writer.WriteRawValue(JsonConvert.SerializeObject(item.WebService, customWebServiceConvert));
+            writer.WritePropertyName("showDocumentation");
+            writer.WriteRawValue(JsonConvert.SerializeObject(item.ShowDocumentation));
             writer.WriteEndObject();
             writer.Flush();
         }
