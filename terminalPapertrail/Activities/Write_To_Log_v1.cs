@@ -35,7 +35,7 @@ namespace terminalPapertrail.Actions
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
         public Write_To_Log_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
             _papertrailLogger = ObjectFactory.GetInstance<IPapertrailLogger>();
         }

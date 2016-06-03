@@ -35,7 +35,7 @@ namespace terminalAzure.Activities
 
 
         public Write_To_Sql_Server_v1(ICrateManager crateManager) 
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 

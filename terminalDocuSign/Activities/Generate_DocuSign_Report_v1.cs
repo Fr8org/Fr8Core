@@ -152,7 +152,7 @@ namespace terminalDocuSign.Activities
         };
         
         public Generate_DocuSign_Report_v1(ICrateManager crateManager, IDocuSignManager docuSignManager)
-            : base(true, crateManager)
+            : base(crateManager)
         {
             _docuSignManager = docuSignManager;
             InitQueryBuilderFields();

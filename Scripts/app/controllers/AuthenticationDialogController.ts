@@ -24,10 +24,10 @@
         constructor(
             private $scope: IAuthenticationDialogScope,
             private $http: ng.IHttpService,
-            private $window: ng.IWindowService,
+            private $window,
             private $modal: any,
             private urlPrefix: string
-            ) {
+        ) {
 
             // var _terminalActions = [];
             var _activities: Array<model.ActivityDTO> = [];
@@ -50,6 +50,8 @@
             $scope.apply = () => {
                 if (!$scope.isAllSelected()) {
                     return;
+                } else {
+                    $window['analytics'].track('Auth Dialog Ok');
                 }
 
                 var data = [];
@@ -69,7 +71,6 @@
                         }
                     }
                 }
-
                 _loading = true;
 
                 $http.post(urlPrefix + '/authentication/tokens/grant', data)
@@ -92,7 +93,6 @@
                         return false;
                     }
                 }
-
                 return true;
             };
 
@@ -103,11 +103,11 @@
                 modalScope.terminalName = terminal.name;
 
                 $modal.open({
-                        animation: true,
-                        templateUrl: '/AngularTemplate/InternalAuthentication',
-                        controller: 'InternalAuthenticationController',
-                        scope: modalScope
-                    })
+                    animation: true,
+                    templateUrl: '/AngularTemplate/InternalAuthentication',
+                    controller: 'InternalAuthenticationController',
+                    scope: modalScope
+                })
                     .result
                     .then((data) => {
                         $scope.isWaitingForResponse = false;
@@ -136,9 +136,7 @@
                     if (!event.data || event.data.type != 'external-auth-success') {
                         return;
                     }
-                
                     childWindow.close();
-
                     var selectedAuthTokens = [];
                     if (event.data.terminalId && event.data.authTokenId) {
                         selectedAuthTokens.push({
@@ -147,11 +145,11 @@
                             authTokenId: event.data.authTokenId
                         });
                     }
-                    
+
 
                     _reloadTerminals(selectedAuthTokens);
                 };
-                
+
                 $http
                     .get('/api/authentication/initial_url?terminal=' + terminal.name + '&version=' + terminal.version)
                     .then(res => {
@@ -170,13 +168,13 @@
                         //    childWindow.addEventListener("unload", _closeSplash, false);
                         //}
 
-                       
+
                         window.addEventListener('message', messageListener);
-                
+
                         var isClosedHandler = function () {
                             if (childWindow.closed) {
                                 window.removeEventListener('message', messageListener);
-                                $scope.isWaitingForResponse = false;  
+                                $scope.isWaitingForResponse = false;
                                 $scope.$apply();
                             }
                             else {
@@ -191,7 +189,7 @@
                 activities: Array<model.ActivityDTO>,
                 allTerminals: Array<model.TerminalDTO>,
                 authTokenTerminals: Array<model.AuthenticationTokenTerminalDTO>)
-                    : Array<model.AuthenticationTokenTerminalDTO> {
+                : Array<model.AuthenticationTokenTerminalDTO> {
 
                 var result = authTokenTerminals.filter((it) => {
                     for (var i = 0; i < $scope.activities.length; ++i) {
@@ -199,7 +197,7 @@
                             return true;
                         }
                     }
-                                
+
                     return false;
                 });
 
