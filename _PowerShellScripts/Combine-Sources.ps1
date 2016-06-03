@@ -90,4 +90,6 @@ ForEach ($currentRepo in $openSourceRepos) {
 
 	# Move cloned directory with files to the main working directory (exclude .git folder)
     Robocopy $curTemp $curTerminal /S /XD .git
+
+    exit 0;
 } 
