@@ -1,7 +1,9 @@
 # INTRODUCTION
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)
 
-Fr8 has support for registering accounts as individual users or users that are part of some Organization. Every new registered user into Fr8 receives the role of customer or a standard user. Also users inside Organizations receive additional role as Member of that Organization, role that is used to identify all users as a group in the Fr8 system, which gives an opportunity for a system administrator for easier managing user accounts.
+Main Fr8 Security system is based on User Roles and Permissions. Their primary purpose is to give an easy way to manage access rules for group of users, restrict a set of web pages for certain users, and allow certain action to specific objects. Our Role management gives a possibility to treat groups of users as a unit by assigning users to roles such as administrator, standard user, admin of organization, member of organization, and so on.   
+
+Fr8 has support for registering accounts as individual users or users that are part of some [Organization}(https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Organizations.md). Every new registered user into Fr8 receives the role of customer or a standard user. Also users inside Organizations receive additional role as Member of that Organization, role that is used to identify all users as a group in the Fr8 system, which gives an opportunity for a system administrator for easier managing user accounts.
 
 Access to different business domain aspects and resources is provided via Permissions and Profiles.
 
