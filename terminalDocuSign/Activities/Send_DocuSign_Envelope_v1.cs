@@ -39,6 +39,10 @@ namespace terminalDocuSign.Actions
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
         protected override string ActivityUserFriendlyName => "Send DocuSign Envelope";
+        private const string advisoryName = "DocuSign Template Warning";
+        private const string advisoryContent = "In your selected template you have fields with default values. Those can be changes inside advanced DocuSign UI to frendlier label.";
+
+
 
         public Send_DocuSign_Envelope_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
             : base(crateManager, docuSignManager)
@@ -248,8 +252,7 @@ namespace terminalDocuSign.Actions
               "DocuSignTemplateRolesFields",
               AvailabilityType.Configuration,
               roles.ToArray()
-
-          );
+            );
 
             Storage.RemoveByLabel("DocuSignTemplateRolesFields");
             Storage.Add(crateRolesDTO);
@@ -258,6 +261,27 @@ namespace terminalDocuSign.Actions
             var envelopeDataDTO = tabsandfields.Item2;
 
             var userDefinedFields = tabsandfields.Item1.Where(a => a.Tags.Contains(DocuSignConstants.DocuSignTabTag));
+
+            //check for DocuSign default template names and add advisory json
+            var hasDefaultNames = DocuSignManager.DocuSignTemplateDefaultNames(tabsandfields.Item2);
+            if (hasDefaultNames)
+            {
+                var advisoryCrate = Storage.CratesOfType<AdvisoryMessagesCM>().FirstOrDefault();
+                var currentAdvisoryResults = advisoryCrate == null ? new AdvisoryMessagesCM() : advisoryCrate.Content;
+
+                var advisory = currentAdvisoryResults.Advisories.FirstOrDefault(x => x.Name == advisoryName);
+
+                if (advisory == null)
+                {
+                    currentAdvisoryResults.Advisories.Add(new AdvisoryMessageDTO { Name = advisoryName, Content = advisoryContent });
+                }
+                else
+                {
+                    advisory.Content = advisoryContent;
+                }
+
+                Storage.Add(Crate.FromContent("Advisories", currentAdvisoryResults));
+            }
 
             var crateUserDefinedDTO = CrateManager.CreateDesignTimeFieldsCrate(
                 "DocuSignTemplateUserDefinedFields",

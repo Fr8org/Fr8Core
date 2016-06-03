@@ -90,16 +90,17 @@
       <HintPath>..\packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Fr8Data, Version=1.0.0.6, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fr8Data.1.0.0.6\lib\net45\Fr8Data.dll</HintPath>
+    <Reference Include="Fr8Data, Version=1.0.0.8, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fr8Data.1.0.0.8\lib\net45\Fr8Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Fr8Infrastructure, Version=1.0.0.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fr8Infrastructure.1.0.0.2\lib\net45\Fr8Infrastructure.dll</HintPath>
+    <Reference Include="Fr8Infrastructure, Version=1.0.0.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fr8Infrastructure.1.0.0.3\lib\net45\Fr8Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="fr8Utilities">
-      <HintPath>..\packages\fr8Utilities.1.0.0.3\lib\net45\fr8Utilities.dll</HintPath>
+    <Reference Include="fr8Utilities, Version=1.0.0.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\fr8Utilities.1.0.0.4\lib\net45\fr8Utilities.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Google.Apis.Auth, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Apis.Auth.1.11.1\lib\net45\Google.Apis.Auth.dll</HintPath>
@@ -363,16 +364,9 @@
     <Compile Include="Managers\APIManagers\Transmitters\Terminal\ITerminalTransmitter.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Terminal\TerminalTransmitter.cs" />
     <Compile Include="Managers\EventReporter.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\Google\AppFlowMetadata.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\Google\AuthorizationCodeFlow.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\Google\GoogleAuthorizer.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\IOAuthAuthorizationResult.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\IOAuthAuthorizer.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\OAuthAuthorizationResult.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\OAuthException.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SegmentIO\SegmentIO.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Http\IAuthorizingHttpChannel.cs" />
-    <Compile Include="Managers\APIManagers\Transmitters\Http\OAuthHttpChannel.cs" />
     <Compile Include="Managers\APIManagers\Packagers\DataTable\DataTablesPackager.cs" />
     <Compile Include="Helper\RoleData.cs" />
     <Compile Include="Managers\APIManagers\Packagers\Kwasant\KwasantPackager.cs" />

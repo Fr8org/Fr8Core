@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Google.Apis.Util.Store;
 using Newtonsoft.Json;
 
-namespace Data.Infrastructure
+namespace terminalGoogle.Infrastructure
 {
     /// <summary> 
     /// Entity Framework implementation for storing dictionary form data in the database.
