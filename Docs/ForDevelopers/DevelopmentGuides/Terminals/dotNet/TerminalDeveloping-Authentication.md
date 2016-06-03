@@ -1,5 +1,7 @@
 # How to implement oAuth2 authentication for a new Terminal
 
+[Back to Terminal Development on .Net](../DevGuide_DotNet.md)
+
 First of all, if you don't know what oAuth2 is, then read this short article https://aaronparecki.com/articles/2012/07/29/1/oauth2-simplified
 Keep in mind, that different services follow this specification in their own way
 
@@ -20,7 +22,7 @@ After that you have to register Fr8 as an app. Specify **redirect_uri**, retriev
 
 | Mail Chimp app registration   |      Slack app registration      |
 |----------|:-------------:|
-|![](../../../../Docs/img/TerminalDeveloping-Authentication.md-1.png) |  ![](../../../../Docs/img/TerminalDeveloping-Authentication.md-2.png) | 
+|![](../../../../../Docs/img/TerminalDeveloping-Authentication.md-1.png) |  ![](../../../../../Docs/img/TerminalDeveloping-Authentication.md-2.png) | 
 
 After that you should be able to compose an **initialOAuthUrl**
 
@@ -40,7 +42,7 @@ Not encoded: ` http://localhost:30643/AuthenticationCallback/ProcessSuccessfulOA
 ###Configuring initial oAuth url
 To pass **initialOAuthUrl** to Fr8 your Terminal has to have AuthenticationController
 Following code in AuthenticationController passes initialOAuthUrl to Fr8
-![](../../../../Docs/img/TerminalDeveloping-Authentication.md-3.png)
+![](../../../../../Docs/img/TerminalDeveloping-Authentication.md-3.png)
 
 CloudConfigurationManager.GetSetting("MailChimpOAuthUrl") retrieves a value specified in Web.config:
 `<add key="MailChimpOAuthUrl" value="https://login.mailchimp.com/oauth2/authorize?response_type=code&amp;state=%STATE%&amp;client_id=583227558154&amp;redirect_uri=http%3A%2F%2F127.0.0.1%3A30643%2FAuthenticationCallback%2FProcessSuccessfulOAuthResponse%3FterminalName%3DterminalMailChimp%26terminalVersion%3D1" />`
@@ -60,7 +62,7 @@ When user have entered credentials Fr8 passes response to Terminal / Authenticat
 In order to generate **oAuthToken** you have to make a call to OAuthAccessUrl with the code you've received
 First you have to parse received **code** and **state**
 
-![](../../../../Docs/img/TerminalDeveloping-Authentication.md-4.png)
+![](../../../../../Docs/img/TerminalDeveloping-Authentication.md-4.png)
 
 When you get **code** and **state** you have to make a call to **OAuthAccessUrl**
 Different services might have different requirements on how this call should be perfomed! 
@@ -68,7 +70,7 @@ Pay attention to documentation!
 
 For example in Slack, in order to exchange code for token you simply have to make a GET call on the **OAuthAccessUrl** with code specifed.
 
-![](../../../../Docs/img/TerminalDeveloping-Authentication.md-5.png)
+![](../../../../../Docs/img/TerminalDeveloping-Authentication.md-5.png)
 
 In ChimpMonkey you have to do it differently.
 You have to:
@@ -79,7 +81,7 @@ You have to:
 
 Code for ChimpMonkeys GetOAuthToken looks like this:
 
-![](../../../../Docs/img/TerminalDeveloping-Authentication.md-6.png)
+![](../../../../../Docs/img/TerminalDeveloping-Authentication.md-6.png)
 
 If you've done everything right - you will get the oAuth token 
 
@@ -92,3 +94,5 @@ If you've done everything right - you will get the oAuth token
 
 ###WebService
 After you are done with Authentication you have to configure the [WebService](TerminalDeveloping-AddingAWebService.md) 
+
+[Back to Terminal Development on .Net](../DevGuide_DotNet.md)

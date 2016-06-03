@@ -12,7 +12,7 @@ Name |	Type |	Nullable	| Default |	Description
 --- | --- | --- | --- | ---   
 actionTemplateId |	Guid	|  |  |		id of the activity template of the activity instance that will be created   
 label |	string |		null |  |	Label that will be shown on the header   
-order |	int |	true |	null |  |	Hierarchical order of the activity according to parent-children relation   
+order |	int |	true |	null |  Hierarchical order of the activity according to parent-children relation   
 parentNodeId |	Guid |	true |	null | If it is a child activity, that is the parent activity id of the instance that will be created   
 authorizationTokenId |	Guid |	true |	null |	 To get authorization tokens for the outside systems such as slack, docusign etc..  
 
@@ -37,7 +37,7 @@ Name |	Type |	Nullable	| Default |	Description
  id |	Guid	| | |		 id of the demanded activity   
 **Return Values:**	ActivityDTO   
 **Description:**	 Simple getter for activity.  
- 
+
 #### **Path:**	*/activities/delete*   
 **Type:**	*DELETE*   
 **Input Parameters:**
@@ -57,7 +57,7 @@ confirmed |	boolean |		false | |	Deleting an activity can cause effects on downs
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---  
  id |	Guid	| | |		 id of the activity to delete  
- 
+
 **Return Values:**	void     
 **Description:**			This endpoint for terminals to delete activity, since there is no user interaction when a request is sent from terminal, there will be no confirm message needed too.  
 
@@ -68,7 +68,7 @@ Name |	Type |	Nullable	| Default |	Description
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---  
  activityId |	Guid | | |			 id of the activity to delete  
- 
+
 **Return Values:**	void    
 **Description:**		Remove all child Nodes and clear activity values  
 
@@ -81,8 +81,8 @@ Name |	Type |	Nullable	| Default |	Description
  curActionDTO |	ActivityDTO	| | |		Current object that will be saved or updated   
 **Return Values:**	ActivityDTO  
 **Description:**	Saves or updates the given action  
- 
- ### ActivityTemplatesController
+
+### ActivityTemplatesController
 ------------------------------------
 #### **Path:**	*/activityTemplates/get*
 **Type:**	*GET*   
@@ -92,64 +92,212 @@ Name |	Type |	Nullable	| Default |	Description
 --- | --- | --- | --- | ---  
 id | Guid | False | --- | Id of the activity template to retrieve   
 **Return Values**	ActivityTemplateDTO   
-**Description:**	Simple getter for activity template 
- 
-### AlarmsController
+**Description:**	Simple getter for activity template
+
+### [AlarmsController](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Services/Scheduling.md)
 -----------------------------------------
-#### **Path:**	*/alarms/post*  
+#### **Path:**	*/alarms*  
 **Type:**	POST    
 **Input Parameters:**   
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---  
- alarmDTO |	 AlarmDTO		| | |	  
-**Return Values:**	void   
-**Description:**		Alarms provide ability to add some delay between activities. This endpoints set the start time of the first activity that is going to be executed after delay.   
-#### **Path:**	*/alarms/executeTerminalWithLogging*
+ContainerId |	GUID |	no |	- |	Specifies the container that needs to postpone the plan execution.
+StartTime |	DateTimeOffset |	no |	- |	The date and time when the execution of the remaining activities should continue.
+
+The request example to the endpoint /alarms/notify:
+```javascript
+{
+	"ContainerId" : "25cc7c40-c385-4f13-8b19-29457838cfe6"
+	"StartTime" : "5/16/2016 6:43:20 AM +00:00",
+}
+```
+
+**Return Values:**	200 OK   
+**Description:**		Alarms provide ability to add some delay between activities. This endpoint sets the start time of the first activity that is going to be executed after the delay.
+
+#### **Path:**	*/alarms/polling*
 **Type:**	*POST*    
 **Input Parameters:**   
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---  
- alarmDTO |	 AlarmDTO		| | |	  
-**Return Values:**	void   
-**Description:**		Alarms provide ability to add some delay between activities. This endpoints set the start time of the first activity that is going to be executed after delay.  
+job_id |	string |	 no	| -	| This serves as a job identifier inside the Terminal and Hub.
+fr8_account_id |	string |	no |	- |	Fr8 Account Identifier used only inside a terminal.
+minutes |	string |	no |	- |	Number of minutes in the form of 15, 10, 5 that specify the delay between iterations.
+terminal_id |	string |	no |	-	| Terminal Identifier to help Hub understand which terminal to reply to.    
+
+**Description:** Alarms provide the ability to resend requests with specified data to the terminal until the latter responses with status 200 OK.    
+It works as follows. A terminal calls this endpoint with specified data and sets the time intervals.    
+The request has the following form:    
+*/alarms/polling?job_id={0}&fr8_account_id={1}&minutes={2}&terminal_id={3}*   
+So the Hub will iteratively call the terminal until the latter replies with status 200 OK. Each time it will make a POST request with the specified above data in the URL:    
+ *[terminalEndpoint]/terminals/[terminalName]/polling?job_id={0}&fr8_account_id={1}&polling_interval={2}*    
+**Note:** It should be noted that the terminal is required to have /polling endpoint that excepts specified above, otherwise the exception will be thrown.    
 
 ### AuthenticationController
 -----------------------------------
-#### **Path:**	*/authentication/authenticate*
-**Type:**	*POST*    
+
+#### **Path:**	*/authentication/login*  
+**Type:** *POST*   
+**HTTP Authentication:** *must provide Fr8 authentication headers*  
 **Input Parameters:**   
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---  
-credentials |	CredentialsDTO	| | |		Credentials of the user to login   
-**Return Values:**	IHttpActionResult   
-**Description:**	Gets the user credentials an provides necessary authentication. Returns authorazition token, terminal id and error message if there is any.   
+username | string | no | | Fr8 account name, QueryString parameter
+password | string | no | | Fr8 account password, Querytring parameter
 
-#### **Path:**	*/authentication/getOAuthInitiationURL*
-**Type:**		*GET*   
-**Input Parameters:**   
+**Return Values:** none   
+**Description:** Perform cookie-based authentication on Fr8 Hub. HTTP response will contain authentication cookies.
 
-Name |	Type |	Nullable	| Default |	Description   
---- | --- | --- | --- | ---  
-terminalId |	[FromUri(Name = bidb)] int		| | |
-
-**Return Values:**	string   
-**Description:** none
 
 #### **Path:**	*/authentication/getAuthToken*  
 **Type:**		*GET*   
+**HTTP Authentication:** *must provide Fr8 authentication headers*  
 **Input Parameters:**   
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---  
-curFr8UserId |	[FromUri]string			| | |
-externalAccountId |	[FromUri]string			| | |
-terminalId |	[FromUri] string			| | |
+curFr8UserId |	string			| | | Fr8 Account ID, QueryString parameter
+externalAccountId |	string			| | | Account name of remote service for searched authentication token, QueryString parameter
+terminalId |	string			| | | Terminal ID for searched authentication token, QueryString parameter
 
-**Return Values:**	AuthorizationTokenDO    
-**Description:** none
+**Return Values:**	AuthenticationToken structure    
+Response JSON sample:
+```javascript
+{
+  "id": "00000000-0000-0000-0000-000000000001",            // Authentication token ID;
+  "externalAccountId": "john.smith@somehost.com",          // Account name of remote service;
+  "externalAccountName": "John Smith",                     // Account display name of remove service;
+  "externalDomainId": "somehost.com",                      // Host of remote service;
+  "externalDomainName": "This is somehost.com service",    // Domain description of remote service;
+  "isMain": false                                          // Flag which indicates whether current auth-token is default or not.
+}
+```
+**Description:** Extract authentication token information for specified terminal and externalAccountId.
+
+
+#### **Path:**	*/authentication/initial_url*
+**Type:**		*GET*   
+**HTTP Authentication:** *must provide Fr8 authentication headers*  
+**Input Parameters:**   
+
+Name |	Type |	Nullable	| Default |	Description   
+--- | --- | --- | --- | ---  
+terminal | string		| | | Terminal name, QueryString parameter
+version |	string		| | | Terminal version, QueryString parameter
+
+**Return Values:**	InitialUrl structure   
+Response JSON sample:
+```javascript
+{
+  "url": "https://oauth.someservice.com/",                 // URL to be called to perform OAuth flow;
+}
+```
+
+**Description:** Extract initial URL for specified terminal in order to perform further OAuth authorization flow.
+
+
+#### **Path:**	*/authentication/token*
+**Type:**	*POST*    
+**HTTP Authentication:** *must provide Fr8 authentication headers*  
+**Input Parameters:** Credentials structure   
+Request JSON sample:
+```javascript
+{
+  "terminal": {
+    "name": "terminalSample",
+    "version": "1"
+  },
+  "username": "john.smith@somehost.com",      // Remote service account name;
+  "password": "pa$$word",                     // Remote service account password;
+  "domain": "somehost.com",                   // Remote service domain;
+  "isDemoAccount": true                       // Flag which indicates whether this is demo account or not.
+}
+```
+
+**Return Values:**	InternalAuthToken structure    
+Response JSON sample:
+```javascript
+{
+  "terminalId": 1001,                                      // Terminal ID;
+  "terminalName": "terminalSample",                        // Terminal name;
+  "authTokenId": "00000000-0000-0000-0000-000000000001",   // Authentication token ID;
+  "error": null                                            // Error text, null if no error occured;
+}
+```
+
+**Description:**	Gets the user credentials an provides necessary authentication. Returns authorazition token, terminal id and error message if there is any.   
+
+
+#### **Path:**	*/authentication/tokens/*  
+**Type:**	*GET*   
+**HTTP Authentication:** *must provide Fr8 authentication headers*  
+**Input Parameters:** *none*  
+
+**Return Values:**	Array of AuthenticationTokenTerminal structures    
+Response JSON sample:
+```javascript
+[
+  {
+    "id": 1001,                   // Terminal ID;
+    "name": "terminalSample",     // Terminal name;
+    "label": "Sample terminal",   // Terminal display name;
+    "authenticationType": 3,      // Terminal authentication type;
+    "authTokens": [               // Array of authentication tokens within terminal assigned to current user.
+      {
+        "id": "00000000-0000-0000-0000-000000000001",         // Auth-token ID;
+        "externalAccountName": "some.account.1@somehost.com", // Account name taken from remote service;
+        "isMain": true    // Flag whether this is default auth-token or not.
+      },
+      {
+        "id": "00000000-0000-0000-0000-000000000002",
+        "externalAccountName": "some.account.2@somehost.com",
+        "isMain": false
+      }
+    ]
+  }
+]
+```
+
+**Description:**	Extract user's authentication tokens.
+
+
+#### **Path:**	*/authentication/tokens/revoke/{id}*  
+**Type:**	*POST*   
+**HTTP Authentication:** *must provide Fr8 authentication headers*  
+**Input Parameters:**
+
+Name |	Type |	Nullable	| Default |	Description   
+--- | --- | --- | --- | ---
+id | Guid | no | | Authentication Token ID
+
+**Description:**	Revoke authentication token to remote service from current user.
+
+
+#### **Path:**	*/authentication/tokens/grant*  
+**Type:**	*POST*   
+**HTTP Authentication:** *must provide Fr8 authentication headers*  
+**Input Parameters:**
+Array of AuthenticationTokenGrant structures.   
+Request JSON example:
+```javascript
+[
+  {
+    "activityId": "00000000-0000-0000-0000-000000000001",   // ID of activity to which we're assigning auth-token;
+    "authTokenId": "00000000-0000-0000-0000-000000000002",  // ID of authentication token;
+    "isMain": true    // Flag to set current auth-token as default for current user.
+  },
+  {
+    "activityId": "00000000-0000-0000-0000-000000000003",
+    "authTokenId": "00000000-0000-0000-0000-000000000004",
+    "isMain": false
+  }
+]
+```
+**Description:**	Assign authentication tokens to specified activities.
+
 
 ### ConfigurationController
 ---------------------------------------
@@ -173,7 +321,7 @@ Name |	Type |	Nullable	| Default |	Description
 id |	Guid		|	| | Container id   
 **Return Values:**	PayloadDTO   
 **Description:**	Gets the payload of the container given.  
- 
+
 #### **Path:**	*/containers/getIdsByName*
 **Type:**	*GET*   
 **Input Parameters:**  	  
@@ -228,19 +376,28 @@ Name |	Type |	Nullable	| Default |	Description
 **Return Values:**		SolutionPageDTO or List<SolutionPageDTO>   
 **Description:**	This endpoint returns help menu of the current activity, if the activity that is passed to function is not a solution. If a solution is given as a parameter, then the endpoint returns the documentation page of the solution.   
 
-### EventsController
+### EventController
 -----------------------------------
-#### **Path:**	*/events*
-**Type:**	*POST*
+#### **Path:**	*/event/processGen1Event*
+**Type:**	*POST*   
+**Input Parameters:**  	  
+
+Name |	Type |	Nullable	| Default |	Description   
+--- | --- | --- | --- | ---   
+submittedEventsCrate |	CrateDTO			| | |
+**Return Values:**	IHttpActionResult  
+**Description:**	Update event logs.  
+
+#### **Path:**	*/event/processEvents*
+**Type:**	*POST*   
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
 raw |	CrateDTO			| | |  
 **Return Values**	IHttpActionResult   
-**Description:**	Called when a Terminal wants to report an event to the Hub. The Hub expects a single EventReport crate. It will open the crate and inspect the ExternalAccountId and ExternalDomainId properties.
-If ExternalAccountId value equals to "system1@fr8.co" Hub will expect one or many LoggingData crates in EventReport crate storage, which are processed and handled as Facts or Incidents.
-Else Hub searches AuthorizationTokens that match ExternalAccountnId and/or ExternalDomainId. For each token that it finds, it searches for Plans that use that token, and launches plans that have an event subscription crate matching one of EventReport.EventNames values. This allows Terminals to log data and Plans to subscribe to specific events, and get notified and launched when they arrive.
+**Description:**	Takes the crate as an input and create related event manifest to establish necessary connection between terminal and Hub.
+
 ### FactsController
 -------------------------------------
 #### **Path:**	*/facts/processQuery*
@@ -315,60 +472,9 @@ id | 	int	|		| | id of the file object
 **Return Values:**	void  
 **Description:**	Deletes the file in Fr8 database and Azure Blob Storage using the given File ID.  
 
-### ManageAuthTokenController
--------------------------------------------
-#### **Path:**	*/manageAuthToken/get*  
-**Type:**	*GET*   
-**Input Parameters:**  	  
-
-Name |	Type |	Nullable	| Default |	Description   
---- | --- | --- | --- | ---   
-**Return Values:**	List<ManageAuthToken_Terminal>   
-**Description:**	Extract userbs auth-tokens and parent terminals.   
-
-#### **Path:**	*/manageAuthToken/revoke*
-**Type:**	*POST*   
-**Input Parameters:**  	  
-
-Name |	Type |	Nullable	| Default |	Description   
---- | --- | --- | --- | ---   
-id |	Guid | | |			 id of the token to revoke  
-**Return Values:**	IHttpActionResult     
-**Description:**	Revoke token.    
-
-#### **Path:**	*/manageAuthToken/terminalsByActivities*
-**Type:**	*POST*   
-**Input Parameters:**  	  
-
-Name |	Type |	Nullable	| Default |	Description   
---- | --- | --- | --- | ---   
-actionIds |	IEnumerable<Guid>		 | | |	
-**Return Values:**	List<ManageAuthToken_Terminal_Activity>   
-**Description:**	Takes the activity ids and manages the necessary auth tokens for them than returns the authenticated terminal activity list.
-
-#### **Path:**	*/manageAuthToken/apply*
-**Type:**	*POST*   
-**Input Parameters:**  	  
-
-Name |	Type |	Nullable	| Default |	Description   
---- | --- | --- | --- | ---   
-apply |	IEnumerable<ManageAuthToken_Apply>		| | |  	  
-**Return Values:**	IHttpActionResult    
-**Description:**	Applies the authentication. If the token set as main, it will be also set as default token.  
-
-#### **Path:**	*/manageAuthToken/setDefault*
-**Type:**	*POST*   
-**Input Parameters:**  	  
-
-Name |	Type |	Nullable	| Default |	Description   
---- | --- | --- | --- | ---   
-id |	Guid	| | |		 id of the auth token   
-**Return Values:**	IHttpActionResult   
-**Description:**	Takes the id of the authentication token and sets it as default authentication token.  
-
 ### ManifestRegistryController
 ------------------------------------
-#### **Path:**	*/manifestRegistry/*
+#### **Path:**	*/manifestRegistry/get*
 **Type:**	*GET*   
 **Input Parameters:**  	  
 
@@ -377,7 +483,7 @@ Name |	Type |	Nullable	| Default |	Description
 **Return Values:**	IEnumerable<ManifestDescriptionCM>  
 **Description:** 	returns list of  manifest descriptions from MultiTenantObjectRepository
 
-#### **Path:**	*/manifestRegistry/*
+#### **Path:**	*/manifestRegistry/post*
 **Type:**	*POST*   
 **Input Parameters:**  	  
 
@@ -415,7 +521,7 @@ id |	int	| | | 		id of the manifest
 
 ### NotificationsController
 -------------------------------------
-#### **Path:**	*/notifications/post* 
+#### **Path:**	*/notifications/post*
 **Type:**	*POST*   
 **Input Parameters:**  	  
 
@@ -425,25 +531,25 @@ notificationMessage |	TerminalNotificationDTO			| | |
 **Return Values**	IHttpActionResult   
 **Description:**	Takes the message, checks whether it is a terminal call or client call, and sets channel accordingly. Then notifies the selected channel.
 
-### OrganizationController
+### OrganizationsController
 ------------------------------------
-#### **Path:**	*/organization/get*
+#### **Path:**	*/organizations/get*
 **Type:**	*GET*   
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
 id	| int	| | |		 id of the organization
-**Return Values**	OrganizationDTO   
+**Return Values**	 [OrganizationDTO](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Organizations.md)
 **Description:**	Takes the id and returns the Organization   
-#### **Path:**	*/organization/put*
+#### **Path:**	*/organizations/put*
 **Type:**	*PUT*   
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
 dto |	OrganizationDTO			| | |
-**Return Values**	OrganizationDTO   
+**Return Values**	[OrganizationDTO](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Organizations.md)   
 **Description:**	Updates organization   
 
 ### PlanNodesController
@@ -454,7 +560,7 @@ dto |	OrganizationDTO			| | |
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-id |	Guid		| | |	
+id |	Guid		| | |
 **Return Values**	ActivityTemplateDTO   
 **Description:**	Returns the activity template with given id.   
 #### **Path:**	*/planNodesController/getUpstreamActivities
@@ -465,7 +571,7 @@ Name |	Type |	Nullable	| Default |	Description
 --- | --- | --- | --- | ---   
 id |	Guid		| | |  	
 **Return Values**	List<PlanNodeDO>   
-**Description:**	Returns the Upstream Activities of the activity with given id. 
+**Description:**	Returns the Upstream Activities of the activity with given id.
 
 #### **Path:**	*/planNodesController/getDownstreamActivities*
 **Type:**	*GET*   
@@ -476,7 +582,7 @@ Name |	Type |	Nullable	| Default |	Description
 id |	Guid			| | |    
 **Return Values**	List<PlanNodeDO>   
 **Description:**	 Returns the Downstream Activities of the activity with given id.
- 
+
 
 #### **Path:**	*/planNodesController/getAvailableActivities*
 **Type:**	*GET*   
@@ -494,7 +600,7 @@ Name |	Type |	Nullable	| Default |	Description
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-id |	Guid			| | | 
+id |	Guid			| | |
 direction |	CrateDirection | |		CrateDirection.Upstream 	|
 availability |	AvailabilityType | | AvailabilityType.RunTime	|   
 **Return Values**	IncomingCratesDTO   
@@ -547,7 +653,7 @@ id |	Guid			| | |
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-planQuery|	[FromUri] PlanQueryDTO			| | | 
+planQuery|	[FromUri] PlanQueryDTO			| | |
 **Return Values**	PlanResultDTO   
 **Description:**	Returns the PlanResult with given query  
 
@@ -560,7 +666,7 @@ Name |	Type |	Nullable	| Default |	Description
 name |	string			| | |
 visibility |	PlanVisibility | |		PlanVisibility.Standard	|  
 **Return Values**	List<PlanDTO>   
-**Description:**	Returns the list of planDTObs with given name and visibility.  
+**Description:**	Returns the list of planDTOb s with given name and visibility.  
 
 #### **Path:**	*/plans/copy*
 **Type:**	*POST*   
@@ -572,7 +678,7 @@ id |	Guid			| | |
 name |	string			| | |
 **Return Values**	dynamic ? ? ?   
 **Description:**	none   
-#### **Path:**	*/plans/get* 
+#### **Path:**	*/plans/get*
 **Type:**	*GET*  
 **Input Parameters:**  	  
 
@@ -591,7 +697,7 @@ Name |	Type |	Nullable	| Default |	Description
 solutionName	| string	| | |		Name of the solution template of the solution that will be created   
 
 **Return Values:**	PlanDTO    
-**Description:**	Creates an instance of solution from solutionTemplates, and configures it. 
+**Description:**	Creates an instance of solution from solutionTemplates, and configures it.
 
 #### **Path:**	*/plans/putActivity*
 **Type:**	*POST*
@@ -609,7 +715,7 @@ Name |	Type |	Nullable	| Default |	Description
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-id	| Guid			| | | 
+id	| Guid			| | |
 **Return Values**	Guid   
 **Description:**	Deletes the plan with given id   
 #### **Path:**	*/plans/activate*   
@@ -619,7 +725,7 @@ id	| Guid			| | |
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
 planId |	Guid			| | |
-planBuilderActivate |	bool |		false	| | 
+planBuilderActivate |	bool |		false	| |
 **Return Values**	ActivateActivitiesDTO   
 **Description:**	Activates the plan and generates the notifier.  
 
@@ -629,9 +735,9 @@ planBuilderActivate |	bool |		false	| |
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-planId | 	Guid			| | | 
+planId | 	Guid			| | |
 **Return Values**	string  
-**Description:**	Deactivates the plan with given id, returns the string result: bsuccessb or bno actionb   
+**Description:**	Deactivates the plan with given id, returns the string result: b successb  or b no actionb    
 
 #### **Path:**	*/plans/createFindObjectsPlan*
 **Type:**	*POST*   
@@ -707,7 +813,7 @@ historyQueryDTO |	[FromUri] HistoryQueryDTO			|||
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-subPlanDTO |	SubPlanDTO			| | | 
+subPlanDTO |	SubPlanDTO			| | |
 **Return Values**	SubPlanDTO   
 **Description:**	Creates and saves given subPlan   
 #### **Path:**	*/subPlans/put*
@@ -726,7 +832,7 @@ subPlanDTO |	SubPlanDTO	|||
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-id |	Guid		|||	
+id |	Guid		|||
 **Return Values**	SubPlanDTO   
 **Description:**	Deletes given subPlan   
 
@@ -749,17 +855,7 @@ id |	Guid			|||
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
 
-**Return Values**	List of 
-TerminalDTO   
-{
-  "Name": null,
-  "Label": null,
-  "Version": null,
-  "TerminalStatus": 0,
-  "Endpoint": null,
-  "Description": null,
-  "AuthenticationType": 0
-}
+**Return Values**	List<TerminalDTO>   
 **Description:**	Returns list of terminals for current user   
 
 #### **Path:**	*/terminals/post*
@@ -769,80 +865,39 @@ TerminalDTO
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
 terminalDto |	TerminalDTO			|||
-**Return Values**	
-TerminalDTO   
-{
-  "Name": null,
-  "Label": null,
-  "Version": null,
-  "TerminalStatus": 0,
-  "Endpoint": null,
-  "Description": null,
-  "AuthenticationType": 0
-}
+**Return Values**	TerminalDTO   
 **Description:**	Creates and saves terminal object.   
 
-### UsersController
+### UserController
 ------------------------------------
-
-#### **Path:**	*/users*
+#### **Path:**	*/user/getCurrent*
 **Type:**	*GET*   
-**Input Parameters:** 
+**Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
- |		|||
 
-**Return Values**	 List of 
-UserDTO  
-{
-  "Id": null,
-  "FirstName": null,
-  "LastName": null,
-  "UserName": null,
-  "EmailAddressID": 0,
-  "EmailAddress": null,
-  "Status": 0,
-  "Role": null,
-  "organizationId": null,
-  "ProfileId": "00000000-0000-0000-0000-000000000000",
-  "Class": null
-}
-**Description:**	Returns all available users in the form of List of UserDTO
-
-#### **Path:**	*/users/userdata/id*
-**Type:**	*GET*   
-**Input Parameters:**  Id
+**Return Values**	UserDTO  
+**Description:**	Returns the current user.  
+#### **Path:**	*/user/getUserData*
+**Type:**	*GET*
+**Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-id |	string	|||Id of the user
+id |	string	|||		
+**Return Values**	UserDTO  
+**Description:**	Returns the user with given id
 
-**Return Values**	 
-UserDTO  
-{
-  "Id": null,
-  "FirstName": null,
-  "LastName": null,
-  "UserName": null,
-  "EmailAddressID": 0,
-  "EmailAddress": null,
-  "Status": 0,
-  "Role": null,
-  "organizationId": null,
-  "ProfileId": "00000000-0000-0000-0000-000000000000",
-  "Class": null
-}
-**Description:**	If Id is not null or empty, returns the UserDTO of the given user ID. Otherwise returns the currently logged in user.
-
-#### **Path:**	*/users/update*
+#### **Path:**	*/user/updatePassword*
 **Type:**	*POST*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-oldPassword |	string			| | |Old Password of the user
-newPassword |	string	|||		New Password of the user
+oldPassword |	string			| | |
+newPassword |	string	|||		
+confirmPassword |	string			|||
 
 **Return Values**	IHttpActionResult   
 **Description:**	Updates user password
@@ -858,7 +913,7 @@ Name |	Type |	Nullable	| Default |	Description
 string |	userId			|||
 crates |	List<CrateDTO>			|||
 **Return Values**	List<CrateDTO>
-**Description:**	
+**Description:**
 
 ### WebServicesController
 ------------------------------------
@@ -869,7 +924,7 @@ crates |	List<CrateDTO>			|||
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
 **Return Values**	List<WebServiceDTO>   
-**Description:**	Returns the collection of all active web services 
+**Description:**	Returns the collection of all active web services
 #### **Path:**	*/webServices/post*   
 **Type:**	*POST*    
 **Input Parameters:**  	  

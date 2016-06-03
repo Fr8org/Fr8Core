@@ -1,4 +1,5 @@
 # Prelimetary work on the Azure deployment
+[Back to Terminal Development on .Net](../DevGuide_DotNet.md)
 
 ####Required software:
 
@@ -28,3 +29,5 @@ however, this not a required step, as it's done automatically when you try to ru
 ####Configure ports
 
 HubWeb's port is 30643. To learn what port a terminal has you can check it's Web.config file and find a key "terminalName.TerminalEndpoint". Make sure that you have set the same port number in project properties ( Web tab, Project URL ).
+
+[Back to Terminal Development on .Net](../DevGuide_DotNet.md)

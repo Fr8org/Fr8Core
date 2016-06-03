@@ -1,30 +1,31 @@
-# TERMINAL DEVELOPMENT GUIDE
+ TERMINAL DEVELOPMENT GUIDE
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md) 
+
 
 Terminals are discrete Web Services that host Activity functionality.
 The main Fr8 Hub runs many of these Terminals itself, but the architecture is decoupled: as far as the Hub is concerned, each Terminal is on the other end of an HTTP request. A fully operational Hub may work with hundreds of different Terminals.
+Terminals can be written in any language, and only need to support a handful of HTTP endpoints. When Hubs startup, they make a /discover call to the terminal endpoints that they know about. The Terminals respond with information about available activities, and users can then start adding those activities to their plans. 
 The initial Terminals being built and hosted by The fr8 Company are .Net based Azure Web App Projects
 
-###.NET
 
-[Getting Started](dotNet/TerminalDeveloping-GettingStarted.md)
+Basic Topics
 
-##### Chapter 1
-[Your first Terminal](dotNet/TerminalDeveloping-Chapter-1.md)
+Before proceeding, make sure you're famililar with the following basic topics:
+*  Fr8 Architecture
+*  Fr8 Events
+*  Fr8 Crates and Containers
+*  Fr8 Activities
+*  Fr8 Plans
+*  Fr8 Authentication
 
-##### Chapter 2:
-[Adding Activities and UI](dotNet/TerminalDeveloping-Chapter-2.md)
+General Information
 
-##### Chapter 3:
-[Implementing oAuth2 authentication](dotNet/TerminalDeveloping-Authentication.md) and [Connecting your Terminal to a WebService ](dotNet/TerminalDeveloping-AddingAWebService.md)
+This is platform-independent.
 
-##### Chapter 4:
-[Prelimetary work on the Azure deployment](dotNet/TerminalDeveloping-DeployingToAzure.md)
+[API Endpoints](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Terminals/TerminalEndpoints.md)
 
-### Ruby on Rails
-
-incomming
-
-### Java
-
-incomming
+Platform-Specific Information
+=====
+*  [.NET](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Terminals/DevGuide_DotNet)
+*  Java
+*  Ruby

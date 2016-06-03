@@ -1,12 +1,12 @@
 # Adding a Web Service
 
-
+[Back to Terminal Development on .Net](../DevGuide_DotNet.md)
 
  Add Web Service registration information to your Terminal information in TerminalController#DiscoverTerminals. The code should like this: 
 
  
 
-![](../../../../Docs/img/TerminalDeveloping-AddingAWebService.md-1.png)
+![](../../../../../Docs/img/TerminalDeveloping-AddingAWebService.md-1.png)
 
 
 
@@ -28,4 +28,6 @@ The result is that your action should appear under a section with the specified 
 
 
 
-![](../../../../Docs/img/TerminalDeveloping-AddingAWebService.md-2.png)
+![](../../../../../Docs/img/TerminalDeveloping-AddingAWebService.md-2.png)
+
+[Back to Terminal Development on .Net](../DevGuide_DotNet.md)
