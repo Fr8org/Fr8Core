@@ -250,7 +250,7 @@ namespace terminalExcel.Activities
         }
 
         public SetExcelTemplate_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
     }

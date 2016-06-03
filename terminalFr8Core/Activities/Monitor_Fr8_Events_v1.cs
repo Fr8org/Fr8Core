@@ -47,7 +47,7 @@ namespace terminalFr8Core.Activities
         }
 
         public Monitor_Fr8_Events_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 
