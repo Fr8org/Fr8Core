@@ -141,9 +141,10 @@ module dockyard.services {
                     //},
                     'createSolution': {
                         method: 'POST',
-                        url: '/api/plans/createSolution',
+                        //url: '/api/plans/createSolution',
+                        url: '/api/plans/',
                         params: {
-                            solutionName: '@solutionName'
+                            solution_name: '@solutionName'
                         }
                     },
                     'deactivate': {
