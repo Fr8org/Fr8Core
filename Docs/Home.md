@@ -24,7 +24,7 @@
         * [Plans](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Plans.md)  
         * [Plan - JSON Definition](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/PlanJSONDefinition.md)  
         * [Plans - Activation and Running](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/PlansActivationAndRunning.md)  
-		* [Plan Templates](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Plans/PlanTemplates.md) 
+		* [Plan Templates](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Plans/PlanTemplates.md)
         * [Subplans](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Subplans.md)  
         * [Containers](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Containers.md)  
         * [Container Execution](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/ContainerExecution.md)  
@@ -41,4 +41,7 @@
     - Tutorials  
         * [Tutorial: A Basic Twilio Terminal That Can Send an SMS Message](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Tutorials/TwilioTutorial.md)    
         * [Tutorial: Create a Fr8 Plan, Import Spreadsheet Data, and Distribute the Data by an Email Activity](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Tutorials/CreateImportDistributeTutorial.md)    
-
+* [Security](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForUsers/Fr8ForUsers.md)  
+    * [Permissions](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Security/Permissions.md)
+    * [Security Internals](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Security/SecurityInternals.md)
+    * [Profiles](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Security/Profiles.md)
