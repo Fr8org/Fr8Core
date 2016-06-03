@@ -94,7 +94,7 @@ namespace terminalFr8Core.Activities
 		}
 
         public Select_Fr8_Object_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 

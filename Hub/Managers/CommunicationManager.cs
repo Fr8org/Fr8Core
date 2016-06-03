@@ -21,9 +21,9 @@ namespace Hub.Managers
         public CommunicationManager(IConfigRepository configRepository, EmailAddress emailAddress)
         {
             if (configRepository == null)
-                throw new ArgumentNullException("configRepository");
+                throw new ArgumentNullException(nameof(configRepository));
             if (emailAddress == null)
-                throw new ArgumentNullException("emailAddress");
+                throw new ArgumentNullException(nameof(emailAddress));
             _configRepository = configRepository;
 
             _emailAddress = emailAddress;
