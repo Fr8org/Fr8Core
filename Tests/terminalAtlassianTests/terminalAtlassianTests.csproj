@@ -204,7 +204,6 @@
   <ItemGroup>
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
     <Compile Include="Integration\Get_Jira_Issue_v1_Tests.cs" />
-    <Compile Include="Integration\Terminal_Authentication_v1_Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
