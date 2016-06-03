@@ -1,4 +1,5 @@
  TERMINAL DEVELOPMENT GUIDE
+ 
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md) 
 
 
