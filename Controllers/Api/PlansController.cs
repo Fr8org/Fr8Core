@@ -317,9 +317,13 @@ namespace HubWeb.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Upload file with plan template and create plan from it. 
+        /// </summary>
+        /// /// <param name="planName">Name of newly created plan</param>
         [HttpPost]
         [Fr8ApiAuthorize]
-        public async Task<IHttpActionResult> LoadPlan(string planName)
+        public async Task<IHttpActionResult> Upload(string planName)
         {
             IHttpActionResult result = InternalServerError();
             await Request.Content.ReadAsMultipartAsync<MultipartMemoryStreamProvider>(new MultipartMemoryStreamProvider()).ContinueWith((tsk) =>
@@ -400,7 +404,7 @@ namespace HubWeb.Controllers
         [Fr8HubWebHMACAuthenticate]
         [ResponseType(typeof(PlanTemplateDTO))]
         [HttpPost]
-        public async Task<IHttpActionResult> CreateTemplate(Guid planId)
+        public async Task<IHttpActionResult> Templates(Guid planId)
         {
             var planTemplateDTO = _planTemplates.GetPlanTemplate(planId, User.Identity.GetUserId());
 

@@ -180,7 +180,7 @@ module dockyard.services {
 
             resource.createTemplate = (id: string): ng.IPromise<any> => {
                 
-                var url = '/api/plans/createTemplate?planId=' + id;
+                var url = '/api/plans/Template?planId=' + id;
                 var d = $q.defer();
 
                 $http.post(url, null)
