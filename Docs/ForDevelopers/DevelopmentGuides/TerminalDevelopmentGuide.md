@@ -26,6 +26,6 @@ This is platform-independent.
 
 Platform-Specific Information
 =====
-*  [.NET](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Terminals/DevGuide_DotNet)
+*  [.NET](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Terminals/DevGuide_DotNet.md)
 *  Java
 *  Ruby
