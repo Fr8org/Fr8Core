@@ -48,7 +48,7 @@ Invoke-Expression "git checkout $mainBranchName 2> $tempFileName"
 if ($LastExitCode -ne 0)
 {
 	Write-Host "Failed to checkout $mainBranchName branch."
-	exit 1;
+	exit 1; 
 }
 
 Write-Host "Getting the latest $mainBranchName branch from GitHub repo..."
