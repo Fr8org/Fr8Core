@@ -34,7 +34,7 @@ namespace terminalDocuSign.Activities
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
         public Prepare_DocuSign_Events_For_Storage_v1(ICrateManager crateManager)
-            : base(true, crateManager)
+            : base(crateManager)
         {
         }
 

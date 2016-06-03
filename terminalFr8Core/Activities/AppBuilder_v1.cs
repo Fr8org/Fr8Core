@@ -292,7 +292,7 @@ namespace terminalFr8Core.Activities
         }
 
         public AppBuilder_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 
@@ -357,7 +357,7 @@ namespace terminalFr8Core.Activities
                         AvailabilityType.RunTime);
                     var payload = new List<CrateDTO>() { CrateManager.ToDto(flagCrate) };
                     //we need to start the process - run current plan - that we belong to
-                    await HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, payload);
+                    HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, payload);
                     //after running the plan - let's reset button state
                     //so next configure calls will be made with a fresh state
                     UnClickSubmitButton();

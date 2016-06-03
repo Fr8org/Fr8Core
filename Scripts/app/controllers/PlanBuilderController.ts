@@ -41,7 +41,7 @@ module dockyard.controllers {
         solutionName: string;
         curAggReloadingActions: Array<string>;
         addSubPlan: () => void;
-        openMenu: ($mdOpenMenu: any , ev: any) => void;
+        openMenu: ($mdOpenMenu: any, ev: any) => void;
         view: string;
         viewMode: string;
         hasAnyActivity: (pSubPlan: any) => boolean;
@@ -78,7 +78,8 @@ module dockyard.controllers {
             'AuthService',
             'ConfigureTrackerService',
             'SubPlanService',
-            '$stateParams'
+            '$stateParams',
+            '$window'
         ];
 
         private _longRunningActionsCounter: number;
@@ -101,7 +102,8 @@ module dockyard.controllers {
             private AuthService: services.AuthService,
             private ConfigureTrackerService: services.ConfigureTrackerService,
             private SubPlanService: services.ISubPlanService,
-            private $stateParams: ng.ui.IStateParamsService
+            private $stateParams: ng.ui.IStateParamsService,
+            private $window: ng.IWindowService
         ) {
 
             this.LayoutService.resetLayout();
@@ -118,6 +120,11 @@ module dockyard.controllers {
 
             this.$scope.view = $stateParams['view'];
             this.$scope.viewMode = $stateParams['viewMode'];
+            
+
+            this.$scope.$on('$stateChangeStart', (event, toState, toParams, fromState, fromParams, options) => {
+                this.handleBackButton(event, toState, toParams, fromState, fromParams, options);
+            });
             
             this.$scope.addAction = (group: model.ActionGroup) => {
                 this.addAction(group);
@@ -169,7 +176,7 @@ module dockyard.controllers {
 
             this.$scope.selectAction = (action: model.ActivityDTO) => {
                 if (!this.$scope.current.activities || this.$scope.current.activities.id !== action.id)
-                    this.selectAction(action, null);
+                    this.selectAction(action, null, $window);
 
             }
 
@@ -232,6 +239,13 @@ module dockyard.controllers {
             };
 
             this.processState($state);
+        }
+
+        private handleBackButton(event, toState, toParams, fromState, fromParams, options) {
+            if (fromParams.viewMode === "plan" && toParams.viewMode === undefined && fromState.name === "planBuilder" && toState.name === "planBuilder") {
+                event.preventDefault();
+                this.$state.go("planList");
+            }
         }
 
         private startLoader() {
@@ -401,6 +415,12 @@ module dockyard.controllers {
             planPromise.$promise.then(this.onPlanLoad.bind(this, mode));
         }
 
+        private reloadFirstActions() {
+            this.$timeout(() => {
+                this.$scope.current.plan.subPlans.forEach(plan => this.$scope.reConfigureAction(plan.activities[0]));
+            }, 1500);
+        }
+
         private onPlanLoad(mode: string, curPlan: interfaces.IPlanFullDTO) {
             this.AuthService.setCurrentPlan(<interfaces.IPlanVM>curPlan.plan);
             this.AuthService.clear();
@@ -412,7 +432,7 @@ module dockyard.controllers {
                 this.setAdvancedEditingMode();
             }
             this.renderPlan(<interfaces.IPlanVM>curPlan.plan);
-            this.$state.go('planBuilder', { id: curPlan.plan.id,  viewMode: mode });
+            this.$state.go('planBuilder', { id: curPlan.plan.id, viewMode: mode });
         }
 
         /*
@@ -599,7 +619,7 @@ module dockyard.controllers {
             // Add action to Workflow Designer.
             this.$scope.current.activities = action.toActionVM();
             this.$scope.current.activities.activityTemplate = activityTemplate;
-            this.selectAction(action, eventArgs.group);
+            this.selectAction(action, eventArgs.group, this.$window);
         }
 
         private allowsChildren(action: model.ActivityDTO) {
@@ -608,7 +628,6 @@ module dockyard.controllers {
 
         private addActionToUI(action: model.ActivityDTO, group: model.ActionGroup) {
             this.$scope.current.activities = action;
-
             var parentAction = this.findActionById(action.parentPlanNodeId);
             if (parentAction != null) {
                 parentAction.childrenActivities.push(action);
@@ -638,7 +657,9 @@ module dockyard.controllers {
             Handles message 'WorkflowDesignerPane_ActionSelected'. 
             This message is sent when user is selecting an existing action or after addng a new action. 
         */
-        private selectAction(action: model.ActivityDTO, group: model.ActionGroup) {
+        private selectAction(action: model.ActivityDTO, group: model.ActionGroup, $window) {
+            //this performs a call to Segment service for analytics
+            $window['analytics'].track("Added Activity To Plan", { "Activity Name": action.name });
 
             console.log("Activity selected: " + action.id);
             var originalId,
@@ -885,7 +906,7 @@ module dockyard.controllers {
         }
     }
     app.controller('PlanBuilderController', PlanBuilderController);
-    app.controller('ActivityLabelModalController', ['$scope', '$modalInstance','label', ($scope: any, $modalInstance: any, label: string): void => {
+    app.controller('ActivityLabelModalController', ['$scope', '$modalInstance', 'label', ($scope: any, $modalInstance: any, label: string): void => {
 
         $scope.label = label;
 

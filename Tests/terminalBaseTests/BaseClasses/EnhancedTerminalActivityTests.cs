@@ -40,7 +40,7 @@ namespace terminaBaselTests.BaseClasses
     class BaseTerminalActivityMock : BaseTerminalActivity
     {
         public BaseTerminalActivityMock(ICrateManager crateManager) 
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 
@@ -74,7 +74,7 @@ namespace terminaBaselTests.BaseClasses
         public bool ValidationState = true;
 
         public ActivityOverrideCheckMock(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 
@@ -202,7 +202,7 @@ namespace terminaBaselTests.BaseClasses
 
 
         public UiSyncDynamicActivityMock(ICrateManager crateManager) 
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 
@@ -292,7 +292,7 @@ namespace terminaBaselTests.BaseClasses
 
 
         public UiSyncActivityMock(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 
@@ -333,7 +333,7 @@ namespace terminaBaselTests.BaseClasses
         }
 
         public ActivityWithUiBuilder(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 

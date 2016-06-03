@@ -218,7 +218,7 @@ namespace TerminalBase.Services
 
             var token = new[] { applyToken };
 
-            var url = $"{GetHubUrlWithApiVersion()}/ManageAuthToken/apply";
+            var url = $"{GetHubUrlWithApiVersion()}/authentication/tokens/grant";
             var uri = new Uri(url);
             await _restfulServiceClient.PostAsync(uri, token, null, await GetHMACHeader(uri, token));
         }
@@ -383,7 +383,7 @@ namespace TerminalBase.Services
 
         public async Task<AuthorizationToken> GetAuthToken(string externalAccountId)
         {
-            var url = $"{GetHubUrlWithApiVersion()}/authentication/GetAuthToken?curFr8UserId={_userId}&externalAccountId={externalAccountId}&terminalId={TerminalId}";
+            var url = $"{GetHubUrlWithApiVersion()}/authentication/GetAuthToken?externalAccountId={externalAccountId}&terminalId={TerminalId}";
             var uri = new Uri(url);
             var authTokenDTO = await _restfulServiceClient.GetAsync<AuthorizationTokenDTO>(uri, null, await GetHMACHeader(uri));
             return Mapper.Map<AuthorizationToken>(authTokenDTO);

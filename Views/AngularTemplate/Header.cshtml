@@ -23,7 +23,7 @@
                 <ul class="nav navbar-nav pull-right">
                     <!-- BEGIN USER LOGIN DROPDOWN -->
                     @using Data.States
-@using HubWeb.Infrastructure_HubWeb
+                    @using HubWeb.Infrastructure_HubWeb
                     @using Microsoft.AspNet.Identity
                     @if (Request.IsAuthenticated) {
                         <li class="dropdown dropdown-user dropdown-dark">
@@ -115,7 +115,9 @@
                         <a data-toggle="dropdown" href="#" class="dropdown-toggle">Plans <i class="fa fa-angle-down"></i></a>
                         <ul class="dropdown-menu">
                             <li><a ui-sref="planList">Show All</a></li>
-                            <li><a ui-sref="planForm">Add</a></li>
+                            <li event-add><a ui-sref="planForm" >Add</a></li>
+                            <li ng-controller="PlanDetailsController" ng-show="$state.is('planDetails')" ><a href="{{href}}"  download='{{ptvm.plan.name}}.json'  type='application/json'  ng-click="sharePlan()">Share Plan</a></li>
+                            <li ng-controller="PlanUploadController"><a ng-click="showModal()" >Load from JSON file</a></li>
                         </ul>
                     </li>
 

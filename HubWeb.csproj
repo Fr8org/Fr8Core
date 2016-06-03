@@ -75,6 +75,10 @@
       <HintPath>packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Excel, Version=2.1.2.3, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
+      <HintPath>packages\ExcelDataReader.2.1.2.3\lib\net45\Excel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="FluentValidation, Version=5.6.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
       <Private>True</Private>
@@ -90,6 +94,18 @@
     <Reference Include="Fr8.AI.DependencyCollector, Version=2.0.0.0, Culture=neutral, PublicKeyToken=f23a46de0be5d6f3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Utilities\Fr8.AI.DependencyCollector.dll</HintPath>
+    </Reference>
+    <Reference Include="Fr8Data, Version=1.0.0.8, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Fr8Data.1.0.0.8\lib\net45\Fr8Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Fr8Infrastructure, Version=1.0.0.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Fr8Infrastructure.1.0.0.3\lib\net45\Fr8Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="fr8Utilities, Version=1.0.0.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\fr8Utilities.1.0.0.4\lib\net45\fr8Utilities.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Google.Apis, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
       <HintPath>packages\Google.Apis.1.11.1\lib\net45\Google.Apis.dll</HintPath>
@@ -125,6 +141,10 @@
     </Reference>
     <Reference Include="Hangfire.StructureMap, Version=1.5.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Hangfire.StructureMap3.1.5.3\lib\net45\Hangfire.StructureMap.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
@@ -251,6 +271,10 @@
       <HintPath>packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.1.0\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Moq, Version=4.2.1507.118, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <HintPath>packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -258,6 +282,10 @@
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PusherServer, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\PusherServer.2.1.1.0\lib\net35\PusherServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="RestSharp, Version=105.2.2.0, Culture=neutral, processorArchitecture=MSIL">
@@ -366,6 +394,10 @@
       <HintPath>packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="YamlDotNet, Version=2.0.1.20271, Culture=neutral, PublicKeyToken=2b53052c5884d7a1, processorArchitecture=MSIL">
+      <HintPath>packages\YamlDotNet.3.1.1\lib\net35\YamlDotNet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Zlib.Portable, Version=1.11.0.0, Culture=neutral, PublicKeyToken=431cba815f6a8b5b, processorArchitecture=MSIL">
       <HintPath>packages\Zlib.Portable.Signed.1.11.0\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
       <Private>True</Private>
@@ -384,7 +416,7 @@
     <Compile Include="Controllers\Api\ActivityTemplatesController.cs" />
     <Compile Include="Controllers\Api\DocumentationController.cs" />
     <Compile Include="Controllers\Api\ManifestRegistriesController.cs" />
-    <Compile Include="Controllers\Api\OrganizationController.cs" />
+    <Compile Include="Controllers\Api\OrganizationsController.cs" />
     <Compile Include="Controllers\Api\Fr8BaseApiController.cs" />
     <Compile Include="Controllers\Api\NotificationsController.cs" />
     <Compile Include="Controllers\Api\AlarmsController.cs" />
@@ -446,8 +478,6 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DataController.cs" />
-    <Compile Include="Controllers\DiagnosticsController.cs" />
-    <Compile Include="Controllers\External\Google\GoogleAuthCallbackController.cs" />
     <Compile Include="Controllers\ControllerExtensions.cs" />
     <Compile Include="Controllers\Helpers\DemoExtensions.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -461,13 +491,9 @@
     <Compile Include="Infrastructure_HubWeb\HtmlHelpers.cs" />
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="ViewModels\AuthenticationErrorVM.cs" />
-    <Compile Include="ViewModels\DocusignLoginVM.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />
     <Compile Include="ViewModels\HomeVM.cs" />
-    <Compile Include="ViewModels\DiagnosticInfoVM.cs" />
-    <Compile Include="ViewModels\JsonConverters\RelatedItemShowVM.cs" />
     <Compile Include="ViewModels\EventVM.cs" />
-    <Compile Include="ViewModels\MyAccountVM.cs" />
     <Compile Include="Filters\RequestParamsEncryptedFilter.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -479,13 +505,10 @@
     <Compile Include="ViewModels\ManageUserVM.cs" />
     <Compile Include="ViewModels\NavLinksHome.cs" />
     <Compile Include="ViewModels\NavLinksShared.cs" />
-    <Compile Include="ViewModels\ProcessCreateEventVM.cs" />
     <Compile Include="ViewModels\RegisterVM.cs" />
     <Compile Include="ViewModels\ResetPasswordVM.cs" />
-    <Compile Include="ViewModels\SendEmailVM.cs" />
     <Compile Include="ViewModels\UserProfilesVM.cs" />
     <Compile Include="ViewModels\UserVM.cs" />
-    <Compile Include="ViewModels\Validators\ProcessTemplateDTO.cs" />
     <Compile Include="ExceptionHandling\WebApiExceptionFilterAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -980,12 +1003,15 @@
     <Content Include="_PowerShellScripts\RestoreDatabaseFromBackup.ps1" />
     <Content Include="_PowerShellScripts\CleanUpAfterTests.ps1" />
     <Content Include="_PowerShellScripts\Copy-ImagesBetweenAccount.ps1" />
+    <Content Include="Views\AngularTemplate\PlanUploadModal.cshtml" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\KioskModeOrganizationHeaderController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\OrganizationController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\PlanUploadModalController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\PlanUploadController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionDocumentationController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\collapse\collapse.directive.ts" />
@@ -4386,7 +4412,6 @@
     <Content Include="Themes\scheduler_white\tree_expand.png" />
     <Content Include="Themes\scheduler_white\tree_nochildren.png" />
     <Content Include="UnauthorizedRequest.html" />
-    <Compile Include="ViewModels\EventWindowVM.cs" />
     <Content Include="tsd.json" />
     <Content Include="Scripts\tests\Chutzpah.json" />
     <None Include="Properties\PublishProfiles\test.pubxml" />
@@ -4484,6 +4509,7 @@
     <Content Include="Views\AngularTemplate\_AddPayloadModal.cshtml" />
     <None Include="Views\DocusignAuthCallback\Login.cshtml" />
     <TypeScriptCompile Include="Scripts\tests\utils\services\fixture_CrateHelper.ts" />
+    <TypeScriptCompile Include="Scripts\typings\angular-ui-bootstrap.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angular-ui-router\angular-ui-router.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-mocks.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-resource.d.ts" />
@@ -4528,29 +4554,13 @@
     <Folder Include="Webhooks\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Fr8Data\Fr8Data.csproj">
-      <Project>{a3178d71-a2c3-45b9-8334-adcc7c313541}</Project>
-      <Name>Fr8Data</Name>
-    </ProjectReference>
     <ProjectReference Include="Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
     </ProjectReference>
-    <ProjectReference Include="Daemons\Daemons.csproj">
-      <Project>{b15ea73e-e0d0-4604-bcfc-ddafb67f872d}</Project>
-      <Name>Daemons</Name>
-    </ProjectReference>
     <ProjectReference Include="Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="Infrastructure\Fr8Infrastructure.csproj">
-      <Project>{9F4B5C92-3535-4D4C-B1E4-37BEB1AE5C42}</Project>
-      <Name>Fr8Infrastructure</Name>
-    </ProjectReference>
-    <ProjectReference Include="Utilities\Utilities.csproj">
-      <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
-      <Name>Utilities</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

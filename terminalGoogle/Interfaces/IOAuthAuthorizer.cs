@@ -1,8 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Google.Apis.Auth.OAuth2.Web;
 
-namespace Hub.Managers.APIManagers.Authorizers
+namespace terminalGoogle.Interfaces
 {
     public interface IOAuthAuthorizer
     {
