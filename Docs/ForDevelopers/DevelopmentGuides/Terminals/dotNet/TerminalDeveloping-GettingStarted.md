@@ -13,7 +13,8 @@
 
 If you are planning to run Hub locally you'll need to configure a database.
 We use EntityFramework 6.1 to interact with data. We use CodeFirst Migrations.
-Creating a new local database
+
+######Creating a new local database
 1. Check the name of the connection string in Web.config. This is probably "DockyardDB2"
 2. Create a local database on your computer using either Sql Server or Sql Server Express. LocalDB is not recommended because it won't work with the project's default connection string.
 Find Sql Server Express at http://www.hanselman.com/blog/DownloadSQLServerExpress.aspx. Make sure you choose the Default Instance and change the database ID to DockyardDB2,
