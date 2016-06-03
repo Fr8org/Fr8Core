@@ -1,12 +1,6 @@
 ﻿<div>
     <span class="glyphicon glyphicon-info-sign advisory-glyphicon"></span>
     <a href="#" class="pull-right margin-top-10" ng-click="envelope.activity.showAdvisoryPopup = false">X</a>
-    @*<h3 class="popover-title" ng-if="!envelope.activity.label">
-        {{envelope.activity.name}}
-    </h3>
-    <h3 class="popover-title" ng-if="envelope.activity.label !== null">
-        {{envelope.activity.label}}
-    </h3>*@
     <div class="popover-content">
         <div ng-repeat="advisory in envelope.activity.advisoryMessages.advisories track by $index">
             <div class="title">
