@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PlanDirectory.Interfaces
+namespace Fr8Data.DataTransferObjects
 {
     public class PageDefinitionDTO
     {

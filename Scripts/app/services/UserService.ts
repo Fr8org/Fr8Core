@@ -47,9 +47,6 @@ module dockyard.services {
                     method: 'POST',
                     isArray: false,
                     url: '/api/users/updateUserProfile/'
-                    //params: {
-                    //    user: '@user'
-                    //}
                 }
             })
     ]);
