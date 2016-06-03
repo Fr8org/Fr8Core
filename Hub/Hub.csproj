@@ -363,16 +363,9 @@
     <Compile Include="Managers\APIManagers\Transmitters\Terminal\ITerminalTransmitter.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Terminal\TerminalTransmitter.cs" />
     <Compile Include="Managers\EventReporter.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\Google\AppFlowMetadata.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\Google\AuthorizationCodeFlow.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\Google\GoogleAuthorizer.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\IOAuthAuthorizationResult.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\IOAuthAuthorizer.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\OAuthAuthorizationResult.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\OAuthException.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SegmentIO\SegmentIO.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Http\IAuthorizingHttpChannel.cs" />
-    <Compile Include="Managers\APIManagers\Transmitters\Http\OAuthHttpChannel.cs" />
     <Compile Include="Managers\APIManagers\Packagers\DataTable\DataTablesPackager.cs" />
     <Compile Include="Helper\RoleData.cs" />
     <Compile Include="Managers\APIManagers\Packagers\Kwasant\KwasantPackager.cs" />
