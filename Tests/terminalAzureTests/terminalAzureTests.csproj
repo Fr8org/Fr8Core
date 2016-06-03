@@ -75,16 +75,16 @@
       <HintPath>..\..\packages\Fr8Data.1.0.0.8\lib\net45\Fr8Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Fr8Infrastructure, Version=1.0.0.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Fr8Infrastructure.1.0.0.2\lib\net45\Fr8Infrastructure.dll</HintPath>
+    <Reference Include="Fr8Infrastructure, Version=1.0.0.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Fr8Infrastructure.1.0.0.3\lib\net45\Fr8Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="fr8TerminalBase, Version=1.0.0.8, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\fr8TerminalBase.1.0.0.8\lib\net45\fr8TerminalBase.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="fr8Utilities, Version=1.0.0.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\fr8Utilities.1.0.0.3\lib\net45\fr8Utilities.dll</HintPath>
+    <Reference Include="fr8Utilities, Version=1.0.0.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\fr8Utilities.1.0.0.4\lib\net45\fr8Utilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
