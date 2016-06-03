@@ -230,7 +230,6 @@
     <Compile Include="Integration\ExecuteSql_v1_Tests.cs" />
     <Compile Include="Integration\Monitor_Fr8_Events_v1_Tests.cs" />
     <Compile Include="Integration\SetDelay_v1_Tests.cs" />
-    <Compile Include="Integration\Terminal_Authentication_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Discover_v1Tests.cs" />
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
     <Compile Include="Integration\MapFields_v1_Tests.cs" />

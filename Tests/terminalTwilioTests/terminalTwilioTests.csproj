@@ -169,7 +169,6 @@
     <Compile Include="Fixture\FixtureData.cs" />
     <Compile Include="Fixture\HealthMonitor_FixtureData.cs" />
     <Compile Include="Integration\Send_Via_Twilio_v1Tests.cs" />
-    <Compile Include="Integration\Terminal_Authentication_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Discover_v1Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

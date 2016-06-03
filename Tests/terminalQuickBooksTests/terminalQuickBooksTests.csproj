@@ -179,7 +179,6 @@
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
     <Compile Include="Integration\Convert_TableData_To_AccountingTransactions_v1Tests.cs" />
     <Compile Include="Integration\Create_Journal_Entry_v1Tests.cs" />
-    <Compile Include="Integration\Terminal_Authentication_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Discover_v1Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
