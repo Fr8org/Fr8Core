@@ -28,9 +28,9 @@ module dockyard.controllers {
             private $http: any) {
 
             $scope.goToManifestSubmissionForm = function () {
-                $http.get('api/manifest_registries/submit')
-                     .then(url => {
-                         window.open(url);
+                $http.get('/api/manifestregistries/submit')
+                     .then(result => {
+                         window.open(result.data);
                     });
             };
 
