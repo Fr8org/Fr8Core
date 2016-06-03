@@ -27,6 +27,7 @@ using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
 using Utilities;
 using Hub.Exceptions;
+using Segment;
 
 namespace Hub.Services
 {
@@ -215,7 +216,7 @@ namespace Hub.Services
                 }
                 catch (Exception e)
                 {
-                    ReportActivityInvocationError(submittedActivity, e.Message, null ,submittedActivity.Id.ToString(), EventManager.TerminalActionActivationFailed);
+                    ReportActivityInvocationError(submittedActivity, e.Message, null, submittedActivity.Id.ToString(), EventManager.TerminalActionActivationFailed);
                     throw;
                 }
             }
@@ -415,7 +416,7 @@ namespace Hub.Services
 
                     if (originalActions.TryGetValue(submitted.Id, out existingActivity))
                     {
-                        RestoreSystemProperties(existingActivity, (ActivityDO) submitted);
+                        RestoreSystemProperties(existingActivity, (ActivityDO)submitted);
                     }
                 }
             }
@@ -493,7 +494,7 @@ namespace Hub.Services
                 return;
             }
 
-            var curActivityDO = (ActivityDO) exisiting.Clone();
+            var curActivityDO = (ActivityDO)exisiting.Clone();
 
             var dto = Mapper.Map<ActivityDO, ActivityDTO>(curActivityDO);
             bool skipDeactivation = false;
@@ -558,17 +559,16 @@ namespace Hub.Services
                     }
                     else
                     {
-                        ReportActivityInvocationError(submittedActivity, e.Message, null,submittedActivity.Id.ToString(), EventManager.TerminalConfigureFailed);
+                        ReportActivityInvocationError(submittedActivity, e.Message, null, submittedActivity.Id.ToString(), EventManager.TerminalConfigureFailed);
                         throw;
                     }
                 }
                 catch (Exception e)
                 {
-                    ReportActivityInvocationError(submittedActivity, e.Message, null ,submittedActivity.Id.ToString(), EventManager.TerminalConfigureFailed);
+                    ReportActivityInvocationError(submittedActivity, e.Message, null, submittedActivity.Id.ToString(), EventManager.TerminalConfigureFailed);
                     throw;
                 }
             }
-
             return Mapper.Map<ActivityDO>(tempActionDTO);
         }
 

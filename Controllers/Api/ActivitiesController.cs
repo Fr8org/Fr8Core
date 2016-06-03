@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
@@ -9,6 +13,8 @@ using Hub.Infrastructure;
 using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;
 using Microsoft.AspNet.Identity;
+using Segment;
+using Segment.Model;
 using StructureMap;
 
 namespace HubWeb.Controllers
@@ -39,9 +45,9 @@ namespace HubWeb.Controllers
             {
                 var userId = User.Identity.GetUserId();
                 var result = await _activity.CreateAndConfigure(uow, userId, activityTemplateId, label, name, order, parentNodeId, false, authorizationTokenId) as ActivityDO;
-                    return Ok(Mapper.Map<ActivityDTO>(result));
-                }
-                }
+                return Ok(Mapper.Map<ActivityDTO>(result));
+            }
+        }
 
 
         //WARNING. there's lots of potential for confusion between this POST method and the GET method following it.
@@ -53,10 +59,10 @@ namespace HubWeb.Controllers
             // WebMonitor.Tracer.Monitor.StartMonitoring("Configuring action " + curActionDesignDTO.Name);
             curActionDesignDTO.CurrentView = null;
             ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDesignDTO);
-
+            var userId = User.Identity.GetUserId();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                ActivityDTO activityDTO = await _activity.Configure(uow, User.Identity.GetUserId(), curActivityDO);
+                ActivityDTO activityDTO = await _activity.Configure(uow, userId, curActivityDO);
                 return Ok(activityDTO);
             }
         }
