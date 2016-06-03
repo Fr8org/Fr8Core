@@ -82,7 +82,9 @@ namespace terminalDocuSign.Actions
         }
 
         private const string UserFieldsAndRolesCrateLabel = "Fields and Roles";
-        
+        private const string advisoryName = "DocuSign Template Warning";
+        private const string advisoryContent = "In your selected template you have fields with default values. Those can be changes inside advanced DocuSign UI to frendlier label.";
+
         public Send_DocuSign_Envelope_v2(ICrateManager crateManager, IDocuSignManager docuSignManager) 
             : base(crateManager, docuSignManager)
         {
@@ -124,7 +126,21 @@ namespace terminalDocuSign.Actions
             var hasDefaultNames = DocuSignManager.DocuSignTemplateDefaultNames(tabsAndFields.Item2);
             if (hasDefaultNames)
             {
-                AddAdvisoryCrate("DocuSign Template Warning", "In your selected template you have fields with default values. Those can be changes inside advanced DocuSign UI to frendlier label.");
+                var advisoryCrate = Storage.CratesOfType<AdvisoryMessagesCM>().FirstOrDefault();
+                var currentAdvisoryResults = advisoryCrate == null ? new AdvisoryMessagesCM() : advisoryCrate.Content;
+
+                var advisory = currentAdvisoryResults.Advisories.FirstOrDefault(x => x.Name == advisoryName);
+
+                if (advisory == null)
+                {
+                    currentAdvisoryResults.Advisories.Add(new AdvisoryMessageDTO { Name = advisoryName, Content = advisoryContent });
+                }
+                else
+                {
+                    advisory.Content = advisoryContent;
+                }
+
+                Storage.Add(Crate.FromContent("Advisories", currentAdvisoryResults));
             }
             //Add TextSource control for every DocuSign role to activity UI
             ActivityUI.RolesFields.AddRange(roles.Select(x => UiBuilder.CreateSpecificOrUpstreamValueChooser(x.Key, x.Key, requestUpstream: true)));
