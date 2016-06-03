@@ -16,7 +16,7 @@ The initial Terminals being built and hosted by The fr8 Company are .Net based A
 [Adding Activities and UI](dotNet/TerminalDeveloping-Chapter-2.md)
 
 ##### Chapter 3:
-[Implementing oAuth2 authentication](dotNet/TerminalDeveloping-Authentication.md) and [Connecting your Terminal to a WebService ](TerminalDeveloping-AddingAWebService.md)
+[Implementing oAuth2 authentication](dotNet/TerminalDeveloping-Authentication.md) and [Connecting your Terminal to a WebService ](dotNet/TerminalDeveloping-AddingAWebService.md)
 
 ##### Chapter 4:
 [Prelimetary work on the Azure deployment](dotNet/TerminalDeveloping-DeployingToAzure.md)
