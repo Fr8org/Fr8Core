@@ -1,15 +1,14 @@
 ﻿<div id="ap-pane" class="pane-configure-action" block-if="processing === true" ng-click="reloadConfiguration()">
-    <div ng-if="!(currentAction.activityTemplate.category==='Solution' && mode !== 'solution')">
+      <div ng-if="!(currentAction.activityTemplate.category==='Solution' && mode !== 'solution')">
         <div ng-if="!currentAction.currentView" ng-repeat="field in currentAction.configurationControls.fields">
-            <configuration-control plan="plan" current-action="currentAction" field="field" ng-if="!field.isHidden" />
+            <configuration-control plan="plan" current-action="currentAction" field="field" ng-if="!field.isHidden"/>
         </div>
         <div ng-if="currentAction.currentView">
             <div ng-repeat="field in currentAction.configurationControls.fields">
-                <configuration-control plan="plan" current-action="currentAction" field="field" ng-if="!field.isHidden && field.fieldLabel==currentAction.currentView" />
+                <configuration-control plan="plan" current-action="currentAction" field="field" ng-if="!field.isHidden && field.fieldLabel==currentAction.currentView"/>
             </div>
         </div>
     </div>
-
     <div class="pane-configure-action-returnToSolution" ng-if="currentAction.activityTemplate.category==='Solution' && mode !== 'solution'" ng-init="populateAllActivities()">
         <label ng-if="allActivities.length != 0">This solution has {{allActivities.length}} {{allActivities.length > 1 ? "parts" : "part"}}: </label>
         <div class="solution-parts">

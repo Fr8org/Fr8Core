@@ -1,13 +1,10 @@
 ﻿/// <reference path="../_all.ts" />
 
 module dockyard.controllers {
-    'use strict';
-
     export interface ISelectActionScope extends ng.IScope {
         activityCategories: ng.resource.IResource<interfaces.IActivityCategoryDTO[]>;
         onSolutionSelected: (solution: interfaces.IActivityCategoryDTO) => void;
     }
-
     export class SolutionListController {
 
         public static $inject = [

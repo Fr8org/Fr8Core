@@ -23,7 +23,7 @@ namespace HealthMonitor
             string commandText = string.Empty;
             string scriptName = "CleanUpAfterTests.ps1";
 
-            string rootPath = Utilities.MiscUtils.UpNLevels(Environment.CurrentDirectory, 4);
+            string rootPath = UpNLevels(Environment.CurrentDirectory, 4);
             string sqlScript = Path.Combine(rootPath, "_PowerShellScripts", scriptName);
             if (File.Exists(sqlScript))
                 commandText = File.ReadAllText(sqlScript);
@@ -105,6 +105,19 @@ namespace HealthMonitor
         private void debug_DataAdded(object sender, DataAddedEventArgs e)
         {
             Console.WriteLine(((PSDataCollection<DebugRecord>)sender)[e.Index].ToString());
+        }
+
+        private static string UpNLevels(string path, int levels)
+        {
+            int index = path.LastIndexOf('\\', path.Length - 1, path.Length);
+            if (index <= 3)
+                return string.Empty;
+            string result = path.Substring(0, index);
+            if (levels > 1)
+            {
+                result = UpNLevels(result, levels - 1);
+            }
+            return result;
         }
     }
 }

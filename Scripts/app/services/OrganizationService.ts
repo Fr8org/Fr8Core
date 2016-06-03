@@ -7,7 +7,7 @@
     }
 
     app.factory('OrganizationService', ['$resource', ($resource: ng.resource.IResourceService): IOrganizationService =>
-        <IOrganizationService>$resource('/api/organization', null,
+        <IOrganizationService>$resource('/api/organizations', null,
             {
                 'add': {
                     method: 'POST'
@@ -17,7 +17,7 @@
                 },
                 'getOrganization': {
                     method: 'GET',
-                    url: '/api/organization?id=:id',
+                    url: '/api/organizations?id=:id',
                     params: {
                         id: '@id'
                     }
