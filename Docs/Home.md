@@ -41,7 +41,7 @@
     - Tutorials  
         * [Tutorial: A Basic Twilio Terminal That Can Send an SMS Message](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Tutorials/TwilioTutorial.md)    
         * [Tutorial: Create a Fr8 Plan, Import Spreadsheet Data, and Distribute the Data by an Email Activity](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Tutorials/CreateImportDistributeTutorial.md)    
-* [Security](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForUsers/Fr8ForUsers.md)  
+* [Security](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Security/SecurityOverview.md)  
     * [Permissions](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Security/Permissions.md)
     * [Security Internals](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Security/SecurityInternals.md)
     * [Profiles](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Security/Profiles.md)
