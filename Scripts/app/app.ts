@@ -466,6 +466,13 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             url: "/page_definitions",
             templateUrl: "/AngularTemplate/PageDefinitionList",
             data: { pageTitle: "Manage Page Definitions", pageSubTitle: "" }
+        })
+
+        .state("addPlanDefinition",
+        {
+            url: "/page_definitions/details",
+            templateUrl: "/AngularTemplate/PageDefinitionDetails",
+            data: { pageTitle: "Page Definition Details", pageSubTitle: "" }
         });
 }]);
 

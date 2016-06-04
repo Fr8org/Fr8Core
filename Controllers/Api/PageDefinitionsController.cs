@@ -10,20 +10,20 @@ namespace HubWeb.Controllers.Api
         {
             return new List<PageDefinitionDTO> { new PageDefinitionDTO() };
         }
-        
+
         public PageDefinitionDTO Get(int id)
         {
             return new PageDefinitionDTO();
         }
-        
+
         public void Post([FromBody]PageDefinitionDTO pageDefinitionDTO)
         {
         }
-        
+
         public void Put(int id, [FromBody]string pageDefinitionDTO)
         {
         }
-        
+
         public void Delete(int id)
         {
         }

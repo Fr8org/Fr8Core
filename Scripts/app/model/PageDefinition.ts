@@ -9,8 +9,6 @@
         authorUrl: string;
         pageName: string;
 
-
-
         constructor(name: string, url: string, pageName: string) {
             this.title = name;
             this.url = url;
