@@ -1,6 +1,6 @@
 # ACTIVITY DEVELOPMENT: DOCUMENTATION
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md) 
+[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)
 
 Fr8 supports the ability for Activities to provide documentation.  There are two kinds of documentation mechanisms:
 
@@ -19,9 +19,9 @@ This enables the Activity to cause the client to render a full page of informati
 
 ## The Documentation Request Process
 
-![Documentation_Flow](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/ActivityDevelopment_DocumentationFlow.png) 
+![Documentation_Flow](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/ActivityDevelopment_DocumentationFlow.png)
 
- As the above flow shows, Activity designers encode Documentation triggers into their Activities. When the user activates a trigger, a POST is made to the activity, which puts together appropriate content and returns it to the client, which displays it. 
+ As the above flow shows, Activity designers encode Documentation triggers into their Activities. When the user activates a trigger, a POST is made to the activity, which puts together appropriate content and returns it to the client, which displays it.
 
 ### Specifying a Help Menu
 
@@ -43,7 +43,7 @@ At tthat his point, the Activity should assemble HTML content and pack it into a
 ```
 The client will render the provide content by popping up a help dialog window.
 
- 
+
 
 ### Specifying an Activity Overview
 
@@ -53,7 +53,7 @@ Activity Overviews are currently requested by the Fr8.co website on pages such a
 
 Element |	Description |	Notes
 --- | --- | ---
-Body |	a block of HTML	| 
+Body |	a block of HTML	|
 Name |	name of the solution	|
 Terminal |	friendly name of Terminal |	note that TerminalDO is being extended in another JIRA issue to have a friendly name property
 Version |	version number in the form “1.0”	|
@@ -66,7 +66,7 @@ Support for documentation features like small minicon question marks and context
 
 To add a question mark minicon to a control, as shown here:
 
-![CrateChooser](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/ActivityDevelopment_CrateChooser.png) 
+![CrateChooser](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/ActivityDevelopment_CrateChooser.png)
 
 Add a documentation json block to the control with displayMechanism set to “Minicon”.
 ```javascript
@@ -79,4 +79,25 @@ The contentPath can be set to any value. It’s used to tell the Activity which 
 
 The content might also be URL:Path to redirect user to a new page with documentation.
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md) 
+## Adding Advisories as Popup Help
+
+Advisories as Popup Help represents a modeless popups with custom content that gives some explanations, warnings or more information about specified activity. The content that can defined into this modeless popup can be a simple text or complex html.
+
+To add an Advisory to an Activity, custom content need to be packed into Activity JSON with custom crates defined specially for advisories. Those crates are from AdvisoryMessages Crate Manifest type and has this specified JSON definition:
+```javascript
+"advisories" [
+    {
+      "name":"DocuSign Template Warning",
+      "content":"In your selected template you have fields with default values. Those can be changes inside advanced DocuSign UI to  frendlier label."
+    }
+]
+```
+
+Once the terminal provide an advisory for a specific activity, then the front end will render the content provided in a modeless popup, next to the activity, starting from the top-right corner as showed on the picture below. Advisories will be shown in the design-time of a plan.
+
+This way we can make the process easier for users that want to configure a new plan with giving them instructions and help in configuring activities.
+
+![CrateChooser](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/ActivityDevelopment_CrateChooser.png)
+
+
+[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)
