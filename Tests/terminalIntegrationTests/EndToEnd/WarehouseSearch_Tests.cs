@@ -7,6 +7,7 @@ using NUnit.Framework;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
+using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using HealthMonitor.Utility;
@@ -75,6 +76,39 @@ namespace terminalIntegrationTests.EndToEnd
             Assert.AreEqual(1, searchedData.Count, "Response from warehouse/query contains wrong number of results.");
 
             Assert.AreEqual(mtData[1].EnvelopeId, searchedData[0].EnvelopeId, "Response from warehouse/query contains wrong value for EnvelopeId.");
+        }
+
+        [Test]
+        public async Task WarehouseAdd()
+        {
+            var url = GetHubApiBaseUrl() + "warehouse/add";
+            var dataToAdd = new DocuSignEnvelopeCM()
+            {
+                EnvelopeId = Guid.NewGuid().ToString(),
+                Name = "test envelope added by WarehouseAdd test",
+                SentDate = new DateTime(2021, 04, 20)
+            };
+
+            var crateStorage = new CrateStorage(Fr8Data.Crates.Crate.FromContent(null, dataToAdd));
+
+            await HttpPostAsync<CrateStorageDTO, object>(url, CrateStorageSerializer.Default.ConvertToDto(crateStorage));
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var user = uow.UserRepository
+                    .GetQuery()
+                    .Where(x => x.UserName == TestUserEmail)
+                    .FirstOrDefault();
+
+                Assert.NotNull(user, "Could not find test user in the database.");
+
+                var addedEnvelope = uow.MultiTenantObjectRepository.Query<DocuSignEnvelopeCM>(user.Id, x=>x.EnvelopeId == dataToAdd.EnvelopeId).FirstOrDefault();
+
+                Assert.NotNull(addedEnvelope, "Failed to add new record to Warehouse using API");
+
+                Assert.AreEqual(dataToAdd.Name, addedEnvelope.Name, "Invalid Name of stored envelope");
+                Assert.AreEqual(dataToAdd.SentDate, addedEnvelope.SentDate, "Invalid SentDate of stored envelope");
+            }
         }
 
         private void CreateMtDataRecords(IEnumerable<DocuSignEnvelopeCM> data)

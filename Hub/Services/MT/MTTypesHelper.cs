@@ -14,8 +14,6 @@ namespace Hub.Services.MT
         public static IEnumerable<FieldDTO> GetFieldsByTypeId(
             Guid typeId, AvailabilityType availability = AvailabilityType.NotSet)
         {
-            var fields = new Dictionary<string, string>();
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 return GetFieldsByTypeId(uow, typeId, availability);
