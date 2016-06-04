@@ -10,6 +10,7 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using Newtonsoft.Json;
 using terminalUtilities.Excel;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
@@ -88,14 +89,24 @@ namespace terminalFr8Core.Activities
             var controlContainer = GetControl<MetaControlContainer>("control_container");
             var collectionControls = controlContainer.CreateControls();
 
-                var fieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(RuntimeFieldCrateLabelPrefix, AvailabilityType.RunTime, new FieldDTO[] { });
+            //**** tony
+            var userDefinedPayload =
+                collectionControls.Select(x => new FieldDTO() {Key = x.Label, Value = x.Label, Availability = AvailabilityType.Always, SourceActivityId = this.ActivityId.ToString()}).ToArray();
+
+            var fieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(RuntimeFieldCrateLabelPrefix, AvailabilityType.RunTime, userDefinedPayload);
+            //var fieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(RuntimeFieldCrateLabelPrefix, AvailabilityType.RunTime, new FieldDTO[] { });
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeFieldCrateLabelPrefix, true).AddFields(userDefinedPayload);
+            //**** tony
+
             Storage.RemoveByLabel(RuntimeFieldCrateLabelPrefix);
             Storage.Add(fieldsCrate);
 
-                foreach (var controlDefinitionDTO in collectionControls)
-                {
-                PublishCollectionControl(controlDefinitionDTO);
-                }
+            
+            //tony.y: this not works ↓
+            //foreach (var controlDefinitionDTO in collectionControls)
+            //    {
+            //    PublishCollectionControl(controlDefinitionDTO);
+            //    }
 
                 //TODO this part should be modified with 2975
                 //PublishFilePickers(pStorage, collectionControls.Controls.Where(a => a.Type == ControlTypes.FilePicker));
@@ -365,6 +376,33 @@ namespace terminalFr8Core.Activities
                 }
             }
             PublishCollectionControls();
+
+
+            // tony.y: i don`t really know what i`m doing here ↓
+            //var valuesList = controlContainer.CreateControls() ;
+
+            //foreach (var item in valuesList)
+            //{
+            //    CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeFieldCrateLabelPrefix, true)
+            //        .AddField(item.Label);
+            //}
+
+            //var fieldListControl = GetControl<FieldList>("Selected_Fields");
+
+            //var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
+
+            //userDefinedPayload.ForEach(x =>
+            //{
+            //    x.Value = x.Key;
+            //    x.Availability = AvailabilityType.RunTime;
+            //});
+
+            //CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeFieldCrateLabelPrefix, true).AddFields(userDefinedPayload);
+
+
+
+           
+           
         }
     }
 }
