@@ -81,9 +81,9 @@ The content might also be URL:Path to redirect user to a new page with documenta
 
 ## Adding Advisories as Popup Help
 
-Advisories as Popup Help represents a modeless popups with custom content that gives some explanations, warnings or more information about specified activity. The content that can defined into this modeless popup can be a simple text or complex html.
+Advisories as Popup Help represents a modeless popups with custom content that gives some explanations, warnings or more information about specified activity. The content is can defined into this modeless popup can be a simple text or complex html.
 
-To add an Advisory to an Activity, custom content need to be packed into Activity JSON with custom crates defined specially for advisories. Those crates are from AdvisoryMessages Crate Manifest type and has this specified JSON definition:
+To add an Advisory to an Activity, given custom content need to be packed into Activity JSON with custom crates defined specially for advisories. Those crates are from 'AdvisoryMessages Crate Manifest" type and has below specified JSON definition:
 ```javascript
 "advisories" [
     {
@@ -97,7 +97,7 @@ Once the terminal provide an advisory for a specific activity, then the front en
 
 This way we can make the process easier for users that want to configure a new plan with giving them instructions and help in configuring activities.
 
-![CrateChooser](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/ActivityDevelopment_CrateChooser.png)
+  ![CrateChooser](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/advisoryMessages.png)
 
 
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)
