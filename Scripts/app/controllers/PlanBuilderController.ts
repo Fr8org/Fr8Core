@@ -503,6 +503,9 @@ module dockyard.controllers {
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ExecutePlan], () => this.PaneConfigureAction_ExecutePlan());
 
             // Handles Response from Configure call from PaneConfiguration
+            this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ConfigureCallResponse],
+                (event: ng.IAngularEvent, callConfigureResponseEventArgs: pca.CallConfigureResponseEventArgs) => this.PaneConfigureAction_ConfigureCallResponse(callConfigureResponseEventArgs));
+            
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ShowAdvisoryMessages],
                 (event: ng.IAngularEvent, eventArgs: pca.ShowAdvisoryMessagesEventArgs) => this.PaneConfigureAction_ShowAdvisoryMessage(eventArgs));
         }
