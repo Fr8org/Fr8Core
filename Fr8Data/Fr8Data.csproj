@@ -101,6 +101,7 @@
     <Compile Include="DataTransferObjects\ActivityTemplateCategoryDTO.cs" />
     <Compile Include="DataTransferObjects\ActivityTemplateDTO.cs" />
     <Compile Include="DataTransferObjects\ActivityTypeListDTO.cs" />
+    <Compile Include="DataTransferObjects\AdvisoryMessageDTO.cs" />
     <Compile Include="DataTransferObjects\AlarmDTO.cs" />
     <Compile Include="DataTransferObjects\AuthenticateResponse.cs" />
     <Compile Include="DataTransferObjects\AuthorizationTokenDTO.cs" />
@@ -155,7 +156,7 @@
     <Compile Include="DataTransferObjects\ProfileDTO.cs" />
     <Compile Include="DataTransferObjects\QueryDTO.cs" />
     <Compile Include="DataTransferObjects\SlackPayloadDTO.cs" />
-    <Compile Include="DataTransferObjects\SolutionPageDTO.cs" />
+    <Compile Include="DataTransferObjects\DocumentationResponseDTO.cs" />
     <Compile Include="DataTransferObjects\StandardAccountingTransactionDTO.cs" />
     <Compile Include="DataTransferObjects\SubPlanDTO.cs" />
     <Compile Include="DataTransferObjects\TerminalDiscoveryDTO.cs" />
@@ -181,6 +182,7 @@
     <Compile Include="Managers\CrateManager.StorageUpdater.cs" />
     <Compile Include="Managers\CrateMangerExtensions.cs" />
     <Compile Include="Managers\ICrateManager.cs" />
+    <Compile Include="Manifests\AdvisoryMessagesCM.cs" />
     <Compile Include="Manifests\ChartOfAccountsCM.cs" />
     <Compile Include="Manifests\CrateDescriptionCM.cs" />
     <Compile Include="Manifests\CrateManifestTypes.cs" />

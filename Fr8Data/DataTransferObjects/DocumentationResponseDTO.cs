@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Fr8Data.DataTransferObjects
 {
-    public class SolutionPageDTO
+    public class DocumentationResponseDTO
     {
         public string Name { get; set; }
         public double Version { get; set; }

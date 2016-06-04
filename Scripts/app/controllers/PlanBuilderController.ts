@@ -45,6 +45,8 @@ module dockyard.controllers {
         view: string;
         viewMode: string;
         hasAnyActivity: (pSubPlan: any) => boolean;
+        hasHelpMenuItem: (activity: model.ActivityDTO) => boolean;
+        showActivityHelpDocumentation: (activity: model.ActivityDTO) => void;
 }
 
 
@@ -63,6 +65,7 @@ module dockyard.controllers {
 
         public static $inject = [
             '$scope',
+            '$window',
             'LocalIdentityGenerator',
             '$state',
             'ActionService',
@@ -87,6 +90,7 @@ module dockyard.controllers {
 
         constructor(
             private $scope: IPlanBuilderScope,
+            private $window: ng.IWindowService,
             private LocalIdentityGenerator: services.ILocalIdentityGenerator,
             private $state: ng.ui.IStateService,
             private ActionService: services.IActionService,
@@ -103,7 +107,7 @@ module dockyard.controllers {
             private ConfigureTrackerService: services.ConfigureTrackerService,
             private SubPlanService: services.ISubPlanService,
             private $stateParams: ng.ui.IStateParamsService,
-            private $window: ng.IWindowService
+            private documentationService: services.ISolutionDocumentationService
         ) {
 
             this.LayoutService.resetLayout();
@@ -138,6 +142,33 @@ module dockyard.controllers {
                 });
             };
 
+            this.$scope.hasHelpMenuItem = (activity) => {
+                if (activity.activityTemplate.showDocumentation != null) {
+                    if (activity.activityTemplate.showDocumentation.body.displayMechanism != undefined &&
+                        activity.activityTemplate.showDocumentation.body.displayMechanism.contains("HelpMenu")) {
+                        return true;
+                    }                    
+                }
+
+                return false;
+            }
+
+            this.$scope.showActivityHelpDocumentation = (activity) => {
+
+                var activityDTO = new model.ActivityDTO("", "", "");
+                activityDTO.toActionVM();
+                activityDTO.documentation = "HelpMenu";
+                activityDTO.activityTemplate = activity.activityTemplate;
+
+                documentationService.getDocumentationResponseDTO(activityDTO).$promise.then(data => {
+
+                    if (data) {
+                        var newWindow = this.$window.open();
+                        newWindow.document.writeln(data.body);
+                    }
+                });
+            }
+
             this.$scope.isBusy = () => {
                 return this._longRunningActionsCounter > 0 || this._loading;
             };
@@ -170,6 +201,7 @@ module dockyard.controllers {
                     ActionService.save(action);
                 });
             }
+
             this.$scope.chooseAuthToken = (action: model.ActivityDTO) => {
                 this.chooseAuthToken(action);
             };
@@ -471,8 +503,8 @@ module dockyard.controllers {
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ExecutePlan], () => this.PaneConfigureAction_ExecutePlan());
 
             // Handles Response from Configure call from PaneConfiguration
-            this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ConfigureCallResponse],
-                (event: ng.IAngularEvent, callConfigureResponseEventArgs: pca.CallConfigureResponseEventArgs) => this.PaneConfigureAction_ConfigureCallResponse(callConfigureResponseEventArgs));
+            this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ShowAdvisoryMessages],
+                (event: ng.IAngularEvent, eventArgs: pca.ShowAdvisoryMessagesEventArgs) => this.PaneConfigureAction_ShowAdvisoryMessage(eventArgs));
         }
 
 
@@ -813,6 +845,28 @@ module dockyard.controllers {
                         --this._longRunningActionsCounter;
                     }
                 });
+        }
+
+        private PaneConfigureAction_ShowAdvisoryMessage(eventArgs : pca.ShowAdvisoryMessagesEventArgs) {
+            for (var i = 0; i < this.$scope.processedSubPlans.length; ++i) {
+                var subPlan = this.$scope.processedSubPlans[i];
+                if (!subPlan.actionGroups) {
+                    continue;
+                }
+                for (var j = 0; j < subPlan.actionGroups.length; ++j) {
+                    var actionGroup = subPlan.actionGroups[j];
+                    if (!actionGroup.envelopes) {
+                        continue;
+                    }
+                    for (var k = 0; k < actionGroup.envelopes.length; ++k) {
+                        var envelope = actionGroup.envelopes[k];
+                        if (envelope.activity.id === eventArgs.id) {
+                            envelope.activity.showAdvisoryPopup = true;
+                            envelope.activity.advisoryMessages = eventArgs.advisories;
+                        } 
+                    }
+                }
+            }
         }
 
         // This should handle everything that should be done when a configure call response arrives from server.
