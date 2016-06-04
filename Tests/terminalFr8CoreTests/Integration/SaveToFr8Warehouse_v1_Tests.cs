@@ -56,8 +56,7 @@ namespace terminalFr8CoreTests.Integration
             Assert.NotNull(responseActionDTO.CrateStorage);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            Assert.AreEqual(3, crateStorage.Count);
-            Assert.AreEqual(2, crateStorage.CratesOfType<FieldDescriptionsCM>().Count());
+            Assert.AreEqual(1, crateStorage.Count);
 
             AssertConfigureControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
         }

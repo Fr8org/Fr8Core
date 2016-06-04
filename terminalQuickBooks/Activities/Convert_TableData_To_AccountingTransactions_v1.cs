@@ -18,7 +18,7 @@ using Fr8Data.States;
 
 namespace terminalQuickBooks.Actions
 {
-    public class Convert_TableData_To_AccountingTransactions_v1 :
+    /*public class Convert_TableData_To_AccountingTransactions_v1 :
         BaseQuickbooksTerminalActivity<Convert_TableData_To_AccountingTransactions_v1.ActivityUi>
     {
         public class ActivityUi : StandardConfigurationControlsCM
@@ -391,5 +391,5 @@ namespace terminalQuickBooks.Actions
                 DebitOrCredit = debitOrCredit
             };
         }
-    }
+    }*/
 }

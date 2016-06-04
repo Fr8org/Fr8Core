@@ -114,7 +114,7 @@ namespace terminalBaseTests.BaseClasses
         }*/
 
         //TestActionTree
-        [Test]
+       /* [Test]
         public async Task GetDesignTimeFields_CrateDirectionIsUpstream_ReturnsMergeDesignTimeFields()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -166,7 +166,7 @@ namespace terminalBaseTests.BaseClasses
                 Assert.NotNull(result);
                 Assert.AreEqual(270, result.Fields.Count);
             }
-        }
+        }*/
 
         private static HashSet<CrateManifestType> ExcludedManifestTypes = new HashSet<CrateManifestType>()
         {
