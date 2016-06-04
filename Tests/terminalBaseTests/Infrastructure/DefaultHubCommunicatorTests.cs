@@ -22,7 +22,7 @@ namespace terminaBaselTests.Infrastructure
             base.SetUp();
         }
 
-        [Test]
+       /* [Test]
         public void GetAvailableData_ShouldGenerateCorrectDesigntimeURL()
         {
             var _restfulServiceClient = new Mock<IRestfulServiceClient>();
@@ -42,6 +42,6 @@ namespace terminaBaselTests.Infrastructure
             _hubCommunicator.GetAvailableData(id, direction, availability);
 
             _restfulServiceClient.Verify(o => o.GetAsync<IncomingCratesDTO>(It.Is<Uri>(p => p.ToString() == resultUrl), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()));
-        }
+        }*/
     }
 }
