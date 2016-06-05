@@ -301,27 +301,31 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
     $urlRouterProvider.otherwise("/myaccount");
 
     $stateProvider
-        .state('myaccount', {
+        .state('myaccount',
+        {
             url: "/myaccount",
             templateUrl: "/AngularTemplate/MyAccountPage",
             data: { pageTitle: 'My Account', pageSubTitle: '' }
         })
         // Plan list
-        .state('planList', {
+        .state('planList',
+        {
             url: "/plans",
             templateUrl: "/AngularTemplate/PlanList",
             data: { pageTitle: 'Plans', pageSubTitle: 'This page displays all Plans' }
         })
 
         // Plan form
-        .state('planForm', {
+        .state('planForm',
+        {
             url: "/plans/add",
             templateUrl: "/AngularTemplate/PlanForm",
             data: { pageTitle: 'Plan', pageSubTitle: 'Add a new Plan' }
         })
 
         // Plan Builder framework
-        .state('planBuilder', {
+        .state('planBuilder',
+        {
             url: "/plans/{id}/builder?viewMode&view",
             views: {
                 'maincontainer@': {
@@ -352,127 +356,121 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
 
             data: { pageTitle: '' }
         })
-
-        .state('showIncidents', {
+        .state('showIncidents',
+        {
             url: "/showIncidents",
             templateUrl: "/AngularTemplate/ShowIncidents",
             data: { pageTitle: 'Incidents', pageSubTitle: 'This page displays all incidents' }
         })
-
-        .state('showFacts', {
+        .state('showFacts',
+        {
             url: "/showFacts",
             templateUrl: "/AngularTemplate/ShowFacts",
             data: { pageTitle: 'Facts', pageSubTitle: 'This page displays all facts' },
         })
-
-        .state('planDetails', {
+        .state('planDetails',
+        {
             url: "/plans/{id}/details",
             templateUrl: "/AngularTemplate/PlanDetails",
             data: { pageTitle: 'Plan Details', pageSubTitle: '' }
         })
 
         // Manage files
-        .state('managefiles', {
+        .state('managefiles',
+        {
             url: "/managefiles",
             templateUrl: "/AngularTemplate/ManageFileList",
             data: { pageTitle: 'Manage Files', pageSubTitle: '' }
         })
-
-        .state('fileDetail', {
+        .state('fileDetail',
+        {
             url: "/managefiles/{id}",
             templateUrl: "/AngularTemplate/FileDetails",
             data: { pageTitle: 'File details', pageSubTitle: '' }
         })
-
-        .state('accounts', {
+        .state('accounts',
+        {
             url: '/accounts',
             templateUrl: '/AngularTemplate/AccountList',
             data: { pageTitle: 'Manage Accounts', pageSubTitle: '' }
         })
-
-        .state('accountDetails', {
+        .state('accountDetails',
+        {
             url: '/accounts/{id}',
             templateUrl: '/AngularTemplate/AccountDetails',
             data: { pageTitle: 'Account Details', pageSubTitle: '' }
         })
-
-        .state('containerDetails', {
+        .state('containerDetails',
+        {
             url: "/container/{id}/details",
             templateUrl: "/AngularTemplate/containerDetails",
             data: { pageTitle: 'Container  Details', pageSubTitle: '' }
         })
-
-        .state('configureSolution', {
+        .state('configureSolution',
+        {
             url: "/solution/{solutionName}",
             templateUrl: "/AngularTemplate/PlanBuilder",
             data: { pageTitle: 'Create a Solution', pageSubTitle: '' }
         })
-
-        .state('containers', {
+        .state('containers',
+        {
             url: "/containers",
             templateUrl: "/AngularTemplate/ContainerList",
             data: { pageTitle: 'Containers', pageSubTitle: 'This page displays all Containers ' },
         })
-
-        .state('webservices', {
+        .state('webservices',
+        {
             url: "/webservices",
             templateUrl: "/AngularTemplate/WebServiceList",
             data: { pageTitle: 'Web Services', pageSubTitle: '' }
         })
-
-        .state('findObjects', {
+        .state('findObjects',
+        {
             url: '/findObjects/create',
             templateUrl: '/AngularTemplate/FindObjects',
             data: { pageTitle: 'Constructing Find Objects plan', pageSubTitle: '' }
         })
-
-        .state('findObjectsResult', {
+        .state('findObjectsResult',
+        {
             url: '/findObjects/{id}/results',
             templateUrl: '/AngularTemplate/FindObjectsResults',
             data: { pageTitle: 'Find Objects results', pageSubTitle: '' }
         })
-
-        .state('terminals', {
+        .state('terminals',
+        {
             url: "/terminals",
             templateUrl: "/AngularTemplate/TerminalList",
             data: { pageTitle: 'Terminals', pageSubTitle: '' }
         })
-
-        .state('manifestregistry', {
+        .state('manifestregistry',
+        {
             url: "/manifest_registries",
             templateUrl: "/AngularTemplate/ManifestRegistryList",
             data: { pageTitle: 'Manifest Registry', pageSubTitle: '' }
         })
-
-        .state('manageAuthTokens', {
+        .state('manageAuthTokens',
+        {
             url: '/manageAuthTokens',
             templateUrl: '/AngularTemplate/ManageAuthTokens',
             data: { pageTitle: 'Manage Auth Tokens', pageSubTitle: '' }
         })
-
-        .state('changePassword', {
+        .state('changePassword',
+        {
             url: '/changePassword',
             templateUrl: '/AngularTemplate/ChangePassword',
             data: { pageTitle: 'Change Password', pageSubTitle: '' }
         })
-
-        .state('reports', {
+        .state('reports',
+        {
             url: "/reports",
             templateUrl: "/AngularTemplate/PlanReportList",
             data: { pageTitle: 'Reports', pageSubTitle: 'This page displays all Reports' }
         })
-
-        .state("pageDefinitions", {
+        .state("pageDefinitions",
+        {
             url: "/page_definitions",
             templateUrl: "/AngularTemplate/PageDefinitionList",
             data: { pageTitle: "Manage Page Definitions", pageSubTitle: "" }
-        })
-
-        .state("addPlanDefinition",
-        {
-            url: "/page_definitions/details",
-            templateUrl: "/AngularTemplate/PageDefinitionDetails",
-            data: { pageTitle: "Page Definition Details", pageSubTitle: "" }
         });
 }]);
 

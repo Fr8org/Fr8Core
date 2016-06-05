@@ -5,11 +5,12 @@ module dockyard.controllers {
 
     export interface IPageDefinitionListScope extends ng.IScope {
         pageDefinitions: Array<interfaces.IPageDefinitionVM>;
-        openDetails(pd: interfaces.IPageDefinitionVM);
-        dtOptionsBuilder: any;
+        showAddPageDefinitionModal: () => void;
+        showModalWithPopulatedValues: (pageDefinition: interfaces.IPageDefinitionVM) => void;
     }
 
     class PageDefinitionListController {
+
         // $inject annotation.
         // It provides $injector with information about dependencies to be injected into constructor
         // it is better to have it close to the constructor, because the parameters must match in count and type.
@@ -17,35 +18,60 @@ module dockyard.controllers {
         public static $inject = [
             '$scope',
             'PageDefinitionService',
-            '$state',
-            'DTOptionsBuilder'
+            '$modal'
         ];
 
         constructor(
             private $scope: IPageDefinitionListScope,
             private PageDefinitionService: services.IPageDefinitionService,
-            private $state: ng.ui.IStateService,
-            private DTOptionsBuilder) {
+            private $modal: any) {
 
-            $scope.dtOptionsBuilder = DTOptionsBuilder.newOptions().withOption('language', {
-                'sEmptyTable': '',
-                'zeroRecords': ''
-            });
+            $scope.showAddPageDefinitionModal = <() => void>angular.bind(this, this.showAddPageDefinitionModal);
 
-            PageDefinitionService.getAll().$promise.then(function (data) {
+            $scope.showModalWithPopulatedValues = <(pageDefinition: interfaces.IPageDefinitionVM) => void>angular
+                .bind(this, this.showModalWithPopulatedValues);
+
+            PageDefinitionService.query().$promise.then(data => {
                 $scope.pageDefinitions = data;
-
-                // reconfigure the message 
-
-                $scope.dtOptionsBuilder = DTOptionsBuilder.newOptions().withOption('language', {
-                    'sEmptyTable': 'No data available in table',
-                    'zeroRecords': 'No matching records found'
-                });
             });
+        }
 
-            $scope.openDetails = function (pd) {
-                $state.go('', { id: pd.title });
-            }
+        private showAddPageDefinitionModal() {
+
+            this.$modal.open({
+                animation: true,
+                templateUrl: 'pageDefinitionFormModal',
+                controller: 'PageDefinitionFormController',
+                resolve: {
+                    definitionTitle: function () {
+                        return undefined;
+                    }
+                }
+            })
+                .result.then(pageDefinition => {
+                    this.$scope.pageDefinitions.push(pageDefinition);
+                });
+        }
+
+        private showModalWithPopulatedValues(pageDefinition: interfaces.IPageDefinitionVM) {
+            var definitionTitle = { value: pageDefinition.title };
+
+            this.$modal.open({
+                animation: true,
+                templateUrl: 'pageDefinitionFormModal',
+                controller: 'PageDefinitionFormController',
+                resolve: {
+                    definitionTitle: function () {
+                        return definitionTitle;
+                    }
+                }
+            })
+                .result.then(pageDefinition => {
+                    this.$scope.pageDefinitions.push(pageDefinition);
+                    this.PageDefinitionService.query().$promise.then(data => {
+                        this.$scope.pageDefinitions = data;
+                    });
+                });
         }
     }
 

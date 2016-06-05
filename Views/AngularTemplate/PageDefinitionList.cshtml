@@ -1,5 +1,5 @@
-﻿<div ng-controller="PageDefinitionListController" class="margin-top-10">
-    <div class="row">
+﻿<div ng-controller="PageDefinitionListController">
+    <div class="row" style="margin-bottom: 24px;">
         <div class="col-md-12 col-sm-12">
             <!-- BEGIN PORTLET-->
             <div class="portlet light ">
@@ -7,28 +7,74 @@
                     <div class="caption caption-md">
                         <i class="icon-bar-chart font-green-haze hide"></i>
                         <span class="caption-subject font-green-haze bold uppercase">Page Definitions</span>
-                        <a ui-sref="addPlanDefinition" class="btn green route-list-header-button">Add New</a>
+                    </div>
+                    <div class="actions">
+                        <a class="btn green" ng-click="showAddPageDefinitionModal()" href="#">Add Page Definition</a>
                     </div>
                 </div>
                 <div class="portlet-body">
-                    <table datatable="ng" class="row-border hover" dt-options="dtOptionsBuilder">
-                        <thead>
-                            <tr>
-                                <th>Title</th>
-                                <th>Url</th>
-                                <th>Tags</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="pd in ::pageDefinitions" ng-click="openDetails(pd)" style="cursor: pointer;">
-                                <td>{{:: pd.title }}</td>
-                                <td>{{:: pd.url }}</td>
-                                <td>{{:: pd.tags }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div ng-show="pageDefinitions.length == 0" class="ng-hide">No page definitions found.</div>
+                    <div ng-show="pageDefinitions.length > 0">
+                        <table datatable="ng" class="row-border hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Url</th>
+                                    <th>Tags</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="pageDefinition in pageDefinitions" ng-click="showModalWithPopulatedValues(pageDefinition)" style="cursor: pointer;">
+                                    <td>{{:: pageDefinition.title }}</td>
+                                    <td>{{:: pageDefinition.url }}</td>
+                                    <td>{{:: pageDefinition.tags }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script type="text/ng-template" id="pageDefinitionFormModal">
+        <form role="form" ng-submit="submit(form.$valid)" name="form" novalidate>
+
+            <div class="modal-header">
+                <h3 class="modal-title">Add Page Definition</h3>
+            </div>
+
+            <div class="modal-body">
+                <div class="alert alert-danger" ng-show="form.$submitted && !form.$valid">
+                    Some fields do not contain correct data. Please check below.
+                </div>
+                <div class="alert alert-danger" ng-show="errorMessage != null">
+                    {{errorMessage}}
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Title</label>
+                    <input type="text" name="title" placeholder="" maxlength="100" class="form-control" ng-model="pageDefinition.title" required />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Tags</label>
+                    <input type="text" name="url" placeholder="" maxlength="100" class="form-control" ng-model="pageDefinition.tags" required />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Type</label>
+                    <input type="text" name="type" placeholder="" maxlength="100" class="form-control" ng-model="pageDefinition.type" required />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Description</label>
+                    <input type="text" name="author" placeholder="" maxlength="100" class="form-control" ng-model="pageDefinition.description" required />
+                </div>               
+
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-primary" type="submit" ng-disabled="!form.$valid">Ok</button>
+                <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+            </div>
+
+        </form>
+    </script>
 </div>
