@@ -31,7 +31,7 @@ namespace HubTests.Controllers
         {
             var controller = new DocumentationController(_activityMock.Object, _terminalMock.Object);
             var result = await controller.Activity(new ActivityDTO { Documentation = "Terminal=t" });
-            Assert.IsTrue(result is OkNegotiatedContentResult<List<SolutionPageDTO>>, "Wrong result type is returned for terminal documentation type");
+            Assert.IsTrue(result is OkNegotiatedContentResult<List<DocumentationResponseDTO>>, "Wrong result type is returned for terminal documentation type");
             _terminalMock.Verify(x => x.GetSolutionDocumentations("t"), Times.Once(), "Terminal documentation was not requested");
         }
 
@@ -40,8 +40,8 @@ namespace HubTests.Controllers
         {
             var controller = new DocumentationController(_activityMock.Object, _terminalMock.Object);
             var result = await controller.Activity(new ActivityDTO { Documentation = "MainPage" });
-            Assert.IsTrue(result is OkNegotiatedContentResult<SolutionPageDTO>, "Wrong result type is returned for solution documentation type");
-            _activityMock.Verify(x => x.GetActivityDocumentation<SolutionPageDTO>(It.IsAny<ActivityDTO>(), true), Times.Once(), "Solution documentation was not requested");
+            Assert.IsTrue(result is OkNegotiatedContentResult<DocumentationResponseDTO>, "Wrong result type is returned for solution documentation type");
+            _activityMock.Verify(x => x.GetActivityDocumentation<DocumentationResponseDTO>(It.IsAny<ActivityDTO>(), true), Times.Once(), "Solution documentation was not requested");
         }
 
         [Test]

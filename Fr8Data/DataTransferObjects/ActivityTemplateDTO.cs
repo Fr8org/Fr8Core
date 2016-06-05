@@ -45,5 +45,8 @@ namespace Fr8Data.DataTransferObjects
         public int MinPaneWidth { get; set; }
 
         public bool NeedsAuthentication { get; set; }
+
+        [JsonProperty("showDocumentation")]
+        public ActivityResponseDTO ShowDocumentation { get; set; }
     }
 }

@@ -18,6 +18,6 @@ namespace Hub.Interfaces
 
         Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId);
         Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId);
-        Task<List<SolutionPageDTO>> GetSolutionDocumentations(string terminalName);
+        Task<List<DocumentationResponseDTO>> GetSolutionDocumentations(string terminalName);
     }
 }

@@ -56,23 +56,13 @@ namespace terminalFr8Core.Activities
 
         public override async Task Initialize()
         {
-            var mergedUpstreamRunTimeObjects = await MergeUpstreamFields("Available Run-Time Objects");
-            FieldDTO[] upstreamLabels = mergedUpstreamRunTimeObjects.Content.
-                Fields.Select(field => new FieldDTO { Key = field.Key, Value = field.Value }).ToArray();
             var configControls = new StandardConfigurationControlsCM();
             configControls.Controls.Add(ControlHelper.CreateUpstreamCrateChooser("UpstreamCrateChooser", "Store which crates?"));
             var curConfigurationControlsCrate = PackControls(configControls);
-            //TODO let's leave this like that until Alex decides what to do
-            var upstreamLabelsCrate = CrateManager.CreateDesignTimeFieldsCrate("AvailableUpstreamLabels", new FieldDTO[] { });
-            //var upstreamLabelsCrate = Crate.CreateDesignTimeFieldsCrate("AvailableUpstreamLabels", upstreamLabels);
-            var upstreamDescriptions = await HubCommunicator.GetCratesByDirection<ManifestDescriptionCM>(ActivityId, CrateDirection.Upstream);
-            var upstreamRunTimeDescriptions = upstreamDescriptions.Where(c => c.Availability == AvailabilityType.RunTime);
-            var fields = upstreamRunTimeDescriptions.Select(c => new FieldDTO(c.Content.Name, c.Content.Id));
-            var upstreamManifestsCrate = CrateManager.CreateDesignTimeFieldsCrate("AvailableUpstreamManifests", fields.ToArray());
+            
             Storage.Clear();
             Storage.Add(curConfigurationControlsCrate);
-            Storage.Add(upstreamLabelsCrate);
-            Storage.Add(upstreamManifestsCrate);
+           
         }
 
         public override Task FollowUp()

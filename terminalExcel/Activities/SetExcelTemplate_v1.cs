@@ -105,10 +105,7 @@ namespace terminalExcel.Activities
             return CreateStandardTableCMFromExcelFile(new byte[] {}/*fileAsByteArray*/, extension);
         }
 
-        protected async Task<List<Crate<StandardFileDescriptionCM>>> GetUpstreamFileHandleCrates()
-        {
-            return await HubCommunicator.GetCratesByDirection<StandardFileDescriptionCM>(ActivityId, CrateDirection.Upstream);
-        }
+       
 
         //private async Task<StandardTableDataCM> GetUpstreamTableData()
         //{

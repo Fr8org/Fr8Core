@@ -129,12 +129,6 @@ namespace terminalDocuSignTests.Integration
             using (var updatableStorage = Crate.UpdateStorage(() => fr8CoreLoop.CrateStorage))
             {
                 updatableStorage.Clear();
-                /*var chooser = (CrateChooser)updatableStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First().Controls.FirstOrDefault(c => c.Name == "Available_Crates");
-
-                if (chooser?.CrateDescriptions != null)
-                {
-                    chooser.CrateDescriptions = new List<CrateDescriptionDTO>();
-                }*/
             }
 
             fr8CoreLoop = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", fr8CoreLoop);
@@ -146,11 +140,15 @@ namespace terminalDocuSignTests.Integration
 
             Assert.NotNull(crateChooser, "Crate chooser was not found");
 
-            var payloadDataCrate = crateChooser.CrateDescriptions.SingleOrDefault(c => c.ManifestId == (int)MT.StandardPayloadData);
+            var firstActivityCrates = Crate.GetStorage(apmAction.CrateStorage).CrateContentsOfType<CrateDescriptionCM>().FirstOrDefault();
 
-            Assert.NotNull(payloadDataCrate, "StandardPayloadData was not found in crateChooser.CrateDescriptions. Available crate descriptions are: " + string.Join("\n", crateChooser.CrateDescriptions.Select(x => $"{x.Label} of type {x.ManifestType}")));
+            crateChooser.CrateDescriptions = firstActivityCrates?.CrateDescriptions;
 
-            payloadDataCrate.Selected = true;
+            var tableDescription = crateChooser.CrateDescriptions?.FirstOrDefault(c => c.ManifestId == (int)MT.StandardPayloadData);
+            Assert.NotNull(tableDescription, "StandardPayloadData was not found in crateChooser.CrateDescriptions. Available crate descriptions are: " + string.Join("\n", crateChooser.CrateDescriptions?.Select(x => $"{x.Label} of type {x.ManifestType}") ?? new string[0]));
+            
+            tableDescription.Selected = true;
+    
             using (var updatableStorage = Crate.GetUpdatableStorage(fr8CoreLoop))
             {
                 updatableStorage.Remove<StandardConfigurationControlsCM>();
