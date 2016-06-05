@@ -55,6 +55,7 @@ namespace terminalAtlassian.Actions
             }
         }
 
+        private const string RunTimeCrateLabel = "Jira Issue Details";
 
         private readonly AtlassianService _atlassianService;
 
@@ -94,12 +95,13 @@ namespace terminalAtlassian.Actions
 
         private Crate CrateJiraIssueDetailsDescriptionCrate(List<FieldDTO> curJiraIssue)
         {
-            return Fr8Data.Crates.Crate.FromContent("Jira Issue Details", new FieldDescriptionsCM(curJiraIssue), Fr8Data.States.AvailabilityType.RunTime);
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel);
+            return Crate.FromContent(RunTimeCrateLabel, new FieldDescriptionsCM(curJiraIssue), AvailabilityType.RunTime);
         }
 
         private Crate CrateJiraIssueDetailsPayloadCrate(List<FieldDTO> curJiraIssue)
         {
-            return Fr8Data.Crates.Crate.FromContent("Jira Issue Details", new StandardPayloadDataCM(curJiraIssue), Fr8Data.States.AvailabilityType.RunTime);
+            return Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(curJiraIssue), AvailabilityType.RunTime);
         }
     }
 }
