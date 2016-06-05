@@ -67,6 +67,7 @@ namespace terminalAtlassian.Actions
 
         public override async Task Initialize()
         {
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel);
             await Task.Yield();
         }
 
@@ -76,7 +77,7 @@ namespace terminalAtlassian.Actions
             if (!string.IsNullOrEmpty(issueKey))
             {
                 var issueFields = _atlassianService.GetJiraIssue(issueKey, AuthorizationToken);
-                CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel).AddFields(issueFields);
+                Storage.ReplaceByLabel(CrateJiraIssueDetailsDescriptionCrate(issueFields));
             }
             await Task.Yield();
         }
@@ -91,6 +92,11 @@ namespace terminalAtlassian.Actions
             }
 
             await Task.Yield();
+        }
+
+        private Crate CrateJiraIssueDetailsDescriptionCrate(List<FieldDTO> curJiraIssue)
+        {
+            return Crate.FromContent(RunTimeCrateLabel, new FieldDescriptionsCM(curJiraIssue), AvailabilityType.RunTime);
         }
 
         private Crate CrateJiraIssueDetailsPayloadCrate(List<FieldDTO> curJiraIssue)
