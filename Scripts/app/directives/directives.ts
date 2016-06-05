@@ -198,11 +198,13 @@ app.directive('delayedControl', ['$compile', ($compile: ng.ICompileService) => (
     scope: {
         currentAction: '=',
         field: '=',
-        plan: '='
+        plan: '=',
+        change: '='
     },
     template: '',
     link: (scope: ng.IScope, elem: ng.IAugmentedJQuery, attr: ng.IAttributes) => {
-        elem.append("<configuration-control plan='plan' current-action='currentAction' field='field'></configuration-control>");
+        
+        elem.append("<configuration-control plan='plan' current-action='currentAction' field='field' change='change'></configuration-control>");
         $compile(elem.contents())(scope);
     }
 })]);

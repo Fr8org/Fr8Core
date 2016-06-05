@@ -6,7 +6,7 @@ module dockyard.directives.controlContainer {
     interface IMetaControlContainerScope extends ng.IScope {
         plan: model.PlanDTO;
         field: model.MetaControlContainer;
-        addControl: () => void;
+        addControl: () => void;        
         change: () => (field: model.ControlDefinitionDTO) => void;
         removeMetaDescription: (index: number) => void;
         currentAction: model.ActivityDTO;
@@ -18,7 +18,8 @@ module dockyard.directives.controlContainer {
     export function MetaControlContainer(): ng.IDirective {
         var controller = ['$scope', '$modal', 'SubPlanService',
             ($scope: IMetaControlContainerScope, $modal: any, SubPlanService: services.ISubPlanService) => {
-            var triggerChange = () => {
+                var triggerChange = () => {
+                    debugger;
                 if ($scope.change != null && angular.isFunction($scope.change)) {
                     $scope.change()($scope.field);
                 }
@@ -97,7 +98,8 @@ module dockyard.directives.controlContainer {
             scope: {
                 plan: '=',
                 field: '=',
-                currentAction: '='
+                currentAction: '=',
+                change: '='
             }
         };
     }
