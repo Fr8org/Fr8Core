@@ -115,12 +115,25 @@ namespace terminalGoogle.Actions
             }
             if (string.IsNullOrEmpty(ActivityUI.FormsList.selectedKey))
                 SelectedForm = null;
+
+            //need to get all form fields
+
+            
+            //get form id
+            var googleFormControl = ActivityUI.FormsList;
+            var formId = googleFormControl.Value;
+            if (string.IsNullOrEmpty(formId))
+                throw new ArgumentNullException("Google Form selected is empty. Please select google form to receive.");
+
+            var formFields = await _googleDrive.GetGoogleFormFields(googleAuth, formId);
             CrateSignaller.ClearAvailableCrates();
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel)
-                .AddField("Full Name")
-                .AddField("TR ID")
-                .AddField("Email Address")
-                .AddField("Period of Availability");
+
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel);
+            foreach (var item in formFields)
+            {
+                CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel)
+                    .AddField(item.title);
+            }
         }
 
         public override async Task Activate()

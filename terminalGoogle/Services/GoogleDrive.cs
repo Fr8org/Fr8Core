@@ -14,8 +14,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Google.Apis.Requests;
 using Google.Apis.Script.v1;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using RestSharp;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services.Authorization;
+using TerminalBase.Infrastructure;
 using Utilities.Configuration.Azure;
 
 namespace terminalGoogle.Services
@@ -123,6 +127,85 @@ namespace terminalGoogle.Services
             });
 
             return scriptsService;
+        }
+
+        public class GoogleFormField
+        {
+            public int id { get; set; }
+            public int index { get; set; }
+            public string title { get; set; }
+            public string type { get; set; }
+
+        }
+
+        public async Task<List<GoogleFormField>> GetGoogleFormFields(GoogleAuthDTO authDTO, string formId)
+        {
+            try
+            {
+                var driveService = await CreateDriveService(authDTO);
+
+                //allow edit permissions to our main google account on current form in Google Drive 
+                var batch = new BatchRequest(driveService);
+                BatchRequest.OnResponse<Permission> callback = delegate (
+                    Permission permission,
+                    RequestError error,
+                    int index,
+                    HttpResponseMessage message)
+                {
+                    if (error != null)
+                    {
+                        // Handle error
+                        throw new ApplicationException($"Problem with Google Drive Permission on creating Fr8Trigger: {error.Message} ");
+                    }
+                };
+                Permission userPermission = new Permission();
+                userPermission.Type = "user";
+                userPermission.Role = "writer";
+                userPermission.Value = CloudConfigurationManager.GetSetting("GoogleMailAccount");
+                var request = driveService.Permissions.Insert(userPermission, formId);
+                request.Fields = "id";
+                batch.Queue(request, callback);
+
+                await batch.ExecuteAsync();
+
+                // run apps script deployed as web app to return form fields as json object
+                _googleAuth.CreateFlowMetadata(authDTO, "", CloudConfigurationManager.GetSetting("GoogleRedirectUri"));
+
+                var appScriptUrl = CloudConfigurationManager.GetSetting("GoogleAppScriptWebApp");
+
+                appScriptUrl = string.Format(appScriptUrl + "?formId={0}&action={1}", formId, "getFormFields");
+
+                HttpClient client = new HttpClient();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer",
+                    authDTO.AccessToken);
+
+                //check received response
+                var responseMessage = await client.GetAsync(new Uri(appScriptUrl));
+                var contents = await responseMessage.Content.ReadAsStringAsync();
+
+                //try to serialize the object
+                var jsonObj = JObject.Parse(contents);
+                var formFields = jsonObj["formFields"];
+
+                var result = new List<GoogleFormField>();
+                foreach (var item in formFields.ToList())
+                {
+                    result.Add(new GoogleFormField()
+                    {
+                        id = (int) item["id"],
+                        title = (string) item["title"],
+                        index = (int) item["index"],
+                        //type = (string) item["type"],
+                    });
+                } 
+
+                return await Task.FromResult(result);
+            }
+            catch (Exception e)
+            {
+                //in case of error generate script link for user
+                throw new Exception(e.Message);
+            }
         }
         
         public async Task<bool> CreateFr8TriggerForDocument(GoogleAuthDTO authDTO, string formId, string email)
