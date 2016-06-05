@@ -988,7 +988,6 @@
     <Content Include="_PowerShellScripts\Set-CloudServiceSettings.ps1" />
     <Content Include="_PowerShellScripts\Wait-Database.ps1" />
     <Content Include="_PowerShellScripts\Run-IntegrationTests.ps1" />
-    <Content Include="_PowerShellScripts\Set-HealthMonitorSettings.ps1" />
     <Content Include="_PowerShellScripts\Upload-File.ps1" />
     <Content Include="_PowerShellScripts\Start-StagingWebsite.ps1" />
     <Content Include="_PowerShellScripts\Stop-StagingWebsite.ps1" />
@@ -1005,6 +1004,7 @@
     <Content Include="_PowerShellScripts\CleanUpAfterTests.ps1" />
     <Content Include="_PowerShellScripts\Copy-ImagesBetweenAccount.ps1" />
     <Content Include="Views\AngularTemplate\PlanUploadModal.cshtml" />
+    <Content Include="_PowerShellScripts\Set-Config.ps1" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\KioskModeOrganizationHeaderController.ts" />
