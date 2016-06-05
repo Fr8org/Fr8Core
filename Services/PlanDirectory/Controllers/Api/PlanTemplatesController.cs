@@ -11,7 +11,7 @@ using PlanDirectory.Infrastructure;
 using PlanDirectory.Interfaces;
 using Utilities.Configuration.Azure;
 
-namespace PlanDirectory.Controllers
+namespace PlanDirectory.Controllers.Api
 {
     public class PlanTemplatesController : ApiController
     {
