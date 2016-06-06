@@ -10,6 +10,7 @@ using UtilitiesTesting;
 
 namespace HubTests.Entities
 {
+    [Ignore("@alexavrutin: the functionality being tested seems to be related to Kwasant and not used in Fr8.")]
     [TestFixture]
     [Category("EmailAddress")]
     public class EmailAddressTests : BaseTest
