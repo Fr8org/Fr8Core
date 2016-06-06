@@ -12,6 +12,7 @@ using System.Web.Routing;
 using Data.Interfaces;
 using FluentValidation.WebApi;
 using Hub.Infrastructure;
+using Hub.Interfaces;
 using Hub.Managers;
 using Hub.ModelBinders;
 using Hub.StructureMap;
@@ -98,6 +99,7 @@ namespace HubWeb
 
             ConfigureValidationEngine();
             StartupMigration.CreateSystemUser();
+            ObjectFactory.GetInstance<IManifestRegistryMonitor>().StartMonitoringManifestRegistrySubmissions();
         }
 
         private void ConfigureValidationEngine()

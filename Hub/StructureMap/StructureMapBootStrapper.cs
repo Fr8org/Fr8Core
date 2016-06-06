@@ -124,6 +124,7 @@ namespace Hub.StructureMap
                 For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
                 For<ITimer>().Use<Win32Timer>();
+                For<IManifestRegistryMonitor>().Use<ManifestRegistryMonitor>();
             }
         }
 

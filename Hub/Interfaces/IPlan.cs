@@ -15,7 +15,7 @@ namespace Hub.Interfaces
         PlanResultDTO GetForUser(IUnitOfWork uow, Fr8AccountDO account, PlanQueryDTO planQueryDTO, bool isAdmin);
         IList<PlanDO> GetByName(IUnitOfWork uow, Fr8AccountDO account, string name, PlanVisibility visibility);
         void CreateOrUpdate(IUnitOfWork uow, PlanDO submittedPlan);
-        PlanDO Create(IUnitOfWork uow, string name, string category = "");
+        PlanDO Create(IUnitOfWork uow, string name, string category = "", string ownerId = "", bool isInternal = false);
         PlanDO GetFullPlan(IUnitOfWork uow, Guid id);
         Task Delete(Guid id);
 

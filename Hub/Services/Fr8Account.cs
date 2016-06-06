@@ -153,11 +153,10 @@ namespace Hub.Services
 
         public Fr8AccountDO GetExisting(IUnitOfWork uow, string emailAddress)
         {
-            Fr8AccountDO existingDockyardAccount =
-                uow.UserRepository.GetQuery().Where(e => e.EmailAddress.Address == emailAddress).FirstOrDefault();
+            Fr8AccountDO existingDockyardAccount = uow.UserRepository.GetQuery().FirstOrDefault(e => e.EmailAddress.Address == emailAddress);
             return existingDockyardAccount;
         }
-
+        
         public void Update(IUnitOfWork uow, Fr8AccountDO submittedDockyardAccountData,
             Fr8AccountDO existingDockyardAccount)
         {

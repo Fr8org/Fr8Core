@@ -54,9 +54,9 @@ namespace Hub.Security.ObjectDecorators
             return _target.IsMonitoringPlan(uow, planDo);
         }
         
-        public PlanDO Create(IUnitOfWork uow, string name, string category = "")
+        public PlanDO Create(IUnitOfWork uow, string name, string category = "", string ownerId = "", bool isInternal = false)
         {
-            return _target.Create(uow, name, category);
+            return _target.Create(uow, name, category, ownerId, isInternal);
         }
 
         public PlanDO GetFullPlan(IUnitOfWork uow, Guid planId)

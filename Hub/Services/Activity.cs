@@ -69,7 +69,7 @@ namespace Hub.Services
             return uow.PlanRepository.GetById<ActivityDO>(id);
         }
 
-        public async Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
+        public async Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null, bool isInternal = false)
         {
             if (parentNodeId != null && createPlan)
             {
@@ -92,7 +92,7 @@ namespace Hub.Services
 
             if (createPlan)
             {
-                plan = ObjectFactory.GetInstance<IPlan>().Create(uow, name);
+                plan = ObjectFactory.GetInstance<IPlan>().Create(uow, name, ownerId: userId, isInternal: isInternal);
 
                 plan.ChildNodes.Add(parentNode = new SubplanDO
                 {
