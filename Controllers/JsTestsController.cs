@@ -20,5 +20,11 @@ namespace HubWeb.Controllers
             ViewBag.TestType = "integration";
             return View("tests");
         }
+
+        public ActionResult Endpoints()
+        {
+            ViewBag.TestType = "endpoints";
+            return View("endpoints");
+        }
     }
 }
