@@ -687,6 +687,7 @@
     <Compile Include="Repositories\Authorization\Impl\EfAuthorizationTokenStorageProvider.cs" />
     <Compile Include="Repositories\Authorization\Impl\KeyVaultAuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\Authorization\Impl\MockedDbAuthorizationTokenStorageProvider.cs" />
+    <Compile Include="Repositories\EnvelopeRepository.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtObjectStorage.Queries.cs" />
     <Compile Include="Repositories\PlanTemplates\ActivityDescriptionRepository.cs" />
     <Compile Include="Repositories\PlanTemplates\NodeTransitionRepository.cs" />
@@ -816,7 +817,6 @@
     <Compile Include="Repositories\ActivityTemplateRepository.cs" />
     <Compile Include="Repositories\Plan\Internal\ActivityRepository.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
-    <Compile Include="Repositories\EnvelopeRepository.cs" />
     <Compile Include="Repositories\Plan\Internal\SubPlanRepository.cs" />
     <Compile Include="Repositories\Plan\Internal\PlansRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
@@ -869,8 +869,6 @@
     <Compile Include="States\AnswerState.cs" />
     <Compile Include="States\NegotiationState.cs" />
     <Compile Include="Entities\IncidentDO.cs" />
-    <Compile Include="Interfaces\IRemoteOAuthDataDO.cs" />
-    <Compile Include="Entities\RemoteOAuthDataDo.cs" />
     <Compile Include="States\Templates\_ServiceAuthorizationTypeTemplate.cs" />
     <Compile Include="Interfaces\IRemoteServiceProviderDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
@@ -908,8 +906,6 @@
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />
-    <Compile Include="Repositories\RemoteServiceAuthDataRepository.cs" />
-    <Compile Include="Repositories\RemoteServiceProviderRepository.cs" />
     <Compile Include="Repositories\IncidentRepository.cs" />
     <Compile Include="Repositories\FactRepository.cs" />
     <Compile Include="Repositories\EmailEmailAddressRepository.cs" />
