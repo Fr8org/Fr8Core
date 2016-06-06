@@ -72,16 +72,16 @@
       <HintPath>..\..\packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Fr8Data, Version=1.0.0.8, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Fr8Data.1.0.0.8\lib\net45\Fr8Data.dll</HintPath>
+    <Reference Include="Fr8Data, Version=1.0.0.9, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Fr8Data.1.0.0.9\lib\net45\Fr8Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Fr8Infrastructure, Version=1.0.0.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Fr8Infrastructure.1.0.0.3\lib\net45\Fr8Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="fr8TerminalBase, Version=1.0.0.8, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\fr8TerminalBase.1.0.0.8\lib\net45\fr8TerminalBase.dll</HintPath>
+    <Reference Include="fr8TerminalBase, Version=1.0.0.13, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\fr8TerminalBase.1.0.0.13\lib\net45\fr8TerminalBase.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="fr8Utilities, Version=1.0.0.4, Culture=neutral, processorArchitecture=MSIL">
@@ -230,10 +230,8 @@
     <Compile Include="Integration\ExecuteSql_v1_Tests.cs" />
     <Compile Include="Integration\Monitor_Fr8_Events_v1_Tests.cs" />
     <Compile Include="Integration\SetDelay_v1_Tests.cs" />
-    <Compile Include="Integration\Terminal_Authentication_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Discover_v1Tests.cs" />
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
-    <Compile Include="Integration\MapFields_v1_Tests.cs" />
     <Compile Include="Integration\Select_Fr8_Object_v1Tests.cs" />
     <Compile Include="Unit\Loop_v1Tests.cs" />
     <Compile Include="Unit\Send_Email_v1Tests.cs" />

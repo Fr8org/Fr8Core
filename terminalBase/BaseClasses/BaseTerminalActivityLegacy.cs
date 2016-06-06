@@ -35,7 +35,6 @@ namespace TerminalBase.BaseClasses
         protected PlanHelper PlanHelper => _planHelper ?? (_planHelper = new PlanHelper(HubCommunicator));
         protected Guid ActivityId => ActivityContext.ActivityPayload.Id;
         protected string CurrentUserId => ActivityContext.UserId;
-        public Task<FieldDescriptionsCM> GetDesignTimeFields(CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet) => HubCommunicator.GetDesignTimeFieldsByDirection(ActivityId, direction, availability);
         protected void SendEventReport(string message) => _eventLogger.SendEventReport(MyTemplate.Terminal.Name, message);
         protected UpstreamQueryManager UpstreamQueryManager { get; private set; }
 
@@ -182,14 +181,6 @@ namespace TerminalBase.BaseClasses
             parent.ChildrenActivities.Add(result);
             return result;
         }
-
-        protected async Task<Crate<FieldDescriptionsCM>> MergeUpstreamFields(string label)
-        {
-            var curUpstreamFields = (await GetDesignTimeFields(CrateDirection.Upstream)).Fields.ToArray();
-            var upstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(label, curUpstreamFields);
-            return upstreamFieldsCrate;
-        }
-
 
         protected async Task<ActivityPayload> AddAndConfigureChildActivity(Guid parentActivityId, ActivityTemplateDTO activityTemplate, string name = null, string label = null, int? order = null)
         {

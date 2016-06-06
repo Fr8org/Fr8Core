@@ -204,7 +204,7 @@ namespace terminalFr8Core.Activities
                     result.Table.Add(dataRow);
                 }
             }
-            return Crate<StandardTableDataCM>.FromContent(data.Label, result, data.Availability);
+            return Crate<StandardTableDataCM>.FromContent(data.Label, result);
         }
 
         private string[] GetPropertyValuesFromDataRow(TableRowDTO dataRow, HashSet<string> dataProperties)

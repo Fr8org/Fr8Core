@@ -98,7 +98,7 @@ module dockyard.services {
                     'getFull': {
                         method: 'GET',
                         isArray: false,
-                        url: '/api/plans/full/:id',
+                        url: '/api/plans?id=:id&include_children=true',
                         params: {
                             id: '@id'
                         }
@@ -115,12 +115,13 @@ module dockyard.services {
                     'getByQuery': {
                         method: 'GET',
                         isArray: false,
-                        url: '/api/plans/getByQuery'
+                        //url: '/api/plans/getByQuery'
+                        url: '/api/plans/query'
                     },
                     'getByActivity': {
                         method: 'GET',
                         isArray: false,
-                        url: '/api/plans/getByActivity/:id',
+                        url: '/api/plans?activity_id=:id',
                         params: {
                             id: '@id'
                         }
@@ -134,15 +135,16 @@ module dockyard.services {
                         }
                     },
                     
-                    'create': {
-                        method: 'POST',
-                        url: '/api/plans/create'
-                    },
+                    //'create': {
+                    //    method: 'POST',
+                    //    url: '/api/plans/create'
+                    //},
                     'createSolution': {
                         method: 'POST',
-                        url: '/api/plans/createSolution',
+                        //url: '/api/plans/createSolution',
+                        url: '/api/plans/',
                         params: {
-                            solutionName: '@solutionName'
+                            solution_name: '@solutionName'
                         }
                     },
                     'deactivate': {
@@ -179,7 +181,7 @@ module dockyard.services {
 
             resource.createTemplate = (id: string): ng.IPromise<any> => {
                 
-                var url = '/api/plans/createTemplate?planId=' + id;
+                var url = '/api/plans/Template?planId=' + id;
                 var d = $q.defer();
 
                 $http.post(url, null)

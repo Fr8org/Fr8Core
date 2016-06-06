@@ -36,7 +36,6 @@ namespace terminalTwilioTests.Activities
 
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             StructureMapBootStrapper.ConfigureDependencies(dependencyType).ConfigureTwilioDependencies(dependencyType);
-            ObjectFactory.Configure(cfg => cfg.For<ITwilioService>().Use(new TwilioService()));
             TerminalBootstrapper.ConfigureTest();
 
             _crate = ObjectFactory.GetInstance<ICrateManager>();
@@ -60,10 +59,10 @@ namespace terminalTwilioTests.Activities
             ObjectFactory.Configure(cfg => cfg.For<BaseTerminalActivity>().Use(baseTerminalAction.Object));
             */
             var hubCommunicator = new Mock<IHubCommunicator>();
-            hubCommunicator.Setup(hc => hc.GetDesignTimeFieldsByDirection(
+           /* hubCommunicator.Setup(hc => hc.GetDesignTimeFieldsByDirection(
                                                 It.IsAny<Guid>(), 
                                                 CrateDirection.Upstream, 
-                                                It.IsAny<AvailabilityType>())).Returns(Task.FromResult(FixtureData.TestFields()));
+                                                It.IsAny<AvailabilityType>())).Returns(Task.FromResult(FixtureData.TestFields()));*/
             ObjectFactory.Configure(cfg => cfg.For<IHubCommunicator>().Use(hubCommunicator.Object));
         }
 

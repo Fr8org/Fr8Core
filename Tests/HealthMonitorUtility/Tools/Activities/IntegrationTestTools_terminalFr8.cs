@@ -63,7 +63,7 @@ namespace terminaBaselTests.Tools.Activities
                 crateStorage.Remove<StandardConfigurationControlsCM>();
                 activityUi.Name.Value = messageName;
                 activityUi.Body.Value = messageBodyTemplate;
-                crateStorage.Add(Crate<StandardConfigurationControlsCM>.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
+                crateStorage.Add(Crate<StandardConfigurationControlsCM>.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray())));
             }
             buildMessageActivityDTO = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/save", buildMessageActivityDTO);
             buildMessageActivityDTO = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/configure", buildMessageActivityDTO);

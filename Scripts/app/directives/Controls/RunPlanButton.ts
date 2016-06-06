@@ -26,7 +26,7 @@ module dockyard.directives {
         };
 
         var getPlan = function ($q, $http, actionId): ng.IPromise<any> {
-            var url = '/api/plans/getByActivity/' + actionId;
+            var url = '/api/plans?activity_id=' + actionId;
 
             return $q(function (resolve, reject) {
                 $http.get(url)

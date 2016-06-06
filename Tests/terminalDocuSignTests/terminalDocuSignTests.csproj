@@ -62,16 +62,16 @@
       <HintPath>..\..\packages\ExcelDataReader.2.1.2.3\lib\net45\Excel.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Fr8Data, Version=1.0.0.8, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Fr8Data.1.0.0.8\lib\net45\Fr8Data.dll</HintPath>
+    <Reference Include="Fr8Data, Version=1.0.0.9, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Fr8Data.1.0.0.9\lib\net45\Fr8Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Fr8Infrastructure, Version=1.0.0.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Fr8Infrastructure.1.0.0.3\lib\net45\Fr8Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="fr8TerminalBase, Version=1.0.0.8, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\fr8TerminalBase.1.0.0.8\lib\net45\fr8TerminalBase.dll</HintPath>
+    <Reference Include="fr8TerminalBase, Version=1.0.0.13, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\fr8TerminalBase.1.0.0.13\lib\net45\fr8TerminalBase.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="fr8Utilities, Version=1.0.0.4, Culture=neutral, processorArchitecture=MSIL">
@@ -204,7 +204,6 @@
     <Compile Include="Integration\Monitor_DocuSign_v1_Tests.cs" />
     <Compile Include="Integration\Query_DocuSign_v1_Tests.cs" />
     <Compile Include="Integration\Track_DocuSign_Recipients_v1_Tests.cs" />
-    <Compile Include="Integration\Terminal_Authentication_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Discover_v1Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Integration\Prepare_DocuSign_Events_For_Storage_v1_Tests.cs" />
