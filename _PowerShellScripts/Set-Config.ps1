@@ -1,4 +1,16 @@
-﻿$connectionStrings = @{}
+﻿<#
+    .SYNOPSIS
+    The script changes application settings and connection strings in the provided web.config or app.config file. 
+	To update an application setting, prefix its name with as: and in order to update a connection string, prefix its 
+	name with cs:
+
+	The script can only update one file at a time. 
+	
+	.EXAMPLE
+	.\Set-Config.ps1 -as:HubApiBaseUrl "http://localhost" -as:AzureSearchApiKey "IDKLSWOVC" -cs:DockyardDB "Data Source=.;Initial Catalog=DockyardDB2;Integrated Security=SSPI;Transaction Binding=Explicit Unbind;"	
+#>
+
+$connectionStrings = @{}
 $overrideDbName = @{}
 $appSettings = @{}
 $filePath = $null
