@@ -984,6 +984,7 @@
     <Content Include="Views\AngularTemplate\MiniHeader.cshtml" />
     <Content Include="Views\AngularTemplate\ActivityLabelModal.cshtml" />
     <Content Include="Views\AngularTemplate\AdvisoryMessagesPopup.cshtml" />
+    <Content Include="Config\Settings.config" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="_PowerShellScripts\HM-job-run.cmd" />
