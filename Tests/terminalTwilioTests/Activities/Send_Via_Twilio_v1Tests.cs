@@ -36,7 +36,6 @@ namespace terminalTwilioTests.Activities
 
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             StructureMapBootStrapper.ConfigureDependencies(dependencyType).ConfigureTwilioDependencies(dependencyType);
-            ObjectFactory.Configure(cfg => cfg.For<ITwilioService>().Use(new TwilioService()));
             TerminalBootstrapper.ConfigureTest();
 
             _crate = ObjectFactory.GetInstance<ICrateManager>();
