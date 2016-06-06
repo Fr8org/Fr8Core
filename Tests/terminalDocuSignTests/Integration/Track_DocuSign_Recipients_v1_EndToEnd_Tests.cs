@@ -75,7 +75,7 @@ namespace terminalDocuSignTests.Integration
 
             string baseUrl = GetHubApiBaseUrl();
 
-            var solutionCreateUrl = baseUrl + "plans/createSolution?solutionName=Track_DocuSign_Recipients";
+            var solutionCreateUrl = baseUrl + "plans?solution_name=Track_DocuSign_Recipients";
 
 
             //
@@ -84,7 +84,7 @@ namespace terminalDocuSignTests.Integration
             var plan = await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
             var solution = plan.Plan.SubPlans.FirstOrDefault().Activities.FirstOrDefault();
 
-            var planReloadUrl = string.Format(baseUrl + "plans/full/{0}", plan.Plan.Id);
+            var planReloadUrl = string.Format(baseUrl + "plans?id={0}&include_children=true", plan.Plan.Id);
 
             //
             // Send configuration request without authentication token
