@@ -43,21 +43,8 @@ namespace terminalFr8Core.Activities
         {
             return ConfigurationControls.Controls.Single(c => c.Name == "Selected_Table_Prefix").Value;            
         }
-
-        private async Task<Crate> GetUpstreamManifestTypes()
-        {
-            var upstreamCrates = await HubCommunicator.GetCratesByDirection(ActivityId, CrateDirection.Upstream);
-            var manifestTypeOptions = upstreamCrates.GroupBy(c => c.ManifestType).Select(c => new FieldDTO(c.Key.Type, c.Key.Type));
-            var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Manifest Type List", manifestTypeOptions.ToArray());
-            return queryFieldsCrate;
-        }
-
-        private async Task<List<FieldDTO>> GetLabelsByManifestType(string manifestType)
-        {
-            var upstreamCrates = await HubCommunicator.GetCratesByDirection(ActivityId, CrateDirection.Upstream);
-            return CrateManager.GetLabelsByManifestType(upstreamCrates, manifestType).Select(c => new FieldDTO(c, c)).ToList();
-        }
-
+        
+      
         private Crate PackCrate_ConfigurationControls()
         {
             var actionExplanation = new TextBlock()
@@ -89,7 +76,7 @@ namespace terminalFr8Core.Activities
 
 
         public ConvertRelatedFieldsIntoTable_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 
@@ -161,19 +148,11 @@ namespace terminalFr8Core.Activities
             //build a controls crate to render the pane
             var configurationControlsCrate = PackCrate_ConfigurationControls();
             Storage.Add(configurationControlsCrate);
-            Storage.Add(await GetUpstreamManifestTypes());
         }
 
         public override async Task FollowUp()
         {
-            var upstreamDataChooser = GetControl<UpstreamDataChooser>("Upstream_data_chooser");
-            if (upstreamDataChooser.SelectedManifest != null)
-            {
-                var labelList = await GetLabelsByManifestType(upstreamDataChooser.SelectedManifest);
-
-                Storage.RemoveByLabel("Upstream Crate Label List");
-                Storage.Add(Crate.FromContent("Upstream Crate Label List", new FieldDescriptionsCM() { Fields = labelList }));
-            }
+           
         }
     }
 }

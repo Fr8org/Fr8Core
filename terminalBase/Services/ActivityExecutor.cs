@@ -147,7 +147,7 @@ namespace TerminalBase.Services
             return Mapper.Map<PayloadDTO>(activityContext);
         }
 
-        private SolutionPageDTO SerializeResponse(SolutionPageDTO documentation)
+        private DocumentationResponseDTO SerializeResponse(DocumentationResponseDTO documentation)
         {
             return documentation;
         }

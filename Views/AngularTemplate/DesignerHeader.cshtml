@@ -10,13 +10,11 @@
     </div>
     <div class="designer-header-status" ng-if="!kioskMode">
         <span class="h4">
-            <button class="btn btn-primary" title="Publish to Plan Directory" style="margin-right: 20px;" ng-click="sharePlan()">Publish</button>
-
             <strong> 
                 <span class="plan-state-text" ng-if="plan.planState === 2">{{plan.planState | PlanState}}</span>   
                 <span ng-if="plan.planState === 1">Ready</span>   
             </strong>
-            <md-button class="md-icon-button" ng-click="runPlan()" ng-show="plan.planState === 1" >
+            <md-button class="md-icon-button" ng-click="runPlan()" ng-show="plan.planState === 1" event-run>
                 <md-icon md-font-icon="fa-play" class="fa fa-2x" style="color:green"></md-icon>
             </md-button>
             <md-button class="md-icon-button" ng-click="deactivatePlan()" ng-show="plan.planState === 2">

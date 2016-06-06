@@ -437,9 +437,23 @@ namespace terminalDocuSign.Activities
 
         protected override string ActivityUserFriendlyName => SolutionName;
 
+        private void GetAllDescendants(ActivityPayload root, List<ActivityPayload> activties)
+        {
+            activties.AddRange(root.ChildrenActivities);
+
+            foreach (var childrenActivity in root.ChildrenActivities)
+            {
+                GetAllDescendants(childrenActivity, activties);
+            }
+        }
+
         protected override async Task RunDS()
         {
-            var configControls = (await HubCommunicator.GetCratesByDirection<StandardConfigurationControlsCM>(ActivityId, CrateDirection.Downstream)).SelectMany(c => c.Content.Controls);
+            var descendants = new List<ActivityPayload>();
+
+            GetAllDescendants(ActivityPayload, descendants);
+
+            var configControls = descendants.SelectMany(c => c.CrateStorage.FirstCrateOrDefault<StandardConfigurationControlsCM>()?.Content?.Controls).Where(x => x != null).ToArray();
             var delayValue = (Duration)configControls.Single(c => c.Name == "Delay_Duration" && c.Type == ControlTypes.Duration);
             var runTimePayloadData = new List<FieldDTO>();
             var delayTimeString = delayValue.Days + " days, " + delayValue.Hours + " hours and " + delayValue.Minutes + " minutes";
@@ -462,7 +476,7 @@ namespace terminalDocuSign.Activities
         /// <param name="activityDO"></param>
         /// <param name="curDocumentation"></param>
         /// <returns></returns>
-        protected override Task<SolutionPageDTO> GetDocumentation(string curDocumentation)
+        protected override Task<DocumentationResponseDTO> GetDocumentation(string curDocumentation)
         {
             if (curDocumentation.Contains("MainPage"))
             {

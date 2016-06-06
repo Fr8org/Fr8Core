@@ -291,14 +291,14 @@ namespace Hub.Services
 
         }
 
-        public async Task<List<SolutionPageDTO>> GetSolutionDocumentations(string terminalName)
+        public async Task<List<DocumentationResponseDTO>> GetSolutionDocumentations(string terminalName)
         {
             var _activity = ObjectFactory.GetInstance<IActivity>();
             var solutionNames = _activity.GetSolutionNameList(terminalName);
-            var solutionPages = new List<SolutionPageDTO>();
+            var solutionPages = new List<DocumentationResponseDTO>();
             foreach (var solutionName in solutionNames)
             {
-               var solutionPageDTO = await _activity.GetActivityDocumentation<SolutionPageDTO>(
+               var solutionPageDTO = await _activity.GetActivityDocumentation<DocumentationResponseDTO>(
                     new ActivityDTO
                     {
                         Documentation = "MainPage",
@@ -307,7 +307,7 @@ namespace Hub.Services
                 if (solutionPageDTO != null)
                 {
                     solutionPages.Add(solutionPageDTO);
-    }
+                }
             }
             return solutionPages;
         }

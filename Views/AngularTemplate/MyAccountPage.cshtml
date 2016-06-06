@@ -1,10 +1,11 @@
-﻿<ul class="page-breadcrumb breadcrumb hide"> <!-- BEGIN PAGE BREADCRUMB -->
-	<li>
-		<a href="#">Home</a><i class="fa fa-circle"></i>
-	</li>
-	<li class="active">
-		Dashboard
-	</li>
+﻿<ul class="page-breadcrumb breadcrumb hide">
+    <!-- BEGIN PAGE BREADCRUMB -->
+    <li>
+        <a href="#">Home</a><i class="fa fa-circle"></i>
+    </li>
+    <li class="active">
+        Dashboard
+    </li>
 </ul>
 <!-- END PAGE BREADCRUMB -->
 <!-- BEGIN MAIN CONTENT -->
@@ -16,10 +17,8 @@
                 <md-tab label="My Plans">
                     <md-content class="md-padding">
                         <div id="Myfr8lines">
-                            <h3>My Plans <a ui-sref="planForm" class="btn green route-list-header-button">Add Plan</a></h3>
-
+                            <h3>My Plans <a ui-sref="planForm" class="btn green route-list-header-button" event-add>Add Plan</a></h3>
                             @Html.Partial("_PlanList")
-
                         </div>
                     </md-content>
                 </md-tab>
@@ -42,13 +41,6 @@
     </div>
 </div>
 <!-- END MAIN CONTENT -->
-
 <script>
-	$(document).ready(function () {
-		$(".left-pills li").click(function () {
-			$(".left-pills li").removeClass("active");
-			// $(".tab").addClass("active"); // instead of this do the below
-			$(this).addClass("active");
-		});
-	});
+    analytics.page('Plan Dashboard');
 </script>

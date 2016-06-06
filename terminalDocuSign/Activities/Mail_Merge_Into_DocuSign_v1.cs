@@ -33,7 +33,7 @@ namespace terminalDocuSign.Actions
             MinPaneWidth = 500,
             Tags = Tags.UsesReconfigureList,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -325,11 +325,17 @@ namespace terminalDocuSign.Actions
                 var loopActivity = await AddAndConfigureChildActivity(context.SolutionActivity, loopAT, "Loop", "Loop", 2);
                 var loopConfigControls = ControlHelper.GetConfigurationControls(loopActivity.CrateStorage);
                 var crateChooser = ControlHelper.GetControl<CrateChooser>(loopConfigControls, "Available_Crates");
-                    var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(c => c.ManifestId == (int)MT.StandardTableData);
-                    if (tableDescription != null)
-                    {
-                        tableDescription.Selected = true;
-                    }
+                var firstActivity = context.SolutionActivity.ChildrenActivities.OrderBy(x => x.Ordering).First();
+                var firstActivityCrates = firstActivity.CrateStorage.CrateContentsOfType<CrateDescriptionCM>().FirstOrDefault();
+
+                crateChooser.CrateDescriptions = firstActivityCrates?.CrateDescriptions;
+
+                var tableDescription = crateChooser.CrateDescriptions?.FirstOrDefault(c => c.ManifestId == (int)MT.StandardTableData);
+                if (tableDescription != null)
+                {
+                    tableDescription.Selected = true;
+                }
+
                 parentActivity = loopActivity;
                 activityIndex = 1;
             }
@@ -417,7 +423,7 @@ namespace terminalDocuSign.Actions
         /// <param name="activityDO"></param>
         /// <param name="curDocumentation"></param>
         /// <returns></returns>
-        protected override Task<SolutionPageDTO> GetDocumentation(string curDocumentation)
+        protected override Task<DocumentationResponseDTO> GetDocumentation(string curDocumentation)
         {
             if (curDocumentation.Contains("MainPage"))
             {

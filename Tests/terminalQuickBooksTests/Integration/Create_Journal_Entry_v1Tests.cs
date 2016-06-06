@@ -42,26 +42,5 @@ namespace terminalQuickBooksTests.Integration
             var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls;
             Assert.AreEqual(0, controls.Count);
         }
-
-        [Test, Category("Integration.terminalQuickBooks")]
-        public async Task Create_Journal_Entry_Configuration_Check_With_Upstream_Crate()
-        {
-            //Arrange
-            var configureUrl = GetTerminalConfigureUrl();
-            var dataDTO = HealthMonitor_FixtureData.Activity_Create_Journal_Entry_v1_InitialConfiguration_Fr8DataDTO();
-            var curStandAccTransCrate = HealthMonitor_FixtureData.GetAccountingTransactionCM();
-            AddUpstreamCrate(dataDTO, curStandAccTransCrate);
-            //Act
-            var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
-                    configureUrl,
-                    dataDTO
-                );
-            //Assert
-            Assert.NotNull(responseActionDTO);
-            Assert.NotNull(responseActionDTO.CrateStorage);
-            var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            var upstream = crateStorage.CrateContentsOfType<StandardAccountingTransactionCM>().Single();
-            Assert.NotNull(upstream);
-        }
     }
 }

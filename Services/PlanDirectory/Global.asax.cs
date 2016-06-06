@@ -24,8 +24,9 @@ namespace PlanDirectory
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
 
             Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
-            var segmentWriteKey = new ConfigRepository().Get("SegmentWriteKey");
-            Analytics.Initialize(segmentWriteKey);
+            var segmentWriteKey = Utilities.Configuration.Azure.CloudConfigurationManager.GetSetting("SegmentWriteKey");
+            if (!segmentWriteKey.IsNullOrEmpty())
+                Analytics.Initialize(segmentWriteKey);
 
             await ObjectFactory.GetInstance<ISearchProvider>().Initialize(false);
         }

@@ -147,17 +147,7 @@ namespace TerminalBase.Services
             var availableData = await _restfulServiceClient.GetAsync<IncomingCratesDTO>(uri, null, await GetHMACHeader(uri));
             return availableData;
         }
-
-        public async Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability)
-        {
-            var mergedFields = new FieldDescriptionsCM();
-            var availableData = await GetAvailableData(activityId, direction, availability);
-
-            mergedFields.Fields.AddRange(availableData.AvailableCrates.SelectMany(x => x.Fields));
-
-            return mergedFields;
-        }
-
+        
         public async Task CreateAlarm(AlarmDTO alarmDTO)
         {
             var hubAlarmsUrl = $"{GetHubUrlWithApiVersion()}/alarms";
@@ -218,7 +208,7 @@ namespace TerminalBase.Services
 
             var token = new[] { applyToken };
 
-            var url = $"{GetHubUrlWithApiVersion()}/ManageAuthToken/apply";
+            var url = $"{GetHubUrlWithApiVersion()}/authentication/tokens/grant";
             var uri = new Uri(url);
             await _restfulServiceClient.PostAsync(uri, token, null, await GetHMACHeader(uri, token));
         }

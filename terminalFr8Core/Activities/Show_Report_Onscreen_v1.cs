@@ -50,25 +50,9 @@ namespace terminalFr8Core.Activities
                 Controls.Add(new RunPlanButton());
             }
         }
-
-
-        private async Task<Crate> FindTables()
-        {
-            var fields = new List<FieldDTO>();
-            foreach (var table in (await HubCommunicator.GetCratesByDirection<FieldDescriptionsCM>(ActivityId, CrateDirection.Upstream))
-                                             .Select(x => x.Content)
-                                             .SelectMany(x => x.Fields)
-                                             .Where(x => x.Availability == AvailabilityType.RunTime && x.Value == "Table"))
-            {
-                fields.Add(new FieldDTO(table.Key, table.Key));    
-            }
-
-            return Crate.FromContent("Upstream Crate Label List", new FieldDescriptionsCM(fields));
-        }
-
-
+        
         public Show_Report_Onscreen_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 
@@ -97,12 +81,12 @@ namespace terminalFr8Core.Activities
         public override async Task Initialize()
         {
             Storage.Add(PackControls(new ActivityUi()));
-            Storage.Add(await FindTables());
+            
         }
 
         public override async Task FollowUp()
         {
-            Storage.ReplaceByLabel(await FindTables());
+          
         }
     }
 }

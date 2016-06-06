@@ -7,8 +7,6 @@ using Hub.Managers.APIManagers.Packagers.SendGrid;
 using InternalInterfaces = Hub.Interfaces;
 using Hub.Interfaces;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Authorizers;
-using Hub.Managers.APIManagers.Authorizers.Google;
 using Hub.Managers.APIManagers.Packagers;
 using Hub.Managers.APIManagers.Packagers.SegmentIO;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
@@ -90,7 +88,6 @@ namespace Hub.StructureMap
                 For<ITracker>().Use<SegmentIO>();
                 For<IIntakeManager>().Use<IntakeManager>();
 
-                For<IOAuthAuthorizer>().Use<GoogleAuthorizer>().Named("Google");
 
                 For<IImapClient>().Use<ImapClientWrapper>();
                 For<ITerminalTransmitter>().Use<TerminalTransmitter>();
@@ -147,7 +144,6 @@ namespace Hub.StructureMap
 
                 For<ISecurityServices>().Use(new MockedSecurityServices());
 
-                For<IOAuthAuthorizer>().Use<GoogleAuthorizer>().Named("Google");
 
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
 
@@ -254,7 +250,7 @@ namespace Hub.StructureMap
 
             }
 
-            public Task<List<SolutionPageDTO>> GetSolutionDocumentations(string terminalName)
+            public Task<List<DocumentationResponseDTO>> GetSolutionDocumentations(string terminalName)
             {
                 return _terminal.GetSolutionDocumentations(terminalName);
             }

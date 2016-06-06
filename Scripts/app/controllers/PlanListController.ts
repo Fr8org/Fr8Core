@@ -20,6 +20,8 @@ module dockyard.controllers {
         updatePlansLastUpdated: (id: any, date: any) => void;
         doesOrganizationExists: boolean;
 
+        createTemplate: (plan: interfaces.IPlanVM)=>void;
+
         filter: any;
 
         inActiveQuery: model.PlanQueryDTO;
@@ -266,6 +268,7 @@ module dockyard.controllers {
                     });
             }
         }
+
 
         private goToPlanPage(planId) {
             this.$state.go('planBuilder', { id: planId });

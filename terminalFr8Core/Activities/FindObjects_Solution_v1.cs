@@ -41,7 +41,7 @@ namespace terminalFr8Core.Activities
         public FindObjectHelper FindObjectHelper { get; set; }
 
         public FindObjects_Solution_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
             FindObjectHelper = new FindObjectHelper();
         }
@@ -301,7 +301,7 @@ namespace terminalFr8Core.Activities
         /// <param name="activityDO"></param>
         /// <param name="curDocumentation"></param>
         /// <returns></returns>
-        protected override Task<SolutionPageDTO> GetDocumentation(string curDocumentation)
+        protected override Task<DocumentationResponseDTO> GetDocumentation(string curDocumentation)
         {
             if (curDocumentation.Contains("MainPage"))
             {

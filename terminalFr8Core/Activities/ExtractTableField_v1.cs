@@ -163,7 +163,7 @@ namespace terminalFr8Core.Activities
 
         private async Task<Crate> CreateControlsCrate()
         {
-            var crateChooser = await ControlHelper.GenerateCrateChooser("TableChooser", "Select Upstream Data", true, true, true);
+            var crateChooser = ControlHelper.GenerateCrateChooser("TableChooser", "Select Upstream Data", true, true, true);
             //this cell's list items will be filled on followup configuration
             var cellDdTemplate =  new DropDownList()
             {
@@ -206,7 +206,7 @@ namespace terminalFr8Core.Activities
         }
 
         public ExtractTableField_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 
@@ -315,10 +315,7 @@ namespace terminalFr8Core.Activities
                 chosenCellDd.ListItems = listItems;
             }
             ((DropDownList)tempChosenCellList.TemplateContainer.Template.First()).ListItems = listItems;
-            /*
-            crateStorage.RemoveByLabel(AvailableCellsCrateLabel);
-            crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate(AvailableCellsCrateLabel, AvailabilityType.Configuration, tableFields.ToArray()));
-            */
+         
             var chosenCellList = GetControl<ControlList>("extractor_list");
             //let's publish our data - that this will be available during runtime
             var extractedFields = new List<FieldDTO>();

@@ -200,7 +200,7 @@ namespace terminalFr8Core.Activities
 
         private async Task<Crate> CreateControlsCrate()
         {
-            var crateChooser = await ControlHelper.GenerateCrateChooser(
+            var crateChooser = ControlHelper.GenerateCrateChooser(
                 "Available_Crates",
                 "This Loop will process the data inside of",
                 true,
@@ -211,7 +211,7 @@ namespace terminalFr8Core.Activities
         }
 
         public Loop_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
     }
