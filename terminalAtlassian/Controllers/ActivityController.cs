@@ -23,9 +23,9 @@ namespace terminalAtlassian.Controllers
         [HttpPost]
         [fr8TerminalHMACAuthenticate(curTerminal)]
         [Authorize]
-        public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
+        public async Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
         {
-            return _activityExecutor.HandleFr8Request(curTerminal, actionType, curDataDTO);
+            return await _activityExecutor.HandleFr8Request(curTerminal, actionType, curDataDTO);
         }
     }
 }
