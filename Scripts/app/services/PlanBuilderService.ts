@@ -16,6 +16,8 @@ module dockyard.services {
         update: (data: { id: string, name: string }) => interfaces.IPlanVM;
         run: (id: string) => ng.IPromise<model.ContainerDTO>;
         runAndProcessClientAction: (id: string) => ng.IPromise<model.ContainerDTO>;
+        share: (id: string) => ng.IPromise<any>;
+        createTemplate: (id: string) => ng.IPromise<any>;
     }
 
     export interface ISubPlanService extends ng.resource.IResourceClass<interfaces.ISubPlanVM> {
@@ -28,7 +30,7 @@ module dockyard.services {
         getByPlan: (id: Object) => ng.resource.IResource<Array<interfaces.IActionVM>>;
         create: (args: { activityTemplateId: number, name: string, label: string, parentNodeId: number }) => ng.resource.IResource<model.ActivityDTO>;
         //TODO make resource class do this operation
-        deleteById: (id: { id: string; confirmed: boolean }) => ng.resource.IResource<string>;
+        deleteById: (id: { id: string }) => ng.resource.IResource<string>;
         batchSave: (actionList: interfaces.IActivityDTO[]) => ng.resource.IResource<interfaces.IActionVM>;
     }
 
@@ -96,7 +98,7 @@ module dockyard.services {
                     'getFull': {
                         method: 'GET',
                         isArray: false,
-                        url: '/api/plans/full/:id',
+                        url: '/api/plans?id=:id&include_children=true',
                         params: {
                             id: '@id'
                         }
@@ -113,12 +115,13 @@ module dockyard.services {
                     'getByQuery': {
                         method: 'GET',
                         isArray: false,
-                        url: '/api/plans/getByQuery'
+                        //url: '/api/plans/getByQuery'
+                        url: '/api/plans/query'
                     },
                     'getByActivity': {
                         method: 'GET',
                         isArray: false,
-                        url: '/api/plans/getByActivity/:id',
+                        url: '/api/plans?activity_id=:id',
                         params: {
                             id: '@id'
                         }
@@ -132,15 +135,16 @@ module dockyard.services {
                         }
                     },
                     
-                    'create': {
-                        method: 'POST',
-                        url: '/api/plans/create'
-                    },
+                    //'create': {
+                    //    method: 'POST',
+                    //    url: '/api/plans/create'
+                    //},
                     'createSolution': {
                         method: 'POST',
-                        url: '/api/plans/createSolution',
+                        //url: '/api/plans/createSolution',
+                        url: '/api/plans/',
                         params: {
-                            solutionName: '@solutionName'
+                            solution_name: '@solutionName'
                         }
                     },
                     'deactivate': {
@@ -159,6 +163,37 @@ module dockyard.services {
                         }
                     }
                 });
+
+            resource.share = (id: string): ng.IPromise<any> => {
+                var url = '/api/plans/share?planId=' + id;
+                var d = $q.defer();
+
+                $http.post(url, null)
+                    .then((res: any) => {
+                        d.resolve();
+                    })
+                    .catch((err: any) => {
+                        d.reject(err);
+                    });
+
+                return d.promise;
+            };
+
+            resource.createTemplate = (id: string): ng.IPromise<any> => {
+                
+                var url = '/api/plans/Template?planId=' + id;
+                var d = $q.defer();
+
+                $http.post(url, null)
+                    .then((template: any) => {
+                        d.resolve(template.data);
+                    })
+                    .catch((err: any) => {
+                        d.reject(err);
+                    });
+
+                return d.promise;
+            };
 
             resource.run = (id: string): ng.IPromise<model.ContainerDTO> => {
                 var url = '/api/plans/run?planId=' + id;
@@ -311,7 +346,7 @@ module dockyard.services {
                 },
                 'deleteById': {
                     method: 'DELETE',
-                    url: '/api/activities?id=:id&confirmed=:confirmed'
+                    url: '/api/activities?id=:id'
                 },
                 'create': {
                     method: 'POST',

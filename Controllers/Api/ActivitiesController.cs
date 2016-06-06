@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
@@ -9,6 +13,8 @@ using Hub.Infrastructure;
 using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;
 using Microsoft.AspNet.Identity;
+using Segment;
+using Segment.Model;
 using StructureMap;
 
 namespace HubWeb.Controllers
@@ -39,9 +45,9 @@ namespace HubWeb.Controllers
             {
                 var userId = User.Identity.GetUserId();
                 var result = await _activity.CreateAndConfigure(uow, userId, activityTemplateId, label, name, order, parentNodeId, false, authorizationTokenId) as ActivityDO;
-                    return Ok(Mapper.Map<ActivityDTO>(result));
-                }
-                }
+                return Ok(Mapper.Map<ActivityDTO>(result));
+            }
+        }
 
 
         //WARNING. there's lots of potential for confusion between this POST method and the GET method following it.
@@ -53,10 +59,10 @@ namespace HubWeb.Controllers
             // WebMonitor.Tracer.Monitor.StartMonitoring("Configuring action " + curActionDesignDTO.Name);
             curActionDesignDTO.CurrentView = null;
             ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDesignDTO);
-
+            var userId = User.Identity.GetUserId();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                ActivityDTO activityDTO = await _activity.Configure(uow, User.Identity.GetUserId(), curActivityDO);
+                ActivityDTO activityDTO = await _activity.Configure(uow, userId, curActivityDO);
                 return Ok(activityDTO);
             }
         }
@@ -73,31 +79,50 @@ namespace HubWeb.Controllers
             }
         }
 
+        /// <summary>
+        /// DELETE: if flag withChldNodes seted to true Remove all child Nodes and clear activity values
+        /// Oterwise delete activity with 'id'
+        /// </summary>
         [HttpDelete]
-        public async Task<IHttpActionResult> Delete(Guid id, bool confirmed = false)
+        [Fr8HubWebHMACAuthenticate]
+        public async Task<IHttpActionResult> Delete([FromUri] Guid id, [FromUri(Name = "delete_child_nodes")] bool deleteChildNodes = false)
         {
-            await _activity.Delete(id);
+            if (deleteChildNodes)
+            {
+                await _activity.DeleteChildNodes(id);
+            }
+            else
+            {
+                await _activity.Delete(id);
+            }
             return Ok();
         }
 
-        [HttpDelete]
-        [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> DeleteActivity(Guid id)
-        {
-            await _activity.Delete(id);
-            return Ok();
-        }
+        //[HttpDelete]
+        //public async Task<IHttpActionResult> Delete(Guid id, bool confirmed = false)
+        //{
+        //    await _activity.Delete(id);
+        //    return Ok();
+        //}
+
+        //[HttpDelete]
+        //[Fr8HubWebHMACAuthenticate]
+        //public async Task<IHttpActionResult> DeleteActivity(Guid id)
+        //{
+        //    await _activity.Delete(id);
+        //    return Ok();
+        //}
 
         /// <summary>
         /// DELETE: Remove all child Nodes and clear activity values
         /// </summary>
-        [HttpDelete]
-        [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> DeleteChildNodes(Guid activityId)
-        {
-            await _activity.DeleteChildNodes(activityId);
-            return Ok();
-        }
+        //[HttpDelete]
+        //[Fr8HubWebHMACAuthenticate]
+        //public async Task<IHttpActionResult> DeleteChildNodes(Guid activityId)
+        //{
+        //    await _activity.DeleteChildNodes(activityId);
+        //    return Ok();
+        //}
 
         /// <summary>
         /// POST : Saves or updates the given action

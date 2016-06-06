@@ -82,11 +82,29 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
-    <Reference Include="FluentValidation">
-      <HintPath>..\packages\FluentValidation.5.1.0.0\lib\Net40\FluentValidation.dll</HintPath>
+    <Reference Include="Excel, Version=2.1.2.3, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelDataReader.2.1.2.3\lib\net45\Excel.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="FluentValidation.Mvc">
-      <HintPath>..\packages\FluentValidation.MVC4.5.1.0.0\lib\Net40\FluentValidation.Mvc.dll</HintPath>
+    <Reference Include="FluentValidation, Version=5.6.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Fr8Data, Version=1.0.0.9, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fr8Data.1.0.0.9\lib\net45\Fr8Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Fr8Infrastructure, Version=1.0.0.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fr8Infrastructure.1.0.0.3\lib\net45\Fr8Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="fr8TerminalBase, Version=1.0.0.12, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\fr8TerminalBase.1.0.0.12\lib\net45\fr8TerminalBase.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="fr8Utilities, Version=1.0.0.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\fr8Utilities.1.0.0.4\lib\net45\fr8Utilities.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Google.Apis.Auth, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Apis.Auth.1.11.1\lib\net45\Google.Apis.Auth.dll</HintPath>
@@ -122,6 +140,10 @@
     </Reference>
     <Reference Include="Hangfire.SqlServer, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Hangfire.SqlServer.1.6.0-beta2\lib\net45\Hangfire.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
@@ -181,6 +203,18 @@
     </Reference>
     <Reference Include="Owin">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="PhoneNumbers, Version=7.0.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\libphonenumber-csharp.7.2.5\lib\PhoneNumbers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PusherServer, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\PusherServer.2.1.1.0\lib\net35\PusherServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="RestSharp, Version=105.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.105.0.1\lib\net4\RestSharp.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="S22.Imap, Version=3.6.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -270,6 +304,10 @@
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="YamlDotNet, Version=2.0.1.20271, Culture=neutral, PublicKeyToken=2b53052c5884d7a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\YamlDotNet.3.1.1\lib\net35\YamlDotNet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Zlib.Portable">
       <HintPath>..\packages\Zlib.Portable.1.9.2\lib\portable-net4+sl4+wp71+win8\Zlib.Portable.dll</HintPath>
     </Reference>
@@ -329,21 +367,13 @@
     <Compile Include="ExternalServices\ISmtpClient.cs" />
     <Compile Include="ExternalServices\ServiceManager.cs" />
     <Compile Include="ExternalServices\SmtpClientWrapper.cs" />
-    <Compile Include="KwasantLogAppender.cs" />
     <Compile Include="Managers\APIManagers\Packagers\Json\JsonContent.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Terminal\ITerminalTransmitter.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Terminal\TerminalTransmitter.cs" />
     <Compile Include="Managers\EventReporter.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\Google\AppFlowMetadata.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\Google\AuthorizationCodeFlow.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\Google\GoogleAuthorizer.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\IOAuthAuthorizationResult.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\IOAuthAuthorizer.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\OAuthAuthorizationResult.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\OAuthException.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SegmentIO\SegmentIO.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Http\IAuthorizingHttpChannel.cs" />
-    <Compile Include="Managers\APIManagers\Transmitters\Http\OAuthHttpChannel.cs" />
     <Compile Include="Managers\APIManagers\Packagers\DataTable\DataTablesPackager.cs" />
     <Compile Include="Helper\RoleData.cs" />
     <Compile Include="Managers\APIManagers\Packagers\Kwasant\KwasantPackager.cs" />
@@ -409,18 +439,6 @@
     <ProjectReference Include="..\Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Fr8Data\Fr8Data.csproj">
-      <Project>{a3178d71-a2c3-45b9-8334-adcc7c313541}</Project>
-      <Name>Fr8Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Infrastructure\Fr8Infrastructure.csproj">
-      <Project>{9f4b5c92-3535-4d4c-b1e4-37beb1ae5c42}</Project>
-      <Name>Fr8Infrastructure</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Utilities\Utilities.csproj">
-      <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
-      <Name>Utilities</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

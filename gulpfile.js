@@ -57,10 +57,12 @@ gulp.task('compile_js', function () {
         'Scripts/app/model/TerminalDTO.js',
         'Scripts/app/model/TerminalActionSetDTO.js',
         'Scripts/app/model/AuthenticationTokenDTO.js',
-        'Scripts/app/model/SolutionDTO.js',
+        'Scripts/app/model/DocumentationResponseDTO.js',
+        'Scripts/app/model/ActivityResponseDTO.js',
         'Scripts/app/model/AlertDTO.js',
         'Scripts/app/model/SubordinateSubplan.js',
         'Scripts/app/model/HistoryDTO.js',
+        'Scripts/app/model/AdvioryMessages.js',
         'Scripts/app/services/CrateHelper.js',
         'Scripts/app/services/AuthService.js',
         'Scripts/app/services/ConfigureTrackerService.js',
@@ -173,6 +175,8 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/ManifestRegistryFormController.js',
         'Scripts/app/controllers/SolutionDocumentationController.js',
         'Scripts/app/controllers/ManageUserController.js',
+        'Scripts/app/controllers/PlanUploadModalController.js',
+        'Scripts/app/controllers/PlanUploadController.js',
         'Scripts/app/directives/Controls/Fr8Event.js'
     ])
         .pipe(sourcemaps.init())

@@ -6,8 +6,8 @@ Global Directives
 ***/
 
 'use strict';
- 
-app.directive('autoFocus', ['$timeout',function ($timeout) {
+
+app.directive('autoFocus', ['$timeout', function ($timeout) {
     return {
         restrict: 'AC',
         link: function (_scope, _element) {
@@ -280,3 +280,43 @@ app.directive('stickyFooter', [
         };
     }
 ]);
+
+app.directive('eventAdd', ['$timeout', '$window', function ($timeout, $window) {
+    return {
+        restrict: 'A',
+        link: function (scope, element) {
+            element.on('click', function () {
+                $window.analytics.track("Clicked Add Plan Button");
+            });
+        }
+    };
+}]);
+
+app.directive('eventRun', ['$timeout', '$window', function ($timeout, $window) {
+    return {
+        restrict: 'A',
+        link: function (scope, element) {
+            element.on('click', function () {
+                $window.analytics.track("Clicked Run Plan Button");
+            });
+        }
+    };
+}]);
+
+app.directive('eventAuthDialog', ['$timeout', '$window', function ($timeout, $window) {
+    return {
+        restrict: 'A',
+        link: function (scope, element) {
+            $window.analytics.track("Auth Dialog Opened");
+        }
+    };
+}]);
+
+app.directive('eventPlanbuilder', ['$timeout', '$window', function ($timeout, $window) {
+    return {
+        restrict: 'A',
+        link: function (scope, element) {
+            $window.analytics.page("Visited Page - Plan Builder");
+        }
+    };
+}]);

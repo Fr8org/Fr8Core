@@ -9,9 +9,8 @@ namespace terminalFr8CoreTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
-        private const int Fr8CoreActivityCount = 28;
+        private const int Fr8CoreActivityCount = 27;
         private const string TestIncomingDataName = "TestIncomingData";
-        private const string MapFieldsName = "MapFields";
         private const string AddPayloadManuallyName = "AddPayloadManually";
         private const string SaveToFr8WarehouseName = "SaveToFr8Warehouse";
         private const string Select_Fr8_ObjectName = "Select_Fr8_Object";
@@ -54,7 +53,6 @@ namespace terminalFr8CoreTests.Integration
             Assert.NotNull(terminalDiscoverResponse);
             Assert.AreEqual(Fr8CoreActivityCount, terminalDiscoverResponse.Activities.Count);
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == TestIncomingDataName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == MapFieldsName));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == AddPayloadManuallyName));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SaveToFr8WarehouseName));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == Select_Fr8_ObjectName));

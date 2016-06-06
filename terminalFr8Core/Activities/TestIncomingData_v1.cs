@@ -34,7 +34,7 @@ namespace terminalFr8Core.Activities
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
         public TestIncomingData_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 
@@ -278,7 +278,7 @@ namespace terminalFr8Core.Activities
 
         public override async Task Initialize()
         {
-            var curUpstreamFields = (await GetDesignTimeFields(CrateDirection.Upstream, AvailabilityType.RunTime))
+           /* var curUpstreamFields = (await GetDesignTimeFields(CrateDirection.Upstream, AvailabilityType.RunTime))
                 .Fields
                 .ToArray();
             //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
@@ -287,16 +287,16 @@ namespace terminalFr8Core.Activities
                 "Queryable Criteria",
                 new FieldDescriptionsCM(curUpstreamFields)
             );
-
+            */
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
             Storage.Add(configurationControlsCrate);
-            Storage.Add(queryFieldsCrate);
+           // Storage.Add(queryFieldsCrate);
         }
 
         public override async Task FollowUp()
         {
-            var curUpstreamFields = (await GetDesignTimeFields(CrateDirection.Upstream, AvailabilityType.RunTime))
+           /* var curUpstreamFields = (await GetDesignTimeFields(CrateDirection.Upstream, AvailabilityType.RunTime))
                 .Fields
                 .ToArray();
             //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
@@ -306,7 +306,7 @@ namespace terminalFr8Core.Activities
                 new FieldDescriptionsCM(curUpstreamFields)
             );
             Storage.RemoveByLabel("Queryable Criteria");
-            Storage.Add(queryFieldsCrate);
+            Storage.Add(queryFieldsCrate);*/
         }
     }
 }

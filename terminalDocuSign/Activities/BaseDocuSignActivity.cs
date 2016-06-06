@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.Crates;
@@ -22,7 +24,7 @@ namespace terminalDocuSign.Activities
 
 
         protected BaseDocuSignActivity(ICrateManager crateManager, IDocuSignManager docuSignManager)
-            : base(true, crateManager)
+            : base(crateManager)
         {
             DocuSignManager = docuSignManager;
         }

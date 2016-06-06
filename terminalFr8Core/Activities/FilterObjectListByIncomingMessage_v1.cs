@@ -94,7 +94,7 @@ namespace terminalFr8Core.Activities
         private static readonly TimeSpan CacheExpirationTime = TimeSpan.FromHours(1.0);
 
         public FilterObjectListByIncomingMessage_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
             //ActivityName = "Match Incoming Text and Build Object List";
         }
@@ -204,7 +204,7 @@ namespace terminalFr8Core.Activities
                     result.Table.Add(dataRow);
                 }
             }
-            return Crate<StandardTableDataCM>.FromContent(data.Label, result, data.Availability);
+            return Crate<StandardTableDataCM>.FromContent(data.Label, result);
         }
 
         private string[] GetPropertyValuesFromDataRow(TableRowDTO dataRow, HashSet<string> dataProperties)

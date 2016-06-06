@@ -37,7 +37,7 @@ namespace terminalTwilio.Activities
         protected ITwilioService Twilio;
 
         public Send_Via_Twilio_v1(ICrateManager crateManager, ITwilioService twilioService)
-            : base(false, crateManager)
+            : base(crateManager)
         {
             Twilio = twilioService;
         }
@@ -46,20 +46,8 @@ namespace terminalTwilio.Activities
         {
             Storage.Clear();
             Storage.Add(PackCrate_ConfigurationControls());
-            Storage.Add(await CreateAvailableFieldsCrate());
         }
-
-        private async Task<Crate> CreateAvailableFieldsCrate()
-        {
-            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(ActivityId, CrateDirection.Upstream, AvailabilityType.RunTime) ?? new FieldDescriptionsCM();
-
-            var availableFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(
-                    "Upstream Terminal-Provided Fields",
-                    curUpstreamFields.Fields,
-                    AvailabilityType.Configuration);
-
-            return availableFieldsCrate;
-        }
+        
 
         private Crate PackCrate_ConfigurationControls()
         {
@@ -79,9 +67,8 @@ namespace terminalTwilio.Activities
 
         public override async Task FollowUp()
         {
-            Storage.RemoveByLabel("Upstream Terminal-Provided Fields");
-            Storage.Add(await CreateAvailableFieldsCrate());
-            }
+          
+        }
 
         public override async Task Run()
         {

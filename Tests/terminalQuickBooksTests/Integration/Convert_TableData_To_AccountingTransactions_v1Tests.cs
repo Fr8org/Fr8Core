@@ -18,7 +18,7 @@ namespace terminalQuickBooksTests.Integration
     /// It prevents test case from running when CI is building the solution,
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
-    [Explicit]
+    [Explicit, Ignore]
     internal class Convert_TableData_To_AccountingTransactions_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName => "terminalQuickBooks";

@@ -46,7 +46,7 @@ namespace terminalBox.Actions
         }
 
         public SaveToFile_v1(ICrateManager crateManager) 
-            : base(true, crateManager)
+            : base(crateManager)
         {
         }
 

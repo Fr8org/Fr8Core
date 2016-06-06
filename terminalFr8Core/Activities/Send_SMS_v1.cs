@@ -71,37 +71,17 @@ namespace terminalFr8Core.Activities
         }
 
         public Send_SMS_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
             _twilio = ObjectFactory.GetInstance<ITwilioService>();
         }
 
         public override async Task Initialize()
         {
-            Storage.Add(await CreateAvailableFieldsCrate());
         }
 
         public override async Task FollowUp()
         {
-            Storage.RemoveByLabel("Upstream Terminal-Provided Fields");
-            Storage.Add(await CreateAvailableFieldsCrate());
-        }
-
-        /// <summary>
-        /// Creates a crate with available design-time fields.
-        /// </summary>
-        /// <param name="terminalActivity">ActionDO.</param>
-        /// <returns></returns>
-        protected async Task<Crate> CreateAvailableFieldsCrate()
-        {
-            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(ActivityId, CrateDirection.Upstream, AvailabilityType.RunTime) ?? new FieldDescriptionsCM();
-
-            var availableFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(
-                    "Upstream Terminal-Provided Fields",
-                    curUpstreamFields.Fields,
-                    AvailabilityType.Configuration);
-
-            return availableFieldsCrate;
         }
 
         public override async Task Run()

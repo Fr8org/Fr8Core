@@ -18,7 +18,7 @@ namespace TerminalBase.BaseClasses
         protected StandardConfigurationControlsCM ConfigurationControls => _configurationControls ?? (_configurationControls = GetConfigurationControls());
 
         protected BaseTerminalActivity(bool isAuthenticationRequired, ICrateManager crateManager)
-          : base(isAuthenticationRequired, crateManager)
+          : base(crateManager)
         {
         }
 
@@ -43,14 +43,7 @@ namespace TerminalBase.BaseClasses
 
             throw new ApplicationException(exceptionMessage);
         }
-
-        protected async Task<Crate<FieldDescriptionsCM>> MergeUpstreamFields(string label)
-        {
-            var curUpstreamFields = (await HubCommunicator.GetDesignTimeFieldsByDirection(ActivityContext.ActivityPayload.Id, CrateDirection.Upstream, AvailabilityType.Always)).Fields.ToArray();
-            var upstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(label, curUpstreamFields);
-            return upstreamFieldsCrate;
-        }
-
+        
         protected StandardConfigurationControlsCM GetConfigurationControls()
         {
             return ControlHelper.GetConfigurationControls(Storage);

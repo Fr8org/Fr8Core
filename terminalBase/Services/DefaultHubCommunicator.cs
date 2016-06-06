@@ -147,17 +147,7 @@ namespace TerminalBase.Services
             var availableData = await _restfulServiceClient.GetAsync<IncomingCratesDTO>(uri, null, await GetHMACHeader(uri));
             return availableData;
         }
-
-        public async Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability)
-        {
-            var mergedFields = new FieldDescriptionsCM();
-            var availableData = await GetAvailableData(activityId, direction, availability);
-
-            mergedFields.Fields.AddRange(availableData.AvailableCrates.SelectMany(x => x.Fields));
-
-            return mergedFields;
-        }
-
+        
         public async Task CreateAlarm(AlarmDTO alarmDTO)
         {
             var hubAlarmsUrl = $"{GetHubUrlWithApiVersion()}/alarms";
@@ -218,7 +208,7 @@ namespace TerminalBase.Services
 
             var token = new[] { applyToken };
 
-            var url = $"{GetHubUrlWithApiVersion()}/ManageAuthToken/apply";
+            var url = $"{GetHubUrlWithApiVersion()}/authentication/tokens/grant";
             var uri = new Uri(url);
             await _restfulServiceClient.PostAsync(uri, token, null, await GetHMACHeader(uri, token));
         }
@@ -283,14 +273,14 @@ namespace TerminalBase.Services
         
         public async Task<IEnumerable<PlanDTO>> GetPlansByName(string name, PlanVisibility visibility = PlanVisibility.Standard)
         {
-            var url = $"{GetHubUrlWithApiVersion()}/plans/getbyname?name={name}&visibility={visibility}";
+            var url = $"{GetHubUrlWithApiVersion()}/plans?name={name}&visibility={visibility}";
             var uri = new Uri(url);
             return await _restfulServiceClient.GetAsync<IEnumerable<PlanDTO>>(uri, null, await GetHMACHeader(uri));
         }
 
         public async Task<PlanDTO> GetPlansByActivity(string activityId)
         {
-            var url = $"{GetHubUrlWithApiVersion()}/plans/getByActivity?id={activityId}";
+            var url = $"{GetHubUrlWithApiVersion()}/plans?activity_id={activityId}";
             var uri = new Uri(url);
             return await _restfulServiceClient.GetAsync<PlanDTO>(uri, null, await GetHMACHeader(uri));
         }
@@ -321,14 +311,16 @@ namespace TerminalBase.Services
 
         public async Task DeleteExistingChildNodesFromActivity(Guid curActivityId)
         {
-            var hubAlarmsUrl = $"{GetHubUrlWithApiVersion()}/activities/deletechildnodes?activityId={curActivityId}";
+            //var hubAlarmsUrl = $"{GetHubUrlWithApiVersion()}/activities/deletechildnodes?activityId={curActivityId}";
+            var hubAlarmsUrl = $"{GetHubUrlWithApiVersion()}/activities?id={curActivityId}&delete_child_nodes=true";
             var uri = new Uri(hubAlarmsUrl);
             await _restfulServiceClient.DeleteAsync(uri, null, await GetHMACHeader(uri));
         }
 
         public async Task DeleteActivity(Guid curActivityId)
         {
-            var hubDeleteUrl = $"{GetHubUrlWithApiVersion()}/activities/deleteactivity?id={curActivityId}";
+            //var hubDeleteUrl = $"{GetHubUrlWithApiVersion()}/activities/deleteactivity?id={curActivityId}";
+            var hubDeleteUrl = $"{GetHubUrlWithApiVersion()}/activities?id={curActivityId}";
             var uri = new Uri(hubDeleteUrl);
             var headers = await GetHMACHeader(uri);
             await _restfulServiceClient.DeleteAsync(uri, null, headers);
@@ -381,7 +373,7 @@ namespace TerminalBase.Services
 
         public async Task<AuthorizationToken> GetAuthToken(string externalAccountId)
         {
-            var url = $"{GetHubUrlWithApiVersion()}/authentication/GetAuthToken?curFr8UserId={_userId}&externalAccountId={externalAccountId}&terminalId={TerminalId}";
+            var url = $"{GetHubUrlWithApiVersion()}/authentication/GetAuthToken?externalAccountId={externalAccountId}&terminalId={TerminalId}";
             var uri = new Uri(url);
             var authTokenDTO = await _restfulServiceClient.GetAsync<AuthorizationTokenDTO>(uri, null, await GetHMACHeader(uri));
             return Mapper.Map<AuthorizationToken>(authTokenDTO);
