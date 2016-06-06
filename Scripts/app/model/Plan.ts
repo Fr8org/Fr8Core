@@ -45,4 +45,14 @@
         currentPage: number;
         totalPlanCount: number;
     }
+
+    // TODO: implement FE PlanTemplateDTO
+    //export class PlanTemplateDTO {
+    //    id: string;        
+    //    name: string;
+    //    startingPlanNodeDescriptionId: string;        
+    //    description: string;
+        
+    //    PlanNodeDescriptions: Array<PlanNodeDescriptionDTO>;
+    //}
 }

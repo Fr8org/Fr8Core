@@ -38,9 +38,9 @@ module dockyard.tests.utils.fixtures {
 
         public static dropDownListBox: model.DropDownList = {
             listItems: [
-                { key: 'test1', data: null, fieldType: null, selected: false, value: 'value1', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null },
-                { key: 'test2', data: null, fieldType: null, selected: false, value: 'value2', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null },
-                { key: 'test3', data: null, fieldType: null, selected: false, value: 'value3', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null }
+                { key: 'test1', data: null, fieldType: null, selected: false, value: 'value1', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null, sourceActivityId: null },
+                { key: 'test2', data: null, fieldType: null, selected: false, value: 'value2', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null, sourceActivityId: null },
+                { key: 'test3', data: null, fieldType: null, selected: false, value: 'value3', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null, sourceActivityId: null }
             ],
             source: {
                 manifestType: 'testManifest',
@@ -59,7 +59,8 @@ module dockyard.tests.utils.fixtures {
             errorMessage: null,
             selectedKey: 'test3',
             isHidden: false,
-            hasRefreshButton: false
+            hasRefreshButton: false,
+            selectedItem: null
         };
 
         public static radioButtonGroupField: model.RadioButtonGroup = {
@@ -168,6 +169,7 @@ module dockyard.tests.utils.fixtures {
                     availability: model.AvailabilityType.Configuration,
                     sourceCrateLabel: null,
                     sourceCrateManifest: null,
+                    sourceActivityId: null,
                     fieldType: null,
                     data: null
                 },
@@ -179,6 +181,7 @@ module dockyard.tests.utils.fixtures {
                     availability: model.AvailabilityType.Configuration,
                     sourceCrateLabel: null,
                     sourceCrateManifest: null,
+                    sourceActivityId: null,
                     fieldType: null,
                     data: null
                 },
@@ -190,12 +193,14 @@ module dockyard.tests.utils.fixtures {
                     availability: model.AvailabilityType.Configuration,
                     sourceCrateLabel: null,
                     sourceCrateManifest: null,
+                    sourceActivityId: null,
                     fieldType: null,
                     data: null
                 }],
             name: 'test name',
             fieldLabel: 'test label',
-            selectedKey: null
+            selectedKey: null,
+            selectedItem: null
         };
     }
 } 

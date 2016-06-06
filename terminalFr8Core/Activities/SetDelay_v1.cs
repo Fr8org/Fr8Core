@@ -1,104 +1,53 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Data.Entities;
-using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Hub.Managers;
+using Fr8Data.Managers;
+using Fr8Data.States;
 using TerminalBase;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class SetDelay_v1 : BaseTerminalActivity
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "SetDelay",
+            Label = "Delay Action Processing",
+            Category = ActivityCategory.Processors,
+            Version = "1",
+            MinPaneWidth = 330,
+            Type = ActivityType.Standard,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         private const int MinDurationSeconds = 10;
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
-        {
-            var curPayloadDTO = await GetPayload(curActivityDO, containerId);
-            using (var payloadStorage = CrateManager.UpdateStorage(() => curPayloadDTO.CrateStorage))
-            {
-
-                var operationsCrate = payloadStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
-                //check for operations crate
-                if (operationsCrate == null)
+        private AlarmDTO CreateAlarm(TimeSpan duration)
                 {
-                    Error(payloadStorage, "This Action can't run without OperationalStateCM crate", ActivityErrorCode.PAYLOAD_DATA_MISSING);
-                    return curPayloadDTO;
-                }
-
-                //find our action state in operations crate
-                var delayState = operationsCrate.CallStack.GetLocalData<string>("Delay");
-
-                //extract ActivityResponse type from result
-                if (delayState == "suspended")
-                {
-                    //this is second time we are being called. this means alarm has triggered
-                    Success(payloadStorage);
-                    return curPayloadDTO;
-                }
-
-                //get user selected design time duration
-                var delayDuration = GetUserDefinedDelayDuration(curActivityDO);
-                var alarmDTO = CreateAlarm(curActivityDO, containerId, delayDuration);
-                //post to hub to create an alarm
-                await HubCommunicator.CreateAlarm(alarmDTO, CurrentFr8UserId);
-
-                operationsCrate.CallStack.StoreLocalData("Delay", "suspended");
-            }
-
-            return SuspendHubExecution(curPayloadDTO);
-            
-        }
-
-        private AlarmDTO CreateAlarm(ActivityDO activityDO, Guid containerId, TimeSpan duration)
-        {
             if (duration.TotalSeconds == 0)
             {
                 duration.Add(TimeSpan.FromSeconds(MinDurationSeconds));
             }
             return new AlarmDTO
             {
-                ActivityDTO = Mapper.Map<ActivityDTO>(activityDO),
-                ContainerId = containerId,
-                TerminalName = "fr8Core",
-                TerminalVersion = "v1",
+                ContainerId = ExecutionContext.ContainerId,
                 StartTime = DateTime.UtcNow.Add(duration)
             };
         }
-        private TimeSpan GetUserDefinedDelayDuration(ActivityDO curActivityDO)
+        private TimeSpan GetUserDefinedDelayDuration()
         {
-            var controlsMS = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First();
-            var manifestTypeDropdown = (Duration) controlsMS.Controls.Single(x => x.Type == ControlTypes.Duration && x.Name == "Delay_Duration");
+            var manifestTypeDropdown = GetControl<Duration>("Delay_Duration");
             if (manifestTypeDropdown.Value == null)
             {
                 throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Delay activity can't create a delay without a selected duration on design time");
             }
             return manifestTypeDropdown.Value;
-        }
-
-        public override async Task<ActivityDO> Configure(ActivityDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
-        {
-            return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authTokenDO);
-        }
-
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-        
-            //build a controls crate to render the pane
-            var configurationControlsCrate = CreateControlsCrate();
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
-            }
-
-            return curActivityDO;
         }
 
         private Crate CreateControlsCrate()
@@ -112,28 +61,44 @@ namespace terminalFr8Core.Actions
             return PackControlsCrate(duration);
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public SetDelay_v1(ICrateManager crateManager)
+            : base(crateManager)
         {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
+        }
+
+        public override async Task Run()
+        {
+            //find our action state in operations crate
+            var delayState = OperationalState.CallStack.GetLocalData<string>("Delay");
+            //extract ActivityResponse type from result
+            if (delayState == "suspended")
             {
-                return ConfigurationRequestType.Initial;
+                //this is second time we are being called. this means alarm has triggered
+                Success();
+                return;
             }
 
-            var controlsMS = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            //get user selected design time duration
+            var delayDuration = GetUserDefinedDelayDuration();
+            var alarmDTO = CreateAlarm(delayDuration);
+            //post to hub to create an alarm
+            await HubCommunicator.CreateAlarm(alarmDTO);
 
-            if (controlsMS == null)
-            {
-                return ConfigurationRequestType.Initial;
+            OperationalState.CallStack.StoreLocalData("Delay", "suspended");
+
+            SuspendHubExecution();
             }
 
-            var durationControl = controlsMS.Controls.FirstOrDefault(x => x.Type == ControlTypes.Duration && x.Name == "Delay_Duration");
-
-            if (durationControl == null)
+        public override Task Initialize()
             {
-                return ConfigurationRequestType.Initial;
+            var configurationControlsCrate = CreateControlsCrate();
+            Storage.Add(configurationControlsCrate);
+            return Task.FromResult(0);
             }
 
-            return ConfigurationRequestType.Followup;
+        public override Task FollowUp()
+        {
+            return Task.FromResult(0);
         }
     }
 }

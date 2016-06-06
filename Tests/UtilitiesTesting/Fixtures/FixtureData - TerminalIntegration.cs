@@ -3,6 +3,7 @@ using Data.Entities;
 ﻿using Data.States;
 ﻿using Fr8Data.DataTransferObjects;
 ﻿using Fr8Data.States;
+﻿using TerminalBase.Models;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -16,9 +17,9 @@ namespace UtilitiesTesting.Fixtures
 
         public static string TestTerminal_Core_EndPoint2 = "localhost:50705";
 
-        public static AuthorizationTokenDO AuthToken_TerminalIntegration()
+        public static AuthorizationToken AuthToken_TerminalIntegration()
         {
-            return new AuthorizationTokenDO()
+            return new AuthorizationToken()
             {
                 Token = @"{""Email"":""freight.testing@gmail.com"",""ApiPassword"":""SnByDvZJ/fp9Oesd/a9Z84VucjU=""}"
             };
@@ -35,12 +36,12 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static SubPlanDO SubPlan_TerminalIntegration()
+        public static SubplanDO SubPlan_TerminalIntegration()
         {
-            return new SubPlanDO()
+            return new SubplanDO()
             {
                 Id = GetTestGuidById(1001),
-                Name = "Test SubPlan"
+                Name = "Test Subplan"
             };
         }
 

@@ -1,7 +1,7 @@
 ﻿using System;
-using Data.Entities;
 using Fr8Data.DataTransferObjects;
 using TerminalBase.Infrastructure;
+using TerminalBase.Models;
 
 namespace terminalQuickBooks.Interfaces
 {
@@ -11,8 +11,7 @@ namespace terminalQuickBooks.Interfaces
         Intuit.Ipp.Data.JournalEntry CreateQbJournalEntry(StandardAccountingTransactionDTO crate);
         void Create(
             StandardAccountingTransactionDTO curStandardAccountingTransactionCM,
-            AuthorizationTokenDO authTokenDO,
-            string userId,
+            AuthorizationToken authorizationToken,
             IHubCommunicator hubCommunicator);
     }
 }

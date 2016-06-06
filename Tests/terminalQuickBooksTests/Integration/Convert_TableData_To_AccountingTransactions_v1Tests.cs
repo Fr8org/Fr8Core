@@ -2,15 +2,14 @@
 using System.Linq;
 using System.Threading.Tasks;
 using HealthMonitor.Utility;
-using Hub.Managers;
 using NUnit.Framework;
 using terminalQuickBooksTests.Fixtures;
 using System.Globalization;
-using System.Linq;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
+using Fr8Data.Managers;
 
 namespace terminalQuickBooksTests.Integration
 {
@@ -19,7 +18,7 @@ namespace terminalQuickBooksTests.Integration
     /// It prevents test case from running when CI is building the solution,
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
-    [Explicit]
+    [Explicit, Ignore]
     internal class Convert_TableData_To_AccountingTransactions_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName => "terminalQuickBooks";

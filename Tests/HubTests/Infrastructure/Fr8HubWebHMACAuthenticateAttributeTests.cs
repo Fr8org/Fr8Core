@@ -12,6 +12,8 @@ using Hub.Interfaces;
 using Moq;
 using StructureMap;
 using UtilitiesTesting;
+using HubWeb.Infrastructure_HubWeb;
+using Fr8Infrastructure.Interfaces;
 
 namespace HubWeb.Infrastructure
 {

@@ -7,6 +7,7 @@ using Fr8Data.Manifests;
 using Newtonsoft.Json;
 using Hub.Managers;
 using Utilities;
+using Fr8Data.Managers;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -203,11 +204,6 @@ namespace UtilitiesTesting.Fixtures
                 Label = "Select a File"
             };
 
-            var mapingPaneControl = new MappingPane()
-            {
-                Label = "Mapping Pane"
-            };
-
             var fieldFilterPane = new FilterPane()
             {
                 Label = "Execute Actions If:",
@@ -219,14 +215,7 @@ namespace UtilitiesTesting.Fixtures
                     ManifestType = CrateManifestTypes.StandardDesignTimeFields
                 }
             };
-
-            var mappingPane = new MappingPane()
-            {
-                Label = "Configure Mapping",
-                Name = "Selected_Mapping",
-                Required = true
-            };
-
+            
             var checkboxControl = new CheckBox()
             {
                 Label = "Envelope Sent",
@@ -241,7 +230,6 @@ namespace UtilitiesTesting.Fixtures
                 textblockControl,
                 filepickerControl,
                 fieldFilterPane,
-                mappingPane,
                 checkboxControl
             };
 

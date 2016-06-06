@@ -9,8 +9,8 @@ using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
-using Hub.Managers;
 using Newtonsoft.Json.Linq;
+using Fr8Data.Managers;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -109,13 +109,13 @@ namespace terminalDocuSignTests.Integration
                 //
                 // Asociate token with action
                 //
-                var applyToken = new ManageAuthToken_Apply()
+                var applyToken = new AuthenticationTokenGrantDTO()
                 {
                     ActivityId = solution.Id,
                     AuthTokenId = tokenGuid,
                     IsMain = true
                 };
-                await HttpPostAsync<ManageAuthToken_Apply[], string>(baseUrl + "ManageAuthToken/apply", new ManageAuthToken_Apply[] { applyToken });
+                await HttpPostAsync<AuthenticationTokenGrantDTO[], string>(baseUrl + "authentication/tokens/grant", new AuthenticationTokenGrantDTO[] { applyToken });
                 //let's give it some time to create MonitorDocusignEvents plan
                 await Task.Delay(TimeSpan.FromSeconds(15));
 
@@ -231,7 +231,7 @@ namespace terminalDocuSignTests.Integration
             var emailSubject = (TextSource)emailControlsCrate.Content.Controls.Single(c => c.Name == "EmailSubject");
             var emailBody = (TextSource)emailControlsCrate.Content.Controls.Single(c => c.Name == "EmailBody");
 
-            var upstreamFieldDescription = await HttpGetAsync<IncomingCratesDTO>(baseUrl + "plannodes/available_data?id=" + emailActivity.Id);
+            var upstreamFieldDescription = await HttpGetAsync<IncomingCratesDTO>(baseUrl + "plan_nodes/signals?id=" + emailActivity.Id);
 
             Assert.True(upstreamFieldDescription.AvailableCrates.SelectMany(x=>x.Fields).Any(y => y.Key == "NotificationMessage"));
             Assert.AreEqual("NotificationMessage", emailBody.Value);

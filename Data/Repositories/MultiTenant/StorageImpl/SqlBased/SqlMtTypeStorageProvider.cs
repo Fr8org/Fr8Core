@@ -13,17 +13,17 @@ namespace Data.Repositories.MultiTenant.Sql
     {
         private readonly IMtTypeStorage _storage;
         private readonly List<MtTypeDefinition> _newTypes = new List<MtTypeDefinition>();
-        private readonly string _connectionString;
+        // private readonly string _connectionString;
 
         public SqlMtTypeStorageProvider(IMtTypeStorage storage)
         {
             _storage = storage;
-            _connectionString = ConfigurationManager.ConnectionStrings["DockyardDB"].ConnectionString;
+            // _connectionString = ConfigurationManager.ConnectionStrings["DockyardDB"].ConnectionString;
         }
 
         private SqlConnection OpenConnection(ISqlConnectionProvider connectionProvider)
         {
-            var connection = new SqlConnection(_connectionString);
+            var connection = new SqlConnection((string)connectionProvider.ConnectionInfo);
 
             connection.Open();
             return connection;

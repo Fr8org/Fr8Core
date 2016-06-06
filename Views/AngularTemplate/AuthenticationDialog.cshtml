@@ -1,7 +1,13 @@
-﻿<div class="modal-header">
+﻿<div class="modal-header" event-auth-dialog>
     <h4 class="pull-left">Authorize Accounts</h4>
 </div>
 <div class="auth-dialog modal-body" block-if="isLoading()">
+    <div  class="fr8-auth-cover" ng-class="[{'expanded':!isWaitingForResponse}]" >
+        <div class="fr8-full-width fr8-full-height" style="position: absolute; top: 40%;" >
+            <div  block-if="isWaitingForResponse === true"></div>
+        </div>
+    </div>
+
     <div class="panel panel-default" ng-repeat="terminal in terminals">
         <div class="panel-heading">
             Terminal: {{terminal.label}}
@@ -36,7 +42,7 @@
         </div>
     </div>
 </div>
-<div class="modal-footer" style="margin-top: -20px;">
+<div class="modal-footer" >
     <button class="btn btn-default pull-right" style="width: 100px;" ng-click="$dismiss()">Cancel</button>
     <button class="btn btn-primary pull-right" style="width: 100px;" ng-click="apply()" ng-disabled="!isAllSelected()">Ok</button>
 </div>

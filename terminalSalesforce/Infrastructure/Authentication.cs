@@ -5,8 +5,8 @@ using System;
 using System.Threading.Tasks;
 using System.Web;
 using Utilities.Configuration.Azure;
-using Data.Entities;
 using Fr8Data.DataTransferObjects;
+using TerminalBase.Models;
 
 namespace terminalSalesforce.Infrastructure
 {
@@ -54,13 +54,32 @@ namespace terminalSalesforce.Infrastructure
 
             AuthenticationClient authClient = (AuthenticationClient)Task.Run(() => GetAuthToken(code)).Result;
 
-            //By Default, Salesforce returns the User ID of the currently logged in user which is not friendly one.
-            var friendlyUserName = GetFriendlyUserName(authClient);
+            string username = "";
+            string externalAccountId = "";
+            var curUserInfo =
+                  Task.Run(
+                      () =>
+                          new ForceClient(authClient.InstanceUrl, authClient.AccessToken, authClient.ApiVersion)
+                              .UserInfo<object>(authClient.Id)).Result;
+
+            JToken propertyValue;
+
+            var jCurUserInfo = (JObject)curUserInfo;
+            if (jCurUserInfo.TryGetValue("display_name", out propertyValue))
+            {
+                username = propertyValue.Value<string>();
+            }
+
+            if (jCurUserInfo.TryGetValue("user_id", out propertyValue))
+            {
+                externalAccountId = propertyValue.Value<string>();
+            }
 
             return new AuthorizationTokenDTO()
             {
                 Token = authClient.AccessToken,
-                ExternalAccountId = friendlyUserName,
+                ExternalAccountId = externalAccountId,
+                ExternalAccountName = username,
                 ExternalStateToken = state,
                 AdditionalAttributes = $"refresh_token={authClient.RefreshToken};" +
                                        $"instance_url={authClient.InstanceUrl};" +
@@ -95,10 +114,10 @@ namespace terminalSalesforce.Infrastructure
             return url;
         }
 
-        public async Task<AuthorizationTokenDO> RefreshAccessToken(AuthorizationTokenDO curAuthTokenDO)
+        public async Task<AuthorizationToken> RefreshAccessToken(AuthorizationToken curAuthToken)
         {
             var authClient = new AuthenticationClient();
-            string authAttributes = curAuthTokenDO.AdditionalAttributes;
+            string authAttributes = curAuthToken.AdditionalAttributes;
             string refreshToken = authAttributes.Substring(authAttributes.IndexOf("refresh_token"), authAttributes.IndexOf("instance_url") - 1);
             refreshToken = refreshToken.Replace("refresh_token=", "");
 
@@ -106,44 +125,15 @@ namespace terminalSalesforce.Infrastructure
             //In that case, there will no refresh token be available. Return the input auth token.
             if(string.IsNullOrEmpty(refreshToken))
             {
-                return curAuthTokenDO;
+                return curAuthToken;
             }
 
             await authClient.TokenRefreshAsync(salesforceConsumerKey, refreshToken);
-            curAuthTokenDO.Token = authClient.AccessToken;
-            curAuthTokenDO.AdditionalAttributes = $"refresh_token={authClient.RefreshToken};" +
+            curAuthToken.Token = authClient.AccessToken;
+            curAuthToken.AdditionalAttributes = $"refresh_token={authClient.RefreshToken};" +
                                                   $"instance_url={authClient.InstanceUrl};" +
                                                   $"api_version={authClient.ApiVersion}";
-            return curAuthTokenDO;
-        }
-
-        /// <summary>
-        /// Gets Salesforce Friendly Name for the Auth Token User ID.
-        /// </summary>
-        private string GetFriendlyUserName(AuthenticationClient oauthToken)
-        {
-            string userName = string.Empty;
-
-            var curUserInfo =
-                    Task.Run(
-                        () =>
-                            new ForceClient(oauthToken.InstanceUrl, oauthToken.AccessToken, oauthToken.ApiVersion)
-                                .UserInfo<object>(oauthToken.Id)).Result;
-
-            JToken propertyValue;
-
-            var jCurUserInfo = (JObject) curUserInfo; 
-            if (jCurUserInfo.TryGetValue("display_name", out propertyValue))
-            {
-                userName = propertyValue.Value<string>();
-            }
-
-            if (jCurUserInfo.TryGetValue("user_id", out propertyValue))
-            {
-                userName += string.Format(" [{0}]", propertyValue.Value<string>());
-            }
-
-            return userName;
+            return curAuthToken;
         }
     }
 }

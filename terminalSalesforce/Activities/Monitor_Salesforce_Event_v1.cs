@@ -4,9 +4,13 @@ using System.Threading.Tasks;
 using terminalSalesforce.Infrastructure;
 using StructureMap;
 using System.Linq;
+using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
+using Fr8Data.States;
 using ServiceStack;
 using TerminalBase.Infrastructure;
 
@@ -14,6 +18,19 @@ namespace terminalSalesforce.Actions
 {
     public class Monitor_Salesforce_Event_v1 : BaseSalesforceTerminalActivity<Monitor_Salesforce_Event_v1.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Version = "1",
+            Name = "Monitor_Salesforce_Event",
+            Label = "Monitor Salesforce Events",
+            NeedsAuthentication = true,
+            Category = ActivityCategory.Monitors,
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         private const string CreatedEventname = "Created";
         private const string UpdatedEventname = "Updated";
 
@@ -67,43 +84,38 @@ namespace terminalSalesforce.Actions
 
         readonly ISalesforceManager _salesforceManager;
 
-        public Monitor_Salesforce_Event_v1()
+        public Monitor_Salesforce_Event_v1(ICrateManager crateManager, ISalesforceManager salesforceManager)
+            : base(crateManager)
         {
-            _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
+            _salesforceManager = salesforceManager;
         }
 
-        protected override Task Initialize(CrateSignaller crateSignaller)
+        public override Task Initialize()
         {
-            ActivitiesHelper.GetAvailableFields(ConfigurationControls.SalesforceObjectList);
-
+            ActivitiesHelper.GetAvailableFields(ActivityUI.SalesforceObjectList);
             return Task.FromResult(0);
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
+        public override async Task FollowUp()
         {
-            string curSfChosenObject = ConfigurationControls.SalesforceObjectList.selectedKey;
+            string curSfChosenObject = ActivityUI.SalesforceObjectList.selectedKey;
 
             if(string.IsNullOrEmpty(curSfChosenObject))
             {
                 return;
             }
-
             var eventSubscriptionCrate = PackEventSubscriptionsCrate();
-
-            CurrentActivityStorage.ReplaceByLabel(eventSubscriptionCrate);
-
-            crateSignaller.ClearAvailableCrates();
-            crateSignaller.MarkAvailableAtRuntime<SalesforceEventCM>("Salesforce Event");
-
+            Storage.ReplaceByLabel(eventSubscriptionCrate);
+            CrateSignaller.ClearAvailableCrates();
+            CrateSignaller.MarkAvailableAtRuntime<SalesforceEventCM>("Salesforce Event");
             var selectedObjectProperties = await _salesforceManager.GetProperties(curSfChosenObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
-
-            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(GenerateRuntimeDataLabel(), true).AddFields(selectedObjectProperties);
+            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(GenerateRuntimeDataLabel(), true).AddFields(selectedObjectProperties);
         }
 
-        protected override async Task RunCurrentActivity()
+        public override async Task Run()
         {
             //get the event payload from the Salesforce notification event
-            var sfEventPayloads = CurrentPayloadStorage.CratesOfType<EventReportCM>().ToList().SelectMany(er => er.Content.EventPayload).ToList();
+            var sfEventPayloads = Payload.CratesOfType<EventReportCM>().ToList().SelectMany(er => er.Content.EventPayload).ToList();
             
             if (sfEventPayloads.Count == 0 || 
                 !sfEventPayloads.Any(payload => payload.Label.Equals("Salesforce Event Notification Payload")))
@@ -113,7 +125,7 @@ namespace terminalSalesforce.Actions
             }
 
             //if payload contains Salesforce Notification, get it from the payload storage
-            var curEventReport = CurrentPayloadStorage.CratesOfType<EventReportCM>().Single(er => er.Content.Manufacturer.Equals("Salesforce")).Content;
+            var curEventReport = Payload.CratesOfType<EventReportCM>().Single(er => er.Content.Manufacturer.Equals("Salesforce")).Content;
             var curEventPayloads = curEventReport.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().Single().PayloadObjects;
 
             //for each payload,
@@ -135,15 +147,15 @@ namespace terminalSalesforce.Actions
                 };
 
                 //store the SalesforceEventCM into the current payload
-                CurrentPayloadStorage.ReplaceByLabel(Crate.FromContent("Salesforce Event", sfEvent));
+                Payload.ReplaceByLabel(Crate.FromContent("Salesforce Event", sfEvent));
             });
 
             var runtimeCrateLabel = GenerateRuntimeDataLabel();
 
-            var salesforceObjectFields = CurrentActivityStorage.FirstCrate<CrateDescriptionCM>().Content.CrateDescriptions.First(x => x.Label == runtimeCrateLabel).Fields.Select(x => x.Key).ToArray();
+            var salesforceObjectFields = Storage.FirstCrate<CrateDescriptionCM>().Content.CrateDescriptions.First(x => x.Label == runtimeCrateLabel).Fields.Select(x => x.Key).ToArray();
 
             //for each Salesforce event notification
-            var sfEventsList = CurrentPayloadStorage.CrateContentsOfType<SalesforceEventCM>().ToList();
+            var sfEventsList = Payload.CrateContentsOfType<SalesforceEventCM>().ToList();
             foreach (var sfEvent in sfEventsList)
             {
                 //get the object fields as Standard Table Data
@@ -153,21 +165,21 @@ namespace terminalSalesforce.Actions
                                                 $"ID = '{sfEvent.ObjectId}'", 
                                                 AuthorizationToken);
 
-                CurrentPayloadStorage.Add(Crate<StandardTableDataCM>.FromContent(runtimeCrateLabel, resultObjects));
+                Payload.Add(Crate<StandardTableDataCM>.FromContent(runtimeCrateLabel, resultObjects));
             }
         }
 
         private string GenerateRuntimeDataLabel()
         {
-            var curSfChosenObject = ConfigurationControls.SalesforceObjectList.selectedKey;
+            var curSfChosenObject = ActivityUI.SalesforceObjectList.selectedKey;
 
             var eventSubscriptions = new List<string>();
             
-            if (ConfigurationControls.Created.Selected)
+            if (ActivityUI.Created.Selected)
             {
                 eventSubscriptions.Add(CreatedEventname);
             }
-            if (ConfigurationControls.Updated.Selected)
+            if (ActivityUI.Updated.Selected)
             {
                 eventSubscriptions.Add(UpdatedEventname);
             }
@@ -179,15 +191,15 @@ namespace terminalSalesforce.Actions
 
         private Crate PackEventSubscriptionsCrate()
         {
-            var curSfChosenObject = ConfigurationControls.SalesforceObjectList.selectedKey;
+            var curSfChosenObject = ActivityUI.SalesforceObjectList.selectedKey;
 
             var eventSubscriptions = new List<string>();
 
-            if (ConfigurationControls.Created.Selected)
+            if (ActivityUI.Created.Selected)
             {
                 eventSubscriptions.Add($"{curSfChosenObject}{CreatedEventname}");
             }
-            if (ConfigurationControls.Updated.Selected)
+            if (ActivityUI.Updated.Selected)
             {
                 eventSubscriptions.Add($"{curSfChosenObject}{UpdatedEventname}");
             }

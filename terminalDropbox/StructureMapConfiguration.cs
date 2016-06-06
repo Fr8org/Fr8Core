@@ -1,8 +1,5 @@
-﻿using StructureMap;
-using Hub.Interfaces;
-using Hub.Services;
-using Hub.StructureMap;
-using Hub.Managers;
+﻿using Fr8Infrastructure.StructureMap;
+using StructureMap;
 using terminalDropbox.Interfaces;
 using terminalDropbox.Services;
 
@@ -31,10 +28,6 @@ namespace terminalDropbox
         {
             public LiveMode()
             {
-                For<IActivity>().Use<Hub.Services.Activity>();
-                For<ITerminal>().Use<Terminal>().Singleton();
-                For<ICrateManager>().Use<CrateManager>();
-                For<IPlanNode>().Use<PlanNode>();
                 For<IDropboxService>().Use<DropboxService>();
             }
         }

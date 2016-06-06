@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
-using Data.Infrastructure;
 using Google.GData.Client;
-using Hub.Managers.APIManagers.Transmitters.Restful;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using StructureMap;
 using terminalGoogle.DataTransferObjects;
@@ -12,17 +9,19 @@ using terminalGoogle.Interfaces;
 using TerminalBase.Infrastructure;
 using Utilities.Configuration.Azure;
 using Utilities.Logging;
+using Fr8Infrastructure.Interfaces;
+using Fr8Infrastructure.Communication;
+using Newtonsoft.Json;
 
 namespace terminalGoogle.Services.Authorization
 {
     public class GoogleIntegration : IGoogleIntegration
     {
-
         private readonly IRestfulServiceClient _client;
 
-        public GoogleIntegration()
+        public GoogleIntegration(IRestfulServiceClient serviceClient)
         {
-            _client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+            _client = serviceClient;
         }
 
         public OAuth2Parameters CreateOAuth2Parameters(
@@ -105,7 +104,7 @@ namespace terminalGoogle.Services.Authorization
                     && string.IsNullOrEmpty(googleAuthDTO.RefreshToken))
                 {
                     var message = "Google access token is expired. Token refresh will be executed";
-                    EventManager.TokenValidationFailed(JsonConvert.SerializeObject(googleAuthDTO), message);
+                    //EventManager.TokenValidationFailed(JsonConvert.SerializeObject(googleAuthDTO), message);
                     Logger.LogError(message);
                     return false;
                 }
@@ -123,7 +122,7 @@ namespace terminalGoogle.Services.Authorization
                 if (exception is RestfulServiceException || exception is WebException)
                 {
                     var message = "Google token validation fails with error: " + exception.Message;
-                    EventManager.TokenValidationFailed(JsonConvert.SerializeObject(googleAuthDTO), message);
+                    //EventManager.TokenValidationFailed(JsonConvert.SerializeObject(googleAuthDTO), message);
                     Logger.LogError(message);
                     return false;
                 }

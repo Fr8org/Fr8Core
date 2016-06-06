@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
-using Data.States;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
-using Hub.Managers;
+using Fr8Data.States;
 using Newtonsoft.Json;
 using terminalYammer.Interfaces;
 using terminalYammer.Services;
@@ -19,6 +18,20 @@ namespace terminalYammer.Actions
 {
     public class Post_To_Yammer_v1 : BaseTerminalActivity
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Post_To_Yammer",
+            Label = "Post To Yammer",
+            Tags = "Notifier",
+            Category = ActivityCategory.Forwarders,
+            NeedsAuthentication = true,
+            Version = "1",
+            MinPaneWidth = 330,
+            Terminal = TerminalData.TerminalDTO,
+            WebService = TerminalData.WebServiceDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         private readonly IYammer _yammer;
 
         public class GroupMessage
@@ -62,80 +75,46 @@ namespace terminalYammer.Actions
             }
         }
 
-        public Post_To_Yammer_v1()
+        public Post_To_Yammer_v1(ICrateManager crateManager)
+            : base(crateManager)
         {
             _yammer = new Yammer();
         }
 
-        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override Task FollowUp()
         {
-            if (CheckAuthentication(curActivityDO, authTokenDO))
-            {
-                return curActivityDO;
-            }
-
-            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
+            return Task.FromResult(0);
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public override async Task Initialize()
         {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            return ConfigurationRequestType.Followup;
-        }
-
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            var oauthToken = authTokenDO.Token;
+            var oauthToken = AuthorizationToken.Token;
             var groups = await _yammer.GetGroupsList(oauthToken);
-
             var crateAvailableGroups = CreateAvailableGroupsCrate(groups);
-            var crateAvailableFields = await CreateAvailableFieldsCrate(curActivityDO);
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.Clear();
-                crateStorage.Add(PackControls(new ActivityUi()));
-                crateStorage.Add(crateAvailableGroups);
-                crateStorage.Add(crateAvailableFields);
-            }
-
-            return curActivityDO;
+            Storage.Clear();
+            Storage.Add(PackControls(new ActivityUi()));
+            Storage.Add(crateAvailableGroups);
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public override async Task Run()
         {
-            var ui = CrateManager.GetStorage(activityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
-            var processPayload = await GetPayload(activityDO, containerId);
-
-            if (NeedsAuthentication(authTokenDO))
-            {
-                return NeedsAuthenticationError(processPayload);
-            }
-
-            if (ui == null)
+            if (ConfigurationControls == null)
             {
                 throw new ApplicationException("Action was not configured correctly");
             }
-            var groupMessageField = GetGroupMessageFields(ui, CrateManager.GetStorage(processPayload));
-
+            var groupMessageField = GetGroupMessageFields(ConfigurationControls, Payload);
             ValidateYammerActivity(groupMessageField.GroupID, "No selected group found in activity.");
             ValidateYammerActivity(groupMessageField.Message, "No selected field found in activity.");
-
             try
             {
-                await _yammer.PostMessageToGroup(authTokenDO.Token,
+                await _yammer.PostMessageToGroup(AuthorizationToken.Token,
                     groupMessageField.GroupID, groupMessageField.Message);
             }
             catch (TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException)
             {
-                return InvalidTokenError(processPayload);
+                RaiseInvalidTokenError();
+                return;
             }
-
-            return processPayload;
         }
 
         private Crate CreateAvailableGroupsCrate(IEnumerable<FieldDTO> groups)
@@ -158,28 +137,12 @@ namespace terminalYammer.Actions
             groupMessage.GroupID = controls.Groups.Value;
 
             //Quick fix FR-2719
-            var messageField = (TextSource)GetControl(ui, "Message", ControlTypes.TextSource);
+            var messageField = GetControl<TextSource>("Message");
             groupMessage.Message = messageField.GetValue(payload);
-
             return groupMessage;
         }
 
-        private async Task<Crate> CreateAvailableFieldsCrate(ActivityDO activityDO)
-        {
-            var curUpstreamFields =
-                (await GetCratesByDirection<FieldDescriptionsCM>(activityDO, CrateDirection.Upstream))
-
-                .Where(x => x.Label != "Available Groups")
-                .SelectMany(x => x.Content.Fields)
-                .ToArray();
-
-            var availableFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(
-                    "Available Fields",
-                    curUpstreamFields
-                );
-
-            return availableFieldsCrate;
-        }
+       
 
         private void ValidateYammerActivity(string value, string exceptionMessage)
         {

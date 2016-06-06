@@ -7,6 +7,7 @@ using Fr8Data.Crates;
 using Fr8Data.Manifests;
 using Hub.Managers;
 using Utilities.Serializers.Json;
+using Fr8Data.Managers;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -65,7 +66,7 @@ namespace UtilitiesTesting.Fixtures
 
             for (int i = 1; i <= 4; ++i)
             {
-                var curSubPlanDO = new SubPlanDO()
+                var curSubPlanDO = new SubplanDO()
                 {
                     Id = GetTestGuidById(i),
                     Name = string.Format("curSubPlanDO-{0}", i),
@@ -113,13 +114,13 @@ namespace UtilitiesTesting.Fixtures
 
                 uow.ActivityTemplateRepository.Add(actionTemplate);
 
-                SubPlanDO subPlaneDO = new SubPlanDO()
+                SubplanDO subPlaneDO = new SubplanDO()
                 {
                     ParentPlanNode = planDO,
                     StartingSubPlan = true
                 };
                 planDO.ChildNodes = new List<PlanNodeDO> { subPlaneDO };
-                planDO.StartingSubPlan = subPlaneDO;
+                planDO.StartingSubplan = subPlaneDO;
 
                 uow.ActivityTemplateRepository.Add(actionTemplate);
 
@@ -189,13 +190,13 @@ namespace UtilitiesTesting.Fixtures
                 uow.ActivityTemplateRepository.Add(actionTemplate);
 
 
-                SubPlanDO subPlanDO = new SubPlanDO()
+                SubplanDO subplanDO = new SubplanDO()
                 {
                     ParentPlanNode = planDO,
                     StartingSubPlan = true
                 };
-                planDO.ChildNodes = new List<PlanNodeDO> { subPlanDO };
-                planDO.StartingSubPlan = subPlanDO;
+                planDO.ChildNodes = new List<PlanNodeDO> { subplanDO };
+                planDO.StartingSubplan = subplanDO;
 
 
                 var actionDo = new ActivityDO()
@@ -220,7 +221,7 @@ namespace UtilitiesTesting.Fixtures
                 }
 
                 // uow.ActivityRepository.Add(actionDo);
-                subPlanDO.ChildNodes.Add(actionDo);
+                subplanDO.ChildNodes.Add(actionDo);
 
                 uow.SaveChanges();
             }
@@ -240,7 +241,7 @@ namespace UtilitiesTesting.Fixtures
 
             for (int i = 2; i <= 3; ++i)
             {
-                var curSubPlanDO = new SubPlanDO()
+                var curSubPlanDO = new SubplanDO()
                 {
                     Id = GetTestGuidById(i),
                     Name = string.Format("curSubPlanDO-{0}", i),
@@ -265,7 +266,7 @@ namespace UtilitiesTesting.Fixtures
 
             for (int i = 2; i <= 3; ++i)
             {
-                var curSubPlanDO = new SubPlanDO()
+                var curSubPlanDO = new SubplanDO()
                 {
                     Id = GetTestGuidById(i),
                     Name = string.Format("curSubPlanDO-{0}", i),
@@ -288,7 +289,7 @@ namespace UtilitiesTesting.Fixtures
                 PlanState = PlanState.Running,
             };
 
-            var curSubPlanDO = new SubPlanDO()
+            var curSubPlanDO = new SubplanDO()
             {
                 Id = GetTestGuidById(1),
                 Name = string.Format("curSubPlanDO-{0}", 1),
@@ -313,7 +314,7 @@ namespace UtilitiesTesting.Fixtures
                 PlanState = PlanState.Running,
             };
 
-            var curSubPlanDO = new SubPlanDO()
+            var curSubPlanDO = new SubplanDO()
             {
                 Id = GetTestGuidById(2),
                 Name = string.Format("curSubPlanDO-{0}", 1),
@@ -342,7 +343,7 @@ namespace UtilitiesTesting.Fixtures
                 PlanState = PlanState.Running,
             };
 
-            var curSubPlanDO = new SubPlanDO()
+            var curSubPlanDO = new SubplanDO()
             {
                 Name = string.Format("curSubPlanDO-{0}", 1),
                 ParentPlanNode = curPlanDO,

@@ -105,7 +105,7 @@ namespace terminalDocuSignTests.Integration
                         string.Format("No terminal found with Name = {0}", TerminalName)
                     );
                 }
-
+                
                 await RecreateDefaultAuthToken(unitOfWork, testAccount, docuSignTerminal);
 
                 var mtDataCountBefore = unitOfWork.MultiTenantObjectRepository
@@ -113,9 +113,11 @@ namespace terminalDocuSignTests.Integration
                     .Count();
 
 
+                Debug.WriteLine("Waiting for MADSE plan to be created");
                 //let's wait 10 seconds to ensure that MADSE plan was created/activated by re-authentication
-                await Task.Delay(SingleAwaitPeriod);
+                await Task.Delay(SingleAwaitPeriod+5000);
 
+                Debug.WriteLine("Sending test event");
                 string response = 
                     await HttpPostAsync<string>(GetTerminalEventsUrl(), new StringContent(string.Format(EnvelopeToSend, Guid.NewGuid())));
 
@@ -148,8 +150,8 @@ namespace terminalDocuSignTests.Integration
            Fr8AccountDO account, TerminalDO docuSignTerminal)
         {
             Debug.WriteLine($"Reauthorizing tokens for {account.EmailAddress.Address}");
-            var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
-                _baseUrl + "manageauthtoken/"
+            var tokens = await HttpGetAsync<IEnumerable<AuthenticationTokenTerminalDTO>>(
+                _baseUrl + "authentication/tokens"
             );
 
             var docusignTokens = tokens?.FirstOrDefault(x => x.Name == "terminalDocuSign");
@@ -159,7 +161,7 @@ namespace terminalDocuSignTests.Integration
                 foreach (var token in docusignTokens.AuthTokens)
                 {
                     await HttpPostAsync<string>(
-                        _baseUrl + "manageauthtoken/revoke?id=" + token.Id,
+                        _baseUrl + "authentication/tokens/revoke?id=" + token.Id,
                         null
                         );
                 }
@@ -177,6 +179,8 @@ namespace terminalDocuSignTests.Integration
                 _baseUrl + "authentication/token",
                 creds
             );
+
+            Debug.WriteLine("Received new tokens.");
 
             Assert.NotNull(
                 tokenResponse["authTokenId"],

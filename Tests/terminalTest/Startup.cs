@@ -3,7 +3,9 @@ using Owin;
 using System;
 using System.Collections.Generic;
 using System.Web.Http.Dispatcher;
+using terminalTest.Actions;
 using TerminalBase.BaseClasses;
+using TerminalBase.Services;
 
 [assembly: OwinStartup(typeof(terminalTest.Startup))]
 namespace terminalTest
@@ -27,6 +29,14 @@ namespace terminalTest
             {
                 StartHosting("terminalAzure");
             }
+        }
+
+        protected override void RegisterActivities()
+        {
+            ActivityStore.RegisterActivity<GenerateTableActivity_v1>(GenerateTableActivity_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<SimpleActivity_v1>(SimpleActivity_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<SimpleHierarchicalActivity_v1>(SimpleHierarchicalActivity_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<SimpleJumperActivity_v1>(SimpleJumperActivity_v1.ActivityTemplateDTO);
         }
 
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)

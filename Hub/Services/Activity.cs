@@ -11,22 +11,23 @@ using System.Threading.Tasks;
 using Data.Infrastructure.Security;
 using Data.Repositories.Plan;
 using Data.Infrastructure.StructureMap;
-using Data.Interfaces.Manifests;
 using Data.States;
 using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using Fr8Infrastructure.Communication;
 using Hub.Exceptions;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
 using Utilities;
 using Hub.Exceptions;
+using Segment;
 
 namespace Hub.Services
 {
@@ -93,7 +94,7 @@ namespace Hub.Services
             {
                 plan = ObjectFactory.GetInstance<IPlan>().Create(uow, name);
 
-                plan.ChildNodes.Add(parentNode = new SubPlanDO
+                plan.ChildNodes.Add(parentNode = new SubplanDO
                 {
                     StartingSubPlan = true,
                     Name = name + " #1"
@@ -105,9 +106,9 @@ namespace Hub.Services
 
                 if (parentNode is PlanDO)
                 {
-                    if (((PlanDO) parentNode).StartingSubPlan == null)
+                    if (((PlanDO) parentNode).StartingSubplan == null)
                     {
-                        parentNode.ChildNodes.Add(parentNode = new SubPlanDO
+                        parentNode.ChildNodes.Add(parentNode = new SubplanDO
                         {
                             StartingSubPlan = true,
                             Name = name + " #1"
@@ -115,7 +116,7 @@ namespace Hub.Services
                     }
                     else
                     {
-                        parentNode = ((PlanDO) parentNode).StartingSubPlan;
+                        parentNode = ((PlanDO) parentNode).StartingSubplan;
                     }
 
                 }
@@ -215,7 +216,7 @@ namespace Hub.Services
                 }
                 catch (Exception e)
                 {
-                    ReportActivityInvocationError(submittedActivity, e.Message, null ,submittedActivity.Id.ToString(), EventManager.TerminalActionActivationFailed);
+                    ReportActivityInvocationError(submittedActivity, e.Message, null, submittedActivity.Id.ToString(), EventManager.TerminalActionActivationFailed);
                     throw;
                 }
             }
@@ -400,7 +401,7 @@ namespace Hub.Services
                 plan.ChildNodes.Remove(originalAction);
 
                 // Add child subplans.
-                foreach (var subPlan in originalAction.ChildNodes.OfType<SubPlanDO>())
+                foreach (var subPlan in originalAction.ChildNodes.OfType<SubplanDO>())
                 {
                     submittedActiviy.ChildNodes.Add(subPlan);
                 }
@@ -415,7 +416,7 @@ namespace Hub.Services
 
                     if (originalActions.TryGetValue(submitted.Id, out existingActivity))
                     {
-                        RestoreSystemProperties(existingActivity, (ActivityDO) submitted);
+                        RestoreSystemProperties(existingActivity, (ActivityDO)submitted);
                     }
                 }
             }
@@ -493,13 +494,13 @@ namespace Hub.Services
                 return;
             }
 
-            var curActivityDO = (ActivityDO) exisiting.Clone();
+            var curActivityDO = (ActivityDO)exisiting.Clone();
 
             var dto = Mapper.Map<ActivityDO, ActivityDTO>(curActivityDO);
             bool skipDeactivation = false;
             var template = _activityTemplate.GetByKey(curActivityDO.ActivityTemplateId);
 
-            if (curActivityDO.AuthorizationToken != null || !template.NeedsAuthentication)
+            if (curActivityDO.AuthorizationTokenId != null || !template.NeedsAuthentication)
             {
                 try
                 {
@@ -558,17 +559,16 @@ namespace Hub.Services
                     }
                     else
                     {
-                        ReportActivityInvocationError(submittedActivity, e.Message, null,submittedActivity.Id.ToString(), EventManager.TerminalConfigureFailed);
+                        ReportActivityInvocationError(submittedActivity, e.Message, null, submittedActivity.Id.ToString(), EventManager.TerminalConfigureFailed);
                         throw;
                     }
                 }
                 catch (Exception e)
                 {
-                    ReportActivityInvocationError(submittedActivity, e.Message, null ,submittedActivity.Id.ToString(), EventManager.TerminalConfigureFailed);
+                    ReportActivityInvocationError(submittedActivity, e.Message, null, submittedActivity.Id.ToString(), EventManager.TerminalConfigureFailed);
                     throw;
                 }
             }
-
             return Mapper.Map<ActivityDO>(tempActionDTO);
         }
 
@@ -630,7 +630,7 @@ namespace Hub.Services
         /// <param name="activityDTO"></param>
         /// <param name="isSolution">This parameter controls the access level: if it is a solution case
         /// we allow calls without CurrentAccount; if it is not - we need a User to get the list of available activities</param>
-        /// <returns>Task<SolutionPageDTO/> or Task<ActivityResponceDTO/></returns>
+        /// <returns>Task<DocumentationResponseDTO></returns>
         public async Task<T> GetActivityDocumentation<T>(ActivityDTO activityDTO, bool isSolution = false) where T : class
         {
             //activityResponce can be either of type SolutoinPageDTO or ActivityRepsonceDTO

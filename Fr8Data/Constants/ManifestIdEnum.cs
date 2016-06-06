@@ -124,7 +124,10 @@ namespace Fr8Data.Constants
         ValidationResults = 39,
 
         [Display(Name = "Docusign Envelope v3")]
-        DocuSignEnvelope_v3 = 40
+        DocuSignEnvelope_v3 = 40,
+
+        [Display(Name = "Advisory Messages")]
+        AdvisoryMessages = 41
     }
 }
 

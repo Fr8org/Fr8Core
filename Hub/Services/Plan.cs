@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using AutoMapper;
 using StructureMap;
 using Data.Entities;
@@ -10,13 +11,16 @@ using Data.Interfaces;
 using Data.States;
 using Hub.Interfaces;
 using InternalInterface = Hub.Interfaces;
-using Hub.Managers;
 using System.Threading.Tasks;
+using System.Web.Http.Controllers;
+using System.Web.Routing;
 using Data.Infrastructure;
-using Data.Interfaces.Manifests;
 using Data.Repositories.Plan;
+using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.DataTransferObjects.Helpers;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Hub.Exceptions;
@@ -27,10 +31,10 @@ namespace Hub.Services
 {
     public class Plan : IPlan
     {
-        private const int DEFAULT_PLAN_PAGE_SIZE = 10;
-        private const int MIN_PLAN_PAGE_SIZE = 5;
-        // private readonly IProcess _process;
-        private readonly InternalInterface.IContainer _container;
+        private const int DefaultPlanPageSize = 10;
+        private const int MinPlanPageSize = 5;
+        
+        private readonly InternalInterface.IContainerService _containerService;
         private readonly Fr8Account _dockyardAccount;
         private readonly IActivity _activity;
         private readonly ICrateManager _crate;
@@ -38,10 +42,10 @@ namespace Hub.Services
         private readonly IJobDispatcher _dispatcher;
         private readonly IPusherNotifier _pusher;
 
-        public Plan(InternalInterface.IContainer container, Fr8Account dockyardAccount, IActivity activity,
+        public Plan(IContainerService containerService, Fr8Account dockyardAccount, IActivity activity,
             ICrateManager crate, ISecurityServices security, IJobDispatcher dispatcher, IPusherNotifier pusher)
         {
-            _container = container;
+            _containerService = containerService;
             _dockyardAccount = dockyardAccount;
             _activity = activity;
             _crate = crate;
@@ -56,8 +60,8 @@ namespace Hub.Services
             planQueryDTO = planQueryDTO ?? new PlanQueryDTO();
             planQueryDTO.Page = planQueryDTO.Page ?? 1;
             planQueryDTO.Page = planQueryDTO.Page < 1 ? 1 : planQueryDTO.Page;
-            planQueryDTO.PlanPerPage = planQueryDTO.PlanPerPage ?? DEFAULT_PLAN_PAGE_SIZE;
-            planQueryDTO.PlanPerPage = planQueryDTO.PlanPerPage < MIN_PLAN_PAGE_SIZE ? MIN_PLAN_PAGE_SIZE : planQueryDTO.PlanPerPage;
+            planQueryDTO.PlanPerPage = planQueryDTO.PlanPerPage ?? DefaultPlanPageSize;
+            planQueryDTO.PlanPerPage = planQueryDTO.PlanPerPage < MinPlanPageSize ? MinPlanPageSize : planQueryDTO.PlanPerPage;
             planQueryDTO.IsDescending = planQueryDTO.IsDescending ?? true;
 
             var planQuery = unitOfWork.PlanRepository.GetPlanQueryUncached()
@@ -110,7 +114,7 @@ namespace Hub.Services
 
         public bool IsMonitoringPlan(IUnitOfWork uow, PlanDO plan)
         {
-            var initialActivity = plan.StartingSubPlan.GetDescendantsOrdered()
+            var initialActivity = plan.StartingSubplan.GetDescendantsOrdered()
                 .OfType<ActivityDO>()
                 .FirstOrDefault(x => uow.ActivityTemplateRepository.GetByKey(x.ActivityTemplateId).Category != ActivityCategory.Solution);
 
@@ -163,7 +167,7 @@ namespace Hub.Services
                 submittedPlan.PlanState = PlanState.Inactive;
                 submittedPlan.Fr8Account = _security.GetCurrentAccount(uow);
 
-                submittedPlan.ChildNodes.Add(new SubPlanDO(true)
+                submittedPlan.ChildNodes.Add(new SubplanDO(true)
                 {
                     Id = Guid.NewGuid(),
                     Name = "Starting Subplan"
@@ -231,7 +235,7 @@ namespace Hub.Services
                 }
 
                 //Plan deletion will only update its PlanState = Deleted
-                foreach (var container in _container.LoadContainers(uow, plan))
+                foreach (var container in _containerService.LoadContainers(uow, plan))
                 {
                     container.State = State.Deleted;
                 }
@@ -305,7 +309,7 @@ namespace Hub.Services
                     }
                 }
 
-                if (result.ValidationErrors.Count == 0)
+                if (result.ValidationErrors.Count == 0 && plan.PlanState != PlanState.Running)
                 {
                     plan.PlanState = PlanState.Running;
                     plan.LastUpdated = DateTimeOffset.UtcNow;
@@ -377,7 +381,6 @@ namespace Hub.Services
 
         }
 
-
         public List<PlanDO> MatchEvents(List<PlanDO> curPlans, EventReportCM curEventReport)
         {
             List<PlanDO> subscribingPlans = new List<PlanDO>();
@@ -438,213 +441,305 @@ namespace Hub.Services
         {
             return (PlanDO)uow.PlanRepository.GetById<PlanNodeDO>(id).GetTreeRoot();
         }
-
-        public PlanDO Copy(IUnitOfWork uow, PlanDO plan, string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// New Process object
-        /// </summary>
-        /// <param name="planId"></param>
-        /// <param name="envelopeId"></param>
-        /// <returns></returns>
-        public ContainerDO Create(IUnitOfWork uow, PlanDO curPlan, params Crate[] curPayload)
-        {
-            var containerDO = new ContainerDO { Id = Guid.NewGuid() };
-
-            containerDO.PlanId = curPlan.Id;
-            containerDO.Name = curPlan.Name;
-            containerDO.State = State.Unstarted;
-
-            using (var crateStorage = _crate.UpdateStorage(() => containerDO.CrateStorage))
-            {
-                if (curPayload?.Length > 0)
-                {
-                    foreach (var crate in curPayload)
-                    {
-                        if (crate != null && !crate.IsOfType<OperationalStateCM>())
-                        {
-                            crateStorage.Add(crate);
-                        }
-                    }
-                }
-
-                var operationalState = new OperationalStateCM();
-
-                operationalState.CallStack.PushFrame(new OperationalStateCM.StackFrame
-                {
-                    NodeName = "Starting subplan",
-                    NodeId = curPlan.StartingSubPlanId,
-                });
-
-                crateStorage.Add(Crate.FromContent("Operational state", operationalState));
-            }
-
-            uow.ContainerRepository.Add(containerDO);
-
-            uow.SaveChanges();
-
-            EventManager.ContainerCreated(containerDO);
-
-            return containerDO;
-        }
-
-        private async Task<ContainerDO> Run(IUnitOfWork uow, ContainerDO curContainerDO)
-        {
-            var plan = uow.PlanRepository.GetById<PlanDO>(curContainerDO.PlanId);
-            var user = uow.UserRepository.GetByKey(plan.Fr8AccountId);
-
-            if (plan.PlanState == PlanState.Deleted)
-            {
-                throw new ApplicationException("Cannot run plan that is in deleted state.");
-            }
-
-            if (curContainerDO.State == State.Failed
-                || curContainerDO.State == State.Completed)
-            {
-                throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
-            }
-
-            try
-            {
-                await _container.Run(uow, curContainerDO);
-                return curContainerDO;
-            }
-            catch (InvalidTokenRuntimeException ex)
-            {
-                ReportAuthError(user, ex);
-                curContainerDO.State = State.Failed;
-                throw;
-            }
-            catch (Exception)
-            {
-                curContainerDO.State = State.Failed;
-                throw;
-            }
-            finally
-            {
-                //TODO is this necessary? let's leave it as it is
-                /*
-                curContainerDO.CurrentPlanNode = null;
-                curContainerDO.NextPlanNode = null;
-                 * */
-                uow.SaveChanges();
-            }
-        }
-
-        private void ReportAuthError(Fr8AccountDO user, InvalidTokenRuntimeException ex)
-        {
-            string errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with " +
-                    $"{ex?.FailedActivityDTO.ActivityTemplate.WebService.Name}. ";
-
-            errorMessage += $"Please re-authorize Fr8 to connect to {ex?.FailedActivityDTO.ActivityTemplate.WebService.Name} " +
-                    $"by clicking on the Settings dots in the upper " +
-                    $"right corner of the activity and then selecting Choose Authentication. ";
-
-            // Try getting specific the instructions provided by the terminal.
-            if (!String.IsNullOrEmpty(ex.Message))
-            {
-                errorMessage += "Additional instructions from the terminal: ";
-                errorMessage += ex.Message;
-            }
-
-            _pusher.NotifyUser(errorMessage, NotificationChannel.GenericFailure, user.UserName);
-        }
-
+        
         public void Enqueue(Guid curPlanId, params Crate[] curEventReport)
         {
             //We convert incoming data to DTO objects because HangFire will serialize method parameters into JSON and serializing of Crate objects is forbidden
             var curEventReportDTO = curEventReport.Select(x => CrateStorageSerializer.Default.ConvertToDto(x)).ToArray();
             //We don't await this call as it will be awaited inside HangFire after job is launched
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            _dispatcher.Enqueue(() => LaunchProcess(curPlanId, curEventReportDTO));
+             _dispatcher.Enqueue(() => LaunchPlanCallback(curPlanId, curEventReportDTO));
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
-
-        public void Enqueue(IEnumerable<PlanDO> curPlans, params Crate[] curEventReport)
+        
+        public static async Task LaunchPlanCallback(Guid planId, params CrateDTO[] curPayload)
         {
-            if (curPlans == null)
-            {
-                return;
-            }
-            foreach (var curPlan in curPlans)
-            {
-                Enqueue(curPlan.Id, curEventReport);
-            }
-        }
+            Logger.LogInfo($"Starting executing plan {planId} as a reaction to external event");
 
-        public static async Task LaunchProcess(Guid curPlan, params CrateDTO[] curPayload)
-        {
-            Logger.LogInfo($"Starting executing plan {curPlan} as a reaction to external event");
-            if (curPlan == default(Guid))
+            if (planId == default(Guid))
             {
-                throw new ArgumentException("Invalid pland id.", nameof(curPlan));
+                Logger.LogError("Can't lanunch plan with empty id");
             }
 
             // we "eat" this exception to make Hangfire thinks that everthying is good and job is completed
             // this exception should be already logged somewhere
             try
             {
-                await ObjectFactory.GetInstance<IPlan>().Run(curPlan, curPayload.Select(x => CrateStorageSerializer.Default.ConvertFromDto(x)).ToArray());
+                var planService = ObjectFactory.GetInstance<Plan>();
+
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var plan = uow.PlanRepository.GetById<PlanDO>(planId);
+
+                    if (plan == null)
+                    {
+                        Logger.LogError($"Unable to find plan: {planId}");
+                        return;
+                    }
+                    
+                    await planService.Run(uow, plan, curPayload.Select(x => CrateStorageSerializer.Default.ConvertFromDto(x)).ToArray());
+                }
             }
             catch
             {
             }
-            Logger.LogInfo($"Finished executing plan {curPlan} as a reaction to external event");
+
+            Logger.LogInfo($"Finished executing plan {planId} as a reaction to external event");
         }
 
-        public async Task<ContainerDO> Run(Guid planId, Crate[] curPayload)
+        private async Task<ContainerDO> Run(IUnitOfWork uow, PlanDO plan, Crate[] curPayload)
         {
+            if (plan == null)
+            {
+                throw new ArgumentNullException(nameof(plan));
+            }
+
+            var activationResults = await Activate(plan.Id, false);
+
+            if (activationResults.ValidationErrors.Count > 0)
+            {
+                Logger.LogError($"Failed to run {plan.Name}:{plan.Id} plan due to activation errors.");
+
+                return new ContainerDO
+                {
+                    PlanId = plan.Id,
+                    State = State.Failed
+                };
+            }
+
+            var container = _containerService.Create(uow, plan, curPayload);
+            await _containerService.Run(uow, container);
+
+            return container;
+        }
+        
+        public async Task<ContainerDTO> Run(Guid planId, Crate[] payload, Guid? containerId)
+        {
+            var activationResults = await Activate(planId, false);
+            string userName = Thread.CurrentPrincipal?.Identity?.Name;
+
+            if (activationResults.ValidationErrors.Count > 0)
+            {
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var plan = uow.PlanRepository.GetById<PlanDO>(planId);
+                    var failedActivities = new List<string>();
+
+                    foreach (var key in activationResults.ValidationErrors.Keys)
+                    {
+                        var activity = uow.PlanRepository.GetById<PlanNodeDO>(key) as ActivityDO;
+
+                        if (activity != null)
+                        {
+                            var label = string.IsNullOrWhiteSpace(activity.Label) ? activity.Name : activity.Label;
+
+                            if (string.IsNullOrWhiteSpace(label))
+                            {
+                                label = activity.Id.ToString();
+                            }
+
+                            failedActivities.Add($"'{label}'");
+
+                            ReportGenericValidationErrors(userName, label, plan.Name, activationResults.ValidationErrors[key]);
+                        }
+                    }
+
+                    var activitiesList = string.Join(", ", failedActivities);
+
+                    _pusher.NotifyUser($"Validation failed for activities: {activitiesList} from plan \"{plan.Name}\". See activity configuration pane for details.",
+                        NotificationChannel.GenericFailure,
+                        userName);
+                }
+
+                return new ContainerDTO
+                {
+                    PlanId = planId,
+                    ValidationErrors = activationResults.ValidationErrors
+                };
+            }
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curPlan = uow.PlanRepository.GetById<PlanDO>(planId);
-                string containerId = "";
+                ContainerDO container = null;
+                var plan = uow.PlanRepository.GetById<PlanDO>(planId);
 
-                if (curPlan == null)
+                // it container id was passed validate it
+                if (containerId != null)
                 {
-                    throw new ArgumentNullException("planId");
+                    container = uow.ContainerRepository.GetByKey(containerId.Value);
+
+                    // we didn't find contaier or found container belong to the other plan.
+                    if (container == null || container.PlanId != planId)
+                    {
+                        // that's bad. Reset containerId to run plan with new container
+                        containerId = null;
+                    }
                 }
+
+                PlanType? currentPlanType = null;
+
                 try
                 {
-                    var curContainerDO = Create(uow, curPlan, curPayload);
+                    if (plan != null)
+                    {
+                        currentPlanType = IsMonitoringPlan(uow, plan) ? PlanType.Monitoring : PlanType.RunOnce;
 
-                    containerId = curContainerDO.Id.ToString();
+                        if (containerId == null)
+                        {
+                            // There is no sense to run monitoring plans explicitly
+                            // Just return empty container
+                            if (currentPlanType == PlanType.Monitoring)
+                            {
+                                _pusher.NotifyUser($"Plan \"{plan.Name}\" activated. It will wait and respond to specified external events.",
+                                    NotificationChannel.GenericSuccess,
+                                    userName);
 
-                    return await Run(uow, curContainerDO);
+                                return new ContainerDTO
+                                {
+                                    CurrentPlanType = currentPlanType,
+                                    PlanId = planId
+                                };
+                            }
+
+                            container = await Run(uow, plan, payload);
+                        }
+                        else
+                        {
+                            _pusher.NotifyUser($"Continue execution of the supsended Plan \"{plan.Name}\"",
+                                NotificationChannel.GenericSuccess,
+                                userName);
+
+                            await _containerService.Continue(uow, container);
+                        }
+
+                        var response = _crate.GetContentType<OperationalStateCM>(container.CrateStorage);
+                        var responseMsg = GetResponseMessage(response);
+
+                        if (container.State != State.Failed)
+                        {
+                            _pusher.NotifyUser($"Complete processing for Plan \"{plan.Name}\".{responseMsg}", NotificationChannel.GenericSuccess, userName);
+                        }
+                        else
+                        {
+                            _pusher.NotifyUser($"Failed executing plan \"{plan.Name}\"", NotificationChannel.GenericFailure, userName);
+                        }
+
+                        var containerDTO = Mapper.Map<ContainerDTO>(container);
+                        containerDTO.CurrentPlanType = currentPlanType;
+
+                        return containerDTO;
+                    }
+
+                    return null;
                 }
-                catch (Exception ex)
+                catch (InvalidTokenRuntimeException exception)
                 {
-                    EventManager.ContainerFailed(curPlan, ex, containerId);
-                    this.Deactivate(curPlan.Id);
+                    //this response contains details about the error that happened on some terminal and need to be shown to client
+                    if (exception.ContainerDTO != null)
+                    {
+                        exception.ContainerDTO.CurrentPlanType = currentPlanType;
+                    }
+                    // Do not notify -- it happens in Plan.cs
                     throw;
                 }
+                catch (ActivityExecutionException exception)
+                {
+                    //this response contains details about the error that happened on some terminal and need to be shown to client
+                    if (exception.ContainerDTO != null)
+                    {
+                        exception.ContainerDTO.CurrentPlanType = currentPlanType;
+                    }
+
+                    NotifyWithErrorMessage(exception, plan, userName, exception.ErrorMessage);
+
+                    throw;
+                }
+                catch (Exception e)
+                {
+                    var errorMessage = "An internal error has occured. Please, contact the administrator.";
+                    NotifyWithErrorMessage(e, plan, userName, errorMessage);
+                    throw;
+                }
+                finally
+                {
+                    // THIS CODE IS HERE ONLY TO SUPPORT CURRENT UI LOGIC THAT DISPLAYS PLAN LISTS.
+                    // It should be updated to show  as 'running' only:
+                    //   1. Plans that have at least one executing container
+                    //   2. Active monitoring plans
+                    if (currentPlanType == PlanType.RunOnce)
+                    {
+                        using (var planStatUpdateUow = ObjectFactory.GetInstance<IUnitOfWork>())
+                        {
+                            planStatUpdateUow.PlanRepository.GetById<PlanDO>(planId).PlanState = PlanState.Inactive;
+                            planStatUpdateUow.SaveChanges();
+                        }
+                    }
+                }
             }
         }
 
-        public async Task<ContainerDO> Continue(Guid containerId)
+        private string GetResponseMessage(OperationalStateCM response)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            string responseMsg = "";
+            ResponseMessageDTO responseMessage;
+            if (response != null && response.CurrentActivityResponse != null && response.CurrentActivityResponse.TryParseResponseMessageDTO(out responseMessage))
             {
-                var curContainerDO = uow.ContainerRepository.GetByKey(containerId);
-
-                if (curContainerDO == null)
+                if (responseMessage != null && !string.IsNullOrEmpty(responseMessage.Message))
                 {
-                    throw new Exception($"Can't continue container execution. Container {containerId} was not found.");
+                    responseMsg = "\n" + responseMessage.Message;
                 }
+            }
 
-                if (curContainerDO.State != State.Suspended)
+            return responseMsg;
+        }
+
+        private void NotifyWithErrorMessage(Exception exception, PlanDO planDO, string username, string errorMessage = "")
+        {
+            var messageToNotify = string.Empty;
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                messageToNotify = errorMessage;
+            }
+
+            var message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, messageToNotify);
+            _pusher.NotifyUser(message, NotificationChannel.GenericFailure, username);
+
+        }
+
+
+        // We don't have place in activity configuration pane to display activity-wide configuration errors that are not binded to specific controls.
+        // Report them via Action Stream.
+        private void ReportGenericValidationErrors(string userName, string activityLabel, string planName, ValidationErrorsDTO validationErrors)
+        {
+            var genericErrors = new List<string>();
+
+            foreach (var error in validationErrors.ValidationErrors)
+            {
+                if (error.ControlNames == null || error.ControlNames.Count == 0)
                 {
-                    throw new ApplicationException($"Attempted to Continue a Container {containerId} that wasn't in pending state. Container state is {curContainerDO.State}.");
+                    genericErrors.Add(error.ErrorMessage);
                 }
+            }
 
-                //continue from where we left
-                return await Run(uow, curContainerDO);
+            if (genericErrors.Count > 0)
+            {
+                var errors = string.Join(" ", genericErrors.Select(x =>
+                {
+                    if (!x.TrimEnd().EndsWith("."))
+                    {
+                        return x + ".";
+                    }
+
+                    return x;
+                }));
+
+                _pusher.NotifyUser($"Validation of activity '{activityLabel}' from plan \"{planName}\" failed: {errors}",
+                       NotificationChannel.GenericFailure,
+                       userName);
             }
         }
 
-        public async Task<PlanDO> Clone(Guid planId)
+        public PlanDO Clone(Guid planId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -657,23 +752,7 @@ namespace Hub.Services
                 }
 
                 var cloneTag = "Cloned From " + planId;
-
-                /*
-                //let's check if we have cloned this plan before
-                var existingPlan = await uow.PlanRepository.GetPlanQueryUncached()
-                    .Where(p => p.Fr8AccountId == currentUser.Id 
-                    && p.Tag.Contains(cloneTag) 
-                    && p.PlanState != PlanState.Deleted)
-                    .FirstOrDefaultAsync();
-
-
-                if (existingPlan != null)
-                {
-                    //we already have cloned this plan before
-                    return existingPlan;
-                }
-                */
-
+                
                 //we should clone this plan for current user
                 //let's clone the plan entirely
                 var clonedPlan = (PlanDO)PlanTreeHelper.CloneWithStructure(targetPlan);
@@ -727,12 +806,23 @@ namespace Hub.Services
             }
         }
 
-        public ContainerDO Create(IUnitOfWork uow, Guid planId, params Crate[] curPayload)
+        private void ReportAuthError(Fr8AccountDO user, InvalidTokenRuntimeException ex)
         {
-            var curPlan = uow.PlanRepository.GetById<PlanDO>(planId);
-            if (curPlan == null)
-                throw new ArgumentNullException("planId");
-            return Create(uow, curPlan, curPayload);
+            string errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with " +
+                    $"{ex?.FailedActivityDTO.ActivityTemplate.WebService.Name}. ";
+
+            errorMessage += $"Please re-authorize Fr8 to connect to {ex?.FailedActivityDTO.ActivityTemplate.WebService.Name} " +
+                    $"by clicking on the Settings dots in the upper " +
+                    $"right corner of the activity and then selecting Choose Authentication. ";
+
+            // Try getting specific the instructions provided by the terminal.
+            if (!String.IsNullOrEmpty(ex.Message))
+            {
+                errorMessage += "Additional instructions from the terminal: ";
+                errorMessage += ex.Message;
+            }
+
+            _pusher.NotifyUser(errorMessage, NotificationChannel.GenericFailure, user.UserName);
         }
     }
 }

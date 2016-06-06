@@ -1,17 +1,18 @@
 ﻿using System.Web;
-using Hub.Infrastructure;
 using Microsoft.Owin;
 using Owin;
+using Hub.Infrastructure;
 
 [assembly: OwinStartup(typeof(PlanDirectory.Startup))]
-
 namespace PlanDirectory
 {
-    public class Startup
+    public class Startup 
     {
+
         public void Configuration(IAppBuilder app)
         {
-            OwinInitializer.ConfigureAuth(app, VirtualPathUtility.ToAbsolute("~/Reauthenticate"));
+            var reauthenticateUrl = VirtualPathUtility.ToAbsolute("~/Reauthenticate");
+            OwinInitializer.ConfigureAuth(app, reauthenticateUrl);
         }
     }
 }

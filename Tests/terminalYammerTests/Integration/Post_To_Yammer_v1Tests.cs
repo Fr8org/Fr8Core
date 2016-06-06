@@ -4,8 +4,8 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using HealthMonitor.Utility;
-using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
+using Fr8Data.Managers;
+using Fr8Infrastructure.Communication;
 using NUnit.Framework;
 using terminalYammerTests.Fixtures;
 
@@ -55,10 +55,9 @@ namespace terminalYammerTests.Integration
 
         private void AssertCrateTypes(ICrateStorage crateStorage)
         {
-            Assert.AreEqual(3, crateStorage.Count);
+            Assert.AreEqual(2, crateStorage.Count);
 
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(x => x.Label == "Configuration_Controls"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Available Fields"));
             Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Available Groups"));
         }
 
@@ -77,13 +76,14 @@ namespace terminalYammerTests.Integration
         }
 
         [Test]
-        [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException)
-        )]
         public async Task Post_To_Yammer_v1_Initial_Configuration_Check_Crate_Structure_NoAuth()
         {
             // Act
-            var responseActionDTO = await ConfigureInitial(false);
+            var response = await ConfigureInitial(false);
+            Assert.NotNull(response);
+            Assert.NotNull(response.CrateStorage);
+            Assert.NotNull(response.CrateStorage.Crates);
+            Assert.True(response.CrateStorage.Crates.Any(x => x.ManifestType == "Standard Authentication"));
         }
 
 

@@ -26,7 +26,8 @@ var app = angular.module("app", [
     "angularResizable",
     "mdColorPicker",
     "md.data.table",
-    "fr8.collapse"
+    "fr8.collapse",
+    "popoverToggle"
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */
@@ -439,7 +440,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
         })
 
         .state('manifestregistry', {
-            url: "/manifestregistry",
+            url: "/manifest_registries",
             templateUrl: "/AngularTemplate/ManifestRegistryList",
             data: { pageTitle: 'Manifest Registry', pageSubTitle: '' }
         })

@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Fr8Data.DataTransferObjects;
+using TerminalBase.Models;
 
 namespace terminalQuickBooks.Interfaces
 {
@@ -9,6 +9,6 @@ namespace terminalQuickBooks.Interfaces
     {
         string CreateAuthUrl();
         Task<AuthorizationTokenDTO> GetAuthToken(string oauthToken, string oauthVerifier, string realmId);
-        Task<AuthorizationTokenDO> RefreshAuthToken(AuthorizationTokenDO curAuthTokenDO);
+        Task<AuthorizationToken> RefreshAuthToken(AuthorizationToken curAuthTokenDO);
     }
 }

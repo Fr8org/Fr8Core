@@ -6,10 +6,13 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using NUnit.Framework;
 using HealthMonitor.Utility;
-using Hub.Managers;
+using Fr8Data.Managers;
 using terminalSlackTests.Fixtures;
 using terminalSlack.Actions;
 using TerminalBase.BaseClasses;
+using TerminalBase.Services;
+using Fr8Data.Managers;
+using TerminalBase.Helpers;
 
 namespace terminalSlackTests.Integration
 {
@@ -117,23 +120,26 @@ namespace terminalSlackTests.Integration
                     }
                  }
             );
-            selectedChannel = selectedChannel.StartsWith("#") ? selectedChannel : $"#{selectedChannel}";
-            activityDTO.UpdateControls<Monitor_Channel_v1.ActivityUi>(x =>
+            using (var storage = Crate.GetUpdatableStorage(activityDTO))
             {
-                if (string.IsNullOrEmpty(selectedChannel))
+                selectedChannel = selectedChannel.StartsWith("#") ? selectedChannel : $"#{selectedChannel}";
+                storage.UpdateControls<Monitor_Channel_v1.ActivityUi>(x =>
                 {
-                    x.AllChannelsOption.Selected = true;
-                    x.SpecificChannelOption.Selected = false;
-                }
-                else
-                {
-                    x.AllChannelsOption.Selected = false;
-                    x.SpecificChannelOption.Selected = true;
-                    var channelListItem = x.ChannelList.ListItems.FirstOrDefault(y => y.Key == selectedChannel);
-                    x.ChannelList.selectedKey = channelListItem?.Key;
-                    x.ChannelList.Value = channelListItem?.Value;
-                }
-            });
+                    if (string.IsNullOrEmpty(selectedChannel))
+                    {
+                        x.AllChannelsOption.Selected = true;
+                        x.SpecificChannelOption.Selected = false;
+                    }
+                    else
+                    {
+                        x.AllChannelsOption.Selected = false;
+                        x.SpecificChannelOption.Selected = true;
+                        var channelListItem = x.ChannelList.ListItems.FirstOrDefault(y => y.Key == selectedChannel);
+                        x.ChannelList.selectedKey = channelListItem?.Key;
+                        x.ChannelList.Value = channelListItem?.Value;
+                    }
+                });
+            }
             return requestDataDTO;
         }
 
@@ -145,7 +151,7 @@ namespace terminalSlackTests.Integration
             var requestActionDTO = HealthMonitor_FixtureData.Monitor_Channel_v1_InitialConfiguration_Fr8DataDTO();
             using (var storage = Crate.GetUpdatableStorage(requestActionDTO.ActivityDTO))
             {
-                storage.Add(Fr8Data.Crates.Crate.FromContent("Configuration Values", new Monitor_Channel_v1.ActivityUi(), Fr8Data.States.AvailabilityType.Configuration));
+                storage.Add(Fr8Data.Crates.Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, new Monitor_Channel_v1.ActivityUi(), Fr8Data.States.AvailabilityType.Configuration));
             }
             //Act
             var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, requestActionDTO);
@@ -162,7 +168,7 @@ namespace terminalSlackTests.Integration
             var requestActionDTO = HealthMonitor_FixtureData.Monitor_Channel_v1_InitialConfiguration_Fr8DataDTO();
             using (var storage = Crate.GetUpdatableStorage(requestActionDTO.ActivityDTO))
             {
-                storage.Add(Fr8Data.Crates.Crate.FromContent("Configuration Values", new Monitor_Channel_v1.ActivityUi(), Fr8Data.States.AvailabilityType.Configuration));
+                storage.Add(Fr8Data.Crates.Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, new Monitor_Channel_v1.ActivityUi(), Fr8Data.States.AvailabilityType.Configuration));
             }
             //Act
             var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, requestActionDTO);

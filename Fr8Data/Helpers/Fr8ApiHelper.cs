@@ -51,6 +51,46 @@ namespace Fr8Data.Helpers
             return null;
         }
 
+        public static string FindField(this ICrateStorage payloadStorage, FieldDTO fieldToMatch)
+        {
+            if (payloadStorage == null)
+            {
+                throw new ArgumentNullException(nameof(payloadStorage));
+            }
+            if (fieldToMatch == null)
+            {
+                throw new ArgumentNullException(nameof(fieldToMatch));
+            }
+            if (string.IsNullOrWhiteSpace(fieldToMatch.Key))
+            {
+                return null;
+            }
+            var filteredCrates = payloadStorage.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(fieldToMatch.SourceActivityId))
+            {
+                filteredCrates = filteredCrates.Where(x => x.SourceActivityId == fieldToMatch.SourceActivityId);
+            }
+            if (!string.IsNullOrEmpty(fieldToMatch.SourceCrateLabel))
+            {
+                filteredCrates = filteredCrates.Where(x => x.Label == fieldToMatch.SourceCrateLabel);
+            }
+            if (fieldToMatch.SourceCrateManifest != CrateManifestType.Any && fieldToMatch.SourceCrateManifest != CrateManifestType.Unknown)
+            {
+                filteredCrates = filteredCrates.Where(x => x.ManifestType.Equals(fieldToMatch.SourceCrateManifest));
+            }
+            var operationalState = payloadStorage.CrateContentsOfType<OperationalStateCM>().Single();
+            //iterate through found crates to find the payload
+            foreach (var foundCrate in filteredCrates)
+            {
+                var foundField = FindField(operationalState, foundCrate, fieldToMatch.Key);
+                if (foundField != null)
+                {
+                    return foundField.Value;
+                }
+            }
+            return null;
+        }
+
 
         private static FieldDTO FindField(OperationalStateCM operationalState, Crate crate, string fieldKey)
         {
@@ -94,6 +134,18 @@ namespace Fr8Data.Helpers
                         if (row != null)
                             return row.Row.FirstOrDefault(a => a.Cell.Key == fieldKey)?.Cell;
                     }
+                }
+            }
+
+            if (searchArea is Crate)
+            {
+                if (((Crate) searchArea).IsKnownManifest)
+                {
+                    searchArea = ((Crate) searchArea).Get();
+                }
+                else
+                {
+                    return null;
                 }
             }
 

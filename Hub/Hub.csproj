@@ -82,11 +82,25 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
-    <Reference Include="FluentValidation">
-      <HintPath>..\packages\FluentValidation.5.1.0.0\lib\Net40\FluentValidation.dll</HintPath>
+    <Reference Include="Excel, Version=2.1.2.3, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelDataReader.2.1.2.3\lib\net45\Excel.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="FluentValidation.Mvc">
-      <HintPath>..\packages\FluentValidation.MVC4.5.1.0.0\lib\Net40\FluentValidation.Mvc.dll</HintPath>
+    <Reference Include="FluentValidation, Version=5.6.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Fr8Data, Version=1.0.0.9, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fr8Data.1.0.0.9\lib\net45\Fr8Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Fr8Infrastructure, Version=1.0.0.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fr8Infrastructure.1.0.0.3\lib\net45\Fr8Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="fr8Utilities, Version=1.0.0.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\fr8Utilities.1.0.0.4\lib\net45\fr8Utilities.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Google.Apis.Auth, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Apis.Auth.1.11.1\lib\net45\Google.Apis.Auth.dll</HintPath>
@@ -122,6 +136,10 @@
     </Reference>
     <Reference Include="Hangfire.SqlServer, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Hangfire.SqlServer.1.6.0-beta2\lib\net45\Hangfire.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
@@ -182,6 +200,14 @@
     <Reference Include="Owin">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
+    <Reference Include="PusherServer, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\PusherServer.2.1.1.0\lib\net35\PusherServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="RestSharp, Version=105.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.105.0.1\lib\net4\RestSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="S22.Imap, Version=3.6.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\S22.Imap.dll</HintPath>
@@ -224,7 +250,6 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Runtime.Caching" />
-    <Reference Include="System.Threading.Tasks" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.Helpers.dll</HintPath>
       <Private>True</Private>
@@ -271,12 +296,15 @@
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="YamlDotNet, Version=2.0.1.20271, Culture=neutral, PublicKeyToken=2b53052c5884d7a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\YamlDotNet.3.1.1\lib\net35\YamlDotNet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Zlib.Portable">
       <HintPath>..\packages\Zlib.Portable.1.9.2\lib\portable-net4+sl4+wp71+win8\Zlib.Portable.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Crates\Helpers\EventReportCrateFactory.cs" />
     <Compile Include="Exceptions\AmbiguityException.cs" />
     <Compile Include="Exceptions\AuthenticationExeception.cs" />
     <Compile Include="Exceptions\ErrorResponseException.cs" />
@@ -286,23 +314,24 @@
     <Compile Include="Helper\LZString.cs" />
     <Compile Include="Infrastructure\AsyncMultiLock.cs" />
     <Compile Include="Infrastructure\FilterConditionPredicateBuilder.cs" />
-    <Compile Include="Infrastructure\fr8HMACAuthenticateAttribute.cs" />
     <Compile Include="Infrastructure\Fr8Identity.cs" />
     <Compile Include="Infrastructure\Fr8Principle.cs" />
     <Compile Include="Infrastructure\Fr8ApiAuthorizeAttribute.cs" />
     <Compile Include="Infrastructure\OwinInitializer.cs" />
     <Compile Include="Interfaces\IPlanTemplates.cs" />
+    <Compile Include="Interfaces\ITimer.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\IEmailPackager.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\SendGrid\SendGridPackager.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportFactory.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportWrapper.cs" />
     <Compile Include="Managers\HangfireJobDispatcher.cs" />
     <Compile Include="Interfaces\IJobDispatcher.cs" />
     <Compile Include="Interfaces\IFact.cs" />
     <Compile Include="Interfaces\IOrganization.cs" />
     <Compile Include="Security\AuthorizeActivityInterceptor.cs" />
     <Compile Include="Security\HangFireAuthorizationFilter.cs" />
-    <Compile Include="Security\HMACAuthenticator.cs" />
     <Compile Include="Interfaces\IAuthorization.cs" />
     <Compile Include="Interfaces\IFindObjectsPlan.cs" />
-    <Compile Include="Interfaces\IHMACAuthenticator.cs" />
-    <Compile Include="Interfaces\IHMACService.cs" />
     <Compile Include="Interfaces\IManifest.cs" />
     <Compile Include="Interfaces\IField.cs" />
     <Compile Include="Interfaces\IPlanNode.cs" />
@@ -310,17 +339,13 @@
     <Compile Include="Interfaces\IActivity.cs" />
     <Compile Include="Interfaces\ITag.cs" />
     <Compile Include="Interfaces\ITime.cs" />
-    <Compile Include="Managers\CrateManager.StorageUpdater.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Managers\CrateMangerExtensions.cs" />
-    <Compile Include="Managers\ICrateManager.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
     <Compile Include="Interfaces\IExpectedResponse.cs" />
     <Compile Include="Interfaces\IFile.cs" />
     <Compile Include="Interfaces\INotification.cs" />
     <Compile Include="Interfaces\IEmailAddress.cs" />
-    <Compile Include="Interfaces\IContainer.cs" />
+    <Compile Include="Interfaces\IContainerService.cs" />
     <Compile Include="Interfaces\ISubPlan.cs" />
     <Compile Include="Interfaces\IReport.cs" />
     <Compile Include="Interfaces\ISMSMessage.cs" />
@@ -338,26 +363,12 @@
     <Compile Include="Managers\APIManagers\Packagers\Json\JsonContent.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Terminal\ITerminalTransmitter.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Terminal\TerminalTransmitter.cs" />
-    <Compile Include="Managers\APIManagers\Transmitters\Restful\IRestfulServiceClient.cs" />
-    <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulServiceClient.cs" />
-    <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulServiceException.cs" />
     <Compile Include="Managers\EventReporter.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\Google\AppFlowMetadata.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\Google\AuthorizationCodeFlow.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\Google\GoogleAuthorizer.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\IOAuthAuthorizationResult.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\IOAuthAuthorizer.cs" />
-    <Compile Include="Managers\APIManagers\Authorizers\OAuthAuthorizationResult.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\OAuthException.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SegmentIO\SegmentIO.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportFactory.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportWrapper.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Http\IAuthorizingHttpChannel.cs" />
-    <Compile Include="Managers\APIManagers\Transmitters\Http\OAuthHttpChannel.cs" />
     <Compile Include="Managers\APIManagers\Packagers\DataTable\DataTablesPackager.cs" />
     <Compile Include="Helper\RoleData.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\SendGrid\SendGridPackager.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\IEmailPackager.cs" />
     <Compile Include="Managers\APIManagers\Packagers\Kwasant\KwasantPackager.cs" />
     <Compile Include="Managers\APIManagers\Packagers\UnknownEmailPackagerException.cs" />
     <Compile Include="Managers\CommunicationManager.cs" />
@@ -377,10 +388,9 @@
     </Compile>
     <Compile Include="Security\DockyardIdentityManager.cs" />
     <Compile Include="Security\DockyardUserStore.cs" />
-    <Compile Include="Security\Fr8HMACService.cs" />
     <Compile Include="Security\ObjectDecorators\PlanSecurityDecorator.cs" />
     <Compile Include="Security\SecurityServices.cs" />
-    <Compile Include="Services\Container.ExecutionSession.cs" />
+    <Compile Include="Services\ContainerService.ExecutionSession.cs" />
     <Compile Include="Services\Fact.cs" />
     <Compile Include="Services\Field.cs" />
     <Compile Include="Services\FindObjectsPlan.cs" />
@@ -396,7 +406,6 @@
     <Compile Include="Services\ActivityTemplate.cs" />
     <Compile Include="Services\AuthData.cs" />
     <Compile Include="Services\Authorization.cs" />
-    <Compile Include="Managers\CrateManager.cs" />
     <Compile Include="Services\Fr8Account.cs" />
     <Compile Include="Services\EmailAddress.cs" />
     <Compile Include="Services\Email.cs" />
@@ -406,12 +415,13 @@
     <Compile Include="Services\Terminal.cs" />
     <Compile Include="Services\File.cs" />
     <Compile Include="Services\Notification.cs" />
-    <Compile Include="Services\Container.cs" />
+    <Compile Include="Services\ContainerService.cs" />
     <Compile Include="Services\SubPlan.cs" />
     <Compile Include="Services\Plan.cs" />
     <Compile Include="Services\Report.cs" />
     <Compile Include="Services\Subscription.cs" />
     <Compile Include="Services\Time.cs" />
+    <Compile Include="Services\Timers\Win32Timer.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
     <Compile Include="Interfaces\IActivityExecutionRateLimitingService.cs" />
     <Compile Include="Interfaces\IUtilizationMonitoringService.cs" />
@@ -422,14 +432,6 @@
     <ProjectReference Include="..\Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Fr8Data\Fr8Data.csproj">
-      <Project>{a3178d71-a2c3-45b9-8334-adcc7c313541}</Project>
-      <Name>Fr8Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Utilities\Utilities.csproj">
-      <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
-      <Name>Utilities</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -451,6 +453,7 @@
     <Content Include="Resources\perfect-krawsant.png" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Crates\" />
     <Folder Include="Diagnostics\" />
     <Folder Include="Enums\" />
     <Folder Include="Managers\APIManagers\Packagers\Docusign\" />

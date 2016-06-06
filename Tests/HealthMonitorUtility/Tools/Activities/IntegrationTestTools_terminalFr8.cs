@@ -4,12 +4,13 @@ using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using HealthMonitor.Utility;
-using Hub.Managers;
 using NUnit.Framework;
 using terminalFr8Core.Actions;
+using terminalFr8Core.Activities;
 using UtilitiesTesting.Fixtures;
 
 namespace terminaBaselTests.Tools.Activities
@@ -36,8 +37,8 @@ namespace terminaBaselTests.Tools.Activities
             var activityName = "Build_Message";
             var buildMessageActivityDTO = FixtureData.Build_Message_v1_InitialConfiguration();
 
-            var activityCategoryParam = new ActivityCategory[] { ActivityCategory.Processors };
-            var activityTemplates = await _baseHubITest.HttpPostAsync<ActivityCategory[], List<WebServiceActivitySetDTO>>(_baseHubITest.GetHubApiBaseUrl() + "webservices/activities", activityCategoryParam);
+            var activityCategoryParam = (int)ActivityCategory.Processors;
+            var activityTemplates = await _baseHubITest.HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseHubITest.GetHubApiBaseUrl() + "webservices?id=" + activityCategoryParam);
             var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == activityName);
 
             buildMessageActivityDTO.ActivityTemplate = apmActivityTemplate;
@@ -62,7 +63,7 @@ namespace terminaBaselTests.Tools.Activities
                 crateStorage.Remove<StandardConfigurationControlsCM>();
                 activityUi.Name.Value = messageName;
                 activityUi.Body.Value = messageBodyTemplate;
-                crateStorage.Add(Crate<StandardConfigurationControlsCM>.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
+                crateStorage.Add(Crate<StandardConfigurationControlsCM>.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray())));
             }
             buildMessageActivityDTO = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/save", buildMessageActivityDTO);
             buildMessageActivityDTO = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/configure", buildMessageActivityDTO);

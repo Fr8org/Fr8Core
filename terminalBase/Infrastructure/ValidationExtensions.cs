@@ -1,7 +1,7 @@
-﻿using Data.Validations;
-using Fr8Data.Control;
+﻿using Fr8Data.Control;
 using Fr8Data.DataTransferObjects;
 using PhoneNumbers;
+using Utilities;
 
 namespace TerminalBase.Infrastructure
 {
@@ -9,9 +9,23 @@ namespace TerminalBase.Infrastructure
     {
         public static void ValidateEmail(this ValidationManager validationManager, ControlDefinitionDTO control, string errorMessage = null)
         {
-            if (!control.Value.IsValidEmailAddress())
+            if (!Utilities.RegexUtilities.IsValidEmailAddress(control.Value))
             {
                 validationManager.SetError(errorMessage ?? "Not a valid e-mail address", control);
+            }
+        }
+
+        public static void ValidateEmail(this ValidationManager validationManager, TextSource textSource, string errorMessage = null)
+        {
+            //The validation actually won't go further only if Upstream is set as source but payload is not avaialable. That means we can't yet validate
+            if (!textSource.CanGetValue(validationManager.Payload) && !textSource.ValueSourceIsNotSet)
+            {
+                return;
+            }
+            var value = textSource.CanGetValue(validationManager.Payload) ? textSource.GetValue(validationManager.Payload) : string.Empty;
+            if (!RegexUtilities.IsValidEmailAddress(value))
+            {
+                validationManager.SetError(errorMessage ?? "Not a valid e-mail address", textSource);
             }
         }
 
@@ -25,7 +39,7 @@ namespace TerminalBase.Infrastructure
                 PhoneNumber phoneNumber = phoneUtil.Parse(number, "");
                 if (isAlphaNumber || !phoneUtil.IsValidNumber(phoneNumber))
                 {
-                    validationManager.SetError( control.InitialLabel + " Is Invalid", control);
+                    validationManager.SetError(control.InitialLabel + " Is Invalid", control);
                     return false;
                 }
 
@@ -45,6 +59,23 @@ namespace TerminalBase.Infrastructure
             if (control != null && control.CanGetValue(validationManager.Payload) && string.IsNullOrWhiteSpace(control.GetValue(validationManager.Payload)))
             {
                 validationManager.SetError(errorMessage, control);
+                return false;
+            }
+
+            return true;
+        }
+
+        public static bool ValidateCrateChooserNotEmpty(this ValidationManager validationManager, CrateChooser crateChooser, string errorMessage)
+        {
+            if (!crateChooser.HasValue)
+            {
+                validationManager.SetError(errorMessage, crateChooser);
+                return false;
+            }
+
+            if (crateChooser.CanGetValue(validationManager.Payload) && crateChooser.GetValue(validationManager.Payload) == null)
+            {
+                validationManager.SetError(errorMessage, crateChooser);
                 return false;
             }
 

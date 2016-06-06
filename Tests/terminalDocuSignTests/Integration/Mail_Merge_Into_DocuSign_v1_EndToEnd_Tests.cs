@@ -4,7 +4,6 @@ using HealthMonitor.Utility;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
-using Hub.Managers;
 using Data.States;
 using DocuSign.eSign.Api;
 using Fr8Data.Constants;
@@ -17,6 +16,8 @@ using terminaBaselTests.Tools.Activities;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
 using UtilitiesTesting.Fixtures;
+using Fr8Data.Managers;
+using TerminalBase.Models;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -85,8 +86,8 @@ namespace terminalDocuSignTests.Integration
             await HttpDeleteAsync(_baseUrl + "activities?id=" + this.solution.ChildrenActivities[0].Id);
 
             // Add Add Payload Manually action
-            var activityCategoryParam = new ActivityCategory[] { ActivityCategory.Processors };
-            var activityTemplates = await HttpPostAsync<ActivityCategory[], List<WebServiceActivitySetDTO>>(_baseUrl + "webservices/activities", activityCategoryParam);
+            var activityCategoryParam = (int)ActivityCategory.Processors;
+            var activityTemplates = await HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseUrl + "webservices?id=" + activityCategoryParam);
             var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == "AddPayloadManually");
 
             var apmAction = new ActivityDTO()
@@ -128,14 +129,8 @@ namespace terminalDocuSignTests.Integration
             using (var updatableStorage = Crate.UpdateStorage(() => fr8CoreLoop.CrateStorage))
             {
                 updatableStorage.Clear();
-                /*var chooser = (CrateChooser)updatableStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First().Controls.FirstOrDefault(c => c.Name == "Available_Crates");
-
-                if (chooser?.CrateDescriptions != null)
-                {
-                    chooser.CrateDescriptions = new List<CrateDescriptionDTO>();
-                }*/
             }
-            
+
             fr8CoreLoop = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", fr8CoreLoop);
             //we should update fr8Core loop to loop through manually added payload
             var fr8CoreLoopCrateStorage = Crate.FromDto(fr8CoreLoop.CrateStorage);
@@ -145,11 +140,15 @@ namespace terminalDocuSignTests.Integration
 
             Assert.NotNull(crateChooser, "Crate chooser was not found");
 
-            var payloadDataCrate = crateChooser.CrateDescriptions.SingleOrDefault(c => c.ManifestId == (int)MT.StandardPayloadData);
+            var firstActivityCrates = Crate.GetStorage(apmAction.CrateStorage).CrateContentsOfType<CrateDescriptionCM>().FirstOrDefault();
 
-            Assert.NotNull(payloadDataCrate, "StandardPayloadData was not found in crateChooser.CrateDescriptions. Available crate descriptions are: " + string.Join("\n", crateChooser.CrateDescriptions.Select(x=> $"{x.Label} of type {x.ManifestType}")));
+            crateChooser.CrateDescriptions = firstActivityCrates?.CrateDescriptions;
 
-            payloadDataCrate.Selected = true;
+            var tableDescription = crateChooser.CrateDescriptions?.FirstOrDefault(c => c.ManifestId == (int)MT.StandardPayloadData);
+            Assert.NotNull(tableDescription, "StandardPayloadData was not found in crateChooser.CrateDescriptions. Available crate descriptions are: " + string.Join("\n", crateChooser.CrateDescriptions?.Select(x => $"{x.Label} of type {x.ManifestType}") ?? new string[0]));
+            
+            tableDescription.Selected = true;
+    
             using (var updatableStorage = Crate.GetUpdatableStorage(fr8CoreLoop))
             {
                 updatableStorage.Remove<StandardConfigurationControlsCM>();
@@ -264,17 +263,17 @@ namespace terminalDocuSignTests.Integration
             // Create solution
             //
             var parameters = await _docuSignActivitiesTestTools.CreateAndConfigure_MailMergeIntoDocuSign_Solution("Get_Google_Sheet_Data",
-                    "Get Google Sheet Data", "a439cedc-92a8-49ad-ab31-e2ee7964b468", "Fr8 Fromentum Registration Form",false);
+                    "Get Google Sheet Data", "a439cedc-92a8-49ad-ab31-e2ee7964b468", "Fr8 Fromentum Registration Form", false);
             this.solution = parameters.Item1;
             var plan = parameters.Item2;
             var tokenGuid = parameters.Item3;
-            
+
             //
             // configure Get_Google_Sheet_Data activity
             //
-            var googleSheetActivity = this.solution.ChildrenActivities.Single(a=>a.Name.Equals("get google sheet data", StringComparison.InvariantCultureIgnoreCase));
+            var googleSheetActivity = this.solution.ChildrenActivities.Single(a => a.Name.Equals("get google sheet data", StringComparison.InvariantCultureIgnoreCase));
             await googleActivityTestTools.ConfigureGetFromGoogleSheetActivity(googleSheetActivity, spreadsheetName, false, worksheetName);
-            
+
             //
             // configure Loop activity
             //
@@ -297,7 +296,7 @@ namespace terminalDocuSignTests.Integration
             var docuSignTemplate = controlsCrate.Content.Controls.OfType<DropDownList>().First();
             docuSignTemplate.Value = "a439cedc-92a8-49ad-ab31-e2ee7964b468";
             docuSignTemplate.selectedKey = "Fr8 Fromentum Registration Form";
-  
+
             using (var updatableStorage = Crate.GetUpdatableStorage(sendEnvelopeAction))
             {
                 updatableStorage.Remove<StandardConfigurationControlsCM>();
@@ -316,7 +315,7 @@ namespace terminalDocuSignTests.Integration
             var emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingLead role email");
             emailField.ValueSource = "upstream";
             emailField.Value = "emailaddress";
-            emailField.selectedKey= "emailaddress";
+            emailField.selectedKey = "emailaddress";
 
             var emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingLead role name");
             emailNameField.ValueSource = "upstream";
@@ -338,7 +337,7 @@ namespace terminalDocuSignTests.Integration
             companyField.Value = "companyname";
             companyField.selectedKey = "companyname";
 
-            var radioGroup = controlsCrate.Content.Controls.OfType<RadioButtonGroup>().First(f=>f.GroupName == "RadioGroupMappingRegistration Type(Lead)");
+            var radioGroup = controlsCrate.Content.Controls.OfType<RadioButtonGroup>().First(f => f.GroupName == "RadioGroupMappingRegistration Type(Lead)");
             foreach (var radios in radioGroup.Radios)
             {
                 //reset all preselected radioButtons
@@ -374,19 +373,23 @@ namespace terminalDocuSignTests.Integration
             //
             var container = await HttpPostAsync<string, ContainerDTO>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
             Assert.AreEqual(container.State, State.Completed, "Container state is not equal to completed on Mail_Merge e2e test");
-            
+
             //
             // Assert 
             //
-
-            var configuration =  new DocuSignManager().SetUp(_terminalDocuSignTestTools.GetDocuSignAuthToken(tokenGuid));
+            var authorizationTokenDO = _terminalDocuSignTestTools.GetDocuSignAuthToken(tokenGuid);
+            var authorizationToken = new AuthorizationToken()
+            {
+                Token = authorizationTokenDO.Token,
+            };
+            var configuration = new DocuSignManager().SetUp(authorizationToken);
             //find the envelope on the Docusign Account
             var folderItems = DocuSignFolders.GetFolderItems(configuration, new DocuSignQuery()
-            {       
+            {
                 Status = "sent",
                 SearchText = spreadsheetKeyWord
             });
-            
+
             var envelope = folderItems.FirstOrDefault();
             Assert.IsNotNull(envelope, "Cannot find created Envelope in sent folder of DocuSign Account");
             var envelopeApi = new EnvelopesApi(configuration.Configuration);
@@ -396,11 +399,11 @@ namespace terminalDocuSignTests.Integration
             //get the tabs for the envelope that this recipient received
             var tabs = envelopeApi.ListTabs(configuration.AccountId, envelope.EnvelopeId, envelopeSigner.RecipientId);
             Assert.IsNotNull(tabs, "Envelope does not contain any tabs. Check for problems in DocuSignManager and HandleTemplateData");
-            
+
             //check all tabs and their values for received envelope, and compare them to those from the google sheet configured into Mail_Merge_Into_Docusign solution 
             var titleRecipientTab = tabs.TextTabs.FirstOrDefault(x => x.TabLabel == "Title");
             Assert.IsNotNull(titleRecipientTab, "Envelope does not contain Title tab. Check for problems in DocuSignManager and HandleTemplateData");
-            Assert.AreEqual(tableFixtureData.Table[1].Row.FirstOrDefault(x=>x.Cell.Key == "title").Cell.Value, titleRecipientTab.Value, "Provided value for Title in document for recipient after finishing mail merge plan is incorrect");
+            Assert.AreEqual(tableFixtureData.Table[1].Row.FirstOrDefault(x => x.Cell.Key == "title").Cell.Value, titleRecipientTab.Value, "Provided value for Title in document for recipient after finishing mail merge plan is incorrect");
 
             var companyRecipientTab = tabs.TextTabs.FirstOrDefault(x => x.TabLabel == "Company");
             Assert.IsNotNull(companyRecipientTab, "Envelope does not contain Company tab. Check for problems in DocuSignManager and HandleTemplateData");
@@ -417,10 +420,10 @@ namespace terminalDocuSignTests.Integration
             var checkboxRecipientTab = tabs.CheckboxTabs.FirstOrDefault(x => x.TabLabel == "GovernmentEntity?");
             Assert.IsNotNull(checkboxRecipientTab, "Envelope does not contain Checkbox for Goverment Entity tab. Check for problems in DocuSignManager and HandleTemplateData");
             Assert.AreEqual("true", checkboxRecipientTab.Selected, "Provided value for GovernmentEntity? in document for recipient after finishing mail merge plan is incorrect");
-            
+
             var radioButtonGroupTab = tabs.RadioGroupTabs.FirstOrDefault(x => x.GroupName == "Registration Type");
             Assert.IsNotNull(radioButtonGroupTab, "Envelope does not contain RadioGroup tab for registration. Check for problems in DocuSignManager and HandleTemplateData");
-            Assert.AreEqual("Buy 2, Get 3rd Free", radioButtonGroupTab.Radios.FirstOrDefault(x=>x.Selected == "true").Value, "Provided value for Registration Type in document for recipient after finishing mail merge plan is incorrect");
+            Assert.AreEqual("Buy 2, Get 3rd Free", radioButtonGroupTab.Radios.FirstOrDefault(x => x.Selected == "true").Value, "Provided value for Registration Type in document for recipient after finishing mail merge plan is incorrect");
 
             // Verify that test email has been received
             EmailAssert.EmailReceived("dse_demo@docusign.net", "Test Message from Fr8");
@@ -431,7 +434,7 @@ namespace terminalDocuSignTests.Integration
 
             //delete spreadsheet
             await terminalGoogleTestTools.DeleteSpreadSheet(googleAuthTokenId, spreadsheetId);
-            
+
             //
             // Deactivate plan
             //
@@ -442,13 +445,13 @@ namespace terminalDocuSignTests.Integration
             //
             //await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
         }
-        
+
         private async Task<Guid> ExtractGoogleDefaultToken()
         {
             var errorMessage = $"Authorization token for Google is not found for the integration testing user {TestUserEmail}. Please go to the target instance of fr8 and log in with the integration testing user credentials. Then add a Google action to any plan and be sure to set the \"Use for all Activities\" checkbox on the Authorize Accounts dialog while authenticating. Reason: ";
 
-            var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
-                _baseUrl + "manageauthtoken/"
+            var tokens = await HttpGetAsync<IEnumerable<AuthenticationTokenTerminalDTO>>(
+                _baseUrl + "authentication/tokens"
             );
 
             Assert.NotNull(tokens, errorMessage + "No auth-tokens found");

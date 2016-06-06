@@ -4,20 +4,27 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Excel;
 using StructureMap;
-using Data.Entities;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using Hub.Interfaces;
-using Hub.Managers;
+using Fr8Infrastructure.Interfaces;
+using RestSharp.Extensions;
 
 namespace terminalUtilities.Excel
 {
-    public static class ExcelUtils
+    public class ExcelUtils
     {
+        private readonly IRestfulServiceClient _restfulServiceClient;
+        public ExcelUtils()
+        {
+            _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
+        }
+
         public static void ConvertToCsv(string pathToExcel, string pathToCsv)
         {
             if (pathToExcel == null)
@@ -82,11 +89,12 @@ namespace terminalUtilities.Excel
             }
         }
 
-        public static string[] GetColumnHeaders(string filePath)
+        public async Task<string[]> GetColumnHeaders(string filePath)
         {
             var extension = Path.GetExtension(filePath);
-            var file = RetrieveFile(filePath);
-            return GetColumnHeaders(file, extension);
+            var file = await RetrieveFile(filePath);
+            file.Position = 0;
+            return GetColumnHeaders(file.ReadAsBytes(), extension);
 
         }
 
@@ -194,15 +202,16 @@ namespace terminalUtilities.Excel
             return excelRows;
         }
 
-        public static byte[] GetExcelFileAsByteArray(string selectedFilePath)
+        public async Task<byte[]> GetExcelFileAsByteArray(string selectedFilePath)
         {
-            var fileAsByteArray = RetrieveFile(selectedFilePath);
-            return fileAsByteArray;
+            var fileAsByteArray = await RetrieveFile(selectedFilePath);
+            fileAsByteArray.Position = 0;
+            return fileAsByteArray.ReadAsBytes();
         }
 
-        public static StandardTableDataCM GetExcelFile(string selectedFilePath, bool isFirstRowAsColumnNames = true)
+        public async Task<StandardTableDataCM> GetExcelFile(string selectedFilePath, bool isFirstRowAsColumnNames = true)
         {
-            var fileAsByteArray = GetExcelFileAsByteArray(selectedFilePath);
+            var fileAsByteArray = await GetExcelFileAsByteArray(selectedFilePath);
             return GetExcelFile(fileAsByteArray, selectedFilePath, isFirstRowAsColumnNames);
         }
 
@@ -265,16 +274,14 @@ namespace terminalUtilities.Excel
             return curStandardTableDataMS;
         }
 
-        private static byte[] RetrieveFile(string filePath)
+        private async Task<Stream> RetrieveFile(string filePath)
         {
             var ext = Path.GetExtension(filePath);
             if (ext != ".xls" && ext != ".xlsx")
             {
                 throw new ArgumentException("Expected '.xls' or '.xlsx'", "selectedFile");
             }
-            var curFileDO = new FileDO { CloudStorageUrl = filePath };
-            var file = ObjectFactory.GetInstance<IFile>();
-            return file.Retrieve(curFileDO);
+            return await _restfulServiceClient.DownloadAsync(new Uri(filePath));
         }
 
         public static List<TableRowDTO> CreateTableCellPayloadObjects(Dictionary<string, List<Tuple<string, string>>> rowsDictionary, string[] headersArray = null, bool includeHeadersAsFirstRow = false)
@@ -301,9 +308,9 @@ namespace terminalUtilities.Excel
             return listOfRows;
         }
 
-        public static FieldDescriptionsCM GetColumnHeadersData(string uploadFilePath, string label = null)
+        public async Task<FieldDescriptionsCM> GetColumnHeadersData(string uploadFilePath, string label = null)
         {
-            var columnHeaders = GetColumnHeaders(uploadFilePath);
+            var columnHeaders = await GetColumnHeaders(uploadFilePath);
             return new FieldDescriptionsCM(columnHeaders.Select(col => new FieldDTO { Key = col, Value = col, Availability = AvailabilityType.RunTime, SourceCrateLabel = label }));
         }
 
@@ -357,8 +364,7 @@ namespace terminalUtilities.Excel
             }
         }
 
-        public static byte[] RewriteSheetForFile(
-            byte[] existingFile,
+        public static byte[] RewriteSheetForFile(byte[] existingFile,
             StandardTableDataCM tableCM,
             string sheetName)
         {

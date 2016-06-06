@@ -42,5 +42,8 @@ namespace Fr8Data.DataTransferObjects
         [JsonProperty("availability")]
         [JsonConverter(typeof(AvailabilityConverter))]
         public AvailabilityType Availability { get; set; }
+        
+        [JsonProperty("sourceActivityId")]
+        public string SourceActivityId { get; set; }
     }
 }

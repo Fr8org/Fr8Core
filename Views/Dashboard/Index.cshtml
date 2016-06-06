@@ -1,5 +1,5 @@
-﻿@using Utilities
-@using HubWeb.Infrastructure
+﻿@using HubWeb.Infrastructure_HubWeb
+@using Utilities
 <!DOCTYPE html>
 <!--[if IE 8]> <html lang="en" class="ie8 no-js" data-ng-app="app"> <![endif]-->
 <!--[if IE 9]> <html lang="en" class="ie9 no-js" data-ng-app="app"> <![endif]-->
@@ -11,18 +11,18 @@
     <title data-ng-bind="'Dockyard | ' + $state.current.data.pageTitle"></title>
 
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">                           
     <meta content="width=device-width, initial-scale=1" name="viewport" />
-    
+
     @* Load fonts async *@
-    <link href="//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css"  media="none" onload="this.media='all';"/>
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" media="none" onload="this.media='all';" />
     <link href="@Styles.Url("~/Content/css/font-awesome")" rel="stylesheet" type="text/css" media="none" onload="this.media='all';" />
 
     @(Html.IsDebug() ? Html.Partial("_AngularAppStyles") : Html.Partial("CDN/_AngularAppStyles"))
     @Styles.Render("~/Content/css/bower-no-cdn")
 
     <link id="ng_load_plugins_before" />
-    <link rel='shortcut icon' type='image/x-icon' href='/Content/img/favicon.ico'/>
+    <link rel='shortcut icon' type='image/x-icon' href='/Content/img/favicon.ico' />
     <base href="/dashboard/">
 </head>
 <!-- END HEAD -->
@@ -39,13 +39,13 @@
     <!-- END HEADER -->
 
     <div class="main-wrapper">
-        
-         <!-- BEGIN PAGE SPINNER -->
+
+        <!-- BEGIN PAGE SPINNER -->
         <div ng-spinner-bar class="page-spinner-bar">
             <div class="bounce1"></div>
             <div class="bounce2"></div>
             <div class="bounce3"></div>
-        </div>  
+        </div>
         <!-- END PAGE SPINNER -->
 
         <div class="clearfix"> </div>
@@ -74,7 +74,6 @@
         </div>
     </footer>
     <!-- END FOOTER -->
-            
     <!-- BEGIN JAVASCRIPTS(Load javascripts at bottom, this will reduce page load time) -->
     <!-- BEGIN CORE JQUERY PLUGINS -->
     <!--[if lt IE 9]>
@@ -90,13 +89,11 @@
             Metronic.setAssetsPath('/Content/templates/metronic/assets/'); // Set the assets folder path
         });
 
-       
+
     </script>
     <script type="text/javascript">
         window.analytics = window.analytics || [], window.analytics.methods = ["identify", "group", "track", "page", "pageview", "alias", "ready", "on", "once", "off", "trackLink", "trackForm", "trackClick", "trackSubmit"], window.analytics.factory = function (t) { return function () { var a = Array.prototype.slice.call(arguments); return a.unshift(t), window.analytics.push(a), window.analytics } }; for (var i = 0; i < window.analytics.methods.length; i++) { var key = window.analytics.methods[i]; window.analytics[key] = window.analytics.factory(key) } window.analytics.load = function (t) { if (!document.getElementById("analytics-js")) { var a = document.createElement("script"); a.type = "text/javascript", a.id = "analytics-js", a.async = !0, a.src = ("https:" === document.location.protocol ? "https://" : "http://") + "cdn.segment.io/analytics.js/v1/" + t + "/analytics.min.js"; var n = document.getElementsByTagName("script")[0]; n.parentNode.insertBefore(a, n) } }, window.analytics.SNIPPET_VERSION = "2.0.9",
-        window.analytics.load("@(new ConfigRepository().Get("SegmentWriteKey"))");
-        window.analytics.page('Admin');
-
+        window.analytics.load("@(Utilities.Configuration.Azure.CloudConfigurationManager.GetSetting("SegmentWriteKey"))");
     </script>
     <!-- END JAVASCRIPTS -->
 </body>

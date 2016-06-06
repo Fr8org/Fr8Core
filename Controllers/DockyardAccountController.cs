@@ -122,7 +122,6 @@ namespace HubWeb.Controllers
                     }
                     else
                     {
-                        // return RedirectToAction("Index", "Home");
                         return this.Login(new LoginVM
                         {
                             Email = submittedRegData.Email.Trim(),

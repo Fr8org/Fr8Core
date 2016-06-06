@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
-using TerminalBase.BaseClasses;
+using Fr8Data.DataTransferObjects;
+using TerminalBase.Models;
 
 namespace TerminalBase.Infrastructure.Behaviors
 {
@@ -20,12 +20,12 @@ namespace TerminalBase.Infrastructure.Behaviors
         /// <summary>
         /// Delegate that used by ReconfigurationList algorithm to create a new activity and add it to solution child-nodes.
         /// </summary>
-        public Func<ReconfigurationContext, Task<ActivityDO>> CreateActivityMethod { get; set; }
+        public Func<ReconfigurationContext, Task<ActivityPayload>> CreateActivityMethod { get; set; }
 
         /// <summary>
         /// Delegate that used by ReconfigurationList algorithm to configure existing activity in the list of solution child-nodes.
         /// </summary>
-        public Func<ReconfigurationContext, Task<ActivityDO>> ConfigureActivityMethod { get; set; }
+        public Func<ReconfigurationContext, Task<ActivityPayload>> ConfigureActivityMethod { get; set; }
 
         /// <summary>
         /// Ordering number of a child activity to be configured.
@@ -46,12 +46,12 @@ namespace TerminalBase.Infrastructure.Behaviors
         /// <summary>
         /// Solution activity that ReconfigurationLists is run for.
         /// </summary>
-        public ActivityDO SolutionActivity { get; set; }
+        public ActivityPayload SolutionActivity { get; set; }
 
         /// <summary>
         /// Current AuthToken.
         /// </summary>
-        public AuthorizationTokenDO AuthToken { get; set; }
+        public AuthorizationToken AuthToken { get; set; }
 
         /// <summary>
         /// The list of initial requests.
@@ -91,24 +91,17 @@ namespace TerminalBase.Infrastructure.Behaviors
     /// </summary>
     public class ReconfigurationListBehavior
     {
-        private BaseTerminalActivity _activity;
-
-        public ReconfigurationListBehavior(BaseTerminalActivity activity)
-        {
-            _activity = activity;
-        }
-
         /// <summary>
         /// ReconfigurationList algorithm.
         /// </summary>
-        public async Task ReconfigureActivities(ActivityDO solution,
-            AuthorizationTokenDO authToken, IReadOnlyList<ConfigurationRequest> items)
+        public async Task ReconfigureActivities(ActivityPayload solution,
+            AuthorizationToken authToken, IReadOnlyList<ConfigurationRequest> items)
         {
             var queue = new Queue<ConfigurationRequest>(items);
 
-            if (solution.ChildNodes == null)
+            if (solution.ChildrenActivities == null)
             {
-                solution.ChildNodes = new List<PlanNodeDO>();
+                solution.ChildrenActivities = new List<ActivityPayload>();
             }
 
             while (queue.Count > 0)
@@ -124,19 +117,13 @@ namespace TerminalBase.Infrastructure.Behaviors
 
                 if (!await item.HasActivityMethod(context))
                 {
-                    var childActivityByIndex = solution.ChildNodes
+                    var childActivityByIndex = solution.ChildrenActivities
                         .SingleOrDefault(x => x.Ordering == item.ChildActivityIndex);
 
                     if (childActivityByIndex != null)
                     {
-                        await _activity.HubCommunicator.DeleteActivity(
-                            childActivityByIndex.Id,
-                            _activity.CurrentFr8UserId
-                        );
-
-                        solution.ChildNodes.Remove(childActivityByIndex);
+                        solution.ChildrenActivities.Remove(childActivityByIndex);
                     }
-
                     await item.CreateActivityMethod(context);
                 }
                 else
@@ -148,7 +135,7 @@ namespace TerminalBase.Infrastructure.Behaviors
                 {
                     foreach (var additionalItem in context.AdditionalRequests)
                     {
-                        if (!queue.Any(x => x.ChildActivityIndex == additionalItem.ChildActivityIndex))
+                        if (queue.All(x => x.ChildActivityIndex != additionalItem.ChildActivityIndex))
                         {
                             queue.Enqueue(additionalItem);
                         }
