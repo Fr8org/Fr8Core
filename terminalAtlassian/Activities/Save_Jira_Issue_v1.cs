@@ -48,6 +48,8 @@ namespace terminalAtlassian.Actions
 
             public DropDownList AvailablePriorities { get; set; }
 
+            public DropDownList Sprint { get; set; }
+
             public ActivityUi()
             {
                 AvailableProjects = new DropDownList()
@@ -88,6 +90,16 @@ namespace terminalAtlassian.Actions
                     IsHidden = true
                 };
                 Controls.Add(SelectIssueTypeLabel);
+
+                Sprint = new DropDownList()
+                {
+                    Name = "Sprint",
+                    Label = "Sprint",
+                    Value = null,
+                    Source = null,
+                    IsHidden = true
+                };
+                Controls.Add(Sprint);
 
                 AvailablePriorities = new DropDownList()
                 {
@@ -136,17 +148,24 @@ namespace terminalAtlassian.Actions
 
                 foreach (var customField in customFields)
                 {
-                    Controls.Add(new TextSource()
+                    if (customField.Key != "Sprint")
                     {
-                        Name = "CustomField_" + customField.Value,
-                        InitialLabel = customField.Key,
-                        Source = new FieldSourceDTO()
+                        Controls.Add(new TextSource()
                         {
-                            ManifestType = CrateManifestTypes.StandardDesignTimeFields,
-                            RequestUpstream = true,
-                            AvailabilityType = AvailabilityType.RunTime
-                        }
-                    });
+                            Name = "CustomField_" + customField.Value,
+                            InitialLabel = customField.Key,
+                            Source = new FieldSourceDTO()
+                            {
+                                ManifestType = CrateManifestTypes.StandardDesignTimeFields,
+                                RequestUpstream = true,
+                                AvailabilityType = AvailabilityType.RunTime
+                            }
+                        });
+                    }
+                    else
+                    {
+                        Controls.Where(x => x.Label == "Sprint").First().Name = customField.Value;
+                    }
                 }
             }
 
@@ -305,6 +324,7 @@ namespace terminalAtlassian.Actions
             ActivityUI.Summary.IsHidden = !visible;
             ActivityUI.Description.IsHidden = !visible;
             ActivityUI.AvailablePriorities.IsHidden = !visible;
+            ActivityUI.Sprint.IsHidden = !visible;
             ActivityUI.SelectIssueTypeLabel.IsHidden = visible;
         }
 
@@ -315,6 +335,7 @@ namespace terminalAtlassian.Actions
                 .ToListItems()
                 .ToList();
 
+            ActivityUI.Sprint.ListItems = _atlassianService.GetSprints(AuthorizationToken, ActivityUI.AvailableProjects.Value);
             var customFields = _atlassianService.GetCustomFields(AuthorizationToken);
             ActivityUI.AppendCustomFields(customFields);
         }
@@ -326,7 +347,6 @@ namespace terminalAtlassian.Actions
 
         public override async Task Run()
         {
-            ActivityUI.RestoreCustomFields(Storage);
 
             var issueInfo = ExtractIssueInfo();
             _atlassianService.CreateIssue(issueInfo, AuthorizationToken);
@@ -361,6 +381,12 @@ namespace terminalAtlassian.Actions
                 CustomFields = ActivityUI.GetValues(Payload).ToList()
             };
 
+
+            var sprint = ActivityUI.Controls.Where(c => c.Label == "Sprint" && c.Value != null).First();
+            if (!string.IsNullOrEmpty(sprint.Value))
+            {
+                result.CustomFields.Add(new FieldDTO() { Key = sprint.Name, Value = sprint.Value });
+            }
             return result;
         }
 

@@ -13,6 +13,7 @@ using Fr8Infrastructure.Interfaces;
 using TerminalBase.Errors;
 using terminalAtlassian.Interfaces;
 using TerminalBase.Models;
+using Fr8Data.Control;
 
 namespace terminalAtlassian.Services
 {
@@ -227,8 +228,8 @@ namespace terminalAtlassian.Services
                     }
                 }
 
-                issue.SaveChanges();
-                issueInfo.Key = issue.Key.Value;
+                var token = SaveIssue(jira, issue);
+                issueInfo.Key = token;
             });
         }
         
@@ -250,6 +251,68 @@ namespace terminalAtlassian.Services
                 credentialsDTO.Domain = "https://" + credentialsDTO.Domain;
             }
             return Jira.CreateRestClient(credentialsDTO.Domain, credentialsDTO.Username, credentialsDTO.Password);
+        }
+
+        public string SaveIssue(Jira jira, Issue issue)
+        {
+            Newtonsoft.Json.Linq.JToken token = null;
+            InterceptJiraExceptions(() =>
+            {
+                var obj = new { fields = new Dictionary<string, object>() };
+                foreach (var item in issue.CustomFields)
+                {
+                    var value = item.Values.First();
+                    int result;
+                    if (int.TryParse(value, out result))
+                    {
+                        obj.fields.Add(item.Id, result);
+                    }
+                    else
+                    {
+                        obj.fields.Add(item.Id, value);
+                    }
+
+                }
+                if (issue.Description != null)
+                {
+                    obj.fields.Add("description", issue.Description);
+                }
+                if (issue.Priority != null)
+                {
+                    obj.fields.Add("priority", new { id = issue.Priority.Id });
+                }
+                if (issue.Project != null)
+                {
+                    obj.fields.Add("project", new { key = issue.Project });
+                }
+                if (issue.Summary != null)
+                {
+                    obj.fields.Add("summary", issue.Summary);
+                }
+                if (issue.Type != null)
+                {
+                    obj.fields.Add("issuetype", new { id = issue.Type.Id });
+                }
+
+                token = jira.RestClient.ExecuteRequest(RestSharp.Method.POST, "/rest/api/2/issue", JsonConvert.SerializeObject(obj));
+            });
+            return token["key"].ToString();
+        }
+
+        public List<ListItem> GetSprints(AuthorizationToken authToken, string projectName)
+        {
+            var jira = CreateRestClient(authToken.Token);
+            var board = jira.RestClient.ExecuteRequest(RestSharp.Method.GET, "/rest/agile/1.0/board?projectKeyOrId=" + projectName)["values"].First()["id"].ToString();
+            var sprints = jira.RestClient.ExecuteRequest(RestSharp.Method.GET, "/rest/agile/1.0/board/" + board + "/sprint");
+            List<ListItem> list = new List<ListItem>();
+            foreach (var value in sprints["values"])
+            {
+                if (value["state"].ToString().ToLower() != "closed")
+                {
+                    list.Add(new ListItem() { Key = value["name"].ToString(), Value = value["id"].ToString() });
+                }
+            }
+            return list;
         }
     }
 }
