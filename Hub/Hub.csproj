@@ -288,6 +288,7 @@
     <Compile Include="Infrastructure\Fr8Principle.cs" />
     <Compile Include="Infrastructure\Fr8ApiAuthorizeAttribute.cs" />
     <Compile Include="Infrastructure\OwinInitializer.cs" />
+    <Compile Include="Interfaces\IPageDefinition.cs" />
     <Compile Include="Interfaces\IPlanTemplates.cs" />
     <Compile Include="Interfaces\ITimer.cs" />
     <Compile Include="Managers\APIManagers\Packagers\IEmailPackager.cs" />
@@ -376,6 +377,7 @@
     <Compile Include="Services\MT\MTSearchHelper.IMtQueryProvider.cs" />
     <Compile Include="Services\MT\MTSearchHelper.MtQueryProviderT.cs" />
     <Compile Include="Services\MT\MTTypesHelper.cs" />
+    <Compile Include="Services\PageDefinition.cs" />
     <Compile Include="Services\PlanTemplates.cs" />
     <Compile Include="Services\PlanNode.cs" />
     <Compile Include="Services\Organization.cs" />
