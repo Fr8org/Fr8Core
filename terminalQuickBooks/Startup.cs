@@ -45,7 +45,7 @@ namespace terminalQuickBooks
         }
         protected override void RegisterActivities()
         {
-            ActivityStore.RegisterActivity<Convert_TableData_To_AccountingTransactions_v1>(Convert_TableData_To_AccountingTransactions_v1.ActivityTemplateDTO);
+           // ActivityStore.RegisterActivity<Convert_TableData_To_AccountingTransactions_v1>(Convert_TableData_To_AccountingTransactions_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Create_Journal_Entry_v1>(Create_Journal_Entry_v1.ActivityTemplateDTO);
         }
     }

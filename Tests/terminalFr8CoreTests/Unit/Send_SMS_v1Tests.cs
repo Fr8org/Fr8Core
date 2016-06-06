@@ -34,8 +34,8 @@ namespace terminalTests.Unit
 
             var hubCommunicatorMock = new Mock<IHubCommunicator>();
             //hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<Guid>(), It.IsAny<string>())).Returns(Task.FromResult(payload));
-            hubCommunicatorMock.Setup(h => h.GetDesignTimeFieldsByDirection(It.IsAny<Guid>(), It.IsAny<CrateDirection>(), 
-                                        It.IsAny<AvailabilityType>())).Returns(Task.FromResult(fileds));
+           /* hubCommunicatorMock.Setup(h => h.GetDesignTimeFieldsByDirection(It.IsAny<Guid>(), It.IsAny<CrateDirection>(), 
+                                        It.IsAny<AvailabilityType>())).Returns(Task.FromResult(fileds));*/
             ObjectFactory.Container.Inject(hubCommunicatorMock);
             ObjectFactory.Container.Inject(hubCommunicatorMock.Object);
 
@@ -70,7 +70,7 @@ namespace terminalTests.Unit
             Assert.IsTrue(configControls.Content.Controls.Count == 2, "Send SMS configuration controls are not created correctly.");
         }
 
-        [Test]
+      /*  [Test]
         public async Task Initialize__CheckAvailableFields()
         {
             //Arrage
@@ -93,7 +93,7 @@ namespace terminalTests.Unit
                                               .CratesOfType<FieldDescriptionsCM>()
                                               .Single(f => f.Label.Equals("Upstream Terminal-Provided Fields"));
             Assert.IsNotNull(availableFields, "Send SMS does not have available fields.");
-        }
+        }*/
 
         [Test]
         public async Task Run_CheckSendCalledOnlyOnce()

@@ -7,6 +7,17 @@ namespace Fr8Data.Crates
     public static class CrateStorageExtensions
     {
         /**********************************************************************************/
+
+        public static Crate<T> Add<T>(this ICrateStorage storage, string label, T content)
+        {
+            var crate = Crate.FromContent(label, content);
+
+            storage.Add(crate);
+
+            return crate;
+        }
+        
+        /**********************************************************************************/
         /// <summary>
         /// Add collection of crates to storage
         /// </summary>
