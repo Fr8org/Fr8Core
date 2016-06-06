@@ -37,10 +37,9 @@ namespace terminalGoogle.Actions
                 Controls.Add(FormsList);
             }
         }
-        private readonly GoogleDrive _googleDrive;
-        private readonly GoogleAppScript _googleAppScript;
+        private readonly IGoogleDrive _googleDrive;
+        private readonly IGoogleAppsScript _googleAppsScript;
 
-        private readonly IGoogleIntegration _googleIntegration;
         private const string ConfigurationCrateLabel = "Selected_Google_Form";
         private const string RunTimeCrateLabel = "Google Form Payload Data";
         private const string EventSubscriptionsCrateLabel = "Standard Event Subscriptions";
@@ -77,12 +76,11 @@ namespace terminalGoogle.Actions
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        public Monitor_Form_Responses_v1(ICrateManager crateManager, IGoogleIntegration googleIntegration)
+        public Monitor_Form_Responses_v1(ICrateManager crateManager, IGoogleIntegration googleIntegration, IGoogleAppsScript googleAppsScript, IGoogleDrive googleDrive)
             : base(crateManager, googleIntegration)
         {
-            _googleDrive = new GoogleDrive();
-            _googleAppScript = new GoogleAppScript();
-            _googleIntegration = googleIntegration;
+            _googleDrive = googleDrive;
+            _googleAppsScript = googleAppsScript;
         }
 
         public override async Task Initialize()
@@ -116,23 +114,20 @@ namespace terminalGoogle.Actions
             if (string.IsNullOrEmpty(ActivityUI.FormsList.selectedKey))
                 SelectedForm = null;
 
-            //need to get all form fields
-
-            
             //get form id
             var googleFormControl = ActivityUI.FormsList;
             var formId = googleFormControl.Value;
             if (string.IsNullOrEmpty(formId))
                 throw new ArgumentNullException("Google Form selected is empty. Please select google form to receive.");
 
-            var formFields = await _googleDrive.GetGoogleFormFields(googleAuth, formId);
-            CrateSignaller.ClearAvailableCrates();
+            //need to get all form fields and mark them available for runtime
+            var formFields = await _googleAppsScript.GetGoogleFormFields(googleAuth, formId);
 
+            CrateSignaller.ClearAvailableCrates();
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel);
             foreach (var item in formFields)
             {
-                CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel)
-                    .AddField(item.title);
+                CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel).AddField(item.Title);
             }
         }
 
@@ -148,14 +143,14 @@ namespace terminalGoogle.Actions
             bool triggerEvent = false;
             try
             {
-                triggerEvent = await _googleDrive.CreateFr8TriggerForDocument(googleAuth, formId, AuthorizationToken.ExternalAccountId);
+                triggerEvent = await _googleAppsScript.CreateFr8TriggerForDocument(googleAuth, formId, AuthorizationToken.ExternalAccountId);
             }
             finally
             {
                 if (!triggerEvent)
                 {
                     //in case of fail as a backup plan use old manual script notification
-                    var scriptUrl = await _googleDrive.CreateManualFr8TriggerForDocument(googleAuth, formId);
+                    var scriptUrl = await _googleAppsScript.CreateManualFr8TriggerForDocument(googleAuth, formId);
                     await HubCommunicator.NotifyUser(new TerminalNotificationDTO
                     {
                         Type = "Success",
@@ -211,22 +206,17 @@ namespace terminalGoogle.Actions
 
         private List<FieldDTO> CreatePayloadFormResponseFields(List<FieldDTO> payloadfields)
         {
-            List<FieldDTO> formFieldResponse = new List<FieldDTO>();
+            var formFieldResponse = new List<FieldDTO>();
             string[] formresponses = payloadfields.FirstOrDefault(w => w.Key == "response").Value.Split(new char[] { '&' });
 
             if (formresponses.Length > 0)
             {
                 formresponses[formresponses.Length - 1] = formresponses[formresponses.Length - 1].TrimEnd(new char[] { '&' });
 
-                foreach (var response in formresponses)
-                {
-                    string[] itemResponse = response.Split(new char[] { '=' });
-
-                    if (itemResponse.Length >= 2)
-                    {
-                        formFieldResponse.Add(new FieldDTO() { Key = itemResponse[0], Value = itemResponse[1] });
-                    }
-                }
+                formFieldResponse.AddRange(from response in formresponses
+                                           select response.Split(new char[] {'='}) into itemResponse
+                                           where itemResponse.Length >= 2
+                                           select new FieldDTO() {Key = itemResponse[0], Value = itemResponse[1]});
             }
             else
             {
@@ -239,24 +229,12 @@ namespace terminalGoogle.Actions
         private List<FieldDTO> ExtractPayloadFields(ICrateStorage currentPayload)
         {
             var eventReportMS = currentPayload.CrateContentsOfType<EventReportCM>().SingleOrDefault();
-            if (eventReportMS == null)
-                return null;
 
-            var eventFieldsCrate = eventReportMS.EventPayload.SingleOrDefault();
+            var eventFieldsCrate = eventReportMS?.EventPayload.SingleOrDefault();
             if (eventFieldsCrate == null)
                 return null;
 
             return eventReportMS.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()).ToList();
         }
-    }
-
-    public class EnumerateFormFieldsResponseItem
-    {
-        [JsonProperty("type")]
-        public string Type { get; set; }
-        [JsonProperty("id")]
-        public object Id { get; set; }
-        [JsonProperty("title")]
-        public string Title { get; set; }
     }
 }

@@ -45,7 +45,7 @@ namespace terminalIntegrationTests.EndToEnd
             var defaultGoogleAuthToken = GetGoogleAuthToken(googleAuthTokenId);
 
             //create a new plan
-            var googleSheetApi = new GoogleSheet(new GoogleIntegration(ObjectFactory.GetInstance<IRestfulServiceClient>()));
+            var googleSheetApi = new GoogleSheet(new GoogleIntegration(ObjectFactory.GetInstance<IRestfulServiceClient>()), new GoogleDrive());
             var sourceSpreadsheetUri = string.Empty;
             var destinationSpreadsheetUri = string.Empty;
             var sourceSpreadsheetName = Guid.NewGuid().ToString();
