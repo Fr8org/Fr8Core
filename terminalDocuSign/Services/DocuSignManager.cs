@@ -13,6 +13,7 @@ using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services.NewApi;
 using Utilities.Configuration.Azure;
 using System.IO;
+using System.Text.RegularExpressions;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
@@ -30,6 +31,8 @@ namespace terminalDocuSign.Services.New_Api
     public class DocuSignManager : IDocuSignManager
     {
         public const string DocusignTerminalName = "terminalDocuSign";
+        private static readonly string[] DefaultControlNames = new[] { "Text","Checkbox", "Check Box", "Radio Group", "List", "Drop Down", "Note", "Number", "Data Field" };
+        const string DefaultTemplateNameRegex = @"\s*\d+$";
 
         public DocuSignApiConfiguration SetUp(AuthorizationToken authToken)
         {
@@ -227,6 +230,42 @@ namespace terminalDocuSign.Services.New_Api
             // sending an envelope
             envelopesApi.Update(loginInfo.AccountId, envelopeSummary.EnvelopeId, new Envelope() { Status = "sent" });
         }
+
+        public bool DocuSignTemplateDefaultNames(IEnumerable<DocuSignTabDTO> templateDefinedFields)
+        {
+            //filter out default names that start with the following strings: signature, initial, date signed
+
+            //2) evalute the remaining fields and return true if at least 80 % of the fields match a default name pattern.This consists of:
+            //a) a word from this list(Text, Checkbox, Radio Group, Drop Down, Name)
+            //b) followed by a space
+            //c) followed by an integer
+            var result = false;
+            var defaultTemplateNamesCount = 0;
+            var totalTemplateNamesCount = 0;
+            foreach (var item in templateDefinedFields)
+            {
+                totalTemplateNamesCount++;
+                foreach (var x in DefaultControlNames)
+                {
+                    if (!item.Name.StartsWith(x)) continue;
+
+                    int index = item.Name.IndexOf($"({item.RoleName})", StringComparison.Ordinal);
+                    string cleanTemplateFieldName = (index < 0) ? item.Name : item.Name.Remove(index, item.RoleName.Length + 2);
+
+                    var res = Regex.Match(cleanTemplateFieldName, DefaultTemplateNameRegex).Value;
+
+                    var number = 0;
+                    if (int.TryParse(res, out number))
+                    {
+                        defaultTemplateNamesCount++;
+                    }
+                }
+            }
+
+            var percentOfTemplateNames = ((double) defaultTemplateNamesCount/ (double) totalTemplateNamesCount * 100);
+            return percentOfTemplateNames >= 80;
+        }
+
 
         #endregion
 

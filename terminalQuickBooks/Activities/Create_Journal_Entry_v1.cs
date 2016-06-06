@@ -44,14 +44,7 @@ namespace terminalQuickBooks.Actions
         {
             if (ActivityId == Guid.Empty)
                 throw new ArgumentException("Configuration requires the submission of an Action that has a real ActionId");
-
-            //get StandardAccountingTransactionCM
-            var upstreamCrates = await HubCommunicator.GetCratesByDirection<StandardAccountingTransactionCM>(ActivityId, CrateDirection.Upstream);
-            TextBlock textBlock;
-            if (upstreamCrates.Count > 0)
-            {
-                Storage.Add(upstreamCrates.First());
-            }
+          
         }
 
         public override Task FollowUp()

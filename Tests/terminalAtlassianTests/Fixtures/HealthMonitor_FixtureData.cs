@@ -12,7 +12,7 @@ namespace terminalAtlassianTests.Fixtures
             {
                 Domain = "https://maginot.atlassian.net",
                 Username = "fr8_atlassian_test",
-                Password = "yakima29"
+                Password = "shoggoth34"
             };
 
             return new AuthorizationTokenDTO()

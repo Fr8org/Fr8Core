@@ -183,7 +183,7 @@ namespace terminalDocuSign.Actions
                         break;
                     case "recipient":
 
-                        string envelopeCurentRecipientEmail = eventFields.Where(a => a.Key == "CurrentRecipientEmail").FirstOrDefault().Value;
+                        string envelopeCurentRecipientEmail = eventFields.FirstOrDefault(a => a.Key == "CurrentRecipientEmail")?.Value;
                         //filter incoming envelope by recipient email address specified by the user
                         if (envelopeCurentRecipientEmail != null)
                         {
@@ -202,33 +202,16 @@ namespace terminalDocuSign.Actions
                         break;
                 }
             }
+            
+            var allFields = new List<FieldDTO>(eventFields);
 
-            //Create log message
-            var logMessages = new StandardLoggingCM
-            {
-                Item = new List<LogItemDTO>
-                {
-                    new LogItemDTO
-                    {
-                        Data = "Monitor DocuSign activity successfully recieved an envelope ID " + envelopeId,
-                        IsLogged = false
-                    }
-                }
-            };
-
-            List<FieldDTO> allFields = new List<FieldDTO>();
-            allFields.AddRange(eventFields);
-            //crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
-            Payload.Add(Crate.FromContent("Log Messages", logMessages));
             if (curSelectedOption == "template")
             {
                 allFields.AddRange(GetEnvelopeData(envelopeId, null));
             }
-            // TODO: This is probably obsolete crate, however lookup of that particular crate is hardcoded in QueryFr8Warehouse_v1#GetCurrentEnvelopeId.
-            //          This was possibly required by Generate_DocuSign_Report.
-            Payload.Add(Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(eventFields)));
-            // Crate that should be used, since it is base on CrateDescriptionCM.
-            Payload.Add(CrateManager.CreateDesignTimeFieldsCrate(AllFieldsCrateName, AvailabilityType.RunTime, allFields.ToArray()));
+           
+            Payload.Add(AllFieldsCrateName, new StandardPayloadDataCM(allFields));
+
             Success();
         }
 
@@ -237,14 +220,10 @@ namespace terminalDocuSign.Actions
 
             var controlsCrate = PackControls(CreateActivityUi());
             FillDocuSignTemplateSource(controlsCrate, "UpstreamCrate");
-            //var eventFields = CrateManager.CreateDesignTimeFieldsCrate("DocuSign Event Fields", AvailabilityType.RunTime, CreateDocuSignEventFields().ToArray());
             Storage.Add(controlsCrate);
-            //crateStorage.Add(eventFields);
             // Remove previously added crate of "Standard Event Subscriptions" schema
             Storage.Remove<EventSubscriptionCM>();
             Storage.Add(PackEventSubscriptionsCrate(controlsCrate.Get<StandardConfigurationControlsCM>()));
-            // Add Crate Description
-            Storage.Add(GetAvailableRunTimeTableCrate());
         }
 
         protected override Task FollowUpDS()
@@ -258,26 +237,12 @@ namespace terminalDocuSign.Actions
             {
                 allFields.AddRange(GetTemplateUserDefinedFields(selectedValue, null));
             }
-            // Update all fields crate
-            Storage.RemoveByLabel(AllFieldsCrateName);
-            Storage.Add(CrateManager.CreateDesignTimeFieldsCrate(AllFieldsCrateName, AvailabilityType.RunTime, allFields.ToArray()));
+
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(AllFieldsCrateName, true).AddFields(allFields);
+
             return Task.FromResult(0);
         }
-
-        private Crate GetAvailableRunTimeTableCrate()
-        {
-            var availableRunTimeCrates = Crate.FromContent("Available Run Time Crates", new CrateDescriptionCM(
-                    new CrateDescriptionDTO
-                    {
-                        ManifestType = MT.FieldDescription.GetEnumDisplayName(),
-                        Label = AllFieldsCrateName,
-                        ManifestId = (int)MT.FieldDescription,
-                        ProducedBy = "Monitor_DocuSign_Envelope_Activity_v1"
-                    }), AvailabilityType.RunTime);
-            return availableRunTimeCrates;
-        }
-
-
+        
         /// <summary>
         /// Updates event subscriptions list by user checked check boxes.
         /// </summary>
