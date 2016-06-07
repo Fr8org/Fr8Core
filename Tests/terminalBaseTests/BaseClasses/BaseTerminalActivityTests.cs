@@ -18,7 +18,6 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Infrastructure.Interfaces;
 using Fr8Infrastructure.Communication;
-using Fr8Data.States;
 using Hub.Managers;
 using terminaBaselTests.BaseClasses;
 using TerminalBase.Models;

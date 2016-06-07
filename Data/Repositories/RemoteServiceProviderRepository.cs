@@ -2,8 +2,8 @@
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
+using fr8.Infrastructure.Utilities;
 using Newtonsoft.Json;
-using Utilities;
 
 namespace Data.Repositories
 {

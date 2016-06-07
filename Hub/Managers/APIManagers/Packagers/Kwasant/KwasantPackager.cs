@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Data.Entities;
-using Utilities;
-using Utilities.Serializers.Json;
+using fr8.Infrastructure.Utilities;
+using fr8.Infrastructure.Utilities.Serializers.Json;
 
 namespace Hub.Managers.APIManagers.Packagers.Kwasant
 {

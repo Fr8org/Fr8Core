@@ -1,14 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Web.Http;
+﻿using System.Web.Http;
 using StructureMap;
 using Microsoft.AspNet.Identity;
 using Data.Interfaces;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
+using fr8.Infrastructure.Data.DataTransferObjects;
 using Hub.Infrastructure;
-using Hub.Managers;
 using Hub.Services;
 using HubWeb.Infrastructure_HubWeb;
 

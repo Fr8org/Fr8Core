@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using Data.Entities;
-using Fr8Data.DataTransferObjects;
+using fr8.Infrastructure.Data.DataTransferObjects;
 using Hub.Interfaces;
 using HubWeb.ViewModels;
 

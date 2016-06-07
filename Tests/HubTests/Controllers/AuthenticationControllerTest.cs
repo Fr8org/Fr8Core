@@ -13,7 +13,6 @@ using HubTests.Controllers.Api;
 using UtilitiesTesting.Fixtures;
 using AutoMapper;
 using Fr8Data.DataTransferObjects;
-using Fr8Data.States;
 using Hub.Interfaces;
 using Fr8Infrastructure.Interfaces;
 

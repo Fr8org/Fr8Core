@@ -2,11 +2,11 @@
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http.Filters;
-using Fr8Infrastructure.Security;
+using fr8.Infrastructure.Security;
+using fr8.Infrastructure.Utilities.Configuration;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using StructureMap;
-using Utilities.Configuration.Azure;
 
 namespace HubWeb.Infrastructure_HubWeb
 {

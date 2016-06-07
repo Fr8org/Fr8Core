@@ -1,10 +1,7 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Infrastructure;
 using Data.Infrastructure;
-using Data.Interfaces;
-using Utilities;
+using fr8.Infrastructure.Utilities;
 
 namespace Data.Entities
 {

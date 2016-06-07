@@ -6,10 +6,10 @@ using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using fr8.Infrastructure.Data.Crates;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.Manifests;
+using fr8.Infrastructure.Data.States;
 using Hub.Interfaces;
 
 namespace Hub.Security.ObjectDecorators

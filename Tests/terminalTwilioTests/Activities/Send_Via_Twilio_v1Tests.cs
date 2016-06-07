@@ -11,7 +11,6 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using System;
 using Fr8Data.Manifests;
-using Fr8Data.States;
 using UtilitiesTesting;
 using terminalTwilio;
 using terminalTwilio.Activities;

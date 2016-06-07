@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
-using Fr8Data.Crates;
+using fr8.Infrastructure.Data.Crates;
 
 namespace Hub.Interfaces
 {

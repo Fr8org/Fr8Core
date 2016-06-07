@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Fr8Data.States;
+using fr8.Infrastructure.Data.States;
 
 namespace HubWeb.ViewModels.RequestParameters
 {

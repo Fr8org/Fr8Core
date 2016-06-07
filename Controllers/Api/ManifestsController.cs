@@ -1,15 +1,7 @@
-﻿using Hub;
-using Hub.Interfaces;
+﻿using Hub.Interfaces;
 using StructureMap;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
-using AutoMapper;
-using Fr8Data.Managers;
-using Hub.Managers;
+using fr8.Infrastructure.Data.Managers;
 
 namespace HubWeb.Controllers
 {

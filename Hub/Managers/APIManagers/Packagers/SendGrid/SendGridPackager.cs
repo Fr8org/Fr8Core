@@ -1,19 +1,15 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
-using System.Web.UI;
 using Newtonsoft.Json.Linq;
 using SendGrid;
 using StructureMap;
-using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
-using Hub.Managers.APIManagers.Packagers;
-using Utilities;
-using Utilities.Logging;
+using fr8.Infrastructure.Utilities;
+using fr8.Infrastructure.Utilities.Logging;
 
 namespace Hub.Managers.APIManagers.Packagers.SendGrid
 {

@@ -2,13 +2,13 @@
 using System.Web.Http;
 using AutoMapper;
 using Data.Interfaces;
-using Fr8Data.DataTransferObjects;
 using StructureMap;
 using System.Web.Http.Description;
 using System.Collections.Generic;
 using Hub.Interfaces;
 using Data.Entities;
 using System.Linq;
+using fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace HubWeb.Controllers
 {

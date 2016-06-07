@@ -4,7 +4,6 @@ using System.Linq;
 using Data.Interfaces;
 using Data.Repositories.MultiTenant;
 using Fr8Data.DataTransferObjects;
-using Fr8Data.States;
 using StructureMap;
 
 namespace terminalDocuSign.Services.MT

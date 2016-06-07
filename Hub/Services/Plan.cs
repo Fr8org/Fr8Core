@@ -12,20 +12,18 @@ using Data.States;
 using Hub.Interfaces;
 using InternalInterface = Hub.Interfaces;
 using System.Threading.Tasks;
-using System.Web.Http.Controllers;
-using System.Web.Routing;
 using Data.Infrastructure;
 using Data.Repositories.Plan;
-using Fr8Data.Constants;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.DataTransferObjects.Helpers;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using fr8.Infrastructure.Data.Constants;
+using fr8.Infrastructure.Data.Crates;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.DataTransferObjects.Helpers;
+using fr8.Infrastructure.Data.Managers;
+using fr8.Infrastructure.Data.Manifests;
+using fr8.Infrastructure.Data.States;
+using fr8.Infrastructure.Interfaces;
+using fr8.Infrastructure.Utilities.Logging;
 using Hub.Exceptions;
-using Utilities.Logging;
-using Utilities.Interfaces;
 
 namespace Hub.Services
 {

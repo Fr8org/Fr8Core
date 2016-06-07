@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 
@@ -22,7 +18,7 @@ using System.IO;
 using System.Net;
 using System.Xml;
 using System.Xml.Linq;
-using Utilities.Configuration.Azure;
+using fr8.Infrastructure.Utilities.Configuration;
 
 namespace DocusignTutorial.Controllers 
 {

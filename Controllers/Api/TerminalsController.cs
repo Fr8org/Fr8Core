@@ -6,7 +6,7 @@ using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Validations;
-using Fr8Data.DataTransferObjects;
+using fr8.Infrastructure.Data.DataTransferObjects;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using StructureMap;

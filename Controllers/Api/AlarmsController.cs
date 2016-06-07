@@ -5,19 +5,18 @@ using StructureMap;
 using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Fr8Data.DataTransferObjects;
 using HubWeb.Infrastructure_HubWeb;
 using log4net;
 using Data.Interfaces;
 using System.Linq;
 using System.Net.Http;
-using System.Web.Http.Validation.Providers;
+using fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace HubWeb.Controllers
 {
     public class AlarmsController : ApiController
     {
-        private static readonly ILog Logger = Utilities.Logging.Logger.GetCurrentClassLogger();
+        private static readonly ILog Logger = fr8.Infrastructure.Utilities.Logging.Logger.GetCurrentClassLogger();
 
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]

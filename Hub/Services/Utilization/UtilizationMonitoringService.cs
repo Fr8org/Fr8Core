@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Data.Entities;
 using Data.Interfaces;
+using fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
-using Utilities.Configuration.Azure;
 
 namespace Hub.Services
 {

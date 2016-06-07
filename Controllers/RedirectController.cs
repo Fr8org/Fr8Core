@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using StructureMap;
 using System.Web.Mvc;
+using fr8.Infrastructure.Utilities;
 using Hub.Interfaces;
 using Hub.Managers;
-using Utilities;
 
 namespace HubWeb.Controllers
 {

@@ -1,4 +1,4 @@
-using Fr8Data.DataTransferObjects;
+using fr8.Infrastructure.Data.DataTransferObjects;
 
 
 namespace Hub.Interfaces

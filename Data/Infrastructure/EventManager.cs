@@ -1,10 +1,9 @@
 ﻿//We rename .NET style "events" to "alerts" to avoid confusion with our business logic Alert concepts
-
 using System;
 using Data.Entities;
 using System.Data.Entity.Infrastructure;
-using Fr8Data.Constants;
-using Fr8Data.DataTransferObjects;
+using fr8.Infrastructure.Data.Constants;
+using fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace Data.Infrastructure
 {

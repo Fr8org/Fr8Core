@@ -20,8 +20,8 @@ using Data.Repositories.Security.StorageImpl.Cache;
 using Data.Repositories.Security.StorageImpl.SqlBased;
 using Data.Repositories.SqlBased;
 using Data.Repositories.Utilization;
+using fr8.Infrastructure.Utilities.Configuration;
 using StructureMap.Configuration.DSL;
-using Utilities.Configuration.Azure;
 
 //using MT_FieldService = Data.Infrastructure.MultiTenant.MT_Field;
 

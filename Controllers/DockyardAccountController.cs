@@ -6,13 +6,13 @@ using System.Web;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
+using fr8.Infrastructure.Utilities;
+using fr8.Infrastructure.Utilities.Logging;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Services;
 using HubWeb.ViewModels;
 using StructureMap;
-using Utilities;
-using Utilities.Logging;
 
 namespace HubWeb.Controllers
 {

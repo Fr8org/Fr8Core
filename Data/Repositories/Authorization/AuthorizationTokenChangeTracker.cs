@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using Data.Entities;
-using Fr8Data.Helpers;
+using fr8.Infrastructure.Data.Helpers;
 
 namespace Data.Repositories
 {

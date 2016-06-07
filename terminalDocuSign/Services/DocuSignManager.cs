@@ -16,7 +16,6 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
-using Fr8Data.States;
 using TerminalBase.Errors;
 using TerminalBase.Models;
 

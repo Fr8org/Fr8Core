@@ -7,7 +7,6 @@ using Data.States;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.DataTransferObjects.PlanTemplates;
 using Fr8Data.Manifests;
-using Fr8Data.States;
 using HealthMonitor.Utility;
 using Hub.Interfaces;
 using Newtonsoft.Json;

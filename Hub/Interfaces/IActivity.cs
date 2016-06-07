@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
-using Fr8Data.Constants;
-using Fr8Data.DataTransferObjects;
+using fr8.Infrastructure.Data.Constants;
+using fr8.Infrastructure.Data.DataTransferObjects;
 
 
 namespace Hub.Interfaces

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
-using Fr8Data.Manifests;
-using Utilities;
+using fr8.Infrastructure.Data.Manifests;
+using fr8.Infrastructure.Utilities;
 
 namespace Data.Entities
 {

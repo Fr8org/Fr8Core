@@ -1,9 +1,8 @@
 ﻿using System;
 using System.IO;
 using Data.Entities;
-using Microsoft.WindowsAzure;
-using Utilities;
-using Utilities.Configuration.Azure;
+using fr8.Infrastructure.Utilities;
+using fr8.Infrastructure.Utilities.Configuration;
 
 namespace Data.Infrastructure
 {

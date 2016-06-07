@@ -4,8 +4,8 @@ using System.Linq;
 using StructureMap;
 using Data.Interfaces;
 using Data.Repositories.MultiTenant;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.States;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.States;
 
 namespace Hub.Services.MT
 {

@@ -2,12 +2,10 @@
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Repositories.Security;
 using Hub.Interfaces;
 using StructureMap;
 using AutoMapper;
-using Fr8Data.DataTransferObjects;
-using Hub.Managers;
+using fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace Hub.Services
 {

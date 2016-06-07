@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
+using fr8.Infrastructure.Data.Crates;
+using fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace Hub.Interfaces
 {

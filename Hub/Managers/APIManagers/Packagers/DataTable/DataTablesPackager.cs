@@ -1,5 +1,4 @@
-﻿//using Newtonsoft.Json;
-using Utilities.Serializers.Json;
+﻿using fr8.Infrastructure.Utilities.Serializers.Json;
 
 namespace Hub.Managers.APIManagers.Packagers.DataTable
 {

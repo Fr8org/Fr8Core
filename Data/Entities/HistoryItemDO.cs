@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Data.Interfaces;
-using Utilities.Logging;
+using fr8.Infrastructure.Utilities;
+using fr8.Infrastructure.Utilities.Logging;
 using StructureMap;
-using Utilities;
 
 namespace Data.Entities
 {

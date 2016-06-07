@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Fr8Data.DataTransferObjects;
+using fr8.Infrastructure.Data.DataTransferObjects;
 using Newtonsoft.Json;
 
 namespace HubWeb.ExceptionHandling

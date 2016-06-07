@@ -11,10 +11,10 @@ using Data.States.Templates;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using fr8.Infrastructure.Data.Crates;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.Manifests;
+using fr8.Infrastructure.Data.States;
 using StructureMap;
 
 namespace Data.Migrations

@@ -11,9 +11,9 @@ using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
+using fr8.Infrastructure.Data.DataTransferObjects;
 using Hub.Infrastructure;
 using Hub.Interfaces;
-using Fr8Data.DataTransferObjects;
 using HubWeb.Infrastructure_HubWeb;
 
 namespace HubWeb.Controllers

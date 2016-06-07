@@ -4,17 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
-using FluentValidation;
 using StructureMap;
 using Data.Entities;
-using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
-using Data.Validations;
+using fr8.Infrastructure.Utilities;
 using Hub.Managers.APIManagers.Packagers;
-using Utilities;
-using Utilities.Logging;
 
 
 namespace Hub.Services

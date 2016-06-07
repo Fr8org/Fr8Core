@@ -5,7 +5,6 @@ using Utilities.Configuration.Azure;
 using Fr8Data.Constants;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
-using Fr8Data.States;
 using TerminalBase.Services;
 
 namespace terminalFr8Core.Controllers

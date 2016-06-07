@@ -12,10 +12,10 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
 using Hub.Security;
-using Utilities;
 using System.Web;
 using System.Net.Http;
 using System.Security.Claims;
+using fr8.Infrastructure.Utilities;
 
 namespace Hub.Services
 {

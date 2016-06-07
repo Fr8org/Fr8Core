@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net.Mail;
 using Data.Entities;
 using Data.Interfaces;
-using Utilities;
+using fr8.Infrastructure.Utilities;
 
 namespace Hub.Interfaces
 {

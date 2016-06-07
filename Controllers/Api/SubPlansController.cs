@@ -6,10 +6,9 @@ using AutoMapper;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Fr8Data.DataTransferObjects;
-using Hub.Infrastructure;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Utilities.Logging;
 using Hub.Interfaces;
-using Utilities.Logging;
 
 namespace HubWeb.Controllers
 {

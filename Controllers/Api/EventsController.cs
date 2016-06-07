@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Fr8Data.Constants;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.Managers;
+using fr8.Infrastructure.Data.Manifests;
+using fr8.Infrastructure.Utilities.Logging;
 using StructureMap;
 using Hub.Interfaces;
-using Hub.Managers;
-using Newtonsoft.Json;
-using Utilities.Logging;
 
 namespace HubWeb.Controllers
 {

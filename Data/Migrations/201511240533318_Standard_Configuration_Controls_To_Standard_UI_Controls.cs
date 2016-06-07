@@ -1,8 +1,7 @@
-using Utilities;
+using fr8.Infrastructure.Utilities;
 
 namespace Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
     
     public partial class Standard_Configuration_Controls_To_Standard_UI_Controls : DbMigration

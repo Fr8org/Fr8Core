@@ -1,5 +1,4 @@
 ﻿using Fr8Data.DataTransferObjects;
-using Fr8Data.States;
 using Utilities.Configuration.Azure;
 
 namespace terminalDocuSign

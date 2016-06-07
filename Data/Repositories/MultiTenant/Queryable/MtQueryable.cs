@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Fr8Data.Manifests;
+using fr8.Infrastructure.Data.Manifests;
 
 namespace Data.Repositories.MultiTenant.Queryable
 {

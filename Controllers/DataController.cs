@@ -8,8 +8,8 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Validations;
+using fr8.Infrastructure.Utilities;
 using Hub.Services;
-using Utilities;
 
 namespace HubWeb.Controllers
 {

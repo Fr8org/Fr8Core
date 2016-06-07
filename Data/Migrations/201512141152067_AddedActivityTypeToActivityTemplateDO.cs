@@ -1,8 +1,7 @@
-using Fr8Data.States;
+using fr8.Infrastructure.Data.States;
 
 namespace Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
     
     public partial class AddedActivityTypeToActivityTemplateDO : DbMigration

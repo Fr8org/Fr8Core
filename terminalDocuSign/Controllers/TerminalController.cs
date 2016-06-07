@@ -6,7 +6,6 @@ using System.Web.Http.Description;
 using Fr8Data.Constants;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
-using Fr8Data.States;
 using TerminalBase.Services;
 
 namespace terminalDocuSign.Controllers

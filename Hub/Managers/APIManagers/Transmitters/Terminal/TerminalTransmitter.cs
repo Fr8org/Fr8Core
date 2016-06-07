@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Fr8Data.DataTransferObjects;
-using Fr8Infrastructure.Communication;
-using Fr8Infrastructure.Interfaces;
+using fr8.Infrastructure.Communication;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Interfaces;
+using fr8.Infrastructure.Utilities.Logging;
 using StructureMap;
 using Hub.Interfaces;
-using Utilities.Logging;
 
 namespace Hub.Managers.APIManagers.Transmitters.Terminal
 {

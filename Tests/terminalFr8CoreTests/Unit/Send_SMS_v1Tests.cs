@@ -13,7 +13,6 @@ using Fr8Data.Control;
 using System;
 using Fr8Data.DataTransferObjects;
 using Data.States;
-using Fr8Data.States;
 using terminalUtilities.Twilio;
 using System.Collections.Generic;
 using terminalFr8Core.Activities;
