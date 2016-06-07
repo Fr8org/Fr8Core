@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fr8Data.DataTransferObjects;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
 using terminalDocuSignTests.Fixtures;
 using Fr8Infrastructure.Communication;

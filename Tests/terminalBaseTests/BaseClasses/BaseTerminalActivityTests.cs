@@ -10,8 +10,8 @@ using Data.States;
 using Fr8Data.Managers;
 using TerminalBase.Infrastructure;
 using TerminalBase.BaseClasses;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 using System.Collections.Generic;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
@@ -224,7 +224,7 @@ namespace terminalBaseTests.BaseClasses
                 Assert.NotNull(crateLabelList);
                 Assert.AreEqual(crateLabelList.Count(), crateLabelList.Distinct().Count());
 
-                foreach (var crate in UtilitiesTesting.Fixtures.FixtureData.TestCrateDTO3())
+                foreach (var crate in Fr8.Testing.Unit.Fixtures.FixtureData.TestCrateDTO3())
                 {
                     if (ExcludedManifestTypes.Contains(crate.ManifestType))
                     {

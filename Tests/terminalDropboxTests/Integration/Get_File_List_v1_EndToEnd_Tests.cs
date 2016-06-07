@@ -3,11 +3,10 @@ using System.Threading.Tasks;
 using Data.States;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
-using HealthMonitor.Utility;
-using HealthMonitorUtility.Tools.Activities;
+using Fr8.Testing.Integration;
+using Fr8.Testing.Integration.Tools.Activities;
 using NUnit.Framework;
-using terminaBaselTests.Tools.Activities;
-using terminaBaselTests.Tools.Plans;
+using Fr8.Testing.Integration.Tools.Plans;
  
 namespace terminalDropboxTests.Integration
 {
@@ -44,7 +43,7 @@ namespace terminalDropboxTests.Integration
             await _terminalDropboxConfigurator.AddAndConfigure_GetFileList(plan, 1);
 
             // Google auth
-            var terminalGoogleTestTools = new terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalGoogle(this);
+            var terminalGoogleTestTools = new Fr8.Testing.Integration.Tools.Terminals.IntegrationTestTools_terminalGoogle(this);
             var googleAuthTokenId = await terminalGoogleTestTools.ExtractGoogleDefaultToken();
 
             var speadsheetName = Guid.NewGuid().ToString();

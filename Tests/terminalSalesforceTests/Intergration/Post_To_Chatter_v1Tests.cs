@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Fr8Data.Crates;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
 using terminalSalesforceTests.Fixtures;
 using terminalSalesforce.Actions;

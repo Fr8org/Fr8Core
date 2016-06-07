@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Fr8Data.Manifests;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
 
 namespace terminalSalesforceTests.Integration

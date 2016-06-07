@@ -1,7 +1,7 @@
 ﻿using System;
 using Moq;
 using NUnit.Framework;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 using Utilities.Configuration.Azure;
 using System.Collections.Generic;
 using Fr8Data.DataTransferObjects;

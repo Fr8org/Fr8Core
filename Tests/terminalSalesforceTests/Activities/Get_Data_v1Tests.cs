@@ -16,7 +16,7 @@ using terminalSalesforce.Actions;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforceTests.Fixtures;
 using TerminalBase.Infrastructure;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 using Fr8Data.Managers;
 using TerminalBase.Models;
 

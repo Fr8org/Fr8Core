@@ -9,8 +9,8 @@ using terminalDocuSign.Actions;
 using terminalDocuSign.Services.New_Api;
 using terminalDocuSignTests.Fixtures;
 using TerminalBase.Infrastructure;
-using UtilitiesTesting.Asserts;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Asserts;
+using Fr8.Testing.Unit.Fixtures;
 using terminalDocuSign.Activities;
 using TerminalBase.Models;
 

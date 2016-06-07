@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
 using terminalAzureTests.Fixtures;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
 using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.Crates;

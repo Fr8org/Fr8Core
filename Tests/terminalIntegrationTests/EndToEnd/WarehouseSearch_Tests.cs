@@ -9,7 +9,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 
 namespace terminalIntegrationTests.EndToEnd
 {

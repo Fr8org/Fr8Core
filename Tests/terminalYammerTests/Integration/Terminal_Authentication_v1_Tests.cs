@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fr8Data.DataTransferObjects;
 using Fr8Infrastructure.Communication;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
 
 namespace terminalYammerTests.Integration

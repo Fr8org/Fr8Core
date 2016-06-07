@@ -457,9 +457,9 @@
       <Project>{e8bf04ac-1a7d-4cbe-80b9-e20f53699f2d}</Project>
       <Name>terminalYammer</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HealthMonitorUtility\HealthMonitorUtility.csproj">
+    <ProjectReference Include="..\HealthMonitorUtility\Fr8.Testing.csproj">
       <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
-      <Name>HealthMonitorUtility</Name>
+      <Name>Fr8.Testing</Name>
     </ProjectReference>
     <ProjectReference Include="..\terminalAzureTests\terminalAzureTests.csproj">
       <Project>{36ed6f21-1a8f-4f07-a08a-a55639891e9b}</Project>

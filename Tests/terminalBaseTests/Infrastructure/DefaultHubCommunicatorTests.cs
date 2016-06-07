@@ -8,7 +8,7 @@ using NUnit.Framework;
 using StructureMap;
 using TerminalBase.Infrastructure;
 using TerminalBase.Services;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace terminaBaselTests.Infrastructure
 {

@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
 using terminalDocuSign.Actions;
 using terminalDocuSignTests.Fixtures;

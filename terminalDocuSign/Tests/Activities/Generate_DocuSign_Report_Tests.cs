@@ -19,7 +19,7 @@ using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Infrastructure.StructureMap;
 using terminalDocuSign.Tests.Fixtures;
 using TerminalBase.Infrastructure;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace terminalDocuSign.Tests.Actions
 {

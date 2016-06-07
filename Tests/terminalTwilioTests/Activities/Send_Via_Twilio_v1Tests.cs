@@ -12,7 +12,7 @@ using TerminalBase.Infrastructure;
 using System;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 using terminalTwilio;
 using terminalTwilio.Activities;
 using Fr8Infrastructure.StructureMap;

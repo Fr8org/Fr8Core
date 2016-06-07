@@ -13,7 +13,7 @@ using Data.States;
 using Fr8Data.DataTransferObjects;
 using Hub.Interfaces;
 using HubWeb.Controllers;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace HubTests.Controllers
 {

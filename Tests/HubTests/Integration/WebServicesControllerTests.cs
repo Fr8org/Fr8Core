@@ -1,6 +1,6 @@
 ﻿
 using Data.Interfaces;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using HubTests.Fixtures;
 using NUnit.Framework;
 using StructureMap;

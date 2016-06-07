@@ -2,14 +2,14 @@
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using terminalDocuSignTests.Fixtures;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
 using Fr8Data.Managers;
 
 namespace terminalDocuSignTests.Integration

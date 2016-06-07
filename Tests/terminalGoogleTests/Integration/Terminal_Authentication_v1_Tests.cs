@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Fr8Data.DataTransferObjects;
 using Fr8Infrastructure.Communication;
 using Fr8Infrastructure.Interfaces;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
 using StructureMap;
 using terminalGoogle.DataTransferObjects;

@@ -373,12 +373,6 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
-      <Project>{6B855C3F-07A9-4787-9FDE-29FA567C43E2}</Project>
-      <Name>UtilitiesTesting</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup />

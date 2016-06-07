@@ -344,10 +344,6 @@
       <Project>{fa105e66-8756-4f57-8230-2a52bfebddc6}</Project>
       <Name>TerminalSqlUtilities</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
-      <Project>{6b855c3f-07a9-4787-9fde-29fa567c43e2}</Project>
-      <Name>UtilitiesTesting</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />

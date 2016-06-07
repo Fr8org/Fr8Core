@@ -195,9 +195,9 @@
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HealthMonitorUtility\HealthMonitorUtility.csproj">
+    <ProjectReference Include="..\HealthMonitorUtility\Fr8.Testing.csproj">
       <Project>{459FE39A-A5CC-41D8-B06E-8FAE3A1A623B}</Project>
-      <Name>HealthMonitorUtility</Name>
+      <Name>Fr8.Testing</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using terminalFr8Core;
 using terminalFr8Core.Actions;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 using TerminalBase.Infrastructure;
 using System.Threading.Tasks;
 using Moq;

@@ -18,8 +18,8 @@ using StructureMap;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using TerminalBase.Services;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 using TerminalBase.Models;
 
 namespace terminaBaselTests.BaseClasses
