@@ -27,7 +27,7 @@ namespace terminalFr8Core.Activities
             Version = "1",
             Category = ActivityCategory.Processors,
             NeedsAuthentication = false,
-            MinPaneWidth = 400,
+            MinPaneWidth = 320,
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO
         };
