@@ -164,8 +164,6 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/OrganizationController.js',
         'Scripts/app/controllers/KioskModeOrganizationHeaderController.js',
         'Scripts/app/controllers/PlanActionsDialogController.js',
-        'Scripts/app/controllers/FindObjectsController.js',
-        'Scripts/app/controllers/FindObjectsResultsController.js',
         'Scripts/app/controllers/ManageAuthTokenController.js',
         'Scripts/app/controllers/PayloadFormController.js',
         'Scripts/app/controllers/TerminalListController.js',
