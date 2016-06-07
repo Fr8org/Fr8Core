@@ -5,7 +5,7 @@ using TerminalBase.Services;
 
 namespace terminalDropbox.Controllers
 {
-    [RoutePrefix("terminals")]
+    //[RoutePrefix("terminals")]
     public class TerminalController : ApiController
     {
         [HttpGet]

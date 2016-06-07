@@ -83,7 +83,8 @@ namespace HealthMonitor.Utility
 
         public string GetTerminalDiscoverUrl()
         {
-            return TerminalUrl + "/terminals/discover";
+            //return TerminalUrl + "/terminals/discover";
+            return TerminalUrl + "/discover";
         }
 
         public string GetTerminalConfigureUrl()
