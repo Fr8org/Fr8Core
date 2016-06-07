@@ -20,8 +20,6 @@ namespace terminalDropbox.Controllers
         }
 
         [HttpPost]
-        [fr8TerminalHMACAuthenticate(curTerminal)]
-        [Authorize]
         public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
         {
             return _activityExecutor.HandleFr8Request(curTerminal, actionType, curDataDTO);

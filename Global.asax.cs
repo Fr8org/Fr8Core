@@ -66,9 +66,6 @@ namespace HubWeb
             var db = ObjectFactory.GetInstance<DbContext>();
             db.Database.Initialize(true);
 
-            Utilities.Server.IsProduction = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsProduction");
-            Utilities.Server.IsDevMode = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsDev", true);
-
             if (!selfHostMode)
             {
                 Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
