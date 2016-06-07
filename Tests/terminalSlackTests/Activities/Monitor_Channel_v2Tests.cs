@@ -14,7 +14,7 @@ using terminalSlack.Actions;
 using terminalSlack.Interfaces;
 using terminalSlackTests.Fixtures;
 using TerminalBase.Infrastructure;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 using TerminalBase.Models;
 using Fr8Data.Crates;
 using terminalSlack.Activities;

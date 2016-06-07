@@ -11,7 +11,7 @@ using TerminalBase.Services;
 namespace terminalFr8Core.Controllers
 {
 
-    [RoutePrefix("terminals")]
+    //[RoutePrefix("terminals")]
     public class TerminalController : ApiController
     {
         /// <summary>

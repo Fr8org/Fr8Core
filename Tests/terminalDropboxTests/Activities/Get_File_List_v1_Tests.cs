@@ -9,7 +9,7 @@ using StructureMap;
 using terminalDropbox.Actions;
 using terminalDropboxTests.Fixtures;
 using TerminalBase.Infrastructure;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 using Fr8Infrastructure.Interfaces;
 using terminalDropbox.Interfaces;
 using TerminalBase.Models;

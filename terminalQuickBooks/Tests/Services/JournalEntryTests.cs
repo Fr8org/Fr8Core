@@ -6,7 +6,7 @@ using NUnit.Framework;
 using StructureMap;
 using terminalQuickBooks.Interfaces;
 using TerminalBase.Infrastructure;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace terminalQuickBooks.Tests.Services
 {

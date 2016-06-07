@@ -4,7 +4,7 @@ using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using Hub.StructureMap;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;

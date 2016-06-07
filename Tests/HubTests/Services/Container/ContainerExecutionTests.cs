@@ -12,7 +12,7 @@ using Fr8Data.Crates;
 using Fr8Data.Manifests;
 using HubTests.Services.Container;
 using Hub.Exceptions;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace HubTests.Services
 {

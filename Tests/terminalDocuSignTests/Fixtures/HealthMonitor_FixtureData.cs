@@ -5,7 +5,7 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.States;
 using NUnit.Framework;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using terminalDocuSign.Infrastructure;

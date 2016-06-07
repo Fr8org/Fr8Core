@@ -8,7 +8,7 @@ using System.Linq;
 using Data.Repositories;
 using Data.Infrastructure;
 using Data.Interfaces;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;

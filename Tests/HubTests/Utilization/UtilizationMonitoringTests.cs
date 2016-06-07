@@ -12,7 +12,7 @@ using HubTests.Services.Container;
 using NUnit.Framework;
 using StructureMap;
 using Utilities.Configuration.Azure;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace HubTests.Utilization
 {

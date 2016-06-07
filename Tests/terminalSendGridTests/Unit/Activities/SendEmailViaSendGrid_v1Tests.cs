@@ -16,7 +16,7 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using TerminalBase.Models;
 using Utilities;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace terminalSendGridTests.Unit.Activities
 {

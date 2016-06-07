@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using NUnit.Framework;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.Crates;

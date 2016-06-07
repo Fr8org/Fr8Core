@@ -3,7 +3,7 @@ using System.Web.Http.Results;
 using Fr8Data.Manifests;
 using NUnit.Framework;
 using terminalPapertrail.Controllers;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace terminalPapertrail.Tests.Controllers
 {

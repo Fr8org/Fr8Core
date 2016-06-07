@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
 using Salesforce.Common;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 
 namespace terminalIntegrationTests.Fixtures
 {

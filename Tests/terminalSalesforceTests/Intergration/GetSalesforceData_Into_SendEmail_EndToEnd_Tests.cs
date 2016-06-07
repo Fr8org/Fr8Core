@@ -1,5 +1,5 @@
 ﻿using System;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
 using System.Threading.Tasks;
 using System.Linq;

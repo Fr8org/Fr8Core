@@ -8,7 +8,7 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using terminalTests.Fixtures;
 
 namespace terminalFr8CoreTests.Integration

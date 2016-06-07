@@ -10,7 +10,7 @@ using Fr8Data.Manifests;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 
 namespace terminalDocuSignTests.Integration
 {

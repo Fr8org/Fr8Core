@@ -7,7 +7,7 @@ using NUnit.Framework;
 using StructureMap;
 using Utilities.Configuration;
 using Utilities.Configuration.Azure;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace HubTests.Services
 {

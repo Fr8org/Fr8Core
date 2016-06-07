@@ -6,7 +6,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Hub.Interfaces;
 using Utilities;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace HubTests.Entities
 {

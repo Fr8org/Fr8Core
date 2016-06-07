@@ -17,8 +17,8 @@ using terminalPapertrail.Interfaces;
 using terminalPapertrail.Tests.Infrastructure;
 using TerminalBase.Infrastructure;
 using TerminalBase.Models;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace terminalPapertrail.Tests.Actions
 {

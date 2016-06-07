@@ -1,6 +1,5 @@
 ﻿using System;
 using NUnit.Framework;
-using HealthMonitor.Utility;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +11,11 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using terminaBaselTests.Tools.Activities;
+using Fr8.Testing.Integration.Tools.Activities;
+using Fr8.Testing.Integration;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
 using Fr8Data.Managers;
 using TerminalBase.Models;
 
@@ -34,7 +34,7 @@ namespace terminalDocuSignTests.Integration
 
         private ActivityDTO solution;
         private ICrateStorage crateStorage;
-        private terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalDocuSign _terminalDocuSignTestTools;
+        private Fr8.Testing.Integration.Tools.Terminals.IntegrationTestTools_terminalDocuSign _terminalDocuSignTestTools;
         private IntegrationTestTools_terminalDocuSign _docuSignActivitiesTestTools;
 
         public override string TerminalName
@@ -46,7 +46,7 @@ namespace terminalDocuSignTests.Integration
 
         public Mail_Merge_Into_DocuSign_v1_EndToEnd_Tests()
         {
-            _terminalDocuSignTestTools = new terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalDocuSign(this);
+            _terminalDocuSignTestTools = new Fr8.Testing.Integration.Tools.Terminals.IntegrationTestTools_terminalDocuSign(this);
             _docuSignActivitiesTestTools = new IntegrationTestTools_terminalDocuSign(this);
         }
 
@@ -246,8 +246,8 @@ namespace terminalDocuSignTests.Integration
             //
             await RevokeTokens();
 
-            var terminalGoogleTestTools = new terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalGoogle(this);
-            var googleActivityTestTools = new terminaBaselTests.Tools.Activities.IntegrationTestTools_terminalGoogle(this);
+            var terminalGoogleTestTools = new Fr8.Testing.Integration.Tools.Terminals.IntegrationTestTools_terminalGoogle(this);
+            var googleActivityTestTools = new Fr8.Testing.Integration.Tools.Activities.IntegrationTestTools_terminalGoogle(this);
             var googleAuthTokenId = await terminalGoogleTestTools.ExtractGoogleDefaultToken();
 
             string spreadsheetName = Guid.NewGuid().ToString();

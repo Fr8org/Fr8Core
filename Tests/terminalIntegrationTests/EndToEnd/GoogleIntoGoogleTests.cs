@@ -6,12 +6,12 @@ using Data.Interfaces;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Infrastructure.Interfaces;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
-using terminaBaselTests.Tools.Activities;
-using terminaBaselTests.Tools.Plans;
+using Fr8.Testing.Integration.Tools.Activities;
+using Fr8.Testing.Integration.Tools.Plans;
 using terminalFr8Core.Actions;
 using terminalFr8Core.Activities;
 using terminalGoogle.DataTransferObjects;
@@ -41,7 +41,7 @@ namespace terminalIntegrationTests.EndToEnd
         public async Task GoogleIntoGoogleEndToEnd()
         {
             
-            var googleAuthTokenId = await new terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalGoogle(this).ExtractGoogleDefaultToken();
+            var googleAuthTokenId = await new Fr8.Testing.Integration.Tools.Terminals.IntegrationTestTools_terminalGoogle(this).ExtractGoogleDefaultToken();
             var defaultGoogleAuthToken = GetGoogleAuthToken(googleAuthTokenId);
 
             //create a new plan

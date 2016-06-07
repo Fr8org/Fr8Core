@@ -8,8 +8,8 @@ using System.Web.Http.Results;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Hub.Managers;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 using HubWeb.Controllers;
 using Fr8Data.Managers;
 

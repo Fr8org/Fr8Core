@@ -10,7 +10,7 @@ using Data.Interfaces;
 using Fr8Data.DataTransferObjects;
 using HubTests.Controllers.Api;
 using HubWeb.Controllers;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
 using Fr8Data.States;
 using HubWeb.ViewModels.RequestParameters;
 

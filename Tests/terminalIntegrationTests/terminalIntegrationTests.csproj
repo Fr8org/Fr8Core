@@ -96,8 +96,8 @@
       <HintPath>..\..\packages\fr8TerminalBase.1.0.0.13\lib\net45\fr8TerminalBase.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="fr8Utilities, Version=1.0.0.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\fr8Utilities.1.0.0.4\lib\net45\fr8Utilities.dll</HintPath>
+    <Reference Include="fr8Utilities, Version=1.0.0.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\fr8Utilities.1.0.0.5\lib\net45\fr8Utilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
@@ -335,13 +335,13 @@
       <Project>{e46b602a-287b-450f-b455-5eed20c93eb7}</Project>
       <Name>terminalUtilities</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HealthMonitorUtility\HealthMonitorUtility.csproj">
-      <Project>{459FE39A-A5CC-41D8-B06E-8FAE3A1A623B}</Project>
-      <Name>HealthMonitorUtility</Name>
+    <ProjectReference Include="..\Fr8.Testing.Integration.Tools\Fr8.Testing.Integration.Tools.csproj">
+      <Project>{4f56c030-d16b-4a51-82d0-3c23a47ab703}</Project>
+      <Name>Fr8.Testing.Integration.Tools</Name>
     </ProjectReference>
-    <ProjectReference Include="..\UtilitiesTesting\UtilitiesTesting.csproj">
-      <Project>{6b855c3f-07a9-4787-9fde-29fa567c43e2}</Project>
-      <Name>UtilitiesTesting</Name>
+    <ProjectReference Include="..\HealthMonitorUtility\Fr8.Testing.csproj">
+      <Project>{459FE39A-A5CC-41D8-B06E-8FAE3A1A623B}</Project>
+      <Name>Fr8.Testing</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\HubWeb.csproj">
       <Project>{f7bd7117-4f1d-4215-b338-61ebdd0d0bfe}</Project>

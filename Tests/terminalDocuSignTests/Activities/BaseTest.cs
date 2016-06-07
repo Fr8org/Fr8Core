@@ -10,7 +10,7 @@ using StructureMap;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services.New_Api;
 using TerminalBase.Infrastructure;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
 using TerminalBase.BaseClasses;
 using Fr8Data.Manifests;
 using Fr8Data.Managers;
@@ -18,7 +18,7 @@ using TerminalBase.Models;
 
 namespace terminalDocuSignTests.Activities
 {
-    public class BaseTest : UtilitiesTesting.BaseTest
+    public class BaseTest : Fr8.Testing.Unit.BaseTest
     {
         protected readonly AuthorizationToken FakeToken = new AuthorizationToken { Token = "1" };
         [SetUp]

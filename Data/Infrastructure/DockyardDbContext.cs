@@ -274,8 +274,6 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ConceptDO>().ToTable("Concepts");
             modelBuilder.Entity<SubscriptionDO>().ToTable("Subscriptions");
             modelBuilder.Entity<TerminalDO>().ToTable("Terminals");
-            modelBuilder.Entity<RemoteServiceProviderDO>().ToTable("RemoteCalendarProviders");
-            modelBuilder.Entity<RemoteOAuthDataDo>().ToTable("RemoteCalendarAuthData");
             modelBuilder.Entity<AuthorizationTokenDO>().ToTable("AuthorizationTokens");
             modelBuilder.Entity<LogDO>().ToTable("Logs");
             modelBuilder.Entity<ExpectedResponseDO>().ToTable("ExpectedResponses");

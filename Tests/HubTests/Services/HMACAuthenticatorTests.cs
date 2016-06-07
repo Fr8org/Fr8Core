@@ -13,7 +13,7 @@ using Hub.Security;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 using Fr8Infrastructure.Interfaces;
 using Fr8Infrastructure.Security;
 

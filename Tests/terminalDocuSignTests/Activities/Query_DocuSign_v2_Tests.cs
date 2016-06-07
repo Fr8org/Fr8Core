@@ -12,7 +12,7 @@ using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
 using TerminalBase.Helpers;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
 using terminalDocuSign.Activities;
 using TerminalBase.Models;
 using Fr8Data.Managers;
