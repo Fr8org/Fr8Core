@@ -50,8 +50,7 @@ namespace terminalFr8Core
             ActivityStore.RegisterActivity<ConvertRelatedFieldsIntoTable_v1>(ConvertRelatedFieldsIntoTable_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<ExecuteSql_v1>(ExecuteSql_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<ExtractTableField_v1>(ExtractTableField_v1.ActivityTemplateDTO);
-            ActivityStore.RegisterActivity<FilterObjectListByIncomingMessage_v1>(FilterObjectListByIncomingMessage_v1.ActivityTemplateDTO);
-            ActivityStore.RegisterActivity<FindObjects_Solution_v1>(FindObjects_Solution_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<FilterObjectListByIncomingMessage_v1>(FilterObjectListByIncomingMessage_v1.ActivityTemplateDTO);            
             ActivityStore.RegisterActivity<GetDataFromFr8Warehouse_v1>(GetDataFromFr8Warehouse_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<GetFileFromFr8Store_v1>(GetFileFromFr8Store_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Loop_v1>(Loop_v1.ActivityTemplateDTO);
