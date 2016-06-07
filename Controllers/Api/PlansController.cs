@@ -78,20 +78,29 @@ namespace HubWeb.Controllers
         //    }
         //}
 
-
+        /// <summary>
+        /// Creates or updates Plan. 
+        /// If solution_name defined, creates solution with given name.
+        /// 
+        /// </summary>
+        /// <param name="planDto"></param>
+        /// <param name="parameters">
+        ///     Contains 
+        /// </param>
+        /// <returns></returns>
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
         [HttpPost]
-        public IHttpActionResult Post([FromBody] PlanEmptyDTO planDto,[FromUri] PlansPostParams parameters = null)
+        public async Task<IHttpActionResult> Post([FromBody] PlanEmptyDTO planDto,[FromUri] PlansPostParams parameters = null)
         {
             parameters = parameters ?? new PlansPostParams();
 
             if (!parameters.solution_name.IsNullOrEmpty())
             {
-                return CreateSolution(parameters.solution_name).Result;
+                return await CreateSolution(parameters.solution_name);
             }
 
-            return Post(planDto, parameters.update_registrations);
+            return await Post(planDto, parameters.update_registrations);
         }
 
         [HttpPost]
@@ -119,7 +128,7 @@ namespace HubWeb.Controllers
         [Fr8HubWebHMACAuthenticate]
         [ResponseType(typeof(PlanDTO))]
         [NonAction]
-        private IHttpActionResult Post(PlanEmptyDTO planDto, bool updateRegistrations = false)
+        private async Task<IHttpActionResult> Post(PlanEmptyDTO planDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -143,7 +152,11 @@ namespace HubWeb.Controllers
         }
 
         
-
+        /// <summary>
+        /// Get PlanResult depending on passed query parameters. 
+        /// </summary>
+        /// <param name="planQuery"></param>
+        /// <returns></returns>
         [Fr8ApiAuthorize]
         //[ActionName("query")]
         [HttpGet]
@@ -175,7 +188,17 @@ namespace HubWeb.Controllers
             }
         }
 
-
+        /// <summary>
+        /// Get Plan, depending on the given parameters.
+        /// </summary>
+        /// <remarks>
+        /// If defined id - get plan by Id, also can provide include_children in order to get full Plan
+        /// If defined activity_id - get Plan by Activity.
+        /// If defined name - get Plan by it`s name.
+        /// Returns an 400 error if several of those parameters defined at same time.
+        /// </remarks>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
         [HttpGet]
@@ -320,6 +343,9 @@ namespace HubWeb.Controllers
         /// <summary>
         /// Upload file with plan template and create plan from it. 
         /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
         /// /// <param name="planName">Name of newly created plan</param>
         [HttpPost]
         [Fr8ApiAuthorize]
