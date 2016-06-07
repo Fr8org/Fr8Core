@@ -212,6 +212,7 @@ module dockyard.controllers {
 
             }
 
+
             $scope.$watch(function () {
                 return $(".resizable").width();
             }, function (newVal, oldVal) {
@@ -274,9 +275,14 @@ module dockyard.controllers {
         }
 
         private handleBackButton(event, toState, toParams, fromState, fromParams, options) {
+            
             if (fromParams.viewMode === "plan" && toParams.viewMode === undefined && fromState.name === "planBuilder" && toState.name === "planBuilder") {
                 event.preventDefault();
                 this.$state.go("planList");
+            }
+
+            if (toParams.viewMode === "plan" && fromParams.viewMode === undefined && fromState.name === "planBuilder" && toState.name === "planBuilder") {
+                this.reloadFirstActions();
             }
         }
 
@@ -428,6 +434,7 @@ module dockyard.controllers {
                 this.$scope.planId = $state.params.id;
             }
 
+   
             this.loadPlan($state.params.viewMode);
         }
 

@@ -11,7 +11,7 @@ using TerminalBase.Services;
 
 namespace terminalDocuSign.Controllers
 {
-    [RoutePrefix("terminals")]
+    //[RoutePrefix("terminals")]
     public class TerminalController : ApiController
     {
         [HttpGet]

@@ -50,17 +50,15 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
 
 
             var actionName = Regex.Replace(curActionType, @"[^-_\w\d]", "_");
-            var requestUri = new Uri(string.Format("activities/{0}", actionName), UriKind.Relative);
-            if (terminal == null || string.IsNullOrEmpty(terminal.Endpoint))
+            var requestUri = new Uri($"activities/{actionName}", UriKind.Relative);
+            if (string.IsNullOrEmpty(terminal?.Endpoint))
             {
                 //_logger.ErrorFormat("Terminal record not found for activityTemplate: {0}. Throwing exception.", dataDTO.ActivityDTO.ActivityTemplate.Name);
                 Logger.LogError($"Terminal record not found for activityTemplate: {dataDTO.ActivityDTO.ActivityTemplate.Name} Throwing exception.");
                 throw new Exception("Unknown terminal or terminal endpoint");
             }
-            //let's calculate absolute url, since our hmac mechanism needs it
             requestUri = new Uri(new Uri(terminal.Endpoint), requestUri);
-            var hmacHeader =  await _hmacService.GenerateHMACHeader(requestUri, terminal.PublicIdentifier, terminal.Secret, dataDTO.ActivityDTO.AuthToken.UserId, dataDTO);
-            return await PostAsync<Fr8DataDTO, TResponse>(requestUri, dataDTO, correlationId, hmacHeader);
+            return await PostAsync<Fr8DataDTO, TResponse>(requestUri, dataDTO, correlationId);
         }
     }
 }

@@ -53,7 +53,7 @@ namespace terminalSalesforceTests.Intergration
                 initialPlanId = await CreatePlan_SaveAndGetDataFromSalesforce(authTokenDO);
 
                 //get the full plan which is created
-                var plan = await HttpGetAsync<PlanDTO>(_baseUrl + "Plans/full?id=" + initialPlanId.ToString());
+                var plan = await HttpGetAsync<PlanDTO>(_baseUrl + "Plans?include_children=true&id=" + initialPlanId.ToString());
                 Debug.WriteLine("Created plan with all activities.");
 
                 //prepare the two activities with their follow up config

@@ -191,7 +191,7 @@ namespace terminalIntegrationTests.EndToEnd
 
         private async Task<PlanDTO> CreatePlan()
         {
-            var solutionCreateUrl = GetHubApiBaseUrl() + "plans/createSolution?solutionName=Mail_Merge_From_Salesforce";
+            var solutionCreateUrl = GetHubApiBaseUrl() + "plans?solution_name=Mail_Merge_From_Salesforce";
             return await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
         }
 

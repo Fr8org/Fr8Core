@@ -46,7 +46,7 @@ module dockyard.controllers {
 
             $scope.uploadFlag = true;
             Upload.upload({
-                url: '/api/plans/loadplan?planName=' + $scope.planName,
+                url: '/api/plans/upload?planName=' + $scope.planName,
                 file: file 
             }).then((response) => {
                 

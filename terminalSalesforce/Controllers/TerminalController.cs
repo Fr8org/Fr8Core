@@ -5,7 +5,7 @@ using TerminalBase.Services;
 
 namespace terminalSalesforce.Controllers
 {
-     [RoutePrefix("terminals")]
+    // [RoutePrefix("terminals")]
     public class TerminalController : ApiController
     {
         [HttpGet]

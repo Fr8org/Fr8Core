@@ -72,7 +72,7 @@ namespace terminalDocuSignTests.Integration
 
         private async Task<PlanDTO> CreateSolution()
         {
-            var solutionCreateUrl = _baseUrl + "plans/createSolution?solutionName=Generate_DocuSign_Report";
+            var solutionCreateUrl = _baseUrl + "plans?solution_name=Generate_DocuSign_Report";
             
             var plan = await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
 
@@ -234,7 +234,7 @@ namespace terminalDocuSignTests.Integration
 
         private async Task<PlanDTO> GetPlanByActivity(Guid id)
         {
-            var solutionCreateUrl = _baseUrl + "/plans/getByActivity?id=" + id.ToString();
+            var solutionCreateUrl = _baseUrl + "/plans?activity_id=" + id.ToString();
             var plan = await HttpGetAsync<PlanDTO>(solutionCreateUrl);
 
             return plan;
