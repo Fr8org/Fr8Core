@@ -24,7 +24,7 @@ namespace Hub.Interfaces
             Guid? parentNodeId = null, 
             bool createPlan = false, 
             Guid? authorizationTokenId = null,
-            bool isInternal = false);
+            bool isInternalPlan = false);
 
         Task<PayloadDTO> Run(IUnitOfWork uow, ActivityDO curActivityDO, ActivityExecutionMode curActionExecutionMode, ContainerDO curContainerDO);
         Task<ActivityDTO> Activate(ActivityDO curActivityDO);

@@ -43,6 +43,7 @@ namespace HubWeb
             if (!selfHostMode)
             {
                 await RegisterTerminalActions();
+                await ObjectFactory.GetInstance<IManifestRegistryMonitor>().StartMonitoringManifestRegistrySubmissions();
             }
         }
 
