@@ -7,7 +7,8 @@ namespace Data.Migrations
     {
         public override void Up()
         {
-            var query = "DELETE FROM ActivityTemplate WHERE name LIKE 'FindObjects_Solution';";
+            var query = "DELETE FROM Actions WHERE ActivityTemplateId IN (SELECT id FROM ActivityTemplate WHERE name LIKE 'FindObjects_Solution' );" +
+                        "DELETE FROM ActivityTemplate WHERE name LIKE 'FindObjects_Solution';";
 
             Sql(query);
         }
