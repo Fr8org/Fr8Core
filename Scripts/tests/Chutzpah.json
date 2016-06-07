@@ -86,6 +86,9 @@
       "Path": "../../bower_components/angular-animate/angular-animate.min.js"
     },
     {
+      "Path": "../../bower_components/angular-popover-toggle/popover-toggle.js"
+    },
+    {
       "Path": "../../bower_components/angular-messages/angular-messages.min.js"
     },
     {

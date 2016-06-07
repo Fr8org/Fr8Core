@@ -45,7 +45,7 @@ namespace HubTests.Integration
             var baseUrl = GetHubApiBaseUrl();
             var getSolutionListUrl = baseUrl + "documentation/activity";
             var emptyActivityDTO = new ActivityDTO { Documentation = "Terminal=terminalDocuSign", ActivityTemplate = new ActivityTemplateDTO() };
-            var solutionPages = await HttpPostAsync<ActivityDTO, List<SolutionPageDTO>>(getSolutionListUrl, emptyActivityDTO);
+            var solutionPages = await HttpPostAsync<ActivityDTO, List<DocumentationResponseDTO>>(getSolutionListUrl, emptyActivityDTO);
             Assert.IsNotNull(solutionPages);
             Assert.IsTrue(solutionPages.Any());
             //We provide 3 Solution Pages for the DocuSign terminal
@@ -75,7 +75,7 @@ namespace HubTests.Integration
             var baseUrl = GetHubApiBaseUrl();
             var getSolutionListUrl = baseUrl + "documentation/activity";
             var emptyActivityDTO = new ActivityDTO { Documentation = "Terminal=terminalFr8Core", ActivityTemplate = new ActivityTemplateDTO() };
-            var solutionPages = await HttpPostAsync<ActivityDTO, List<SolutionPageDTO>>(getSolutionListUrl, emptyActivityDTO);
+            var solutionPages = await HttpPostAsync<ActivityDTO, List<DocumentationResponseDTO>>(getSolutionListUrl, emptyActivityDTO);
             Assert.IsNotNull(solutionPages);
             Assert.IsTrue(solutionPages.Any());
             //We provide 2 Solution Pages for the Fr8Core terminal

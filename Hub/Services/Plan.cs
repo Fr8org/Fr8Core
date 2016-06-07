@@ -600,10 +600,6 @@ namespace Hub.Services
                                     PlanId = planId
                                 };
                             }
-                           
-                            _pusher.NotifyUser($"Launching a new Container for Plan \"{plan.Name}\"",
-                                NotificationChannel.GenericSuccess,
-                                userName);
 
                             container = await Run(uow, plan, payload);
                         }

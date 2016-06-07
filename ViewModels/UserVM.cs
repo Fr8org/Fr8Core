@@ -17,10 +17,4 @@ namespace HubWeb.ViewModels
 
         public String Role { get; set; }
     }
-
-    public class UserCalendarVM
-    {
-        public int Id { get; set; }
-        public String Name { get; set; }
-    }
 }

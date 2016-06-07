@@ -40,26 +40,7 @@ namespace terminalFr8Core.Activities
             stream.Position = 0;
             return stream;
         }
-
-        public async Task UpdateUpstreamFileCrates()
-        {
-            // Build a crate with the list of available upstream fields
-            var curUpstreamFieldsCrate = Storage.SingleOrDefault(c => c.ManifestType.Id == (int)MT.FieldDescription
-                                                                                && c.Label == "Upstream Terminal-Provided File Crates");
-            if (curUpstreamFieldsCrate != null)
-            {
-                Storage.Remove(curUpstreamFieldsCrate);
-            }
-
-            var upstreamFileCrates = await HubCommunicator.GetCratesByDirection<StandardFileDescriptionCM>(ActivityId, CrateDirection.Upstream);
-
-            var curUpstreamFields = upstreamFileCrates.Select(c => new FieldDTO(c.Label, c.Label)).ToArray();
-
-            curUpstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided File Crates", curUpstreamFields);
-            Storage.Add(curUpstreamFieldsCrate);
-            
-        }
-
+        
         private Crate CreateControlsCrate()
         {
             var fileNameTextBox = new TextBox
@@ -67,7 +48,7 @@ namespace terminalFr8Core.Activities
                 Label = "Name of file",
                 Name = "File_Name"
             };
-            var textSource = new TextSource("File Crate Label", "Upstream Terminal-Provided File Crates", "File Crate label");
+            var textSource = new TextSource("File Crate Label", null, "File Crate label");
             return PackControlsCrate(fileNameTextBox, textSource);
         }
 
@@ -118,7 +99,7 @@ namespace terminalFr8Core.Activities
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
             Storage.Add(configurationControlsCrate);
-            await UpdateUpstreamFileCrates();
+           // await UpdateUpstreamFileCrates();
         }
 
         public override Task FollowUp()
