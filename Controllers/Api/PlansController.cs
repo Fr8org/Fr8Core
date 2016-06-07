@@ -46,7 +46,6 @@ namespace HubWeb.Controllers
 
         private readonly IActivityTemplate _activityTemplate;
         private readonly IActivity _activity;
-        private readonly IFindObjectsPlan _findObjectsPlan;
         private readonly ISecurityServices _security;
         private readonly ICrateManager _crate;
         private readonly IPusherNotifier _pusherNotifier;
@@ -58,7 +57,6 @@ namespace HubWeb.Controllers
             _plan = ObjectFactory.GetInstance<IPlan>();
             _container = ObjectFactory.GetInstance<IContainerService>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
-            _findObjectsPlan = ObjectFactory.GetInstance<IFindObjectsPlan>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
@@ -372,21 +370,6 @@ namespace HubWeb.Controllers
             return result;
         }
 
-
-        [HttpPost]
-        [Fr8ApiAuthorize]
-        public IHttpActionResult CreateFindObjectsPlan()
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var account = uow.UserRepository.GetByKey(User.Identity.GetUserId());
-                var plan = _findObjectsPlan.CreatePlan(uow, account);
-
-                uow.SaveChanges();
-
-                return Ok(new { id = plan.Id });
-            }
-        }
 
         // Method for plan execution or continuation without payload specified
         [Fr8ApiAuthorize("Admin", "Customer")]
