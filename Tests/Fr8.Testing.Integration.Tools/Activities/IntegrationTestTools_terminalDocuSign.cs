@@ -12,7 +12,7 @@ using Fr8Data.Managers;
 using NUnit.Framework;
 using UtilitiesTesting.Fixtures;
 
-namespace Fr8.Testing.Integration.Tools.Activities
+namespace terminaBaselTests.Tools.Activities
 {
     public class IntegrationTestTools_terminalDocuSign
     {
@@ -44,7 +44,7 @@ namespace Fr8.Testing.Integration.Tools.Activities
         public async Task<Tuple<ActivityDTO, PlanDTO, Guid>> CreateAndConfigure_MailMergeIntoDocuSign_Solution(string dataSourceValue,
             string dataSourceSelectedKey, string docuSignTemplateValue, string docuSignTemplateSelectedKey, bool addNewDocuSignTemplate)
         {
-            var solutionCreateUrl = _baseHubITest.GetHubApiBaseUrl() + "plans/createSolution?solutionName=Mail_Merge_Into_DocuSign";
+            var solutionCreateUrl = _baseHubITest.GetHubApiBaseUrl() + "plans?solution_name=Mail_Merge_Into_DocuSign";
 
             //
             // Create solution
@@ -84,7 +84,7 @@ namespace Fr8.Testing.Integration.Tools.Activities
             //
             var dataSource = controls.OfType<DropDownList>().FirstOrDefault(c => c.Name == "DataSource");
             dataSource.Value = dataSourceValue;
-            dataSource.selectedKey = dataSourceSelectedKey; 
+            dataSource.selectedKey = dataSourceSelectedKey;
             //
             // Set DocuSign template value 
             //
@@ -162,7 +162,7 @@ namespace Fr8.Testing.Integration.Tools.Activities
                 ActivityId = queryDocuSignActivity.Id,
                 AuthTokenId = Guid.Parse(queryDocuSignActivity.AuthToken.Token),
             };
-            await _baseHubITest.HttpPostAsync<AuthenticationTokenGrantDTO[], string>( _baseHubITest.GetHubApiBaseUrl() + "authentication/tokens/grant", new AuthenticationTokenGrantDTO[] { applyToken });
+            await _baseHubITest.HttpPostAsync<AuthenticationTokenGrantDTO[], string>(_baseHubITest.GetHubApiBaseUrl() + "authentication/tokens/grant", new AuthenticationTokenGrantDTO[] { applyToken });
 
             //send configure with the auth token
             queryDocuSignActivity = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/save", queryDocuSignActivity);
