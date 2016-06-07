@@ -135,6 +135,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalBoxTests", "Tests\t
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fr8Infrastructure.NET", "Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj", "{BBA91AF2-7636-41B6-87C4-C1575AE8B04B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fr8TerminalBase.NET", "Fr8TerminalBase.NET\Fr8TerminalBase.NET.csproj", "{BF96675E-6BAF-4AC9-B247-1551D62E8C44}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		alexlocal|Any CPU = alexlocal|Any CPU
@@ -960,6 +962,26 @@ Global
 		{BBA91AF2-7636-41B6-87C4-C1575AE8B04B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BBA91AF2-7636-41B6-87C4-C1575AE8B04B}.Release|x86.ActiveCfg = Release|Any CPU
 		{BBA91AF2-7636-41B6-87C4-C1575AE8B04B}.Release|x86.Build.0 = Release|Any CPU
+		{BF96675E-6BAF-4AC9-B247-1551D62E8C44}.alexlocal|Any CPU.ActiveCfg = Release|Any CPU
+		{BF96675E-6BAF-4AC9-B247-1551D62E8C44}.alexlocal|Any CPU.Build.0 = Release|Any CPU
+		{BF96675E-6BAF-4AC9-B247-1551D62E8C44}.alexlocal|x86.ActiveCfg = Release|Any CPU
+		{BF96675E-6BAF-4AC9-B247-1551D62E8C44}.alexlocal|x86.Build.0 = Release|Any CPU
+		{BF96675E-6BAF-4AC9-B247-1551D62E8C44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF96675E-6BAF-4AC9-B247-1551D62E8C44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF96675E-6BAF-4AC9-B247-1551D62E8C44}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BF96675E-6BAF-4AC9-B247-1551D62E8C44}.Debug|x86.Build.0 = Debug|Any CPU
+		{BF96675E-6BAF-4AC9-B247-1551D62E8C44}.Demo|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF96675E-6BAF-4AC9-B247-1551D62E8C44}.Demo|Any CPU.Build.0 = Debug|Any CPU
+		{BF96675E-6BAF-4AC9-B247-1551D62E8C44}.Demo|x86.ActiveCfg = Debug|Any CPU
+		{BF96675E-6BAF-4AC9-B247-1551D62E8C44}.Demo|x86.Build.0 = Debug|Any CPU
+		{BF96675E-6BAF-4AC9-B247-1551D62E8C44}.Dev|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF96675E-6BAF-4AC9-B247-1551D62E8C44}.Dev|Any CPU.Build.0 = Debug|Any CPU
+		{BF96675E-6BAF-4AC9-B247-1551D62E8C44}.Dev|x86.ActiveCfg = Debug|Any CPU
+		{BF96675E-6BAF-4AC9-B247-1551D62E8C44}.Dev|x86.Build.0 = Debug|Any CPU
+		{BF96675E-6BAF-4AC9-B247-1551D62E8C44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF96675E-6BAF-4AC9-B247-1551D62E8C44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF96675E-6BAF-4AC9-B247-1551D62E8C44}.Release|x86.ActiveCfg = Release|Any CPU
+		{BF96675E-6BAF-4AC9-B247-1551D62E8C44}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using fr8.Infrastructure.Data.Control;
+using fr8.Infrastructure.Data.Crates;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.Managers;
+using fr8.Infrastructure.Data.Manifests;
+using fr8.Infrastructure.Data.States;
 using StructureMap;
 using terminalAtlassian.Services;
 using TerminalBase.BaseClasses;
@@ -94,12 +94,12 @@ namespace terminalAtlassian.Actions
 
         private Crate CrateJiraIssueDetailsDescriptionCrate(List<FieldDTO> curJiraIssue)
         {
-            return Fr8Data.Crates.Crate.FromContent("Jira Issue Details", new FieldDescriptionsCM(curJiraIssue), Fr8Data.States.AvailabilityType.RunTime);
+            return Crate.FromContent("Jira Issue Details", new FieldDescriptionsCM(curJiraIssue), AvailabilityType.RunTime);
         }
 
         private Crate CrateJiraIssueDetailsPayloadCrate(List<FieldDTO> curJiraIssue)
         {
-            return Fr8Data.Crates.Crate.FromContent("Jira Issue Details", new StandardPayloadDataCM(curJiraIssue), Fr8Data.States.AvailabilityType.RunTime);
+            return Crate.FromContent("Jira Issue Details", new StandardPayloadDataCM(curJiraIssue), AvailabilityType.RunTime);
         }
     }
 }

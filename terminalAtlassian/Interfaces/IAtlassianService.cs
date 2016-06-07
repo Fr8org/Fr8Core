@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Fr8Data.DataTransferObjects;
+using fr8.Infrastructure.Data.DataTransferObjects;
 using TerminalBase.Models;
 
 namespace terminalAtlassian.Interfaces

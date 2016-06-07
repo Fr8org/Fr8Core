@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using terminalAtlassian.Services;
 using StructureMap;
 using System;
-using Fr8Data.DataTransferObjects;
+using fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace terminalAtlassian.Controllers
 {
