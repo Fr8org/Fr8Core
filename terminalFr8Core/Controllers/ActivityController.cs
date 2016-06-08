@@ -1,10 +1,9 @@
 ﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Fr8Data.DataTransferObjects;
 using StructureMap;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 using TerminalBase.Services;
 
 namespace terminalFr8Core.Controllers
@@ -23,8 +22,8 @@ namespace terminalFr8Core.Controllers
         [HttpPost]
         public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
         {
-            return _activityExecutor.HandleFr8Request(curTerminal, actionType, curDataDTO);
-
+            var queryParams = Request.GetQueryNameValuePairs();
+            return _activityExecutor.HandleFr8Request(curTerminal, actionType, queryParams, curDataDTO);
         }
     }
 }
