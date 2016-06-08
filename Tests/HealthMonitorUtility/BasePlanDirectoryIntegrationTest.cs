@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Net.Http;
 using System.Threading.Tasks;
+using fr8.Infrastructure.Communication;
+using fr8.Infrastructure.Data.Managers;
+using fr8.Infrastructure.Security;
 using StructureMap;
-using Fr8Data.Managers;
-using Fr8Infrastructure.Communication;
-using Fr8Infrastructure.Security;
 
 namespace HealthMonitor.Utility
 {
@@ -33,7 +33,7 @@ namespace HealthMonitor.Utility
         {
             ObjectFactory.Initialize();
             ObjectFactory.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
-            ObjectFactory.Configure(Fr8Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
+            ObjectFactory.Configure(fr8.Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
 
             // Use a common HttpClient for all REST operations within testing session 
             // to ensure the presense of the authentication cookie. 

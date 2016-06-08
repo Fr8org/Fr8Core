@@ -12,9 +12,9 @@ using Data.Infrastructure.AutoMapper;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Entities;
-using Fr8Data.DataTransferObjects;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.Managers;
 using Hub.StructureMap;
-using Fr8Data.Managers;
 
 namespace UtilitiesTesting
 {
@@ -32,7 +32,7 @@ namespace UtilitiesTesting
             ConfigureAutoMapper();
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             CrateManager = ObjectFactory.Container.GetInstance<ICrateManager>();
-            ObjectFactory.Configure(x => x.AddRegistry<Fr8Infrastructure.StructureMap.StructureMapBootStrapper.TestMode>());
+            ObjectFactory.Configure(x => x.AddRegistry<fr8.Infrastructure.StructureMap.StructureMapBootStrapper.TestMode>());
             
             
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>()) //Get the seeding done first

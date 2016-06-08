@@ -1,26 +1,17 @@
 ﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
 using NUnit.Framework;
 using StructureMap;
-using Data.Entities;
-using Data.Interfaces;
-using Data.States;
-using Fr8Data.Managers;
 using TerminalBase.Infrastructure;
 using TerminalBase.BaseClasses;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using System.Collections.Generic;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Fr8Infrastructure.Interfaces;
-using Fr8Infrastructure.Communication;
-using Hub.Managers;
+using fr8.Infrastructure.Communication;
+using fr8.Infrastructure.Data.Crates;
+using fr8.Infrastructure.Data.Managers;
+using fr8.Infrastructure.Data.Manifests;
+using fr8.Infrastructure.Interfaces;
 using terminaBaselTests.BaseClasses;
-using TerminalBase.Models;
 
 namespace terminalBaseTests.BaseClasses
 {

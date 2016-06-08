@@ -42,7 +42,7 @@ namespace HealthMonitorUtility
         private void Init(string scriptName, string connectionString)
         {
             string commandText;
-            string rootPath = Utilities.MiscUtils.UpNLevels(Environment.CurrentDirectory, 2);
+            string rootPath = fr8.Infrastructure.Utilities.MiscUtils.UpNLevels(Environment.CurrentDirectory, 2);
             string sqlScript = GetScriptPath(rootPath, scriptName);
             if (File.Exists(sqlScript))
                 commandText = File.ReadAllText(sqlScript);

@@ -4,12 +4,12 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using fr8.Infrastructure.Data.Control;
+using fr8.Infrastructure.Data.Crates;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.Managers;
+using fr8.Infrastructure.Data.Manifests;
 using terminalDocuSignTests.Fixtures;
-using Fr8Data.Managers;
 
 namespace terminalDocuSignTests.Integration
 {

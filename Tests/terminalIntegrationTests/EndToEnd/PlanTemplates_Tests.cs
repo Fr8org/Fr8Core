@@ -1,23 +1,18 @@
 ﻿using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.DataTransferObjects.PlanTemplates;
-using Data.States;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.DataTransferObjects.PlanTemplates;
-using Fr8Data.Manifests;
 using HealthMonitor.Utility;
-using Hub.Interfaces;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using terminaBaselTests.Tools.Activities;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates;
+using fr8.Infrastructure.Data.Manifests;
+using fr8.Infrastructure.Data.States;
 using terminaBaselTests.Tools.Plans;
 using UtilitiesTesting.Fixtures;
 

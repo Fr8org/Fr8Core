@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Newtonsoft.Json;
 using TerminalBase.BaseClasses;
-using Utilities.Configuration.Azure;
 using DocuSign.eSign.Client;
 using DocuSign.eSign.Model;
 using DocuSign.eSign.Api;
-using Fr8Data.DataTransferObjects;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Utilities.Configuration;
 using terminalDocuSign.DataTransferObjects;
 
 namespace terminalDocuSign.Controllers

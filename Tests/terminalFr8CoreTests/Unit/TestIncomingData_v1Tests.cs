@@ -1,13 +1,12 @@
 ﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-﻿using Fr8Data.DataTransferObjects;
+﻿using fr8.Infrastructure.Data.DataTransferObjects;
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using NUnit.Framework;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using terminalFr8Core.Actions;
 ﻿using terminalFr8Core.Activities;
 ﻿using TerminalBase.Infrastructure;
 

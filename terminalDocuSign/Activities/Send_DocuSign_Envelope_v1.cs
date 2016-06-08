@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Data.Entities;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Hub.Managers;
+using fr8.Infrastructure.Data.Constants;
+using fr8.Infrastructure.Data.Control;
+using fr8.Infrastructure.Data.Crates;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.Managers;
+using fr8.Infrastructure.Data.Manifests;
+using fr8.Infrastructure.Data.States;
 using terminalDocuSign.Activities;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
@@ -361,7 +359,7 @@ namespace terminalDocuSign.Actions
                 previousTemplateId = previousTemplateIdCrate.Get<StandardPayloadDataCM>().GetValueOrDefault("TemplateId");
             }
 
-            crateStorage.ReplaceByLabel(Fr8Data.Crates.Crate.FromContent("ChosenTemplateId", new StandardPayloadDataCM()
+            crateStorage.ReplaceByLabel(Crate.FromContent("ChosenTemplateId", new StandardPayloadDataCM()
             { PayloadObjects = new List<PayloadObjectDTO>() { new PayloadObjectDTO() { PayloadObject = new List<FieldDTO>() { new FieldDTO("TemplateId", docusignTemplateId) } } } }));
 
             return docusignTemplateId != previousTemplateId;

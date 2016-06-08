@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Fr8Data.Crates;
+using fr8.Infrastructure.Data.Crates;
 
 namespace terminalDocuSign.Interfaces
 {

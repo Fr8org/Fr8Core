@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
+using fr8.Infrastructure.Data.States;
+using fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
 using Hub.Services;
 using NUnit.Framework;
 using StructureMap;
-using Utilities.Configuration;
-using Utilities.Configuration.Azure;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 

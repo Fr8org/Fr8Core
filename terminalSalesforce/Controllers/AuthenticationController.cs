@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Fr8Data.DataTransferObjects;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Utilities.Logging;
 using TerminalBase.BaseClasses;
 using terminalSalesforce.Infrastructure;
-using Utilities.Logging;
 
 namespace terminalSalesforce.Controllers
 {

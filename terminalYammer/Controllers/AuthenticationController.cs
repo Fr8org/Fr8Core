@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Fr8Data.DataTransferObjects;
+using fr8.Infrastructure.Data.DataTransferObjects;
 using TerminalBase.BaseClasses;
 using terminalYammer.Interfaces;
 using terminalYammer.Services;

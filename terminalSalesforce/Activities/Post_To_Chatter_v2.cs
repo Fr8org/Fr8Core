@@ -6,13 +6,13 @@ using terminalSalesforce.Infrastructure;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Helpers;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using fr8.Infrastructure.Data.Control;
+using fr8.Infrastructure.Data.Crates;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.Helpers;
+using fr8.Infrastructure.Data.Managers;
+using fr8.Infrastructure.Data.Manifests;
+using fr8.Infrastructure.Data.States;
 using log4net;
 using Newtonsoft.Json;
 using ServiceStack;
@@ -116,7 +116,7 @@ namespace terminalSalesforce.Actions
         public const string PostedFeedPropertiesCrateLabel = "Posted Feeds";
         public const string FeedIdKeyName = "FeedId";
 
-        private static readonly ILog Logger = Utilities.Logging.Logger.GetCurrentClassLogger();
+        private static readonly ILog Logger = fr8.Infrastructure.Utilities.Logging.Logger.GetCurrentClassLogger();
             
 
         private readonly ISalesforceManager _salesforceManager;

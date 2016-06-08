@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using Fr8Data.Manifests;
-using Intuit.Ipp.Data;
+﻿using fr8.Infrastructure.Data.Manifests;
 using TerminalBase.Infrastructure;
 using TerminalBase.Models;
 

@@ -1,4 +1,4 @@
-﻿using Utilities.Configuration.Azure;
+﻿using fr8.Infrastructure.Utilities.Configuration;
 
 namespace terminalBox.Infrastructure
 {

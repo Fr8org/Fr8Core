@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
+using fr8.Infrastructure.Data.Control;
+using fr8.Infrastructure.Data.Crates;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.Managers;
+using fr8.Infrastructure.Data.Manifests;
+using fr8.Infrastructure.Data.States;
 using terminalGoogle.Activities;
 
 namespace terminalGoogleTests.Integration
@@ -175,7 +176,7 @@ namespace terminalGoogleTests.Integration
         }
         private ICrateStorage WrapPayloadDataCrate(List<FieldDTO> payloadFields)
         {
-            return new CrateStorage(Fr8Data.Crates.Crate.FromContent("Payload Data", new StandardPayloadDataCM(payloadFields)));
+            return new CrateStorage(Crate.FromContent("Payload Data", new StandardPayloadDataCM(payloadFields)));
         }
 
         private Crate PayloadRaw()

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Fr8Data.DataTransferObjects;
+using fr8.Infrastructure.Data.DataTransferObjects;
 using Intuit.Ipp.Data;
-using Intuit.Ipp.DataService;
 using StructureMap;
 using terminalQuickBooks.Interfaces;
 using TerminalBase.Infrastructure;

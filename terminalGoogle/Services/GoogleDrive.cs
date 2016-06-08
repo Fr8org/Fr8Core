@@ -12,11 +12,11 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using fr8.Infrastructure.Utilities.Configuration;
 using Google.Apis.Requests;
 using Google.Apis.Script.v1;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services.Authorization;
-using Utilities.Configuration.Azure;
 
 namespace terminalGoogle.Services
 {

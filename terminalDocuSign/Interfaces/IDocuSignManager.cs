@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using Data.Entities;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.Manifests;
 using Newtonsoft.Json.Linq;
 using terminalDocuSign.DataTransferObjects;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
 using TerminalBase.Models;
 
 namespace terminalDocuSign.Services.New_Api

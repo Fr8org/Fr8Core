@@ -2,10 +2,10 @@
 using HealthMonitor.Utility;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Fr8Data.Managers;
+using fr8.Infrastructure.Data.Crates;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.Managers;
+using fr8.Infrastructure.Data.Manifests;
 using terminalDropboxTests.Fixtures;
 
 namespace terminalDropboxTests.Integration

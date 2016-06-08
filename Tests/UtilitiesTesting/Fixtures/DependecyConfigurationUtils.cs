@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Data.Entities;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using fr8.Infrastructure.Data.Crates;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.Managers;
+using fr8.Infrastructure.Data.Manifests;
 using Moq;
 using StructureMap;
 using TerminalBase.Infrastructure;
-using Fr8Data.Managers;
 
 namespace UtilitiesTesting.Fixtures
 {

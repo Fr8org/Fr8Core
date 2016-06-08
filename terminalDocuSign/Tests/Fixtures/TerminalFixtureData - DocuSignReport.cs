@@ -1,5 +1,6 @@
 ﻿using System;
-using Fr8Data.DataTransferObjects;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.States;
 
 namespace terminalDocuSign.Tests.Fixtures
 {

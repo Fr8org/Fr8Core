@@ -1,10 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using Data.Entities;
+﻿using System.Threading.Tasks;
 using DocuSign.eSign.Model;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using fr8.Infrastructure.Data.Crates;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.Manifests;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
@@ -15,7 +13,6 @@ using TerminalBase.Helpers;
 using UtilitiesTesting.Fixtures;
 using terminalDocuSign.Activities;
 using TerminalBase.Models;
-using Fr8Data.Managers;
 using TerminalBase.Infrastructure;
 
 namespace terminalDocuSignTests.Activities

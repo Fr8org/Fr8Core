@@ -2,11 +2,10 @@
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using Fr8Data.DataTransferObjects;
+using fr8.Infrastructure.Data.DataTransferObjects;
 using StructureMap;
 using TerminalBase.BaseClasses;
 using terminalQuickBooks.Interfaces;
-using terminalQuickBooks.Services;
 
 namespace terminalQuickBooks.Controllers
 {

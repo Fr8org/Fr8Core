@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using terminalGoogle.DataTransferObjects;
 using System.Threading.Tasks;
-using Fr8Data.Manifests;
+using fr8.Infrastructure.Data.Manifests;
 
 namespace terminalGoogle.Interfaces
 {

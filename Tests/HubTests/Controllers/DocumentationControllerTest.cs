@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http.Results;
-using Data.Entities;
+using fr8.Infrastructure.Data.DataTransferObjects;
 using Moq;
 using NUnit.Framework;
 using HubTests.Controllers.Api;
-using Fr8Data.DataTransferObjects;
 using Hub.Interfaces;
 using HubWeb.Controllers;
 

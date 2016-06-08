@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Data.Interfaces;
-using Fr8Data.DataTransferObjects;
+using fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace terminalDocuSign.Services.MT
 {

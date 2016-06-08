@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
-using TerminalBase.BaseClasses;
-using AutoMapper;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
+using fr8.Infrastructure.Data.DataTransferObjects;
 using StructureMap;
-using TerminalBase.Infrastructure;
 using TerminalBase.Services;
 
 namespace terminalAzure.Controllers

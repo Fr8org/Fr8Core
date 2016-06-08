@@ -2,24 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.Manifests.Helpers;
-using Fr8Data.States;
+using fr8.Infrastructure.Data.Control;
+using fr8.Infrastructure.Data.Crates;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.Managers;
+using fr8.Infrastructure.Data.Manifests;
+using fr8.Infrastructure.Data.Manifests.Helpers;
+using fr8.Infrastructure.Data.States;
+using Google.GData.Client;
 using Newtonsoft.Json;
-using StructureMap;
+using terminalGoogle.Actions;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
-using TerminalBase.BaseClasses;
-using Google.GData.Client;
 using TerminalBase.Errors;
 using TerminalBase.Infrastructure;
 
-namespace terminalGoogle.Actions
+namespace terminalGoogle.Activities
 {
     public class Save_To_Google_Sheet_v1 : BaseGoogleTerminalActivity<Save_To_Google_Sheet_v1.ActivityUi>
     {

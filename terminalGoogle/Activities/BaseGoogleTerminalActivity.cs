@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.Managers;
+using fr8.Infrastructure.Data.Manifests;
+using fr8.Infrastructure.Utilities.Logging;
 using Newtonsoft.Json;
-using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
 using terminalGoogle.Services;
 using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using Utilities.Logging;
 
 namespace terminalGoogle.Actions
 {

@@ -1,9 +1,8 @@
 ﻿using System;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
+using fr8.Infrastructure.Data.Managers;
+using fr8.Infrastructure.Data.Manifests;
 using terminalQuickBooks.Infrastructure;
 using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
 namespace terminalQuickBooks.Actions
 {

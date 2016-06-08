@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Web.Http.Description;
+﻿using System.Web.Http.Description;
 using System.Web.Http;
-using Utilities.Configuration.Azure;
-using Fr8Data.Constants;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using fr8.Infrastructure.Data.Manifests;
 using TerminalBase.Services;
 
 namespace terminalFr8Core.Controllers

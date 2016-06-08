@@ -1,6 +1,6 @@
 ﻿using System;
+using fr8.Infrastructure.Utilities;
 using NUnit.Framework;
-using Utilities;
 using UtilitiesTesting;
 
 namespace HubTests.Utilities

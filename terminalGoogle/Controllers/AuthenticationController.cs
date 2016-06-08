@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using Fr8Data.DataTransferObjects;
-using Fr8Infrastructure.Interfaces;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Interfaces;
 using Newtonsoft.Json;
 using StructureMap;
 using terminalGoogle.Interfaces;

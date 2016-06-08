@@ -13,8 +13,8 @@ using terminalDocuSign.Services.New_Api;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using AutoMapper;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.Manifests;
 using TerminalBase.Models;
 
 namespace terminalDocuSignTests.Integration

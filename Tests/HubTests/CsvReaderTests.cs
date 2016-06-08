@@ -1,10 +1,8 @@
 ﻿using System;
 using NUnit.Framework;
-using Utilities.Interfaces;
-using StructureMap;
 using System.IO;
-using Utilities;
-using System.Linq;
+using fr8.Infrastructure.Interfaces;
+using fr8.Infrastructure.Utilities;
 using UtilitiesTesting;
 
 namespace HubTests

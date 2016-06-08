@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using Fr8Infrastructure.Interfaces;
+using fr8.Infrastructure.Interfaces;
+using fr8.Infrastructure.Utilities.Configuration;
+using fr8.Infrastructure.Utilities.Logging;
 using terminalSlack.Interfaces;
 using terminalSlack.RtmClient;
 using TerminalBase.Models;
-using Utilities.Configuration.Azure;
-using Utilities.Logging;
 
 namespace terminalSlack.Services
 {

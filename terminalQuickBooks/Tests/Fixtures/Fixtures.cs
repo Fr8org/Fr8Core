@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.Manifests;
 using Intuit.Ipp.Data;
 
 namespace terminalQuickBooks.Tests.Fixtures

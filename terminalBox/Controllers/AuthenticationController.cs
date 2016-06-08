@@ -2,13 +2,13 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using TerminalBase.BaseClasses;
-using Utilities.Configuration.Azure;
 using System.Net.Http;
 using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Text;
 using System.Web;
-using Fr8Data.DataTransferObjects;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Utilities.Configuration;
 using Newtonsoft.Json;
 using terminalBox.Infrastructure;
 

@@ -1,5 +1,6 @@
-﻿using Fr8Data.DataTransferObjects;
-using Utilities.Configuration.Azure;
+﻿using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.States;
+using fr8.Infrastructure.Utilities.Configuration;
 
 namespace terminalDocuSign
 {

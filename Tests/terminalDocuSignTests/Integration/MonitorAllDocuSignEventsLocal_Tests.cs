@@ -10,8 +10,8 @@ using System.Diagnostics;
 using System.Net.Http;
 using AutoMapper;
 using Data.Entities;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.Manifests;
 using Newtonsoft.Json.Linq;
 
 namespace terminalDocuSignTests.Integration

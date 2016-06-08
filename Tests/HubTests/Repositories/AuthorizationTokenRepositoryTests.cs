@@ -5,7 +5,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.Repositories.Authorization;
-using Data.States;
+using fr8.Infrastructure.Data.States;
 using Hub.StructureMap;
 using NUnit.Framework;
 using StructureMap;

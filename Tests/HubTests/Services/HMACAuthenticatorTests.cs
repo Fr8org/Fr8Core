@@ -1,21 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.Caching;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web.Http.Controllers;
-using System.Web.Http.Filters;
-using Hub.Interfaces;
-using Hub.Security;
+using fr8.Infrastructure.Interfaces;
+using fr8.Infrastructure.Security;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
-using Fr8Infrastructure.Interfaces;
-using Fr8Infrastructure.Security;
 
 namespace HubTests.Services
 {

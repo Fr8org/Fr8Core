@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using fr8.Infrastructure.Utilities.Logging;
 using TerminalSqlUtilities;
-using Utilities.Logging;
 using terminalAzure.Infrastructure;
 
 namespace terminalAzure.Services

@@ -1,5 +1,5 @@
-﻿using terminalPapertrail.Interfaces;
-using Utilities.Logging;
+﻿using fr8.Infrastructure.Utilities.Logging;
+using terminalPapertrail.Interfaces;
 
 namespace terminalPapertrail.Services
 {

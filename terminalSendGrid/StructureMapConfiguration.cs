@@ -1,7 +1,7 @@
-﻿using SendGrid;
+﻿using fr8.Infrastructure.StructureMap;
+using fr8.Infrastructure.Utilities;
+using SendGrid;
 using StructureMap;
-using Utilities;
-using Fr8Infrastructure.StructureMap;
 using terminalUtilities.Interfaces;
 using terminalUtilities.SendGrid;
 

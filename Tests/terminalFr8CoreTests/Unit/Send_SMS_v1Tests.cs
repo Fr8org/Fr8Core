@@ -1,20 +1,16 @@
-﻿using Fr8Data.Crates;
-using Fr8Data.Manifests;
-using NUnit.Framework;
-using terminalFr8Core.Actions;
+﻿using NUnit.Framework;
 using UtilitiesTesting;
 using TerminalBase.Infrastructure;
 using System.Threading.Tasks;
 using Moq;
 using StructureMap;
-using Hub.Managers;
-using System.Linq;
-using Fr8Data.Control;
-using System;
-using Fr8Data.DataTransferObjects;
-using Data.States;
 using terminalUtilities.Twilio;
 using System.Collections.Generic;
+using System.Linq;
+using fr8.Infrastructure.Data.Control;
+using fr8.Infrastructure.Data.Crates;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.Manifests;
 using terminalFr8Core.Activities;
 using TerminalBase.Models;
 

@@ -1,5 +1,5 @@
 using System;
-using Fr8Data.Constants;
+using fr8.Infrastructure.Data.Constants;
 
 namespace HubTests.Services.Container
 {

@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Data.Interfaces.DataTransferObjects;
-using Fr8Data.DataTransferObjects;
+using fr8.Infrastructure.Data.DataTransferObjects;
 using TerminalBase.Models;
 
 namespace terminalQuickBooks.Interfaces

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Data.Entities;
-using Fr8Data.DataTransferObjects;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Interfaces;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
@@ -10,7 +10,6 @@ using terminalDropbox.Actions;
 using terminalDropboxTests.Fixtures;
 using TerminalBase.Infrastructure;
 using UtilitiesTesting;
-using Fr8Infrastructure.Interfaces;
 using terminalDropbox.Interfaces;
 using TerminalBase.Models;
 

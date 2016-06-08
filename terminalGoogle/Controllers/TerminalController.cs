@@ -1,6 +1,6 @@
 ﻿using System.Web.Http;
 using System.Web.Http.Description;
-using Fr8Data.Manifests;
+using fr8.Infrastructure.Data.Manifests;
 using TerminalBase.Services;
 
 namespace terminalGoogle.Controllers

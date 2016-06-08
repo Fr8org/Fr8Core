@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Net;
+using fr8.Infrastructure.Utilities;
+using fr8.Infrastructure.Utilities.Configuration;
 using SendGrid;
-using Utilities;
-using Utilities.Configuration.Azure;
 
 namespace terminalUtilities.SendGrid
 {

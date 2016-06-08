@@ -6,16 +6,17 @@ using System.Collections.Generic;
 using System.Linq;
 using Data.States;
 using DocuSign.eSign.Api;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using fr8.Infrastructure.Data.Constants;
+using fr8.Infrastructure.Data.Control;
+using fr8.Infrastructure.Data.Crates;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.Managers;
+using fr8.Infrastructure.Data.Manifests;
+using fr8.Infrastructure.Data.States;
 using terminaBaselTests.Tools.Activities;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
 using UtilitiesTesting.Fixtures;
-using Fr8Data.Managers;
 using TerminalBase.Models;
 
 namespace terminalDocuSignTests.Integration

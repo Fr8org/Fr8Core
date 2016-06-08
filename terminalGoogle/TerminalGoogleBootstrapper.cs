@@ -1,9 +1,9 @@
-﻿using StructureMap;
+﻿using fr8.Infrastructure.Data.Managers;
+using fr8.Infrastructure.StructureMap;
+using StructureMap;
 using terminalGoogle.Interfaces;
 using terminalGoogle.Services;
 using terminalGoogle.Services.Authorization;
-using Fr8Infrastructure.StructureMap;
-using Fr8Data.Managers;
 
 namespace terminalGoogle
 {

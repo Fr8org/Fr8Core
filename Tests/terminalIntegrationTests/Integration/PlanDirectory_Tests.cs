@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
+using fr8.Infrastructure.Data.DataTransferObjects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using Fr8Data.DataTransferObjects;
 using HealthMonitor.Utility;
 
 namespace terminalIntegrationTests.Integration

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fr8Data.Manifests;
+using fr8.Infrastructure.Data.Manifests;
 using StructureMap;
 using terminalQuickBooks.Interfaces;
 using TerminalBase.Infrastructure;

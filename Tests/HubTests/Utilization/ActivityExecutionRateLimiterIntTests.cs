@@ -2,7 +2,7 @@
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using Fr8Data.Constants;
+using fr8.Infrastructure.Data.Constants;
 using Hub.Interfaces;
 using HubTests.Services.Container;
 using NUnit.Framework;

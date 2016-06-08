@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Fr8Data.DataTransferObjects;
-using Fr8Infrastructure.Interfaces;
-using Moq;
-using NUnit.Framework;
-using StructureMap;
-using TerminalBase.Infrastructure;
-using TerminalBase.Services;
+﻿using NUnit.Framework;
 using UtilitiesTesting;
 
 namespace terminaBaselTests.Infrastructure

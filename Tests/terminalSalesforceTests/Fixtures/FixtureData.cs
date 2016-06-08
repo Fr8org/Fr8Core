@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Data.Entities;
-using Fr8Data.Crates;
+using fr8.Infrastructure.Data.Crates;
+using fr8.Infrastructure.Data.DataTransferObjects;
 using Salesforce.Common;
 using TerminalBase.Models;
-using Fr8Data.DataTransferObjects;
 using StructureMap;
 using TerminalBase.Infrastructure;
 

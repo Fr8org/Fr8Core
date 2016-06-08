@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using Fr8Data.DataTransferObjects;
 using Intuit.Ipp.Data;
 using NUnit.Framework;
 using StructureMap;

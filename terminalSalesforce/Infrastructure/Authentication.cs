@@ -4,8 +4,8 @@ using Salesforce.Common;
 using System;
 using System.Threading.Tasks;
 using System.Web;
-using Utilities.Configuration.Azure;
-using Fr8Data.DataTransferObjects;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Utilities.Configuration;
 using TerminalBase.Models;
 
 namespace terminalSalesforce.Infrastructure

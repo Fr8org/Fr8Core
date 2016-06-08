@@ -1,10 +1,6 @@
-using System.Collections.Generic;
 using System.Web.Http;
-using Utilities.Configuration.Azure;
 using System.Web.Http.Description;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using fr8.Infrastructure.Data.Manifests;
 using TerminalBase.Services;
 
 namespace terminalQuickBooks.Controllers

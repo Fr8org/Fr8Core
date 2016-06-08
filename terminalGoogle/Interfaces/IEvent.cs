@@ -1,8 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Fr8Data.Crates;
+using fr8.Infrastructure.Data.Crates;
 
-
-namespace terminalGoogle.Infrastructure
+namespace terminalGoogle.Interfaces
 {
     public interface IEvent
     {

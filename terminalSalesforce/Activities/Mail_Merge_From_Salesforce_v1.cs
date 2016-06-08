@@ -1,22 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using TerminalBase.BaseClasses;
 using terminalSalesforce.Infrastructure;
 using System.Threading.Tasks;
-using StructureMap;
+using fr8.Infrastructure.Data.Constants;
+using fr8.Infrastructure.Data.Control;
+using fr8.Infrastructure.Data.Crates;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.Managers;
+using fr8.Infrastructure.Data.Manifests;
+using fr8.Infrastructure.Data.States;
 using TerminalBase.Infrastructure.Behaviors;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
 using ServiceStack;
-using TerminalBase.Infrastructure;
 using TerminalBase.Models;
-using TerminalBase.Services;
 
 namespace terminalSalesforce.Actions
 {

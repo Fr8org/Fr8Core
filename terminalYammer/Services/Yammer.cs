@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Fr8Data.DataTransferObjects;
-using Fr8Infrastructure.Interfaces;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Interfaces;
+using fr8.Infrastructure.Utilities.Configuration;
 using Newtonsoft.Json.Linq;
 using StructureMap;
 using terminalYammer.Interfaces;
-using Utilities.Configuration.Azure;
 using terminalYammer.Model;
 
 namespace terminalYammer.Services

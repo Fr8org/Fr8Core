@@ -6,7 +6,7 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using Fr8Data.DataTransferObjects;
+using fr8.Infrastructure.Data.DataTransferObjects;
 using HubWeb.Controllers;
 using UtilitiesTesting.Fixtures;
 using HubTests.Controllers.Api;

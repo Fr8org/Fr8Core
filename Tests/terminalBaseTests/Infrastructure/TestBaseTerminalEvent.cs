@@ -1,4 +1,4 @@
-﻿using Fr8Infrastructure.Interfaces;
+﻿using fr8.Infrastructure.Interfaces;
 using Moq;
 using TerminalBase.Infrastructure;
 

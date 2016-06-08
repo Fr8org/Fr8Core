@@ -1,9 +1,10 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
+using fr8.Infrastructure.Data.Control;
+using fr8.Infrastructure.Data.Crates;
+using fr8.Infrastructure.Data.Managers;
+using fr8.Infrastructure.Data.Manifests;
+using fr8.Infrastructure.Utilities;
 using NUnit.Framework;
 using SendGrid;
 using StructureMap;
@@ -15,7 +16,6 @@ using terminalUtilities.SendGrid;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using TerminalBase.Models;
-using Utilities;
 using UtilitiesTesting;
 
 namespace terminalSendGridTests.Unit.Activities

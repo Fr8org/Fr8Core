@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories.Plan;
 using Data.States;
-using DayPilot.Web.Mvc.Events.Navigator;
+using fr8.Infrastructure.Data.States;
 using Hub.StructureMap;
 using NUnit.Framework;
 using StructureMap;
@@ -16,7 +14,6 @@ using UtilitiesTesting.Fixtures;
 
 namespace HubTests.Repositories.Plan
 {
-
     class PlanStorageProviderMonitor : IPlanStorageProvider
     {
         private PlanNodeDO _planNode;

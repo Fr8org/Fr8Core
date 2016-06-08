@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
-using Fr8Data.Manifests;
+using fr8.Infrastructure.Data.Manifests;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure.DocuSignParserModels;
 using terminalDocuSign.Services.NewApi;

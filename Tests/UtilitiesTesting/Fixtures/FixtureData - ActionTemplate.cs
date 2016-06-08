@@ -1,6 +1,7 @@
 ﻿using Data.Entities;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
+using fr8.Infrastructure.Data.Crates;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.States;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

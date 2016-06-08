@@ -4,16 +4,16 @@ using Newtonsoft.Json;
 using StructureMap;
 using Data.Entities;
 using Data.States;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using fr8.Infrastructure.Data.Control;
+using fr8.Infrastructure.Data.Crates;
+using fr8.Infrastructure.Data.DataTransferObjects;
+using fr8.Infrastructure.Data.Managers;
+using fr8.Infrastructure.Data.Manifests;
+using fr8.Infrastructure.Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
 using Newtonsoft.Json.Linq;
-using Fr8Data.Managers;
 using TerminalBase.Models;
-using Hub.Services;
 using TerminalBase.Infrastructure;
 
 namespace UtilitiesTesting.Fixtures

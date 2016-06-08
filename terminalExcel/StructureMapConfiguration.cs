@@ -1,6 +1,6 @@
-﻿using StructureMap;
+﻿using fr8.Infrastructure.Data.Managers;
+using StructureMap;
 using StructureMap.Configuration.DSL;
-using Fr8Data.Managers;
 
 namespace terminalExcel
 {

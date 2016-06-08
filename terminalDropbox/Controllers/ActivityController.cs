@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Web.Http;
-using TerminalBase.BaseClasses;
 using System.Threading.Tasks;
-using Fr8Data.DataTransferObjects;
-using TerminalBase.Infrastructure;
+using fr8.Infrastructure.Data.DataTransferObjects;
 using TerminalBase.Services;
 using StructureMap;
 
