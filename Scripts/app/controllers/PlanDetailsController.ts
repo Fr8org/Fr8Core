@@ -54,12 +54,12 @@ module dockyard.controllers {
             };
 
             $scope.download = ($event: Event) => {
-
+                
                 if (!$scope.digestFlag) {
                     $scope.digestFlag = true;
 
                     var promise = PlanService.createTemplate($scope.ptvm.plan.id);
-                    var element = $event.srcElement;
+                    var element = $event.target;
 
                     promise.then((template) => {
                         let json = $filter('json')(template);

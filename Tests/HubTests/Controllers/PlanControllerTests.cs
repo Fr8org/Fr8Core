@@ -95,7 +95,7 @@ namespace HubTests.Controllers
 
             //Act
             var ptc = CreatePlanController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
-            var response = ptc.Post(PlanDto);
+            var response = ptc.Post(PlanDto).Result;
 
 
             //Assert
@@ -119,7 +119,7 @@ namespace HubTests.Controllers
 
             //Act
             var ptc = CreatePlanController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address); ;
-            var response = ptc.Post(PlanDto);
+            var response = ptc.Post(PlanDto).Result;
 
             //Assert
             var badResult = response as BadRequestErrorMessageResult;
@@ -181,7 +181,7 @@ namespace HubTests.Controllers
             //Arrange
             var PlanController = CreatePlanController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             var PlanDto = FixtureData.CreateTestPlanDTO();
-            var resultPlan = (PlanController.Post(PlanDto) as OkNegotiatedContentResult<PlanDTO>).Content;
+            var resultPlan = (PlanController.Post(PlanDto).Result as OkNegotiatedContentResult<PlanDTO>).Content;
 
             //Act
             var actionResult = PlanController.Get( new PlansGetParams()
@@ -206,7 +206,7 @@ namespace HubTests.Controllers
             var PlanDto = FixtureData.CreateTestPlanDTO();
 
             var PlanController = CreatePlanController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
-            var postResult = PlanController.Post(PlanDto) as OkNegotiatedContentResult<PlanEmptyDTO>;
+            var postResult = PlanController.Post(PlanDto).Result as OkNegotiatedContentResult<PlanEmptyDTO>;
 
             Assert.NotNull(postResult);
 
@@ -257,7 +257,7 @@ namespace HubTests.Controllers
             }
 
             //Save First
-            var postResult = PlanController.Post(PlanDto) as OkNegotiatedContentResult<PlanDTO>;
+            var postResult = PlanController.Post(PlanDto).Result as OkNegotiatedContentResult<PlanDTO>;
             Assert.NotNull(postResult);
 
             //Then Get
@@ -270,7 +270,7 @@ namespace HubTests.Controllers
             //Then Edit
             var postEditNameValue = "EditedName";
             getResult.Content.Name = postEditNameValue;
-            var editResult = PlanController.Post(getResult.Content) as OkNegotiatedContentResult<PlanDTO>;
+            var editResult = PlanController.Post(getResult.Content).Result as OkNegotiatedContentResult<PlanDTO>;
             Assert.NotNull(editResult);
 
             //Then Get
