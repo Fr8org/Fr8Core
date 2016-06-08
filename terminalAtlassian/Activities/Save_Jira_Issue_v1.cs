@@ -48,6 +48,9 @@ namespace terminalAtlassian.Actions
 
             public DropDownList AvailablePriorities { get; set; }
 
+            public ControlDefinitionDTO SprintFieldName { get; set; }
+
+
             public DropDownList Sprint { get; set; }
 
             public ActivityUi()
@@ -126,6 +129,13 @@ namespace terminalAtlassian.Actions
                     IsHidden = true
                 };
                 Controls.Add(Description);
+
+                SprintFieldName = new ControlDefinitionDTO()
+                {
+                    Name = "SprintFieldName",
+                    IsHidden = true
+                };
+                Controls.Add(SprintFieldName);
             }
 
             public void AppendCustomFields(IEnumerable<FieldDTO> customFields)
@@ -162,7 +172,7 @@ namespace terminalAtlassian.Actions
                     }
                     else
                     {
-                        Controls.Where(x => x.Label == "Sprint").First().Name = customField.Value;
+                        SprintFieldName.Label = customField.Value;
                     }
                 }
             }
@@ -345,6 +355,7 @@ namespace terminalAtlassian.Actions
 
         public override async Task Run()
         {
+            ActivityUI.RestoreCustomFields(Storage);
 
             var issueInfo = ExtractIssueInfo();
             await _atlassianService.CreateIssue(issueInfo, AuthorizationToken);
@@ -380,14 +391,10 @@ namespace terminalAtlassian.Actions
             };
 
 
-            var sprint = ActivityUI.Controls.Where(c => c.Label == "Sprint" && c.Value != null).FirstOrDefault();
-            if(sprint != null)
+            if (ActivityUI.Sprint.Value != null)
             {
-                if (!string.IsNullOrEmpty(sprint.Value))
-                {
-                    result.CustomFields.Add(new FieldDTO() { Key = sprint.Name, Value = sprint.Value });
-                }
-            }           
+                result.CustomFields.Add(new FieldDTO() { Key = ActivityUI.SprintFieldName.Label, Value = ActivityUI.Sprint.Value });
+            }
 
             return result;
         }
