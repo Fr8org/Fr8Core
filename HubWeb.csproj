@@ -38,6 +38,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\HubWeb.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -1185,8 +1186,6 @@
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
-    <TypeScriptCompile Include="Scripts\app\controllers\FindObjectsController.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\FindObjectsResultsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\InternalAuthenticationController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManageFileListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ContainerListController.ts" />
@@ -1206,7 +1205,6 @@
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionListController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Counter.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Duration.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Controls\RunPlanButton.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ManagePlan.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextSource.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DropDownListBox.ts" />
@@ -4505,8 +4503,6 @@
     <Content Include="Views\AngularTemplate\ManagePlan.cshtml" />
     <Content Include="Views\AngularTemplate\Duration.cshtml" />
     <Content Include="Views\AngularTemplate\Counter.cshtml" />
-    <Content Include="Views\AngularTemplate\FindObjects.cshtml" />
-    <Content Include="Views\AngularTemplate\FindObjectsResults.cshtml" />
     <Content Include="Views\AngularTemplate\_AddPayloadModal.cshtml" />
     <None Include="Views\DocusignAuthCallback\Login.cshtml" />
     <TypeScriptCompile Include="Scripts\tests\utils\services\fixture_CrateHelper.ts" />

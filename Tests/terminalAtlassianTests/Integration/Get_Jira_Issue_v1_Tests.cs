@@ -76,7 +76,7 @@ namespace terminalAtlassianTests.Integration
             Assert.IsNotNull(activityDTO.CrateStorage);
 
             var crateStorage = Crate.FromDto(activityDTO.CrateStorage);
-            Assert.AreEqual(1, crateStorage.Count);
+            Assert.AreEqual(2, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
 
             var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
@@ -113,9 +113,9 @@ namespace terminalAtlassianTests.Integration
             var crateStorage = Crate.FromDto(activityDTO.CrateStorage);
             Assert.AreEqual(2, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count());
+            Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
 
-            var fieldDescriptions = crateStorage.CrateContentsOfType<FieldDescriptionsCM>().First();
+            var fieldDescriptions = crateStorage.CrateContentsOfType<CrateDescriptionCM>().FirstOrDefault().CrateDescriptions[0];
             Assert.True(fieldDescriptions.Fields.Any(x => x.Key == "Key" && x.Value == "FR-1245"));
 
             return activityDTO;

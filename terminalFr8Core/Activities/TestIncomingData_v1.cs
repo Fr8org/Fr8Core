@@ -78,10 +78,7 @@ namespace terminalFr8Core.Activities
             {
                 EventManager.CriteriaEvaluationStarted(processId);
 
-                var filterExpression = ParseCriteriaExpression(filterDataDTO.Conditions, values);
-                var results = values.Provider.CreateQuery<FieldDTO>(filterExpression);
-
-                return results;
+                return filterDataDTO.Conditions.Select(condition => ParseCriteriaExpression(condition, values)).Aggregate<Expression, IQueryable<FieldDTO>>(null, (current, filterExpression) => current?.Provider.CreateQuery<FieldDTO>(filterExpression) ?? values.Provider.CreateQuery<FieldDTO>(filterExpression));
             }
         }
         public static int Compare(object left, object right)
@@ -93,7 +90,7 @@ namespace terminalFr8Core.Activities
             if (left is string && right is string)
             {
                 decimal v1;
-                decimal v2;
+                decimal v2; 
                 if (decimal.TryParse((string)left, out v1) && decimal.TryParse((string)right, out v2))
                 {
                     return v1.CompareTo(v2);
@@ -102,65 +99,52 @@ namespace terminalFr8Core.Activities
             }
             return -2;
         }
-        protected Expression ParseCriteriaExpression(IEnumerable<FilterConditionDTO> conditions, IQueryable<FieldDTO> queryableData)
+        
+        protected Expression ParseCriteriaExpression(FilterConditionDTO condition, IQueryable<FieldDTO> queryableData)
         {
             var curType = typeof(FieldDTO);
             Expression criteriaExpression = null;
             var pe = Expression.Parameter(curType, "p");
-            foreach (var condition in conditions)
+
+            var namePropInfo = curType.GetProperty("Key");
+            var valuePropInfo = curType.GetProperty("Value");
+            var nameLeftExpr = Expression.Property(pe, namePropInfo);
+            var nameRightExpr = Expression.Constant(condition.Field);
+            var nameExpression = Expression.Equal(nameLeftExpr, nameRightExpr);
+            var comparisionExpr = Expression.Call(typeof(TestIncomingData_v1).GetMethod("Compare", BindingFlags.Public | BindingFlags.Static), new Expression[]
             {
-                var namePropInfo = curType.GetProperty("Key");
-                var valuePropInfo = curType.GetProperty("Value");
-                var nameLeftExpr = Expression.Property(pe, namePropInfo);
-                var nameRightExpr = Expression.Constant(condition.Field);
-                var nameExpression = Expression.Equal(nameLeftExpr, nameRightExpr);
-                //var valueLeftExpr = Expression.Invoke(TryMakeDecimalExpression.Value, Expression.Property(pe, valuePropInfo));
-              //  var valueRightExpr = Expression.Invoke(TryMakeDecimalExpression.Value, Expression.Constant(condition.Value));
-               // var comparisionExpr = Expression.Call(valueLeftExpr, "CompareTo", null, valueRightExpr);
-                var comparisionExpr = Expression.Call(typeof(TestIncomingData_v1).GetMethod("Compare", BindingFlags.Public | BindingFlags.Static), new Expression[]
-                {
-                    Expression.Property(pe, valuePropInfo),
-                    Expression.Constant(condition.Value)
-                });
-                var zero = Expression.Constant(0);
-                var op = condition.Operator;
-                Expression criterionExpression;
-                switch (op)
-                {
-                    case "eq":
-                        criterionExpression = Expression.Equal(comparisionExpr, zero);
-                        break;
-                    case "neq":
-                        criterionExpression = Expression.NotEqual(comparisionExpr, zero);
-                        break;
-                    case "gt":
-                        criterionExpression = Expression.GreaterThan(comparisionExpr, zero);
-                        break;
-                    case "gte":
-                        criterionExpression = Expression.GreaterThanOrEqual(comparisionExpr, zero);
-                        break;
-                    case "lt":
-                        criterionExpression = Expression.LessThan(comparisionExpr, zero);
-                        break;
-                    case "lte":
-                        criterionExpression = Expression.LessThanOrEqual(comparisionExpr, zero);
-                        break;
-                    default:
-                        throw new NotSupportedException($"Not supported operator: {op}");
-                }
-                if (criteriaExpression == null)
-                {
-                    criteriaExpression = Expression.And(nameExpression, criterionExpression);
-                }
-                else
-                {
-                    criteriaExpression = Expression.AndAlso(criteriaExpression, Expression.And(nameExpression, criterionExpression));
-                }
-            }
-            if (criteriaExpression == null)
+                Expression.Property(pe, valuePropInfo),
+                Expression.Constant(condition.Value)
+            });
+            var zero = Expression.Constant(0);
+            var op = condition.Operator;
+            Expression criterionExpression;
+            switch (op)
             {
-                criteriaExpression = Expression.Constant(true);
+                case "eq":
+                    criterionExpression = Expression.Equal(comparisionExpr, zero);
+                    break;
+                case "neq":
+                    criterionExpression = Expression.NotEqual(comparisionExpr, zero);
+                    break;
+                case "gt":
+                    criterionExpression = Expression.GreaterThan(comparisionExpr, zero);
+                    break;
+                case "gte":
+                    criterionExpression = Expression.GreaterThanOrEqual(comparisionExpr, zero);
+                    break;
+                case "lt":
+                    criterionExpression = Expression.LessThan(comparisionExpr, zero);
+                    break;
+                case "lte":
+                    criterionExpression = Expression.LessThanOrEqual(comparisionExpr, zero);
+                    break;
+                default:
+                    throw new NotSupportedException($"Not supported operator: {op}");
             }
+
+            criteriaExpression = Expression.And(nameExpression, criterionExpression);
+
             var whereCallExpression = Expression.Call(
                 typeof(Queryable),
                 "Where",

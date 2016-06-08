@@ -19,7 +19,8 @@ namespace terminalDropbox.Controllers
         [HttpPost]
         public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
         {
-            return _activityExecutor.HandleFr8Request(curTerminal, actionType, curDataDTO);
+            var queryParams = Request.GetQueryNameValuePairs();
+            return _activityExecutor.HandleFr8Request(curTerminal, actionType, queryParams, curDataDTO);
         }
     }
 }

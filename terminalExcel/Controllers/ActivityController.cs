@@ -1,5 +1,6 @@
-﻿using System.Web.Http;
-using System;
+﻿using System;
+using System.Net.Http;
+using System.Web.Http;
 using System.Threading.Tasks;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using StructureMap;
@@ -20,7 +21,8 @@ namespace terminalExcel.Controllers
         [HttpPost]
         public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
         {
-            return _activityExecutor.HandleFr8Request(curTerminal, actionType, curDataDTO);
+            var queryParams = Request.GetQueryNameValuePairs();
+            return _activityExecutor.HandleFr8Request(curTerminal, actionType, queryParams, curDataDTO);
         }
     }
 }

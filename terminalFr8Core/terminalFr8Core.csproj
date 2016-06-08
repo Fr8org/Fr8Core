@@ -278,7 +278,6 @@
     <Compile Include="Activities\SetDelay_v1.cs" />
     <Compile Include="Activities\ConvertRelatedFieldsIntoTable_v1.cs" />
     <Compile Include="Activities\ExecuteSql_v1.cs" />
-    <Compile Include="Activities\FindObjects_Solution_v1.cs" />
     <Compile Include="Activities\Loop_v1.cs" />
     <Compile Include="Activities\ManagePlan_v1.cs" />
     <Compile Include="Activities\Select_Fr8_Object_v1.cs" />

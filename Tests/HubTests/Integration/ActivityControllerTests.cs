@@ -25,8 +25,7 @@ namespace HubTests.Integration
                                             @"<p>The Search Fr8 Warehouse solution allows you to search the Fr8 Warehouse 
                                             for information we're storing for you. This might be event data about your cloud services that we track on your 
                                             behalf. Or it might be files or data that your plans have stored.</p>";
-
-        private string FindObjects_Solution_Description = @"<p>This is the FindObjects Solution.</p>";
+        
         public override string TerminalName
         {
             get { return "Hub"; }
@@ -71,23 +70,20 @@ namespace HubTests.Integration
         [Test]
         private async Task GetFr8CoreSolutionList()
         {
-            var solutionNames = new List<string> { "Find Objects Solution", "Search Fr8 Warehouse" };
+            var solutionNames = new List<string> { "Search Fr8 Warehouse" };
             var baseUrl = GetHubApiBaseUrl();
             var getSolutionListUrl = baseUrl + "documentation/activity";
             var emptyActivityDTO = new ActivityDTO { Documentation = "Terminal=terminalFr8Core", ActivityTemplate = new ActivityTemplateDTO() };
             var solutionPages = await HttpPostAsync<ActivityDTO, List<DocumentationResponseDTO>>(getSolutionListUrl, emptyActivityDTO);
             Assert.IsNotNull(solutionPages);
             Assert.IsTrue(solutionPages.Any());
-            //We provide 2 Solution Pages for the Fr8Core terminal
-            Assert.AreEqual(2, solutionPages.Count);
+            //We provide 2 Solution Pages for the Fr8Core terminal, but then we deleted FindObjects and there is only one now
+            Assert.AreEqual(1, solutionPages.Count);
             foreach (var solutionPage in solutionPages)
             {
                 Assert.IsTrue(solutionNames.Contains(solutionPage.Name));
                 switch (solutionPage.Name)
-                {
-                    case "Find Objects Solution":
-                        Assert.AreEqual(FindObjects_Solution_Description, solutionPage.Body);
-                        break;
+                {                    
                     case "Search Fr8 Warehouse":
                         Assert.AreEqual(SearchFr8Warehouse_Description, solutionPage.Body);
                         break;
