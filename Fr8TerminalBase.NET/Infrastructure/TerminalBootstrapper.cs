@@ -1,5 +1,5 @@
-﻿using fr8.Infrastructure.Data.Managers;
-using fr8.Infrastructure.Utilities;
+﻿using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Utilities;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Services;
 using StructureMap;

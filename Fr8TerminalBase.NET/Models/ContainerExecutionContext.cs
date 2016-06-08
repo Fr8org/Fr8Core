@@ -1,5 +1,5 @@
 ﻿using System;
-using fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.Crates;
 
 namespace Fr8.TerminalBase.Models
 {

@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using fr8.Infrastructure.Data.Constants;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Newtonsoft.Json.Linq;
 
-namespace fr8.Infrastructure.Data.Manifests.Helpers
+namespace Fr8.Infrastructure.Data.Manifests.Helpers
 {
     public class StandardTableDataCMTools
     {

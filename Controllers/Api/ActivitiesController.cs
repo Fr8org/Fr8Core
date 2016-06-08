@@ -4,7 +4,7 @@ using System.Web.Http;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
-using fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;

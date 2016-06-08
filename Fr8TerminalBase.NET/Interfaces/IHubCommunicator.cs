@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using fr8.Infrastructure.Data.Constants;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.Models;
 
 namespace Fr8.TerminalBase.Interfaces

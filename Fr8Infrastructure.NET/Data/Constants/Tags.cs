@@ -1,4 +1,4 @@
-﻿namespace fr8.Infrastructure.Data.Constants
+﻿namespace Fr8.Infrastructure.Data.Constants
 {
     public static class Tags
     {

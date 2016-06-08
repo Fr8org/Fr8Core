@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
 using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Interfaces;
 using NUnit.Framework;

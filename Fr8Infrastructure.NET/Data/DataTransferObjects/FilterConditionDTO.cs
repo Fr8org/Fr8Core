@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace fr8.Infrastructure.Data.DataTransferObjects
+namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
     /// <summary>
     /// Single FilterPane condition.

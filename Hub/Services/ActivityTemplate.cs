@@ -6,7 +6,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using Data.Utility;
-using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
 using StructureMap;
 

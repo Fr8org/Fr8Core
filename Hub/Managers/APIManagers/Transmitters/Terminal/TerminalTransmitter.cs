@@ -5,10 +5,10 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using fr8.Infrastructure.Communication;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Interfaces;
-using fr8.Infrastructure.Utilities.Logging;
+using Fr8.Infrastructure.Communication;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Logging;
 using StructureMap;
 using Hub.Interfaces;
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace fr8.Infrastructure.Interfaces
+namespace Fr8.Infrastructure.Interfaces
 {
 	public interface ICsvReader : IDisposable
 	{

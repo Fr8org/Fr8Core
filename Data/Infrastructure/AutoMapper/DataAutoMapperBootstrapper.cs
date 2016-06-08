@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using Data.Entities;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates;
-using fr8.Infrastructure.Data.Manifests;
-using fr8.Infrastructure.Utilities.AutoMapper;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Utilities.AutoMapper;
 using Newtonsoft.Json.Linq;
 
 namespace Data.Infrastructure.AutoMapper
@@ -152,7 +152,7 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ContainerDO, ContainerDTO>()
                 .ForMember(
                     x => x.CurrentActivityResponse,
-                    x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentActivityResponse != null ? Enum.Parse(typeof(fr8.Infrastructure.Data.Constants.ActivityResponse), z.CurrentActivityResponse.Type) : null))
+                    x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentActivityResponse != null ? Enum.Parse(typeof(Fr8.Infrastructure.Data.Constants.ActivityResponse), z.CurrentActivityResponse.Type) : null))
                 )
                 .ForMember(
                     x => x.CurrentClientActivityName,

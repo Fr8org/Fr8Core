@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Managers;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;

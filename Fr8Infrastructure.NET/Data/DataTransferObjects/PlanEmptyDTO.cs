@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Data.States;
 
-namespace fr8.Infrastructure.Data.DataTransferObjects
+namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
     public class PlanEmptyDTO
     {

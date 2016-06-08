@@ -6,10 +6,10 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.Managers;
-using fr8.Infrastructure.Data.Manifests;
-using fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Interfaces;
 using Hub.Exceptions;
 using Hub.Interfaces;
 

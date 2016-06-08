@@ -1,6 +1,6 @@
-﻿using fr8.Infrastructure.Data.Control;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Utilities;
+﻿using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Utilities;
 using PhoneNumbers;
 
 namespace Fr8.TerminalBase.Infrastructure

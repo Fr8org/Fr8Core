@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
-namespace fr8.Infrastructure.Data.DataTransferObjects
+namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
     public class Fr8DataDTO
     {

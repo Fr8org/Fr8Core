@@ -5,7 +5,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories.Utilization;
 using Data.States;
-using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
 using HubTests.Services.Container;
 using NUnit.Framework;

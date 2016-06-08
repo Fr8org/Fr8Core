@@ -15,7 +15,7 @@
 
 using System;
 
-namespace fr8.Infrastructure.Utilities.Configuration
+namespace Fr8.Infrastructure.Utilities.Configuration
 {
     /// <summary>
     /// Configuration manager for accessing Microsoft Azure settings.

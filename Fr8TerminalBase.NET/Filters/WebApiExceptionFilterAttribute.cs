@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
-using fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Errors;
 using Microsoft.ApplicationInsights;

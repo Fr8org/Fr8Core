@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using fr8.Infrastructure.Data.Constants;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.DataTransferObjects.Helpers;
-using fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects.Helpers;
+using Fr8.Infrastructure.Data.Manifests;
 using Fr8.TerminalBase.Errors;
 using Fr8.TerminalBase.Infrastructure.States;
 using Fr8.TerminalBase.Interfaces;

@@ -1,9 +1,9 @@
-﻿using fr8.Infrastructure.Data.Constants;
-using fr8.Infrastructure.Data.Control;
-using fr8.Infrastructure.Data.DataTransferObjects.Helpers;
+﻿using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.DataTransferObjects.Helpers;
 using Newtonsoft.Json;
 
-namespace fr8.Infrastructure.Data.DataTransferObjects
+namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
     /// <summary>
     /// Data structure intended to enable Fr8 services to return useful data as part of the http response

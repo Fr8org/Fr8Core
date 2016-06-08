@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace fr8.Infrastructure.Data.Manifests
+namespace Fr8.Infrastructure.Data.Manifests
 {
     partial class OperationalStateCM
     {

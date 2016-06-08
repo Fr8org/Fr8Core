@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace fr8.Infrastructure.Data.Crates
+namespace Fr8.Infrastructure.Data.Crates
 {
     /// <summary>
     /// Describes custom crate manifest serilizer

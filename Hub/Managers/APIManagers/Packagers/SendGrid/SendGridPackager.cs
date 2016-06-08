@@ -8,8 +8,8 @@ using SendGrid;
 using StructureMap;
 using Data.Infrastructure;
 using Data.Interfaces;
-using fr8.Infrastructure.Utilities;
-using fr8.Infrastructure.Utilities.Logging;
+using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Logging;
 
 namespace Hub.Managers.APIManagers.Packagers.SendGrid
 {

@@ -1,9 +1,9 @@
 ﻿using System;
-using fr8.Infrastructure.Interfaces;
-using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Configuration;
 using PusherServer;
 
-namespace fr8.Infrastructure.Utilities
+namespace Fr8.Infrastructure.Utilities
 {
 	public class PusherNotifier : IPusherNotifier
     {

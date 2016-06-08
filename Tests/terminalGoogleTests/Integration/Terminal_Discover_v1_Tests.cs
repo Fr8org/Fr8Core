@@ -2,8 +2,8 @@
 using HealthMonitor.Utility;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using fr8.Infrastructure.Data.Manifests;
-using fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
 
 namespace terminalGoogleTests.Integration
 {

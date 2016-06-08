@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Data.Interfaces;
 using Data.States;
-using fr8.Infrastructure.Interfaces;
-using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
 using log4net;
 using StructureMap;
@@ -17,7 +17,7 @@ namespace Hub.Services
         private const int DefaultOverheatingThreshold = 100; // executuions per unit
         private const int DefaultUserBanTime = 600; // in seconds
 
-        private static readonly ILog Logger = fr8.Infrastructure.Utilities.Logging.Logger.GetCurrentClassLogger();
+        private static readonly ILog Logger = Fr8.Infrastructure.Utilities.Logging.Logger.GetCurrentClassLogger();
 
         private readonly IUtilizationDataProvider _utilizationDataProvider;
         private readonly IPusherNotifier _pusherNotifier;

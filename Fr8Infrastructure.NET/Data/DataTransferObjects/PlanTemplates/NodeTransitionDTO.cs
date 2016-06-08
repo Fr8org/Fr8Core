@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates
+namespace Fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates
 {
     public class NodeTransitionDTO
     {

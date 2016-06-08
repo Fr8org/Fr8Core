@@ -24,7 +24,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using YamlDotNet.RepresentationModel;
 
-namespace fr8.Infrastructure.Utilities.UAParser
+namespace Fr8.Infrastructure.Utilities.UAParser
 {
     #region Imports
 

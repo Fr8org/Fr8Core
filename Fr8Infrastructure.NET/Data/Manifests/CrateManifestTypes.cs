@@ -1,6 +1,6 @@
-﻿using fr8.Infrastructure.Data.Crates;
+﻿using Fr8.Infrastructure.Data.Crates;
 
-namespace fr8.Infrastructure.Data.Manifests
+namespace Fr8.Infrastructure.Data.Manifests
 {
     public static class CrateManifestTypes
     {

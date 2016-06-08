@@ -5,8 +5,8 @@ using Newtonsoft.Json;
 using DocuSign.eSign.Client;
 using DocuSign.eSign.Model;
 using DocuSign.eSign.Api;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.BaseClasses;
 using terminalDocuSign.DataTransferObjects;
 

@@ -1,5 +1,5 @@
 ﻿using System;
-using fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities;
 using NUnit.Framework;
 using UtilitiesTesting;
 

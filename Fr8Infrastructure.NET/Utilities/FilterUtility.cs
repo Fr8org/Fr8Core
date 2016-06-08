@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using StructureMap;
 
-namespace fr8.Infrastructure.Utilities
+namespace Fr8.Infrastructure.Utilities
 {
     public static class FilterUtility
     {

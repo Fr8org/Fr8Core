@@ -4,7 +4,7 @@ using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.Crates;
 using Newtonsoft.Json;
 
 namespace Data.Migrations

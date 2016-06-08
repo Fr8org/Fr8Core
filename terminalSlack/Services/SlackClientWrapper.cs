@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using fr8.Infrastructure.Utilities.Logging;
+using Fr8.Infrastructure.Utilities.Logging;
 using ServiceStack;
 using terminalSlack.RtmClient;
 using terminalSlack.RtmClient.Entities;

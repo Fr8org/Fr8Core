@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace fr8.Infrastructure.Utilities
+namespace Fr8.Infrastructure.Utilities
 {
     //public class ExceptionHandling
     //{

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using Data.Interfaces;
-using fr8.Infrastructure.Utilities;
-using fr8.Infrastructure.Utilities.Logging;
+using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Logging;
 using StructureMap;
 
 namespace Data.Entities

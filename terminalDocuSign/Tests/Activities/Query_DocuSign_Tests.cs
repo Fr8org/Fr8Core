@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
-using fr8.Infrastructure.Data.Managers;
-using fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
 using NUnit.Framework;
 using terminalDocuSign.Activities;
 using terminalDocuSign.Infrastructure;

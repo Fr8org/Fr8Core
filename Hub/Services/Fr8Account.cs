@@ -15,7 +15,7 @@ using Hub.Security;
 using System.Web;
 using System.Net.Http;
 using System.Security.Claims;
-using fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities;
 
 namespace Hub.Services
 {

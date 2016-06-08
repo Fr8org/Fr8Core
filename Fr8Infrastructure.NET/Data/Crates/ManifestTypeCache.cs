@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
-using fr8.Infrastructure.Data.Constants;
-using fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Manifests;
 
-namespace fr8.Infrastructure.Data.Crates
+namespace Fr8.Infrastructure.Data.Crates
 {
     internal static class ManifestTypeCache
     {

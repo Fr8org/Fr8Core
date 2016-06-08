@@ -1,4 +1,4 @@
-﻿using fr8.Infrastructure.Utilities;
+﻿using Fr8.Infrastructure.Utilities;
 using Hub.StructureMap;
 using SendGrid;
 using StructureMap;

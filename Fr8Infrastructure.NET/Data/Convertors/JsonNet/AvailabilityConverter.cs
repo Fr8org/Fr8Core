@@ -1,8 +1,8 @@
 ﻿using System;
-using fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Data.States;
 using Newtonsoft.Json;
 
-namespace fr8.Infrastructure.Data.Convertors.JsonNet
+namespace Fr8.Infrastructure.Data.Convertors.JsonNet
 {
     class AvailabilityConverter : JsonConverter
     {

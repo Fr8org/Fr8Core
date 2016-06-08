@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
-using fr8.Infrastructure.Data.Constants;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Hub.Interfaces;
 using Newtonsoft.Json;
 

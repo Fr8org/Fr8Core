@@ -3,10 +3,10 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.Managers;
-using fr8.Infrastructure.Data.Manifests;
-using fr8.Infrastructure.Utilities.Serializers.Json;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Utilities.Serializers.Json;
 using Hub.Managers;
 
 namespace UtilitiesTesting.Fixtures

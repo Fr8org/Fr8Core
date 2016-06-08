@@ -1,8 +1,8 @@
-﻿using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.States;
+﻿using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.States;
 using Newtonsoft.Json;
 
-namespace fr8.Infrastructure.Data.Crates
+namespace Fr8.Infrastructure.Data.Crates
 {
     [JsonConverter(typeof(DenySerializationConverter), "Crate can't be directly serialized to JSON. Convert it to CrateDTO.")]
     public class Crate<T> : Crate

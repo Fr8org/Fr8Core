@@ -16,7 +16,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace fr8.Infrastructure.Utilities.Configuration
+namespace Fr8.Infrastructure.Utilities.Configuration
 {
     static internal class NativeMethods
     {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using fr8.Infrastructure.Data.Control;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
 
 namespace terminalTwilioTests.Fixture
 {

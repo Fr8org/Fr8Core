@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.Crates;
 
-namespace fr8.Infrastructure.Data.Crates
+namespace Fr8.Infrastructure.Data.Crates
 {
     public interface ICrateStorage : IEnumerable<Crate>
     {

@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.Manifests;
 using HealthMonitor.Utility;
 using NUnit.Framework;
 

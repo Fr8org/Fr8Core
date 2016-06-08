@@ -6,7 +6,7 @@ using System.Reflection;
 using log4net;
 using log4net.Appender;
 
-namespace fr8.Infrastructure.Utilities.Logging
+namespace Fr8.Infrastructure.Utilities.Logging
 {
 
     public enum EventType

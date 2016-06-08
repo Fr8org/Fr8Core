@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using fr8.Infrastructure.Data.Constants;
-using fr8.Infrastructure.Data.Control;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.Managers;
-using fr8.Infrastructure.Data.Manifests;
-using fr8.Infrastructure.Data.States;
-using fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Data.Crates;
 using Fr8.TerminalBase.BaseClasses;
 using Newtonsoft.Json;
 using terminalFr8Core.Infrastructure;
@@ -177,7 +177,7 @@ namespace terminalFr8Core.Activities
 
             if (queryCrate == null)
             {
-                queryCrate = fr8.Infrastructure.Data.Crates.Crate<StandardQueryCM>.FromContent(
+                queryCrate = Fr8.Infrastructure.Data.Crates.Crate<StandardQueryCM>.FromContent(
                     "Selected Query",
                     new StandardQueryCM()
                     {
@@ -263,7 +263,7 @@ namespace terminalFr8Core.Activities
                 RaiseError("Selected Query crate was not found in Action's CrateStorage");
                 return;
             }
-            var sqlQueryCrate = fr8.Infrastructure.Data.Crates.Crate<StandardQueryCM>.FromContent("Sql Query", sqlQueryCM);
+            var sqlQueryCrate = Fr8.Infrastructure.Data.Crates.Crate<StandardQueryCM>.FromContent("Sql Query", sqlQueryCM);
             Payload.Add(sqlQueryCrate);
             Success();
             await Task.Yield();

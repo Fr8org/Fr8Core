@@ -17,14 +17,14 @@ namespace PlanDirectory
             RouteConfig.RegisterRoutes(RouteTable.Routes);
 
             ObjectFactory.Initialize();
-            ObjectFactory.Configure(fr8.Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
+            ObjectFactory.Configure(Fr8.Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
             ObjectFactory.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
             ObjectFactory.Configure(PlanDirectoryBootStrapper.LiveConfiguration);
 
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
 
-            fr8.Infrastructure.Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
-            var segmentWriteKey = fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey");
+            Fr8.Infrastructure.Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
+            var segmentWriteKey = Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey");
             if (!string.IsNullOrEmpty(segmentWriteKey))
                 Analytics.Initialize(segmentWriteKey);
 

@@ -13,7 +13,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Migrations;
 using Data.States.Templates;
-using fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities;
 using Segment.Model;
 using StructureMap;
 

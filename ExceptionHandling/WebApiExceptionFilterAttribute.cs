@@ -10,9 +10,9 @@ using Hub.Exceptions;
 using Hub.Managers;
 using Microsoft.ApplicationInsights;
 using System.Collections.Generic;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Utilities;
-using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Configuration;
 
 namespace HubWeb.ExceptionHandling
 {

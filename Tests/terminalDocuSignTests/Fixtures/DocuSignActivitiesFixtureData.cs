@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
 using Moq;
 using terminalDocuSign;
 using terminalDocuSign.Services.New_Api;

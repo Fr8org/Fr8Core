@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using AutoMapper;
 
-namespace fr8.Infrastructure.Utilities
+namespace Fr8.Infrastructure.Utilities
 {
     public static class MappingEngineExtensions
     {

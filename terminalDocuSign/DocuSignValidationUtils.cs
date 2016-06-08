@@ -1,5 +1,5 @@
-﻿using fr8.Infrastructure.Data.Control;
-using fr8.Infrastructure.Data.DataTransferObjects;
+﻿using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.TerminalBase.Infrastructure;
 
 namespace terminalDocuSign

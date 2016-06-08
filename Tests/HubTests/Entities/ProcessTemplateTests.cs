@@ -3,7 +3,7 @@ using Data.Entities;
 using NUnit.Framework;
 using StructureMap;
 using Data.Interfaces;
-using fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.Manifests;
 using Hub.Interfaces;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;

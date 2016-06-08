@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace fr8.Infrastructure.Data.Helpers
+namespace Fr8.Infrastructure.Data.Helpers
 {
     public class PropertyMemberAccessor : IMemberAccessor
     {

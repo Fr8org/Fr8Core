@@ -1,5 +1,5 @@
 using System;
-using fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Constants;
 
 namespace Fr8.TerminalBase.Errors
 {

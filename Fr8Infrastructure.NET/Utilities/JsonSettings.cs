@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace fr8.Infrastructure.Utilities
+namespace Fr8.Infrastructure.Utilities
 {
     public static class JsonSettings
     {

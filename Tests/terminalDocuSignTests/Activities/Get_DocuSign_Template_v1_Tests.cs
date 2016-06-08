@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using fr8.Infrastructure.Data.Control;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.Manifests;
 using Fr8.TerminalBase.Models;
 using NUnit.Framework;
 using StructureMap;

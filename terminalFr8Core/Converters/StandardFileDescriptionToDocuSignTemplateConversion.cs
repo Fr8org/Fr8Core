@@ -1,6 +1,6 @@
 ﻿using System;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.Manifests;
 using Newtonsoft.Json;
 
 namespace terminalFr8Core.Converters

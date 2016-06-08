@@ -4,8 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http.Filters;
-using fr8.Infrastructure.Security;
-using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Security;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Infrastructure;
 
 namespace PlanDirectory.Infrastructure

@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace fr8.Infrastructure.Data.Convertors.JsonNet
+namespace Fr8.Infrastructure.Data.Convertors.JsonNet
 {
     class CreateTimeConverter : JsonConverter
     {

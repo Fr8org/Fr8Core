@@ -1,4 +1,4 @@
-﻿using fr8.Infrastructure.Data.DataTransferObjects;
+﻿using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 

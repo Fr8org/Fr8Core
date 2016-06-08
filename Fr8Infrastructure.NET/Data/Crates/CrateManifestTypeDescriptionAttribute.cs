@@ -1,6 +1,6 @@
 using System;
 
-namespace fr8.Infrastructure.Data.Crates
+namespace Fr8.Infrastructure.Data.Crates
 {
     [AttributeUsage(AttributeTargets.Field)]
     public class CrateManifestTypeDescriptionAttribute : Attribute

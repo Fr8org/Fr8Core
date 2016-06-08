@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace fr8.Infrastructure.Utilities
+namespace Fr8.Infrastructure.Utilities
 {
     public interface IConfigRepository
     {
@@ -41,7 +41,7 @@ namespace fr8.Infrastructure.Utilities
 
         private T InternalGet<T>(String key, T defaultValue = default(T), bool defaultProvided = false)
         {
-            var stringValue = global::fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting(key);
+            var stringValue = global::Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting(key);
 
             if (String.IsNullOrEmpty(stringValue))
             {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
 using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Models;
 using Moq;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
-using fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities;
 using Newtonsoft.Json.Linq;
 using SendGrid;
 using StructureMap;

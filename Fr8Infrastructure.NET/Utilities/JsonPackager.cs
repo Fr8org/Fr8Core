@@ -1,6 +1,6 @@
-﻿using fr8.Infrastructure.Utilities.Serializers.Json;
+﻿using Fr8.Infrastructure.Utilities.Serializers.Json;
 
-namespace fr8.Infrastructure.Utilities
+namespace Fr8.Infrastructure.Utilities
 {
     public class JsonPackager
     {

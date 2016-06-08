@@ -1,6 +1,6 @@
 ﻿using System.Configuration;
 
-namespace fr8.Infrastructure.Utilities.Configuration
+namespace Fr8.Infrastructure.Utilities.Configuration
 {
     public class ConfigurationManagerApplicationSettings : IApplicationSettings
     {

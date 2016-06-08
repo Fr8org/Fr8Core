@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Constants;
 using Newtonsoft.Json;
 
-namespace fr8.Infrastructure.Data.DataTransferObjects
+namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
     public class ContainerDTO
     {

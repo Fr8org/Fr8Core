@@ -1,10 +1,10 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using fr8.Infrastructure.Data.Control;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.Managers;
-using fr8.Infrastructure.Data.Manifests;
-using fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Utilities;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Models;

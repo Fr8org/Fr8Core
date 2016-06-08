@@ -2,11 +2,11 @@
 using NUnit.Framework;
 using HealthMonitor.Utility;
 using System.Threading.Tasks;
-using fr8.Infrastructure.Communication;
-using fr8.Infrastructure.Data.Control;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Communication;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 using Fr8.TerminalBase.Services;
 
 namespace terminalGoogleTests.Integration
@@ -240,7 +240,7 @@ namespace terminalGoogleTests.Integration
                {
                    EventPayload = new CrateStorage()
                    {
-                        fr8.Infrastructure.Data.Crates.Crate.FromContent(
+                        Fr8.Infrastructure.Data.Crates.Crate.FromContent(
                             "Response",
                             new StandardPayloadDataCM(
                                 new FieldDTO("response", "key1=value1&key2=value2")

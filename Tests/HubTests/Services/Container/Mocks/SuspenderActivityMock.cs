@@ -1,6 +1,6 @@
 ﻿using System;
-using fr8.Infrastructure.Data.Constants;
-using fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Managers;
 using NUnit.Framework;
 
 namespace HubTests.Services.Container

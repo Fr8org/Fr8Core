@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net.Mail;
 using Data.Entities;
 using Data.Interfaces;
-using fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities;
 using Hub.Interfaces;
 
 namespace Hub.Services

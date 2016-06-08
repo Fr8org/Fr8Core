@@ -1,9 +1,9 @@
-﻿using fr8.Infrastructure.Data.Constants;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.DataTransferObjects;
+﻿using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Newtonsoft.Json.Linq;
 
-namespace fr8.Infrastructure.Data.Manifests
+namespace Fr8.Infrastructure.Data.Manifests
 {
     [CrateManifestSerializer(typeof(EventReportSerializer))]
     public class EventReportCM : Manifest

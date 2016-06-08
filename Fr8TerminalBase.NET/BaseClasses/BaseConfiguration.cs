@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
-using fr8.Infrastructure.StructureMap;
+using Fr8.Infrastructure.StructureMap;
 using Fr8.TerminalBase.Infrastructure;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;

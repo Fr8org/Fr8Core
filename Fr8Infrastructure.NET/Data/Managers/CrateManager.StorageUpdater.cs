@@ -3,12 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using fr8.Infrastructure.Data.Convertors;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Convertors;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Newtonsoft.Json;
 
-namespace fr8.Infrastructure.Data.Managers
+namespace Fr8.Infrastructure.Data.Managers
 {
     partial class CrateManager
     {

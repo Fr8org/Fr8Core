@@ -6,8 +6,8 @@ using Google.GData.Spreadsheets;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
 using System.Threading.Tasks;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace terminalGoogle.Services
 {

@@ -12,8 +12,8 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Utility;
 using Data.Utility.JoinClasses;
-using fr8.Infrastructure.Utilities;
-using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Configuration;
 
 namespace Data.Infrastructure
 {

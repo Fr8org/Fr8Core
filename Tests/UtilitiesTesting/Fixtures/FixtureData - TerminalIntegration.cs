@@ -1,8 +1,8 @@
 ﻿﻿using System;
 using Data.Entities;
 ﻿using Data.States;
-﻿using fr8.Infrastructure.Data.DataTransferObjects;
-﻿using fr8.Infrastructure.Data.States;
+﻿using Fr8.Infrastructure.Data.DataTransferObjects;
+﻿using Fr8.Infrastructure.Data.States;
 ﻿using Fr8.TerminalBase.Models;
 
 namespace UtilitiesTesting.Fixtures

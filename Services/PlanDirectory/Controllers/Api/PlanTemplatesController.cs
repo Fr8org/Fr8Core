@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Interfaces;
-using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Microsoft.AspNet.Identity;
 using Newtonsoft.Json.Linq;
 using StructureMap;

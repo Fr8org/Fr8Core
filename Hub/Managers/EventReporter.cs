@@ -10,11 +10,11 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Hub.Interfaces;
 using System.Data.Entity.Infrastructure;
-using fr8.Infrastructure.Data.Constants;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Interfaces;
-using fr8.Infrastructure.Utilities;
-using fr8.Infrastructure.Utilities.Logging;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Logging;
 
 //NOTES: Do NOT put Incidents here. Put them in IncidentReporter
 

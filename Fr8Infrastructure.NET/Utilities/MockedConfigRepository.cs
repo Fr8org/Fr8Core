@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Utilities.Configuration;
 
-namespace fr8.Infrastructure.Utilities
+namespace Fr8.Infrastructure.Utilities
 {
     public class MockedConfigRepository : IConfigRepository
     {

@@ -7,8 +7,8 @@ using Microsoft.AspNet.Identity;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using fr8.Infrastructure.Utilities;
-using fr8.Infrastructure.Utilities.Logging;
+using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Services;
 using HubWeb.ViewModels;
 
@@ -45,7 +45,7 @@ namespace HubWeb.Controllers
                     dockyardAccountDO = uow.UserRepository.GetByKey(userID);
                 }
 
-                var returnVM = new HomeVM { SegmentWriteKey = fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey") };
+                var returnVM = new HomeVM { SegmentWriteKey = Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey") };
 
                 if (dockyardAccountDO != null)
                 {

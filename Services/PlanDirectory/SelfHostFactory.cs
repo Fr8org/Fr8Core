@@ -28,7 +28,7 @@ namespace PlanDirectory
                 app.UseWebApi(configuration);
 
                 ObjectFactory.Initialize();
-                ObjectFactory.Configure(fr8.Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
+                ObjectFactory.Configure(Fr8.Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
                 ObjectFactory.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
                 ObjectFactory.Configure(PlanDirectoryBootStrapper.LiveConfiguration);
 

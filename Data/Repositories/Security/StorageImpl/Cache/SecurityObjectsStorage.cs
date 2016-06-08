@@ -6,7 +6,7 @@ using Data.Interfaces;
 using Data.Repositories.Security.Entities;
 using Data.States;
 using Data.States.Templates;
-using fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using StructureMap;
 
 namespace Data.Repositories.Security.StorageImpl.Cache

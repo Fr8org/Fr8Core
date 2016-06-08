@@ -1,4 +1,4 @@
-﻿namespace fr8.Infrastructure.Data.States
+﻿namespace Fr8.Infrastructure.Data.States
 {
     public enum ActivityCategory
     {

@@ -8,12 +8,12 @@ using StructureMap;
 using terminalDocuSign.Services.New_Api;
 using terminalDocuSign.Infrastructure;
 using System.Threading.Tasks;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.Managers;
-using fr8.Infrastructure.Data.Manifests;
-using fr8.Infrastructure.Interfaces;
-using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Interfaces;
 
 namespace terminalDocuSign.Services

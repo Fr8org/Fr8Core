@@ -2,7 +2,7 @@
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities;
 using Newtonsoft.Json;
 
 namespace Data.Repositories

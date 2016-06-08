@@ -1,9 +1,9 @@
 ﻿using System.Linq;
-using fr8.Infrastructure.Data.Constants;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.DataTransferObjects.Helpers;
-using fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects.Helpers;
+using Fr8.Infrastructure.Data.Manifests;
 using NUnit.Framework;
 
 namespace UtilitiesTesting.Asserts

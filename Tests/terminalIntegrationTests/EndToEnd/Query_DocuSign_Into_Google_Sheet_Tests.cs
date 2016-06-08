@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Interfaces;
 using HealthMonitor.Utility;
 using NUnit.Framework;
 using StructureMap;

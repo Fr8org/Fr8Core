@@ -4,7 +4,7 @@ using System.Linq;
 using Data.Infrastructure.StructureMap;
 using Data.Repositories.Security.Entities;
 using Data.Repositories.SqlBased;
-using fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using StructureMap;
 
 namespace Data.Repositories.Security.StorageImpl

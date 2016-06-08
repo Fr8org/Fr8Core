@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.Managers;
-using fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
 using Microsoft.Owin.Hosting;
 using Owin;
 

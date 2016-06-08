@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Data.States.Templates;
-using fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Data.States;
 
 namespace Data.Entities
 {

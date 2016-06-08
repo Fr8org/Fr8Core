@@ -1,4 +1,4 @@
-﻿namespace fr8.Infrastructure.Data.DataTransferObjects
+﻿namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
     public class ExternalAuthUrlDTO
     {

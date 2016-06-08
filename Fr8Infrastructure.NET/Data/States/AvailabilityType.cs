@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace fr8.Infrastructure.Data.States
+namespace Fr8.Infrastructure.Data.States
 {
     [Flags]
     public enum AvailabilityType

@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
-using fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.Manifests;
 using terminalUtilities;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;

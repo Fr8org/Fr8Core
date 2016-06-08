@@ -17,7 +17,7 @@ using Data.Interfaces;
 using Data.Repositories.Security;
 using Data.Repositories.Security.Entities;
 using Data.States;
-using fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Data.States;
 using Hub.Exceptions;
 using Hub.Infrastructure;
 using Hub.Interfaces;

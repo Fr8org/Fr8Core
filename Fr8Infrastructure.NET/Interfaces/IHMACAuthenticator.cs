@@ -1,7 +1,7 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace fr8.Infrastructure.Interfaces
+namespace Fr8.Infrastructure.Interfaces
 {
     public interface IHMACAuthenticator
     {

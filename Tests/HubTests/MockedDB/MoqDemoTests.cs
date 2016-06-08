@@ -5,7 +5,7 @@ using NUnit.Framework;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities;
 using Hub.Interfaces;
 using UtilitiesTesting;
 

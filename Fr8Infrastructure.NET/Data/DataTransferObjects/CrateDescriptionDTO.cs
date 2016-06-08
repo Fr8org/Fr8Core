@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Data.States;
 using Newtonsoft.Json;
 
-namespace fr8.Infrastructure.Data.DataTransferObjects
+namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
     public class CrateDescriptionDTO
     {

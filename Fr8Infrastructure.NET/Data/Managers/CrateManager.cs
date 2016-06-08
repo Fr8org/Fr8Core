@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.Helpers;
-using fr8.Infrastructure.Data.Manifests;
-using fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Helpers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
 using Newtonsoft.Json;
 
-namespace fr8.Infrastructure.Data.Managers
+namespace Fr8.Infrastructure.Data.Managers
 {
     public partial class CrateManager : ICrateManager
     {

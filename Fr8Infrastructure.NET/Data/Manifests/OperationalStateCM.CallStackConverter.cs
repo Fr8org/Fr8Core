@@ -2,7 +2,7 @@
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace fr8.Infrastructure.Data.Manifests
+namespace Fr8.Infrastructure.Data.Manifests
 {
     partial class OperationalStateCM
     {

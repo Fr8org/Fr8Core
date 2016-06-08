@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using fr8.Infrastructure.Utilities;
-using fr8.Infrastructure.Utilities.Logging;
+using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Logging;
 using Fr8.TerminalBase.Infrastructure;
 
 namespace Fr8.TerminalBase.BaseClasses

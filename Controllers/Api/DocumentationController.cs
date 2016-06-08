@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Utilities;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using StructureMap;

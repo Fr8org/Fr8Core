@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
-using fr8.Infrastructure.Utilities;
-using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Configuration;
 using SendGrid;
 
 namespace Hub.Managers.APIManagers.Packagers.SendGrid

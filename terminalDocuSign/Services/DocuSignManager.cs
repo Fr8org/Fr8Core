@@ -13,10 +13,10 @@ using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services.NewApi;
 using System.IO;
 using System.Text.RegularExpressions;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.Manifests;
-using fr8.Infrastructure.Data.States;
-using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Errors;
 using Fr8.TerminalBase.Models;
 

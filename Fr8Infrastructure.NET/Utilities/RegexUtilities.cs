@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using FluentValidation;
 using FluentValidation.Results;
 
-namespace fr8.Infrastructure.Utilities
+namespace Fr8.Infrastructure.Utilities
 {
     public class RegexUtilities
     {

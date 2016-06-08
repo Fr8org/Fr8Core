@@ -5,11 +5,11 @@ using HealthMonitor.Utility;
 using NUnit.Framework;
 using terminalQuickBooksTests.Fixtures;
 using System.Globalization;
-using fr8.Infrastructure.Data.Control;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.Managers;
-using fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace terminalQuickBooksTests.Integration
 {
@@ -43,7 +43,7 @@ namespace terminalQuickBooksTests.Integration
             AddUpstreamCrate(dataDTO, curTableDataCrate, "DocuSignTableDataMappedToQuickbooks");
             using (var crateStorage = Crate.GetUpdatableStorage(dataDTO.ActivityDTO))
             {
-                crateStorage.Add(fr8.Infrastructure.Data.Crates.Crate.FromContent("ChartOfAccounts", curAccountsCrate));
+                crateStorage.Add(Fr8.Infrastructure.Data.Crates.Crate.FromContent("ChartOfAccounts", curAccountsCrate));
             }
 
             //Act
@@ -66,7 +66,7 @@ namespace terminalQuickBooksTests.Integration
                 var memoTextBox = controls.FindByName("Memo");
                 memoTextBox.Value = "The testing transactions";
                 crateStorage.Remove<StandardAccountingTransactionCM>();
-                crateStorage.Add(fr8.Infrastructure.Data.Crates.Crate.FromContent("StandardConfigurationControlsCM", controls));
+                crateStorage.Add(Fr8.Infrastructure.Data.Crates.Crate.FromContent("StandardConfigurationControlsCM", controls));
                 AddOperationalStateCrate(dataDTO, new OperationalStateCM());
                 dataDTO.ActivityDTO.AuthToken = HealthMonitor_FixtureData.QuickBooks_AuthTokenDTO();
             }

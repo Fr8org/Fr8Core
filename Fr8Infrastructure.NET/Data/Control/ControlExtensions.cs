@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
-namespace fr8.Infrastructure.Data.Control
+namespace Fr8.Infrastructure.Data.Control
 {
     public static class DataExtensions
     {

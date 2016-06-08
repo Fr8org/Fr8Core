@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace fr8.Infrastructure.Data.Crates
+namespace Fr8.Infrastructure.Data.Crates
 {
     public struct CrateManifestType
     {

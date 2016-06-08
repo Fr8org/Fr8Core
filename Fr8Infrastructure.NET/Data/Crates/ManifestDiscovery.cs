@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.Manifests;
 
-namespace fr8.Infrastructure.Data.Crates
+namespace Fr8.Infrastructure.Data.Crates
 {
     public class ManifestDiscovery
     {

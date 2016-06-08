@@ -3,12 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using fr8.Infrastructure.Data.Constants;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.Helpers;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Helpers;
 
-namespace fr8.Infrastructure.Data.Manifests
+namespace Fr8.Infrastructure.Data.Manifests
 {
     /// <summary>
     /// This class represents manifest for action's configuraton controls. To simplify creation of the UI the following mechanism is integrated into this class.

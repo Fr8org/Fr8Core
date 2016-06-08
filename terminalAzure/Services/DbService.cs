@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using fr8.Infrastructure.Utilities.Logging;
+using Fr8.Infrastructure.Utilities.Logging;
 using TerminalSqlUtilities;
 using terminalAzure.Infrastructure;
 

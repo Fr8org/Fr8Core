@@ -1,4 +1,4 @@
-﻿using fr8.Infrastructure.StructureMap;
+﻿using Fr8.Infrastructure.StructureMap;
 using Moq;
 using StructureMap;
 using terminalSalesforce.Infrastructure;

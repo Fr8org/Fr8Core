@@ -7,7 +7,7 @@ using Data.Interfaces;
 using Data.Repositories.Encryption;
 using Data.Repositories.Plan;
 using Data.States;
-using fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Data.States;
 using Hub.StructureMap;
 using NUnit.Framework;
 using StructureMap;

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Data.Entities;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using Salesforce.Common;

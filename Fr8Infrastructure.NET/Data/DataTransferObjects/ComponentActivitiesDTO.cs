@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace fr8.Infrastructure.Data.DataTransferObjects
+namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
     public class ComponentActivitiesDTO
     {

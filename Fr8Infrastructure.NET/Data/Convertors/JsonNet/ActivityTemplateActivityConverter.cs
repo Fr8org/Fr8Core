@@ -1,9 +1,9 @@
 ﻿using System;
-using fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace fr8.Infrastructure.Data.Convertors.JsonNet
+namespace Fr8.Infrastructure.Data.Convertors.JsonNet
 {
     class ActivityTemplateActivityConverter : JsonConverter
     {

@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Data.Entities;
 using Data.States;
-using fr8.Infrastructure.Data.Control;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.Managers;
-using fr8.Infrastructure.Data.Manifests;
-using fr8.Infrastructure.Data.States;
-using fr8.Infrastructure.Utilities;
-using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using log4net;
@@ -254,8 +254,8 @@ namespace terminalDocuSign.Services
             var existingLabelDdlb = upstreamCrateChooser.SelectedCrates[0].Label;
             var docusignEnvelope = new DropDownList
             {
-                selectedKey = fr8.Infrastructure.Data.Constants.MT.DocuSignEnvelope_v2.ToString(),
-                Value = ((int)fr8.Infrastructure.Data.Constants.MT.DocuSignEnvelope_v2).ToString(),
+                selectedKey = Fr8.Infrastructure.Data.Constants.MT.DocuSignEnvelope_v2.ToString(),
+                Value = ((int)Fr8.Infrastructure.Data.Constants.MT.DocuSignEnvelope_v2).ToString(),
                 Name = "UpstreamCrateChooser_mnfst_dropdown_0",
                 Source = existingDdlbSource
             };

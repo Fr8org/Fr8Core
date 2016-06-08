@@ -1,4 +1,4 @@
-﻿namespace fr8.Infrastructure.Interfaces
+﻿namespace Fr8.Infrastructure.Interfaces
 {
 	public interface IPusherNotifier
 	{

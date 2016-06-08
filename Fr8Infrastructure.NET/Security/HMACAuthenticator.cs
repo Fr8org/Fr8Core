@@ -2,10 +2,10 @@
 using System.Net.Http;
 using System.Runtime.Caching;
 using System.Threading.Tasks;
-using fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Interfaces;
 using StructureMap;
 
-namespace fr8.Infrastructure.Security
+namespace Fr8.Infrastructure.Security
 {
     public class HMACAuthenticator : IHMACAuthenticator
     {

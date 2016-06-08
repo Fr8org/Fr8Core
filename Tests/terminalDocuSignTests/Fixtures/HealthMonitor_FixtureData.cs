@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.States;
 using NUnit.Framework;
 using HealthMonitor.Utility;
 using Newtonsoft.Json.Linq;

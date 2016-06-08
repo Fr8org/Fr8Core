@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Data.States;
 
 namespace Data.States.Templates
 {

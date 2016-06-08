@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using Intuit.Ipp.Data;

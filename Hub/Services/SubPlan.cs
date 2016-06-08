@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using fr8.Infrastructure.Utilities.Logging;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Interfaces;
 using StructureMap;
 

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using fr8.Infrastructure.Data.Control;
-using fr8.Infrastructure.Data.Manifests;
-using fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
 
 namespace Fr8.TerminalBase.Services
 {

@@ -9,11 +9,11 @@ using NUnit.Framework;
 using StructureMap;
 using System.Threading.Tasks;
 using Data.States;
-using fr8.Infrastructure.Data.Constants;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.Manifests;
-using fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Interfaces;
 using HubTests.Services.Container;
 using UtilitiesTesting.Fixtures;
 

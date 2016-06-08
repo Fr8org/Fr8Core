@@ -12,9 +12,9 @@ using System.Threading.Tasks;
 using HubTests.Controllers.Api;
 using UtilitiesTesting.Fixtures;
 using AutoMapper;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.States;
-using fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Interfaces;
 using Hub.Interfaces;
 
 namespace HubTests.Controllers

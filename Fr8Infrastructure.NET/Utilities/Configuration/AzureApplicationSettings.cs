@@ -21,7 +21,7 @@ using System.IO;
 using System.Reflection;
 
 [assembly: CLSCompliant(true)]
-namespace fr8.Infrastructure.Utilities.Configuration
+namespace Fr8.Infrastructure.Utilities.Configuration
 {
     /// <summary>
     /// Microsoft Azure settings.

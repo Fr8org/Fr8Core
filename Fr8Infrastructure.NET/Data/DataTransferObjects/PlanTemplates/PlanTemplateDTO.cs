@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates
+namespace Fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates
 {
     public  class PlanTemplateDTO
     {

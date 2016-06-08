@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Data.Infrastructure;
 using Data.Repositories.Encryption.Impl.Rijndael;
 using Data.Repositories.SqlBased;
-using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Microsoft.Azure.KeyVault;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 

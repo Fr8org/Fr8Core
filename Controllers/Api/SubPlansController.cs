@@ -6,8 +6,8 @@ using AutoMapper;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Utilities.Logging;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Interfaces;
 
 namespace HubWeb.Controllers

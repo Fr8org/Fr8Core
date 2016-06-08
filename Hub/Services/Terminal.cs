@@ -7,10 +7,10 @@ using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Utility;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.Manifests;
-using fr8.Infrastructure.Interfaces;
-using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
 using StructureMap;
 

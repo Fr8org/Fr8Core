@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
-namespace fr8.Infrastructure.Data.DataTransferObjects
+namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
     /// <summary>
     /// Plan DTO that contains full graph of other DTO objects

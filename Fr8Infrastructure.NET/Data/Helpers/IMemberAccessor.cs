@@ -1,6 +1,6 @@
 using System;
 
-namespace fr8.Infrastructure.Data.Helpers
+namespace Fr8.Infrastructure.Data.Helpers
 {
     public interface IMemberAccessor
     {

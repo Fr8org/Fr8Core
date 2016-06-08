@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Web.Mvc;
-using fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities;
 
 namespace HubWeb.Filters
 {

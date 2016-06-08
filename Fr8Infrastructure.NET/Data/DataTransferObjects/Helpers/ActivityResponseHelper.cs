@@ -1,9 +1,10 @@
 ﻿using System;
-using fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Control;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace fr8.Infrastructure.Data.DataTransferObjects.Helpers
+namespace Fr8.Infrastructure.Data.DataTransferObjects.Helpers
 {
     public static class ActivityResponseHelper
     {

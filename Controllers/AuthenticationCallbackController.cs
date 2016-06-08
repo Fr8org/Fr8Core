@@ -9,7 +9,7 @@ using Hub.Interfaces;
 using HubWeb.ViewModels;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
-using fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace HubWeb.Controllers
 {

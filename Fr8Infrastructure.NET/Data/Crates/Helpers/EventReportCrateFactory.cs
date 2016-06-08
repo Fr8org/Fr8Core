@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.Manifests;
 
-namespace fr8.Infrastructure.Data.Crates.Helpers
+namespace Fr8.Infrastructure.Data.Crates.Helpers
 {
     public class EventReportCrateFactory
     {

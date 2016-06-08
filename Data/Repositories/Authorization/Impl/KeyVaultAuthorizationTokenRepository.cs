@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Repositories.Authorization;
-using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Microsoft.Azure.KeyVault;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 

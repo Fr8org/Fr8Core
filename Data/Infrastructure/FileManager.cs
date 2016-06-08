@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using Data.Entities;
-using fr8.Infrastructure.Utilities;
-using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Configuration;
 
 namespace Data.Infrastructure
 {

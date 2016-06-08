@@ -1,6 +1,6 @@
-﻿using fr8.Infrastructure.Data.Crates.Helpers;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.Manifests;
+﻿using Fr8.Infrastructure.Data.Crates.Helpers;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace UtilitiesTesting.Fixtures
 {

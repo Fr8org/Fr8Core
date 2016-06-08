@@ -10,11 +10,11 @@ using UtilitiesTesting.Fixtures;
 using System.Collections.Generic;
 using Moq;
 using AutoMapper;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.Managers;
-using fr8.Infrastructure.Data.Manifests;
-using fr8.Infrastructure.Data.States;
-using fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Interfaces;
 using Hub.Interfaces;
 
 namespace HubTests.Security

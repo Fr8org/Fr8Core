@@ -1,10 +1,10 @@
 ﻿using System;
-using fr8.Infrastructure.Data.Convertors.JsonNet;
-using fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Data.Convertors.JsonNet;
+using Fr8.Infrastructure.Data.States;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace fr8.Infrastructure.Data.DataTransferObjects
+namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
     public class CrateDTO
     {

@@ -11,11 +11,11 @@ using Hub.Interfaces;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Data.Repositories.Plan;
-using fr8.Infrastructure.Data.Constants;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.Managers;
-using fr8.Infrastructure.Data.Manifests;
-using fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
 using Event = Hub.Services.Event;
 
 namespace HubTests.Services

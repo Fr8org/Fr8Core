@@ -5,9 +5,9 @@ using HubWeb.Controllers;
 using UtilitiesTesting;
 using System.Threading.Tasks;
 using System;
-using fr8.Infrastructure.Data.Crates.Helpers;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Crates.Helpers;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
 
 namespace HubTests.Controllers
 {

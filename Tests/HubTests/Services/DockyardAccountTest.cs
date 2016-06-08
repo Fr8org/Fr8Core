@@ -6,7 +6,7 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities;
 using Hub.Services;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;

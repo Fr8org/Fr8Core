@@ -2,7 +2,7 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using fr8.Infrastructure.Data.Helpers;
+using Fr8.Infrastructure.Data.Helpers;
 
 namespace Data.Entities
 {

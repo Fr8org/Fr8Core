@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Controllers;
-using fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace Hub.Infrastructure
 {

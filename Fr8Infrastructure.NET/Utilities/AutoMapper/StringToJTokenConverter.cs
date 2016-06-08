@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Newtonsoft.Json.Linq;
 
-namespace fr8.Infrastructure.Utilities.AutoMapper
+namespace Fr8.Infrastructure.Utilities.AutoMapper
 {
     /// <summary>
     /// AutoMapper converter to convert string JSON representation to JObject.

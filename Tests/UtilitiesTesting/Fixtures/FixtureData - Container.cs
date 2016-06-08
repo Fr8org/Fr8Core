@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Data.Entities;
 using Data.States;
-using fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities;
 
 namespace UtilitiesTesting.Fixtures
 {

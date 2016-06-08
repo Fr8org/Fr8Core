@@ -1,7 +1,7 @@
-﻿using fr8.Infrastructure.Data.Constants;
-using fr8.Infrastructure.Data.Manifests;
+﻿using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Manifests;
 
-namespace fr8.Infrastructure.Data.DataTransferObjects
+namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
 
     public class LoggingDataCM : Manifest

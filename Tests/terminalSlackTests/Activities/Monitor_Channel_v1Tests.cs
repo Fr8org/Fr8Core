@@ -1,10 +1,10 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using fr8.Infrastructure.Data.Constants;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.Managers;
-using fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Services;
@@ -111,7 +111,7 @@ namespace terminalSlackTests.Integration
                  {
                      EventPayload = new CrateStorage()
                     {
-                        fr8.Infrastructure.Data.Crates.Crate.FromContent(
+                        Fr8.Infrastructure.Data.Crates.Crate.FromContent(
                             "EventReport",
                             new StandardPayloadDataCM(HealthMonitor_FixtureData.SlackEventFields()
                             )
@@ -150,7 +150,7 @@ namespace terminalSlackTests.Integration
             var requestActionDTO = HealthMonitor_FixtureData.Monitor_Channel_v1_InitialConfiguration_Fr8DataDTO();
             using (var storage = Crate.GetUpdatableStorage(requestActionDTO.ActivityDTO))
             {
-                storage.Add(fr8.Infrastructure.Data.Crates.Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, new Monitor_Channel_v1.ActivityUi(), fr8.Infrastructure.Data.States.AvailabilityType.Configuration));
+                storage.Add(Fr8.Infrastructure.Data.Crates.Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, new Monitor_Channel_v1.ActivityUi(), Fr8.Infrastructure.Data.States.AvailabilityType.Configuration));
             }
             //Act
             var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, requestActionDTO);
@@ -167,7 +167,7 @@ namespace terminalSlackTests.Integration
             var requestActionDTO = HealthMonitor_FixtureData.Monitor_Channel_v1_InitialConfiguration_Fr8DataDTO();
             using (var storage = Crate.GetUpdatableStorage(requestActionDTO.ActivityDTO))
             {
-                storage.Add(fr8.Infrastructure.Data.Crates.Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, new Monitor_Channel_v1.ActivityUi(), fr8.Infrastructure.Data.States.AvailabilityType.Configuration));
+                storage.Add(Fr8.Infrastructure.Data.Crates.Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, new Monitor_Channel_v1.ActivityUi(), Fr8.Infrastructure.Data.States.AvailabilityType.Configuration));
             }
             //Act
             var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, requestActionDTO);

@@ -5,7 +5,7 @@ using Data.Entities;
 using Data.Repositories.Security.Entities;
 using Data.Repositories.SqlBased;
 using Data.States.Templates;
-using fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace Data.Repositories.Security.StorageImpl.SqlBased
 {

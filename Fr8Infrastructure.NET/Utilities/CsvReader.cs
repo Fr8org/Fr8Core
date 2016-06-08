@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Interfaces;
 
-namespace fr8.Infrastructure.Utilities
+namespace Fr8.Infrastructure.Utilities
 {
 	public class CsvReader : ICsvReader
 	{

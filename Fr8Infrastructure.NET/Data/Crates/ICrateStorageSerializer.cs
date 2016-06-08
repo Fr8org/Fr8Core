@@ -1,6 +1,6 @@
-﻿using fr8.Infrastructure.Data.DataTransferObjects;
+﻿using Fr8.Infrastructure.Data.DataTransferObjects;
 
-namespace fr8.Infrastructure.Data.Crates
+namespace Fr8.Infrastructure.Data.Crates
 {
     public interface ICrateStorageSerializer
     {

@@ -29,10 +29,10 @@ using System.Linq.Expressions;
 using Castle.DynamicProxy;
 using Data.Interfaces;
 using Data.Repositories.Utilization;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Data.Managers;
-using fr8.Infrastructure.Interfaces;
-using fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities;
 using Hub.Security.ObjectDecorators;
 using Hub.Services.Timers;
 

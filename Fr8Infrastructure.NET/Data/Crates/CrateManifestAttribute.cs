@@ -1,6 +1,6 @@
 using System;
 
-namespace fr8.Infrastructure.Data.Crates
+namespace Fr8.Infrastructure.Data.Crates
 {
     /// <summary>
     /// Use this attribute to specife crate manifest type. This is the alternative to deriving crate's manifest from Manifest base class.

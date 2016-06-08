@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.Manifests;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using terminalFr8Core.Activities;

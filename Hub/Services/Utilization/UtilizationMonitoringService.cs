@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
-using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
 
 namespace Hub.Services

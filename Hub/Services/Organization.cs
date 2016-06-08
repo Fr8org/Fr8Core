@@ -5,7 +5,7 @@ using Data.Interfaces;
 using Hub.Interfaces;
 using StructureMap;
 using AutoMapper;
-using fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace Hub.Services
 {

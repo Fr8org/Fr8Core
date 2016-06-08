@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
-using fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Interfaces;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using Moq;

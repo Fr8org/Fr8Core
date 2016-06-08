@@ -1,7 +1,7 @@
 ﻿using Data.Interfaces;
 using Data.States;
 using StructureMap;
-using fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities;
 
 namespace HubWeb.App_Start
 {

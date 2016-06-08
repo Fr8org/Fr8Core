@@ -1,9 +1,9 @@
 ﻿using System;
-using fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Data.States;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace fr8.Infrastructure.Data.DataTransferObjects
+namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
     public class ActivityTemplateDTO
     {

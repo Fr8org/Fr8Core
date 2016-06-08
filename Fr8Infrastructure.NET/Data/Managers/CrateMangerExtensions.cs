@@ -1,9 +1,9 @@
 ﻿using System;
-using fr8.Infrastructure.Data.Convertors;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Convertors;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
-namespace fr8.Infrastructure.Data.Managers
+namespace Fr8.Infrastructure.Data.Managers
 {
     public static class CrateManagerExtensions
     {

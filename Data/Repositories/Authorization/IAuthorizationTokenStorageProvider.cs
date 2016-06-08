@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Data.Entities;
-using fr8.Infrastructure.Data.Helpers;
+using Fr8.Infrastructure.Data.Helpers;
 
 namespace Data.Repositories.Authorization
 {

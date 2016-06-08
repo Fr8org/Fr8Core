@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
-using fr8.Infrastructure.Communication;
-using fr8.Infrastructure.Interfaces;
-using fr8.Infrastructure.Utilities.Configuration;
-using fr8.Infrastructure.Utilities.Logging;
+using Fr8.Infrastructure.Communication;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Utilities.Logging;
 using Google.GData.Client;
 using Newtonsoft.Json.Linq;
 using terminalGoogle.DataTransferObjects;

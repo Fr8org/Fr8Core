@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using fr8.Infrastructure.Data.Manifests;
-using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Microsoft.Azure.Search;
 using Microsoft.Azure.Search.Models;
 using PlanDirectory.Interfaces;

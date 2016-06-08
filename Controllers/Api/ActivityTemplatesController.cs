@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using Hub.Interfaces;
 using Data.Entities;
 using System.Linq;
-using fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace HubWeb.Controllers
 {

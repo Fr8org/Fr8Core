@@ -9,7 +9,7 @@ namespace Data.Entities
     {
         public TerminalDO()
         {
-            this.AuthenticationType = fr8.Infrastructure.Data.States.AuthenticationType.None;      
+            this.AuthenticationType = Fr8.Infrastructure.Data.States.AuthenticationType.None;      
         }
 
         [Key]

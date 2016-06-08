@@ -9,7 +9,7 @@ using Data.Entities;
 using Data.Interfaces;
 using HubTests.Controllers.Api;
 using Data.States;
-using fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Hub.Interfaces;
 using HubWeb.Controllers;
 using UtilitiesTesting.Fixtures;

@@ -1,14 +1,14 @@
 using System.Net.Http;
 using System.Net.Http.Formatting;
-using fr8.Infrastructure.Communication;
-using fr8.Infrastructure.Interfaces;
-using fr8.Infrastructure.Security;
+using Fr8.Infrastructure.Communication;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Security;
 using Moq;
 using StructureMap.Configuration.DSL;
 using StructureMap;
 
 
-namespace fr8.Infrastructure.StructureMap
+namespace Fr8.Infrastructure.StructureMap
 {
     /// <summary>
     /// TODO this class should live in parent project

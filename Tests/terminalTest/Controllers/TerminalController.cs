@@ -1,6 +1,6 @@
 ﻿using System.Web.Http.Description;
 using System.Web.Http;
-using fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.Manifests;
 using Fr8.TerminalBase.Services;
 
 namespace terminalTest.Controllers

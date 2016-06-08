@@ -1,6 +1,6 @@
 ﻿using System;
 using Data.Entities;
-using fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates;
+using Fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates;
 
 namespace Hub.Interfaces
 {

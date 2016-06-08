@@ -1,6 +1,7 @@
-﻿using fr8.Infrastructure.Data.DataTransferObjects;
+﻿using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
-namespace fr8.Infrastructure.Data.Crates.Helpers
+namespace Fr8.Infrastructure.Data.Crates.Helpers
 {
     public class LoggingDataCrateFactory
     {

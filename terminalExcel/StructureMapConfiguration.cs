@@ -1,4 +1,4 @@
-﻿using fr8.Infrastructure.Data.Managers;
+﻿using Fr8.Infrastructure.Data.Managers;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 

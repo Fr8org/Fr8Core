@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities;
 
 namespace UtilitiesTesting
 {

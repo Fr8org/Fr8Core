@@ -1,4 +1,4 @@
-﻿using fr8.Infrastructure.Utilities.Logging;
+﻿using Fr8.Infrastructure.Utilities.Logging;
 using terminalPapertrail.Interfaces;
 
 namespace terminalPapertrail.Services

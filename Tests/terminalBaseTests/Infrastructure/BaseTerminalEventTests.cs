@@ -3,8 +3,8 @@ using Moq;
 using NUnit.Framework;
 using UtilitiesTesting;
 using System.Collections.Generic;
-using fr8.Infrastructure.Data.DataTransferObjects;
-using fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
 
 namespace terminalBaseTests.Infrastructure
 {

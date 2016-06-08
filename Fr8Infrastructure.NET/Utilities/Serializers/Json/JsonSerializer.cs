@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
-namespace fr8.Infrastructure.Utilities.Serializers.Json
+namespace Fr8.Infrastructure.Utilities.Serializers.Json
 {
     /// <summary>
     /// Default JSON serializer

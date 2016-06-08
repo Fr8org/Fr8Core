@@ -6,11 +6,11 @@ using System.IO;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Threading.Tasks;
-using fr8.Infrastructure.Interfaces;
-using fr8.Infrastructure.Utilities.Logging;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Logging;
 using log4net;
 
-namespace fr8.Infrastructure.Communication
+namespace Fr8.Infrastructure.Communication
 {
     public class RestfulServiceClient : IRestfulServiceClient
     {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Control;
 using Newtonsoft.Json;
 
-namespace fr8.Infrastructure.Data.DataTransferObjects
+namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
     // We have logic that can copy properties from one StandardConfigurationControlsCM to another.
     // Important moment here is that we want to copy only properties (i.e what can be changed by user) no structure.

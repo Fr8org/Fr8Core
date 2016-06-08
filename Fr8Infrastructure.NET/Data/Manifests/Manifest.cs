@@ -2,11 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using fr8.Infrastructure.Data.Constants;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Utilities;
 
-namespace fr8.Infrastructure.Data.Manifests
+namespace Fr8.Infrastructure.Data.Manifests
 {
     [CrateManifestType(Int32.MinValue, null)]
     public abstract class Manifest

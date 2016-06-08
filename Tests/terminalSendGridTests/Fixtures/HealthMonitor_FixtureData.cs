@@ -1,5 +1,5 @@
 ﻿using System;
-using fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace terminalSendGridTests.Fixtures
 {

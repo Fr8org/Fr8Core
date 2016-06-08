@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Data.Interfaces;
 using Data.States.Templates;
-using fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities;
 
 namespace Data.Infrastructure
 {

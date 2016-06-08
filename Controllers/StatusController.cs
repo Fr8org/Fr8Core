@@ -18,7 +18,7 @@ using System.IO;
 using System.Net;
 using System.Xml;
 using System.Xml.Linq;
-using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Utilities.Configuration;
 
 namespace DocusignTutorial.Controllers 
 {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.Caching;
 using Data.Entities;
 using Data.Repositories.Authorization;
-using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Utilities.Configuration;
 
 namespace Data.Repositories
 {

@@ -24,7 +24,7 @@ using log4net.Core;
 using log4net.Layout;
 using log4net.Util;
 
-namespace fr8.Infrastructure.Utilities.Logging
+namespace Fr8.Infrastructure.Utilities.Logging
 {
 	/// <summary>
 	/// Logs events to a remote syslog daemon.

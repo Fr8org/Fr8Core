@@ -1,7 +1,7 @@
 ﻿
 using System;
 
-namespace fr8.Infrastructure.Data.Manifests
+namespace Fr8.Infrastructure.Data.Manifests
 {
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public class MtPrimaryKeyAttribute : Attribute

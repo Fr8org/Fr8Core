@@ -1,8 +1,8 @@
 ﻿using System;
-using fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Constants;
 using Newtonsoft.Json;
 
-namespace fr8.Infrastructure.Data.DataTransferObjects
+namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
     public class FieldValidationDTO
     {

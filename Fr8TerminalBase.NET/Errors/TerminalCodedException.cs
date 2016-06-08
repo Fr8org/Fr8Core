@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Net;
-using fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities;
 
 namespace Fr8.TerminalBase.Errors
 {

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using fr8.Infrastructure.Data.Crates;
-using fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.States;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace fr8.Infrastructure.Data.DataTransferObjects
+namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
     [System.Diagnostics.DebuggerDisplay("Key = '{Key}', Value = '{Value}'")]
     public class FieldDTO : System.ICloneable

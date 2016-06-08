@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace fr8.Infrastructure.Data.Crates
+namespace Fr8.Infrastructure.Data.Crates
 {
     [JsonConverter(typeof(DenySerializationConverter), "CrateStorage can't be directly serialized to JSON. Convert it to CrateStorageDTO.")]
     public class CrateStorage : ICrateStorage

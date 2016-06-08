@@ -1,7 +1,7 @@
 ﻿using Hub.Interfaces;
 using StructureMap;
 using System.Web.Http;
-using fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Managers;
 
 namespace HubWeb.Controllers
 {

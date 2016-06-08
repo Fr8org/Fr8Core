@@ -10,7 +10,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using Data.Interfaces;
-using fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities;
 using FluentValidation.WebApi;
 using Google.Apis.Util;
 using Hub.Infrastructure;
@@ -24,7 +24,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Segment;
 using StructureMap;
-using Logger = fr8.Infrastructure.Utilities.Logging.Logger;
+using Logger = Fr8.Infrastructure.Utilities.Logging.Logger;
 
 namespace HubWeb
 {
@@ -61,7 +61,7 @@ namespace HubWeb
             GlobalConfiguration.Configuration.Filters.Add(new WebApiExceptionFilterAttribute());
 
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
-            ObjectFactory.Configure(fr8.Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
+            ObjectFactory.Configure(Fr8.Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
             ObjectFactory.GetInstance<AutoMapperBootStrapper>().ConfigureAutoMapper();
 
             var db = ObjectFactory.GetInstance<DbContext>();
@@ -69,9 +69,9 @@ namespace HubWeb
 
             if (!selfHostMode)
             {
-                fr8.Infrastructure.Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
+                Fr8.Infrastructure.Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
                 var segmentWriteKey =
-                    fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey");
+                    Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey");
                 if (!segmentWriteKey.IsNullOrEmpty())
                     Analytics.Initialize(segmentWriteKey);
             }
@@ -204,10 +204,10 @@ namespace HubWeb
 
                         if (!String.IsNullOrWhiteSpace(domainName) && !String.IsNullOrWhiteSpace(serverProtocol) && domainPort.HasValue)
                         {
-                            fr8.Infrastructure.Utilities.Server.ServerUrl = String.Format("{0}{1}{2}/", serverProtocol, domainName,
+                            Fr8.Infrastructure.Utilities.Server.ServerUrl = String.Format("{0}{1}{2}/", serverProtocol, domainName,
                                 domainPort.Value == 80 ? String.Empty : (":" + domainPort.Value));
 
-                            fr8.Infrastructure.Utilities.Server.ServerHostName = domainName;
+                            Fr8.Infrastructure.Utilities.Server.ServerHostName = domainName;
                         }
                         else
                         {
@@ -228,9 +228,9 @@ namespace HubWeb
                                 protocol = "https://";
 
                             // *** Figure out the base Url which points at the application's root
-                            fr8.Infrastructure.Utilities.Server.ServerHostName = context.Request.ServerVariables["SERVER_NAME"];
+                            Fr8.Infrastructure.Utilities.Server.ServerHostName = context.Request.ServerVariables["SERVER_NAME"];
                             string url = protocol + context.Request.ServerVariables["SERVER_NAME"] + port + context.Request.ApplicationPath;
-                            fr8.Infrastructure.Utilities.Server.ServerUrl = url;
+                            Fr8.Infrastructure.Utilities.Server.ServerUrl = url;
                         }
                         _IsInitialised = true;
                     }
