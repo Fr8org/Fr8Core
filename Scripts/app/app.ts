@@ -425,20 +425,9 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             templateUrl: "/AngularTemplate/WebServiceList",
             data: { pageTitle: 'Web Services', pageSubTitle: '' }
         })
-        .state('findObjects',
-        {
-            url: '/findObjects/create',
-            templateUrl: '/AngularTemplate/FindObjects',
-            data: { pageTitle: 'Constructing Find Objects plan', pageSubTitle: '' }
-        })
-        .state('findObjectsResult',
-        {
-            url: '/findObjects/{id}/results',
-            templateUrl: '/AngularTemplate/FindObjectsResults',
-            data: { pageTitle: 'Find Objects results', pageSubTitle: '' }
-        })
-        .state('terminals',
-        {
+
+
+        .state('terminals', {
             url: "/terminals",
             templateUrl: "/AngularTemplate/TerminalList",
             data: { pageTitle: 'Terminals', pageSubTitle: '' }

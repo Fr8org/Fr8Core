@@ -9,7 +9,7 @@ using Utilities.Configuration.Azure;
 
 namespace terminalYammer.Controllers
 {
-    [RoutePrefix("terminals")]
+    //[RoutePrefix("terminals")]
     public class TerminalController : ApiController
     {
         /// <summary>
