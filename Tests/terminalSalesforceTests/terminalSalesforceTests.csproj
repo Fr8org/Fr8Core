@@ -237,7 +237,7 @@
       <Project>{85CB0215-96DF-4C38-A022-1BE6C952813B}</Project>
       <Name>terminalSalesforce</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HealthMonitorUtility\Fr8.Testing.csproj">
+    <ProjectReference Include="..\Fr8.Testing\Fr8.Testing.csproj">
       <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
       <Name>Fr8.Testing</Name>
     </ProjectReference>

@@ -219,8 +219,8 @@
       <Project>{89d763ed-3ea6-4303-ab29-3239095a4b06}</Project>
       <Name>terminalAtlassian</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HealthMonitorUtility\Fr8.Testing.csproj">
-      <Project>{459FE39A-A5CC-41D8-B06E-8FAE3A1A623B}</Project>
+    <ProjectReference Include="..\Fr8.Testing\Fr8.Testing.csproj">
+      <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
       <Name>Fr8.Testing</Name>
     </ProjectReference>
   </ItemGroup>

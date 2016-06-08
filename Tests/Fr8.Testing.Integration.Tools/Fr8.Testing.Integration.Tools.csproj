@@ -153,7 +153,7 @@
       <Project>{cddccfab-28b8-446c-8585-72d2bb78f2dc}</Project>
       <Name>terminalGoogle</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HealthMonitorUtility\Fr8.Testing.csproj">
+    <ProjectReference Include="..\Fr8.Testing\Fr8.Testing.csproj">
       <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
       <Name>Fr8.Testing</Name>
     </ProjectReference>

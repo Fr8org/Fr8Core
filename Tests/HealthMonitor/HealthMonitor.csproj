@@ -369,6 +369,10 @@
       <Project>{2b78433b-ba79-470b-bef6-dba5c1904865}</Project>
       <Name>PlanDirectory</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Fr8.Testing\Fr8.Testing.csproj">
+      <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
+      <Name>Fr8.Testing</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HubTests\HubTests.csproj">
       <Project>{1e8dd13a-846b-4c36-a9c4-5997c5fd74ff}</Project>
       <Name>HubTests</Name>
@@ -468,10 +472,6 @@
     <ProjectReference Include="..\..\terminalYammer\terminalYammer.csproj">
       <Project>{e8bf04ac-1a7d-4cbe-80b9-e20f53699f2d}</Project>
       <Name>terminalYammer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\HealthMonitorUtility\Fr8.Testing.csproj">
-      <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
-      <Name>Fr8.Testing</Name>
     </ProjectReference>
     <ProjectReference Include="..\terminalAzureTests\terminalAzureTests.csproj">
       <Project>{36ed6f21-1a8f-4f07-a08a-a55639891e9b}</Project>

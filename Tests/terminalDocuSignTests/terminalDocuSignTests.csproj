@@ -233,7 +233,7 @@
       <Project>{4f56c030-d16b-4a51-82d0-3c23a47ab703}</Project>
       <Name>Fr8.Testing.Integration.Tools</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HealthMonitorUtility\Fr8.Testing.csproj">
+    <ProjectReference Include="..\Fr8.Testing\Fr8.Testing.csproj">
       <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
       <Name>Fr8.Testing</Name>
     </ProjectReference>
