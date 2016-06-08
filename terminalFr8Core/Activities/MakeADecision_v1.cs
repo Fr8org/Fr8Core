@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Fr8Data.Constants;
 using Fr8Data.Control;
@@ -131,14 +132,13 @@ namespace terminalFr8Core.Activities
 
         private bool CheckConditions(List<FilterConditionDTO> conditions, IQueryable<FieldDTO> fields)
         {
-            var filterExpression = ParseCriteriaExpression(conditions, fields);
             foreach (FieldDTO field in fields)
             {
                 double result = 0D;
-                if (Double.TryParse(field.Value, 
-                    System.Globalization.NumberStyles.AllowCurrencySymbol 
-                    | System.Globalization.NumberStyles.AllowDecimalPoint 
-                    | System.Globalization.NumberStyles.AllowThousands, 
+                if (Double.TryParse(field.Value,
+                    System.Globalization.NumberStyles.AllowCurrencySymbol
+                    | System.Globalization.NumberStyles.AllowDecimalPoint
+                    | System.Globalization.NumberStyles.AllowThousands,
                     System.Globalization.CultureInfo.CurrentCulture,
                     out result))
                 {
@@ -146,9 +146,10 @@ namespace terminalFr8Core.Activities
                 }
             }
 
-            var results = fields.Provider.CreateQuery<FieldDTO>(filterExpression);
+            IQueryable<FieldDTO> results = conditions.Select(condition => ParseCriteriaExpression(condition, fields))
+                .Aggregate<Expression, IQueryable<FieldDTO>>(null, (current, filterExpression) => current?.Provider.CreateQuery<FieldDTO>(filterExpression) 
+                ?? fields.Provider.CreateQuery<FieldDTO>(filterExpression));
             return results.Any();
-
         }
 
         protected override Crate CreateControlsCrate()
