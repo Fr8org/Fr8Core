@@ -7,8 +7,8 @@ using StructureMap;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
-using Utilities.Configuration.Azure;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 

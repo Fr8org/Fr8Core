@@ -7,7 +7,6 @@ using System.Web.Security;
 using System.Web.SessionState;
 using Data.Infrastructure.AutoMapper;
 using StructureMap;
-using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core
 {

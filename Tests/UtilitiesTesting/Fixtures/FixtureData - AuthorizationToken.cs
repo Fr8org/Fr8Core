@@ -2,8 +2,8 @@
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.States;
+using Data.States;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace UtilitiesTesting.Fixtures
 {

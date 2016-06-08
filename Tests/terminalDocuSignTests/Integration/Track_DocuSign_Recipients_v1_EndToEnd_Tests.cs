@@ -5,12 +5,12 @@ using HealthMonitor.Utility;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
 using Newtonsoft.Json.Linq;
-using Fr8Data.Managers;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -75,7 +75,7 @@ namespace terminalDocuSignTests.Integration
 
             string baseUrl = GetHubApiBaseUrl();
 
-            var solutionCreateUrl = baseUrl + "plans/createSolution?solutionName=Track_DocuSign_Recipients";
+            var solutionCreateUrl = baseUrl + "plans?solution_name=Track_DocuSign_Recipients";
 
 
             //
@@ -84,7 +84,7 @@ namespace terminalDocuSignTests.Integration
             var plan = await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
             var solution = plan.Plan.SubPlans.FirstOrDefault().Activities.FirstOrDefault();
 
-            var planReloadUrl = string.Format(baseUrl + "plans/full/{0}", plan.Plan.Id);
+            var planReloadUrl = string.Format(baseUrl + "plans?id={0}&include_children=true", plan.Plan.Id);
 
             //
             // Send configuration request without authentication token

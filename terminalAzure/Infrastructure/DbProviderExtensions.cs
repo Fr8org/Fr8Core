@@ -4,8 +4,8 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
+using Fr8.TerminalBase.Errors;
 using StructureMap;
-using TerminalBase;
 using TerminalSqlUtilities;
 
 namespace terminalAzure.Infrastructure

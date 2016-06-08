@@ -4,17 +4,16 @@ using Data.Entities;
 using Data.Interfaces;
 using Hub.Interfaces;
 using HubWeb.Controllers;
-using HubWeb.ViewModels;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
-using Utilities.Interfaces;
 using System.Threading.Tasks;
 using Data.States;
-using Fr8Data.Constants;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Interfaces;
 using HubTests.Services.Container;
 using UtilitiesTesting.Fixtures;
 
@@ -59,7 +58,7 @@ namespace HubTests.Controllers
                                     ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(4),
                                     Ordering = 3
-                                },
+                                }
                             }
                         }
                     }
@@ -120,6 +119,7 @@ namespace HubTests.Controllers
             Mock<IPlan> planMock = new Mock<IPlan>();
             planMock.Setup(x => x.Run(It.IsAny<Guid>(), It.IsAny<Crate[]>(), It.IsAny<Guid?>())).ReturnsAsync(new ContainerDTO());
             planMock.Setup(x => x.Activate(It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(new ActivateActivitiesDTO());
+
             planMock.Setup(x=> x.GetFullPlan(uowMock.Object, (It.IsAny<Guid>()))).Returns(new PlanDO()
             {
                 Fr8Account = FixtureData.TestDockyardAccount1(),

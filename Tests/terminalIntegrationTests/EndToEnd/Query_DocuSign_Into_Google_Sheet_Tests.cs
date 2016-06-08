@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Interfaces;
-using Fr8Infrastructure.Communication;
-using Fr8Infrastructure.Interfaces;
+using Fr8.Infrastructure.Interfaces;
 using HealthMonitor.Utility;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
 using terminaBaselTests.Tools.Activities;
 using terminaBaselTests.Tools.Plans;
-using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services;
 using terminalGoogle.Services.Authorization;
 

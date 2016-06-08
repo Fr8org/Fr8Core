@@ -23,16 +23,16 @@ using ExtternalStructureMap = StructureMap;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 using System.Threading.Tasks;
-using Utilities;
-using Utilities.Interfaces;
 using System.Net.Http;
 using Microsoft.ApplicationInsights;
 using System.Linq.Expressions;
 using Castle.DynamicProxy;
 using Data.Interfaces;
 using Data.Repositories.Utilization;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities;
 using Hub.Security.ObjectDecorators;
 using Hub.Services.Timers;
 
@@ -108,8 +108,7 @@ namespace Hub.StructureMap
                 For<ITerminal>().Use<Terminal>().Singleton();
                 For<ICrateManager>().Use<CrateManager>();
                 For<IReport>().Use<Report>();
-                For<IManifest>().Use<ManifestService>();
-                For<IFindObjectsPlan>().Use<FindObjectsPlan>();
+                For<IManifest>().Use<Manifest>();
                 For<ITime>().Use<Time>();
                 For<IPusherNotifier>().Use<PusherNotifier>();
                 For<IAuthorization>().Use<Authorization>();
@@ -174,8 +173,7 @@ namespace Hub.StructureMap
 
                 For<ICrateManager>().Use<CrateManager>();
 
-                For<IManifest>().Use<ManifestService>();
-                For<IFindObjectsPlan>().Use<FindObjectsPlan>();
+                For<IManifest>().Use<Manifest>();
                 For<IAuthorization>().Use<Authorization>();
                 For<IReport>().Use<Report>();
                 var timeMock = new Mock<ITime>();

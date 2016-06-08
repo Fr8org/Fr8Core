@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
 using HealthMonitor.Utility;
-using Fr8Data.Managers;
 using NUnit.Framework;
 using UtilitiesTesting.Fixtures;
 
@@ -44,7 +42,7 @@ namespace terminaBaselTests.Tools.Activities
         public async Task<Tuple<ActivityDTO, PlanDTO, Guid>> CreateAndConfigure_MailMergeIntoDocuSign_Solution(string dataSourceValue,
             string dataSourceSelectedKey, string docuSignTemplateValue, string docuSignTemplateSelectedKey, bool addNewDocuSignTemplate)
         {
-            var solutionCreateUrl = _baseHubITest.GetHubApiBaseUrl() + "plans/createSolution?solutionName=Mail_Merge_Into_DocuSign";
+            var solutionCreateUrl = _baseHubITest.GetHubApiBaseUrl() + "plans?solution_name=Mail_Merge_Into_DocuSign";
 
             //
             // Create solution

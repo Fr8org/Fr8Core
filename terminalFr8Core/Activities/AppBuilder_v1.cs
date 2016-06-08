@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.BaseClasses;
 using terminalUtilities.Excel;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using Utilities.Configuration.Azure;
 
 namespace terminalFr8Core.Activities
 {
@@ -27,7 +26,7 @@ namespace terminalFr8Core.Activities
             Version = "1",
             Category = ActivityCategory.Processors,
             NeedsAuthentication = false,
-            MinPaneWidth = 400,
+            MinPaneWidth = 320,
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO
         };
@@ -277,7 +276,7 @@ namespace terminalFr8Core.Activities
             };
             var infoText = new TextBlock()
             {
-                Value = "Create a form to app builder. Fr8 will generate a URL that you can distribute to users. The URL will launch this plan and collect data.",
+                Value = "This activity, when run, creates an app that you can distribute to other users as a URL. <a href='http://documentation.fr8.co/action-development-building-documentation/' target='_blank'>?</a>",
                 Name = "info_text"
             };
 

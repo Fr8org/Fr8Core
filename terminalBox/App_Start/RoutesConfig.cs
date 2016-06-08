@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
-using TerminalBase.BaseClasses;
+using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalBox
 {

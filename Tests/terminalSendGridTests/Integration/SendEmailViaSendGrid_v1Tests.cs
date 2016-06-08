@@ -1,12 +1,12 @@
 ﻿using System.Linq;
 using HealthMonitor.Utility;
-using Fr8Data.Managers;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
 using terminalSendGridTests.Fixtures;
 
 namespace terminalSendGridTests.Integration

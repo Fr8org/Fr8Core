@@ -3,11 +3,11 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using Fr8Data.Crates;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Utilities.Serializers.Json;
 using Hub.Managers;
-using Utilities.Serializers.Json;
-using Fr8Data.Managers;
 
 namespace UtilitiesTesting.Fixtures
 {

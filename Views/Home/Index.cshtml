@@ -1,6 +1,6 @@
 ﻿@using Data.Infrastructure.StructureMap
 @using StructureMap
-@using Utilities
+@using Fr8.Infrastructure.Utilities
 @model HubWeb.ViewModels.HomeVM
 
 
@@ -50,26 +50,50 @@
 @Html.Partial("_HomeNavNew", new HubWeb.ViewModels.NavLinksHome())
 
 <!-- HERO UNIT -->
-<div id="hero-unit" class="hero-unit hero-light hero-video" data-vide-bg="mp4: https://fr8.azureedge.net/Content/videos/motion_1920.mp4, webm: https://fr8.azureedge.net/Content/videos/motion.webm, ogv: https://fr8.azureedge.net/Content/videos/motion.ogv, poster: https://fr8.azureedge.net/Content/videos/motion_1920.jpg" data-vide-options="loop: true, posterType: jpg">
+<div id="hero-unit"  class="hero-unit hero-light hero-video" data-vide-bg="mp4: https://fr8.azureedge.net/Content/videos/motion_1920.mp4, webm: https://fr8.azureedge.net/Content/videos/motion.webm, ogv: https://fr8.azureedge.net/Content/videos/motion.ogv, poster: https://fr8.azureedge.net/Content/videos/motion_1920.jpg" data-vide-options="loop: true, posterType: jpg">
     <div class="hero-content text-center">
         <div id="slidecaption" class="slide-caption">
             <div class="hero-text">
                 <h2 class="hero-heading">Connect Your Cloud Services</h2>
-                <p>Our workflows simplify your life.</p>
+                <p>The most powerful Integration-as-a-Service solution.</p>
             </div>
         </div>
         <div class="hero-buttons">
             <a href="/Services/HowItWorks" id="btn-about" class="btn btn-danger btn-lg"><i class="fa fa-arrow-circle-o-down"></i> READ MORE</a>
-            @if (Request.IsAuthenticated)
-            {
+            @if (Request.IsAuthenticated) {
                 <a href="/Welcome" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT NOW</a>
-            }
-            else
-            {
+            } else {
                 <a href="/DockyardAccount/ProcessGuestUserMode" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT NOW</a>
             }
         </div>
+
+        <!-- Slides -->
+        <div id="myCarousel" class="carousel slide hero-slides base-block-white" data-ride="carousel">
+            <!-- Wrapper for slides -->
+            <div class="carousel-inner" role="listbox">
+                <div class="item active">
+                    <div class="carousel-content">
+                        <h3>Akkadian - <i>Peter Smith, Chief Operating Officer</i></h3>
+                        <p><b>"Our team uses Fr8 to generate mail merges using Salesforce and DocuSign. It only takes a few seconds to automatically insert data into our complex DocuSign templates. Fr8 delivers huge time savings."</b></p>
+                    </div>
+                </div>
+            </div>
+            <!-- Left and right controls -->
+            <!-- <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+                <span class="fa fa-chevron-left" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+                <span class="fa fa-chevron-right" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+            </a> -->
+            <!-- Indicators -->
+            <ol class="carousel-indicators">
+                <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+            </ol>
+        </div>
     </div>
+
     <div class="hero-bg-pattern">
         <div class="full-area"></div>
     </div>
@@ -91,8 +115,7 @@
                 <div class="col-sm-8 col-sm-offset-2">
                     <div class="section-content">
                         <p>Fr8 ties your existing cloud applications together, letting you move information easily and enabling you to create powerful web applications, processes and workflows with a few clicks of your mouse.</p>
-                        <p><a href="http://fr8-documentation.azurewebsites.net">Learn More</a>
-                        </p>
+                        <p><a href="http://fr8-documentation.azurewebsites.net">Learn More</a></p>
                     </div>
                 </div>
             </div>
@@ -136,12 +159,9 @@
     <div id="social-network" class="section full-width-parallax parallax">
         <div class="container">
             <h2 class="section-heading">Automate Your Work. Connect Your Cloud Services.</h2>
-            @if (Request.IsAuthenticated)
-            {
+            @if (Request.IsAuthenticated) {
                 <a href="/Welcome" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT FREE</a>
-            }
-            else
-            {
+            } else {
                 <a href="/DockyardAccount/ProcessGuestUserMode" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT FREE</a>
             }
             <p style="color: #F2F4F5; padding-top: 10px;">`</p>
@@ -267,7 +287,7 @@
             n.parentNode.insertBefore(a, n);
         }
     }, window.analytics.SNIPPET_VERSION = "2.0.9",
-       window.analytics.load("@(Utilities.Configuration.Azure.CloudConfigurationManager.GetSetting("SegmentWriteKey"))");
+       window.analytics.load("@(Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey"))");
     window.analytics.page('Visited Page - Home');
     var btnTryItNow = document.getElementById("btn-contact");
     window.analytics.trackLink(btnTryItNow, "Clicked Try It Now Button");

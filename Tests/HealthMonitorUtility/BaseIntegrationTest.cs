@@ -7,14 +7,14 @@ using NUnit.Framework;
 using StructureMap;
 using System.Net.Http;
 using Data.Interfaces;
-using Fr8Data.Constants;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.DataTransferObjects.Helpers;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Infrastructure.Communication;
-using Fr8Infrastructure.Interfaces;
+using Fr8.Infrastructure.Communication;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects.Helpers;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Interfaces;
 
 namespace HealthMonitor.Utility
 {
@@ -83,7 +83,8 @@ namespace HealthMonitor.Utility
 
         public string GetTerminalDiscoverUrl()
         {
-            return TerminalUrl + "/terminals/discover";
+            //return TerminalUrl + "/terminals/discover";
+            return TerminalUrl + "/discover";
         }
 
         public string GetTerminalConfigureUrl()

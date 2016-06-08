@@ -5,25 +5,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data.Entities;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using Hub.Interfaces;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Utilities;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
-using StructureMap;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using TerminalBase.Models;
-using Utilities;
 
 namespace terminalDocuSign.Activities
 {
@@ -626,7 +622,7 @@ namespace terminalDocuSign.Activities
                 new FieldDescriptionsCM(GetFieldListForQueryBuilder())
             );
 
-            yield return Fr8Data.Crates.Crate.FromContent(
+            yield return Crate.FromContent(
                 "DocuSign Envelope Report",
                 new FieldDescriptionsCM(
                     new FieldDTO
