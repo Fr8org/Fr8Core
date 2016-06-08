@@ -146,10 +146,24 @@ namespace terminalFr8Core.Activities
                 }
             }
 
-            IQueryable<FieldDTO> results = conditions.Select(condition => ParseCriteriaExpression(condition, fields))
-                .Aggregate<Expression, IQueryable<FieldDTO>>(null, (current, filterExpression) => current?.Provider.CreateQuery<FieldDTO>(filterExpression) 
-                ?? fields.Provider.CreateQuery<FieldDTO>(filterExpression));
-            return results.Any();
+            var checker = false;
+            foreach (var condition in conditions)
+            {
+                var expression = ParseCriteriaExpression(condition, fields);
+                var results = fields.Provider.CreateQuery<FieldDTO>(expression);
+
+                if (results.Any())
+                {
+                    checker = true;
+                }
+                else
+                {
+                    //if there is false condition, stop evaluating
+                    checker = false;
+                    break;
+                }
+            }
+            return checker;
         }
 
         protected override Crate CreateControlsCrate()
