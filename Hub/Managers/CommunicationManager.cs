@@ -4,9 +4,9 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
+using Fr8.Infrastructure.Utilities;
 using Hub.Interfaces;
 using Hub.Services;
-using Utilities;
 
 namespace Hub.Managers
 {

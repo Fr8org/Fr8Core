@@ -3,7 +3,7 @@ using StructureMap;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using Data.Interfaces;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace HubWeb.Controllers
 {

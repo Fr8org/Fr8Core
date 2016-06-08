@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using Data.Repositories.MultiTenant;
 using Data.Repositories.MultiTenant.Queryable;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace Data.Interfaces
 {

@@ -1,11 +1,7 @@
 ﻿using System.Web.Http;
-using System.Collections.Generic;
-using Utilities.Configuration.Azure;
 using System.Web.Http.Description;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using TerminalBase.Services;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Services;
 
 namespace terminalBox.Controllers
 {

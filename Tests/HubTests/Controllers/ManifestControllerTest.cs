@@ -5,13 +5,12 @@ using NUnit.Framework;
 using StructureMap;
 using System.Linq;
 using System.Web.Http.Results;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using HubWeb.Controllers;
-using Fr8Data.Managers;
 
 namespace HubTests.Controllers
 {

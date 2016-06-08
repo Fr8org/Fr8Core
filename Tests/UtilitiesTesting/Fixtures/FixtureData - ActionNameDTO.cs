@@ -1,5 +1,5 @@
 ﻿
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace UtilitiesTesting.Fixtures
 {

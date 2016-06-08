@@ -1,7 +1,7 @@
 ﻿using System.Web.Http.Description;
 using System.Web.Http;
-using Fr8Data.Manifests;
-using TerminalBase.Services;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Services;
 
 namespace terminalAzure.Controllers
 {

@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Microsoft.AspNet.Identity;
 using Newtonsoft.Json.Linq;
 using StructureMap;
-using Fr8Data.DataTransferObjects;
-using Fr8Infrastructure.Interfaces;
 using Hub.Infrastructure;
 using PlanDirectory.Infrastructure;
 using PlanDirectory.Interfaces;
-using Utilities.Configuration.Azure;
 
 namespace PlanDirectory.Controllers.Api
 {
@@ -118,7 +118,7 @@ namespace PlanDirectory.Controllers.Api
                     planTemplateDTO.PlanContents
                 );
 
-                var plan = await client.PostAsync<JToken, Fr8Data.DataTransferObjects.PlanEmptyDTO>(
+                var plan = await client.PostAsync<JToken, PlanEmptyDTO>(
                     uri, planTemplateDTO.PlanContents, headers: headers);
 
                 return Ok(new { RedirectUrl = CloudConfigurationManager.GetSetting("HubUrl") + "/dashboard/plans/" + plan.Id.ToString() + "/builder?viewMode=plan" });

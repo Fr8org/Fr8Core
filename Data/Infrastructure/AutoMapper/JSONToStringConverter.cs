@@ -14,7 +14,7 @@ namespace Data.Infrastructure.AutoMapper
                 return null;
             }
 
-            var serializer = new Utilities.Serializers.Json.JsonSerializer();
+            var serializer = new Fr8.Infrastructure.Utilities.Serializers.Json.JsonSerializer();
             serializer.Settings.MissingMemberHandling = MissingMemberHandling.Ignore;
 
             var jsonStr = serializer.Serialize(curObject);

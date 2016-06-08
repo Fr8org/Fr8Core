@@ -1,9 +1,9 @@
 ﻿using HealthMonitor.Utility;
 using NUnit.Framework;
 using System;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 using terminalFr8CoreTests.Fixtures;
 
 namespace terminalTests.Integration
@@ -70,7 +70,7 @@ namespace terminalTests.Integration
                {
                    EventPayload = new CrateStorage()
                    {
-                        Fr8Data.Crates.Crate.FromContent(
+                        Fr8.Infrastructure.Data.Crates.Crate.FromContent(
                             "RouteActivatedReport",
                                 RouteActivated()
                             )
