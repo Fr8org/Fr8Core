@@ -26,7 +26,7 @@ namespace terminalFr8Core.Activities
             Version = "1",
             Category = ActivityCategory.Processors,
             NeedsAuthentication = false,
-            MinPaneWidth = 400,
+            MinPaneWidth = 320,
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO
         };
@@ -276,7 +276,7 @@ namespace terminalFr8Core.Activities
             };
             var infoText = new TextBlock()
             {
-                Value = "Start by adding UI controls that your users will see. Then add additional activities. When you click Run, we'll generate a URL that you can use to launch your App. <a href='http://documentation.fr8.co/action-development-building-documentation/' target='_blank'>?</a>",
+                Value = "This activity, when run, creates an app that you can distribute to other users as a URL. <a href='http://documentation.fr8.co/action-development-building-documentation/' target='_blank'>?</a>",
                 Name = "info_text"
             };
 
