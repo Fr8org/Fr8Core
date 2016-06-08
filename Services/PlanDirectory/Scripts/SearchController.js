@@ -17,7 +17,7 @@
             $scope.pages = [];
 
             var doSearch = function (pageStart) {
-                var url = urlPrefix + '/api/plantemplates/search'
+                var url = urlPrefix + '/api/plan_templates/search'
                     + '?text=' + $scope.searchForm.searchText
                     + '&pageStart=' + pageStart
                     + '&pageSize=' + $scope.pageSize;
@@ -83,7 +83,7 @@
                             Metronic.unblockUI();
                         }
                         else {
-                            var url = urlPrefix + '/api/plantemplates/createplan/?id=' + planTemplate.ParentPlanId;
+                            var url = urlPrefix + '/api/plan_templates/createplan/?id=' + planTemplate.ParentPlanId;
                             $http.post(url, null)
                                 .then(function (data) {
                                     $uibModal.open({

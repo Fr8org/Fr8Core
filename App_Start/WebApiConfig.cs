@@ -4,6 +4,7 @@ using HubWeb.ExceptionHandling;
 using System.Web.Http.Routing;
 using System.Net.Http;
 using System.Web.Http.Dispatcher;
+using Hub.Infrastructure;
 
 namespace HubWeb
 {
@@ -80,6 +81,6 @@ namespace HubWeb
                 routeTemplate: "api/v1/authentication/tokens/grant",
                 defaults: new { id = RouteParameter.Optional, controller = "Authentication", action = "GrantTokens" }
             );
-	}
+	    }
     }
 }

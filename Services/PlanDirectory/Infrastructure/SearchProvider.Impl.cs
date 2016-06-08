@@ -141,6 +141,29 @@ namespace PlanDirectory.Infrastructure
             }
         }
 
+        public async Task Remove(Guid planId)
+        {
+            using (var searchClient = CreateAzureSearchClient())
+            {
+                using (var indexClient = searchClient.Indexes.GetClient(GetPlanTemplateIndexName()))
+                {
+                    var doc = ConvertToSearchDocument(planId);
+
+                    var batch = IndexBatch.New(new[] { IndexAction.Delete(doc) } );
+                    await indexClient.Documents.IndexAsync(batch);
+                }
+            }
+        }
+
+        private Document ConvertToSearchDocument(Guid planId)
+        {
+            var document = new Document()
+            {
+                { "parentPlanId", planId.ToString() }
+            };
+
+            return document;
+        }
 
         private Document ConvertToSearchDocument(PlanTemplateCM cm)
         {
