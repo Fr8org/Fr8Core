@@ -242,7 +242,7 @@ module dockyard.services {
 
                             $rootScope.$broadcast(
                                 directives.paneConfigureAction.MessageType[directives.paneConfigureAction.MessageType.PaneConfigureAction_ResetValidationMessages],
-                                new directives.paneConfigureAction.ResetValidationMessagesEventArgs ()
+                                new directives.paneConfigureAction.ResetValidationMessagesEventArgs()
                             );
 
                             // if we have validation errors, send them to activities

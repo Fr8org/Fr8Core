@@ -12,11 +12,12 @@ namespace HubTests.Services
     {
         public Uri BaseUri { get; set; }
 
-        public Func<string, Fr8DataDTO, object> CallActivityBody { get; set; }
+        public Func<string, IEnumerable<KeyValuePair<string, string>>, Fr8DataDTO, object> CallActivityBody { get; set; }
         
-        public Task<TResponse> CallActivityAsync<TResponse>(string actionType, Fr8DataDTO dataDTO, string correlationId)
+        public Task<TResponse> CallActivityAsync<TResponse>(string actionType,
+            IEnumerable<KeyValuePair<string, string>> parameters, Fr8DataDTO dataDTO, string correlationId)
         {
-            return Task.FromResult((TResponse) CallActivityBody(actionType, dataDTO));
+            return Task.FromResult((TResponse) CallActivityBody(actionType, parameters, dataDTO));
         }
 
         public Task<Stream> DownloadAsync(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)

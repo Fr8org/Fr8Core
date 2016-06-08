@@ -78,8 +78,8 @@
       <HintPath>..\packages\Fr8Data.1.0.0.9\lib\net45\Fr8Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="fr8TerminalBase, Version=1.0.0.13, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\fr8TerminalBase.1.0.0.13\lib\net45\fr8TerminalBase.dll</HintPath>
+    <Reference Include="fr8TerminalBase, Version=1.0.0.14, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\fr8TerminalBase.1.0.0.14\lib\net45\fr8TerminalBase.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="fr8Utilities, Version=1.0.0.5, Culture=neutral, processorArchitecture=MSIL">
@@ -681,6 +681,14 @@
     <Compile Include="Migrations\201605231150066_AddOrganizationAndAccountToObjectRolePermissions.Designer.cs">
       <DependentUpon>201605231150066_AddOrganizationAndAccountToObjectRolePermissions.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201606070712251_RemoveFr8CoreActivities.cs" />
+    <Compile Include="Migrations\201606070712251_RemoveFr8CoreActivities.Designer.cs">
+      <DependentUpon>201606070712251_RemoveFr8CoreActivities.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606071223281_Delete FindObjects solution.cs" />
+    <Compile Include="Migrations\201606071223281_Delete FindObjects solution.Designer.cs">
+      <DependentUpon>201606071223281_Delete FindObjects solution.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -1258,6 +1266,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201605231150066_AddOrganizationAndAccountToObjectRolePermissions.resx">
       <DependentUpon>201605231150066_AddOrganizationAndAccountToObjectRolePermissions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606070712251_RemoveFr8CoreActivities.resx">
+      <DependentUpon>201606070712251_RemoveFr8CoreActivities.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606071223281_Delete FindObjects solution.resx">
+      <DependentUpon>201606071223281_Delete FindObjects solution.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

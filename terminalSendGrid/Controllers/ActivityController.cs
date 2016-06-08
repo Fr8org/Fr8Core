@@ -1,9 +1,8 @@
 ﻿using System;
+using System.Net.Http;
 using System.Web.Http;
-using TerminalBase.BaseClasses;
 using System.Threading.Tasks;
 using Fr8Data.DataTransferObjects;
-using TerminalBase.Infrastructure;
 using TerminalBase.Services;
 using StructureMap;
 
@@ -22,7 +21,8 @@ namespace terminalSendGrid.Controllers
         [HttpPost]
         public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
         {
-            return _activityExecutor.HandleFr8Request(curTerminal, actionType, curDataDTO);
+            var queryParams = Request.GetQueryNameValuePairs();
+            return _activityExecutor.HandleFr8Request(curTerminal, actionType, queryParams, curDataDTO);
         }
     }
     
