@@ -3,7 +3,7 @@ using StructureMap;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace HubWeb.Controllers
 {

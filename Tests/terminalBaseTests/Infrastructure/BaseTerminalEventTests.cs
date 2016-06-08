@@ -2,10 +2,9 @@
 using Moq;
 using NUnit.Framework;
 using UtilitiesTesting;
-using Utilities.Configuration.Azure;
 using System.Collections.Generic;
-using Fr8Data.DataTransferObjects;
-using Fr8Infrastructure.Interfaces;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
 
 namespace terminalBaseTests.Infrastructure
 {

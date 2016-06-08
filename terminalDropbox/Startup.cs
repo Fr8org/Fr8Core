@@ -7,11 +7,9 @@ using System.Web.Http;
 using Microsoft.Owin;
 using Newtonsoft.Json;
 using Owin;
-using TerminalBase;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 using System.Web.Http.Dispatcher;
-using TerminalBase.Services;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using terminalDropbox.Actions;
 
 [assembly: OwinStartup(typeof(terminalDropbox.Startup))]

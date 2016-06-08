@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using Data.Entities;
 using System.Globalization;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace terminalQuickBooksTests.Fixtures
 {

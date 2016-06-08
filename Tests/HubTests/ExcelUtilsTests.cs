@@ -1,15 +1,13 @@
 ﻿using System;
 using NUnit.Framework;
-using Utilities.Interfaces;
 using StructureMap;
 using System.IO;
-using Utilities;
 using System.Linq;
-using Data.Repositories;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities;
 using UtilitiesTesting;
-using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using terminalUtilities.Excel;

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -9,5 +9,6 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityNameListDTO{ ActivityNames = new List<ActivityNameDTO>(){FixtureData.TestActivityNameDTO1()}};
         }
+
     }
 }

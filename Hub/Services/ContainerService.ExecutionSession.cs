@@ -6,12 +6,12 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
-using Fr8Data.Constants;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.DataTransferObjects.Helpers;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects.Helpers;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
 using Hub.Exceptions;
 using Hub.Interfaces;
 using StructureMap;
@@ -519,12 +519,12 @@ namespace Hub.Services
                     return;
                 }
                 //Save the info about crates that already existed in payload
-                var containerCrateSources = containerStorage.Where(x => x.ManifestType.Id != (int)Fr8Data.Constants.MT.OperationalStatus)
+                var containerCrateSources = containerStorage.Where(x => x.ManifestType.Id != (int)Fr8.Infrastructure.Data.Constants.MT.OperationalStatus)
                                                             .ToDictionary(x => x.Id, x => x.SourceActivityId);
                 // Update container payload with the payload returned from the activity.
                 containerStorage.Replace(activityPayloadStorage);
                 // Update source activity Id info for all crates and if it is a crate produced by current activity then mark it with its Id
-                foreach (var crate in containerStorage.Where(x => x.ManifestType.Id != (int)Fr8Data.Constants.MT.OperationalStatus))
+                foreach (var crate in containerStorage.Where(x => x.ManifestType.Id != (int)Fr8.Infrastructure.Data.Constants.MT.OperationalStatus))
                 {
                     string sourceActivityId;
                     crate.SourceActivityId = containerCrateSources.TryGetValue(crate.Id, out sourceActivityId) ? sourceActivityId : currentActivityId;

@@ -4,11 +4,10 @@ using System.Linq;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects.PlanTemplates;
-using Fr8Data.Control;
-using Fr8Data.DataTransferObjects.PlanTemplates;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
 using Hub.Interfaces;
 using Hub.Managers;
 
@@ -245,7 +244,7 @@ namespace Hub.Services
                 var makeADecisionNode = allNodesDictionary[tabActivity.Id];
                 using (var crateStorage = _crateManager.GetUpdatableStorage(tabActivity))
                 {
-                    var controlsCrate = crateStorage.Where(a => a.ManifestType.Id == (int)Fr8Data.Constants.MT.StandardConfigurationControls).FirstOrDefault().Get<StandardConfigurationControlsCM>();
+                    var controlsCrate = crateStorage.Where(a => a.ManifestType.Id == (int)Fr8.Infrastructure.Data.Constants.MT.StandardConfigurationControls).FirstOrDefault().Get<StandardConfigurationControlsCM>();
                     var transitionsPanel = (ContainerTransition)controlsCrate.Controls.Where(a => a.Type == ControlTypes.ContainerTransition).FirstOrDefault();
         
                     foreach (var transition in transitionsPanel.Transitions.Where(a => a.TargetNodeId.HasValue))
@@ -365,7 +364,7 @@ namespace Hub.Services
             {
                 using (var crateStorage = _crateManager.GetUpdatableStorage(makeADecisionActivity))
                 {
-                    var controlsCrate = crateStorage.Where(a => a.ManifestType.Id == (int)Fr8Data.Constants.MT.StandardConfigurationControls).FirstOrDefault().Get<StandardConfigurationControlsCM>();
+                    var controlsCrate = crateStorage.Where(a => a.ManifestType.Id == (int)Fr8.Infrastructure.Data.Constants.MT.StandardConfigurationControls).FirstOrDefault().Get<StandardConfigurationControlsCM>();
                     var transitionsPanel = (ContainerTransition)controlsCrate.Controls.Where(a => a.Type == ControlTypes.ContainerTransition).FirstOrDefault();
         
                     foreach (var transition in transitionsPanel.Transitions)

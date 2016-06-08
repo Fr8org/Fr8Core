@@ -1,21 +1,22 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Entities;
-using Fr8Data.Constants;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Helpers;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
 using terminalSalesforce.Actions;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforceTests.Fixtures;
-using TerminalBase.Infrastructure;
 using UtilitiesTesting;
-using TerminalBase.Models;
-using Fr8Data.Managers;
-using TerminalBase.Helpers;
 
 namespace terminalSalesforceTests.Activities
 {

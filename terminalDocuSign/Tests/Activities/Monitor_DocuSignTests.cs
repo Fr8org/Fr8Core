@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.TerminalBase.Infrastructure;
 using NUnit.Framework;
-using TerminalBase.Infrastructure;
 using terminalDocuSign.Actions;
 using terminalDocuSign.Infrastructure.StructureMap;
 using UtilitiesTesting;
@@ -89,7 +89,7 @@ namespace terminalDocuSign.Tests.Actions
         public void GetEnvelopeId_ParameterAsPayloadDTO_ReturnsEnvelopeInformation()
         {
             //Arrange
-            PayloadDTO curPayloadDTO = FixtureData.PayloadDTO1();
+            var curPayloadDTO = FixtureData.PayloadDTO1();
             object[] parameters = new object[] { curPayloadDTO, "EnvelopeId" };
 
             //Act

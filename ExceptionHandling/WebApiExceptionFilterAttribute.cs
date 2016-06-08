@@ -8,11 +8,11 @@ using Newtonsoft.Json;
 using StructureMap;
 using Hub.Exceptions;
 using Hub.Managers;
-using Utilities;
 using Microsoft.ApplicationInsights;
 using System.Collections.Generic;
-using Fr8Data.DataTransferObjects;
-using Utilities.Configuration.Azure;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Configuration;
 
 namespace HubWeb.ExceptionHandling
 {

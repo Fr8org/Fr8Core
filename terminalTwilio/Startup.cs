@@ -1,12 +1,12 @@
 ﻿using Microsoft.Owin;
 using Owin;
 using terminalTwilio;
-using TerminalBase.BaseClasses;
 using System.Collections.Generic;
 using System.Web.Http.Dispatcher;
 using System;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using terminalTwilio.Activities;
-using TerminalBase.Services;
 
 [assembly: OwinStartup(typeof(Startup))]
 

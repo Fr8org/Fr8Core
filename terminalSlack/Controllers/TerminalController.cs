@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Web.Http.Description;
 using System.Web.Http;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using Utilities.Configuration.Azure;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Utilities.Configuration;
 
 namespace terminalSlack.Controllers
 {
