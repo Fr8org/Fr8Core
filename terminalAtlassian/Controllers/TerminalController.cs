@@ -8,7 +8,7 @@ using TerminalBase.Services;
 
 namespace terminalAtlassian.Controllers
 {
-    [RoutePrefix("terminals")]
+    //[RoutePrefix("terminals")]
     public class TerminalController : ApiController
     {
         [HttpGet]

@@ -9,7 +9,7 @@ using TerminalBase.Services;
 
 namespace terminalSendGrid.Controllers
 {
-    [RoutePrefix("terminals")]
+    //[RoutePrefix("terminals")]
     public class TerminalController : ApiController
     {
         [HttpGet]

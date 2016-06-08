@@ -98,7 +98,7 @@ module dockyard.services {
                     'getFull': {
                         method: 'GET',
                         isArray: false,
-                        url: '/api/plans/full/:id',
+                        url: '/api/plans?id=:id&include_children=true',
                         params: {
                             id: '@id'
                         }
@@ -115,12 +115,13 @@ module dockyard.services {
                     'getByQuery': {
                         method: 'GET',
                         isArray: false,
-                        url: '/api/plans/getByQuery'
+                        //url: '/api/plans/getByQuery'
+                        url: '/api/plans/query'
                     },
                     'getByActivity': {
                         method: 'GET',
                         isArray: false,
-                        url: '/api/plans/getByActivity/:id',
+                        url: '/api/plans?activity_id=:id',
                         params: {
                             id: '@id'
                         }
@@ -134,15 +135,16 @@ module dockyard.services {
                         }
                     },
                     
-                    'create': {
-                        method: 'POST',
-                        url: '/api/plans/create'
-                    },
+                    //'create': {
+                    //    method: 'POST',
+                    //    url: '/api/plans/create'
+                    //},
                     'createSolution': {
                         method: 'POST',
-                        url: '/api/plans/createSolution',
+                        //url: '/api/plans/createSolution',
+                        url: '/api/plans/',
                         params: {
-                            solutionName: '@solutionName'
+                            solution_name: '@solutionName'
                         }
                     },
                     'deactivate': {
@@ -179,7 +181,7 @@ module dockyard.services {
 
             resource.createTemplate = (id: string): ng.IPromise<any> => {
                 
-                var url = '/api/plans/createTemplate?planId=' + id;
+                var url = '/api/plans/Templates?planId=' + id;
                 var d = $q.defer();
 
                 $http.post(url, null)
@@ -208,59 +210,6 @@ module dockyard.services {
 
                 return d.promise;
             };
-
-            resource.runAndProcessClientAction =
-                (id: string): ng.IPromise<model.ContainerDTO> => {
-                    var d = $q.defer();
-
-                    resource.run(id)
-                        .then((container: model.ContainerDTO) => {
-                            if (container
-                                && container.currentActivityResponse == model.ActivityResponse.ExecuteClientAction
-                                && container.currentClientActivityName) {
-
-                                switch (container.currentClientActivityName) {
-                                    case 'ShowTableReport':
-                                        var path = '/findObjects/' + container.id + '/results';
-                                        $location.path(path);
-                                        break;
-
-                                    default:
-                                        break;
-                                }
-                            }
-
-                            if (container && container.error != null) {
-                                var messageToShow = "Plan " + container.name + " failed." + "<br/>";
-                                messageToShow += "Action: " + container.error.currentActivity + "<br/>";
-                                messageToShow += "Terminal: " + container.error.currentTerminal + "<br/>";
-                                messageToShow += "Message: " + container.error.message;
-                                ngToast.danger(messageToShow);
-                            }
-
-                            $rootScope.$broadcast(
-                                directives.paneConfigureAction.MessageType[directives.paneConfigureAction.MessageType.PaneConfigureAction_ResetValidationMessages],
-                                new directives.paneConfigureAction.ResetValidationMessagesEventArgs ()
-                            );
-
-                            // if we have validation errors, send them to activities
-                            if (container && container.validationErrors != null) {
-                                for (var key in container.validationErrors) {
-                                    $rootScope.$broadcast(
-                                        directives.paneConfigureAction.MessageType[directives.paneConfigureAction.MessageType.PaneConfigureAction_UpdateValidationMessages],
-                                        new directives.paneConfigureAction.UpdateValidationMessagesEventArgs(key, container.validationErrors[key])
-                                    );
-                                }
-                            }
-
-                            d.resolve(container);
-                        })
-                        .catch((err: any) => {
-                            d.reject(err);
-                        });
-
-                    return d.promise;
-                };
 
             return resource;
         }
