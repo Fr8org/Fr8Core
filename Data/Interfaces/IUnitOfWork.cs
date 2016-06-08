@@ -73,6 +73,8 @@ namespace Data.Interfaces
         
         IOrganizationRepository OrganizationRepository { get; }
 
+        IPageDefinitionRepository PageDefinitionRepository { get; }
+
 	    /// <summary>
         /// Call this to commit the unit of work
         /// </summary>

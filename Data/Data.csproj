@@ -678,6 +678,10 @@
     <Compile Include="Migrations\201606011034503_AddCanManagePageDefinitionsToFr8Account.Designer.cs">
       <DependentUpon>201606011034503_AddCanManagePageDefinitionsToFr8Account.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201606080054264_AddPageDefinition.cs" />
+    <Compile Include="Migrations\201606080054264_AddPageDefinition.Designer.cs">
+      <DependentUpon>201606080054264_AddPageDefinition.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -693,6 +697,7 @@
     <Compile Include="Repositories\Authorization\Impl\KeyVaultAuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\Authorization\Impl\MockedDbAuthorizationTokenStorageProvider.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtObjectStorage.Queries.cs" />
+    <Compile Include="Repositories\PageDefinitionRepository.cs" />
     <Compile Include="Repositories\PlanTemplates\ActivityDescriptionRepository.cs" />
     <Compile Include="Repositories\PlanTemplates\NodeTransitionRepository.cs" />
     <Compile Include="Repositories\PlanTemplates\PlanNodeDescriptionsRepository.cs" />
@@ -1258,6 +1263,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606011034503_AddCanManagePageDefinitionsToFr8Account.resx">
       <DependentUpon>201606011034503_AddCanManagePageDefinitionsToFr8Account.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606080054264_AddPageDefinition.resx">
+      <DependentUpon>201606080054264_AddPageDefinition.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

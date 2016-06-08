@@ -566,6 +566,11 @@ namespace Data.Infrastructure
             }
         }
 
+        private IPageDefinitionRepository _pageDefinitionRepository;
+
+        public IPageDefinitionRepository PageDefinitionRepository => 
+            _pageDefinitionRepository ?? (_pageDefinitionRepository = new PageDefinitionRepository(this));
+
         public void Save()
         {
             _context.SaveChanges();
