@@ -101,6 +101,8 @@ namespace HubWeb
                         //
                         //c.IncludeXmlComments(GetXmlCommentsPath());
 
+                        c.IncludeXmlComments(string.Format(@"{0}\bin\HubWeb.xml", System.AppDomain.CurrentDomain.BaseDirectory));
+
                         // Swashbuckle makes a best attempt at generating Swagger compliant JSON schemas for the various types
                         // exposed in your API. However, there may be occasions when more control of the output is needed.
                         // This is supported through the "MapType" and "SchemaFilter" options:
