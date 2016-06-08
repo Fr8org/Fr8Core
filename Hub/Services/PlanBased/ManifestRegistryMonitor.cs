@@ -5,16 +5,16 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using Fr8Data.Control;
 using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
 using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
 using Utilities;
-using Utilities.Logging;
-using CrateManagerExtensions = Hub.Managers.CrateManagerExtensions;
 
 namespace Hub.Services
 {
@@ -33,6 +33,8 @@ namespace Hub.Services
         private readonly IConfigRepository _configRepository;
 
         private const string MonitoringPlanName = "Monitoring Manifest Submissions";
+
+        private const string MessageName = "JIRA description";
 
         public ManifestRegistryMonitor(
             IActivity activity, 
@@ -74,18 +76,31 @@ namespace Hub.Services
             _configRepository = configRepository;
         }
 
-        public async Task StartMonitoringManifestRegistrySubmissions()
+        public async Task<bool> StartMonitoringManifestRegistrySubmissions()
         {
             var systemUser = await GetSystemUser();
             if (systemUser == null)
             {
                 throw new ApplicationException("System user doesn't exist");
             }
-            var plan = await GetExistingPlan(systemUser);
+            var isNewPlanCreated = false;
+            var plan = await GetExistingPlan();
             if (plan == null)
             {
+                isNewPlanCreated = true;
                 plan = await CreateAndConfigureNewPlan(systemUser);
             }
+            await RunPlan(plan);
+            return isNewPlanCreated;
+        }
+
+        private async Task RunPlan(PlanDO plan)
+        {
+            if (plan.PlanState == PlanState.Running)
+            {
+                return;
+            }
+            await _plan.Run(plan.Id, new[] { Crate<OperationalStateCM>.FromContent(string.Empty, new OperationalStateCM()) }, null);
         }
 
         private async Task<PlanDO> CreateAndConfigureNewPlan(Fr8AccountDO systemUser)
@@ -103,6 +118,71 @@ namespace Hub.Services
 
         private async Task ConfigureSaveJiraActivity(IUnitOfWork uow, Fr8AccountDO systemUser, ActivityTemplateDO[] activityTemplates, Guid planId)
         {
+            var saveJiraTemplate = activityTemplates.FirstOrDefault(x => x.Name == "Save_Jira_Issue" && x.Version == "1" && x.Terminal.Name == "terminalAtlassian");
+            if (saveJiraTemplate == null)
+            {
+                throw new ApplicationException("Save Jira Issue v1 activity template was not found in Atlassian terminal");
+            }
+            var saveJiraActivity = await _activity.CreateAndConfigure(uow, systemUser.Id, saveJiraTemplate.Id, saveJiraTemplate.Label, saveJiraTemplate.Label, 3, planId) as ActivityDO;
+            using (var storage = _crateManager.GetUpdatableStorage(saveJiraActivity))
+            {
+                var controls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+                if (controls == null)
+                {
+                    throw new ApplicationException("Save Jira Issue doesn't contain controls crate");
+                }
+                var projectSelector = controls.FindByName<DropDownList>("AvailableProjects");
+                if (projectSelector == null)
+                {
+                    throw new ApplicationException("Save Jira Issue doesn't contain project selector");
+                }
+                projectSelector.SelectByKey("Fr8");
+            }
+            saveJiraActivity = Mapper.Map<ActivityDO>(await _activity.Configure(uow, systemUser.Id, saveJiraActivity));
+            using (var storage = _crateManager.GetUpdatableStorage(saveJiraActivity))
+            {
+                var controls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+                var issueTypeSelector = controls.FindByName<DropDownList>("AvailableIssueTypes");
+                if (issueTypeSelector == null)
+                {
+                    throw new ApplicationException("Save Jira Issue doesn't contain issue type selector");
+                }
+                issueTypeSelector.SelectByKey("Task");
+            }
+            saveJiraActivity = Mapper.Map<ActivityDO>(await _activity.Configure(uow, systemUser.Id, saveJiraActivity));
+            using (var storage = _crateManager.GetUpdatableStorage(saveJiraActivity))
+            {
+                var controls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+                var prioritySelector = controls.FindByName<DropDownList>("AvailablePriorities");
+                if (prioritySelector == null)
+                {
+                    throw new ApplicationException("Save Jira Issue doesn't contain priority selector");
+                }
+                prioritySelector.SelectByKey("Normal");
+                var assigneeSelector = controls.FindByName<DropDownList>("Asignee");
+                if (assigneeSelector == null)
+                {
+                    throw new ApplicationException("Save Jira Issue doesn't contain asignee selector");
+                }
+                assigneeSelector.SelectByValue("admin");
+                var summary = controls.FindByName<TextSource>("SummaryTextSource");
+                if (summary == null)
+                {
+                    throw new ApplicationException("Save Jira Issue doesn't contain summary field");
+                }
+                summary.ValueSource = TextSource.SpecificValueSource;
+                summary.TextValue = "New Manifest Submission";
+                var description = controls.FindByName<TextSource>("DescriptionTextSource");
+                if (description == null)
+                {
+                    throw new ApplicationException("Save Jira Issue doesn't contain description field");
+                }
+                description.ValueSource = TextSource.UpstreamValueSrouce;
+                description.SelectedItem = new FieldDTO(MessageName);
+                description.selectedKey = MessageName;
+
+            }
+            await _activity.Configure(uow, systemUser.Id, saveJiraActivity);
         }
 
         private async Task ConfigureBuildMessageActivity(IUnitOfWork uow, Fr8AccountDO systemUser, ActivityTemplateDO[] activityTemplates, Guid planId)
@@ -125,24 +205,24 @@ namespace Hub.Services
                 {
                     throw new ApplicationException("Build Message doesn't contain message name control");
                 }
-                messageName.Value = "JIRA description";
-                var messageBody = controls.FindByName<TextBox>("Body");
+                messageName.Value = MessageName;
+                var messageBody = controls.FindByName<BuildMessageAppender>("Body");
                 if (messageBody == null)
                 {
                     throw new ApplicationException("Build Message doesn't contain message body control");
                 }
                 messageBody.Value =
-@"*Manifest Type: *
+@"*Manifest Type:*
 [Manifest Type Name]
-*Version: *
+*Version:*
 [Version]
-*Sample JSON: *
+*Sample JSON:*
 [Sample JSON]
-*Description: *
+*Description:*
 [Description]
-*Submitter Name: *
+*Submitter Name:*
 [Your Name]
-*Submitter Email: *
+*Submitter Email:*
 [Your Email]";
             }
             await _activity.Configure(uow, systemUser.Id, buildMessageActivity);
@@ -188,17 +268,16 @@ namespace Hub.Services
             {
                 throw new ApplicationException("Monitor Form Responses v1 activity template was not found in Google terminal");
             }
-            return await _activity.CreateAndConfigure(uow, systemUser.Id, monitorFormResponseTemplate.Id, monitorFormResponseTemplate.Label, monitorFormResponseTemplate.Label, 1, createPlan: true) as PlanDO;
+            return await _activity.CreateAndConfigure(uow, systemUser.Id, monitorFormResponseTemplate.Id, monitorFormResponseTemplate.Label, MonitoringPlanName, 1, createPlan: true, isInternalPlan: true) as PlanDO;
         }
 
-        private async Task<PlanDO> GetExistingPlan(Fr8AccountDO systemUser)
+        private async Task<PlanDO> GetExistingPlan()
         {
             using (var uow = _unitOfWorkProvider.GetNewUnitOfWork())
             {
                 return await uow.PlanRepository.GetPlanQueryUncached().FirstOrDefaultAsync(x => x.Name == MonitoringPlanName
                                                                                                 && x.Visibility == PlanVisibility.Internal
-                                                                                                && x.Fr8AccountId == systemUser.Id
-                                                                                                && x.PlanState != 3); //Not deleted
+                                                                                                && x.PlanState != PlanState.Deleted);
             }
         }
 

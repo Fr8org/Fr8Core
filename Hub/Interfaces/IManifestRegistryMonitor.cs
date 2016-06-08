@@ -4,6 +4,6 @@ namespace Hub.Interfaces
 {
     public interface IManifestRegistryMonitor
     {
-        Task StartMonitoringManifestRegistrySubmissions();
+        Task<bool> StartMonitoringManifestRegistrySubmissions();
     }
 }

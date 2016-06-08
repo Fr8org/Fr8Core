@@ -683,13 +683,13 @@
     <Compile Include="Migrations\201605231150066_AddOrganizationAndAccountToObjectRolePermissions.Designer.cs">
       <DependentUpon>201605231150066_AddOrganizationAndAccountToObjectRolePermissions.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201606031753092_FillManifestRegistry.cs" />
-    <Compile Include="Migrations\201606031753092_FillManifestRegistry.Designer.cs">
-      <DependentUpon>201606031753092_FillManifestRegistry.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201606070712251_RemoveFr8CoreActivities.cs" />
     <Compile Include="Migrations\201606070712251_RemoveFr8CoreActivities.Designer.cs">
       <DependentUpon>201606070712251_RemoveFr8CoreActivities.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606072048398_FillManifestRegistry.cs" />
+    <Compile Include="Migrations\201606072048398_FillManifestRegistry.Designer.cs">
+      <DependentUpon>201606072048398_FillManifestRegistry.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1269,11 +1269,11 @@
     <EmbeddedResource Include="Migrations\201605231150066_AddOrganizationAndAccountToObjectRolePermissions.resx">
       <DependentUpon>201605231150066_AddOrganizationAndAccountToObjectRolePermissions.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201606031753092_FillManifestRegistry.resx">
-      <DependentUpon>201606031753092_FillManifestRegistry.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606070712251_RemoveFr8CoreActivities.resx">
       <DependentUpon>201606070712251_RemoveFr8CoreActivities.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606072048398_FillManifestRegistry.resx">
+      <DependentUpon>201606072048398_FillManifestRegistry.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

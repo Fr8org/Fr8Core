@@ -34,7 +34,7 @@ namespace terminalAtlassian.Services
         {
             try
             {
-                await GetAsync("configuratin", credentials).ConfigureAwait(false);
+                await GetAsync("configuration", credentials).ConfigureAwait(false);
                 return true;
             }
             catch (AuthorizationTokenExpiredOrInvalidException)

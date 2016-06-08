@@ -2,7 +2,7 @@ namespace Data.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
-    
+
     public partial class FillManifestRegistry : DbMigration
     {
         public override void Up()
@@ -585,7 +585,7 @@ VALUES(@ManifestTypeId, SYSDATETIME(), SYSDATETIME(), 'system1@fr8.co', 0, '40',
 	]
 }', 'Contains information about list of DocuSign envelopes', 'Fr8', '{""Type"" : ""Manifest Description"", ""Id"" : 30}');");
         }
-        
+
         public override void Down()
         {
             Sql(@"

@@ -19,6 +19,7 @@ using Utilities.Configuration.Azure;
 using Hangfire;
 using Hangfire.StructureMap;
 using Hangfire.Dashboard;
+using Utilities.Logging;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 
@@ -43,7 +44,32 @@ namespace HubWeb
             if (!selfHostMode)
             {
                 await RegisterTerminalActions();
-                await ObjectFactory.GetInstance<IManifestRegistryMonitor>().StartMonitoringManifestRegistrySubmissions();
+#pragma warning disable 4014 
+                //We don't await this call as this is Hangfire dispatcher job
+                ObjectFactory.GetInstance<IJobDispatcher>().Enqueue(() => StartMonitoringManifestRegistrySubmissions());
+#pragma warning restore 4014
+            }
+        }
+
+        public static async Task StartMonitoringManifestRegistrySubmissions()
+        {
+            Logger.LogWarning("Preparing manifest registry monitoring plan");
+            try
+            {
+                var isNewPlanCreated = await ObjectFactory.GetInstance<IManifestRegistryMonitor>().StartMonitoringManifestRegistrySubmissions();
+                if (isNewPlanCreated)
+                {
+                    Logger.LogWarning("Brand new manifest registry monitoring plan was created and activated");
+                }
+                else
+                {
+                    Logger.LogWarning("Manifest registry monitoring plan already exists and was activated");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"Failed to start manifest registry monitoring plan. {ex}");
+                throw;
             }
         }
 
