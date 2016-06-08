@@ -69,6 +69,21 @@ namespace PlanDirectory.Infrastructure
             }
         }
 
+        public async Task Remove(string fr8AccountId, Guid planId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var planIdStr = planId.ToString();
+                uow.MultiTenantObjectRepository
+                    .Delete<PlanTemplateCM>(
+                        fr8AccountId,
+                        x => x.ParentPlanId == planIdStr
+                    );
+
+                await Task.Yield();
+            }
+        }
+
         private PlanTemplateCM CreatePlanTemplateCM(PublishPlanTemplateDTO dto,
             PlanTemplateCM existing, Fr8AccountDO account)
         {
