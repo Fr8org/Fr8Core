@@ -321,6 +321,7 @@
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
     <Compile Include="Infrastructure\AsyncMultiLock.cs" />
+    <Compile Include="Infrastructure\CustomSelector.cs" />
     <Compile Include="Infrastructure\FilterConditionPredicateBuilder.cs" />
     <Compile Include="Infrastructure\Fr8Identity.cs" />
     <Compile Include="Infrastructure\Fr8Principle.cs" />
