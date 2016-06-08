@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
-using StructureMap;
 using TerminalBase.Infrastructure;
 using TerminalBase.Interfaces;
 using TerminalBase.Models;
@@ -15,7 +14,7 @@ namespace TerminalBase.Services
         private IHubCommunicator _hubCommunicator;
 
         protected readonly ICrateManager CrateManager;
-        
+
         public ActivityExecutor(IHubCommunicator hubCommunicator, ICrateManager crateManager)
         {
             _hubCommunicator = hubCommunicator;
@@ -37,9 +36,9 @@ namespace TerminalBase.Services
                 throw new ArgumentException(nameof(curDataDTO.ActivityDTO.ActivityTemplate) + " is null");
             }
 
-           
+
             ActivityContext activityContext = DeserializeRequest(curDataDTO);
-            
+
             //we should remove this mode
             var activityTemplate = curDataDTO.ActivityDTO.ActivityTemplate;
             IActivityFactory factory;
@@ -60,7 +59,7 @@ namespace TerminalBase.Services
             {
                 factory = ActivityStore.GetValue(curDataDTO.ActivityDTO.ActivityTemplate);
             }
-            
+
 
             if (factory == null)
             {
