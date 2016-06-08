@@ -311,7 +311,7 @@ namespace Hub.Services
             {
                 IEnumerable<KeyValuePair<string, string>> parameters = null;
 
-                if (curActionExecutionMode == ActivityExecutionMode.InitialRun)
+                if (curActionExecutionMode != ActivityExecutionMode.InitialRun)
                 {
                     parameters = new List<KeyValuePair<string, string>>()
                     {
