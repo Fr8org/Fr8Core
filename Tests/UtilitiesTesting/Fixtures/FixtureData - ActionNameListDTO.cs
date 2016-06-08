@@ -9,5 +9,6 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityNameListDTO{ ActivityNames = new List<ActivityNameDTO>(){FixtureData.TestActivityNameDTO1()}};
         }
+
     }
 }
