@@ -19,16 +19,16 @@ namespace PlanDirectory.Infrastructure
     public class TagGenerator : ITagGenerator
     {
         /// <summary>
-        /// The result of this method is a set of tags
+        /// The result of this method is a a list of ActivityTemplateTag and WebServiceTemplateTag classes
         /// For a plan, that consists of activity named "A" of a webservice "Y"
         /// and of activity named "B" of a webservice "Z"
         /// the result would be:
-        /// A
-        /// A, B
-        /// B
-        /// Y
-        /// Y, Z
-        /// Z
+        /// ActivityTemplateTag: A
+        /// ActivityTemplateTag: B
+        /// ActivityTemplateTag: A, B
+        /// WebServiceTemplateTag: Y
+        /// WebServiceTemplateTag: Z
+        /// WebServiceTemplateTag: Y, Z
         /// </summary>
 
         public async Task<List<TemplateTag>> GetTags(PlanTemplateCM planTemplateCM, string fr8AccountId)
@@ -73,7 +73,7 @@ namespace PlanDirectory.Infrastructure
             var usedWebServices = usedActivityTemplates.Select(a => a.WebService).Distinct().OrderBy(b => b.Name).ToList();
             var webServicesCombination = GetCombinations<WebServiceDTO>(usedWebServices);
             webServicesCombination.ForEach(a => result.Add(new WebServiceTemplateTag(a)));
-            
+
             return result;
         }
 
