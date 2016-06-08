@@ -50,15 +50,10 @@ namespace HealthMonitor.Utility
             AddHubCrate(dataDTO, crateManifest, "HealthMonitor_DownstreamCrate", crateLabel);
         }
 
-        protected async Task<Dictionary<string, string>> GetHMACHeader<T>(Uri requestUri, string userId, T content)
-        {
-            return await HMACService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId, content);
-        }
-
         public async Task<TResponse> HttpPostAsync<TRequest, TResponse>(string url, TRequest request)
         {
             var uri = new Uri(url);
-            return await RestfulServiceClient.PostAsync<TRequest, TResponse>(uri, request, null, await GetHMACHeader(uri, "testUser", request));
+            return await RestfulServiceClient.PostAsync<TRequest, TResponse>(uri, request);
         }
 
         public async Task<TResponse> HttpGetAsync<TResponse>(string url)

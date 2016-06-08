@@ -677,6 +677,10 @@
     <Compile Include="Migrations\201606071223281_Delete FindObjects solution.Designer.cs">
       <DependentUpon>201606071223281_Delete FindObjects solution.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201606081850360_UpdateMTDatabaseWithNewCLRTypes1.cs" />
+    <Compile Include="Migrations\201606081850360_UpdateMTDatabaseWithNewCLRTypes1.Designer.cs">
+      <DependentUpon>201606081850360_UpdateMTDatabaseWithNewCLRTypes1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -1260,6 +1264,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606071223281_Delete FindObjects solution.resx">
       <DependentUpon>201606071223281_Delete FindObjects solution.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606081850360_UpdateMTDatabaseWithNewCLRTypes1.resx">
+      <DependentUpon>201606081850360_UpdateMTDatabaseWithNewCLRTypes1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
