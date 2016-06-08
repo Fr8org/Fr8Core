@@ -203,10 +203,6 @@
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalDocuSign\terminalDocuSign.csproj">
-      <Project>{4e04feb2-b452-4739-8336-ea2cefb18d87}</Project>
-      <Name>terminalDocuSign</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\terminalExcel\terminalExcel.csproj">
       <Project>{57373D06-6B82-4EC6-AF62-ED25FE170C61}</Project>
       <Name>terminalExcel</Name>

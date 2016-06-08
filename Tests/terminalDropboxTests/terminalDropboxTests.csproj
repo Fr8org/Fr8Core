@@ -234,10 +234,6 @@
       <Project>{cfba4468-222f-4255-8d94-809acbf7ac47}</Project>
       <Name>terminalDropbox</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalGoogle\terminalGoogle.csproj">
-      <Project>{CDDCCFAB-28B8-446C-8585-72D2BB78F2DC}</Project>
-      <Name>terminalGoogle</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\HubWeb.csproj">
       <Project>{f7bd7117-4f1d-4215-b338-61ebdd0d0bfe}</Project>
       <Name>HubWeb</Name>
