@@ -63,14 +63,19 @@ Note that this Crate of UI Controls, like other Crates is tagged with a specific
 
 In general, the SDK for a particular platform will include helper classes and methods so that the Activity builder doesn't actually have to manipulate JSON directly. These helper classes typically deserialize the JSON into objects. 
 
+A Terminal should always make sure that any Activity it returns to the Hub contains a Crate of Standard UI Controls, even if the Activity requires no configuration (in that case the Fr8 Convention is to state "This Activity requires no configuration" in the UI as a text block).
 
+Authorization
+===
 
-Configure functionality is structure from two key concepts Initial Configuration and Followup Configuration.
+If a Terminal is providing Activities that require authentication, it should specify that in the corresponding ActivityTemplates. This causes the Hub to look for the presence of a stored [AuthorizationToken](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/DataTransfer/AuthorizationTokenDTO.md) each time it receives a /configure call for the Terminal. If the token is present it is added to the Activity and presented to the Terminal. When a Terminal receives a token with an Activity, it should use it when it needs to access customer data. 
 
-* On Initial Configuration in mandatory to provide Crates for Standard UI Controls (described above) and also provide Authentication logic packed as Standard Authentication Type.
+If the token is not present, the Hub returns a message to the Client instructing it to [start an authorization process](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Services/Authorization.md). This results in a call to the Terminal's /authentication/request_url endpoint. The Terminal should respond to this call with a URL that the client can use to initiate an OAuth session (non-O-Auth authentication is possible as well). The client redirects to that URL to start the OAuth process. Once that's done, the Terminal will receive a call from the Hub to its /authentication/token endpoint and it should then return the token to Hub  for storage with the User's account. 
 
-When new Terminal need to provide authentication to a 3rd-party service provider (example authentication with Google), a developer need to implement /authentication endpoint, where the endpoint will provide /authentication/token request with response of [AuthorizationTokenDTO](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/DataTransfer/AuthorizationTokenDTO.md). Fr8 supports OaAuth authentication, performed by opening external service OAuth page.
-Activity that want to support authentication, need to set the needAuthentication property inside Activity Template.
+For more information on Authorization and Security, see (https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Services/Authorization.md)
+ 
+ 
+
 
 * Standard UI Controls have a support for creating onChange event handlers, so when a user tries to modify some control on the UI, like select an item in a drop down list, or click a submit button in the activity, that front end action will invoke a new call to the Terminal, where some other actions can be performed based on this request. This is called a Followup configuration, where some functionality are invoked based on client interactions with Activity UI.
 
