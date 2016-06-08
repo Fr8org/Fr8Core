@@ -5,12 +5,12 @@ using HealthMonitor.Utility;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
 using Newtonsoft.Json.Linq;
-using Fr8Data.Managers;
 
 namespace terminalDocuSignTests.Integration
 {

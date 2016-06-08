@@ -1,20 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Data.States;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+﻿using System.Threading.Tasks;
 using HealthMonitor.Utility;
-using Fr8Data.Managers;
 using NUnit.Framework;
-using terminalFr8Core.Actions;
-using terminalFr8CoreTests.Fixtures;
-using terminalTests.Fixtures;
 
 namespace terminalFr8CoreTests.Integration
 {

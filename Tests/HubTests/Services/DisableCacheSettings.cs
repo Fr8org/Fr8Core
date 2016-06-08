@@ -1,4 +1,4 @@
-using Utilities.Configuration;
+using Fr8.Infrastructure.Utilities.Configuration;
 
 namespace HubTests.Services
 {

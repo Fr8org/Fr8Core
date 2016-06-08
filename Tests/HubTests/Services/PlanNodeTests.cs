@@ -9,7 +9,7 @@ using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using StructureMap;
 using Data.Interfaces;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.States;
 
 namespace HubTests.Services
 {

@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 using terminalSlack.RtmClient.Entities;
 using terminalSlack.RtmClient.Events;
 using WebSocketSharp;
-using Logger = Utilities.Logging.Logger;
+using Logger = Fr8.Infrastructure.Utilities.Logging.Logger;
 
 namespace terminalSlack.RtmClient
 {

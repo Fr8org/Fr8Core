@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Data.Interfaces;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Manifests;
 using Hub.StructureMap;
 using NUnit.Framework;
 using StructureMap;

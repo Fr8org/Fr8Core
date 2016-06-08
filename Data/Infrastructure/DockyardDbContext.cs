@@ -10,10 +10,10 @@ using System.Reflection;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Data.Entities;
 using Data.Interfaces;
-using Utilities;
 using Data.Utility;
 using Data.Utility.JoinClasses;
-using Utilities.Configuration.Azure;
+using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Configuration;
 
 namespace Data.Infrastructure
 {

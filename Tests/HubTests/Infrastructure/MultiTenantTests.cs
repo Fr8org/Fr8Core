@@ -5,8 +5,8 @@ using NUnit.Framework;
 using StructureMap;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 

@@ -10,15 +10,14 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
+using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Security;
-using Utilities;
-using Utilities.Configuration.Azure;
 using Hangfire;
 using Hangfire.StructureMap;
-using Hangfire.Dashboard;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 

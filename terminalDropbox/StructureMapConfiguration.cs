@@ -1,4 +1,4 @@
-﻿using Fr8Infrastructure.StructureMap;
+﻿using Fr8.Infrastructure.StructureMap;
 using StructureMap;
 using terminalDropbox.Interfaces;
 using terminalDropbox.Services;

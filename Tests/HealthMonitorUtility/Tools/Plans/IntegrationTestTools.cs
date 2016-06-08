@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Data.States;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using HealthMonitor.Utility;
 using NUnit.Framework;
 using UtilitiesTesting.Fixtures;

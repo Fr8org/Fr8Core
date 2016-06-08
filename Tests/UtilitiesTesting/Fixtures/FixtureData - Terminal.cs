@@ -1,7 +1,6 @@
 ﻿using System;
 using Data.Entities;
-using Data.States;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.States;
 
 namespace UtilitiesTesting.Fixtures
 {

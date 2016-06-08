@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Net;
+using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Configuration;
 using SendGrid;
-using Utilities;
-using Utilities.Configuration.Azure;
 
 namespace Hub.Managers.APIManagers.Packagers.SendGrid
 {

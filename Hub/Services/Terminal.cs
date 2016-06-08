@@ -7,12 +7,12 @@ using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Utility;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Fr8Infrastructure.Interfaces;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
 using StructureMap;
-using Utilities.Configuration.Azure;
 
 namespace Hub.Services
 {

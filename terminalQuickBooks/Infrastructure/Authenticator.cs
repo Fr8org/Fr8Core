@@ -1,23 +1,17 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using System.Xml;
-using Data.Interfaces.DataTransferObjects;
 using DevDefined.OAuth.Consumer;
 using DevDefined.OAuth.Framework;
 using DevDefined.OAuth.Storage.Basic;
-using Fr8Data.DataTransferObjects;
-using StructureMap;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.Models;
 using terminalQuickBooks.Interfaces;
-using Utilities.Configuration.Azure;
-using TerminalBase.Models;
 
 namespace terminalQuickBooks.Infrastructure
 {
