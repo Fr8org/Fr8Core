@@ -1,8 +1,8 @@
 # CRATES – MANIFEST
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
-A Manifest is a simple json schema that defines the contents of a Crate of data. Use of Manifests is optional. They’re essentially a way for activities to effectively process data. Put another way, if you know the Manifest of a Crate, you can use it to deserialize the contents (which is just a big json string) into structured data.
+A Manifest is a simple json schema that defines the contents of a Crate of data. Use of Manifests is optional. They’re essentially a way for activities to effectively process structured data. Put another way, if you know the Manifest of a Crate, you can use it to deserialize the contents (which is just a big json string) into structured data. This can be as basic as a set of key/value pairs, but the real power of manifests comes when unrelated activities both process something much more structured, like a DocuSign Envelope. 
 
-While any builder of Fr8 Actions can defined private Manifests for their own purposes, the real value of Manifests comes through a shared registry. For example, in the [Fr8 Manifest Registry](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/RegisteredManifests.md), Id 14 is assigned to a Manifest called DocuSignEnvelope that looks like this:
+While any builder of Fr8 Actions can define private Manifests for their own purposes, the bulk of the value of Manifests comes through a shared registry. For example, in the [Fr8 Manifest Registry](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/RegisteredManifests.md), Id 14 is assigned to a Manifest called DocuSignEnvelope that looks like this:
 
 ![manifest_docusign_envelopes](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/CratesManifest_ManifestDocusignEnvelopes.png) 
 
