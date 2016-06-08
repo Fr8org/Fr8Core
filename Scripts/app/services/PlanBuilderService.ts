@@ -227,6 +227,59 @@ module dockyard.services {
                 return d.promise;
             };
 
+            resource.runAndProcessClientAction =
+                (id: string): ng.IPromise<model.ContainerDTO> => {
+                    var d = $q.defer();
+
+                    resource.run(id)
+                        .then((container: model.ContainerDTO) => {
+                            if (container
+                                && container.currentActivityResponse == model.ActivityResponse.ExecuteClientAction
+                                && container.currentClientActivityName) {
+
+                                switch (container.currentClientActivityName) {
+                                    case 'ShowTableReport':
+                                        var path = '/findObjects/' + container.id + '/results';
+                                        $location.path(path);
+                                        break;
+
+                                    default:
+                                        break;
+                                }
+                            }
+
+                            if (container && container.error != null) {
+                                var messageToShow = "Plan " + container.name + " failed." + "<br/>";
+                                messageToShow += "Action: " + container.error.currentActivity + "<br/>";
+                                messageToShow += "Terminal: " + container.error.currentTerminal + "<br/>";
+                                messageToShow += "Message: " + container.error.message;
+                                ngToast.danger(messageToShow);
+                            }
+
+                            $rootScope.$broadcast(
+                                directives.paneConfigureAction.MessageType[directives.paneConfigureAction.MessageType.PaneConfigureAction_ResetValidationMessages],
+                                new directives.paneConfigureAction.ResetValidationMessagesEventArgs()
+                            );
+
+                            // if we have validation errors, send them to activities
+                            if (container && container.validationErrors != null) {
+                                for (var key in container.validationErrors) {
+                                    $rootScope.$broadcast(
+                                        directives.paneConfigureAction.MessageType[directives.paneConfigureAction.MessageType.PaneConfigureAction_UpdateValidationMessages],
+                                        new directives.paneConfigureAction.UpdateValidationMessagesEventArgs(key, container.validationErrors[key])
+                                    );
+                                }
+                            }
+
+                            d.resolve(container);
+                        })
+                        .catch((err: any) => {
+                            d.reject(err);
+                        });
+
+                    return d.promise;
+                };
+
             return resource;
         }
     ]);
