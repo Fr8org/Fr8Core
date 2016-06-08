@@ -89,20 +89,19 @@ Example: Configure a Activity to Get Google spreadsheet where we select a spread
 The Activation process is currently used primarily for [Validation](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/ActivitiesValidation.md). Many user inputs can be validated as part of the /configure calls, but there's no guarantee that all user inputs will trigger subsequent /configure calls. As a result, the Hub calls /terminals/activate for each Activity in a Plan before calling Run on that Plan.
 
 Validation errors need to be packed in crate as [ValidationResultsCM](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/RegisteredManifests.md) Crate Manifest Type.
-This will prevent plan from running and user will see messages on the Client.
+This will keep the plan from running and the user will see appropriate error messages on their Client UI.
 
-Activities with Monitoring category once run are active the whole time, when all others are run once and then are deactivated. Deactivate is used to stop activity from execution like prevent monitoring for some event.    
+
 
 ### Events
 
-Another important part of a Terminal is developing and /event endpoint. [Events](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Events.md) are used to receive events from external providers. Their main usage is in Activities with Monitoring category.
-
-To provide events monitoring, inside Initial Configuration process we need to provide Crate of Manifest Type [EventSubscriptions](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/RegisteredManifests.md).
-
-In the moment when we receive an event from a external service provider to our /event endpoint, then it's important to provide in the logic, creation of crate from [Standard Event Report](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/RegisteredManifests.md is mandatory. Once we create this object and return the crate pack as JSON, the hub will catch the crate, will take the payload values provided,  and process plan execution forward.
+Terminals should post important event information to the Hub's [/events endpoint](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Events.md). There are two main kinds of events that get posted from Terminals to the Hub:
+1) incoming events that have been received from a web-service by the Terminal, because the Terminal previously registered for notification. This is how Terminals find out that a DocuSign Envelope has been sent or a Slack message has been posted. These events need to be packaged into a Crate of [Standard Event Report](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/RegisteredManifests.md) and Posted immediately to the Hub so the Hub can launch any Plans that are monitoring for those particular messages.
+2) status/logging type messages, including errors. These should be posted so the User and Fr8Admins can figure out what went wrong.
 
 
-## Platform-Specific Information
+
+## Platform-Specific SDK
 =====
 *  [.NET](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Terminals/DevGuide_DotNet.md)
 *  Java
