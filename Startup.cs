@@ -56,15 +56,10 @@ namespace HubWeb
             Logger.LogWarning("Preparing manifest registry monitoring plan");
             try
             {
-                var isNewPlanCreated = await ObjectFactory.GetInstance<IManifestRegistryMonitor>().StartMonitoringManifestRegistrySubmissions();
-                if (isNewPlanCreated)
-                {
-                    Logger.LogWarning("Brand new manifest registry monitoring plan was created and activated");
-                }
-                else
-                {
-                    Logger.LogWarning("Manifest registry monitoring plan already exists and was activated");
-                }
+                var result = await ObjectFactory.GetInstance<IManifestRegistryMonitor>().StartMonitoringManifestRegistrySubmissions();
+                Logger.LogWarning(result.IsNewPlan 
+                    ? $"New manifest registry monitoring plan (Id - {result.PlanId} was created and activated" 
+                    : $"Existing manifest registry monitoring plan (Id - {result.PlanId} was activated");
             }
             catch (Exception ex)
             {

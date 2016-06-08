@@ -76,22 +76,33 @@ namespace Hub.Services
             _configRepository = configRepository;
         }
 
-        public async Task<bool> StartMonitoringManifestRegistrySubmissions()
+        public async Task<ManifestRegistryMonitorResult> StartMonitoringManifestRegistrySubmissions()
         {
-            var systemUser = await GetSystemUser();
+            var systemUser = GetSystemUser();
             if (systemUser == null)
             {
                 throw new ApplicationException("System user doesn't exist");
             }
             var isNewPlanCreated = false;
-            var plan = await GetExistingPlan();
+            var plan = GetExistingPlan(systemUser);
             if (plan == null)
             {
                 isNewPlanCreated = true;
                 plan = await CreateAndConfigureNewPlan(systemUser);
             }
-            await RunPlan(plan);
-            return isNewPlanCreated;
+            try
+            {
+                await RunPlan(plan);
+            }
+            catch
+            {
+                if (isNewPlanCreated)
+                {
+                    await _plan.Delete(plan.Id);
+                }
+                throw;
+            }
+            return new ManifestRegistryMonitorResult(plan.Id, isNewPlanCreated);
         }
 
         private async Task RunPlan(PlanDO plan)
@@ -107,11 +118,19 @@ namespace Hub.Services
         {
             using (var uow = _unitOfWorkProvider.GetNewUnitOfWork())
             {
-                var activityTemplates = await uow.ActivityTemplateRepository.GetQuery().ToArrayAsync();
-                var result = await CreatePlanWithMonitoringActivity(uow, systemUser, activityTemplates);
-                await ConfigureMonitoringActivity(uow, systemUser, result.ChildNodes[0].ChildNodes[0] as ActivityDO);
-                await ConfigureBuildMessageActivity(uow, systemUser, activityTemplates, result.Id);
-                await ConfigureSaveJiraActivity(uow, systemUser, activityTemplates, result.Id);
+                var activityTemplates = uow.ActivityTemplateRepository.GetQuery().ToArray();
+                var result = await CreatePlanWithMonitoringActivity(uow, systemUser, activityTemplates).ConfigureAwait(false);
+                try
+                {
+                    await ConfigureMonitoringActivity(uow, systemUser, result.ChildNodes[0].ChildNodes[0] as ActivityDO).ConfigureAwait(false);
+                    await ConfigureBuildMessageActivity(uow, systemUser, activityTemplates, result.Id).ConfigureAwait(false);
+                    await ConfigureSaveJiraActivity(uow, systemUser, activityTemplates, result.Id).ConfigureAwait(false);
+                }
+                catch
+                {
+                    await _plan.Delete(result.Id);
+                    throw;
+                }
                 return result;
             }
         }
@@ -123,7 +142,7 @@ namespace Hub.Services
             {
                 throw new ApplicationException("Save Jira Issue v1 activity template was not found in Atlassian terminal");
             }
-            var saveJiraActivity = await _activity.CreateAndConfigure(uow, systemUser.Id, saveJiraTemplate.Id, saveJiraTemplate.Label, saveJiraTemplate.Label, 3, planId) as ActivityDO;
+            var saveJiraActivity = await _activity.CreateAndConfigure(uow, systemUser.Id, saveJiraTemplate.Id, saveJiraTemplate.Label, saveJiraTemplate.Label, 3, planId).ConfigureAwait(false) as ActivityDO;
             using (var storage = _crateManager.GetUpdatableStorage(saveJiraActivity))
             {
                 var controls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
@@ -138,7 +157,7 @@ namespace Hub.Services
                 }
                 projectSelector.SelectByKey("Fr8");
             }
-            saveJiraActivity = Mapper.Map<ActivityDO>(await _activity.Configure(uow, systemUser.Id, saveJiraActivity));
+            saveJiraActivity = Mapper.Map<ActivityDO>(await _activity.Configure(uow, systemUser.Id, saveJiraActivity).ConfigureAwait(false));
             using (var storage = _crateManager.GetUpdatableStorage(saveJiraActivity))
             {
                 var controls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
@@ -149,7 +168,7 @@ namespace Hub.Services
                 }
                 issueTypeSelector.SelectByKey("Task");
             }
-            saveJiraActivity = Mapper.Map<ActivityDO>(await _activity.Configure(uow, systemUser.Id, saveJiraActivity));
+            saveJiraActivity = Mapper.Map<ActivityDO>(await _activity.Configure(uow, systemUser.Id, saveJiraActivity).ConfigureAwait(false));
             using (var storage = _crateManager.GetUpdatableStorage(saveJiraActivity))
             {
                 var controls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
@@ -182,7 +201,7 @@ namespace Hub.Services
                 description.selectedKey = MessageName;
 
             }
-            await _activity.Configure(uow, systemUser.Id, saveJiraActivity);
+            await _activity.Configure(uow, systemUser.Id, saveJiraActivity).ConfigureAwait(false);
         }
 
         private async Task ConfigureBuildMessageActivity(IUnitOfWork uow, Fr8AccountDO systemUser, ActivityTemplateDO[] activityTemplates, Guid planId)
@@ -192,7 +211,7 @@ namespace Hub.Services
             {
                 throw new ApplicationException("Build Message v1 activity template was not found in Fr8Core terminal");
             }
-            var buildMessageActivity = await _activity.CreateAndConfigure(uow, systemUser.Id, buildMessageTemplate.Id, buildMessageTemplate.Label, buildMessageTemplate.Label, 2, planId) as ActivityDO;
+            var buildMessageActivity = await _activity.CreateAndConfigure(uow, systemUser.Id, buildMessageTemplate.Id, buildMessageTemplate.Label, buildMessageTemplate.Label, 2, planId).ConfigureAwait(false) as ActivityDO;
             using (var storage = _crateManager.GetUpdatableStorage(buildMessageActivity))
             {
                 var controls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
@@ -225,7 +244,7 @@ namespace Hub.Services
 *Submitter Email:*
 [Your Email]";
             }
-            await _activity.Configure(uow, systemUser.Id, buildMessageActivity);
+            await _activity.Configure(uow, systemUser.Id, buildMessageActivity).ConfigureAwait(false);
         }
     
         private async Task ConfigureMonitoringActivity(IUnitOfWork uow, Fr8AccountDO systemUser, ActivityDO monitoringActivity)
@@ -258,7 +277,7 @@ namespace Hub.Services
                     throw new ApplicationException("Form specified in configuration doesn't belong to system user's account Google authorization");
                 }
             }
-            await _activity.Configure(uow, systemUser.Id, monitoringActivity);
+            await _activity.Configure(uow, systemUser.Id, monitoringActivity).ConfigureAwait(false);
         }
 
         private async Task<PlanDO> CreatePlanWithMonitoringActivity(IUnitOfWork uow, Fr8AccountDO systemUser, ActivityTemplateDO[] activityTemplates)
@@ -268,29 +287,34 @@ namespace Hub.Services
             {
                 throw new ApplicationException("Monitor Form Responses v1 activity template was not found in Google terminal");
             }
-            return await _activity.CreateAndConfigure(uow, systemUser.Id, monitorFormResponseTemplate.Id, monitorFormResponseTemplate.Label, MonitoringPlanName, 1, createPlan: true, isInternalPlan: true) as PlanDO;
+            return await _activity.CreateAndConfigure(uow, systemUser.Id, monitorFormResponseTemplate.Id, monitorFormResponseTemplate.Label, MonitoringPlanName, 1, createPlan: true, isInternalPlan: true)
+                                  .ConfigureAwait(false)as PlanDO;
         }
 
-        private async Task<PlanDO> GetExistingPlan()
+        private PlanDO GetExistingPlan(Fr8AccountDO systemUser)
         {
             using (var uow = _unitOfWorkProvider.GetNewUnitOfWork())
             {
-                return await uow.PlanRepository.GetPlanQueryUncached().FirstOrDefaultAsync(x => x.Name == MonitoringPlanName
-                                                                                                && x.Visibility == PlanVisibility.Internal
-                                                                                                && x.PlanState != PlanState.Deleted);
+                return uow.PlanRepository.GetPlanQueryUncached().FirstOrDefault(x => x.Name == MonitoringPlanName
+                                                                                           && x.Fr8AccountId == systemUser.Id
+                                                                                           && x.Visibility == PlanVisibility.Internal
+                                                                                           && x.PlanState != PlanState.Deleted);
             }
         }
 
-        private async Task<Fr8AccountDO> GetSystemUser()
+        private Fr8AccountDO GetSystemUser()
         {
-            var systemUserEmail = _configRepository.Get("SystemUserEmail");
-            if (string.IsNullOrEmpty(systemUserEmail))
+            try
+            {
+                var systemUserEmail = _configRepository.Get("SystemUserEmail");
+                using (var uow = _unitOfWorkProvider.GetNewUnitOfWork())
+                {
+                    return uow.UserRepository.GetQuery().FirstOrDefault(x => x.EmailAddress.Address == systemUserEmail);
+                }
+            }
+            catch (ConfigurationException)
             {
                 throw new ApplicationException("Configuration repository doesn't contain system user email");
-            }
-            using (var uow = _unitOfWorkProvider.GetNewUnitOfWork())
-            {
-                return await uow.UserRepository.GetQuery().FirstOrDefaultAsync(x => x.EmailAddress.Address == systemUserEmail);
             }
         }
     }
