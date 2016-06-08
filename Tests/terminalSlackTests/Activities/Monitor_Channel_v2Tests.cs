@@ -7,16 +7,16 @@ using fr8.Infrastructure.Data.Crates;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Helpers;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
 using terminalSlack.Interfaces;
 using terminalSlackTests.Fixtures;
-using TerminalBase.Infrastructure;
 using UtilitiesTesting;
-using TerminalBase.Models;
 using terminalSlack.Activities;
-using TerminalBase.Helpers;
 
 namespace terminalSlackTests.Activities
 {

@@ -6,12 +6,12 @@ using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
 using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Infrastructure;
 using StructureMap;
 using terminalUtilities.Infrastructure;
 using terminalUtilities.Interfaces;
 using terminalUtilities.Models;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {

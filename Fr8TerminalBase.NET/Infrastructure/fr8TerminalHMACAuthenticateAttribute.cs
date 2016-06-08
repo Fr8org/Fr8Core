@@ -1,13 +1,13 @@
 ﻿using System.Configuration;
 using System.Security.Principal;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http.Filters;
 using fr8.Infrastructure.Security;
 using fr8.Infrastructure.Utilities.Configuration;
 
-namespace TerminalBase.Infrastructure
+namespace Fr8.TerminalBase.Infrastructure
 {
     public class fr8TerminalHMACAuthenticateAttribute : fr8HMACAuthenticateAttribute
     {

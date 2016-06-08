@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using Data.Infrastructure.AutoMapper;
-using Hub.Interfaces;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
 using terminalTwilio.Tests.Fixtures;
-using TerminalBase.Infrastructure;
 using UtilitiesTesting;
 using terminalTwilio.Activities;
 using System.Linq;
@@ -13,8 +11,11 @@ using fr8.Infrastructure.Data.Crates;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.StructureMap;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Interfaces;
 using terminalTwilio;
 using terminalUtilities.Twilio;
+using IActivity = Hub.Interfaces.IActivity;
 
 namespace terminalTwilioTests.Activities
 {

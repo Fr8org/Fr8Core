@@ -1,7 +1,6 @@
 ﻿using System;
 using StructureMap;
 using System.Threading.Tasks;
-using TerminalBase.BaseClasses;
 using terminalSalesforce.Infrastructure;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,12 +12,12 @@ using fr8.Infrastructure.Data.Helpers;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Services;
 using log4net;
 using Newtonsoft.Json;
 using ServiceStack;
-using TerminalBase.Errors;
-using TerminalBase.Infrastructure;
-using TerminalBase.Services;
 
 namespace terminalSalesforce.Actions
 {

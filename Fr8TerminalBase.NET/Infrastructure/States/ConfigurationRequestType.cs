@@ -1,4 +1,4 @@
-﻿namespace TerminalBase.Infrastructure
+﻿namespace Fr8.TerminalBase.Infrastructure.States
 {
     public enum ConfigurationRequestType
     {

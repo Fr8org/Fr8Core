@@ -10,13 +10,12 @@ using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
 using fr8.Infrastructure.Utilities;
+using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Infrastructure;
 using terminalDocuSign.Activities;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.BaseClasses;
-using TerminalBase.Errors;
-using TerminalBase.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {

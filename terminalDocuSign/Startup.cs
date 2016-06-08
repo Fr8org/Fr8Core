@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Web.Http.Dispatcher;
 using Data.Infrastructure.AutoMapper;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using Microsoft.Owin;
 using Owin;
 using StructureMap;
 using terminalDocuSign;
 using terminalDocuSign.Controllers;
-using TerminalBase.BaseClasses;
 using terminalDocuSign.Actions;
 using terminalDocuSign.Activities;
-using TerminalBase.Services;
 
 [assembly: OwinStartup(typeof(Startup))]
 

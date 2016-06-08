@@ -12,9 +12,9 @@ using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
 using fr8.Infrastructure.Utilities;
-using TerminalBase.BaseClasses;
-using TerminalBase.Errors;
-using TerminalBase.Services;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Services;
 
 namespace terminalFr8Core.Activities
 {

@@ -125,7 +125,7 @@
     <Compile Include="Services\TestMonitoringHubCommunicator.cs" />
     <Compile Include="Services\UiBuilder.cs" />
     <Compile Include="Services\UpstreamQueryManager.cs" />
-    <Compile Include="WebApiExceptionFilterAttribute.cs" />
+    <Compile Include="Filters\WebApiExceptionFilterAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj">

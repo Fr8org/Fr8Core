@@ -1,9 +1,9 @@
 ﻿using System;
+using Fr8.TerminalBase.Infrastructure;
 using Intuit.Ipp.Data;
 using NUnit.Framework;
 using StructureMap;
 using terminalQuickBooks.Interfaces;
-using TerminalBase.Infrastructure;
 using UtilitiesTesting;
 
 namespace terminalQuickBooks.Tests.Services

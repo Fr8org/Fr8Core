@@ -5,13 +5,13 @@ using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using TerminalBase.Infrastructure;
 using Moq;
 using System.Threading.Tasks;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Interfaces;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Models;
 using terminalFr8Core.Activities;
-using TerminalBase.Models;
 
 namespace terminalFr8CoreTests.Unit
 {

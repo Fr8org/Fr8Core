@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 using Task = System.Threading.Tasks.Task;
 using StructureMap;
 using terminalQuickBooks.Interfaces;

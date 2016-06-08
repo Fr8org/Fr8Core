@@ -5,9 +5,9 @@ using fr8.Infrastructure.Data.Crates;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Interfaces;
 using Moq;
 using StructureMap;
-using TerminalBase.Infrastructure;
 
 namespace UtilitiesTesting.Fixtures
 {

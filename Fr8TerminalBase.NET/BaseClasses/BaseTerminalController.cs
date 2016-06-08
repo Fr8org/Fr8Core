@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using fr8.Infrastructure.Utilities;
 using fr8.Infrastructure.Utilities.Logging;
-using TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Infrastructure;
 
-namespace TerminalBase.BaseClasses
+namespace Fr8.TerminalBase.BaseClasses
 {
     //this is a quasi base class. We can't use inheritance directly because it's across project boundaries, but
     //we can generate instances of this.

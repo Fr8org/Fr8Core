@@ -4,7 +4,6 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Schema;
 using fr8.Infrastructure.Data.Constants;
 using fr8.Infrastructure.Data.Crates;
 using fr8.Infrastructure.Data.DataTransferObjects;
@@ -12,12 +11,12 @@ using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
 using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
 using StructureMap;
-using TerminalBase.Infrastructure;
-using TerminalBase.Models;
 
-namespace TerminalBase.Services
+namespace Fr8.TerminalBase.Services
 {
     public abstract class DataHubCommunicatorBase : IHubCommunicator
     {

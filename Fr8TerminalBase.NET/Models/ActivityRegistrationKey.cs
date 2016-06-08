@@ -1,6 +1,6 @@
 ﻿using fr8.Infrastructure.Data.DataTransferObjects;
 
-namespace TerminalBase.Models
+namespace Fr8.TerminalBase.Models
 {
     public struct ActivityRegistrationKey
     {

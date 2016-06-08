@@ -2,7 +2,7 @@
 using System.Net;
 using fr8.Infrastructure.Utilities;
 
-namespace TerminalBase
+namespace Fr8.TerminalBase.Errors
 {
     public class TerminalCodedException : Exception
     {

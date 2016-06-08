@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 using AutoMapper;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
-using TerminalBase.Infrastructure;
-using TerminalBase.Interfaces;
-using TerminalBase.Models;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 
-namespace TerminalBase.Services
+namespace Fr8.TerminalBase.Services
 {
     public class ActivityExecutor
     {

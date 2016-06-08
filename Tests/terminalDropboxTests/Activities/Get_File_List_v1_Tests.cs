@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Interfaces;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Models;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
 using terminalDropbox.Actions;
 using terminalDropboxTests.Fixtures;
-using TerminalBase.Infrastructure;
 using UtilitiesTesting;
 using terminalDropbox.Interfaces;
-using TerminalBase.Models;
 
 namespace terminalDropboxTests.Activities
 {

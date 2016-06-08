@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using fr8.Infrastructure.Data.Control;
 using fr8.Infrastructure.Data.Crates;
 using fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Models;
 using NUnit.Framework;
 using StructureMap;
 using terminalDocuSign;
@@ -11,7 +12,6 @@ using terminalDocuSign.Actions;
 using terminalDocuSign.Services.New_Api;
 using terminalDocuSignTests.Fixtures;
 using UtilitiesTesting.Fixtures;
-using TerminalBase.Models;
 
 namespace terminalDocuSignTests.Activities
 {

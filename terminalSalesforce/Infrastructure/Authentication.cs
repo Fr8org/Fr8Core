@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Web;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Utilities.Configuration;
-using TerminalBase.Models;
+using Fr8.TerminalBase.Models;
 
 namespace terminalSalesforce.Infrastructure
 {

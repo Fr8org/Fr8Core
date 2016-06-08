@@ -11,9 +11,9 @@ using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
 using fr8.Infrastructure.Utilities;
+using Fr8.TerminalBase.BaseClasses;
 using Newtonsoft.Json;
 using terminalUtilities.Excel;
-using TerminalBase.BaseClasses;
 
 namespace terminalExcel.Activities
 {

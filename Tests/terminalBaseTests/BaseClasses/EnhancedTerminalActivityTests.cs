@@ -11,15 +11,17 @@ using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Interfaces;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Infrastructure.States;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
+using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using TerminalBase.Services;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using TerminalBase.Models;
 
 namespace terminaBaselTests.BaseClasses
 {

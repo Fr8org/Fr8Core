@@ -3,13 +3,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
-using TerminalBase.BaseClasses;
 using fr8.Infrastructure.Data.Control;
 using fr8.Infrastructure.Data.Crates;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalSlack.Actions
 {

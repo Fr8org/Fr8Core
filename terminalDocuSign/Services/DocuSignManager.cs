@@ -17,8 +17,8 @@ using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
 using fr8.Infrastructure.Utilities.Configuration;
-using TerminalBase.Errors;
-using TerminalBase.Models;
+using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Models;
 
 namespace terminalDocuSign.Services.New_Api
 {

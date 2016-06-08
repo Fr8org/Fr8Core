@@ -5,7 +5,7 @@ using fr8.Infrastructure.Data.Crates;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
 
-namespace TerminalBase.Infrastructure.Behaviors
+namespace Fr8.TerminalBase.Infrastructure.Behaviors
 {
     public class TextSourceMappingBehavior : BaseControlMappingBehavior<TextSource>
     {

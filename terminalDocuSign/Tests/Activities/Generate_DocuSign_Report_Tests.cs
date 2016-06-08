@@ -8,13 +8,13 @@ using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Interfaces;
+using Fr8.TerminalBase.Infrastructure;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Infrastructure.StructureMap;
 using terminalDocuSign.Tests.Fixtures;
-using TerminalBase.Infrastructure;
 using UtilitiesTesting;
 
 namespace terminalDocuSign.Tests.Actions

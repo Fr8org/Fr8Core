@@ -7,6 +7,9 @@ using fr8.Infrastructure.Data.Crates;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
@@ -15,9 +18,7 @@ using terminalSalesforce.Actions;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
 using terminalSalesforceTests.Fixtures;
-using TerminalBase.Infrastructure;
 using UtilitiesTesting;
-using TerminalBase.Models;
 
 namespace terminalSalesforceTests.Actions
 {

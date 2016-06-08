@@ -6,9 +6,9 @@ using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Helpers;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
-using TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Infrastructure;
 
-namespace TerminalBase.Helpers
+namespace Fr8.TerminalBase.Helpers
 {
     public static class ActivityHelper
     {

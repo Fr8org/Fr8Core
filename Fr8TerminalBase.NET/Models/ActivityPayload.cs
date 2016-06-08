@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using fr8.Infrastructure.Data.Crates;
 using fr8.Infrastructure.Data.DataTransferObjects;
 
-namespace TerminalBase.Models
+namespace Fr8.TerminalBase.Models
 {
     public class ActivityPayload
     {

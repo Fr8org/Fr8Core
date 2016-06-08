@@ -5,7 +5,7 @@ using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using StructureMap;
 
-namespace TerminalBase.Infrastructure.Behaviors
+namespace Fr8.TerminalBase.Infrastructure.Behaviors
 {
     public abstract class BaseControlMappingBehavior<T> where T : ControlDefinitionDTO
     {

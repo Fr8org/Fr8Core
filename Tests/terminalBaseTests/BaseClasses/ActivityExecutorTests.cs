@@ -9,12 +9,13 @@ using fr8.Infrastructure.Data.Crates;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Services;
 using Hub.StructureMap;
 using StructureMap;
-using TerminalBase.Infrastructure;
 using Moq;
 using terminaBaselTests.BaseClasses;
-using TerminalBase.Services;
 
 namespace terminalBaseTests.BaseClasses
 {

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using fr8.Infrastructure.Data.Crates;
 using fr8.Infrastructure.Data.States;
-using TerminalBase.Infrastructure;
-using TerminalBase.Models;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 
-namespace TerminalBase.Services
+namespace Fr8.TerminalBase.Services
 {
     public class UpstreamQueryManager
     {

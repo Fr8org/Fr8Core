@@ -1,5 +1,4 @@
-﻿
-namespace TerminalBase.Services
+﻿namespace Fr8.TerminalBase.Services
 {
     public class TestMonitoringHubCommunicator : DataHubCommunicatorBase
     {

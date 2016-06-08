@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using TerminalBase.BaseClasses;
 using System.Net.Http;
 using Newtonsoft.Json.Linq;
 using System.Net;
@@ -9,6 +8,7 @@ using System.Text;
 using System.Web;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.BaseClasses;
 using Newtonsoft.Json;
 using terminalBox.Infrastructure;
 

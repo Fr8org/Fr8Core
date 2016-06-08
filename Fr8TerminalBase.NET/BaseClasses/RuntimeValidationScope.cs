@@ -1,8 +1,8 @@
 ﻿using System;
 using fr8.Infrastructure.Data.Crates;
-using TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Infrastructure;
 
-namespace TerminalBase.BaseClasses
+namespace Fr8.TerminalBase.BaseClasses
 {
     partial class BaseTerminalActivity
     {
@@ -10,13 +10,13 @@ namespace TerminalBase.BaseClasses
         // Subject to be removed after going opensoruce 
         public class RuntimeValidationScope : IDisposable
         {
-            private readonly BaseTerminalActivity _that;
+            private readonly Fr8.TerminalBase.BaseClasses.BaseTerminalActivity _that;
 
             public readonly ValidationManager ValidationManager;
 
             public bool HasErrors => ValidationManager.HasErrors;
 
-            public RuntimeValidationScope(BaseTerminalActivity that, ICrateStorage payloadStorage)
+            public RuntimeValidationScope(Fr8.TerminalBase.BaseClasses.BaseTerminalActivity that, ICrateStorage payloadStorage)
             {
                 _that = that;
                 ValidationManager = new ValidationManager(payloadStorage);

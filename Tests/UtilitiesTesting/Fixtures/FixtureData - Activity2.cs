@@ -10,11 +10,11 @@ using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
-using Hub.Interfaces;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 using Hub.Managers;
 using Newtonsoft.Json.Linq;
-using TerminalBase.Models;
-using TerminalBase.Infrastructure;
+using IActivity = Hub.Interfaces.IActivity;
 
 namespace UtilitiesTesting.Fixtures
 {

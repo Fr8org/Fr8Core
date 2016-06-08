@@ -11,8 +11,8 @@ using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
-using TerminalBase.Errors;
-using TerminalBase.Services;
+using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Services;
 
 namespace terminalSalesforce.Actions
 {

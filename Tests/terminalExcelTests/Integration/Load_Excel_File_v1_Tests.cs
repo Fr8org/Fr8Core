@@ -7,12 +7,12 @@ using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
 using HealthMonitor.Utility;
 using NUnit.Framework;
 using StructureMap;
 using terminalExcelTests.Fixtures;
 using terminalExcel.Activities;
-using TerminalBase.BaseClasses;
 
 namespace terminalExcelTests.Integration
 {

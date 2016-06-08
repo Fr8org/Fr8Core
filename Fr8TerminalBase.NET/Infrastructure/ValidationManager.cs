@@ -5,7 +5,7 @@ using fr8.Infrastructure.Data.Crates;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Manifests;
 
-namespace TerminalBase.Infrastructure
+namespace Fr8.TerminalBase.Infrastructure
 {
     public class ValidationManager
     {

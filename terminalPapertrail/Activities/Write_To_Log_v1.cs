@@ -8,9 +8,9 @@ using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
 using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.BaseClasses;
 using StructureMap;
 using terminalPapertrail.Interfaces;
-using TerminalBase.BaseClasses;
 
 namespace terminalPapertrail.Actions
 {

@@ -3,7 +3,7 @@ using fr8.Infrastructure.Data.Control;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
 
-namespace TerminalBase.Services
+namespace Fr8.TerminalBase.Services
 {
     public class UiBuilder
     {

@@ -1,7 +1,7 @@
 ﻿using System.Web.Http.Description;
 using System.Web.Http;
 using fr8.Infrastructure.Data.Manifests;
-using TerminalBase.Services;
+using Fr8.TerminalBase.Services;
 
 namespace terminalYammer.Controllers
 {

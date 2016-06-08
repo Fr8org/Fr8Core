@@ -1,8 +1,6 @@
 ﻿using System;
 using NUnit.Framework;
 using StructureMap;
-using TerminalBase.Infrastructure;
-using TerminalBase.BaseClasses;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using System.Collections.Generic;
@@ -11,6 +9,8 @@ using fr8.Infrastructure.Data.Crates;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Interfaces;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Infrastructure;
 using terminaBaselTests.BaseClasses;
 
 namespace terminalBaseTests.BaseClasses

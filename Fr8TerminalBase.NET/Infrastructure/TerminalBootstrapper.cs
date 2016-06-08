@@ -1,10 +1,11 @@
 ﻿using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Utilities;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Services;
 using StructureMap;
 using StructureMap.Configuration.DSL;
-using TerminalBase.Services;
 
-namespace TerminalBase.Infrastructure
+namespace Fr8.TerminalBase.Infrastructure
 {
     public class TerminalBootstrapper
     {

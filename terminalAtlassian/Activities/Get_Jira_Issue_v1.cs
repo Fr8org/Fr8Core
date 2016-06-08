@@ -8,10 +8,9 @@ using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
 using StructureMap;
 using terminalAtlassian.Services;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
 namespace terminalAtlassian.Actions
 {

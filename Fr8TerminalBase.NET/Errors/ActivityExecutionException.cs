@@ -1,7 +1,7 @@
 using System;
 using fr8.Infrastructure.Data.Constants;
 
-namespace TerminalBase.Errors
+namespace Fr8.TerminalBase.Errors
 {
     public class ActivityExecutionException : Exception
     {

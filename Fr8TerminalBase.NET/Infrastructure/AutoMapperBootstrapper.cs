@@ -4,10 +4,10 @@ using AutoMapper;
 using fr8.Infrastructure.Data.Crates;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
+using Fr8.TerminalBase.Models;
 using StructureMap;
-using TerminalBase.Models;
 
-namespace TerminalBase.Infrastructure
+namespace Fr8.TerminalBase.Infrastructure
 {
     public class AutoMapperBootstrapper
     {

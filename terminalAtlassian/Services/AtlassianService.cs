@@ -8,11 +8,11 @@ using System.Text;
 using Atlassian.Jira;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Interfaces;
+using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
 using StructureMap;
-using TerminalBase.Errors;
 using terminalAtlassian.Interfaces;
-using TerminalBase.Models;
 
 namespace terminalAtlassian.Services
 {

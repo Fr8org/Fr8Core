@@ -7,7 +7,7 @@ using fr8.Infrastructure.Data.Control;
 using fr8.Infrastructure.Data.Crates;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Manifests;
-using TerminalBase.Services;
+using Fr8.TerminalBase.Services;
 
 namespace terminalGoogleTests.Integration
 {

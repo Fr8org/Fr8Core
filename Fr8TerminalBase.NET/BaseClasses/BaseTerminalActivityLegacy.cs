@@ -6,12 +6,13 @@ using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
-using TerminalBase.Helpers;
-using TerminalBase.Infrastructure;
-using TerminalBase.Models;
-using TerminalBase.Services;
+using Fr8.TerminalBase.Helpers;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Infrastructure.States;
+using Fr8.TerminalBase.Models;
+using Fr8.TerminalBase.Services;
 
-namespace TerminalBase.BaseClasses
+namespace Fr8.TerminalBase.BaseClasses
 {
     // Common helper stuff used in currently implemented activities
     public abstract class BaseTerminalActivityLegacy : StatefullTerminalActivity

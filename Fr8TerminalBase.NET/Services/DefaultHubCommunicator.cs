@@ -14,12 +14,12 @@ using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.States;
 using fr8.Infrastructure.Interfaces;
 using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
 using StructureMap;
-using TerminalBase.Infrastructure;
-using TerminalBase.Models;
 
-namespace TerminalBase.Services
+namespace Fr8.TerminalBase.Services
 {
     public class DefaultHubCommunicator : IHubCommunicator
     {

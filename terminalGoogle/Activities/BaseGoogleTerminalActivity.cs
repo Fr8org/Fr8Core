@@ -4,11 +4,11 @@ using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Utilities.Logging;
+using Fr8.TerminalBase.BaseClasses;
 using Newtonsoft.Json;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
 using terminalGoogle.Services;
-using TerminalBase.BaseClasses;
 
 namespace terminalGoogle.Actions
 {

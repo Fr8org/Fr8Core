@@ -7,7 +7,7 @@
     <ProjectGuid>{BBA91AF2-7636-41B6-87C4-C1575AE8B04B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>fr8.Infrastructure</RootNamespace>
+    <RootNamespace>Fr8.Infrastructure</RootNamespace>
     <AssemblyName>Fr8Infrastructure.NET</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

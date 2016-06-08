@@ -9,6 +9,7 @@ using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Models;
 using Salesforce.Force;
 using terminalSalesforce.Infrastructure;
 using Salesforce.Common.Models;
@@ -17,7 +18,6 @@ using Salesforce.Chatter;
 using Newtonsoft.Json.Linq;
 using Salesforce.Chatter.Models;
 using StructureMap;
-using TerminalBase.Models;
 
 namespace terminalSalesforce.Services
 {

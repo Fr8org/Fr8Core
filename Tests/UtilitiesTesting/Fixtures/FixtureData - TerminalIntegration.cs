@@ -3,7 +3,7 @@ using Data.Entities;
 ﻿using Data.States;
 ﻿using fr8.Infrastructure.Data.DataTransferObjects;
 ﻿using fr8.Infrastructure.Data.States;
-﻿using TerminalBase.Models;
+﻿using Fr8.TerminalBase.Models;
 
 namespace UtilitiesTesting.Fixtures
 {

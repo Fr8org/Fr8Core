@@ -1,6 +1,4 @@
-﻿using TerminalBase.Models;
-
-namespace TerminalBase.Interfaces
+﻿namespace Fr8.TerminalBase.Interfaces
 {
     public interface IActivityFactory
     {

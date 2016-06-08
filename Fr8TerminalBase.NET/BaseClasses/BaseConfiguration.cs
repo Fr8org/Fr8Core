@@ -4,12 +4,12 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using fr8.Infrastructure.StructureMap;
+using Fr8.TerminalBase.Infrastructure;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using StructureMap;
-using TerminalBase.Infrastructure;
 
-namespace TerminalBase.BaseClasses
+namespace Fr8.TerminalBase.BaseClasses
 {
     public abstract class BaseConfiguration : IHttpControllerTypeResolver
     {

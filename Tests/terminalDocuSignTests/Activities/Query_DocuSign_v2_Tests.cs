@@ -3,17 +3,17 @@ using DocuSign.eSign.Model;
 using fr8.Infrastructure.Data.Crates;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Helpers;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.Helpers;
 using UtilitiesTesting.Fixtures;
 using terminalDocuSign.Activities;
-using TerminalBase.Models;
-using TerminalBase.Infrastructure;
 
 namespace terminalDocuSignTests.Activities
 {

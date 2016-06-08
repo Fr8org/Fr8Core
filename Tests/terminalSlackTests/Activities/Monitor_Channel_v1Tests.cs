@@ -5,13 +5,13 @@ using fr8.Infrastructure.Data.Crates;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Helpers;
+using Fr8.TerminalBase.Services;
 using NUnit.Framework;
 using HealthMonitor.Utility;
 using terminalSlackTests.Fixtures;
 using terminalSlack.Actions;
-using TerminalBase.BaseClasses;
-using TerminalBase.Helpers;
-using TerminalBase.Services;
 
 namespace terminalSlackTests.Integration
 {

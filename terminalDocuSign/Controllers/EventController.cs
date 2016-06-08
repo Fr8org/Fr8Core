@@ -3,9 +3,10 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
-using TerminalBase.Infrastructure;
 using StructureMap;
 using System.Net;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Interfaces;
 
 namespace terminalDocuSign.Controllers
 {

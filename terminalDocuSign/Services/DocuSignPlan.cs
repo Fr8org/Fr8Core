@@ -14,12 +14,12 @@ using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
 using fr8.Infrastructure.Utilities;
 using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 using log4net;
 using StructureMap;
 using terminalDocuSign.Interfaces;
-using TerminalBase.Infrastructure;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.Models;
 
 namespace terminalDocuSign.Services
 {

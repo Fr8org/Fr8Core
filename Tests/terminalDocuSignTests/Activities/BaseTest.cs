@@ -3,15 +3,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using fr8.Infrastructure.Data.Crates;
 using fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.Infrastructure;
 using UtilitiesTesting.Fixtures;
-using TerminalBase.BaseClasses;
-using TerminalBase.Models;
 
 namespace terminalDocuSignTests.Activities
 {

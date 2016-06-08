@@ -7,7 +7,7 @@ using fr8.Infrastructure.Data.Helpers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
 
-namespace TerminalBase.Services
+namespace Fr8.TerminalBase.Services
 {
     public class CrateSignaller
     {

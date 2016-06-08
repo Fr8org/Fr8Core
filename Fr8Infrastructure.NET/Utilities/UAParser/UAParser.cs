@@ -160,7 +160,7 @@ namespace fr8.Infrastructure.Utilities.UAParser
 
         public static Parser GetDefault()
         {
-            using (var stream = new MemoryStream(fr8.Infrastructure.Properties.Resources.UAParser_regexes_yaml))
+            using (var stream = new MemoryStream(Fr8.Infrastructure.Properties.Resources.UAParser_regexes_yaml))
             // ReSharper disable once AssignNullToNotNullAttribute
             using (var reader = new StreamReader(stream))
                 return new Parser(reader.ReadToEnd());

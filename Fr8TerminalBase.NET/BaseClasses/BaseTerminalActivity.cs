@@ -1,16 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using fr8.Infrastructure.Data.Crates;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
-using TerminalBase.Infrastructure;
-using TerminalBase.Services;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Services;
 
-namespace TerminalBase.BaseClasses
+namespace Fr8.TerminalBase.BaseClasses
 {
     public abstract partial class BaseTerminalActivity : BaseTerminalActivityLegacy
     {

@@ -5,11 +5,11 @@ using fr8.Infrastructure.Data.Control;
 using fr8.Infrastructure.Data.Crates;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Manifests;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using TerminalBase.Models;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
+using BaseTerminalActivity = Fr8.TerminalBase.BaseClasses.BaseTerminalActivity;
 
-namespace TerminalBase.Helpers
+namespace Fr8.TerminalBase.Helpers
 {
     public class ControlHelper
     {

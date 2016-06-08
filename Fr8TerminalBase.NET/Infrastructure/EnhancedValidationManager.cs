@@ -5,10 +5,10 @@ using fr8.Infrastructure.Data.Crates;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Helpers;
 using fr8.Infrastructure.Data.Manifests;
-using TerminalBase.BaseClasses;
-using TerminalBase.Helpers;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Helpers;
 
-namespace TerminalBase.Infrastructure
+namespace Fr8.TerminalBase.Infrastructure
 {
     public class EnhancedValidationManager<TActivityUi> : ValidationManager where TActivityUi : StandardConfigurationControlsCM
     {

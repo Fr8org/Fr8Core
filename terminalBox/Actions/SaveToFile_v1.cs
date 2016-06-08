@@ -8,10 +8,10 @@ using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
 using terminalBox.Infrastructure;
-using TerminalBase.BaseClasses;
-using TerminalBase.Services;
 
 namespace terminalBox.Actions
 {

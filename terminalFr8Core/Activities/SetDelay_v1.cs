@@ -5,8 +5,8 @@ using fr8.Infrastructure.Data.Crates;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.States;
-using TerminalBase;
-using TerminalBase.BaseClasses;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Errors;
 
 namespace terminalFr8Core.Activities
 {

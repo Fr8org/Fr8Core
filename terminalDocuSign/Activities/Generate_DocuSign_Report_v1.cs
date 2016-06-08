@@ -13,13 +13,13 @@ using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
 using fr8.Infrastructure.Utilities;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.BaseClasses;
-using TerminalBase.Models;
 
 namespace terminalDocuSign.Activities
 {

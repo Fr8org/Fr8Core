@@ -3,10 +3,10 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using fr8.Infrastructure.Data.DataTransferObjects;
-using TerminalBase.Interfaces;
-using TerminalBase.Models;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 
-namespace TerminalBase.Services
+namespace Fr8.TerminalBase.Services
 {
 
     public static class ActivityStore

@@ -1,8 +1,8 @@
 ﻿using System;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.BaseClasses;
 using terminalSalesforce.Services;
-using TerminalBase.BaseClasses;
 
 namespace terminalSalesforce.Actions
 {

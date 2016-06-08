@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 ﻿using fr8.Infrastructure.Data.DataTransferObjects;
+﻿using Fr8.TerminalBase.Infrastructure;
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using NUnit.Framework;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 ﻿using terminalFr8Core.Activities;
-﻿using TerminalBase.Infrastructure;
 
 namespace HubTests.Unit
 {

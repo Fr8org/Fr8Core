@@ -1,8 +1,8 @@
 ﻿using System;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.BaseClasses;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.BaseClasses;
 
 namespace terminalDocuSign.Activities
 {

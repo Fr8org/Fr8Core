@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TerminalBase.Models;
+using Fr8.TerminalBase.Models;
 
-namespace TerminalBase.Infrastructure.Behaviors
+namespace Fr8.TerminalBase.Infrastructure.Behaviors
 {
     /// <summary>
     /// A single ReconfigurationList item.

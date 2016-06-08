@@ -11,8 +11,8 @@ using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
 using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.BaseClasses;
 using terminalUtilities.Excel;
-using TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Activities
 {

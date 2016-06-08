@@ -12,8 +12,8 @@ using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
 using Newtonsoft.Json;
-using TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Activities
 {

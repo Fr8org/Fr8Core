@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Manifests;
-using TerminalBase.Models;
+using Fr8.TerminalBase.Models;
 
 namespace terminalSalesforce.Infrastructure
 {

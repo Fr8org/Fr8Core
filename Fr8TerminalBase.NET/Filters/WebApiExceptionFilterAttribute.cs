@@ -1,17 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
-using Newtonsoft.Json;
-using TerminalBase.BaseClasses;
-using TerminalBase.Errors;
-using Microsoft.ApplicationInsights;
-using System.Collections.Generic;
 using fr8.Infrastructure.Utilities;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Errors;
+using Microsoft.ApplicationInsights;
+using Newtonsoft.Json;
 
-namespace TerminalBase
+namespace Fr8.TerminalBase.Filters
 {
     public class WebApiExceptionFilterAttribute : ExceptionFilterAttribute
     {

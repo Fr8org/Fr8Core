@@ -11,8 +11,8 @@ using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
 using fr8.Infrastructure.Utilities;
+using Fr8.TerminalBase.BaseClasses;
 using terminalFr8Core.Converters;
-using TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Activities
 {

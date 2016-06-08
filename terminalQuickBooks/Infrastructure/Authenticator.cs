@@ -10,8 +10,8 @@ using DevDefined.OAuth.Framework;
 using DevDefined.OAuth.Storage.Basic;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.Models;
 using terminalQuickBooks.Interfaces;
-using TerminalBase.Models;
 
 namespace terminalQuickBooks.Infrastructure
 {

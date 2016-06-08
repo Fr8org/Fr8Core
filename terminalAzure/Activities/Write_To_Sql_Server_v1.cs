@@ -9,12 +9,11 @@ using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Errors;
 using StructureMap;
 using terminalAzure.Infrastructure;
 using terminalAzure.Services;
-using TerminalBase;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 using TerminalSqlUtilities;
 
 namespace terminalAzure.Activities

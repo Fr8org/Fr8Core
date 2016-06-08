@@ -6,11 +6,12 @@ using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
-using TerminalBase.Helpers;
-using TerminalBase.Infrastructure;
-using TerminalBase.Services;
+using Fr8.TerminalBase.Helpers;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Infrastructure.States;
+using Fr8.TerminalBase.Services;
 
-namespace TerminalBase.BaseClasses
+namespace Fr8.TerminalBase.BaseClasses
 {
     public abstract class EnhancedTerminalActivity<T> : BaseTerminalActivityLegacy
        where T : StandardConfigurationControlsCM

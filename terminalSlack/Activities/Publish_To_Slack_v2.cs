@@ -6,12 +6,12 @@ using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Services;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
-using TerminalBase.BaseClasses;
-using TerminalBase.Errors;
-using TerminalBase.Infrastructure;
-using TerminalBase.Services;
 
 namespace terminalSlack.Activities
 {

@@ -9,9 +9,10 @@ using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Errors;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
-using TerminalBase.BaseClasses;
 
 namespace terminalSlack.Activities
 {
@@ -83,7 +84,7 @@ namespace terminalSlack.Activities
                 await _slackIntegration.PostMessageToChat(AuthorizationToken.Token,
                     actionChannelId, StripHTML(messageField.GetValue(Payload)));
             }
-            catch (TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException)
+            catch (AuthorizationTokenExpiredOrInvalidException)
             {
                 RaiseInvalidTokenError();
             }

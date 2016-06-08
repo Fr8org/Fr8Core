@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace TerminalBase.Errors
+namespace Fr8.TerminalBase.Errors
 {
     public class AuthorizationTokenExpiredOrInvalidException : Exception
     {

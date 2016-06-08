@@ -4,8 +4,8 @@ using System.Web.Http;
 using System.Threading.Tasks;
 using System;
 using fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.TerminalBase.Services;
 using StructureMap;
-using TerminalBase.Services;
 
 namespace terminalAtlassian.Controllers
 {

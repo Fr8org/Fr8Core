@@ -14,11 +14,11 @@ using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
 using Hub.Services;
 using Hub.Services.MT;
 using Newtonsoft.Json;
 using StructureMap;
-using TerminalBase.BaseClasses;
 
 
 namespace terminalFr8Core.Activities

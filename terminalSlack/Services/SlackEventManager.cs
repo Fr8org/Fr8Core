@@ -6,9 +6,9 @@ using System.Web;
 using fr8.Infrastructure.Interfaces;
 using fr8.Infrastructure.Utilities.Configuration;
 using fr8.Infrastructure.Utilities.Logging;
+using Fr8.TerminalBase.Models;
 using terminalSlack.Interfaces;
 using terminalSlack.RtmClient;
-using TerminalBase.Models;
 
 namespace terminalSlack.Services
 {

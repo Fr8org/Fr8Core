@@ -1,6 +1,8 @@
 ﻿using System.Web.Http;
+using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Filters;
 
-namespace TerminalBase.BaseClasses
+namespace Fr8.TerminalBase.BaseClasses
 {
     public static class BaseTerminalWebApiConfig
     {

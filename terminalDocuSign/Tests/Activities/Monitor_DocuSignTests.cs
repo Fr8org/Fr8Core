@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.TerminalBase.Infrastructure;
 using NUnit.Framework;
-using TerminalBase.Infrastructure;
 using terminalDocuSign.Actions;
 using terminalDocuSign.Infrastructure.StructureMap;
 using UtilitiesTesting;

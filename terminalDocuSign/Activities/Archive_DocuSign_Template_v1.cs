@@ -8,8 +8,8 @@ using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Utilities;
+using Fr8.TerminalBase.Models;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.Models;
 
 namespace terminalDocuSign.Activities
 {

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 
-namespace TerminalBase
+namespace Fr8.TerminalBase.Errors
 {
     //TODO remove this?
     public enum TerminalErrorCode

@@ -8,8 +8,9 @@ using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Infrastructure;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
 using ServiceStack;
@@ -145,7 +146,7 @@ namespace terminalSalesforce.Actions
                 {
                     result = await _salesforce.Create(chosenObject.ToEnum<SalesforceObjectType>(), jsonInputObject, AuthorizationToken);
                 }
-                catch (TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException ex)
+                catch (AuthorizationTokenExpiredOrInvalidException ex)
                 {
                     RaiseInvalidTokenError();
                     return;

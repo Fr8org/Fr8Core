@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Interfaces;
 using fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.Errors;
 using Newtonsoft.Json.Linq;
 using StructureMap;
 using terminalYammer.Interfaces;
@@ -102,7 +103,7 @@ namespace terminalYammer.Services
                 }
                 if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 {
-                    throw new TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException();
+                    throw new AuthorizationTokenExpiredOrInvalidException();
                 }
                 return false;
             }

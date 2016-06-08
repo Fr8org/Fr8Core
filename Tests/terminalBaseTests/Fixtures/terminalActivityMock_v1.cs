@@ -5,7 +5,7 @@ using fr8.Infrastructure.Data.Control;
 using fr8.Infrastructure.Data.Crates;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
-using TerminalBase.BaseClasses;
+using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalBaseTests.Actions
 {

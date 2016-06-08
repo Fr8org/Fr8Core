@@ -1,10 +1,10 @@
 ﻿using System.Web.Http;
-using TerminalBase.BaseClasses;
 using Newtonsoft.Json;
 using terminalAtlassian.Services;
 using StructureMap;
 using System;
 using fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalAtlassian.Controllers
 {

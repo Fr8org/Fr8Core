@@ -13,11 +13,11 @@ using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Models;
 using terminaBaselTests.Tools.Activities;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
 using UtilitiesTesting.Fixtures;
-using TerminalBase.Models;
 
 namespace terminalDocuSignTests.Integration
 {

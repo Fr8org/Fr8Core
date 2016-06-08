@@ -8,10 +8,11 @@ using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Errors;
 using Newtonsoft.Json;
 using terminalYammer.Interfaces;
 using terminalYammer.Services;
-using TerminalBase.BaseClasses;
 
 namespace terminalYammer.Actions
 {
@@ -109,7 +110,7 @@ namespace terminalYammer.Actions
                 await _yammer.PostMessageToGroup(AuthorizationToken.Token,
                     groupMessageField.GroupID, groupMessageField.Message);
             }
-            catch (TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException)
+            catch (AuthorizationTokenExpiredOrInvalidException)
             {
                 RaiseInvalidTokenError();
                 return;

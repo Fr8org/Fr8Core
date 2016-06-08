@@ -15,7 +15,7 @@ using System.Diagnostics;
 using AutoMapper;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Manifests;
-using TerminalBase.Models;
+using Fr8.TerminalBase.Models;
 
 namespace terminalDocuSignTests.Integration
 {

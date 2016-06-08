@@ -10,9 +10,9 @@ using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
-using TerminalBase.Infrastructure.Behaviors;
+using Fr8.TerminalBase.Infrastructure.Behaviors;
+using Fr8.TerminalBase.Models;
 using ServiceStack;
-using TerminalBase.Models;
 
 namespace terminalSalesforce.Actions
 {

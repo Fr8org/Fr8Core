@@ -6,12 +6,12 @@ using fr8.Infrastructure.Data.Crates;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.DataTransferObjects.Helpers;
 using fr8.Infrastructure.Data.Manifests;
-using TerminalBase.Errors;
-using TerminalBase.Infrastructure;
-using TerminalBase.Interfaces;
-using TerminalBase.Models;
+using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Infrastructure.States;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 
-namespace TerminalBase.BaseClasses
+namespace Fr8.TerminalBase.BaseClasses
 {
     // Almost minimal activity implementation
     public abstract class StatefullTerminalActivity : IActivity

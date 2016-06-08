@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Utilities.Logging;
-using TerminalBase.BaseClasses;
+using Fr8.TerminalBase.BaseClasses;
 using terminalSalesforce.Infrastructure;
 
 namespace terminalSalesforce.Controllers

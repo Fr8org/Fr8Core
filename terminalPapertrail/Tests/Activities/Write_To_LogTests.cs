@@ -9,14 +9,15 @@ using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Interfaces;
 using fr8.Infrastructure.StructureMap;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
 using terminalPapertrail.Actions;
 using terminalPapertrail.Interfaces;
 using terminalPapertrail.Tests.Infrastructure;
-using TerminalBase.Infrastructure;
-using TerminalBase.Models;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 

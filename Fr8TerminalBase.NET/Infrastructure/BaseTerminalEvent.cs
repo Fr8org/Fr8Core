@@ -1,5 +1,4 @@
-﻿using StructureMap;
-using System;
+﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using fr8.Infrastructure.Data.Crates;
@@ -8,8 +7,9 @@ using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Interfaces;
 using fr8.Infrastructure.Utilities.Configuration;
+using StructureMap;
 
-namespace TerminalBase.Infrastructure
+namespace Fr8.TerminalBase.Infrastructure
 {
     public class BaseTerminalEvent
     {

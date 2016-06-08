@@ -10,9 +10,9 @@ using fr8.Infrastructure.Data.Helpers;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Errors;
 using Newtonsoft.Json.Linq;
-using TerminalBase;
-using TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Activities
 {

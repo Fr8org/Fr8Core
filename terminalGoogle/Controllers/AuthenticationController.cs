@@ -4,11 +4,11 @@ using System.Web;
 using System.Web.Http;
 using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Interfaces;
+using Fr8.TerminalBase.BaseClasses;
 using Newtonsoft.Json;
 using StructureMap;
 using terminalGoogle.Interfaces;
 using terminalGoogle.Services.Authorization;
-using TerminalBase.BaseClasses;
 
 namespace terminalGoogle.Controllers
 {

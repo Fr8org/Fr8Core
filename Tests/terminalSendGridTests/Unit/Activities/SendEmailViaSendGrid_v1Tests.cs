@@ -5,6 +5,9 @@ using fr8.Infrastructure.Data.Crates;
 using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Utilities;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Models;
 using NUnit.Framework;
 using SendGrid;
 using StructureMap;
@@ -13,9 +16,6 @@ using terminalSendGrid.Activities;
 using terminalSendGridTests.Fixtures;
 using terminalUtilities.Interfaces;
 using terminalUtilities.SendGrid;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using TerminalBase.Models;
 using UtilitiesTesting;
 
 namespace terminalSendGridTests.Unit.Activities

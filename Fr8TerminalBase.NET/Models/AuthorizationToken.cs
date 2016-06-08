@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TerminalBase.Models
+﻿namespace Fr8.TerminalBase.Models
 {
     public class AuthorizationToken
     {

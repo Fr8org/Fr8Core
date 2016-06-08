@@ -3,7 +3,7 @@ using fr8.Infrastructure.Data.DataTransferObjects;
 using fr8.Infrastructure.Utilities;
 using PhoneNumbers;
 
-namespace TerminalBase.Infrastructure
+namespace Fr8.TerminalBase.Infrastructure
 {
     public static class ValidationExtensions
     {

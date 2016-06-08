@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
+using Fr8.TerminalBase.Interfaces;
 using StructureMap;
-using TerminalBase.Interfaces;
 
-namespace TerminalBase.Services
+namespace Fr8.TerminalBase.Services
 {
     public class DefaultActivityFactory : IActivityFactory
     {

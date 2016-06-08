@@ -9,13 +9,13 @@ using fr8.Infrastructure.Data.Managers;
 using fr8.Infrastructure.Data.Manifests;
 using fr8.Infrastructure.Data.Manifests.Helpers;
 using fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Infrastructure;
 using Google.GData.Client;
 using Newtonsoft.Json;
 using terminalGoogle.Actions;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
-using TerminalBase.Errors;
-using TerminalBase.Infrastructure;
 
 namespace terminalGoogle.Activities
 {
@@ -246,7 +246,7 @@ namespace terminalGoogle.Activities
             {
                 if (ex.InnerException.Message.IndexOf("(401) Unauthorized") > -1)
                 {
-                    throw new TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException();
+                    throw new AuthorizationTokenExpiredOrInvalidException();
                 }
 
                 throw;

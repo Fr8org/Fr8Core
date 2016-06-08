@@ -3,7 +3,7 @@ using System.Linq;
 using fr8.Infrastructure.Data.Control;
 using fr8.Infrastructure.Data.Crates;
 
-namespace TerminalBase.Infrastructure.Behaviors
+namespace Fr8.TerminalBase.Infrastructure.Behaviors
 {
     public class DropDownListMappingBehavior : BaseControlMappingBehavior<DropDownList>
     {

@@ -4,7 +4,6 @@ using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using Microsoft.Owin.Hosting;
 using Owin;
-using TerminalBase.BaseClasses;
 
 namespace terminalExcel
 {
