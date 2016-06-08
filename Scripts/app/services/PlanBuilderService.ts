@@ -17,6 +17,7 @@ module dockyard.services {
         run: (id: string) => ng.IPromise<model.ContainerDTO>;
         runAndProcessClientAction: (id: string) => ng.IPromise<model.ContainerDTO>;
         share: (id: string) => ng.IPromise<any>;
+        unpublish: (id: string) => ng.IPromise<any>;
         createTemplate: (id: string) => ng.IPromise<any>;
     }
 
@@ -179,9 +180,24 @@ module dockyard.services {
                 return d.promise;
             };
 
+            resource.unpublish = (id: string): ng.IPromise<any> => {
+                var url = '/api/plans/unpublish?planId=' + id;
+                var d = $q.defer();
+
+                $http.post(url, null)
+                    .then((res: any) => {
+                        d.resolve();
+                    })
+                    .catch((err: any) => {
+                        d.reject(err);
+                    });
+
+                return d.promise;
+            };
+
             resource.createTemplate = (id: string): ng.IPromise<any> => {
                 
-                var url = '/api/plans/Template?planId=' + id;
+                var url = '/api/plans/Templates?planId=' + id;
                 var d = $q.defer();
 
                 $http.post(url, null)
@@ -242,7 +258,7 @@ module dockyard.services {
 
                             $rootScope.$broadcast(
                                 directives.paneConfigureAction.MessageType[directives.paneConfigureAction.MessageType.PaneConfigureAction_ResetValidationMessages],
-                                new directives.paneConfigureAction.ResetValidationMessagesEventArgs ()
+                                new directives.paneConfigureAction.ResetValidationMessagesEventArgs()
                             );
 
                             // if we have validation errors, send them to activities

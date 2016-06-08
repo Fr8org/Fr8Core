@@ -98,12 +98,12 @@
       <HintPath>..\packages\Fr8Infrastructure.1.0.0.3\lib\net45\Fr8Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="fr8TerminalBase, Version=1.0.0.13, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\fr8TerminalBase.1.0.0.13\lib\net45\fr8TerminalBase.dll</HintPath>
+    <Reference Include="fr8TerminalBase, Version=1.0.0.14, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\fr8TerminalBase.1.0.0.14\lib\net45\fr8TerminalBase.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="fr8Utilities, Version=1.0.0.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\fr8Utilities.1.0.0.4\lib\net45\fr8Utilities.dll</HintPath>
+    <Reference Include="fr8Utilities, Version=1.0.0.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\fr8Utilities.1.0.0.5\lib\net45\fr8Utilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Google.Apis.Auth, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
@@ -321,6 +321,7 @@
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
     <Compile Include="Infrastructure\AsyncMultiLock.cs" />
+    <Compile Include="Infrastructure\CustomSelector.cs" />
     <Compile Include="Infrastructure\FilterConditionPredicateBuilder.cs" />
     <Compile Include="Infrastructure\Fr8Identity.cs" />
     <Compile Include="Infrastructure\Fr8Principle.cs" />
@@ -339,7 +340,6 @@
     <Compile Include="Security\AuthorizeActivityInterceptor.cs" />
     <Compile Include="Security\HangFireAuthorizationFilter.cs" />
     <Compile Include="Interfaces\IAuthorization.cs" />
-    <Compile Include="Interfaces\IFindObjectsPlan.cs" />
     <Compile Include="Interfaces\IManifest.cs" />
     <Compile Include="Interfaces\IField.cs" />
     <Compile Include="Interfaces\IPlanNode.cs" />
@@ -400,7 +400,6 @@
     <Compile Include="Services\ContainerService.ExecutionSession.cs" />
     <Compile Include="Services\Fact.cs" />
     <Compile Include="Services\Field.cs" />
-    <Compile Include="Services\FindObjectsPlan.cs" />
     <Compile Include="Services\Manifest.cs" />
     <Compile Include="Services\MT\MTSearchHelper.cs" />
     <Compile Include="Services\MT\MTSearchHelper.IMtQueryProvider.cs" />

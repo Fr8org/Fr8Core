@@ -8,7 +8,7 @@ using Utilities.Configuration.Azure;
 
 namespace terminalSlack.Controllers
 {
-    [RoutePrefix("terminals")]
+    //[RoutePrefix("terminals")]
     public class TerminalController : ApiController
     {
         /// <summary>
