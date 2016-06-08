@@ -12,7 +12,7 @@ Separately, Terminals will often communicate with their corresponding web servic
 
 Terminals can use events endpoint to report Facts and Incidents to the Hub. In order to do that EventReport crate has to have ExternalAccountId set to "system1@fr8.co" and to have LoggingData crates in its crate storage.
 LoggingData crates with "Terminal Fact" name are processed as Facts, and crates with "Terminal Incident" name are processed as Incidents.
-Facts are supposed to represent data that is useful for bussines analysis, while Incidents are supposed to represent critical issues in the work of the terminal.
+Facts are supposed to represent data that is useful for business analysis, while Incidents are supposed to represent critical issues in the work of the terminal.
 
 ## At Design-Time
 
@@ -26,9 +26,9 @@ It is common for terminals to register for events with their corresponding web s
 
 Activities that request notifications should also remove the notification requests upon the receipt of a `/deactivate` request.
 
-Whenever Hub receives call to `/event` endpoint with paylod containing crate of Standard Event Report manifest it tries to determine which plans should be run in response to this event. It checks `externalDomainId` and `externalAccountId` properties of the manifest, identifies the authorizations that bear the same values of these properties, get the owners of these authorizations and check their active plans that contains Standard Event Subscription manifest inside its activities storage which matches `eventNames` property of incoming event.
+Whenever Hub receives call to `/event` endpoint with payload containing crate of Standard Event Report manifest it tries to determine which plans should be run in response to this event. It checks `externalDomainId` and `externalAccountId` properties of the manifest, identifies the authorizations that bear the same values of these properties, get the owners of these authorizations and check their active plans that contains Standard Event Subscription manifest inside its activities storage which matches `eventNames` property of incoming event.
 
-If terminal posts manifest with empty `externalAccountId` property but with nonempty `externalDomainId` property that eventually means event that relates to all accounts that belong to specified external domain. 
+If terminal posts manifest with empty `externalAccountId` property but with nonempty `externalDomainId` property that eventually means event that relates to all accounts that belong to specified external domain.
 
 Terminals should avoid posting manifests with both `externalAccountId` and `externalDomainId` as such events won't be processed by Hub
 
