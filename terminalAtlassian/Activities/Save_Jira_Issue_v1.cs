@@ -95,8 +95,6 @@ namespace terminalAtlassian.Actions
                 {
                     Name = "Sprint",
                     Label = "Sprint",
-                    Value = null,
-                    Source = null,
                     IsHidden = true
                 };
                 Controls.Add(Sprint);
@@ -257,7 +255,7 @@ namespace terminalAtlassian.Actions
 
                     if (configProps.SelectedIssueType != issueTypeKey)
                     {
-                        FillFieldDdls();
+                        await FillFieldDdls();
                     }
                 }
                 else
@@ -328,14 +326,14 @@ namespace terminalAtlassian.Actions
             ActivityUI.SelectIssueTypeLabel.IsHidden = visible;
         }
 
-        private void FillFieldDdls()
+        private async Task FillFieldDdls()
         {
             ActivityUI.AvailablePriorities.ListItems = _atlassianService
                 .GetPriorities(AuthorizationToken)
                 .ToListItems()
                 .ToList();
 
-            ActivityUI.Sprint.ListItems = _atlassianService.GetSprints(AuthorizationToken, ActivityUI.AvailableProjects.Value);
+            ActivityUI.Sprint.ListItems = await _atlassianService.GetSprints(AuthorizationToken, ActivityUI.AvailableProjects.Value);
             var customFields = _atlassianService.GetCustomFields(AuthorizationToken);
             ActivityUI.AppendCustomFields(customFields);
         }
@@ -349,7 +347,7 @@ namespace terminalAtlassian.Actions
         {
 
             var issueInfo = ExtractIssueInfo();
-            _atlassianService.CreateIssue(issueInfo, AuthorizationToken);
+            await _atlassianService.CreateIssue(issueInfo, AuthorizationToken);
 
             var credentialsDTO = JsonConvert.DeserializeObject<CredentialsDTO>(AuthorizationToken.Token);
             await
@@ -382,11 +380,15 @@ namespace terminalAtlassian.Actions
             };
 
 
-            var sprint = ActivityUI.Controls.Where(c => c.Label == "Sprint" && c.Value != null).First();
-            if (!string.IsNullOrEmpty(sprint.Value))
+            var sprint = ActivityUI.Controls.Where(c => c.Label == "Sprint" && c.Value != null).FirstOrDefault();
+            if(sprint != null)
             {
-                result.CustomFields.Add(new FieldDTO() { Key = sprint.Name, Value = sprint.Value });
-            }
+                if (!string.IsNullOrEmpty(sprint.Value))
+                {
+                    result.CustomFields.Add(new FieldDTO() { Key = sprint.Name, Value = sprint.Value });
+                }
+            }           
+
             return result;
         }
 

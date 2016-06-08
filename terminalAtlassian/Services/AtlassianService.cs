@@ -14,6 +14,7 @@ using TerminalBase.Errors;
 using terminalAtlassian.Interfaces;
 using TerminalBase.Models;
 using Fr8Data.Control;
+using System.Threading.Tasks;
 
 namespace terminalAtlassian.Services
 {
@@ -185,52 +186,52 @@ namespace terminalAtlassian.Services
             });
         }
 
-        public void CreateIssue(IssueInfo issueInfo, AuthorizationToken authToken)
+        public async Task CreateIssue(IssueInfo issueInfo, AuthorizationToken authToken)
         {
-            InterceptJiraExceptions(() =>
-            {
-                var jira = CreateRestClient(authToken.Token);
+            await InterceptJiraExceptions(async () =>
+             {
+                 var jira = CreateRestClient(authToken.Token);
 
-                var issueTypes = jira.GetIssueTypes(issueInfo.ProjectKey);
-                var issueType = issueTypes.FirstOrDefault(x => x.Id == issueInfo.IssueTypeKey);
-                if (issueType == null)
-                {
-                    throw new ApplicationException("Invalid Jira Issue Type specified.");
-                }
+                 var issueTypes = jira.GetIssueTypes(issueInfo.ProjectKey);
+                 var issueType = issueTypes.FirstOrDefault(x => x.Id == issueInfo.IssueTypeKey);
+                 if (issueType == null)
+                 {
+                     throw new ApplicationException("Invalid Jira Issue Type specified.");
+                 }
 
-                var priorities = jira.GetIssuePriorities();
-                var priority = priorities.FirstOrDefault(x => x.Id == issueInfo.PriorityKey);
-                if (priority == null)
-                {
-                    throw new ApplicationException("Invalid Jira Priority specified.");
-                }
+                 var priorities = jira.GetIssuePriorities();
+                 var priority = priorities.FirstOrDefault(x => x.Id == issueInfo.PriorityKey);
+                 if (priority == null)
+                 {
+                     throw new ApplicationException("Invalid Jira Priority specified.");
+                 }
 
-                var jiraCustomFields = jira.GetCustomFields();
+                 var jiraCustomFields = jira.GetCustomFields();
 
-                var issue = jira.CreateIssue(issueInfo.ProjectKey);
-                issue.Type = issueType;
-                issue.Priority = priority;
-                issue.Summary = issueInfo.Summary;
-                issue.Description = issueInfo.Description;
+                 var issue = jira.CreateIssue(issueInfo.ProjectKey);
+                 issue.Type = issueType;
+                 issue.Priority = priority;
+                 issue.Summary = issueInfo.Summary;
+                 issue.Description = issueInfo.Description;
 
-                if (issueInfo.CustomFields != null)
-                {
-                    var customFieldsCollection = issue.CustomFields.ForEdit();
-                    foreach (var customField in issueInfo.CustomFields)
-                    {
-                        var jiraCustomField = jiraCustomFields.FirstOrDefault(x => x.Id == customField.Key);
-                        if (jiraCustomField == null)
-                        {
-                            throw new ApplicationException($"Invalid custom field {customField.Key}");
-                        }
+                 if (issueInfo.CustomFields != null)
+                 {
+                     var customFieldsCollection = issue.CustomFields.ForEdit();
+                     foreach (var customField in issueInfo.CustomFields)
+                     {
+                         var jiraCustomField = jiraCustomFields.FirstOrDefault(x => x.Id == customField.Key);
+                         if (jiraCustomField == null)
+                         {
+                             throw new ApplicationException($"Invalid custom field {customField.Key}");
+                         }
 
-                        customFieldsCollection.Add(jiraCustomField.Name, customField.Value);
-                    }
-                }
+                         customFieldsCollection.Add(jiraCustomField.Name, customField.Value);
+                     }
+                 }
 
-                var token = SaveIssue(jira, issue);
-                issueInfo.Key = token;
-            });
+                 var token = await SaveIssue(jira, issue);
+                 issueInfo.Key = token;
+             });
         }
         
         private List<FieldDTO> CreateKeyValuePairList(Issue curIssue)
@@ -253,10 +254,10 @@ namespace terminalAtlassian.Services
             return Jira.CreateRestClient(credentialsDTO.Domain, credentialsDTO.Username, credentialsDTO.Password);
         }
 
-        public string SaveIssue(Jira jira, Issue issue)
+        public Task<string> SaveIssue(Jira jira, Issue issue)
         {
             Newtonsoft.Json.Linq.JToken token = null;
-            InterceptJiraExceptions(() =>
+            return InterceptJiraExceptions(async () =>
             {
                 var obj = new { fields = new Dictionary<string, object>() };
                 foreach (var item in issue.CustomFields)
@@ -294,17 +295,21 @@ namespace terminalAtlassian.Services
                     obj.fields.Add("issuetype", new { id = issue.Type.Id });
                 }
 
-                token = jira.RestClient.ExecuteRequest(RestSharp.Method.POST, "/rest/api/2/issue", JsonConvert.SerializeObject(obj));
+                token = await jira.RestClient.ExecuteRequestAsync(RestSharp.Method.POST, "/rest/api/2/issue", JsonConvert.SerializeObject(obj));
+                return token["key"].ToString();
             });
-            return token["key"].ToString();
+
         }
 
-        public List<ListItem> GetSprints(AuthorizationToken authToken, string projectName)
+        public async Task<List<ListItem>> GetSprints(AuthorizationToken authToken, string projectName)
         {
-            var jira = CreateRestClient(authToken.Token);
-            var board = jira.RestClient.ExecuteRequest(RestSharp.Method.GET, "/rest/agile/1.0/board?projectKeyOrId=" + projectName)["values"].First()["id"].ToString();
-            var sprints = jira.RestClient.ExecuteRequest(RestSharp.Method.GET, "/rest/agile/1.0/board/" + board + "/sprint");
             List<ListItem> list = new List<ListItem>();
+
+            var jira = CreateRestClient(authToken.Token);
+            var board = await jira.RestClient.ExecuteRequestAsync(RestSharp.Method.GET, "/rest/agile/1.0/board?projectKeyOrId=" + projectName);
+            var boardId = board["values"].First()["id"].ToString();
+            var sprints = await jira.RestClient.ExecuteRequestAsync(RestSharp.Method.GET, "/rest/agile/1.0/board/" + boardId + "/sprint");
+
             foreach (var value in sprints["values"])
             {
                 if (value["state"].ToString().ToLower() != "closed")
@@ -312,6 +317,7 @@ namespace terminalAtlassian.Services
                     list.Add(new ListItem() { Key = value["name"].ToString(), Value = value["id"].ToString() });
                 }
             }
+
             return list;
         }
     }
