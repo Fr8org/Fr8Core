@@ -115,6 +115,7 @@ namespace Hub.StructureMap
                 For<IAuthorization>().Use<Authorization>();
                 For<ITag>().Use<Tag>();
                 For<IOrganization>().Use<Organization>();
+                For<IPageDefinition>().Use<PageDefinition>();
 
                 For<TelemetryClient>().Use<TelemetryClient>();
                 For<IJobDispatcher>().Use<HangfireJobDispatcher>();
@@ -186,6 +187,8 @@ namespace Hub.StructureMap
 
                 For<ITag>().Use<Tag>();
                 For<IOrganization>().Use<Organization>();
+                For<IPageDefinition>().Use<PageDefinition>();
+
                 For<TelemetryClient>().Use<TelemetryClient>();
                 For<ITerminal>().Use(new TerminalServiceForTests()).Singleton();
                 For<IJobDispatcher>().Use<MockJobDispatcher>();

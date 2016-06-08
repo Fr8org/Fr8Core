@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Optimization;
 using AutoMapper;
 using Data.Entities;
+using fr8.Data.DataTransferObjects;
 using Fr8Data.DataTransferObjects;
 using Hub.Interfaces;
 using HubWeb.ViewModels;
@@ -73,8 +74,11 @@ namespace HubWeb.App_Start
 
             Mapper.CreateMap<PageDefinitionDTO, PageDefinitionDO>()
                 .ForMember(dest => dest.Url, opts => opts.Ignore())
-                .ForMember(dest => dest.AuthorUrl, opts => opts.Ignore());
-            Mapper.CreateMap<PageDefinitionDO, PageDefinitionDTO>();
+                .ForMember(dest => dest.Tags, opts => opts.MapFrom(
+                    x => x.Tags.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList()));
+
+            Mapper.CreateMap<PageDefinitionDO, PageDefinitionDTO>()
+                .ForMember(dest => dest.Tags, opts => opts.MapFrom(x => string.Join(", ", x.Tags)));
 
         }
 

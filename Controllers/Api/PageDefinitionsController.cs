@@ -1,54 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Http;
 using AutoMapper;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
-using Fr8Data.DataTransferObjects;
+using fr8.Data.DataTransferObjects;
+using Hub.Interfaces;
 using StructureMap;
 
 namespace HubWeb.Controllers.Api
 {
     public class PageDefinitionsController : ApiController
     {
-        public static IList<PageDefinitionDO> PageDefinitions = new List<PageDefinitionDO>();
-
-        private readonly ISecurityServices _securityServices;
+        private readonly IPageDefinition _pageDefinition;
 
         public PageDefinitionsController()
         {
-            _securityServices = ObjectFactory.GetInstance<ISecurityServices>();
+            _pageDefinition = ObjectFactory.GetInstance<IPageDefinition>();
         }
 
         public IEnumerable<PageDefinitionDTO> Get()
         {
-            return Mapper.Map<IList<PageDefinitionDTO>>(PageDefinitions);
+            var pageDefinitions = _pageDefinition.GetAll();
+            return Mapper.Map<IList<PageDefinitionDTO>>(pageDefinitions);
         }
 
         public PageDefinitionDTO Get(int id)
         {
-            return new PageDefinitionDTO();
+            var pageDefinition = _pageDefinition.Get(id);
+            return Mapper.Map<PageDefinitionDTO>(pageDefinition);
         }
 
         public void Post([FromBody]PageDefinitionDTO pageDefinitionDTO)
         {
             var pageDefinition = Mapper.Map<PageDefinitionDO>(pageDefinitionDTO);
-            //TODO: move to service
-            if (pageDefinition.CreateDate == DateTimeOffset.MinValue)
-            {
-                pageDefinition.CreateDate = DateTimeOffset.Now;
-            }
-            pageDefinition.LastUpdated = DateTimeOffset.Now;
-            pageDefinition.Author = "atata";
-            PageDefinitions.Add(pageDefinition);
-        }
-
-        public void Put(int id, [FromBody]string pageDefinitionDTO)
-        {
+            _pageDefinition.CreateOrUpdate(pageDefinition);
         }
 
         public void Delete(int id)
         {
+            _pageDefinition.Delete(id);
         }
     }
 }
