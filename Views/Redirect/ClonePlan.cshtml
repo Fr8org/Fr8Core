@@ -1,0 +1,6 @@
+﻿@model string
+<script>
+    window.close();
+    var model = @Html.Raw(Json.Encode(Model));
+    window.open(model, 'google', 'resizable=0,width=400,height=640');
+</script>
