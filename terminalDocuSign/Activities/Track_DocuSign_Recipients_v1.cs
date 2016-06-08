@@ -12,6 +12,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.Models;
+using Hub.Services.MT;
 using Newtonsoft.Json;
 using terminalDocuSign.Services.New_Api;
 

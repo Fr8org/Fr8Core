@@ -384,7 +384,7 @@
     <Compile Include="Services\ContainerService.ExecutionSession.cs" />
     <Compile Include="Services\Fact.cs" />
     <Compile Include="Services\Field.cs" />
-    <Compile Include="Services\Manifest.cs" />
+    <Compile Include="Services\ManifestService.cs" />
     <Compile Include="Services\MT\MTSearchHelper.cs" />
     <Compile Include="Services\MT\MTSearchHelper.IMtQueryProvider.cs" />
     <Compile Include="Services\MT\MTSearchHelper.MtQueryProviderT.cs" />

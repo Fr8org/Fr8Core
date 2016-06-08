@@ -2,7 +2,9 @@
 using StructureMap;
 using Microsoft.AspNet.Identity;
 using Data.Interfaces;
+using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 using Hub.Infrastructure;
 using Hub.Services;
 using HubWeb.Infrastructure_HubWeb;

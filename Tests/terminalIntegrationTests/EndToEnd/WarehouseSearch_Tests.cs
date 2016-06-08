@@ -7,6 +7,7 @@ using NUnit.Framework;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
+using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using HealthMonitor.Utility;
@@ -88,7 +89,7 @@ namespace terminalIntegrationTests.EndToEnd
                 SentDate = new DateTime(2021, 04, 20)
             };
 
-            var crateStorage = new CrateStorage(Fr8Data.Crates.Crate.FromContent(null, dataToAdd));
+            var crateStorage = new CrateStorage(Fr8.Infrastructure.Data.Crates.Crate.FromContent(null, dataToAdd));
 
             await HttpPostAsync<CrateStorageDTO, object>(url, CrateStorageSerializer.Default.ConvertToDto(crateStorage));
 
