@@ -1,7 +1,8 @@
-﻿using System.Web.Http;
-using System.Web.Http.ExceptionHandling;
+﻿using System.Net.Http;
+using System.Web.Http;
 using System.Web.Http.Routing;
-using System.Net.Http;
+using System.Web.Http.Dispatcher;
+using Hub.Infrastructure;
 
 namespace PlanDirectory.App_Start
 {
@@ -9,6 +10,9 @@ namespace PlanDirectory.App_Start
 	{
 		public static void Register(HttpConfiguration config)
 		{
+            // Web API configuration and services
+            config.Services.Replace(typeof(IHttpControllerSelector), new CustomSelector(config));
+
             config.Routes.MapHttpRoute(
 				name : "DefaultApiWithAction",
 				routeTemplate : "api/{controller}/{action}/{id}",
@@ -46,6 +50,6 @@ namespace PlanDirectory.App_Start
             HttpConfiguration config1 = GlobalConfiguration.Configuration;
             config.Formatters.JsonFormatter.SerializerSettings.Formatting =
                 Newtonsoft.Json.Formatting.Indented;
-		}
-	}
+        }
+    }
 }
