@@ -65,7 +65,7 @@ In general, the SDK for a particular platform will include helper classes and me
 
 A Terminal should always make sure that any Activity it returns to the Hub contains a Crate of Standard UI Controls, even if the Activity requires no configuration (in that case the Fr8 Convention is to state "This Activity requires no configuration" in the UI as a text block).
 
-+++ Authorization
+### Authorization
 
 If a Terminal is providing Activities that require authentication, it should specify that in the corresponding ActivityTemplates. This causes the Hub to look for the presence of a stored [AuthorizationToken](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/DataTransfer/AuthorizationTokenDTO.md) each time it receives a /configure call for the Terminal. If the token is present it is added to the Activity and presented to the Terminal. When a Terminal receives a token with an Activity, it should use it when it needs to access customer data. 
 
