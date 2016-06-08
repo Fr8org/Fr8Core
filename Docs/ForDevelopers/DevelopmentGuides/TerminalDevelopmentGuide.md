@@ -49,7 +49,7 @@ See the full set of Terminal [API Endpoints]((https://github.com/Fr8org/Fr8Core/
 
 /Configure calls are received by the Terminal only during [Design-Time](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Fr8Modes.md). User input is used to [configure Activities](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/ActivityConfiguration.md). This takes place as one or more /configure calls that originate on the Client and are handled by the Terminal's Activity code. During Configuration, the Hub passes data back and forth but generally stays out of the way.  In the moment of building a new plan, each Terminal is giving instructions to the Client, what to display based on UI controls that specified Activity provided.
 
-The data provided to the Terminal as part of the /configure call is the Activity JSON(https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/ActivityJSONDefinition.md). When the user initially adds an Activity to their Plan, this Activity JSON is mostly empty. One of the Terminal's first jobs is to add information about the UI that the Terminals wants the User to see. When the User then manipulates the UI and provides information, that information is stored in the Activity as well. There can be multiple rounds of /configure round trips, as the user adds or modifies settings, and the Terminal responds by providing more or different information in return. 
+The data provided to the Terminal as part of the /configure call is the [Activity JSON](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/ActivityJSONDefinition.md). When the user initially adds an Activity to their Plan, this Activity JSON is mostly empty. One of the Terminal's first jobs is to add information about the UI that the Terminals wants the User to see. When the User then manipulates the UI and provides information, that information is stored in the Activity as well. There can be multiple rounds of /configure round trips, as the user adds or modifies settings, and the Terminal responds by providing more or different information in return. 
 
 Some elements of the Activity JSON are hard coded, but for others, Fr8 uses its standardized data normalization mechanism called [Crates](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CrateDTO.md). Crates are also JSON objects, and an Activity can store one or more Crates in it. Crates are also used in the Containers that contain Run-Time Payload. 
 
@@ -59,7 +59,7 @@ Generally, there two things a Terminal does when one of its Activities receives 
 
 Terminal builders specify the UI they want by choosing from the set of available UI [Controls](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/ConfigurationControls.md) and specifying them in JSON in a Crate that is stored in the Activity and returned to the Hub for delivery to the Client, which will render the appropriate UI.
 
-Note that this Crate of UI Controls, like other Crates is tagged with a specific Manifest(https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CratesManifest.md), which specifies its contents. Manifests are collected and registered in central Manifest Registries so Activity designers can exchange structured data.
+Note that this Crate of UI Controls, like other Crates is tagged with a specific [Manifest](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CratesManifest.md), which specifies its contents. Manifests are collected and registered in central Manifest Registries so Activity designers can exchange structured data.
 
 In general, the SDK for a particular platform will include helper classes and methods so that the Activity builder doesn't actually have to manipulate JSON directly. These helper classes typically deserialize the JSON into objects. 
 
@@ -73,27 +73,22 @@ If a Terminal is providing Activities that require authentication, it should spe
 If the token is not present, the Hub returns a message to the Client instructing it to [start an authorization process](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Services/Authorization.md). This results in a call to the Terminal's /authentication/request_url endpoint. The Terminal should respond to this call with a URL that the client can use to initiate an OAuth session (non-O-Auth authentication is possible as well). The client redirects to that URL to start the OAuth process. Once that's done, the Terminal will receive a call from the Hub to its /authentication/token endpoint and it should then return the token to Hub  for storage with the User's account. 
 
 For more information on Authorization and Security, see (https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Services/Authorization.md)
- 
- 
-
-
-* Standard UI Controls have a support for creating onChange event handlers, so when a user tries to modify some control on the UI, like select an item in a drop down list, or click a submit button in the activity, that front end action will invoke a new call to the Terminal, where some other actions can be performed based on this request. This is called a Followup configuration, where some functionality are invoked based on client interactions with Activity UI.
-
-Important concept here is the interaction between activities for managing data into plan run-time. Fr8 provides a robust and loosely-coupled process for communication with upstream and downstream activities using [Activities Signalling](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Activities/Signalling.md) and working with available [Crate Data](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Activities/Signalling.md).
 
 ### Run
 
-When a user click run plan, the hub goes activity by activity in order and calls each terminal /activities/run endpoint that need to be implemented. Once an Activity is run must create and pack a crate of [OperationalState](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Activities/OperationalStateCM.md) Manifest Type, that will hold information about the payload provided from running the activity, status of the activity.
+A Terminal will receive a /activities/run call when the Hub, while processing a Run-Time instance, reaches that particular Activity.  
+The Terminal will be passed a JSON [Container](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Containers.md)
+Payload data is stored inside the Container in one or more Crates. The Terminal should pass the Container to the #Run method of the corresponding Activity, modify the Container as appropriate (for example, by adding a new Crate of processed results), and return the Container with an Activity Status message. 
 
-Based on the configure process, in the run functionality we must provide payload values. That specific values are packed in a crate, linked to the main plan [Container]((https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Containers.md)) and transfer JSON back as [PayloadDTO](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/DataTransfer/PayloadDTO.md).
+A Terminal may choose to store information in the Container's [OperationalState](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Activities/OperationalStateCM.md) Crate. This is useful to preserve state in scenarios where there might be loops or flow resulting in the Terminal being called again later. 
 
 Example: Configure a Activity to Get Google spreadsheet where we select a spreadsheet from a dropdown list in Design-Time, and after when a user click run, this activity run method will read all content from spreadsheet and provide payload values.
 
 ### Activate and Deactivate
 
-In the process of activate an Activity, we need to check if every condition is satisfied for running that activity. With simple logic we can get the configuration controls, and check if some condition is not satisfied like a value is not selected from a dropdown list. Then the functionality for activate Activity need to provide validation errors that will prevent from running whole plan and break logic.
+The Activation process is currently used primarily for [Validation](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/ActivitiesValidation.md). Many user inputs can be validated as part of the /configure calls, but there's no guarantee that all user inputs will trigger subsequent /configure calls. As a result, the Hub calls /terminals/activate for each Activity in a Plan before calling Run on that Plan.
 
-Validation errors need to be packed in crate as [ValidationResultsCM](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/RegisteredManifests.md)) Crate Manifest Type.
+Validation errors need to be packed in crate as [ValidationResultsCM](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/RegisteredManifests.md) Crate Manifest Type.
 This will prevent plan from running and user will see messages on the Client.
 
 Activities with Monitoring category once run are active the whole time, when all others are run once and then are deactivated. Deactivate is used to stop activity from execution like prevent monitoring for some event.    
