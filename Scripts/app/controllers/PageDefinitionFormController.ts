@@ -21,47 +21,29 @@ module dockyard.controllers {
             '$scope',
             'PageDefinitionService',
             '$modalInstance',
-            'definitionTitle'
+            'definitionId'
         ];
 
         constructor(
             private $scope: IPageDefinitionFormScope,
             private PageDefinitionService: services.IPageDefinitionService,
             private $modalInstance: any,
-            private definitionTitle) {
+            private definitionId) {
 
-            if (definitionTitle !== undefined) {
+            if (definitionId !== undefined) {
 
-                PageDefinitionService.getPageDefinition({ title: definitionTitle.value }).$promise.then(data => {
+                PageDefinitionService.getPageDefinition({ id: definitionId.value }).$promise.then(data => {
                     this.$scope.pageDefinition = data;
                 });
             }
 
             $scope.submit = isValid => {
-                this.PageDefinitionService.save(this.$scope.pageDefinition)
-                    .$promise.then(pageDefinition => {
-                        this.$modalInstance.close(pageDefinition);
-                    });
-            
-
-
-            //this.PageDefinitionService.checkVersionAndName({
-                //    version: this.$scope.pageDefinition.version,
-                //    name: this.$scope.pageDefinition.name
-                //    }).$promise
-                //    .then(result => {
-                //        $scope.isNameVersionOk = result.value;
-                //        if (isValid && $scope.isNameVersionOk) {
-                //            this.PageDefinitionService.save(this.$scope.pageDefinition).$promise.then(manifestDescription => {
-                //                this.$modalInstance.close(manifestDescription);
-
-                //            });
-                //        }
-                //        else {
-                //            $scope.errorMessage = "(Version, Name) fields must be unique in ManifestRegistry";
-                //        }
-                //    });
-
+                if (isValid) {
+                    this.PageDefinitionService.save(this.$scope.pageDefinition)
+                        .$promise.then(pageDefinition => {
+                            this.$modalInstance.close(pageDefinition);
+                        });
+                }
             }
 
             $scope.cancel = <() => void>angular.bind(this, this.cancelForm);

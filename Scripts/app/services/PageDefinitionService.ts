@@ -3,11 +3,11 @@
 module dockyard.services {
     export interface IPageDefinitionService extends ng.resource.IResourceClass<interfaces.IPageDefinitionVM> {
         getAll: () => Array<interfaces.IPageDefinitionVM>,
-        getPageDefinition: (title: { title: string; }) => any;
+        getPageDefinition: (id: { id: number; }) => any;
     }
 
     app.factory("PageDefinitionService", ["$resource", ($resource: ng.resource.IResourceService): IPageDefinitionService =>
-        <IPageDefinitionService>$resource("/api/pagedefinitions", {}, {
+        <IPageDefinitionService>$resource("/api/pagedefinitions", null, {
             getAll: {
                 method: "GET",
                 isArray: true,
@@ -16,9 +16,9 @@ module dockyard.services {
             getPageDefinition: {
                 method: "GET",
                 isArray: false,
-                url: "/api/pagedefinitions?title=:title",
+                url: "/api/pagedefinitions?id=:id",
                 params: {
-                    title: "@title"
+                    id: "@id"
                 }
             }
         })

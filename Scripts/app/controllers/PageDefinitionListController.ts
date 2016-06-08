@@ -43,31 +43,32 @@ module dockyard.controllers {
                 templateUrl: 'pageDefinitionFormModal',
                 controller: 'PageDefinitionFormController',
                 resolve: {
-                    definitionTitle: function () {
+                    definitionId: function () {
                         return undefined;
                     }
                 }
             })
-                .result.then(pageDefinition => {
-                    this.$scope.pageDefinitions.push(pageDefinition);
+                .result.then(() => {
+                    this.PageDefinitionService.query().$promise.then(data => {
+                        this.$scope.pageDefinitions = data;
+                    });
                 });
         }
 
         private showModalWithPopulatedValues(pageDefinition: interfaces.IPageDefinitionVM) {
-            var definitionTitle = { value: pageDefinition.title };
+            var definitionId = { value: pageDefinition.id };
 
             this.$modal.open({
                 animation: true,
                 templateUrl: 'pageDefinitionFormModal',
                 controller: 'PageDefinitionFormController',
                 resolve: {
-                    definitionTitle: function () {
-                        return definitionTitle;
+                    definitionId: function () {
+                        return definitionId;
                     }
                 }
             })
-                .result.then(pageDefinition => {
-                    this.$scope.pageDefinitions.push(pageDefinition);
+                .result.then(() => {
                     this.PageDefinitionService.query().$promise.then(data => {
                         this.$scope.pageDefinitions = data;
                     });

@@ -1,7 +1,8 @@
 ﻿module dockyard.model {
     export class PageDefinition {
+        id: number;
         title: string;
-        tags: Array<string>;
+        tags: string;
         url: string;
         type: string;
         author: string;
@@ -9,10 +10,8 @@
         authorUrl: string;
         pageName: string;
 
-        constructor(name: string, url: string, pageName: string) {
+        constructor(name: string) {
             this.title = name;
-            this.url = url;
-            this.pageName = pageName;
         }
     }
 }
