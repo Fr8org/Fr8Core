@@ -17,7 +17,7 @@ namespace terminalPapertrail.Tests.Controllers
         {
             base.SetUp();
             _terminal_controller = new TerminalController();
-        }
+        } 
 
         [Test]
         public async Task Get_ShouldReturn_NonEmptyJsonResult()
