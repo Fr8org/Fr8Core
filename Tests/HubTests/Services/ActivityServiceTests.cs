@@ -396,7 +396,7 @@ namespace HubTests.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var terminalClientMock = new Mock<ITerminalTransmitter>();
-                terminalClientMock.Setup(s => s.CallActivityAsync<PayloadDTO>(It.IsAny<string>(), It.IsAny<Fr8DataDTO>(), It.IsAny<string>()))
+                terminalClientMock.Setup(s => s.CallActivityAsync<PayloadDTO>(It.IsAny<string>(), It.IsAny<IEnumerable<KeyValuePair<string, string>>>(), It.IsAny<Fr8DataDTO>(), It.IsAny<string>()))
                                 .Returns(Task.FromResult(new PayloadDTO(containerDO.Id)
                                 {
                                     CrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(activityDo.CrateStorage)
@@ -446,7 +446,7 @@ namespace HubTests.Services
         {
             var terminalTransmitterMock = new TerminalTransmitterMock();
 
-            terminalTransmitterMock.CallActivityBody = (action, dto) =>
+            terminalTransmitterMock.CallActivityBody = (action, parameters, dto) =>
             {
                 int count;
 
@@ -512,7 +512,7 @@ namespace HubTests.Services
             var activityDo = ActivationTestsSetup(container, callCount);
             var terminalTransmitterMock = new TerminalTransmitterMock();
 
-            terminalTransmitterMock.CallActivityBody = (action, dto) =>
+            terminalTransmitterMock.CallActivityBody = (action, parameters, dto) =>
             {
                 if (action == "activate")
                 {

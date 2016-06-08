@@ -13,6 +13,7 @@ module dockyard.controllers {
         digestFlag:boolean;
 
         sharePlan: () => void;
+        unpublishPlan: () => void;
         download: ($event: Event) => void;
     }
 
@@ -43,13 +44,22 @@ module dockyard.controllers {
             }
 
             $scope.sharePlan = () => {
-                
                 PlanService.share($stateParams.id)
                     .then(() => {
                         console.log('sharePlan: Success');
                     })
                     .catch(() => {
                         console.log('sharePlan: Failure');
+                    });
+            };
+
+            $scope.unpublishPlan = () => {
+                PlanService.unpublish($stateParams.id)
+                    .then(() => {
+                        console.log('unpublishPlan: Success');
+                    })
+                    .catch(() => {
+                        console.log('unpublishPlan: Failure');
                     });
             };
 

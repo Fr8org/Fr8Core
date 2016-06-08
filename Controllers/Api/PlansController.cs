@@ -438,7 +438,7 @@ namespace HubWeb.Controllers
                 PlanContents = JsonConvert.DeserializeObject<JToken>(JsonConvert.SerializeObject(planTemplateDTO))
             };
 
-            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/plantemplates/");
+            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/plan_templates/");
             var headers = await hmacService.GenerateHMACHeader(
                 uri,
                 "PlanDirectory",
@@ -448,6 +448,29 @@ namespace HubWeb.Controllers
             );
 
             await client.PostAsync<PublishPlanTemplateDTO>(uri, dto, headers: headers);
+
+            return Ok();
+        }
+
+        [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
+        [Fr8HubWebHMACAuthenticate]
+        [HttpPost]
+        public async Task<IHttpActionResult> Unpublish(Guid planId)
+        {
+            var planTemplateDTO = _planTemplates.GetPlanTemplate(planId, User.Identity.GetUserId());
+
+            var hmacService = ObjectFactory.GetInstance<IHMACService>();
+            var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+
+            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/plan_templates/?id=" + planId.ToString());
+            var headers = await hmacService.GenerateHMACHeader(
+                uri,
+                "PlanDirectory",
+                CloudConfigurationManager.GetSetting("PlanDirectorySecret"),
+                User.Identity.GetUserId()
+            );
+
+            await client.DeleteAsync(uri, headers: headers);
 
             return Ok();
         }
