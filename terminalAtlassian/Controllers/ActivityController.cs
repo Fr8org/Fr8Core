@@ -23,7 +23,7 @@ namespace terminalAtlassian.Controllers
         public async Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
         {
             var queryParams = Request.GetQueryNameValuePairs();
-            return _activityExecutor.HandleFr8Request(curTerminal, actionType, queryParams, curDataDTO);
+            return await _activityExecutor.HandleFr8Request(curTerminal, actionType, queryParams, curDataDTO);
         }
     }
 }
