@@ -30,6 +30,7 @@ module dockyard.controllers {
         getInactivePlans: () => void;
         removeInactiveFilter: () => void;
 
+        Query: model.PlanQueryDTO;
         activeQuery: model.PlanQueryDTO;
         activePromise: ng.IPromise<model.PlanResultDTO>;
         activePlans: model.PlanResultDTO;
@@ -88,14 +89,18 @@ module dockyard.controllers {
             $scope.inActiveQuery.planPerPage = 10;
             $scope.inActiveQuery.page = 1;
             $scope.inActiveQuery.orderBy = "-lastUpdated";
-            this.getInactivePlans();
 
             $scope.activeQuery = new model.PlanQueryDTO();
             $scope.activeQuery.status = 2;
             $scope.activeQuery.planPerPage = 10;
             $scope.activeQuery.page = 1;
             $scope.activeQuery.orderBy = "-lastUpdated";
-            this.getActivePlans();
+
+            $scope.Query = new model.PlanQueryDTO();
+            $scope.Query.planPerPage = 20;
+            $scope.Query.page = 1;
+            $scope.Query.orderBy = "-lastUpdated";
+            this.getPlans();
 
             $scope.executePlan = <(plan: interfaces.IPlanVM) => void>angular.bind(this, this.executePlan);
             $scope.goToPlanPage = <(plan: interfaces.IPlanVM) => void>angular.bind(this, this.goToPlanPage);
@@ -111,6 +116,8 @@ module dockyard.controllers {
 
 
             $scope.$watch('inActiveQuery.filter', (newValue, oldValue) => {
+                console.log(oldValue);
+                console.log(newValue);
                 var bookmark: number = 1;
                 if (!oldValue) {
                     bookmark = $scope.inActiveQuery.page;
@@ -121,8 +128,9 @@ module dockyard.controllers {
                 if (!newValue) {
                     $scope.inActiveQuery.page = bookmark;
                 }
-
-                this.getInactivePlans();
+                if (!!newValue && !!oldValue) {
+                    this.getInactivePlans();
+                }
             });
 
             $scope.$watch('activeQuery.filter', (newValue, oldValue) => {
@@ -136,8 +144,9 @@ module dockyard.controllers {
                 if (!newValue) {
                     $scope.activeQuery.page = bookmark;
                 }
-            
-                this.getActivePlans();
+                if (!!newValue && !!oldValue) {
+                    this.getActivePlans();
+                }
             });
             
 
@@ -163,6 +172,31 @@ module dockyard.controllers {
             this.$scope.activeQuery.filter = null;
             this.$scope.filter.showActive = false;
             this.getActivePlans();
+        }
+
+        private getPlans() {
+            this.PlanService.getByQuery(this.$scope.Query).$promise
+                .then((data: model.PlanResultDTO) => {
+                    this.$scope.inActivePlans = new model.PlanResultDTO();
+                    this.$scope.inActivePlans.currentPage = 1;
+                    this.$scope.inActivePlans.plans = [];
+                    this.$scope.inActivePlans.totalPlanCount = 0;
+                    this.$scope.activePlans = new model.PlanResultDTO();
+                    this.$scope.activePlans.currentPage = 1;
+                    this.$scope.activePlans.plans = [];
+                    this.$scope.activePlans.totalPlanCount = 0;
+                    data.plans.map(
+                        plan => {                          
+                            if (plan.planState === 1) {
+                                this.$scope.inActivePlans.plans.push(plan);
+                                this.$scope.inActivePlans.totalPlanCount++;
+                            } else if (plan.planState === 2){
+                                this.$scope.activePlans.plans.push(plan);
+                                this.$scope.activePlans.totalPlanCount++;
+                            }
+                        }
+                    );
+                });
         }
 
         private getInactivePlans() {
