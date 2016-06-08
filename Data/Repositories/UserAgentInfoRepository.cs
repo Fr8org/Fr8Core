@@ -1,7 +1,7 @@
 ﻿using System.Web;
 using Data.Entities;
 using Data.Interfaces;
-using Utilities.UAParser;
+using Fr8.Infrastructure.Utilities.UAParser;
 
 namespace Data.Repositories
 {

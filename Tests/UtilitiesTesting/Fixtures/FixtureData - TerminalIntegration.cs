@@ -1,9 +1,9 @@
 ﻿﻿using System;
 using Data.Entities;
 ﻿using Data.States;
-﻿using Fr8Data.DataTransferObjects;
-﻿using Fr8Data.States;
-﻿using TerminalBase.Models;
+﻿using Fr8.Infrastructure.Data.DataTransferObjects;
+﻿using Fr8.Infrastructure.Data.States;
+﻿using Fr8.TerminalBase.Models;
 
 namespace UtilitiesTesting.Fixtures
 {

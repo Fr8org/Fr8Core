@@ -1,10 +1,10 @@
 ﻿using Microsoft.Owin;
 using Owin;
-using TerminalBase.BaseClasses;
 using System;
 using System.Web.Http.Dispatcher;
 using System.Collections.Generic;
-using TerminalBase.Services;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using terminalGoogle.Actions;
 using terminalGoogle.Activities;
 

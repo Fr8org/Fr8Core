@@ -1,9 +1,9 @@
 ﻿using System.Web.Http;
-using TerminalBase.BaseClasses;
 using Newtonsoft.Json;
 using StructureMap;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using terminalAtlassian.Helpers;
+using Fr8.TerminalBase.BaseClasses;
 using System.Threading.Tasks;
 using terminalAtlassian.Interfaces;
 

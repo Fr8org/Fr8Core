@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Data.States;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+﻿using System.Threading.Tasks;
 using HealthMonitor.Utility;
 using HealthMonitorUtility.Tools.Activities;
 using NUnit.Framework;

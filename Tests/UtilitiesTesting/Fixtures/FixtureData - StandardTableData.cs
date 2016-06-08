@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
 using System.Linq;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace UtilitiesTesting.Fixtures
 {

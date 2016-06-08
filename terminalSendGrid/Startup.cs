@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using Microsoft.Owin;
 using Owin;
-using TerminalBase.BaseClasses;
 using System.Web.Http.Dispatcher;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using terminalSendGrid.Activities;
-using TerminalBase.Services;
 
 [assembly: OwinStartup("SendGridStartup", typeof(terminalSendGrid.Startup))]
 namespace terminalSendGrid

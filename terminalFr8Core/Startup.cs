@@ -4,11 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Web.Http.Dispatcher;
 using Data.Infrastructure.AutoMapper;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Services;
 using terminalFr8Core.Actions;
 using terminalFr8Core.Activities;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using TerminalBase.Services;
 
 [assembly: OwinStartup(typeof(terminalFr8Core.Startup))]
 
