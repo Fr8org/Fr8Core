@@ -3,16 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Fr8Data.Manifests;
 using StructureMap;
-using Fr8Infrastructure.Interfaces;
-using Utilities.Configuration.Azure;
 using Microsoft.AspNet.Identity;
 using Newtonsoft.Json.Linq;
-using Fr8Data.DataTransferObjects;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Fr8Data.DataTransferObjects.PlanTemplates;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates;
 
 namespace PlanDirectory.Infrastructure
 {

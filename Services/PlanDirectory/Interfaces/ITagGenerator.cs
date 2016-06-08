@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Fr8Data.Manifests;
 using System.Threading.Tasks;
 using PlanDirectory.Infrastructure;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace PlanDirectory.Interfaces
 {
