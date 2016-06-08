@@ -1,29 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
-using Fr8Data.States;
-using HealthMonitor.Utility;
 using Fr8Data.Managers;
 using NUnit.Framework;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Integration;
+using Fr8.Testing.Integration.Tools;
+using Fr8.Testing.Unit.Fixtures;
 
-namespace terminaBaselTests.Tools.Activities
+namespace Fr8.Testing.Integration.Tools.Activities
 {
     public class IntegrationTestTools_terminalDocuSign
     {
         private readonly BaseHubIntegrationTest _baseHubITest;
-        private Terminals.IntegrationTestTools_terminalDocuSign _terminalDocuSignTestTools;
+        private Fr8.Testing.Integration.Tools.Terminals.IntegrationTestTools_terminalDocuSign _terminalDocuSignTestTools;
 
 
         public IntegrationTestTools_terminalDocuSign(BaseHubIntegrationTest baseHubIntegrationTest)
         {
             _baseHubITest = baseHubIntegrationTest;
-            _terminalDocuSignTestTools = new Terminals.IntegrationTestTools_terminalDocuSign(_baseHubITest);
+            _terminalDocuSignTestTools = new Fr8.Testing.Integration.Tools.Terminals.IntegrationTestTools_terminalDocuSign(_baseHubITest);
         }
 
         /// <summary>
@@ -153,7 +152,7 @@ namespace terminaBaselTests.Tools.Activities
 
             //if (!defaultDocuSignAuthTokenExists)
             //{
-            var terminalDocuSignTools = new Terminals.IntegrationTestTools_terminalDocuSign(_baseHubITest);
+            var terminalDocuSignTools = new Fr8.Testing.Integration.Tools.Terminals.IntegrationTestTools_terminalDocuSign(_baseHubITest);
             // queryDocuSignActivity.AuthToken = await terminalDocuSignTools.GenerateAuthToken("fr8test@gmail.com", "fr8mesomething", queryDocuSignActivity.ActivityTemplate.Terminal);
             queryDocuSignActivity.AuthToken = await terminalDocuSignTools.GenerateAuthToken("freight.testing@gmail.com", "I6HmXEbCxN", queryDocuSignActivity.ActivityTemplate.Terminal);
 

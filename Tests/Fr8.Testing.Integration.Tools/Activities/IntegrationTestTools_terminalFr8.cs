@@ -7,11 +7,9 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using HealthMonitor.Utility;
 using NUnit.Framework;
-using terminalFr8Core.Actions;
 using terminalFr8Core.Activities;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace Fr8.Testing.Integration.Tools.Activities
 {

@@ -238,6 +238,10 @@
       <Project>{CDDCCFAB-28B8-446C-8585-72D2BB78F2DC}</Project>
       <Name>terminalGoogle</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\HubWeb.csproj">
+      <Project>{f7bd7117-4f1d-4215-b338-61ebdd0d0bfe}</Project>
+      <Name>HubWeb</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Fr8.Testing.Integration.Tools\Fr8.Testing.Integration.Tools.csproj">
       <Project>{4f56c030-d16b-4a51-82d0-3c23a47ab703}</Project>
       <Name>Fr8.Testing.Integration.Tools</Name>
@@ -245,10 +249,6 @@
     <ProjectReference Include="..\HealthMonitorUtility\Fr8.Testing.csproj">
       <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
       <Name>Fr8.Testing</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\HubWeb.csproj">
-      <Project>{f7bd7117-4f1d-4215-b338-61ebdd0d0bfe}</Project>
-      <Name>HubWeb</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

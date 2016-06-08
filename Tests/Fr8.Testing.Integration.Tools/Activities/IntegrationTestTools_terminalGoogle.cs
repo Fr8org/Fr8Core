@@ -5,12 +5,12 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using Fr8Data.Managers;
 using NUnit.Framework;
 using terminalGoogle.Actions;
 using terminalGoogle.Activities;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace Fr8.Testing.Integration.Tools.Activities
 {

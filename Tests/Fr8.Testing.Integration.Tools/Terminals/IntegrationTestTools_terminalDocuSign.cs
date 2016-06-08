@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
 using Fr8Data.DataTransferObjects;
-using HealthMonitor.Utility;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;

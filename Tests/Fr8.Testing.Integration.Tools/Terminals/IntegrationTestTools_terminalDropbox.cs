@@ -1,6 +1,4 @@
-﻿using HealthMonitor.Utility;
-
-namespace Fr8.Testing.Integration.Tools.Terminals
+﻿namespace Fr8.Testing.Integration.Tools.Terminals
 {
     public class IntegrationTestTools_terminalDropbox
     {

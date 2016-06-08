@@ -18,6 +18,7 @@ using terminalDocuSign.Services.New_Api;
 using Fr8.Testing.Unit.Fixtures;
 using Fr8Data.Managers;
 using TerminalBase.Models;
+using Fr8.Testing.Integration.Tools.Terminals;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -35,7 +36,7 @@ namespace terminalDocuSignTests.Integration
         private ActivityDTO solution;
         private ICrateStorage crateStorage;
         private Fr8.Testing.Integration.Tools.Terminals.IntegrationTestTools_terminalDocuSign _terminalDocuSignTestTools;
-        private IntegrationTestTools_terminalDocuSign _docuSignActivitiesTestTools;
+        private Fr8.Testing.Integration.Tools.Activities.IntegrationTestTools_terminalDocuSign _docuSignActivitiesTestTools;
 
         public override string TerminalName
         {
@@ -47,7 +48,7 @@ namespace terminalDocuSignTests.Integration
         public Mail_Merge_Into_DocuSign_v1_EndToEnd_Tests()
         {
             _terminalDocuSignTestTools = new Fr8.Testing.Integration.Tools.Terminals.IntegrationTestTools_terminalDocuSign(this);
-            _docuSignActivitiesTestTools = new IntegrationTestTools_terminalDocuSign(this);
+            _docuSignActivitiesTestTools = new Fr8.Testing.Integration.Tools.Activities.IntegrationTestTools_terminalDocuSign(this);
         }
 
         [Test]

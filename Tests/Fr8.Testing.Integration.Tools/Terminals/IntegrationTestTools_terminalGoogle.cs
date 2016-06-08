@@ -6,14 +6,13 @@ using System.Threading.Tasks;
 using Data.Interfaces;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
-using Fr8Infrastructure.Interfaces;
-using HealthMonitor.Utility;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services;
 using terminalGoogle.Services.Authorization;
+using Fr8Infrastructure.Interfaces;
 
 namespace Fr8.Testing.Integration.Tools.Terminals
 {

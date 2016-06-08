@@ -229,6 +229,10 @@
       <Project>{4e04feb2-b452-4739-8336-ea2cefb18d87}</Project>
       <Name>terminalDocuSign</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Fr8.Testing.Integration.Tools\Fr8.Testing.Integration.Tools.csproj">
+      <Project>{4f56c030-d16b-4a51-82d0-3c23a47ab703}</Project>
+      <Name>Fr8.Testing.Integration.Tools</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HealthMonitorUtility\Fr8.Testing.csproj">
       <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
       <Name>Fr8.Testing</Name>

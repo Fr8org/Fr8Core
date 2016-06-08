@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.States;
 using Fr8Data.DataTransferObjects;
-using HealthMonitor.Utility;
 using NUnit.Framework;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
+using Data.States;
 
 namespace Fr8.Testing.Integration.Tools.Plans
 {
