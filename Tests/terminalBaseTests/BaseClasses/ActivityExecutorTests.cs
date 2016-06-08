@@ -122,7 +122,7 @@ namespace terminalBaseTests.BaseClasses
                 new KeyValuePair<string, string>("scope", "childActivities")
             };
 
-            var result = await _activityExecutor.HandleFr8Request(terminalName, "executechildactivities", parameters, f8Data);
+            var result = await _activityExecutor.HandleFr8Request(terminalName, "run", parameters, f8Data);
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOf(typeof(PayloadDTO), result);
