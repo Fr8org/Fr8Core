@@ -3,13 +3,13 @@ using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
 using Salesforce.Common;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 
 namespace terminalIntegrationTests.Fixtures
 {

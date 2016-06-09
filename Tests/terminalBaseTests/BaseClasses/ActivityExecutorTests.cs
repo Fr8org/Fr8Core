@@ -1,22 +1,21 @@
 ﻿using System;
+using Fr8.Testing.Unit;
 using System.Collections.Generic;
-using UtilitiesTesting;
 using NUnit.Framework;
-using TerminalBase.BaseClasses;
 using System.Threading.Tasks;
 using terminalTests.Fixtures;
-using Hub.Managers;
 using System.Linq;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Services;
 using Hub.StructureMap;
 using StructureMap;
-using TerminalBase.Infrastructure;
-using Fr8Data.Managers;
 using Moq;
 using terminaBaselTests.BaseClasses;
-using TerminalBase.Services;
 
 namespace terminalBaseTests.BaseClasses
 {

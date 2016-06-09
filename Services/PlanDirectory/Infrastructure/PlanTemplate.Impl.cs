@@ -6,8 +6,8 @@ using Newtonsoft.Json.Linq;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace PlanDirectory.Infrastructure
 {

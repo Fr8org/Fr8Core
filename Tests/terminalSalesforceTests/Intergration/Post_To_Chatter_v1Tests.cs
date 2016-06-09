@@ -1,18 +1,18 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Crates;
-using HealthMonitor.Utility;
+using Fr8.Infrastructure.Communication;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Helpers;
+using Fr8.TerminalBase.Models;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
 using terminalSalesforceTests.Fixtures;
 using terminalSalesforce.Actions;
 using terminalSalesforce.Services;
 using terminalSalesforce.Infrastructure;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Fr8Infrastructure.Communication;
-using Fr8Data.Managers;
-using TerminalBase.Helpers;
-using TerminalBase.Models;
 
 namespace terminalSalesforceTests.Intergration
 {

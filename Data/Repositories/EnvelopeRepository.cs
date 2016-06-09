@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
+using Fr8.Infrastructure.Utilities;
 using StructureMap;
-using Utilities;
 
 namespace Data.Repositories
 {

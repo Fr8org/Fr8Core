@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Manifests;
 using PlanDirectory.Interfaces;
 
 namespace PlanDirectory.Infrastructure

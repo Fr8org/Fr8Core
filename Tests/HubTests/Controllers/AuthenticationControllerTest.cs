@@ -10,12 +10,12 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HubTests.Controllers.Api;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
 using AutoMapper;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Interfaces;
 using Hub.Interfaces;
-using Fr8Infrastructure.Interfaces;
 
 namespace HubTests.Controllers
 {

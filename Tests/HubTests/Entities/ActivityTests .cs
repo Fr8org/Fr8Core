@@ -3,8 +3,8 @@ using Data.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using StructureMap;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 using Assert = NUnit.Framework.Assert;
 
 namespace HubTests.Entities

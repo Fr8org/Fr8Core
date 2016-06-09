@@ -1,7 +1,7 @@
 ﻿using System.Web.Http;
 using System.Web.Http.Description;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using StructureMap;
-using Fr8Data.DataTransferObjects;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 

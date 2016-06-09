@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.BaseClasses;
 using terminalUtilities.Excel;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using Utilities.Configuration.Azure;
 
 namespace terminalFr8Core.Activities
 {
@@ -87,19 +86,21 @@ namespace terminalFr8Core.Activities
         {
             var controlContainer = GetControl<MetaControlContainer>("control_container");
             var collectionControls = controlContainer.CreateControls();
+            var fieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(RuntimeFieldCrateLabelPrefix, AvailabilityType.RunTime, new FieldDTO[] { });
 
-                var fieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(RuntimeFieldCrateLabelPrefix, AvailabilityType.RunTime, new FieldDTO[] { });
             Storage.RemoveByLabel(RuntimeFieldCrateLabelPrefix);
             Storage.Add(fieldsCrate);
 
-                foreach (var controlDefinitionDTO in collectionControls)
-                {
+            foreach (var controlDefinitionDTO in collectionControls)
+            {
                 PublishCollectionControl(controlDefinitionDTO);
-                }
-
-                //TODO this part should be modified with 2975
-                //PublishFilePickers(pStorage, collectionControls.Controls.Where(a => a.Type == ControlTypes.FilePicker));
             }
+            
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeFieldCrateLabelPrefix, true);
+
+            //TODO this part should be modified with 2975
+            //PublishFilePickers(pStorage, collectionControls.Controls.Where(a => a.Type == ControlTypes.FilePicker));
+        }
 
         private void PublishCollectionControl(ControlDefinitionDTO controlDefinitionDTO)
         {
@@ -364,7 +365,8 @@ namespace terminalFr8Core.Activities
                     return;
                 }
             }
-            PublishCollectionControls();
+            PublishCollectionControls();   
+           
         }
     }
 }

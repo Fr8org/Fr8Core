@@ -13,12 +13,12 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Infrastructure.StructureMap;
-using Fr8Data.DataTransferObjects;
-using Fr8Infrastructure.Interfaces;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;
-using Utilities.Configuration.Azure;
 
 namespace HubWeb.Controllers
 {
