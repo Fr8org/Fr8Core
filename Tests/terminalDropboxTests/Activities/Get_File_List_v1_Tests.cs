@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Data.Entities;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Models;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
 using terminalDropbox.Actions;
 using terminalDropboxTests.Fixtures;
-using TerminalBase.Infrastructure;
 using Fr8.Testing.Unit;
-using Fr8Infrastructure.Interfaces;
 using terminalDropbox.Interfaces;
-using TerminalBase.Models;
 
 namespace terminalDropboxTests.Activities
 {

@@ -11,14 +11,14 @@ using System.Linq;
 using Data.Validations;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services.NewApi;
-using Utilities.Configuration.Azure;
 using System.IO;
 using System.Text.RegularExpressions;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using TerminalBase.Errors;
-using TerminalBase.Models;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Models;
 
 namespace terminalDocuSign.Services.New_Api
 {

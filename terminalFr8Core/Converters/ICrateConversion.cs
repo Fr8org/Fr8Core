@@ -1,5 +1,4 @@
-﻿using Fr8Data.Crates;
-
+﻿using Fr8.Infrastructure.Data.Crates;
 namespace terminalFr8Core.Converters
 {
     public interface ICrateConversion

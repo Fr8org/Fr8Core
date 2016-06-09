@@ -1,5 +1,5 @@
-﻿using Fr8Data.Crates;
-using Fr8Data.Manifests;
+﻿using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace Fr8.Testing.Unit.Fixtures
 {

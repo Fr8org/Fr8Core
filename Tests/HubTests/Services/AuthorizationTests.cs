@@ -10,9 +10,9 @@ using Moq;
 using Hub.Services;
 using System.Collections.Generic;
 using Data.Interfaces;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
 using Fr8.Testing.Unit;
-using Fr8Infrastructure.Interfaces;
 
 namespace HubTests.Services
 {

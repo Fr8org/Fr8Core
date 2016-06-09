@@ -2,8 +2,8 @@
 using Fr8.Testing.Integration;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
 
 namespace terminalGoogleTests.Integration
 {

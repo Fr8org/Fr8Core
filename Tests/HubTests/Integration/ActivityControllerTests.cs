@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.DataTransferObjects;
-using Fr8.Testing.Integration;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+
 using NUnit.Framework;
+using Fr8.Testing.Integration;
 
 namespace HubTests.Integration
 {

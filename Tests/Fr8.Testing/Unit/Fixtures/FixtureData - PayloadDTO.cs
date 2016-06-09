@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.Managers;
 using StructureMap;
-using Fr8Data.Managers;
 
 namespace Fr8.Testing.Unit.Fixtures
 {

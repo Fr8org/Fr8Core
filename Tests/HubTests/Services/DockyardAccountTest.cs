@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Identity.EntityFramework;
 using NUnit.Framework;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
+using Fr8.Infrastructure.Utilities;
 using Hub.Services;
-using Utilities;
 using Fr8.Testing.Unit;
 using Fr8.Testing.Unit.Fixtures;
 using Hub.Security;

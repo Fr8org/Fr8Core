@@ -1,5 +1,4 @@
-﻿
-using Data.Entities;
+﻿using Data.Entities;
 
 namespace Fr8.Testing.Unit.Fixtures
 {

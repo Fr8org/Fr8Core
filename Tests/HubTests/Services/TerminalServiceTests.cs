@@ -2,11 +2,11 @@
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Services;
 using NUnit.Framework;
 using StructureMap;
-using Utilities.Configuration;
-using Utilities.Configuration.Azure;
+
 using Fr8.Testing.Unit;
 
 namespace HubTests.Services

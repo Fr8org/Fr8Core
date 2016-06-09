@@ -2,8 +2,8 @@
 using System.Net.Http;
 using System.Web.Http;
 using System.Threading.Tasks;
-using Fr8Data.DataTransferObjects;
-using TerminalBase.Services;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.TerminalBase.Services;
 using StructureMap;
 
 namespace terminalSendGrid.Controllers

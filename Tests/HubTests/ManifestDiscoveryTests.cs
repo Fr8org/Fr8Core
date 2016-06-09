@@ -1,6 +1,6 @@
 ﻿using System;
-using Fr8Data.Crates;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.Manifests;
 using NUnit.Framework;
 using Fr8.Testing.Unit;
 

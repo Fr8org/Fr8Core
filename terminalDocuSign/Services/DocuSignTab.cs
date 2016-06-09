@@ -3,10 +3,10 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fr8Data.Control;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Utilities;
 using terminalDocuSign.DataTransferObjects;
-using Utilities;
 
 namespace terminalDocuSign.Services.NewApi
 {

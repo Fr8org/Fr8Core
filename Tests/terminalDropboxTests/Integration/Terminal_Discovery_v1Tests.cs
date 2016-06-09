@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Testing.Integration;
 using NUnit.Framework;
 

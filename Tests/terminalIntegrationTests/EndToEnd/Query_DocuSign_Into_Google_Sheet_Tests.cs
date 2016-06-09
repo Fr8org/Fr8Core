@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Infrastructure.Interfaces;
-using Fr8.Testing.Integration;
+using Fr8.Infrastructure.Interfaces;
+
 using NUnit.Framework;
 using StructureMap;
+using Fr8.Testing.Integration;
 using Fr8.Testing.Integration.Tools.Activities;
 using Fr8.Testing.Integration.Tools.Plans;
 using terminalGoogle.Services;

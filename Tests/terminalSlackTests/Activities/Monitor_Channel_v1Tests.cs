@@ -1,18 +1,19 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Constants;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Helpers;
+using Fr8.TerminalBase.Services;
 using NUnit.Framework;
 using Fr8.Testing.Integration;
-using Fr8Data.Managers;
+
+using Fr8.Testing;
 using terminalSlackTests.Fixtures;
 using terminalSlack.Actions;
-using TerminalBase.BaseClasses;
-using TerminalBase.Services;
-using Fr8Data.Managers;
-using TerminalBase.Helpers;
 
 namespace terminalSlackTests.Integration
 {
@@ -112,7 +113,7 @@ namespace terminalSlackTests.Integration
                  {
                      EventPayload = new CrateStorage()
                     {
-                        Fr8Data.Crates.Crate.FromContent(
+                        Fr8.Infrastructure.Data.Crates.Crate.FromContent(
                             "EventReport",
                             new StandardPayloadDataCM(HealthMonitor_FixtureData.SlackEventFields()
                             )
@@ -151,7 +152,7 @@ namespace terminalSlackTests.Integration
             var requestActionDTO = HealthMonitor_FixtureData.Monitor_Channel_v1_InitialConfiguration_Fr8DataDTO();
             using (var storage = Crate.GetUpdatableStorage(requestActionDTO.ActivityDTO))
             {
-                storage.Add(Fr8Data.Crates.Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, new Monitor_Channel_v1.ActivityUi(), Fr8Data.States.AvailabilityType.Configuration));
+                storage.Add(Fr8.Infrastructure.Data.Crates.Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, new Monitor_Channel_v1.ActivityUi(), Fr8.Infrastructure.Data.States.AvailabilityType.Configuration));
             }
             //Act
             var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, requestActionDTO);
@@ -168,7 +169,7 @@ namespace terminalSlackTests.Integration
             var requestActionDTO = HealthMonitor_FixtureData.Monitor_Channel_v1_InitialConfiguration_Fr8DataDTO();
             using (var storage = Crate.GetUpdatableStorage(requestActionDTO.ActivityDTO))
             {
-                storage.Add(Fr8Data.Crates.Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, new Monitor_Channel_v1.ActivityUi(), Fr8Data.States.AvailabilityType.Configuration));
+                storage.Add(Fr8.Infrastructure.Data.Crates.Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, new Monitor_Channel_v1.ActivityUi(), Fr8.Infrastructure.Data.States.AvailabilityType.Configuration));
             }
             //Act
             var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, requestActionDTO);

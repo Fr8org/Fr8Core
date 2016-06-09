@@ -43,7 +43,7 @@ namespace Fr8.Testing.Integration
         private void Init(string scriptName, string connectionString)
         {
             string commandText;
-            string rootPath = MiscUtils.UpNLevels(Environment.CurrentDirectory, 2);
+            string rootPath = Fr8.Infrastructure.Utilities.MiscUtils.UpNLevels(Environment.CurrentDirectory, 2);
             string sqlScript = GetScriptPath(rootPath, scriptName);
             if (File.Exists(sqlScript))
                 commandText = File.ReadAllText(sqlScript);

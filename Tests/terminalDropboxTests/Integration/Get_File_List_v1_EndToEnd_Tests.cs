@@ -1,11 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
-using Data.States;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+﻿using System.Threading.Tasks;
+using NUnit.Framework;
 using Fr8.Testing.Integration;
 using Fr8.Testing.Integration.Tools.Activities;
-using NUnit.Framework;
 using Fr8.Testing.Integration.Tools.Plans;
  
 namespace terminalDropboxTests.Integration

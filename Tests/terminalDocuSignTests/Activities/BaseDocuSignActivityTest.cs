@@ -1,18 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
-using Data.Entities;
-using Fr8Data.Crates;
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
 using StructureMap;
-using terminalDocuSign.Actions;
 using terminalDocuSign.Services.New_Api;
 using terminalDocuSignTests.Fixtures;
-using TerminalBase.Infrastructure;
 using Fr8.Testing.Unit.Asserts;
 using Fr8.Testing.Unit.Fixtures;
-using terminalDocuSign.Activities;
-using TerminalBase.Models;
+
 
 namespace terminalDocuSignTests.Activities
 {

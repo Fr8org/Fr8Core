@@ -1,11 +1,12 @@
 ﻿using System;
 using NUnit.Framework;
-using Utilities.Interfaces;
-using StructureMap;
 using System.IO;
-using Utilities;
+
 using System.Linq;
 using Fr8.Testing.Unit;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities;
+
 
 namespace HubTests
 {

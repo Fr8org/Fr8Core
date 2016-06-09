@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Hub.Managers;
 using StructureMap;
 using Data.Entities;
-using Data.States;
-using Fr8Data.Managers;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.Managers;
 
 namespace Fr8.Testing.Unit.Fixtures
 {

@@ -2,16 +2,14 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Entities;
-using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories.Utilization;
 using Data.States;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
-using Hub.Services;
 using HubTests.Services.Container;
 using NUnit.Framework;
 using StructureMap;
-using Utilities.Configuration.Azure;
 using Fr8.Testing.Unit.Fixtures;
 
 namespace HubTests.Utilization

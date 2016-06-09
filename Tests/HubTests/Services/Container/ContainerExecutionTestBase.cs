@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using HubTests.Services.Container;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.Managers;
 using NUnit.Framework;
 using StructureMap;
 using Fr8.Testing.Unit;
 using Fr8.Testing.Unit.Fixtures;
-using Fr8Data.Managers;
+
 
 namespace HubTests.Services.Container
 {

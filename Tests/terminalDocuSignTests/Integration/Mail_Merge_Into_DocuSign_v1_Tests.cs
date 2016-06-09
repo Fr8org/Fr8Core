@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
 using NUnit.Framework;
 using Fr8.Testing.Integration;
 using terminalDocuSignTests.Fixtures;
-using Fr8Data.Managers;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -65,7 +66,7 @@ namespace terminalDocuSignTests.Integration
                    Name = "Get Google Sheet Data",
                    Label = "Get Google Sheet Data",
                    Tags = "Table Data Generator",
-                   Category = Fr8Data.States.ActivityCategory.Receivers
+                   Category = ActivityCategory.Receivers
                }
            );
         }

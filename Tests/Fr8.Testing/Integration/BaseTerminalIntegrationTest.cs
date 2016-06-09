@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Infrastructure.Interfaces;
-using Fr8Infrastructure.Security;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Security;
 using Newtonsoft.Json;
 using StructureMap;
 
@@ -50,15 +50,10 @@ namespace Fr8.Testing.Integration
             AddHubCrate(dataDTO, crateManifest, "HealthMonitor_DownstreamCrate", crateLabel);
         }
 
-        protected async Task<Dictionary<string, string>> GetHMACHeader<T>(Uri requestUri, string userId, T content)
-        {
-            return await HMACService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId, content);
-        }
-
         public async Task<TResponse> HttpPostAsync<TRequest, TResponse>(string url, TRequest request)
         {
             var uri = new Uri(url);
-            return await RestfulServiceClient.PostAsync<TRequest, TResponse>(uri, request, null, await GetHMACHeader(uri, "testUser", request));
+            return await RestfulServiceClient.PostAsync<TRequest, TResponse>(uri, request);
         }
 
         public async Task<TResponse> HttpGetAsync<TResponse>(string url)

@@ -12,9 +12,9 @@ using Data.Infrastructure.AutoMapper;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Entities;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
 using Hub.StructureMap;
-using Fr8Data.Managers;
 
 namespace Fr8.Testing.Unit
 {

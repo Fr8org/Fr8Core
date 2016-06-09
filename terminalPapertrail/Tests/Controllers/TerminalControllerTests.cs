@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http.Results;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Manifests;
 using NUnit.Framework;
 using terminalPapertrail.Controllers;
 using Fr8.Testing.Unit;

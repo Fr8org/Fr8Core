@@ -1,10 +1,6 @@
-﻿using Fr8Data.Manifests;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.Manifests;
 using terminalUtilities;
 using Fr8.Testing.Unit;
 using Fr8.Testing.Unit.Fixtures;

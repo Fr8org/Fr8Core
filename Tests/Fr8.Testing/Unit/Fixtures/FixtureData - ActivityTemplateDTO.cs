@@ -1,6 +1,6 @@
 ﻿﻿using Data.Entities;
 using System;
-﻿using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace Fr8.Testing.Unit.Fixtures
 {

@@ -1,24 +1,20 @@
-﻿using Data.Entities;
-using Hub.Managers;
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
 using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Constants;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using TerminalBase.Infrastructure;
-using terminalFr8Core.Actions;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Helpers;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 using terminalFr8Core.Activities;
 using terminalTests.Fixtures;
-using TerminalBase.Helpers;
 using Fr8.Testing.Unit;
-using TerminalBase.Models;
 
 namespace terminalTests.Integration
 {

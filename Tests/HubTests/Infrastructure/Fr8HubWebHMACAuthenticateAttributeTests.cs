@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
+using Fr8.Infrastructure.Interfaces;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using Moq;
 using StructureMap;
 using Fr8.Testing.Unit;
 using HubWeb.Infrastructure_HubWeb;
-using Fr8Infrastructure.Interfaces;
 
 namespace HubWeb.Infrastructure
 {

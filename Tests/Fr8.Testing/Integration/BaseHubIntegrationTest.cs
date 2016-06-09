@@ -6,10 +6,10 @@ using System.Linq;
 using NUnit.Framework;
 using StructureMap;
 using System.Net.Http;
-using Fr8Data.DataTransferObjects; 
-using Fr8Data.Managers;
-using Fr8Infrastructure.Communication;
-using Fr8Infrastructure.Security;
+using Fr8.Infrastructure.Communication;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Security;
 
 namespace Fr8.Testing.Integration
 {
@@ -52,7 +52,7 @@ namespace Fr8.Testing.Integration
         {
             ObjectFactory.Initialize();
             ObjectFactory.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
-            ObjectFactory.Configure(Fr8Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
+            ObjectFactory.Configure(Fr8.Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
 
             // Use a common HttpClient for all REST operations within testing session 
             // to ensure the presense of the authentication cookie. 

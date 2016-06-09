@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Newtonsoft.Json.Linq;
 
 namespace Fr8.Testing.Unit.Fixtures

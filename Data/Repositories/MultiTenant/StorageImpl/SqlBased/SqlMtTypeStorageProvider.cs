@@ -5,7 +5,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using Data.Repositories.SqlBased;
-using Fr8Data.Crates;
+using Fr8.Infrastructure.Data.Crates;
 
 namespace Data.Repositories.MultiTenant.Sql
 {

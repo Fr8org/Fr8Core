@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Manifests;
 using Fr8.Testing.Integration;
+using Fr8.Infrastructure.Data.Manifests;
 using NUnit.Framework;
 
 namespace terminalExcelTests.Integration
