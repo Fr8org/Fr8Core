@@ -1,5 +1,5 @@
-﻿using Fr8Data.DataTransferObjects;
-using System;
+﻿using System;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace terminalAtlassian.Helpers
 {

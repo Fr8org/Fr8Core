@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities;
 using HealthMonitor.Utility;
 using Hub.Services;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
-using Utilities;
-using Utilities.Interfaces;
 
 namespace terminalIntegrationTests.Integration
 {

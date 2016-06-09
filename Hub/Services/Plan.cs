@@ -194,7 +194,7 @@ namespace Hub.Services
             return uow.PlanRepository.GetById<PlanDO>(id);
         }
 
-        public PlanDO Create(IUnitOfWork uow, string name, string category = "", string ownerId = "", bool isInternal = false)
+        public PlanDO Create(IUnitOfWork uow, string name, string category = "", string ownerId = "", PlanVisibility visibility = PlanVisibility.Standard)
         {
             var plan = new PlanDO
             {
@@ -202,7 +202,7 @@ namespace Hub.Services
                 Name = name,
                 Fr8Account = string.IsNullOrEmpty(ownerId) ? _security.GetCurrentAccount(uow) : uow.UserRepository.FindOne(x => x.Id == ownerId),
                 PlanState = PlanState.Inactive,
-                Visibility = isInternal ? PlanVisibility.Internal : PlanVisibility.Standard,
+                Visibility = visibility,
                 Category = category
             };
 

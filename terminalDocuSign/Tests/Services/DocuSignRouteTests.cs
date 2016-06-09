@@ -9,6 +9,7 @@ using terminalDocuSign.Services;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Data.Entities;
+using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.Interfaces;
 using IActivity = Hub.Interfaces.IActivity;
 
@@ -108,7 +109,7 @@ namespace terminalDocuSign.Tests.Services
 
                 _actionMock.Setup(
                     a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<Guid>(),
-                        It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>(), It.IsAny<bool>())).Callback(() =>
+                        It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>(), It.IsAny<PlanVisibility>())).Callback(() =>
                         {
                             using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {
@@ -121,7 +122,7 @@ namespace terminalDocuSign.Tests.Services
 
                 _actionMock.Setup(
                     a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<Guid>(),
-                        It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>(), It.IsAny<bool>())).Callback(() =>
+                        It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>(), It.IsAny<PlanVisibility>())).Callback(() =>
                         {
                             using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {

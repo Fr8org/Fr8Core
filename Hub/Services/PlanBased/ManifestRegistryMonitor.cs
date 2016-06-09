@@ -6,23 +6,21 @@ using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Utilities;
 using Hub.Interfaces;
 using Hub.Managers;
-using Utilities;
 
 namespace Hub.Services
 {
     public class ManifestRegistryMonitor : IManifestRegistryMonitor
     {
         private readonly IActivity _activity;
-
-        private readonly IActivityTemplate _activityTemplate;
 
         private readonly ICrateManager _crateManager;
 
@@ -37,8 +35,7 @@ namespace Hub.Services
         private const string MessageName = "JIRA description";
 
         public ManifestRegistryMonitor(
-            IActivity activity, 
-            IActivityTemplate activityTemplate,
+            IActivity activity,
             ICrateManager crateManager,
             IPlan plan, 
             IUnitOfWorkProvider unitOfWorkProvider, 
@@ -47,10 +44,6 @@ namespace Hub.Services
             if (activity == null)
             {
                 throw new ArgumentNullException(nameof(activity));
-            }
-            if (activityTemplate == null)
-            {
-                throw new ArgumentNullException(nameof(activityTemplate));
             }
             if (crateManager == null)
             {
@@ -69,7 +62,6 @@ namespace Hub.Services
                 throw new ArgumentNullException(nameof(configRepository));
             }
             _activity = activity;
-            _activityTemplate = activityTemplate;
             _crateManager = crateManager;
             _plan = plan;
             _unitOfWorkProvider = unitOfWorkProvider;
@@ -287,7 +279,7 @@ namespace Hub.Services
             {
                 throw new ApplicationException("Monitor Form Responses v1 activity template was not found in Google terminal");
             }
-            return await _activity.CreateAndConfigure(uow, systemUser.Id, monitorFormResponseTemplate.Id, monitorFormResponseTemplate.Label, MonitoringPlanName, 1, createPlan: true, isInternalPlan: true)
+            return await _activity.CreateAndConfigure(uow, systemUser.Id, monitorFormResponseTemplate.Id, monitorFormResponseTemplate.Label, MonitoringPlanName, 1, createPlan: true)
                                   .ConfigureAwait(false)as PlanDO;
         }
 

@@ -12,13 +12,13 @@ using Data.Repositories;
 using Data.States;
 using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Security;
 using Hangfire;
 using Hangfire.StructureMap;
-using Utilities.Logging;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 
