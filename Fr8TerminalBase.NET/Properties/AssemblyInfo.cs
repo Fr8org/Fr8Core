@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Fr8TerminalBase.NET")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Fr8 Terminal Developer SDK")]
+[assembly: AssemblyDescription("A set of classes to help developers easily start developing their Fr8 terminals.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Fr8TerminalBase.NET")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyCompany("The Fr8 Company")]
+[assembly: AssemblyProduct("Fr8 Terminal Developer SDK")]
+[assembly: AssemblyCopyright("Copyright © The Fr8 Company 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

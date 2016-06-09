@@ -8,7 +8,6 @@ using System.Web.Http.Filters;
 using Fr8.Infrastructure.Utilities;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Errors;
-using Microsoft.ApplicationInsights;
 using Newtonsoft.Json;
 
 namespace Fr8.TerminalBase.Filters
@@ -46,15 +45,6 @@ namespace Fr8.TerminalBase.Filters
                     }
                 }
             }
-
-            //Post exception information to AppInsights
-            Dictionary<string, string> properties = new Dictionary<string, string>();
-            foreach (KeyValuePair<string, object> arg in actionExecutedContext.ActionContext.ActionArguments)
-            {
-                properties.Add(arg.Key, JsonConvert.SerializeObject(arg.Value));
-            }
-            properties.Add("Terminal", terminalName);
-            new TelemetryClient().TrackException(curTerminalError, properties);
 
             string userId = null;
             if(!string.IsNullOrEmpty(actionExecutedContext.ActionContext.ControllerContext.RequestContext.Principal?.Identity?.AuthenticationType))
