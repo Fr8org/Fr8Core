@@ -1,25 +1,21 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using Data.Infrastructure.AutoMapper;
-using Hub.Interfaces;
-using Fr8Data.Managers;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
 using terminalTwilio.Tests.Fixtures;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using System;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using UtilitiesTesting;
-using terminalTwilio;
+using Fr8.Testing.Unit;
 using terminalTwilio.Activities;
-using Fr8Infrastructure.StructureMap;
-using TerminalBase.Models;
-using Fr8Data.Crates;
 using System.Linq;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.StructureMap;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Interfaces;
+using terminalTwilio;
 using terminalUtilities.Twilio;
+using IActivity = Hub.Interfaces.IActivity;
 
 namespace terminalTwilioTests.Activities
 {
@@ -36,7 +32,6 @@ namespace terminalTwilioTests.Activities
 
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             StructureMapBootStrapper.ConfigureDependencies(dependencyType).ConfigureTwilioDependencies(dependencyType);
-            ObjectFactory.Configure(cfg => cfg.For<ITwilioService>().Use(new TwilioService()));
             TerminalBootstrapper.ConfigureTest();
 
             _crate = ObjectFactory.GetInstance<ICrateManager>();

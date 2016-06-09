@@ -8,22 +8,22 @@ using terminalIntegrationTests.Fixtures;
 using terminalSalesforce.Services;
 using Data.Entities;
 using terminalSalesforce.Infrastructure;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using terminalSalesforce.Actions;
-using terminaBaselTests.Tools.Terminals;
+using Fr8.Testing.Integration.Tools.Terminals;
 using Data.States;
 using terminalDocuSign.Services.New_Api;
 using terminalDocuSign.Services;
 using DocuSign.eSign.Api;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Helpers;
+using Fr8.TerminalBase.Models;
 using terminalDocuSign.Actions;
-using TerminalBase.Helpers;
-using TerminalBase.Models;
 
 namespace terminalIntegrationTests.EndToEnd
 {
@@ -191,7 +191,7 @@ namespace terminalIntegrationTests.EndToEnd
 
         private async Task<PlanDTO> CreatePlan()
         {
-            var solutionCreateUrl = GetHubApiBaseUrl() + "plans/createSolution?solutionName=Mail_Merge_From_Salesforce";
+            var solutionCreateUrl = GetHubApiBaseUrl() + "plans?solution_name=Mail_Merge_From_Salesforce";
             return await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
         }
 

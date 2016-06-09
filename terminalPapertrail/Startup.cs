@@ -6,11 +6,10 @@ using System.Web;
 using Microsoft.Owin;
 using Newtonsoft.Json;
 using Owin;
-using TerminalBase;
-using TerminalBase.BaseClasses;
 using System.Web.Http.Dispatcher;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using terminalPapertrail.Tests.Infrastructure;
-using TerminalBase.Services;
 using terminalPapertrail.Actions;
 
 [assembly: OwinStartup(typeof(terminalPapertrail.Startup))]

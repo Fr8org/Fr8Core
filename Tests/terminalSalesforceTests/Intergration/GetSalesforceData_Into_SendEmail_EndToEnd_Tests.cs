@@ -1,5 +1,5 @@
 ﻿using System;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
 using System.Threading.Tasks;
 using System.Linq;
@@ -8,11 +8,11 @@ using Newtonsoft.Json;
 using System.Diagnostics;
 using terminalSalesforce.Actions;
 using Data.Entities;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Fr8Data.Managers;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace terminalSalesforceTests.Intergration
 {
@@ -38,7 +38,7 @@ namespace terminalSalesforceTests.Intergration
                 initialPlanId = await CreatePlan_GetSalesforceDataIntoSendEmail(authTokenDO);
 
                 //get the full plan which is created
-                var plan = await HttpGetAsync<PlanDTO>(_baseUrl + "Plans/full?id=" + initialPlanId.ToString());
+                var plan = await HttpGetAsync<PlanDTO>(_baseUrl + "Plans?include_children=true&id=" + initialPlanId.ToString());
                 Debug.WriteLine("Created plan with all activities.");
 
                 //make get salesforce data to get Lead

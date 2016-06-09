@@ -8,17 +8,15 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Hub.Interfaces;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 using Data.Repositories.Plan;
-using Data.States;
-using Fr8Data.Constants;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
 using Event = Hub.Services.Event;
-using Fr8Data.Managers;
 
 namespace HubTests.Services
 {

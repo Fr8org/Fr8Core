@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Utilities;
 using Hub.Interfaces;
-using Hub.Managers;
 using StructureMap;
-using Utilities;
 
 namespace Hub.Services
 {

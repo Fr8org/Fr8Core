@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Entities;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Interfaces;
 using Moq;
 using StructureMap;
-using TerminalBase.Infrastructure;
-using Fr8Data.Managers;
-using TerminalBase.Models;
 
 namespace terminalSlackTests.Fixtures
 {

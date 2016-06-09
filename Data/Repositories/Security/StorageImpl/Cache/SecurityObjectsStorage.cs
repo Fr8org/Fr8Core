@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Http.Routing.Constraints;
-using System.Web.UI.WebControls;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.Repositories.Security.Entities;
 using Data.States;
 using Data.States.Templates;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using StructureMap;
 
 namespace Data.Repositories.Security.StorageImpl.Cache

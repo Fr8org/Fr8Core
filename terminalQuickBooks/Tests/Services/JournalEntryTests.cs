@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Linq;
-using Fr8Data.DataTransferObjects;
+using Fr8.TerminalBase.Infrastructure;
 using Intuit.Ipp.Data;
 using NUnit.Framework;
 using StructureMap;
 using terminalQuickBooks.Interfaces;
-using TerminalBase.Infrastructure;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace terminalQuickBooks.Tests.Services
 {

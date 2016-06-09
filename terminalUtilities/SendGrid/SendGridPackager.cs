@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Utilities;
 using Newtonsoft.Json.Linq;
 using SendGrid;
 using StructureMap;
 using terminalUtilities.Helpers;
 using terminalUtilities.Interfaces;
 using terminalUtilities.Models;
-using Utilities;
 
 namespace terminalUtilities.SendGrid
 {

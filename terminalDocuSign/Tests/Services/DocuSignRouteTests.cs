@@ -2,15 +2,15 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Interfaces;
-using Hub.Interfaces;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
 using terminalDocuSign.Services;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 using Data.Entities;
-using TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Interfaces;
+using IActivity = Hub.Interfaces.IActivity;
 
 namespace terminalDocuSign.Tests.Services
 {

@@ -12,19 +12,19 @@ using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
-using Fr8Data.Constants;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Infrastructure;
 using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
 using Hub.Services;
-using TerminalBase.Infrastructure;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 using Action = Hub.Services.Activity;
 using IContainer = StructureMap.IContainer;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
 
 namespace HubTests.Services
 {
@@ -396,7 +396,7 @@ namespace HubTests.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var terminalClientMock = new Mock<ITerminalTransmitter>();
-                terminalClientMock.Setup(s => s.CallActivityAsync<PayloadDTO>(It.IsAny<string>(), It.IsAny<Fr8DataDTO>(), It.IsAny<string>()))
+                terminalClientMock.Setup(s => s.CallActivityAsync<PayloadDTO>(It.IsAny<string>(), It.IsAny<IEnumerable<KeyValuePair<string, string>>>(), It.IsAny<Fr8DataDTO>(), It.IsAny<string>()))
                                 .Returns(Task.FromResult(new PayloadDTO(containerDO.Id)
                                 {
                                     CrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(activityDo.CrateStorage)
@@ -446,7 +446,7 @@ namespace HubTests.Services
         {
             var terminalTransmitterMock = new TerminalTransmitterMock();
 
-            terminalTransmitterMock.CallActivityBody = (action, dto) =>
+            terminalTransmitterMock.CallActivityBody = (action, parameters, dto) =>
             {
                 int count;
 
@@ -512,7 +512,7 @@ namespace HubTests.Services
             var activityDo = ActivationTestsSetup(container, callCount);
             var terminalTransmitterMock = new TerminalTransmitterMock();
 
-            terminalTransmitterMock.CallActivityBody = (action, dto) =>
+            terminalTransmitterMock.CallActivityBody = (action, parameters, dto) =>
             {
                 if (action == "activate")
                 {

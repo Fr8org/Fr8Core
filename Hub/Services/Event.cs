@@ -8,11 +8,11 @@ using Data.States;
 using Data.Entities;
 using System.Linq;
 using System.Collections.Generic;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Utilities.Logging;
-using Fr8Data.Managers;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Utilities.Logging;
 
 namespace Hub.Services
 {
@@ -87,7 +87,7 @@ namespace Hub.Services
                         var errorMsgList = new List<string>();
                         foreach (var crate in eventCm.EventPayload)
                         {
-                            if (crate.ManifestType.Id != (int)Fr8Data.Constants.MT.LoggingData)
+                            if (crate.ManifestType.Id != (int)Fr8.Infrastructure.Data.Constants.MT.LoggingData)
                             {
                                 errorMsgList.Add("Don't know how to process an EventReport with the Contents: " + _crateManager.ToDto(crate));
                                 continue;

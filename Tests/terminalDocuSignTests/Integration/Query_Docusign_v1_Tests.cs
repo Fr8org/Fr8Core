@@ -1,12 +1,11 @@
 ﻿using System.Threading.Tasks;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using HealthMonitor.Utility;
+using Fr8.Infrastructure.Communication;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
-using terminalDocuSign.Actions;
 using terminalDocuSignTests.Fixtures;
 using terminalDocuSign.Activities;
-using Fr8Infrastructure.Communication;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -22,7 +21,7 @@ namespace terminalDocuSignTests.Integration
         {
             var storage = new CrateStorage();
 
-            storage.Add(Fr8Data.Crates.Crate.FromContent("Config", new Query_DocuSign_v1.ActivityUi()));
+            storage.Add(Fr8.Infrastructure.Data.Crates.Crate.FromContent("Config", new Query_DocuSign_v1.ActivityUi()));
             
             return storage;
         }

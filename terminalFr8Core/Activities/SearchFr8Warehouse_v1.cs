@@ -2,22 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
 using Data.Interfaces;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Utilities.Logging;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Models;
 using Hub.Services.MT;
 using Newtonsoft.Json;
 using StructureMap;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using TerminalBase.Models;
-using Utilities.Logging;
 
 namespace terminalFr8Core.Activities
 {

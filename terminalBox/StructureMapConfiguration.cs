@@ -1,5 +1,5 @@
-﻿using Fr8Data.Managers;
-using Fr8Infrastructure.StructureMap;
+﻿using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.StructureMap;
 using StructureMap;
 
 namespace terminalBox

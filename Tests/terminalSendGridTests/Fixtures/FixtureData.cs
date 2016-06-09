@@ -1,11 +1,10 @@
 ﻿using System;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 using StructureMap;
-using TerminalBase.Infrastructure;
-using TerminalBase.Models;
 
 namespace terminalSendGridTests.Fixtures
 {

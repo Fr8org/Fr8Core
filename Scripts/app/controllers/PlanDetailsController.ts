@@ -13,6 +13,7 @@ module dockyard.controllers {
         digestFlag:boolean;
 
         sharePlan: () => void;
+        unpublishPlan: () => void;
         download: ($event: Event) => void;
     }
 
@@ -43,7 +44,6 @@ module dockyard.controllers {
             }
 
             $scope.sharePlan = () => {
-                
                 PlanService.share($stateParams.id)
                     .then(() => {
                         console.log('sharePlan: Success');
@@ -53,13 +53,23 @@ module dockyard.controllers {
                     });
             };
 
-            $scope.download = ($event: Event) => {
+            $scope.unpublishPlan = () => {
+                PlanService.unpublish($stateParams.id)
+                    .then(() => {
+                        console.log('unpublishPlan: Success');
+                    })
+                    .catch(() => {
+                        console.log('unpublishPlan: Failure');
+                    });
+            };
 
+            $scope.download = ($event: Event) => {
+                
                 if (!$scope.digestFlag) {
                     $scope.digestFlag = true;
 
                     var promise = PlanService.createTemplate($scope.ptvm.plan.id);
-                    var element = $event.srcElement;
+                    var element = $event.target;
 
                     promise.then((template) => {
                         let json = $filter('json')(template);

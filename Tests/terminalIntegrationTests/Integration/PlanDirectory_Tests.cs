@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using Fr8Data.DataTransferObjects;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 
 namespace terminalIntegrationTests.Integration
 {
@@ -26,10 +26,10 @@ namespace terminalIntegrationTests.Integration
         public async Task PlanDirectory_PlanTemplateApi_Create_Update_Extract()
         {
             var planTemplateDTO = PlanTemplateDTO_1();
-            await HttpPostAsync<PublishPlanTemplateDTO, string>(_baseUrl + "plantemplates/", planTemplateDTO);
+            await HttpPostAsync<PublishPlanTemplateDTO, string>(_baseUrl + "plan_templates/", planTemplateDTO);
 
             var returnedPlanTemplateDTO = await HttpGetAsync<PublishPlanTemplateDTO>(
-                _baseUrl + "plantemplates/?id=" + planTemplateDTO.ParentPlanId.ToString()
+                _baseUrl + "plan_templates/?id=" + planTemplateDTO.ParentPlanId.ToString()
             );
 
             Assert.NotNull(returnedPlanTemplateDTO);
@@ -44,10 +44,10 @@ namespace terminalIntegrationTests.Integration
                 JsonConvert.SerializeObject(new { subplans = new string[] { } })
             );
 
-            await HttpPostAsync<PublishPlanTemplateDTO, string>(_baseUrl + "plantemplates/", planTemplateDTO);
+            await HttpPostAsync<PublishPlanTemplateDTO, string>(_baseUrl + "plan_templates/", planTemplateDTO);
 
             returnedPlanTemplateDTO = await HttpGetAsync<PublishPlanTemplateDTO>(
-                _baseUrl + "plantemplates/?id=" + planTemplateDTO.ParentPlanId.ToString()
+                _baseUrl + "plan_templates/?id=" + planTemplateDTO.ParentPlanId.ToString()
             );
 
             Assert.NotNull(returnedPlanTemplateDTO);
@@ -55,6 +55,8 @@ namespace terminalIntegrationTests.Integration
             Assert.AreEqual(planTemplateDTO.Description, returnedPlanTemplateDTO.Description, "Returned PlanTemplateDTO does not match updated PlanTemplateDTO (Description)");
             Assert.AreEqual(planTemplateDTO.ParentPlanId, returnedPlanTemplateDTO.ParentPlanId, "Returned PlanTemplateDTO does not match updated PlanTemplateDTO (ParentPlanId)");
             Assert.AreEqual(JsonConvert.SerializeObject(planTemplateDTO.PlanContents), JsonConvert.SerializeObject(returnedPlanTemplateDTO.PlanContents), "Returned PlanTemplateDTO does not match updated PlanTemplateDTO (ParentPlanId)");
+
+            await HttpDeleteAsync(_baseUrl + "plan_templates/?id=" + planTemplateDTO.ParentPlanId.ToString());
         }
     }
 }

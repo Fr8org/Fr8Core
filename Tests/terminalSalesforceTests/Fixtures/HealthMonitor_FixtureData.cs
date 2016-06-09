@@ -4,12 +4,12 @@ using Salesforce.Common;
 using StructureMap;
 using System;
 using System.Threading.Tasks;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Interfaces;
 using Moq;
-using TerminalBase.Infrastructure;
-using Fr8Data.Managers;
 
 namespace terminalSalesforceTests.Fixtures
 {

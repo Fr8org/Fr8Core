@@ -5,7 +5,7 @@ using System.Web.Mvc;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Utilities.Logging;
+using Fr8.Infrastructure.Utilities.Logging;
 
 namespace HubWeb.ExceptionHandling
 {
@@ -46,7 +46,7 @@ namespace HubWeb.ExceptionHandling
             {
                 statusCode = httpException.GetHttpCode();
                 var viewPath = String.Format("Views/Shared/{0}.cshtml", statusCode);
-                var explicitPath = Path.Combine(Utilities.Server.ServerPhysicalPath, viewPath);
+                var explicitPath = Path.Combine(Fr8.Infrastructure.Utilities.Server.ServerPhysicalPath, viewPath);
                 if (File.Exists(explicitPath))
                 {
                     view = statusCode.ToString();

@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using StructureMap;
 using Data.Interfaces;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using System.Diagnostics;
 using System.Net.Http;
 using AutoMapper;
 using Data.Entities;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 using Newtonsoft.Json.Linq;
 
 namespace terminalDocuSignTests.Integration

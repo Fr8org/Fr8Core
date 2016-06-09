@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Mvc;
@@ -7,7 +8,6 @@ using Google.Apis.Auth.OAuth2.Responses;
 using Newtonsoft.Json;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Infrastructure;
-using Utilities.Configuration.Azure;
 
 namespace terminalGoogle.Services.Authorization
 {

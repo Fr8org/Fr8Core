@@ -4,11 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Web.Http.Dispatcher;
 using Data.Infrastructure.AutoMapper;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Services;
 using terminalFr8Core.Actions;
 using terminalFr8Core.Activities;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using TerminalBase.Services;
 
 [assembly: OwinStartup(typeof(terminalFr8Core.Startup))]
 
@@ -50,8 +50,7 @@ namespace terminalFr8Core
             ActivityStore.RegisterActivity<ConvertRelatedFieldsIntoTable_v1>(ConvertRelatedFieldsIntoTable_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<ExecuteSql_v1>(ExecuteSql_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<ExtractTableField_v1>(ExtractTableField_v1.ActivityTemplateDTO);
-            ActivityStore.RegisterActivity<FilterObjectListByIncomingMessage_v1>(FilterObjectListByIncomingMessage_v1.ActivityTemplateDTO);
-            ActivityStore.RegisterActivity<FindObjects_Solution_v1>(FindObjects_Solution_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<FilterObjectListByIncomingMessage_v1>(FilterObjectListByIncomingMessage_v1.ActivityTemplateDTO);            
             ActivityStore.RegisterActivity<GetDataFromFr8Warehouse_v1>(GetDataFromFr8Warehouse_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<GetFileFromFr8Store_v1>(GetFileFromFr8Store_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Loop_v1>(Loop_v1.ActivityTemplateDTO);
