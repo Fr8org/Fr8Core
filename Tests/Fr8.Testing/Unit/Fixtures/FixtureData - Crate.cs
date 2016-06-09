@@ -4,9 +4,9 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Control;
 using Newtonsoft.Json;
-using Utilities;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Utilities;
 
 namespace Fr8.Testing.Unit.Fixtures
 {

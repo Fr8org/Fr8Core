@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Data.Entities;
 using Data.States;
+using Fr8.Infrastructure.Utilities;
 
 namespace Fr8.Testing.Unit.Fixtures
 {
@@ -163,7 +164,7 @@ namespace Fr8.Testing.Unit.Fixtures
 
 			string path = Path.Combine(physLocation, filepath);
 			if (!File.Exists(path))
-				path = FindXmlPayloadFullPath(Utilities.MiscUtils.UpNLevels(physLocation, 1), filepath);
+				path = FindXmlPayloadFullPath(MiscUtils.UpNLevels(physLocation, 1), filepath);
 			return path;
 		}
 
