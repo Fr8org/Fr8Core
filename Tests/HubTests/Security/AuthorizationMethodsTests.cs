@@ -325,7 +325,7 @@ namespace HubTests.Security
            
             restClientMock.Verify(
                 client => client.PostAsync(
-                    new Uri(terminal.Endpoint + "/authentication/initial_url"), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()
+                    new Uri(terminal.Endpoint + "/authentication/request_url"), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()
                 ),
                 Times.Exactly(1)
             );
