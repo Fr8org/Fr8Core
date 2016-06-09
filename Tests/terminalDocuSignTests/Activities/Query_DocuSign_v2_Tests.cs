@@ -12,7 +12,7 @@ using StructureMap;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
 using terminalDocuSign.Activities;
 
 namespace terminalDocuSignTests.Activities

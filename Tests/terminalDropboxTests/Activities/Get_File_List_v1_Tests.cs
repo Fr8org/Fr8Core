@@ -10,7 +10,7 @@ using NUnit.Framework;
 using StructureMap;
 using terminalDropbox.Actions;
 using terminalDropboxTests.Fixtures;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 using terminalDropbox.Interfaces;
 
 namespace terminalDropboxTests.Activities

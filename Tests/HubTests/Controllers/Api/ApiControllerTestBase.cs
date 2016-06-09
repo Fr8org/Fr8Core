@@ -4,7 +4,7 @@ using System.Reflection;
 using NUnit.Framework;
 using Hub.Infrastructure;
 using HubWeb.Infrastructure;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 using HubWeb.Infrastructure_HubWeb;
 
 namespace HubTests.Controllers.Api

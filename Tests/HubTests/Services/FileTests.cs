@@ -9,8 +9,9 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace HubTests.Services
 {

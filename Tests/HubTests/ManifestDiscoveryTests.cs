@@ -2,7 +2,7 @@
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.Manifests;
 using NUnit.Framework;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace HubTests
 {

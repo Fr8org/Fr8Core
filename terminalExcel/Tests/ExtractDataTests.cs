@@ -5,8 +5,10 @@ using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Interfaces;
 using NUnit.Framework;
 using StructureMap;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
+using terminalExcel.Actions;
+using terminalExcel.Activities;
 
 namespace terminalExcel.PluginExcelTests
 {

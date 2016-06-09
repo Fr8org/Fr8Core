@@ -394,7 +394,6 @@
     <Compile Include="Services\Organization.cs" />
     <Compile Include="Services\Activity.cs" />
     <Compile Include="Services\ActivityTemplate.cs" />
-    <Compile Include="Services\AuthData.cs" />
     <Compile Include="Services\Authorization.cs" />
     <Compile Include="Services\Fr8Account.cs" />
     <Compile Include="Services\EmailAddress.cs" />

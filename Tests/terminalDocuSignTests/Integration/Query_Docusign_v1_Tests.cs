@@ -2,7 +2,7 @@
 using Fr8.Infrastructure.Communication;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
 using terminalDocuSignTests.Fixtures;
 using terminalDocuSign.Activities;

@@ -9,7 +9,9 @@ using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Services;
 using NUnit.Framework;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
+
+using Fr8.Testing;
 using terminalSlackTests.Fixtures;
 using terminalSlack.Actions;
 

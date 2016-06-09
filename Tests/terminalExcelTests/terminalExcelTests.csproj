@@ -195,21 +195,13 @@
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalDocuSign\terminalDocuSign.csproj">
-      <Project>{4e04feb2-b452-4739-8336-ea2cefb18d87}</Project>
-      <Name>terminalDocuSign</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\terminalExcel\terminalExcel.csproj">
       <Project>{57373D06-6B82-4EC6-AF62-ED25FE170C61}</Project>
       <Name>terminalExcel</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HealthMonitorUtility\HealthMonitorUtility.csproj">
+    <ProjectReference Include="..\Fr8.Testing\Fr8.Testing.csproj">
       <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
-      <Name>HealthMonitorUtility</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\UtilitiesTesting\UtilitiesTesting.csproj">
-      <Project>{6b855c3f-07a9-4787-9fde-29fa567c43e2}</Project>
-      <Name>UtilitiesTesting</Name>
+      <Name>Fr8.Testing</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
