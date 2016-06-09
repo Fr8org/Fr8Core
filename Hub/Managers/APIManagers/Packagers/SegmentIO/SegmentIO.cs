@@ -10,13 +10,13 @@ using Hub.Services;
 using Segment.Model;
 
 namespace Hub.Managers.APIManagers.Packagers.SegmentIO
-//When a user visits Kwasant, we try three ways to get their ID:
+//When a user visits Fr8, we try three ways to get their ID:
 //1) If they're already logged in, we use their userID from the database
 //2) If they're not logged in, we check their userID from a cookie we set (sessionID)
 //3) If they don't have a cookie, we generate a new ID based on ASP's session
 //When an unknown user performs actions, we log it under their ID taken from above (usually from the ASP session ID). If they then sign in, we push an alias between their previous session ID, and their new logged-in ID.
 //This means, the following workflow:
-//Anonymous user visits kwasant.com
+//Anonymous user visits fr8.com
 //Anonymous user plays the video
 //Anonymous user signs in as 'rjrudman@gmail.com'.
 //When viewing the profile for 'rjrudman@gmail.com' - the first two actions are properly retrieved.
