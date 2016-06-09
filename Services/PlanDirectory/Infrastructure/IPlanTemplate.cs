@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace PlanDirectory.Infrastructure
 {
@@ -9,5 +9,6 @@ namespace PlanDirectory.Infrastructure
     {
         Task<PlanTemplateCM> CreateOrUpdate(string fr8AccountId, PublishPlanTemplateDTO planTemplate);
         Task<PublishPlanTemplateDTO> Get(string fr8AccountId, Guid planId);
+        Task Remove(string fr8AccountId, Guid planId);
     }
 }

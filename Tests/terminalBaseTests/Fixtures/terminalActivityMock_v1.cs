@@ -1,12 +1,11 @@
 ﻿using Data.Entities;
 using System;
 using System.Threading.Tasks;
-using TerminalBase.BaseClasses;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using TerminalBase.Infrastructure;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalBaseTests.Actions
 {

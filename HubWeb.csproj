@@ -38,6 +38,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\HubWeb.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -95,22 +96,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Utilities\Fr8.AI.DependencyCollector.dll</HintPath>
     </Reference>
-    <Reference Include="Fr8Data, Version=1.0.0.9, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Fr8Data.1.0.0.9\lib\net45\Fr8Data.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Fr8Infrastructure, Version=1.0.0.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Fr8Infrastructure.1.0.0.3\lib\net45\Fr8Infrastructure.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="fr8TerminalBase, Version=1.0.0.12, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\fr8TerminalBase.1.0.0.12\lib\net45\fr8TerminalBase.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="fr8Utilities, Version=1.0.0.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\fr8Utilities.1.0.0.4\lib\net45\fr8Utilities.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Google.Apis, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
       <HintPath>packages\Google.Apis.1.11.1\lib\net45\Google.Apis.dll</HintPath>
       <Private>True</Private>
@@ -151,8 +136,8 @@
       <HintPath>packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="LogentriesCore, Version=2.4.4.0, Culture=neutral, processorArchitecture=MSIL">
@@ -1016,8 +1001,10 @@
     <Content Include="_PowerShellScripts\Copy-ImagesBetweenAccount.ps1" />
     <Content Include="Views\JsTests\endpoints.cshtml" />
     <Content Include="Views\AngularTemplate\PlanUploadModal.cshtml" />
+    <Content Include="_PowerShellScripts\Combine-Sources.ps1" />
     <Content Include="_PowerShellScripts\Set-Config.ps1" />
     <Content Include="_PowerShellScripts\Get-StagingHostname.ps1" />
+    <Content Include="Views\Redirect\ClonePlan.cshtml" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\KioskModeOrganizationHeaderController.ts" />
@@ -1201,8 +1188,6 @@
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
-    <TypeScriptCompile Include="Scripts\app\controllers\FindObjectsController.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\FindObjectsResultsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\InternalAuthenticationController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManageFileListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ContainerListController.ts" />
@@ -1222,7 +1207,6 @@
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionListController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Counter.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Duration.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Controls\RunPlanButton.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ManagePlan.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextSource.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DropDownListBox.ts" />
@@ -4521,8 +4505,6 @@
     <Content Include="Views\AngularTemplate\ManagePlan.cshtml" />
     <Content Include="Views\AngularTemplate\Duration.cshtml" />
     <Content Include="Views\AngularTemplate\Counter.cshtml" />
-    <Content Include="Views\AngularTemplate\FindObjects.cshtml" />
-    <Content Include="Views\AngularTemplate\FindObjectsResults.cshtml" />
     <Content Include="Views\AngularTemplate\_AddPayloadModal.cshtml" />
     <None Include="Views\DocusignAuthCallback\Login.cshtml" />
     <TypeScriptCompile Include="Scripts\tests\utils\services\fixture_CrateHelper.ts" />
@@ -4571,6 +4553,10 @@
     <Folder Include="Webhooks\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj">
+      <Project>{bba91af2-7636-41b6-87c4-c1575ae8b04b}</Project>
+      <Name>Fr8Infrastructure.NET</Name>
+    </ProjectReference>
     <ProjectReference Include="Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>

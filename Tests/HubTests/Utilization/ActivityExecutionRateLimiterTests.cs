@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories.Utilization;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
 using NUnit.Framework;
 using StructureMap;
-using Utilities.Configuration.Azure;
-using Utilities.Interfaces;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace HubTests.Utilization
 {

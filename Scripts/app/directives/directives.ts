@@ -25,9 +25,12 @@ app.filter('parseUrl', () => {
         if (!angular.isString(text)) {
             return text;
         }
-
         if (text.match(urls)) {
-            text = text.replace(urls, "<a href=\"$1\" target=\"_blank\">$1</a>");
+            var indexOfUrl = text.indexOf(text.match(urls)[0]);
+            // if url is inside of a href tag, skip adding href
+            if (text.substring(indexOfUrl - 6, indexOfUrl - 1) != "href=") {
+                text = text.replace(urls, "<a href=\"$1\" target=\"_blank\">$1</a>");
+            }
         }
         return text;
     }
@@ -198,11 +201,13 @@ app.directive('delayedControl', ['$compile', ($compile: ng.ICompileService) => (
     scope: {
         currentAction: '=',
         field: '=',
-        plan: '='
+        plan: '=',
+        change: '='
     },
     template: '',
     link: (scope: ng.IScope, elem: ng.IAugmentedJQuery, attr: ng.IAttributes) => {
-        elem.append("<configuration-control plan='plan' current-action='currentAction' field='field'></configuration-control>");
+        
+        elem.append("<configuration-control plan='plan' current-action='currentAction' field='field' change='change'></configuration-control>");
         $compile(elem.contents())(scope);
     }
 })]);

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Fr8Data.DataTransferObjects;
-using TerminalBase.BaseClasses;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.TerminalBase.BaseClasses;
 using terminalYammer.Interfaces;
 using terminalYammer.Services;
 
@@ -22,7 +22,7 @@ namespace terminalYammer.Controllers
         }
 
         [HttpPost]
-        [Route("initial_url")]
+        [Route("request_url")]
         public ExternalAuthUrlDTO GenerateOAuthInitiationURL()
         {
             var externalStateToken = Guid.NewGuid().ToString();

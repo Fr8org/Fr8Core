@@ -1,10 +1,10 @@
-﻿using Hub.StructureMap;
+﻿using Fr8.Infrastructure.Utilities;
+using Hub.StructureMap;
 using SendGrid;
 using StructureMap;
 using terminalUtilities.Interfaces;
 using terminalUtilities.SendGrid;
 using terminalUtilities.Twilio;
-using Utilities;
 
 namespace terminalFr8Core
 {

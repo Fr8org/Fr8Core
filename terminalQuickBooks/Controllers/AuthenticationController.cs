@@ -2,11 +2,10 @@
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.TerminalBase.BaseClasses;
 using StructureMap;
-using TerminalBase.BaseClasses;
 using terminalQuickBooks.Interfaces;
-using terminalQuickBooks.Services;
 
 namespace terminalQuickBooks.Controllers
 {
@@ -23,7 +22,7 @@ namespace terminalQuickBooks.Controllers
         }
 
         [HttpPost]
-        [Route("initial_url")]
+        [Route("request_url")]
         public ExternalAuthUrlDTO GenerateOAuthInitiationURL()
         {
             var url = _authenticator.CreateAuthUrl();

@@ -9,12 +9,12 @@ using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Utilities;
 using Hub.Managers;
 using Hub.Services;
 using Microsoft.AspNet.Identity.EntityFramework;
 using StructureMap;
-using Utilities;
 
 namespace HubWeb.Controllers
 {

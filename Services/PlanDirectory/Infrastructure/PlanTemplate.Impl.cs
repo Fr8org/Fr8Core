@@ -6,8 +6,8 @@ using Newtonsoft.Json.Linq;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace PlanDirectory.Infrastructure
 {
@@ -66,6 +66,21 @@ namespace PlanDirectory.Infrastructure
                 }
 
                 return Task.FromResult(CreatePlanTemplateDTO(planTemplateCM));
+            }
+        }
+
+        public async Task Remove(string fr8AccountId, Guid planId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var planIdStr = planId.ToString();
+                uow.MultiTenantObjectRepository
+                    .Delete<PlanTemplateCM>(
+                        fr8AccountId,
+                        x => x.ParentPlanId == planIdStr
+                    );
+
+                await Task.Yield();
             }
         }
 

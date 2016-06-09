@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using HealthMonitor.Utility;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
 using terminalFr8CoreTests.Fixtures;
 
@@ -88,7 +88,7 @@ namespace terminalFr8CoreTests.Integration
             );
 
             lstFields.Clear();
-            lstFields.Add(new FieldDTO() { Key = UtilitiesTesting.Fixtures.FixtureData.TestConnectionString2().Value, Value = "value" });
+            lstFields.Add(new FieldDTO() { Key = Fr8.Testing.Unit.Fixtures.FixtureData.TestConnectionString2().Value, Value = "value" });
             AddUpstreamCrate(
                 dataDTO,
                 new FieldDescriptionsCM(lstFields),

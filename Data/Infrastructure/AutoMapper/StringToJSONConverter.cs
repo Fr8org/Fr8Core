@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -16,7 +16,7 @@ namespace Data.Infrastructure.AutoMapper
                 return null;
             }
 
-            var serializer = new Utilities.Serializers.Json.JsonSerializer();
+            var serializer = new Fr8.Infrastructure.Utilities.Serializers.Json.JsonSerializer();
             serializer.Settings.MissingMemberHandling = MissingMemberHandling.Ignore;
 
             var curObject = serializer.Deserialize<T>(jsonString);

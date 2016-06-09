@@ -6,12 +6,13 @@ using AutoMapper;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using Fr8Infrastructure.Interfaces;
+using Data.States;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Interfaces;
 using Hub.Interfaces;
 using Newtonsoft.Json;
 using StructureMap;
@@ -137,7 +138,7 @@ namespace Hub.Services
             };
 
             var terminalResponse = await restClient.PostAsync<CredentialsDTO>(
-                new Uri(terminal.Endpoint + "/authentication/internal"),
+                new Uri(terminal.Endpoint + "/authentication/token"),
                 credentialsDTO
             );
 
@@ -324,7 +325,7 @@ namespace Hub.Services
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
             var response = await restClient.PostAsync(
-                new Uri(terminal.Endpoint + "/authentication/initial_url")
+                new Uri(terminal.Endpoint + "/authentication/request_url")
             );
 
             var externalAuthUrlDTO = JsonConvert.DeserializeObject<ExternalAuthUrlDTO>(response);
@@ -398,7 +399,7 @@ namespace Hub.Services
         {
             using (var crateStorage = _crate.GetUpdatableStorage(activityDTO))
             {
-                crateStorage.RemoveByManifestId((int)Fr8Data.Constants.MT.StandardAuthentication);
+                crateStorage.RemoveByManifestId((int)Fr8.Infrastructure.Data.Constants.MT.StandardAuthentication);
             }
         }
 

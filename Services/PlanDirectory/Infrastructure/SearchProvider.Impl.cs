@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Microsoft.Azure.Search;
 using Microsoft.Azure.Search.Models;
-using Utilities.Configuration.Azure;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
 using PlanDirectory.Interfaces;
 
 namespace PlanDirectory.Infrastructure
@@ -141,6 +140,29 @@ namespace PlanDirectory.Infrastructure
             }
         }
 
+        public async Task Remove(Guid planId)
+        {
+            using (var searchClient = CreateAzureSearchClient())
+            {
+                using (var indexClient = searchClient.Indexes.GetClient(GetPlanTemplateIndexName()))
+                {
+                    var doc = ConvertToSearchDocument(planId);
+
+                    var batch = IndexBatch.New(new[] { IndexAction.Delete(doc) } );
+                    await indexClient.Documents.IndexAsync(batch);
+                }
+            }
+        }
+
+        private Document ConvertToSearchDocument(Guid planId)
+        {
+            var document = new Document()
+            {
+                { "parentPlanId", planId.ToString() }
+            };
+
+            return document;
+        }
 
         private Document ConvertToSearchDocument(PlanTemplateCM cm)
         {

@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
+using Fr8.TerminalBase.Infrastructure;
 using StructureMap;
-using TerminalBase.Infrastructure;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
 

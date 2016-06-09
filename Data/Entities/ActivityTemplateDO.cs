@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using Data.Entities;
-using Data.Interfaces;
-using Data.States;
 using Data.States.Templates;
-using Fr8Data.States;
-using StructureMap;
+using Fr8.Infrastructure.Data.States;
 
 namespace Data.Entities
 {

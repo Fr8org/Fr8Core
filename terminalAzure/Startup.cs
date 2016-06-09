@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http.Dispatcher;
-using AutoMapper;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.States;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using Microsoft.Owin;
 using Owin;
 using terminalAzure.Activities;
-using TerminalBase;
-using TerminalBase.BaseClasses;
-using TerminalBase.Services;
-using Utilities.Configuration.Azure;
 
 [assembly: OwinStartup(typeof(terminalAzure.Startup))]
 

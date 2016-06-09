@@ -3,9 +3,9 @@ using Owin;
 using System;
 using System.Collections.Generic;
 using System.Web.Http.Dispatcher;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using terminalTest.Actions;
-using TerminalBase.BaseClasses;
-using TerminalBase.Services;
 
 [assembly: OwinStartup(typeof(terminalTest.Startup))]
 namespace terminalTest

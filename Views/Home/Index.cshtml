@@ -1,6 +1,6 @@
 ﻿@using Data.Infrastructure.StructureMap
 @using StructureMap
-@using Utilities
+@using Fr8.Infrastructure.Utilities
 @model HubWeb.ViewModels.HomeVM
 
 
@@ -74,7 +74,7 @@
                 <div class="item active">
                     <div class="carousel-content">
                         <h3>Akkadian - <i>Peter Smith, Chief Operating Officer</i></h3>
-                        <p><b>"Our team user Fr8 to generate mail merges using Salesforce and DocuSign. It only takes a few seconds to automatically insert data into our complex DocuSign templates. Fr8 delivers huge time savings."</b></p>
+                        <p><b>"Our team uses Fr8 to generate mail merges using Salesforce and DocuSign. It only takes a few seconds to automatically insert data into our complex DocuSign templates. Fr8 delivers huge time savings."</b></p>
                     </div>
                 </div>
             </div>
@@ -115,7 +115,7 @@
                 <div class="col-sm-8 col-sm-offset-2">
                     <div class="section-content">
                         <p>Fr8 ties your existing cloud applications together, letting you move information easily and enabling you to create powerful web applications, processes and workflows with a few clicks of your mouse.</p>
-                        <p><a href="http://fr8-documentation.azurewebsites.net">Learn More</a></p>
+                        <p><a href="http://documentation.fr8.co/how-it-works/">Learn More</a></p>
                     </div>
                 </div>
             </div>
@@ -287,7 +287,7 @@
             n.parentNode.insertBefore(a, n);
         }
     }, window.analytics.SNIPPET_VERSION = "2.0.9",
-       window.analytics.load("@(Utilities.Configuration.Azure.CloudConfigurationManager.GetSetting("SegmentWriteKey"))");
+       window.analytics.load("@(Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey"))");
     window.analytics.page('Visited Page - Home');
     var btnTryItNow = document.getElementById("btn-contact");
     window.analytics.trackLink(btnTryItNow, "Clicked Try It Now Button");

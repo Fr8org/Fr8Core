@@ -181,9 +181,11 @@ module dockyard.controllers {
                 $mdOpenMenu(ev);
             };
             $scope.reConfigureAction = (action: model.ActivityDTO) => {
-                var actionsArray = new Array<model.ActivityDTO>();
-                actionsArray.push(action);
-                this.reConfigure(actionsArray);
+                if (action) {
+                    var actionsArray = new Array<model.ActivityDTO>();
+                    actionsArray.push(action);
+                    this.reConfigure(actionsArray);
+                }
             };
 
             $scope.openAddLabelModal = (action: model.ActivityDTO) => { 
@@ -211,6 +213,7 @@ module dockyard.controllers {
                     this.selectAction(action, null, $window);
 
             }
+
 
             $scope.$watch(function () {
                 return $(".resizable").width();
@@ -274,9 +277,14 @@ module dockyard.controllers {
         }
 
         private handleBackButton(event, toState, toParams, fromState, fromParams, options) {
+            
             if (fromParams.viewMode === "plan" && toParams.viewMode === undefined && fromState.name === "planBuilder" && toState.name === "planBuilder") {
                 event.preventDefault();
                 this.$state.go("planList");
+            }
+
+            if (toParams.viewMode === "plan" && fromParams.viewMode === undefined && fromState.name === "planBuilder" && toState.name === "planBuilder") {
+                this.reloadFirstActions();
             }
         }
 
@@ -428,6 +436,7 @@ module dockyard.controllers {
                 this.$scope.planId = $state.params.id;
             }
 
+   
             this.loadPlan($state.params.viewMode);
         }
 

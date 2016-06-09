@@ -1,11 +1,11 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 using NUnit.Framework;
-using HealthMonitor.Utility;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Testing.Integration;
 using terminalAtlassianTests.Fixtures;
 
 namespace terminalAtlassianTests.Integration
@@ -76,7 +76,7 @@ namespace terminalAtlassianTests.Integration
             Assert.IsNotNull(activityDTO.CrateStorage);
 
             var crateStorage = Crate.FromDto(activityDTO.CrateStorage);
-            Assert.AreEqual(1, crateStorage.Count);
+            Assert.AreEqual(2, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
 
             var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
@@ -113,9 +113,9 @@ namespace terminalAtlassianTests.Integration
             var crateStorage = Crate.FromDto(activityDTO.CrateStorage);
             Assert.AreEqual(2, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count());
+            Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
 
-            var fieldDescriptions = crateStorage.CrateContentsOfType<FieldDescriptionsCM>().First();
+            var fieldDescriptions = crateStorage.CrateContentsOfType<CrateDescriptionCM>().FirstOrDefault().CrateDescriptions[0];
             Assert.True(fieldDescriptions.Fields.Any(x => x.Key == "Key" && x.Value == "FR-1245"));
 
             return activityDTO;

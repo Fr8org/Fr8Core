@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Reflection;
 using Data.Interfaces;
 using Data.Repositories.MultiTenant.Queryable;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 using Hub.Infrastructure;
 
 namespace terminalDocuSign.Services.MT
