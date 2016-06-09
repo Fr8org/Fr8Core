@@ -9,6 +9,7 @@ using terminalDocuSign.Services;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Data.Entities;
+using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Interfaces;
 using IActivity = Hub.Interfaces.IActivity;
 
@@ -18,16 +19,16 @@ namespace terminalDocuSign.Tests.Services
     public class DocuSignPlanTests : BaseTest
     {
         private DocuSignPlan _curDocuSignPlan;
-        private IActivity _activity;
+
         public override void SetUp()
         {
             base.SetUp();
 
+            TerminalBootstrapper.ConfigureTest();
+            ObjectFactory.Container.Configure(TerminalDocusignStructureMapBootstrapper.LiveConfiguration);
+
             SetupForAutomaticPlan();
-
-            _curDocuSignPlan = new DocuSignPlan();
-
-            _activity = ObjectFactory.GetInstance<IActivity>();
+            _curDocuSignPlan = ObjectFactory.GetInstance<DocuSignPlan>();
         }
 
         private IHubCommunicator CreateHubCommunicator(string userId)

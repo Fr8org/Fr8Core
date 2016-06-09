@@ -6,6 +6,6 @@ namespace terminalQuickBooks.Interfaces
 {
     public interface IChartOfAccounts
     {
-        ChartOfAccountsCM GetChartOfAccounts(AuthorizationToken authorizationToken,  IHubCommunicator hubCommunicator);
+        ChartOfAccountsCM GetChartOfAccounts(AuthorizationToken authorizationToken,  IHubCommunicator hubCommunicator, IServiceWorker serviceWorker);
     }
 }

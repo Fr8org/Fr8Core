@@ -27,7 +27,7 @@ namespace HubTests.Services
             var fr8HMACService = new Mock<IHMACService>();
             fr8HMACService.Setup(x => x.CalculateHMACHash(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<HttpContent>())).ReturnsAsync("authToken");
             ObjectFactory.Configure(o => o.For<IHMACService>().Use(fr8HMACService.Object));
-            _hmacAuthenticator = new HMACAuthenticator();
+            _hmacAuthenticator = new HMACAuthenticator(fr8HMACService.Object);
         }
 
         private HttpRequestMessage GetInCorrectRequestMessage1()

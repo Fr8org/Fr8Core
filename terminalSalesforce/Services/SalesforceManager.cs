@@ -17,19 +17,17 @@ using Salesforce.Common;
 using Salesforce.Chatter;
 using Newtonsoft.Json.Linq;
 using Salesforce.Chatter.Models;
-using StructureMap;
 
 namespace terminalSalesforce.Services
 {
     public class SalesforceManager : ISalesforceManager
     {
-        private Authentication _authentication = new Authentication();
+        private readonly Authentication _authentication = new Authentication();
+        private readonly ICrateManager _crateManager;
 
-        private ICrateManager _crateManager;
-
-        public SalesforceManager()
+        public SalesforceManager(ICrateManager crateManager)
         {
-            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
+            _crateManager = crateManager;
         }
         
         public async Task<string> Create(SalesforceObjectType type, IDictionary<string, object> @object, AuthorizationToken authToken)

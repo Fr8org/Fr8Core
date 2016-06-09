@@ -1,30 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Controllers;
 using System.Web.Http.Dispatcher;
+using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.StructureMap;
 using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using StructureMap;
 
 namespace Fr8.TerminalBase.BaseClasses
 {
-    public abstract class BaseConfiguration : IHttpControllerTypeResolver
+    public abstract class BaseConfiguration : IHttpControllerTypeResolver, IHttpControllerActivator
     {
         protected HttpConfiguration _configuration = new HttpConfiguration();
+        private IContainer _container;
+        private IActivityStore _activityStore;
+
+        public IContainer Container => _container;
+        public IActivityStore ActivityStore => _activityStore;
 
         protected virtual void ConfigureProject(bool selfHost, Action<ConfigurationExpression> terminalStructureMapRegistryConfigExpression)
         {
-            ObjectFactory.Initialize();
-            ObjectFactory.Configure(StructureMapBootStrapper.LiveConfiguration);
-            TerminalBootstrapper.ConfigureLive();
+            _container = new Container(StructureMapBootStrapper.LiveConfiguration);
+            _activityStore = new ActivityStore(_container);
+
+            _container.Configure(x => x.AddRegistry<TerminalBootstrapper.LiveMode>());
+            _container.Configure(x => x.For<IActivityStore>().Use(_activityStore));
+
             AutoMapperBootstrapper.ConfigureAutoMapper();
 
             if (terminalStructureMapRegistryConfigExpression != null)
             {
-                ObjectFactory.Configure(terminalStructureMapRegistryConfigExpression);
+                _container.Configure(terminalStructureMapRegistryConfigExpression);
             }
 
             if (selfHost)
@@ -33,6 +45,7 @@ namespace Fr8.TerminalBase.BaseClasses
                 _configuration.Services.Replace(typeof(IHttpControllerTypeResolver), this);
             }
 
+            _configuration.Services.Replace(typeof(IHttpControllerActivator), this);
 
             RegisterActivities();
         }
@@ -54,7 +67,7 @@ namespace Fr8.TerminalBase.BaseClasses
         {
             Task.Run(() =>
             {
-                BaseTerminalController curController = new BaseTerminalController();
+                BaseTerminalController curController = new BaseTerminalController(Container.GetInstance<IRestfulServiceClient>());
                 curController.AfterStartup(terminalName);
             });
         }
@@ -64,6 +77,11 @@ namespace Fr8.TerminalBase.BaseClasses
             // this method should be implemented by the child classes; hence virtual but since it 
             // has to implement IHttpControllerTypeResolver therefore the access is public
             throw new NotImplementedException();
+        }
+
+        public IHttpController Create(HttpRequestMessage request, HttpControllerDescriptor controllerDescriptor, Type controllerType)
+        {
+            return _container.GetInstance(controllerType) as IHttpController;
         }
     }
 }

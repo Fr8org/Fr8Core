@@ -6,6 +6,7 @@ using System.Linq;
 using NUnit.Framework;
 using StructureMap;
 using System.Net.Http;
+using System.Net.Http.Formatting;
 using Fr8.Infrastructure.Communication;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
@@ -61,7 +62,7 @@ namespace HealthMonitor.Utility
             _httpClient.Timeout = TimeSpan.FromMinutes(2);
 
             Crate = new CrateManager();
-            _hmacService = new Fr8HMACService();
+            _hmacService = new Fr8HMACService(ObjectFactory.GetInstance<MediaTypeFormatter>());
             _baseUrl = GetHubApiBaseUrl();
             RestfulServiceClient = new RestfulServiceClient(_httpClient);
 

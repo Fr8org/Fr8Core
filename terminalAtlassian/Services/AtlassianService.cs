@@ -18,14 +18,6 @@ namespace terminalAtlassian.Services
 {
     public class AtlassianService : IAtlassianService
     {
-        private readonly IRestfulServiceClient _client;
-
-
-        public AtlassianService()
-        {
-            _client = ObjectFactory.GetInstance<IRestfulServiceClient>();
-        }
-
         public bool IsValidUser(CredentialsDTO curCredential)
         {
             using (HttpClient client = new HttpClient())

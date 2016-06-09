@@ -20,6 +20,8 @@ namespace terminalDocuSign.Activities
 {
     public class Track_DocuSign_Recipients_v1 : BaseDocuSignActivity
     {
+        private readonly IContainer _container;
+
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "Track_DocuSign_Recipients",
@@ -124,9 +126,10 @@ namespace terminalDocuSign.Activities
             }
         }
 
-        public Track_DocuSign_Recipients_v1(ICrateManager crateManager, IDocuSignManager docuSignManager)
+        public Track_DocuSign_Recipients_v1(ICrateManager crateManager, IDocuSignManager docuSignManager, IContainer container)
             : base(crateManager, docuSignManager)
         {
+            _container = container;
         }
 
         protected override async Task InitializeDS()
@@ -367,16 +370,16 @@ namespace terminalDocuSign.Activities
                 Conditions = conditions
             });
 
-            var queryCriteria = Crate.FromContent(
-                "Queryable Criteria",
-                new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(selectedObject.Id))
-            );
-            crateStorage.Add(queryCriteria);
+            using (var uow = _container.GetInstance<IUnitOfWork>())
+            {
+                var queryCriteria = Crate.FromContent("Queryable Criteria", new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(uow, selectedObject.Id)));
+                crateStorage.Add(queryCriteria);
+            }
         }
 
         private MtTypeReference GetMtType(Type clrType)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var uow = _container.GetInstance<IUnitOfWork>())
             {
                 return uow.MultiTenantObjectRepository.FindTypeReference(clrType);
             }

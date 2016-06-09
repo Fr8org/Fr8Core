@@ -33,7 +33,7 @@ namespace terminalSendGridTests.Unit.Activities
             base.SetUp();
             ObjectFactory.Configure(x => x.AddRegistry<TerminalSendGridStructureMapBootstrapper.LiveMode>());
             ObjectFactory.Configure(cfg => cfg.For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>())));
-            ObjectFactory.Configure(cfg => cfg.For<IEmailPackager>().Use(new SendGridPackager()));
+            ObjectFactory.Configure(cfg => cfg.For<IEmailPackager>().Use(c => new SendGridPackager(c.GetInstance<IConfigRepository>())));
             TerminalBootstrapper.ConfigureTest();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             activityPayload = GetActivityResult().Result;

@@ -14,6 +14,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Models;
+using StructureMap;
 using terminalSalesforce.Actions;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
@@ -84,7 +85,7 @@ namespace terminalSalesforceTests.Intergration
                 Debug.WriteLine("Newly created Lead ID is " + newLeadId);
 
                 Debug.WriteLine("Deleting newly created lead with " + newLeadId);
-                var isDeleted = await new SalesforceManager().Delete(SalesforceObjectType.Lead, newLeadId, authorizationToken);
+                var isDeleted = await ObjectFactory.GetInstance<SalesforceManager>().Delete(SalesforceObjectType.Lead, newLeadId, authorizationToken);
                 Assert.IsTrue(isDeleted, "The newly created Lead for integration test purpose is not deleted.");
                 newLeadId = string.Empty;
 
@@ -145,7 +146,7 @@ namespace terminalSalesforceTests.Intergration
         {
             if(!string.IsNullOrEmpty(newLeadId))
             {
-                var isDeleted = await new SalesforceManager().Delete(SalesforceObjectType.Lead, newLeadId, authToken);
+                var isDeleted = await ObjectFactory.GetInstance<SalesforceManager>().Delete(SalesforceObjectType.Lead, newLeadId, authToken);
                 Assert.IsTrue(isDeleted, "The newly created Lead for integration test purpose is not deleted.");
             }
 

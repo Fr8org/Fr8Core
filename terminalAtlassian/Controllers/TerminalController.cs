@@ -8,6 +8,13 @@ namespace terminalAtlassian.Controllers
     //[RoutePrefix("terminals")]
     public class TerminalController : ApiController
     {
+        private readonly IActivityStore _activityStore;
+
+        public TerminalController(IActivityStore activityStore)
+        {
+            _activityStore = activityStore;
+        }
+
         [HttpGet]
         [Route("discover")]
         [ResponseType(typeof(StandardFr8TerminalCM))]
@@ -16,7 +23,7 @@ namespace terminalAtlassian.Controllers
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = TerminalData.TerminalDTO,
-                Activities = ActivityStore.GetAllActivities(TerminalData.TerminalDTO)
+                Activities = _activityStore.GetAllActivities(TerminalData.TerminalDTO)
             };
 
             return Json(curStandardFr8TerminalCM);

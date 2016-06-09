@@ -20,9 +20,10 @@ namespace terminalGoogle.Controllers
         private readonly IGoogleIntegration _googleIntegration;
 
 
-        public AuthenticationController()
+        public AuthenticationController(IRestfulServiceClient restfulServiceClient)
+            : base(restfulServiceClient)
         {
-            _googleIntegration = new GoogleIntegration(ObjectFactory.GetInstance<IRestfulServiceClient>());
+            _googleIntegration = new GoogleIntegration(restfulServiceClient);
         }
 
         [HttpPost]

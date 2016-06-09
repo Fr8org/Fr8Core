@@ -1,9 +1,9 @@
 ﻿using System.Web.Http;
 using Newtonsoft.Json;
 using terminalAtlassian.Services;
-using StructureMap;
 using System;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
 using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalAtlassian.Controllers
@@ -14,9 +14,10 @@ namespace terminalAtlassian.Controllers
         private readonly AtlassianService _atlassianService;
         private const string curTerminal = "terminalAtlassian";
 
-        public AuthenticationController()
+        public AuthenticationController(AtlassianService atlassianService, IRestfulServiceClient restfulServiceClient)
+            :base (restfulServiceClient)
         {
-            _atlassianService = ObjectFactory.GetInstance<AtlassianService>();
+            _atlassianService = atlassianService;
         }
 
         [HttpPost]

@@ -87,13 +87,13 @@ namespace terminalTwilio.Activities
                 try
                 {
                     curMessage = Twilio.SendSms(smsNumber, smsBody);
-                    SendEventReport($"Twilio SMS Sent -> SMSBody: {smsBody} smsNumber: {smsNumber}");
+                    //SendEventReport($"Twilio SMS Sent -> SMSBody: {smsBody} smsNumber: {smsNumber}");
                     var curFieldDTOList = CreateKeyValuePairList(curMessage);
                     Payload.Add(PackCrate_TwilioMessageDetails(curFieldDTOList));
                 }
                 catch (Exception ex)
                 {
-                    SendEventReport($"TwilioSMSSendFailure -> SMSBody: {smsBody} smsNumber: {smsNumber}, Exception {ex.Message}");
+                   // SendEventReport($"TwilioSMSSendFailure -> SMSBody: {smsBody} smsNumber: {smsNumber}, Exception {ex.Message}");
                     PackCrate_WarningMessage(ex.Message, "Twilio Service Failure");
                     RaiseError("Twilio Service Failure");
                     return;

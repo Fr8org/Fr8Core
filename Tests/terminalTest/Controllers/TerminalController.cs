@@ -9,6 +9,13 @@ namespace terminalTest.Controllers
     [RoutePrefix("terminals")]
     public class TerminalController : ApiController
     {
+        private readonly IActivityStore _activityStore;
+
+        public TerminalController(IActivityStore activityStore)
+        {
+            _activityStore = activityStore;
+        }
+
         /// <summary>
         /// Terminal discovery infrastructure.
         /// Action returns list of supported actions by terminal.
@@ -23,7 +30,7 @@ namespace terminalTest.Controllers
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = TerminalData.TerminalDTO,
-                Activities = ActivityStore.GetAllActivities(TerminalData.TerminalDTO)
+                Activities = _activityStore.GetAllActivities(TerminalData.TerminalDTO)
             };
 
             return Json(curStandardFr8TerminalCM);

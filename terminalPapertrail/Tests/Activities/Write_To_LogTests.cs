@@ -34,7 +34,7 @@ namespace terminalPapertrail.Tests.Actions
             base.SetUp();
             TerminalBootstrapper.ConfigureTest();
             TerminalPapertrailMapBootstrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
-
+            AutoMapperBootstrapper.ConfigureAutoMapper();
             //setup the rest client
             Mock<IRestfulServiceClient> restClientMock = new Mock<IRestfulServiceClient>(MockBehavior.Default);
             restClientMock.Setup(restClient => restClient.GetAsync<PayloadDTO>(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
@@ -123,6 +123,17 @@ namespace terminalPapertrail.Tests.Actions
                 UserId = null
             };
             var executionContext = new ContainerExecutionContext();
+
+            executionContext.PayloadStorage = new CrateStorage(Crate.FromContent("", new OperationalStateCM()));
+
+            executionContext.PayloadStorage.Add("Log Messages", new StandardLoggingCM
+            {
+                Item = new List<LogItemDTO>()
+                {
+                    new LogItemDTO() {Activity = "A", Data = "Test Log Message"}
+                }
+            });
+
             await _activity_under_test.Configure(testAction);
             await _activity_under_test.Configure(testAction);
 
@@ -130,7 +141,7 @@ namespace terminalPapertrail.Tests.Actions
             await _activity_under_test.Run(testAction, executionContext);
 
             //Assert
-            var loggedMessge = testAction.ActivityPayload.CrateStorage.CrateContentsOfType<StandardLoggingCM>().Single();
+            var loggedMessge = executionContext.PayloadStorage.CrateContentsOfType<StandardLoggingCM>().Single();
             Assert.IsNotNull(loggedMessge, "Logged message is missing from the payload");
             Assert.AreEqual(1, loggedMessge.Item.Count, "Logged message is missing from the payload");
 
@@ -161,6 +172,16 @@ namespace terminalPapertrail.Tests.Actions
             await _activity_under_test.Configure(testAction);
 
             var executionContext = new ContainerExecutionContext();
+            executionContext.PayloadStorage = new CrateStorage(Crate.FromContent("", new OperationalStateCM()));
+
+            executionContext.PayloadStorage.Add("Log Messages", new StandardLoggingCM
+            {
+                Item = new List<LogItemDTO>()
+                {
+                    new LogItemDTO() {Activity = "A", Data = "Test Log Message"}
+                }
+            });
+
             //log first time
             await _activity_under_test.Run(testAction, executionContext);
 
@@ -169,7 +190,7 @@ namespace terminalPapertrail.Tests.Actions
             await _activity_under_test.Run(testAction, executionContext);
 
             //Assert
-            var loggedMessge = testAction.ActivityPayload.CrateStorage.CrateContentsOfType<StandardLoggingCM>().Single();
+            var loggedMessge = executionContext.PayloadStorage.CrateContentsOfType<StandardLoggingCM>().Single();
             Assert.IsNotNull(loggedMessge, "Logged message is missing from the payload");
             Assert.AreEqual(1, loggedMessge.Item.Count, "Logged message is missing from the payload");
 

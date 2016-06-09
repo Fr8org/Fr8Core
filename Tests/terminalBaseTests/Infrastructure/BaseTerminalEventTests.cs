@@ -4,7 +4,10 @@ using NUnit.Framework;
 using UtilitiesTesting;
 using System.Collections.Generic;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Interfaces;
+using Fr8.TerminalBase.Infrastructure;
+using StructureMap;
 
 namespace terminalBaseTests.Infrastructure
 {
@@ -12,24 +15,21 @@ namespace terminalBaseTests.Infrastructure
     [Category("BaseTerminalEvent")]
     public class BaseTerminalEventTests : BaseTest
     {
-        private TestBaseTerminalEvent _baseTerminalEvent;
+        private BaseTerminalEvent _baseTerminalEvent;
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
-            _baseTerminalEvent = new TestBaseTerminalEvent();
         }
 
         [Test]
         public void SendTerminalErrorIncident_ShouldPostLoggingData_ToFr8EventController()
         {
-            //Act
+            var restClientMock = new Mock<IRestfulServiceClient>(MockBehavior.Default);
+            _baseTerminalEvent = new BaseTerminalEvent(restClientMock.Object);
             _baseTerminalEvent.SendTerminalErrorIncident("something", "ex", "exception","test-id");
-
-            //Assert
-            Mock<IRestfulServiceClient> restClientMock = Mock.Get(_baseTerminalEvent.RestfulServiceClient);
-
+            
             //verify that the post call is made to Fr8 Event Controller
             restClientMock.Verify(
                 client => client.PostAsync(new Uri("http://localhost:30643/api/v1/events", UriKind.Absolute), 

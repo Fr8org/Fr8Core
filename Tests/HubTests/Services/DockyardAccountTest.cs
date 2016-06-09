@@ -24,6 +24,8 @@ namespace HubTests.Services
         private readonly string userName = "alexlucre";
         private readonly string password = "alex@123";
         LoginStatus curLogingStatus = LoginStatus.InvalidCredential;
+
+
         [SetUp]
         public override void SetUp()
         {
@@ -115,7 +117,7 @@ namespace HubTests.Services
         [ExpectedException(ExpectedException = typeof(NullReferenceException))]
         public void FailsGetDisplayNameIfDockyardAccountDONull()
         {
-            Fr8Account.GetDisplayName(null);
+            _fr8Account.GetDisplayName(null);
         }
 
         [Test]
@@ -124,7 +126,7 @@ namespace HubTests.Services
             _dockyardAccountDO.FirstName = "Alex";
             _dockyardAccountDO.LastName = "Lucre";
             string displayName = "Alex Lucre";
-            Assert.AreEqual(displayName, Fr8Account.GetDisplayName(_dockyardAccountDO));
+            Assert.AreEqual(displayName, _fr8Account.GetDisplayName(_dockyardAccountDO));
         }
 
         [Test]
@@ -133,7 +135,7 @@ namespace HubTests.Services
             _dockyardAccountDO.FirstName = "Alex";
             _dockyardAccountDO.LastName = null;
             string displayName = "Alex";
-            Assert.AreEqual(displayName, Fr8Account.GetDisplayName(_dockyardAccountDO));
+            Assert.AreEqual(displayName, _fr8Account.GetDisplayName(_dockyardAccountDO));
         }
 
         [Test]
@@ -141,7 +143,7 @@ namespace HubTests.Services
         {
             _dockyardAccountDO.EmailAddress = FixtureData.TestEmailAddress1();
             string displayName = "Alex";
-            Assert.AreEqual(displayName, Fr8Account.GetDisplayName(_dockyardAccountDO));
+            Assert.AreEqual(displayName, _fr8Account.GetDisplayName(_dockyardAccountDO));
         }
 
         [Test]
@@ -150,7 +152,7 @@ namespace HubTests.Services
             _dockyardAccountDO.EmailAddress = FixtureData.TestEmailAddress1();
             _dockyardAccountDO.EmailAddress.Name = null;
             string displayName = "alexlucre1";
-            Assert.AreEqual(displayName, Fr8Account.GetDisplayName(_dockyardAccountDO));
+            Assert.AreEqual(displayName, _fr8Account.GetDisplayName(_dockyardAccountDO));
         }
         #endregion
 

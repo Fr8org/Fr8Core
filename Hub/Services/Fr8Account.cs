@@ -21,6 +21,13 @@ namespace Hub.Services
 {
     public class Fr8Account
     {
+        private readonly IConfigRepository _configRepository;
+
+        public Fr8Account(IConfigRepository configRepository)
+        {
+            _configRepository = configRepository;
+        }
+
         public void UpdatePassword(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO, string password)
         {
             if (dockyardAccountDO != null)
@@ -100,7 +107,7 @@ namespace Hub.Services
         //else if we have a first name only, use that
         //else if we have just an email address, use the portion preceding the @ unless there's a name
         //else throw
-        public static string GetDisplayName(Fr8AccountDO curDockyardAccount)
+        public string GetDisplayName(Fr8AccountDO curDockyardAccount)
         {
             string firstName = curDockyardAccount.FirstName;
             string lastName = curDockyardAccount.LastName;
@@ -116,7 +123,7 @@ namespace Hub.Services
             if (curEmailAddress.Name != null)
                 return curEmailAddress.Name;
 
-            RegexUtilities.ValidateEmailAddress(curEmailAddress.Address);
+            RegexUtilities.ValidateEmailAddress(_configRepository, curEmailAddress.Address);
             return curEmailAddress.Address.Split(new[] {'@'})[0];
         }
 
@@ -232,7 +239,7 @@ namespace Hub.Services
                     if (existingUserDO.PasswordHash == null)
                     {
                         //this is an existing implicit user, who sent in a request in the past, had a DockyardAccountDO created, and now is registering. Add the password
-                        new Fr8Account().UpdatePassword(uow, existingUserDO, password);
+                        UpdatePassword(uow, existingUserDO, password);
                         existingUserDO.Organization = organizationDO;
 
                         curRegStatus = RegistrationStatus.Successful;

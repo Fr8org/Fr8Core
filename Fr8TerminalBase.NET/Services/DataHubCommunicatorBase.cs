@@ -29,9 +29,9 @@ namespace Fr8.TerminalBase.Services
 
         public string UserId => _userId;
 
-        protected DataHubCommunicatorBase(string explicitData)
+        protected DataHubCommunicatorBase(string explicitData, ICrateManager crateManager)
         {
-            Crate = ObjectFactory.GetInstance<ICrateManager>();
+            Crate = crateManager;
             ExplicitData = explicitData;
         }
         

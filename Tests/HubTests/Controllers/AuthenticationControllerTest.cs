@@ -71,7 +71,6 @@ namespace HubTests.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var user = new Fr8Account();
                 var emailAddress = new EmailAddressDO
                 {
                     Address = "tester@gmail.com",

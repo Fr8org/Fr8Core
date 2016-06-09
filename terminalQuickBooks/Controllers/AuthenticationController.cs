@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
 using Fr8.TerminalBase.BaseClasses;
-using StructureMap;
 using terminalQuickBooks.Interfaces;
 
 namespace terminalQuickBooks.Controllers
@@ -16,9 +16,10 @@ namespace terminalQuickBooks.Controllers
 
         private readonly IAuthenticator _authenticator;
 
-        public AuthenticationController()
+        public AuthenticationController(IAuthenticator authenticator, IRestfulServiceClient restfulServiceClient)
+            :base (restfulServiceClient)
         {
-            _authenticator = ObjectFactory.GetInstance<IAuthenticator>();
+            _authenticator = authenticator;
         }
 
         [HttpPost]

@@ -21,6 +21,8 @@ namespace terminalDocuSign.Actions
 {
     public class Send_DocuSign_Envelope_v2 : EnhancedDocuSignActivity<Send_DocuSign_Envelope_v2.ActivityUi>
     {
+        private readonly IConfigRepository _configRepository;
+
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Version = "2",
@@ -82,9 +84,10 @@ namespace terminalDocuSign.Actions
         private const string advisoryName = "DocuSign Template Warning";
         private const string advisoryContent = "In your selected template you have fields with default values. Those can be changes inside advanced DocuSign UI to frendlier label.";
 
-        public Send_DocuSign_Envelope_v2(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+        public Send_DocuSign_Envelope_v2(ICrateManager crateManager, IDocuSignManager docuSignManager, IConfigRepository configRepository) 
             : base(crateManager, docuSignManager)
         {
+            _configRepository = configRepository;
             DisableValidationOnFollowup = true;
         }
 
@@ -191,7 +194,7 @@ namespace terminalDocuSign.Actions
 
             foreach (var roleControl in ActivityUI.RolesFields.Where(x => x.InitialLabel.Contains(DocuSignConstants.DocuSignRoleEmail)))
             {
-                ValidationManager.ValidateEmail(roleControl);
+                ValidationManager.ValidateEmail(_configRepository, roleControl);
             }
 
             return Task.FromResult(0);

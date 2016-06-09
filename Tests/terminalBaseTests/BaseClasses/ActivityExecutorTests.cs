@@ -26,30 +26,36 @@ namespace terminalBaseTests.BaseClasses
         ActivityExecutor _activityExecutor;
         string terminalName = "terminalBaseTests";
         ICrateManager CrateManagerHelper;
-
+        private IActivityStore _activityStore;
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
+
             AutoMapperBootstrapper.ConfigureAutoMapper();
             ObjectFactory.Configure(x => x.AddRegistry<StructureMapBootStrapper.TestMode>());
-
+            ObjectFactory.Configure(x => x.For<IActivityStore>().Use<ActivityStore>().Singleton());
+            
             var crateStorage = new CrateStorage(Crate.FromContent("", new OperationalStateCM()));
             var crateDTO = CrateManager.ToDto(crateStorage);
             var hubCommunicatorMock = new Mock<IHubCommunicator>();
+
             hubCommunicatorMock.Setup(x => x.GetPayload(It.IsAny<Guid>()))
                 .ReturnsAsync(new PayloadDTO(Guid.NewGuid())
                 {
                      CrateStorage = crateDTO
                 });
+
             ObjectFactory.Configure(cfg => cfg.For<IHubCommunicator>().Use(hubCommunicatorMock.Object));
 
             CrateManagerHelper = new CrateManager();
             _activityExecutor = ObjectFactory.GetInstance<ActivityExecutor>();
-            if(ActivityStore.GetValue(BaseTerminalActivityMock.ActivityTemplate) == null)
-            { 
-                ActivityStore.RegisterActivity<BaseTerminalActivityMock>(BaseTerminalActivityMock.ActivityTemplate);
+            _activityStore = ObjectFactory.GetInstance<IActivityStore>();
+
+            if (_activityStore.GetValue(BaseTerminalActivityMock.ActivityTemplate) == null)
+            {
+                _activityStore.RegisterActivity<BaseTerminalActivityMock>(BaseTerminalActivityMock.ActivityTemplate);
             }
         }
 

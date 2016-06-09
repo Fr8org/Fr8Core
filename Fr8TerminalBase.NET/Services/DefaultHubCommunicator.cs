@@ -34,11 +34,11 @@ namespace Fr8.TerminalBase.Services
 
         public string UserId => _userId;
 
-        public DefaultHubCommunicator()
+        public DefaultHubCommunicator(ICrateManager crateManager, IRestfulServiceClient restfulServiceClient, IHMACService hmacService)
         {
-            _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
-            _crate = ObjectFactory.GetInstance<ICrateManager>();
-            _hmacService = ObjectFactory.GetInstance<IHMACService>();
+            _restfulServiceClient = restfulServiceClient;
+            _crate = crateManager;
+            _hmacService = hmacService;
         }
 
         public void Configure(string terminalName, string userId)

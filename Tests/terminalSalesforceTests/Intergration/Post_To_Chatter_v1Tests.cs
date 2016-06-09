@@ -9,6 +9,7 @@ using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Models;
 using HealthMonitor.Utility;
 using NUnit.Framework;
+using StructureMap;
 using terminalSalesforceTests.Fixtures;
 using terminalSalesforce.Actions;
 using terminalSalesforce.Services;
@@ -91,7 +92,7 @@ namespace terminalSalesforceTests.Intergration
                                          .CratesOfType<StandardPayloadDataCM>()
                                          .SingleOrDefault();
             Assert.IsNotNull(newFeedIdCrate, "Feed is not created");
-            Assert.IsTrue(await new SalesforceManager().Delete(SalesforceObjectType.FeedItem, 
+            Assert.IsTrue(await ObjectFactory.GetInstance<SalesforceManager>().Delete(SalesforceObjectType.FeedItem, 
                 newFeedIdCrate.Content.PayloadObjects[0].PayloadObject[0].Value, new AuthorizationToken { Token = authToken.Token, AdditionalAttributes = authToken.AdditionalAttributes }), "Test feed created is not deleted");
         }
         
