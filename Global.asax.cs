@@ -14,6 +14,7 @@ using Fr8.Infrastructure.Utilities;
 using FluentValidation.WebApi;
 using Google.Apis.Util;
 using Hub.Infrastructure;
+using Hub.Interfaces;
 using Hub.Managers;
 using Hub.ModelBinders;
 using Hub.StructureMap;

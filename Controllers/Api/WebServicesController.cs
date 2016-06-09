@@ -39,7 +39,7 @@ namespace HubWeb.Controllers
                     // resulting set is grouped into batches 1 x web service - n x actions
 
                     var unknwonService = uow.WebServiceRepository.GetQuery().FirstOrDefault(x => x.Name == UknownWebServiceName);
-                    Fr8Account fr8Account = new Fr8Account();
+                    var fr8Account = ObjectFactory.GetInstance<Fr8Account>();
 
                     var activityTemplate = _activityTemplate.GetQuery()
                         .Where(x => x.ActivityTemplateState == ActivityTemplateState.Active)

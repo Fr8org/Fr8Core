@@ -1,53 +1,41 @@
 ﻿using System.Web.Http;
 using Newtonsoft.Json;
-using terminalAtlassian.Services;
 using StructureMap;
-using System;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using terminalAtlassian.Helpers;
 using Fr8.TerminalBase.BaseClasses;
+using System.Threading.Tasks;
+using terminalAtlassian.Interfaces;
 
 namespace terminalAtlassian.Controllers
 {
     [RoutePrefix("authentication")]
     public class AuthenticationController : BaseTerminalController
     {
-        private readonly AtlassianService _atlassianService;
-        private const string curTerminal = "terminalAtlassian";
+        private readonly IAtlassianService _atlassianService;
 
         public AuthenticationController()
         {
-            _atlassianService = ObjectFactory.GetInstance<AtlassianService>();
+            _atlassianService = ObjectFactory.GetInstance<IAtlassianService>();
         }
 
         [HttpPost]
         [Route("token")]
-        public AuthorizationTokenDTO GenerateInternalOAuthToken(CredentialsDTO curCredential)
+        public async Task<AuthorizationTokenDTO> GenerateInternalOAuthToken(CredentialsDTO credentials)
         {
-            try
+            credentials = credentials.EnforceDomainSchema();
+            if (await _atlassianService.CheckAuthenticationAsync(credentials))
             {
-                if (_atlassianService.IsValidUser(curCredential))
-                {
-                    return new AuthorizationTokenDTO()
-                    {
-                        Token = JsonConvert.SerializeObject(curCredential),
-                        ExternalAccountId = curCredential.Username
-                    };
-                }
                 return new AuthorizationTokenDTO()
                 {
-                    Error = "Unable to authenticate in Atlassian service, invalid domain,login name or password."
+                    Token = JsonConvert.SerializeObject(credentials),
+                    ExternalAccountId = credentials.Username
                 };
             }
-            catch (Exception ex)
+            return new AuthorizationTokenDTO()
             {
-                ReportTerminalError(curTerminal, ex,curCredential.Fr8UserId);
-
-                return new AuthorizationTokenDTO()
-                {
-                    Error = "An error occurred while trying to authorize, please try again later."
-                };
-            }
-
+                Error = "Unable to authenticate in Atlassian service, invalid domain, login name or password."
+            };
         }
     }
 }
