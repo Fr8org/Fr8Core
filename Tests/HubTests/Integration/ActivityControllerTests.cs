@@ -2,8 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using HealthMonitor.Utility;
+
 using NUnit.Framework;
+using Fr8.Testing.Integration;
 
 namespace HubTests.Integration
 {

@@ -7,7 +7,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Fr8.Infrastructure.Utilities;
 using Hub.Interfaces;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace HubTests.MockedDB
 {

@@ -83,7 +83,7 @@ namespace HealthMonitor
                             }
                         }
 
-                        app.Endpoint = Utility.Utilities.NormalizeSchema(app.Endpoint);
+                        app.Endpoint = Fr8.Testing.Integration.Utilities.NormalizeSchema(app.Endpoint);
                         MethodInfo curMethodInfo = calledType.GetMethod("CreateServer", BindingFlags.Static | BindingFlags.Public);
                         _selfHostedTerminals.Add((IDisposable)curMethodInfo.Invoke(null, new string[] { app.Endpoint }));
                     }

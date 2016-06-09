@@ -15,7 +15,7 @@ using StructureMap;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Infrastructure.StructureMap;
 using terminalDocuSign.Tests.Fixtures;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace terminalDocuSign.Tests.Actions
 {

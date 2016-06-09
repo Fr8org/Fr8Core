@@ -2,7 +2,8 @@
 using StructureMap;
 using Hub.Managers;
 using HubWeb.Controllers;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 using System.Threading.Tasks;
 using System;
 using Fr8.Infrastructure.Data.Crates.Helpers;

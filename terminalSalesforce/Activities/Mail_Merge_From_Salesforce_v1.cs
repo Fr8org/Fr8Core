@@ -303,21 +303,21 @@ namespace terminalSalesforce.Actions
         /// <param name="activityDO"></param>
         /// <param name="curDocumentation"></param>
         /// <returns></returns>
-        public dynamic Documentation(ActivityPayload activityDO, string curDocumentation)
+        protected override Task<DocumentationResponseDTO> GetDocumentation(string documentationType)
         {
-            if (curDocumentation.Contains("MainPage"))
+            if (documentationType.Contains("MainPage"))
             {
                 var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
                 return Task.FromResult(curSolutionPage);
 
             }
-            if (curDocumentation.Contains("HelpMenu"))
+            if (documentationType.Contains("HelpMenu"))
             {
-                if (curDocumentation.Contains("ExplainMailMerge"))
+                if (documentationType.Contains("ExplainMailMerge"))
                 {
                     return Task.FromResult(GenerateDocumentationResponse(@"This solution helps you to work with email and move data from them to DocuSign service"));
                 }
-                if (curDocumentation.Contains("ExplainService"))
+                if (documentationType.Contains("ExplainService"))
                 {
                     return Task.FromResult(GenerateDocumentationResponse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
                 }

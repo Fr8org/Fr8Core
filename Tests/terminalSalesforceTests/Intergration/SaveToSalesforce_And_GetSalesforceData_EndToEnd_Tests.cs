@@ -1,5 +1,5 @@
 ﻿using Data.Entities;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System;

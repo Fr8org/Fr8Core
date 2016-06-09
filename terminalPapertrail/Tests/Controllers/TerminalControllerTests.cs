@@ -3,7 +3,7 @@ using System.Web.Http.Results;
 using Fr8.Infrastructure.Data.Manifests;
 using NUnit.Framework;
 using terminalPapertrail.Controllers;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace terminalPapertrail.Tests.Controllers
 {
@@ -17,7 +17,7 @@ namespace terminalPapertrail.Tests.Controllers
         {
             base.SetUp();
             _terminal_controller = new TerminalController();
-        }
+        } 
 
         [Test]
         public async Task Get_ShouldReturn_NonEmptyJsonResult()

@@ -14,7 +14,7 @@ using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using terminalFr8Core.Activities;
 using terminalTests.Fixtures;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace terminalTests.Integration
 {

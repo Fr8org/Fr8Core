@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using StructureMap;
 using Data.Interfaces;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using System.Diagnostics;
 using System.Net.Http;
 using AutoMapper;

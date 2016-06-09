@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HubTests.Controllers.Api;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
 using AutoMapper;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.States;
@@ -154,7 +154,7 @@ namespace HubTests.Controllers
             //verify that the post call is made 
             restClientMock.Verify(
                 client => client.PostAsync<CredentialsDTO>(
-                    new Uri(activityTemplateDO.Terminal.Endpoint + "/authentication/internal"),
+                    new Uri(activityTemplateDO.Terminal.Endpoint + "/authentication/token"),
                     It.Is<CredentialsDTO>(it => it.Username == credentialsDTO.Username
                         && it.Password == credentialsDTO.Password
                         && it.Domain == credentialsDTO.Domain), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()

@@ -20,7 +20,7 @@ namespace terminalAtlassian.Controllers
         }
 
         [HttpPost]
-        [Route("internal")]
+        [Route("token")]
         public async Task<AuthorizationTokenDTO> GenerateInternalOAuthToken(CredentialsDTO credentials)
         {
             credentials = credentials.EnforceDomainSchema();

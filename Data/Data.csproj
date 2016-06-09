@@ -687,6 +687,10 @@
     <Compile Include="Migrations\201606081850360_UpdateMTDatabaseWithNewCLRTypes1.Designer.cs">
       <DependentUpon>201606081850360_UpdateMTDatabaseWithNewCLRTypes1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201606090249437_RemovingUnusedObjects.cs" />
+    <Compile Include="Migrations\201606090249437_RemovingUnusedObjects.Designer.cs">
+      <DependentUpon>201606090249437_RemovingUnusedObjects.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -701,6 +705,7 @@
     <Compile Include="Repositories\Authorization\Impl\EfAuthorizationTokenStorageProvider.cs" />
     <Compile Include="Repositories\Authorization\Impl\KeyVaultAuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\Authorization\Impl\MockedDbAuthorizationTokenStorageProvider.cs" />
+    <Compile Include="Repositories\EnvelopeRepository.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtObjectStorage.Queries.cs" />
     <Compile Include="Repositories\PlanTemplates\ActivityDescriptionRepository.cs" />
     <Compile Include="Repositories\PlanTemplates\NodeTransitionRepository.cs" />
@@ -830,7 +835,6 @@
     <Compile Include="Repositories\ActivityTemplateRepository.cs" />
     <Compile Include="Repositories\Plan\Internal\ActivityRepository.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
-    <Compile Include="Repositories\EnvelopeRepository.cs" />
     <Compile Include="Repositories\Plan\Internal\SubPlanRepository.cs" />
     <Compile Include="Repositories\Plan\Internal\PlansRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
@@ -867,7 +871,6 @@
     <Compile Include="States\Templates\_ContainerStateTemplate.cs" />
     <Compile Include="States\Templates\IStateTemplate.cs" />
     <Compile Include="States\InstructionConstants.cs" />
-    <Compile Include="States\ServiceAuthorizationType.cs" />
     <Compile Include="Entities\AspNetRolesDO.cs" />
     <Compile Include="Entities\AspNetUserRolesDO.cs" />
     <Compile Include="Entities\ConceptDO.cs" />
@@ -883,10 +886,6 @@
     <Compile Include="States\AnswerState.cs" />
     <Compile Include="States\NegotiationState.cs" />
     <Compile Include="Entities\IncidentDO.cs" />
-    <Compile Include="Interfaces\IRemoteOAuthDataDO.cs" />
-    <Compile Include="Entities\RemoteOAuthDataDo.cs" />
-    <Compile Include="States\Templates\_ServiceAuthorizationTypeTemplate.cs" />
-    <Compile Include="Interfaces\IRemoteServiceProviderDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
     <Compile Include="Entities\FactDO.cs" />
     <Compile Include="States\QuestionState.cs" />
@@ -897,7 +896,6 @@
     <Compile Include="States\Templates\_UserStateTemplate.cs" />
     <Compile Include="States\TrackingState.cs" />
     <Compile Include="States\TrackingType.cs" />
-    <Compile Include="Entities\RemoteServiceProviderDO.cs" />
     <Compile Include="Infrastructure\JoinTables\EventEmailDO.cs" />
     <Compile Include="Entities\GenericCustomField.cs" />
     <Compile Include="Entities\UserAgentInfoDO.cs" />
@@ -922,8 +920,6 @@
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />
-    <Compile Include="Repositories\RemoteServiceAuthDataRepository.cs" />
-    <Compile Include="Repositories\RemoteServiceProviderRepository.cs" />
     <Compile Include="Repositories\IncidentRepository.cs" />
     <Compile Include="Repositories\FactRepository.cs" />
     <Compile Include="Repositories\EmailEmailAddressRepository.cs" />
@@ -1276,6 +1272,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606081850360_UpdateMTDatabaseWithNewCLRTypes1.resx">
       <DependentUpon>201606081850360_UpdateMTDatabaseWithNewCLRTypes1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606090249437_RemovingUnusedObjects.resx">
+      <DependentUpon>201606090249437_RemovingUnusedObjects.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

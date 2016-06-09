@@ -7,7 +7,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Models;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
 using terminalSalesforceTests.Fixtures;
 using terminalSalesforce.Actions;

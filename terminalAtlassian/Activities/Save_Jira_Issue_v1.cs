@@ -48,6 +48,10 @@ namespace terminalAtlassian.Actions
             public DropDownList AvailablePriorities { get; set; }
 
             public DropDownList AssigneeSelector { get; set; }
+            public ControlDefinitionDTO SprintFieldName { get; set; }
+
+
+            public DropDownList Sprint { get; set; }
 
             public ActivityUi()
             {
@@ -90,6 +94,14 @@ namespace terminalAtlassian.Actions
                 };
                 Controls.Add(SelectIssueTypeLabel);
 
+                Sprint = new DropDownList()
+                {
+                    Name = "Sprint",
+                    Label = "Sprint",
+                    IsHidden = true
+                };
+                Controls.Add(Sprint);
+
                 AvailablePriorities = new DropDownList()
                 {
                     Label = "Priority",
@@ -125,6 +137,13 @@ namespace terminalAtlassian.Actions
                     IsHidden = true
                 };
                 Controls.Add(Description);
+
+                SprintFieldName = new ControlDefinitionDTO()
+                {
+                    Name = "SprintFieldName",
+                    IsHidden = true
+                };
+                Controls.Add(SprintFieldName);
             }
 
             public void AppendCustomFields(IEnumerable<FieldDTO> customFields)
@@ -145,17 +164,24 @@ namespace terminalAtlassian.Actions
 
                 foreach (var customField in customFields)
                 {
-                    Controls.Add(new TextSource()
+                    if (customField.Key != "Sprint")
                     {
-                        Name = "CustomField_" + customField.Value,
-                        InitialLabel = customField.Key,
-                        Source = new FieldSourceDTO()
+                        Controls.Add(new TextSource()
                         {
-                            ManifestType = CrateManifestTypes.StandardDesignTimeFields,
-                            RequestUpstream = true,
-                            AvailabilityType = AvailabilityType.RunTime
-                        }
-                    });
+                            Name = "CustomField_" + customField.Value,
+                            InitialLabel = customField.Key,
+                            Source = new FieldSourceDTO()
+                            {
+                                ManifestType = CrateManifestTypes.StandardDesignTimeFields,
+                                RequestUpstream = true,
+                                AvailabilityType = AvailabilityType.RunTime
+                            }
+                        });
+                    }
+                    else
+                    {
+                        SprintFieldName.Label = customField.Value;
+                    }
                 }
             }
 
@@ -248,7 +274,7 @@ namespace terminalAtlassian.Actions
 
                     if (configProps.SelectedIssueType != issueTypeKey)
                     {
-                        FillFieldDdls();
+                        await FillFieldDdls();
                     }
                 }
                 else
@@ -321,17 +347,19 @@ namespace terminalAtlassian.Actions
             ActivityUI.Summary.IsHidden = !visible;
             ActivityUI.Description.IsHidden = !visible;
             ActivityUI.AvailablePriorities.IsHidden = !visible;
+            ActivityUI.Sprint.IsHidden = !visible;
             ActivityUI.SelectIssueTypeLabel.IsHidden = visible;
             ActivityUI.AssigneeSelector.IsHidden = !visible;
         }
 
-        private void FillFieldDdls()
+        private async Task FillFieldDdls()
         {
             ActivityUI.AvailablePriorities.ListItems = _atlassianService
                 .GetPriorities(AuthorizationToken)
                 .ToListItems()
                 .ToList();
 
+            ActivityUI.Sprint.ListItems = await _atlassianService.GetSprints(AuthorizationToken, ActivityUI.AvailableProjects.Value);
             var customFields = _atlassianService.GetCustomFields(AuthorizationToken);
             ActivityUI.AppendCustomFields(customFields);
         }
@@ -346,7 +374,7 @@ namespace terminalAtlassian.Actions
             ActivityUI.RestoreCustomFields(Storage);
 
             var issueInfo = ExtractIssueInfo();
-            _atlassianService.CreateIssue(issueInfo, AuthorizationToken);
+            await _atlassianService.CreateIssue(issueInfo, AuthorizationToken);
 
             var credentialsDTO = JsonConvert.DeserializeObject<CredentialsDTO>(AuthorizationToken.Token);
             await
@@ -378,6 +406,12 @@ namespace terminalAtlassian.Actions
                 CustomFields = ActivityUI.GetValues(Payload).ToList(),
                 Assignee = ActivityUI.AssigneeSelector.Value
             };
+
+
+            if (ActivityUI.Sprint.Value != null)
+            {
+                result.CustomFields.Add(new FieldDTO() { Key = ActivityUI.SprintFieldName.Label, Value = ActivityUI.Sprint.Value });
+            }
 
             return result;
         }

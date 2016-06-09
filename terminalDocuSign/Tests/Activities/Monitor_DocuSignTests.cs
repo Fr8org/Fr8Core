@@ -4,8 +4,8 @@ using Fr8.TerminalBase.Infrastructure;
 using NUnit.Framework;
 using terminalDocuSign.Actions;
 using terminalDocuSign.Infrastructure.StructureMap;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace terminalDocuSign.Tests.Actions
 {
