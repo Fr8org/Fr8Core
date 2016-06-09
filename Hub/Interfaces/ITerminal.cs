@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using Data.Entities;
 using System.Threading.Tasks;
-using System;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace Hub.Interfaces
 {
@@ -18,6 +17,6 @@ namespace Hub.Interfaces
 
         Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId);
         Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId);
-        Task<List<SolutionPageDTO>> GetSolutionDocumentations(string terminalName);
+        Task<List<DocumentationResponseDTO>> GetSolutionDocumentations(string terminalName);
     }
 }

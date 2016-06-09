@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Twilio;
-using Utilities.Configuration.Azure;
 
 namespace terminalUtilities.Twilio
 {

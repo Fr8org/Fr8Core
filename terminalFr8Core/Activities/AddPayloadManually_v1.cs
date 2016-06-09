@@ -1,17 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
 using Newtonsoft.Json;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using Utilities;
 
 namespace terminalFr8Core.Activities
 {
@@ -29,10 +26,9 @@ namespace terminalFr8Core.Activities
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
         private const string RunTimeCrateLabel = "ManuallyAddedPayload";
-        private const string CrateSignalLabel = "Available Run Time Crates";
 
         public AddPayloadManually_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
 
         }
@@ -55,17 +51,7 @@ namespace terminalFr8Core.Activities
         {
             var configurationControlsCrate = CreateControlsCrate();
             Storage.Add(configurationControlsCrate);
-            //TODO do this with crateSignaller
-            var availableRunTimeCrates = Crate.FromContent(CrateSignalLabel, new CrateDescriptionCM(
-                new CrateDescriptionDTO
-                {
-                    ManifestType = MT.StandardPayloadData.GetEnumDisplayName(),
-                    Label = RunTimeCrateLabel,
-                    ManifestId = (int)MT.StandardPayloadData,
-                    ProducedBy = "AddPayloadManually_v1"
-                }), AvailabilityType.RunTime);
 
-            Storage.Add(availableRunTimeCrates);
             return Task.FromResult(0);
         }
 
@@ -80,16 +66,14 @@ namespace terminalFr8Core.Activities
             if (fieldListControl.Value != null)
             {
                 var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
+
                 userDefinedPayload.ForEach(x =>
                 {
                     x.Value = x.Key;
                     x.Availability = AvailabilityType.RunTime;
                 });
-                
-                Storage.RemoveByLabel(RunTimeCrateLabel);
-                var crate = Crate.FromContent(RunTimeCrateLabel, new FieldDescriptionsCM() { Fields = userDefinedPayload });
-                crate.Availability = AvailabilityType.RunTime;
-                Storage.Add(crate);
+
+                CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel, true).AddFields(userDefinedPayload);
             }
 
             return Task.FromResult(0);

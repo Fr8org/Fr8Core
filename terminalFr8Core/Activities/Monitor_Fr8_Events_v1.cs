@@ -1,14 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Constants;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Activities
 {
@@ -47,7 +46,7 @@ namespace terminalFr8Core.Activities
         }
 
         public Monitor_Fr8_Events_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 

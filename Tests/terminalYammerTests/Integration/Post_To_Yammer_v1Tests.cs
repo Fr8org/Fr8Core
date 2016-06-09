@@ -1,11 +1,11 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using HealthMonitor.Utility;
-using Fr8Data.Managers;
-using Fr8Infrastructure.Communication;
+using Fr8.Infrastructure.Communication;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
 using terminalYammerTests.Fixtures;
 
@@ -55,10 +55,9 @@ namespace terminalYammerTests.Integration
 
         private void AssertCrateTypes(ICrateStorage crateStorage)
         {
-            Assert.AreEqual(3, crateStorage.Count);
+            Assert.AreEqual(2, crateStorage.Count);
 
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(x => x.Label == "Configuration_Controls"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Available Fields"));
             Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Available Groups"));
         }
 

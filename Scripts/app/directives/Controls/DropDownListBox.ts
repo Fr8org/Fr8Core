@@ -34,8 +34,18 @@ module dockyard.directives.dropDownListBox {
                 };
 
                 $scope.setSelectedItem = (item: model.DropDownListItem) => {
-                    $scope.field.value = item.value;
-                    $scope.field.selectedKey = item.key;
+                    let field = {
+                        value: null,
+                        key: null
+                    };
+                    if (item) {
+                        field = {
+                            value: item.value,
+                            key: item.key
+                        };
+                    }
+                    $scope.field.value = field.value;
+                    $scope.field.selectedKey = field.key;
                     $scope.selectedItem = item;
 
                     // Invoke onChange event handler

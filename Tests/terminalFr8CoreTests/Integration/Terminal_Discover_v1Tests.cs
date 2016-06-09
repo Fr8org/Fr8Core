@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Manifests;
-using HealthMonitor.Utility;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
 
 namespace terminalFr8CoreTests.Integration
@@ -9,17 +9,16 @@ namespace terminalFr8CoreTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
-        private const int Fr8CoreActivityCount = 28;
+        //private const int Fr8CoreActivityCount = 27;
+        private const int Fr8CoreActivityCount = 26;
         private const string TestIncomingDataName = "TestIncomingData";
-        private const string MapFieldsName = "MapFields";
         private const string AddPayloadManuallyName = "AddPayloadManually";
         private const string SaveToFr8WarehouseName = "SaveToFr8Warehouse";
         private const string Select_Fr8_ObjectName = "Select_Fr8_Object";
         private const string ConnectToSqlName = "ConnectToSql";
         private const string BuildQueryName = "BuildQuery";
         private const string ExecuteSqlName = "ExecuteSql";
-        private const string ManagePlanName = "ManagePlan";
-        private const string FindObjectsSolutionName = "FindObjects_Solution";
+        private const string ManagePlanName = "ManagePlan";        
         private const string LoopName = "Loop";
         private const string SetDelayName = "SetDelay";
         private const string ConvertCratesName = "ConvertCrates";
@@ -54,15 +53,13 @@ namespace terminalFr8CoreTests.Integration
             Assert.NotNull(terminalDiscoverResponse);
             Assert.AreEqual(Fr8CoreActivityCount, terminalDiscoverResponse.Activities.Count);
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == TestIncomingDataName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == MapFieldsName));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == AddPayloadManuallyName));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SaveToFr8WarehouseName));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == Select_Fr8_ObjectName));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ConnectToSqlName));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == BuildQueryName));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ExecuteSqlName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ManagePlanName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == FindObjectsSolutionName));
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ManagePlanName));            
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == LoopName));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SetDelayName));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ConvertCratesName));

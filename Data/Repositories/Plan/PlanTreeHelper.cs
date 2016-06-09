@@ -170,7 +170,7 @@ namespace Data.Repositories.Plan
 
             foreach (var planNodeDo in root.ChildNodes.OrderBy(x => x.Ordering))
             {
-                Visit(planNodeDo, root, vistor);
+                VisitOrdered(planNodeDo, root, vistor);
             }
         }
 

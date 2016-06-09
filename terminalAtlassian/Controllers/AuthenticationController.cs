@@ -1,10 +1,10 @@
 ﻿using System.Web.Http;
-using TerminalBase.BaseClasses;
 using Newtonsoft.Json;
 using terminalAtlassian.Services;
 using StructureMap;
 using System;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalAtlassian.Controllers
 {
@@ -20,8 +20,8 @@ namespace terminalAtlassian.Controllers
         }
 
         [HttpPost]
-        [Route("internal")]
-        public  AuthorizationTokenDTO GenerateInternalOAuthToken(CredentialsDTO curCredential)
+        [Route("token")]
+        public AuthorizationTokenDTO GenerateInternalOAuthToken(CredentialsDTO curCredential)
         {
             try
             {

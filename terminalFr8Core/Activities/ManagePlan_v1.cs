@@ -1,12 +1,11 @@
 ﻿using System.Threading.Tasks;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
 using terminalFr8Core.Infrastructure;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
@@ -51,7 +50,7 @@ namespace terminalFr8Core.Activities
         #endregion Configuration.
 
         public ManagePlan_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
 
         }

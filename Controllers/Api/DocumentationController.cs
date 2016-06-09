@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Utilities;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using StructureMap;
-using Utilities;
 
 namespace HubWeb.Controllers
 {
@@ -50,7 +50,12 @@ namespace HubWeb.Controllers
             }
             if (curDocSupport.Contains("MainPage", StringComparison.InvariantCultureIgnoreCase))
             {
-                var solutionPageDTO = await _activity.GetActivityDocumentation<SolutionPageDTO>(curActivityDTO, true);
+                var solutionPageDTO = await _activity.GetActivityDocumentation<DocumentationResponseDTO>(curActivityDTO, true);
+                return Ok(solutionPageDTO);
+            }
+            if (curDocSupport.Contains("HelpMenu", StringComparison.InvariantCultureIgnoreCase))
+            {
+                var solutionPageDTO = await _activity.GetActivityDocumentation<DocumentationResponseDTO>(curActivityDTO, false);
                 return Ok(solutionPageDTO);
             }
             return BadRequest("Unknown activity documentation request type");

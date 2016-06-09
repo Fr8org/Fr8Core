@@ -4,18 +4,16 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
-using Data.Entities;
 using Data.Infrastructure;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
 using Newtonsoft.Json;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
@@ -34,7 +32,7 @@ namespace terminalFr8Core.Activities
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
         public TestIncomingData_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 
@@ -80,10 +78,7 @@ namespace terminalFr8Core.Activities
             {
                 EventManager.CriteriaEvaluationStarted(processId);
 
-                var filterExpression = ParseCriteriaExpression(filterDataDTO.Conditions, values);
-                var results = values.Provider.CreateQuery<FieldDTO>(filterExpression);
-
-                return results;
+                return filterDataDTO.Conditions.Select(condition => ParseCriteriaExpression(condition, values)).Aggregate<Expression, IQueryable<FieldDTO>>(null, (current, filterExpression) => current?.Provider.CreateQuery<FieldDTO>(filterExpression) ?? values.Provider.CreateQuery<FieldDTO>(filterExpression));
             }
         }
         public static int Compare(object left, object right)
@@ -95,7 +90,7 @@ namespace terminalFr8Core.Activities
             if (left is string && right is string)
             {
                 decimal v1;
-                decimal v2;
+                decimal v2; 
                 if (decimal.TryParse((string)left, out v1) && decimal.TryParse((string)right, out v2))
                 {
                     return v1.CompareTo(v2);
@@ -104,65 +99,52 @@ namespace terminalFr8Core.Activities
             }
             return -2;
         }
-        protected Expression ParseCriteriaExpression(IEnumerable<FilterConditionDTO> conditions, IQueryable<FieldDTO> queryableData)
+        
+        protected Expression ParseCriteriaExpression(FilterConditionDTO condition, IQueryable<FieldDTO> queryableData)
         {
             var curType = typeof(FieldDTO);
             Expression criteriaExpression = null;
             var pe = Expression.Parameter(curType, "p");
-            foreach (var condition in conditions)
+
+            var namePropInfo = curType.GetProperty("Key");
+            var valuePropInfo = curType.GetProperty("Value");
+            var nameLeftExpr = Expression.Property(pe, namePropInfo);
+            var nameRightExpr = Expression.Constant(condition.Field);
+            var nameExpression = Expression.Equal(nameLeftExpr, nameRightExpr);
+            var comparisionExpr = Expression.Call(typeof(TestIncomingData_v1).GetMethod("Compare", BindingFlags.Public | BindingFlags.Static), new Expression[]
             {
-                var namePropInfo = curType.GetProperty("Key");
-                var valuePropInfo = curType.GetProperty("Value");
-                var nameLeftExpr = Expression.Property(pe, namePropInfo);
-                var nameRightExpr = Expression.Constant(condition.Field);
-                var nameExpression = Expression.Equal(nameLeftExpr, nameRightExpr);
-                //var valueLeftExpr = Expression.Invoke(TryMakeDecimalExpression.Value, Expression.Property(pe, valuePropInfo));
-              //  var valueRightExpr = Expression.Invoke(TryMakeDecimalExpression.Value, Expression.Constant(condition.Value));
-               // var comparisionExpr = Expression.Call(valueLeftExpr, "CompareTo", null, valueRightExpr);
-                var comparisionExpr = Expression.Call(typeof(TestIncomingData_v1).GetMethod("Compare", BindingFlags.Public | BindingFlags.Static), new Expression[]
-                {
-                    Expression.Property(pe, valuePropInfo),
-                    Expression.Constant(condition.Value)
-                });
-                var zero = Expression.Constant(0);
-                var op = condition.Operator;
-                Expression criterionExpression;
-                switch (op)
-                {
-                    case "eq":
-                        criterionExpression = Expression.Equal(comparisionExpr, zero);
-                        break;
-                    case "neq":
-                        criterionExpression = Expression.NotEqual(comparisionExpr, zero);
-                        break;
-                    case "gt":
-                        criterionExpression = Expression.GreaterThan(comparisionExpr, zero);
-                        break;
-                    case "gte":
-                        criterionExpression = Expression.GreaterThanOrEqual(comparisionExpr, zero);
-                        break;
-                    case "lt":
-                        criterionExpression = Expression.LessThan(comparisionExpr, zero);
-                        break;
-                    case "lte":
-                        criterionExpression = Expression.LessThanOrEqual(comparisionExpr, zero);
-                        break;
-                    default:
-                        throw new NotSupportedException($"Not supported operator: {op}");
-                }
-                if (criteriaExpression == null)
-                {
-                    criteriaExpression = Expression.And(nameExpression, criterionExpression);
-                }
-                else
-                {
-                    criteriaExpression = Expression.AndAlso(criteriaExpression, Expression.And(nameExpression, criterionExpression));
-                }
-            }
-            if (criteriaExpression == null)
+                Expression.Property(pe, valuePropInfo),
+                Expression.Constant(condition.Value)
+            });
+            var zero = Expression.Constant(0);
+            var op = condition.Operator;
+            Expression criterionExpression;
+            switch (op)
             {
-                criteriaExpression = Expression.Constant(true);
+                case "eq":
+                    criterionExpression = Expression.Equal(comparisionExpr, zero);
+                    break;
+                case "neq":
+                    criterionExpression = Expression.NotEqual(comparisionExpr, zero);
+                    break;
+                case "gt":
+                    criterionExpression = Expression.GreaterThan(comparisionExpr, zero);
+                    break;
+                case "gte":
+                    criterionExpression = Expression.GreaterThanOrEqual(comparisionExpr, zero);
+                    break;
+                case "lt":
+                    criterionExpression = Expression.LessThan(comparisionExpr, zero);
+                    break;
+                case "lte":
+                    criterionExpression = Expression.LessThanOrEqual(comparisionExpr, zero);
+                    break;
+                default:
+                    throw new NotSupportedException($"Not supported operator: {op}");
             }
+
+            criteriaExpression = Expression.And(nameExpression, criterionExpression);
+
             var whereCallExpression = Expression.Call(
                 typeof(Queryable),
                 "Where",
@@ -278,7 +260,7 @@ namespace terminalFr8Core.Activities
 
         public override async Task Initialize()
         {
-            var curUpstreamFields = (await GetDesignTimeFields(CrateDirection.Upstream, AvailabilityType.RunTime))
+           /* var curUpstreamFields = (await GetDesignTimeFields(CrateDirection.Upstream, AvailabilityType.RunTime))
                 .Fields
                 .ToArray();
             //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
@@ -287,16 +269,16 @@ namespace terminalFr8Core.Activities
                 "Queryable Criteria",
                 new FieldDescriptionsCM(curUpstreamFields)
             );
-
+            */
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
             Storage.Add(configurationControlsCrate);
-            Storage.Add(queryFieldsCrate);
+           // Storage.Add(queryFieldsCrate);
         }
 
         public override async Task FollowUp()
         {
-            var curUpstreamFields = (await GetDesignTimeFields(CrateDirection.Upstream, AvailabilityType.RunTime))
+           /* var curUpstreamFields = (await GetDesignTimeFields(CrateDirection.Upstream, AvailabilityType.RunTime))
                 .Fields
                 .ToArray();
             //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
@@ -306,7 +288,7 @@ namespace terminalFr8Core.Activities
                 new FieldDescriptionsCM(curUpstreamFields)
             );
             Storage.RemoveByLabel("Queryable Criteria");
-            Storage.Add(queryFieldsCrate);
+            Storage.Add(queryFieldsCrate);*/
         }
     }
 }

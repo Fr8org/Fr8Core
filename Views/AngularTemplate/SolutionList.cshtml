@@ -13,10 +13,10 @@
                         </thead>
                         <tbody>
                             <tr class="select-action-list2" ng-repeat="activity in (activityCategories | filter: {name: 'Solution'})[0].activities">
-                                <td class="select-action-row2" ng-click="onSolutionSelected(activity)">
+                                <td class="select-action-row2 seg-solution" ng-click="onSolutionSelected(activity)">
                                     {{activity.label}}
                                 </td>
-                                <td class="select-action-row2" ng-click="onSolutionSelected(activity)">
+                                <td class="select-action-row2 seg-solution" ng-click="onSolutionSelected(activity)">
                                     {{activity.description}}
                                 </td>
                             </tr>

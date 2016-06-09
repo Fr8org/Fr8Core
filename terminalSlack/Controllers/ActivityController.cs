@@ -1,11 +1,10 @@
 ﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Fr8Data.DataTransferObjects;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.TerminalBase.Services;
 using StructureMap;
-using TerminalBase.Services;
 
 namespace terminalSlack.Controllers
 {
@@ -20,11 +19,10 @@ namespace terminalSlack.Controllers
         }
 
         [HttpPost]
-        [fr8TerminalHMACAuthenticate(curTerminal)]
-        [Authorize]
         public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
         {
-            return _activityExecutor.HandleFr8Request(curTerminal, actionType, curDataDTO);
+            var queryParams = Request.GetQueryNameValuePairs();
+            return _activityExecutor.HandleFr8Request(curTerminal, actionType, queryParams, curDataDTO);
         }
     }
 }

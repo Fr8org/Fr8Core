@@ -1,5 +1,4 @@
 ﻿using System.Web.Http;
-using TerminalBase.Infrastructure;
 
 namespace terminalSlack
 {

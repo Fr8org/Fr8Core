@@ -1,12 +1,5 @@
-﻿using System;
-using System.Web.Http;
-using Fr8Data.Managers;
-using Microsoft.Owin.Hosting;
-using Owin;
-using StructureMap;
+﻿using StructureMap;
 using StructureMap.Configuration.DSL;
-using TerminalBase.BaseClasses;
-using TerminalBase.Services;
 using TerminalSqlUtilities;
 
 namespace terminalAzure

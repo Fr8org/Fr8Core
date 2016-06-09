@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
-using System.Net.Http;
 using System.Security.Claims;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
 
 namespace Data.Infrastructure.StructureMap

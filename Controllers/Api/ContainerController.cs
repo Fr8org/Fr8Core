@@ -10,7 +10,7 @@ using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;
 using Newtonsoft.Json;

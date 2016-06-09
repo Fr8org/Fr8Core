@@ -2,15 +2,14 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Interfaces;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
 using StructureMap;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
@@ -28,7 +27,7 @@ namespace terminalFr8Core.Activities
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
         public SaveToFr8Warehouse_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 
@@ -56,23 +55,13 @@ namespace terminalFr8Core.Activities
 
         public override async Task Initialize()
         {
-            var mergedUpstreamRunTimeObjects = await MergeUpstreamFields("Available Run-Time Objects");
-            FieldDTO[] upstreamLabels = mergedUpstreamRunTimeObjects.Content.
-                Fields.Select(field => new FieldDTO { Key = field.Key, Value = field.Value }).ToArray();
             var configControls = new StandardConfigurationControlsCM();
             configControls.Controls.Add(ControlHelper.CreateUpstreamCrateChooser("UpstreamCrateChooser", "Store which crates?"));
             var curConfigurationControlsCrate = PackControls(configControls);
-            //TODO let's leave this like that until Alex decides what to do
-            var upstreamLabelsCrate = CrateManager.CreateDesignTimeFieldsCrate("AvailableUpstreamLabels", new FieldDTO[] { });
-            //var upstreamLabelsCrate = Crate.CreateDesignTimeFieldsCrate("AvailableUpstreamLabels", upstreamLabels);
-            var upstreamDescriptions = await HubCommunicator.GetCratesByDirection<ManifestDescriptionCM>(ActivityId, CrateDirection.Upstream);
-            var upstreamRunTimeDescriptions = upstreamDescriptions.Where(c => c.Availability == AvailabilityType.RunTime);
-            var fields = upstreamRunTimeDescriptions.Select(c => new FieldDTO(c.Content.Name, c.Content.Id));
-            var upstreamManifestsCrate = CrateManager.CreateDesignTimeFieldsCrate("AvailableUpstreamManifests", fields.ToArray());
+            
             Storage.Clear();
             Storage.Add(curConfigurationControlsCrate);
-            Storage.Add(upstreamLabelsCrate);
-            Storage.Add(upstreamManifestsCrate);
+           
         }
 
         public override Task FollowUp()

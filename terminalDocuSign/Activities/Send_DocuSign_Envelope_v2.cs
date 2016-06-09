@@ -2,23 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Validations;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using StructureMap;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Utilities;
+using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Infrastructure;
 using terminalDocuSign.Activities;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.BaseClasses;
-using TerminalBase.Errors;
-using TerminalBase.Infrastructure;
-using Utilities;
 
 namespace terminalDocuSign.Actions
 {
@@ -82,7 +79,9 @@ namespace terminalDocuSign.Actions
         }
 
         private const string UserFieldsAndRolesCrateLabel = "Fields and Roles";
-        
+        private const string advisoryName = "DocuSign Template Warning";
+        private const string advisoryContent = "In your selected template you have fields with default values. Those can be changes inside advanced DocuSign UI to frendlier label.";
+
         public Send_DocuSign_Envelope_v2(ICrateManager crateManager, IDocuSignManager docuSignManager) 
             : base(crateManager, docuSignManager)
         {
@@ -119,6 +118,27 @@ namespace terminalDocuSign.Actions
             var roles = tabsAndFields.Item1.Where(x => x.Tags.Contains(DocuSignConstants.DocuSignSignerTag, StringComparison.InvariantCultureIgnoreCase)).ToArray();
             var userDefinedFields = tabsAndFields.Item1.Where(x => x.Tags.Contains(DocuSignConstants.DocuSignTabTag));
             var envelopeData = tabsAndFields.Item2.ToLookup(x => x.Fr8DisplayType);
+
+            //check for DocuSign default template names and add advisory json
+            var hasDefaultNames = DocuSignManager.DocuSignTemplateDefaultNames(tabsAndFields.Item2);
+            if (hasDefaultNames)
+            {
+                var advisoryCrate = Storage.CratesOfType<AdvisoryMessagesCM>().FirstOrDefault();
+                var currentAdvisoryResults = advisoryCrate == null ? new AdvisoryMessagesCM() : advisoryCrate.Content;
+
+                var advisory = currentAdvisoryResults.Advisories.FirstOrDefault(x => x.Name == advisoryName);
+
+                if (advisory == null)
+                {
+                    currentAdvisoryResults.Advisories.Add(new AdvisoryMessageDTO { Name = advisoryName, Content = advisoryContent });
+                }
+                else
+                {
+                    advisory.Content = advisoryContent;
+                }
+
+                Storage.Add(Crate.FromContent("Advisories", currentAdvisoryResults));
+            }
             //Add TextSource control for every DocuSign role to activity UI
             ActivityUI.RolesFields.AddRange(roles.Select(x => UiBuilder.CreateSpecificOrUpstreamValueChooser(x.Key, x.Key, requestUpstream: true)));
             //Add TextSrouce control for every DocuSign template text field to activity UI

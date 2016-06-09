@@ -5,11 +5,7 @@ using Data.States.Templates;
 using System.Linq;
 using System;
 using System.Reflection;
-using Data.Infrastructure.StructureMap;
-using StructureMap;
-using Data.Interfaces;
-using Data.States;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.States;
 
 namespace Data.Entities
 {

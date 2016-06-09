@@ -4,7 +4,7 @@ using System.Configuration;
 using System.Linq;
 using NUnit.Core;
 using HealthMonitor.Configuration;
-using HealthMonitorUtility;
+using Fr8.Testing.Integration;
 
 namespace HealthMonitor
 {

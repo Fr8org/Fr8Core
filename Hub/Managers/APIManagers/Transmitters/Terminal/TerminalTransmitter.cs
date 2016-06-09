@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Fr8Data.DataTransferObjects;
-using Fr8Infrastructure.Communication;
-using Fr8Infrastructure.Interfaces;
+using Fr8.Infrastructure.Communication;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Logging;
 using StructureMap;
 using Hub.Interfaces;
-using Utilities.Logging;
 
 namespace Hub.Managers.APIManagers.Transmitters.Terminal
 {
@@ -28,7 +32,11 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
         /// <param name="activityDTO">DTO</param>
         /// <remarks>Uses <paramref name="curActionType"/> argument for constructing request uri replacing all space characters with "_"</remarks>
         /// <returns></returns>
-        public async Task<TResponse> CallActivityAsync<TResponse>(string curActionType, Fr8DataDTO dataDTO, string correlationId)
+        public async Task<TResponse> CallActivityAsync<TResponse>(
+            string curActionType,
+            IEnumerable<KeyValuePair<string, string>> parameters,
+            Fr8DataDTO dataDTO,
+            string correlationId)
         {
             if (dataDTO == null)
             {
@@ -50,17 +58,35 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
 
 
             var actionName = Regex.Replace(curActionType, @"[^-_\w\d]", "_");
-            var requestUri = new Uri(string.Format("activities/{0}", actionName), UriKind.Relative);
-            if (terminal == null || string.IsNullOrEmpty(terminal.Endpoint))
+            string queryString = string.Empty;
+            if (parameters != null && parameters.Any())
+            {
+                var queryStringBuilder = new StringBuilder();
+                queryStringBuilder.Append("?");
+                foreach (var parameter in parameters)
+                {
+                    if (queryStringBuilder.Length > 1)
+                    {
+                        queryStringBuilder.Append("&");
+                    }
+
+                    queryStringBuilder.Append(WebUtility.UrlEncode(parameter.Key));
+                    queryStringBuilder.Append("=");
+                    queryStringBuilder.Append(WebUtility.UrlEncode(parameter.Value));
+                }
+
+                queryString = queryStringBuilder.ToString();
+            }
+
+            var requestUri = new Uri($"activities/{actionName}{queryString}", UriKind.Relative);
+            if (string.IsNullOrEmpty(terminal?.Endpoint))
             {
                 //_logger.ErrorFormat("Terminal record not found for activityTemplate: {0}. Throwing exception.", dataDTO.ActivityDTO.ActivityTemplate.Name);
                 Logger.LogError($"Terminal record not found for activityTemplate: {dataDTO.ActivityDTO.ActivityTemplate.Name} Throwing exception.");
                 throw new Exception("Unknown terminal or terminal endpoint");
             }
-            //let's calculate absolute url, since our hmac mechanism needs it
             requestUri = new Uri(new Uri(terminal.Endpoint), requestUri);
-            var hmacHeader =  await _hmacService.GenerateHMACHeader(requestUri, terminal.PublicIdentifier, terminal.Secret, dataDTO.ActivityDTO.AuthToken.UserId, dataDTO);
-            return await PostAsync<Fr8DataDTO, TResponse>(requestUri, dataDTO, correlationId, hmacHeader);
+            return await PostAsync<Fr8DataDTO, TResponse>(requestUri, dataDTO, correlationId);
         }
     }
 }

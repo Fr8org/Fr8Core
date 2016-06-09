@@ -1,6 +1,6 @@
-﻿using Fr8Infrastructure.Interfaces;
+﻿using Fr8.Infrastructure.Interfaces;
+using Fr8.TerminalBase.Infrastructure;
 using Moq;
-using TerminalBase.Infrastructure;
 
 namespace terminalBaseTests.Infrastructure
 {

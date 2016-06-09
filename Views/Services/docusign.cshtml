@@ -4,7 +4,7 @@
 @{
     ViewBag.Title = "Add Note";
 }
-@model List<Fr8Data.DataTransferObjects.SolutionPageDTO>
+@model List<Fr8.Infrastructure.Data.DataTransferObjects.DocumentationResponseDTO>
 <section id="solution" data-section="welcome">
     <div class="solution-header jumbotron">
         <div id="logotext" class="text">
@@ -15,4 +15,7 @@
     </div>
 </section>
 <h2 class="container" style="margin-bottom:30px">Fr8 Solutions for DocuSign</h2>
-@Html.Partial("SolutionListTemplate",Model)
+@Html.Partial("SolutionListTemplate", Model)
+<script type="text/javascript">
+    window.analytics.page('Visited Page - DocuSign Solutions');
+</script>

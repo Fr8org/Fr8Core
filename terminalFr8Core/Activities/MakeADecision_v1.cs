@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using TerminalBase.Infrastructure;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
 
 namespace terminalFr8Core.Activities
 {
@@ -131,14 +131,13 @@ namespace terminalFr8Core.Activities
 
         private bool CheckConditions(List<FilterConditionDTO> conditions, IQueryable<FieldDTO> fields)
         {
-            var filterExpression = ParseCriteriaExpression(conditions, fields);
             foreach (FieldDTO field in fields)
             {
                 double result = 0D;
-                if (Double.TryParse(field.Value, 
-                    System.Globalization.NumberStyles.AllowCurrencySymbol 
-                    | System.Globalization.NumberStyles.AllowDecimalPoint 
-                    | System.Globalization.NumberStyles.AllowThousands, 
+                if (Double.TryParse(field.Value,
+                    System.Globalization.NumberStyles.AllowCurrencySymbol
+                    | System.Globalization.NumberStyles.AllowDecimalPoint
+                    | System.Globalization.NumberStyles.AllowThousands,
                     System.Globalization.CultureInfo.CurrentCulture,
                     out result))
                 {
@@ -146,9 +145,24 @@ namespace terminalFr8Core.Activities
                 }
             }
 
-            var results = fields.Provider.CreateQuery<FieldDTO>(filterExpression);
-            return results.Any();
+            var checker = false;
+            foreach (var condition in conditions)
+            {
+                var expression = ParseCriteriaExpression(condition, fields);
+                var results = fields.Provider.CreateQuery<FieldDTO>(expression);
 
+                if (results.Any())
+                {
+                    checker = true;
+                }
+                else
+                {
+                    //if there is false condition, stop evaluating
+                    checker = false;
+                    break;
+                }
+            }
+            return checker;
         }
 
         protected override Crate CreateControlsCrate()

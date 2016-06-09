@@ -1,15 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Activities
 {
@@ -163,7 +162,7 @@ namespace terminalFr8Core.Activities
 
         private async Task<Crate> CreateControlsCrate()
         {
-            var crateChooser = await ControlHelper.GenerateCrateChooser("TableChooser", "Select Upstream Data", true, true, true);
+            var crateChooser = ControlHelper.GenerateCrateChooser("TableChooser", "Select Upstream Data", true, true, true);
             //this cell's list items will be filled on followup configuration
             var cellDdTemplate =  new DropDownList()
             {
@@ -206,7 +205,7 @@ namespace terminalFr8Core.Activities
         }
 
         public ExtractTableField_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 
@@ -315,10 +314,7 @@ namespace terminalFr8Core.Activities
                 chosenCellDd.ListItems = listItems;
             }
             ((DropDownList)tempChosenCellList.TemplateContainer.Template.First()).ListItems = listItems;
-            /*
-            crateStorage.RemoveByLabel(AvailableCellsCrateLabel);
-            crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate(AvailableCellsCrateLabel, AvailabilityType.Configuration, tableFields.ToArray()));
-            */
+         
             var chosenCellList = GetControl<ControlList>("extractor_list");
             //let's publish our data - that this will be available during runtime
             var extractedFields = new List<FieldDTO>();

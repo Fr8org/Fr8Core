@@ -6,13 +6,12 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
-using Fr8Data.Crates;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Interfaces;
 using Hub.Exceptions;
 using Hub.Interfaces;
-using StructureMap;
-using Utilities.Interfaces;
 
 namespace Hub.Services
 {

@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -72,7 +72,7 @@ namespace terminalDocuSignTests.Integration
 
         private async Task<PlanDTO> CreateSolution()
         {
-            var solutionCreateUrl = _baseUrl + "plans/createSolution?solutionName=Generate_DocuSign_Report";
+            var solutionCreateUrl = _baseUrl + "plans?solution_name=Generate_DocuSign_Report";
             
             var plan = await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
 
@@ -234,7 +234,7 @@ namespace terminalDocuSignTests.Integration
 
         private async Task<PlanDTO> GetPlanByActivity(Guid id)
         {
-            var solutionCreateUrl = _baseUrl + "/plans/getByActivity?id=" + id.ToString();
+            var solutionCreateUrl = _baseUrl + "/plans?activity_id=" + id.ToString();
             var plan = await HttpGetAsync<PlanDTO>(solutionCreateUrl);
 
             return plan;

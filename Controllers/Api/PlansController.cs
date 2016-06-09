@@ -18,24 +18,18 @@ using Data.Interfaces;
 using Data.States;
 using Hub.Interfaces;
 using System.Threading.Tasks;
-using System.Web;
-using HubWeb.ViewModels;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Newtonsoft.Json;
 using Hub.Infrastructure;
-using Hub.Managers;
-using Utilities.Interfaces;
-using Data.Infrastructure;
-using Fr8Data.Constants;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.DataTransferObjects.Helpers;
-using Fr8Data.DataTransferObjects.PlanTemplates;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
 using HubWeb.Infrastructure_HubWeb;
-using Fr8Infrastructure.Interfaces;
-using Utilities.Configuration.Azure;
+using HubWeb.ViewModels.RequestParameters;
 using Newtonsoft.Json.Linq;
 
 namespace HubWeb.Controllers
@@ -49,7 +43,6 @@ namespace HubWeb.Controllers
 
         private readonly IActivityTemplate _activityTemplate;
         private readonly IActivity _activity;
-        private readonly IFindObjectsPlan _findObjectsPlan;
         private readonly ISecurityServices _security;
         private readonly ICrateManager _crate;
         private readonly IPusherNotifier _pusherNotifier;
@@ -61,7 +54,6 @@ namespace HubWeb.Controllers
             _plan = ObjectFactory.GetInstance<IPlan>();
             _container = ObjectFactory.GetInstance<IContainerService>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
-            _findObjectsPlan = ObjectFactory.GetInstance<IFindObjectsPlan>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
@@ -69,19 +61,45 @@ namespace HubWeb.Controllers
             _planTemplates = ObjectFactory.GetInstance<IPlanTemplates>();
         }
 
-        [HttpPost]
+        //[HttpPost]
+        //[Fr8HubWebHMACAuthenticate]
+        //public async Task<IHttpActionResult> Create(Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, Guid? authorizationTokenId = null)
+        //{
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        var userId = User.Identity.GetUserId();
+        //        var result = await _activity.CreateAndConfigure(uow, userId, activityTemplateId, label, name, order, parentNodeId, true, authorizationTokenId) as PlanDO;
+        //        return Ok(Mapper.Map<PlanDTO>(result));
+        //    }
+        //}
+
+        /// <summary>
+        /// Creates or updates Plan. 
+        /// If solution_name defined, creates solution with given name.
+        /// 
+        /// </summary>
+        /// <param name="planDto"></param>
+        /// <param name="parameters">
+        ///     Contains 
+        /// </param>
+        /// <returns></returns>
         [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Create(Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, Guid? authorizationTokenId = null)
+        [Fr8ApiAuthorize]
+        [HttpPost]
+        public async Task<IHttpActionResult> Post([FromBody] PlanEmptyDTO planDto,[FromUri] PlansPostParams parameters = null)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            parameters = parameters ?? new PlansPostParams();
+
+            if (!parameters.solution_name.IsNullOrEmpty())
             {
-                var userId = User.Identity.GetUserId();
-                var result = await _activity.CreateAndConfigure(uow, userId, activityTemplateId, label, name, order, parentNodeId, true, authorizationTokenId) as PlanDO;
-                return Ok(Mapper.Map<PlanDTO>(result));
+                return await CreateSolution(parameters.solution_name);
             }
+
+            return await Post(planDto, parameters.update_registrations);
         }
 
         [HttpPost]
+        [NonAction]
         public async Task<IHttpActionResult> CreateSolution(string solutionName)
         {
             var userId = User.Identity.GetUserId();
@@ -104,7 +122,8 @@ namespace HubWeb.Controllers
 
         [Fr8HubWebHMACAuthenticate]
         [ResponseType(typeof(PlanDTO))]
-        public IHttpActionResult Post(PlanEmptyDTO planDto, bool updateRegistrations = false)
+        [NonAction]
+        private async Task<IHttpActionResult> Post(PlanEmptyDTO planDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -127,41 +146,17 @@ namespace HubWeb.Controllers
             }
         }
 
+        
+        /// <summary>
+        /// Get PlanResult depending on passed query parameters. 
+        /// </summary>
+        /// <param name="planQuery"></param>
+        /// <returns></returns>
         [Fr8ApiAuthorize]
-        //[Route("full/{id:guid}")]
-        [ActionName("full")]
-        [ResponseType(typeof(PlanDTO))]
+        //[ActionName("query")]
         [HttpGet]
-        public IHttpActionResult GetFullPlan(Guid id)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var plan = _plan.GetFullPlan(uow, id);
-                var result = PlanMappingHelper.MapPlanToDto(uow, plan);
-
-                return Ok(result);
-            };
-        }
-
-        //[Route("getByAction/{id:guid}")]
-        [Fr8HubWebHMACAuthenticate]
-        [ResponseType(typeof(PlanDTO))]
-        [HttpGet]
-        public IHttpActionResult GetByActivity(Guid id)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var plan = _plan.GetPlanByActivityId(uow, id);
-                var result = PlanMappingHelper.MapPlanToDto(uow, plan);
-
-                return Ok(result);
-            };
-        }
-
-        [Fr8ApiAuthorize]
-        [ActionName("getByQuery")]
-        [HttpGet]
-        public IHttpActionResult GetByQuery([FromUri] PlanQueryDTO planQuery)
+        //formerly  GetByQuery
+        public IHttpActionResult Query([FromUri] PlanQueryDTO planQuery)
         {
             //i want to leave md-data-tables related logic inside controller
             //that is why this operation is done here - our backend service shouldn't know anything
@@ -188,10 +183,86 @@ namespace HubWeb.Controllers
             }
         }
 
+        /// <summary>
+        /// Get Plan, depending on the given parameters.
+        /// </summary>
+        /// <remarks>
+        /// If defined id - get plan by Id, also can provide include_children in order to get full Plan
+        /// If defined activity_id - get Plan by Activity.
+        /// If defined name - get Plan by it`s name.
+        /// Returns an 400 error if several of those parameters defined at same time.
+        /// </remarks>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
         [HttpGet]
+        public IHttpActionResult Get([FromUri] PlansGetParams parameters)
+        {
+            if ((!parameters.name.IsNullOrEmpty() && parameters.id.HasValue)
+                || (parameters.activity_id.HasValue && parameters.id.HasValue)
+                || (parameters.activity_id.HasValue && !parameters.name.IsNullOrEmpty()))
+            {
+                return BadRequest("Multiple parameters are defined");
+            }
+
+
+            if (parameters.include_children && parameters.id.HasValue)
+            {
+                return GetFullPlan((Guid)parameters.id);
+            }
+
+            if (parameters.activity_id.HasValue)
+            {
+                return GetByActivity((Guid)parameters.activity_id);
+            }
+
+            if (!parameters.name.IsNullOrEmpty())
+            {
+                return GetByName(parameters.name, parameters.visibility);
+            }
+
+            return Get(parameters.id);
+        }
+
+        //[Fr8ApiAuthorize]
+        //[Route("full/{id:guid}")]
+        //[ActionName("full")]
+        [ResponseType(typeof(PlanDTO))]
+        [HttpGet]
+        [NonAction]
+        public IHttpActionResult GetFullPlan(Guid id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var plan = _plan.GetFullPlan(uow, id);
+                var result = PlanMappingHelper.MapPlanToDto(uow, plan);
+
+                return Ok(result);
+            };
+        }
+
+        //[Route("getByAction/{id:guid}")]
+        [Fr8HubWebHMACAuthenticate]
+        [ResponseType(typeof(PlanDTO))]
+        //[HttpGet]
+        [NonAction]
+        public IHttpActionResult GetByActivity(Guid id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var plan = _plan.GetPlanByActivityId(uow, id);
+                var result = PlanMappingHelper.MapPlanToDto(uow, plan);
+
+                return Ok(result);
+            };
+        }
+
+        [Fr8ApiAuthorize]
+        [Fr8HubWebHMACAuthenticate]
+        //[HttpGet]
         [ResponseType(typeof(IEnumerable<PlanDTO>))]
+        [NonAction]
         public IHttpActionResult GetByName(string name, PlanVisibility visibility = PlanVisibility.Standard)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -212,8 +283,9 @@ namespace HubWeb.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [Fr8ApiAuthorize]
-        public IHttpActionResult Get(Guid? id = null)
+        //[Fr8ApiAuthorize]
+        [NonAction]
+        private IHttpActionResult Get(Guid? id = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -242,15 +314,6 @@ namespace HubWeb.Controllers
             return Ok();
         }
 
-        [HttpPost]
-        [ActionName("activity")]
-        [Fr8ApiAuthorize]
-        public IHttpActionResult PutActivity(ActivityDTO activityDto)
-        {
-            //A stub until the functionaltiy is ready
-            return Ok();
-        }
-
 
         [HttpDelete]
         [Fr8HubWebHMACAuthenticate]
@@ -262,13 +325,6 @@ namespace HubWeb.Controllers
             return Ok(id);
         }
 
-
-        [ActionName("triggersettings"), ResponseType(typeof(List<ExternalEventDTO>))]
-        [Fr8ApiAuthorize]
-        public IHttpActionResult GetTriggerSettings()
-        {
-            return Ok("This is no longer used due to V2 Event Handling mechanism changes.");
-        }
         
         [HttpPost]
         [Fr8ApiAuthorize]
@@ -279,9 +335,16 @@ namespace HubWeb.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Upload file with plan template and create plan from it. 
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// /// <param name="planName">Name of newly created plan</param>
         [HttpPost]
         [Fr8ApiAuthorize]
-        public async Task<IHttpActionResult> LoadPlan(string planName)
+        public async Task<IHttpActionResult> Upload(string planName)
         {
             IHttpActionResult result = InternalServerError();
             await Request.Content.ReadAsMultipartAsync<MultipartMemoryStreamProvider>(new MultipartMemoryStreamProvider()).ContinueWith((tsk) =>
@@ -304,21 +367,6 @@ namespace HubWeb.Controllers
             return result;
         }
 
-
-        [HttpPost]
-        [Fr8ApiAuthorize]
-        public IHttpActionResult CreateFindObjectsPlan()
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var account = uow.UserRepository.GetByKey(User.Identity.GetUserId());
-                var plan = _findObjectsPlan.CreatePlan(uow, account);
-
-                uow.SaveChanges();
-
-                return Ok(new { id = plan.Id });
-            }
-        }
 
         // Method for plan execution or continuation without payload specified
         [Fr8ApiAuthorize("Admin", "Customer")]
@@ -362,7 +410,7 @@ namespace HubWeb.Controllers
         [Fr8HubWebHMACAuthenticate]
         [ResponseType(typeof(PlanTemplateDTO))]
         [HttpPost]
-        public async Task<IHttpActionResult> CreateTemplate(Guid planId)
+        public async Task<IHttpActionResult> Templates(Guid planId)
         {
             var planTemplateDTO = _planTemplates.GetPlanTemplate(planId, User.Identity.GetUserId());
 
@@ -387,7 +435,7 @@ namespace HubWeb.Controllers
                 PlanContents = JsonConvert.DeserializeObject<JToken>(JsonConvert.SerializeObject(planTemplateDTO))
             };
 
-            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/plantemplates/");
+            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/plan_templates/");
             var headers = await hmacService.GenerateHMACHeader(
                 uri,
                 "PlanDirectory",
@@ -397,6 +445,29 @@ namespace HubWeb.Controllers
             );
 
             await client.PostAsync<PublishPlanTemplateDTO>(uri, dto, headers: headers);
+
+            return Ok();
+        }
+
+        [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
+        [Fr8HubWebHMACAuthenticate]
+        [HttpPost]
+        public async Task<IHttpActionResult> Unpublish(Guid planId)
+        {
+            var planTemplateDTO = _planTemplates.GetPlanTemplate(planId, User.Identity.GetUserId());
+
+            var hmacService = ObjectFactory.GetInstance<IHMACService>();
+            var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+
+            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/plan_templates/?id=" + planId.ToString());
+            var headers = await hmacService.GenerateHMACHeader(
+                uri,
+                "PlanDirectory",
+                CloudConfigurationManager.GetSetting("PlanDirectorySecret"),
+                User.Identity.GetUserId()
+            );
+
+            await client.DeleteAsync(uri, headers: headers);
 
             return Ok();
         }

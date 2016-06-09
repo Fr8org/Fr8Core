@@ -1,7 +1,6 @@
-﻿using System;
-using Fr8Data.DataTransferObjects;
-using TerminalBase.Infrastructure;
-using TerminalBase.Models;
+﻿using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 
 namespace terminalQuickBooks.Interfaces
 {

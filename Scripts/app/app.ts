@@ -26,7 +26,8 @@ var app = angular.module("app", [
     "angularResizable",
     "mdColorPicker",
     "md.data.table",
-    "fr8.collapse"
+    "fr8.collapse",
+    "popoverToggle"
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */
@@ -420,17 +421,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             data: { pageTitle: 'Web Services', pageSubTitle: '' }
         })
 
-        .state('findObjects', {
-            url: '/findObjects/create',
-            templateUrl: '/AngularTemplate/FindObjects',
-            data: { pageTitle: 'Constructing Find Objects plan', pageSubTitle: '' }
-        })
-
-        .state('findObjectsResult', {
-            url: '/findObjects/{id}/results',
-            templateUrl: '/AngularTemplate/FindObjectsResults',
-            data: { pageTitle: 'Find Objects results', pageSubTitle: '' }
-        })
 
         .state('terminals', {
             url: "/terminals",

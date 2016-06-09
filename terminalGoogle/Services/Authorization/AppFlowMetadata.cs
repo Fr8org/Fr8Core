@@ -1,14 +1,13 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
-using Data.Infrastructure;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Mvc;
 using Google.Apis.Auth.OAuth2.Responses;
-using Hub.Services;
 using Newtonsoft.Json;
 using terminalGoogle.DataTransferObjects;
-using Utilities.Configuration.Azure;
+using terminalGoogle.Infrastructure;
 
 namespace terminalGoogle.Services.Authorization
 {
@@ -19,7 +18,6 @@ namespace terminalGoogle.Services.Authorization
         private readonly string _email;
         private readonly string _authCallbackUrl;
         private IAuthorizationCodeFlow _flow;
-        private AuthData _authDataService;
 
         public AppFlowMetadata(string googleToken, string email = null, string callbackUrl = null)
         {
@@ -27,7 +25,6 @@ namespace terminalGoogle.Services.Authorization
             _email = email;
 
             _authCallbackUrl = callbackUrl;
-            _authDataService = new AuthData();
         }
 
         public AppFlowMetadata(GoogleAuthDTO googleToken, string email = null, string callbackUrl = null)
@@ -36,7 +33,6 @@ namespace terminalGoogle.Services.Authorization
             _email = email;
 
             _authCallbackUrl = callbackUrl;
-            _authDataService = new AuthData();
         }
 
 

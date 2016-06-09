@@ -12,21 +12,19 @@ using Data.Infrastructure.Security;
 using Data.Repositories.Plan;
 using Data.Infrastructure.StructureMap;
 using Data.States;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using Fr8Infrastructure.Communication;
+using Fr8.Infrastructure.Communication;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Utilities;
 using Hub.Exceptions;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
-using Utilities;
-using Hub.Exceptions;
 
 namespace Hub.Services
 {
@@ -192,7 +190,7 @@ namespace Hub.Services
                             return Mapper.Map<ActivityDTO>(submittedActivity);
                         }
 
-                        var activatedActivityDTO = await CallTerminalActivityAsync<ActivityDTO>(uow, "activate", submittedActivity, Guid.Empty);
+                        var activatedActivityDTO = await CallTerminalActivityAsync<ActivityDTO>(uow, "activate", null, submittedActivity, Guid.Empty);
                         var activatedActivityDo = Mapper.Map<ActivityDO>(activatedActivityDTO);
 
                         var storage = _crate.GetStorage(activatedActivityDo);
@@ -215,7 +213,7 @@ namespace Hub.Services
                 }
                 catch (Exception e)
                 {
-                    ReportActivityInvocationError(submittedActivity, e.Message, null ,submittedActivity.Id.ToString(), EventManager.TerminalActionActivationFailed);
+                    ReportActivityInvocationError(submittedActivity, e.Message, null, submittedActivity.Id.ToString(), EventManager.TerminalActionActivationFailed);
                     throw;
                 }
             }
@@ -308,11 +306,19 @@ namespace Hub.Services
 
             try
             {
-                var actionName = curActionExecutionMode == ActivityExecutionMode.InitialRun ? "Run" : "ExecuteChildActivities";
+                IEnumerable<KeyValuePair<string, string>> parameters = null;
+
+                if (curActionExecutionMode != ActivityExecutionMode.InitialRun)
+                {
+                    parameters = new List<KeyValuePair<string, string>>()
+                    {
+                        new KeyValuePair<string, string>("scope", "childActivities")
+                    };
+                }
 
                 EventManager.ActivityRunRequested(curActivityDO, curContainerDO);
 
-                var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, actionName, curActivityDO, curContainerDO.Id);
+                var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, "Run", parameters, curActivityDO, curContainerDO.Id);
 
                 EventManager.ActivityResponseReceived(curActivityDO, ActivityResponse.RequestSuspend);
 
@@ -415,7 +421,7 @@ namespace Hub.Services
 
                     if (originalActions.TryGetValue(submitted.Id, out existingActivity))
                     {
-                        RestoreSystemProperties(existingActivity, (ActivityDO) submitted);
+                        RestoreSystemProperties(existingActivity, (ActivityDO)submitted);
                     }
                 }
             }
@@ -493,7 +499,7 @@ namespace Hub.Services
                 return;
             }
 
-            var curActivityDO = (ActivityDO) exisiting.Clone();
+            var curActivityDO = (ActivityDO)exisiting.Clone();
 
             var dto = Mapper.Map<ActivityDO, ActivityDTO>(curActivityDO);
             bool skipDeactivation = false;
@@ -522,7 +528,7 @@ namespace Hub.Services
                     ActivityDTO = dto
                 };
 
-                await ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<ActivityDTO>("deactivate", fr8DataDTO, Guid.Empty.ToString());
+                await ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<ActivityDTO>("deactivate", null, fr8DataDTO, Guid.Empty.ToString());
             }
 
             var root = exisiting.GetTreeRoot() as PlanDO;
@@ -546,7 +552,7 @@ namespace Hub.Services
 
                 try
                 {
-                    tempActionDTO = await CallTerminalActivityAsync<ActivityDTO>(uow, "configure", submittedActivity, Guid.Empty);
+                    tempActionDTO = await CallTerminalActivityAsync<ActivityDTO>(uow, "configure", null, submittedActivity, Guid.Empty);
                     _authorizationToken.RevokeTokenIfNeeded(uow, tempActionDTO);
                 }
                 catch (RestfulServiceException e)
@@ -558,22 +564,23 @@ namespace Hub.Services
                     }
                     else
                     {
-                        ReportActivityInvocationError(submittedActivity, e.Message, null,submittedActivity.Id.ToString(), EventManager.TerminalConfigureFailed);
+                        ReportActivityInvocationError(submittedActivity, e.Message, null, submittedActivity.Id.ToString(), EventManager.TerminalConfigureFailed);
                         throw;
                     }
                 }
                 catch (Exception e)
                 {
-                    ReportActivityInvocationError(submittedActivity, e.Message, null ,submittedActivity.Id.ToString(), EventManager.TerminalConfigureFailed);
+                    ReportActivityInvocationError(submittedActivity, e.Message, null, submittedActivity.Id.ToString(), EventManager.TerminalConfigureFailed);
                     throw;
                 }
             }
-
             return Mapper.Map<ActivityDO>(tempActionDTO);
         }
 
         private Task<TResult> CallTerminalActivityAsync<TResult>(
-            IUnitOfWork uow, string activityName,
+            IUnitOfWork uow,
+            string activityName,
+            IEnumerable<KeyValuePair<string, string>> parameters,
             ActivityDO curActivityDO,
             Guid containerId,
             string curDocumentationSupport = null)
@@ -603,13 +610,13 @@ namespace Hub.Services
                 var containerDO = uow.ContainerRepository.GetByKey(containerId);
                 EventManager.ContainerSent(containerDO, curActivityDO);
 
-                var reponse = ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<TResult>(activityName, fr8DataDTO, containerId.ToString());
+                var reponse = ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<TResult>(activityName, parameters, fr8DataDTO, containerId.ToString());
 
                 EventManager.ContainerReceived(containerDO, curActivityDO);
                 return reponse;
             }
 
-            return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<TResult>(activityName, fr8DataDTO, containerId.ToString());
+            return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<TResult>(activityName, parameters, fr8DataDTO, containerId.ToString());
         }
 
         private void ReportActivityInvocationError(ActivityDO activity, string error, string containerId, string objectId, Action<string, string, string, string> reportingAction)
@@ -630,7 +637,7 @@ namespace Hub.Services
         /// <param name="activityDTO"></param>
         /// <param name="isSolution">This parameter controls the access level: if it is a solution case
         /// we allow calls without CurrentAccount; if it is not - we need a User to get the list of available activities</param>
-        /// <returns>Task<SolutionPageDTO/> or Task<ActivityResponceDTO/></returns>
+        /// <returns>Task<DocumentationResponseDTO></returns>
         public async Task<T> GetActivityDocumentation<T>(ActivityDTO activityDTO, bool isSolution = false) where T : class
         {
             //activityResponce can be either of type SolutoinPageDTO or ActivityRepsonceDTO
@@ -697,7 +704,7 @@ namespace Hub.Services
                 ActivityDTO = curActivityDTO
             };
             //Call the terminal
-            return await ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<T>(actionName, fr8Data, curContainerId.ToString());
+            return await ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<T>(actionName, null, fr8Data, curContainerId.ToString());
         }
 
         public List<string> GetSolutionNameList(string terminalName)

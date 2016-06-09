@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Data.Entities;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.States;
-using Hub.Managers;
-using Newtonsoft.Json;
-using terminalDocuSign.DataTransferObjects;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Utilities;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.Infrastructure;
-using Utilities;
 
 namespace terminalDocuSign.Activities
 {
@@ -42,7 +37,6 @@ namespace terminalDocuSign.Activities
 
         protected override Task InitializeDS()
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(AuthorizationToken.Token);
             var control = ControlHelper.CreateSpecificOrUpstreamValueChooser(
                "EnvelopeId",
                "EnvelopeIdSelector",
@@ -57,17 +51,10 @@ namespace terminalDocuSign.Activities
 
         protected override async Task FollowUpDS()
         {
-            List<FieldDTO> allFields = new List<FieldDTO>();
-            var curUpstreamFields = (await GetDesignTimeFields(CrateDirection.Upstream)).Fields.ToArray();
-            var upstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Design-Time Fields", curUpstreamFields);
-            Storage.ReplaceByLabel(upstreamFieldsCrate);
             var control = GetControl<TextSource>("EnvelopeIdSelector");
             string envelopeId = GetEnvelopeId(control);
-            allFields.AddRange(GetTemplateUserDefinedFields(envelopeId, null));
 
-            // Update all fields crate
-            Storage.RemoveByLabel(AllFieldsCrateName);
-            Storage.Add(CrateManager.CreateDesignTimeFieldsCrate(AllFieldsCrateName, AvailabilityType.RunTime, allFields.ToArray()));
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(AllFieldsCrateName, true).AddFields(GetTemplateUserDefinedFields(envelopeId));
         }
 
         protected override string ActivityUserFriendlyName => "Get DocuSign Envelope";
@@ -105,7 +92,7 @@ namespace terminalDocuSign.Activities
             // Perhaps it can be received by EnvelopeId
             allFields.AddRange(GetEnvelopeData(envelopeId, null));
             // Update all fields crate
-            Payload.Add(CrateManager.CreateDesignTimeFieldsCrate(AllFieldsCrateName, AvailabilityType.RunTime, allFields.ToArray()));
+            Payload.Add(AllFieldsCrateName, new StandardPayloadDataCM(allFields));
 
             Success();
         }

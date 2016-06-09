@@ -5,15 +5,13 @@ using System.Web;
 using Microsoft.Owin;
 using Newtonsoft.Json;
 using Owin;
-using TerminalBase;
-using TerminalBase.BaseClasses;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
-using TerminalBase.Services;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using terminalSlack.Actions;
 using terminalSlack.Activities;
-using TerminalBase.Infrastructure;
 
 [assembly: OwinStartup(typeof(terminalSlack.Startup))]
 

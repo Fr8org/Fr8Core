@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Data.Interfaces;
 using Data.States.Templates;
 
@@ -14,7 +9,7 @@ namespace Data.Entities
     {
         public TerminalDO()
         {
-            this.AuthenticationType = Fr8Data.States.AuthenticationType.None;      
+            this.AuthenticationType = Fr8.Infrastructure.Data.States.AuthenticationType.None;      
         }
 
         [Key]
