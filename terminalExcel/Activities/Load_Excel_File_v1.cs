@@ -108,6 +108,7 @@ namespace terminalExcel.Activities
                         AvailabilityType.Always
                     );
 
+
                     ActivityUI.MarkFileAsUploaded(selectedFileDescription.Value, selectedFileDescription.Key);
                     Storage.ReplaceByLabel(columnHeadersCrate);
                     SelectedFileDescription = selectedFileDescription;
