@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -13,6 +12,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Interfaces;
 using Hub.Managers;
 
@@ -33,6 +33,7 @@ namespace Hub.Services
 
         private const string MonitoringPlanName = "Monitoring Manifest Submissions";
         private const string MessageName = "JIRA description";
+        private const string ManifestMonitoringPrefix = "Manifest Monitoring - ";
 
         public ManifestRegistryMonitor(
             IActivity activity,
@@ -78,24 +79,32 @@ namespace Hub.Services
         /// </summary>
         public async Task<ManifestRegistryMonitorResult> StartMonitoringManifestRegistrySubmissions()
         {
+            Logger.LogInfo($"{ManifestMonitoringPrefix}Retrieving system user");
             var systemUser = _fr8Account.GetSystemUser();
             if (systemUser == null)
             {
+                Logger.LogError($"{ManifestMonitoringPrefix}System user doesn't exists");
                 throw new ApplicationException("System user doesn't exist");
             }
             var isNewPlanCreated = false;
+            Logger.LogInfo($"{ManifestMonitoringPrefix}Trying to find existing plan");
             var plan = GetExistingPlan(systemUser);
             if (plan == null)
             {
+                Logger.LogInfo($"{ManifestMonitoringPrefix}No existing plan found. Creating new plan");
                 isNewPlanCreated = true;
                 plan = await CreateAndConfigureNewPlan(systemUser);
+                Logger.LogInfo($"{ManifestMonitoringPrefix}New plan was created");
             }
             try
             {
+                Logger.LogInfo($"{ManifestMonitoringPrefix}Trying to launch the plan");
                 await RunPlan(plan);
+                Logger.LogInfo($"{ManifestMonitoringPrefix}Plan was successfully launched");
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.LogError($"{ManifestMonitoringPrefix}Failed to launch a plan. {ex}");
                 if (isNewPlanCreated)
                 {
                     await _plan.Delete(plan.Id);
@@ -120,11 +129,15 @@ namespace Hub.Services
             {
                 var activityTemplates = uow.ActivityTemplateRepository.GetQuery().ToArray();
                 var result = await CreatePlanWithMonitoringActivity(uow, systemUser, activityTemplates).ConfigureAwait(false);
+                Logger.LogInfo($"{ManifestMonitoringPrefix}Created a plan");
                 try
                 {
                     await ConfigureMonitoringActivity(uow, systemUser, result.ChildNodes[0].ChildNodes[0] as ActivityDO).ConfigureAwait(false);
+                    Logger.LogInfo($"{ManifestMonitoringPrefix}Configured Monitor Form Response activity");
                     await ConfigureBuildMessageActivity(uow, systemUser, activityTemplates, result.Id).ConfigureAwait(false);
+                    Logger.LogInfo($"{ManifestMonitoringPrefix}Configured Build Message activity");
                     await ConfigureSaveJiraActivity(uow, systemUser, activityTemplates, result.Id).ConfigureAwait(false);
+                    Logger.LogInfo($"{ManifestMonitoringPrefix}Configured Save Jira activity");
                 }
                 catch
                 {
