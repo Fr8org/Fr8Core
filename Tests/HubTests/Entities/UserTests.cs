@@ -33,7 +33,7 @@ namespace HubTests.Entities
             {
                 
                 uow.AspNetRolesRepository.Add(FixtureData.TestRole());
-              
+
                 //SETUP                 
 
                 Fr8AccountDO currDockyardAccountDO = new Fr8AccountDO();

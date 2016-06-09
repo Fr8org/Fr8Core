@@ -23,14 +23,14 @@ namespace HubWeb.Controllers
     {
         private readonly IMappingEngine _mappingEngine;
         private readonly ISecurityServices _securityServices;
-        private Fr8Account _account;
+        private readonly Fr8Account _fr8Account;
 
         public UsersController()
         {
             _account = ObjectFactory.GetInstance<Fr8Account>();
             _securityServices = ObjectFactory.GetInstance<ISecurityServices>();
             _mappingEngine = ObjectFactory.GetInstance<IMappingEngine>();
-
+            _fr8Account = ObjectFactory.GetInstance<Fr8Account>();
         }
 
         #region API Endpoints 
@@ -112,9 +112,9 @@ namespace HubWeb.Controllers
             {
                 var user = uow.UserRepository.FindOne(u => u.EmailAddress.Address == User.Identity.Name);
 
-                if (_account.IsValidHashedPassword(user, oldPassword))
+                if (_fr8Account.IsValidHashedPassword(user, oldPassword))
                 {
-                    _account.UpdatePassword(uow, user, newPassword);
+                    _fr8Account.UpdatePassword(uow, user, newPassword);
                     uow.SaveChanges();
                 }
                 else

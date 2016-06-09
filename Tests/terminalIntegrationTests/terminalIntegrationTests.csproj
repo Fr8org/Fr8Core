@@ -272,6 +272,7 @@
     <Compile Include="EndToEnd\WarehouseSearch_Tests.cs" />
     <Compile Include="Fixtures\FixtureData - CoreSelfHostFactory.cs" />
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
+    <Compile Include="Integration\ManifestRegistryMonitorTests.cs" />
     <Compile Include="Integration\PlanDirectory_Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

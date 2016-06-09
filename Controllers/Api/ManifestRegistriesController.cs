@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Configuration;
+using AutoMapper;
 using Data.Interfaces;
 using StructureMap;
 using System.Linq;
@@ -25,6 +26,13 @@ namespace HubWeb.Controllers.Api
                 return Ok(list);
             }
         }
+
+        [HttpGet]
+        public IHttpActionResult Submit()
+        {
+            return Ok(ConfigurationManager.AppSettings["ManifestSubmissionFormUrl"]);
+        }
+
 
         [HttpPost]
         public IHttpActionResult Post(ManifestDescriptionDTO description)

@@ -324,6 +324,15 @@ namespace terminalSalesforce.Services
         {
             authToken = isRefreshTokenRequired ? await _authentication.RefreshAccessToken(authToken) : authToken;
             var salesforceToken = ToSalesforceToken(authToken);
+
+            // When debugging, decimal point gets messed up and Salesforce client rejects to work properly.
+            // var ci = new System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.Name);
+            // if (ci.NumberFormat.NumberDecimalSeparator != ".")
+            // {
+            //     ci.NumberFormat.NumberDecimalSeparator = ".";
+            //     System.Threading.Thread.CurrentThread.CurrentCulture = ci;
+            // }
+
             return new ChatterClient(salesforceToken.InstanceUrl, salesforceToken.Token, salesforceToken.ApiVersion);
         }
 
