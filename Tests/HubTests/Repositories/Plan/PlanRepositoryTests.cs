@@ -9,8 +9,8 @@ using Fr8.Infrastructure.Data.States;
 using Hub.StructureMap;
 using NUnit.Framework;
 using StructureMap;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
+using Fr8.Testing.Unit;
 
 namespace HubTests.Repositories.Plan
 {

@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Control;
@@ -65,7 +65,7 @@ namespace terminalFr8CoreTests.Integration
 
         private Crate CreateConnectionStringCrate()
         {
-            var control = UtilitiesTesting.Fixtures.FixtureData.TestConnectionString2();
+            var control = Fr8.Testing.Unit.Fixtures.FixtureData.TestConnectionString2();
             control.Name = "ConnectionString";
             control.Label = "Connection String";
 
@@ -74,7 +74,7 @@ namespace terminalFr8CoreTests.Integration
 
         private Crate CreateWrongConnectionStringCrate()
         {
-            var control = UtilitiesTesting.Fixtures.FixtureData.TestConnectionString2();
+            var control = Fr8.Testing.Unit.Fixtures.FixtureData.TestConnectionString2();
             control.Name = "ConnectionString";
             control.Label = "Connection String";
             control.Value = "Wrong connection string";

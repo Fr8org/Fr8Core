@@ -6,8 +6,9 @@ using System.Linq;
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using NUnit.Framework;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
+using terminalFr8Core.Actions;
 ﻿using terminalFr8Core.Activities;
 
 namespace HubTests.Unit

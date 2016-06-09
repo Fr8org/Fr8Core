@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
@@ -9,12 +9,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Fr8.Testing.Integration.Tools.Plans;
+using Fr8.Testing.Unit.Fixtures;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
-using terminaBaselTests.Tools.Plans;
-using UtilitiesTesting.Fixtures;
 
 namespace terminalIntegrationTests.EndToEnd
 {

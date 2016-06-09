@@ -5,8 +5,8 @@ using Data.Entities;
 using StructureMap;
 using Data.Interfaces;
 using Data.States;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 using System.Collections.Generic;
 using Moq;
 using AutoMapper;
@@ -63,7 +63,6 @@ namespace HubTests.Security
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var user = new Fr8Account();
                 var emailAddress = new EmailAddressDO
                 {
                     Address = "tester@gmail.com",
@@ -242,7 +241,7 @@ namespace HubTests.Security
             //verify that the post call is made 
             restClientMock.Verify(
                 client => client.PostAsync<CredentialsDTO>(
-                new Uri(activityTemplateDO.Terminal.Endpoint + "/authentication/internal"),
+                new Uri(activityTemplateDO.Terminal.Endpoint + "/authentication/token"),
                 It.Is<CredentialsDTO>(it => it.Username == credentialsDTO.Username &&
                                            it.Password == credentialsDTO.Password &&
                                            it.Domain == credentialsDTO.Domain), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()), Times.Exactly(1));
@@ -325,7 +324,7 @@ namespace HubTests.Security
            
             restClientMock.Verify(
                 client => client.PostAsync(
-                    new Uri(terminal.Endpoint + "/authentication/initial_url"), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()
+                    new Uri(terminal.Endpoint + "/authentication/request_url"), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()
                 ),
                 Times.Exactly(1)
             );

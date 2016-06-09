@@ -2,8 +2,8 @@
 using System;
 using Fr8.Infrastructure.Data.Manifests;
 using terminalUtilities;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace terminaBaselTests.Utilities
 {

@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 using System.Threading.Tasks;
 using Moq;
 using StructureMap;

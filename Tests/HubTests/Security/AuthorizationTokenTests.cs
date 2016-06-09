@@ -7,7 +7,7 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Hub.Services;
 using HubWeb.Controllers;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace HubTests.Security
 {

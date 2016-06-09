@@ -311,6 +311,7 @@
     <Compile Include="Infrastructure\Fr8Principle.cs" />
     <Compile Include="Infrastructure\Fr8ApiAuthorizeAttribute.cs" />
     <Compile Include="Infrastructure\OwinInitializer.cs" />
+    <Compile Include="Interfaces\IManifestRegistryMonitor.cs" />
     <Compile Include="Interfaces\IPlanTemplates.cs" />
     <Compile Include="Interfaces\ITimer.cs" />
     <Compile Include="Managers\APIManagers\Packagers\IEmailPackager.cs" />
@@ -389,12 +390,12 @@
     <Compile Include="Services\MT\MTSearchHelper.IMtQueryProvider.cs" />
     <Compile Include="Services\MT\MTSearchHelper.MtQueryProviderT.cs" />
     <Compile Include="Services\MT\MTTypesHelper.cs" />
+    <Compile Include="Services\PlanBased\ManifestRegistryMonitor.cs" />
     <Compile Include="Services\PlanTemplates.cs" />
     <Compile Include="Services\PlanNode.cs" />
     <Compile Include="Services\Organization.cs" />
     <Compile Include="Services\Activity.cs" />
     <Compile Include="Services\ActivityTemplate.cs" />
-    <Compile Include="Services\AuthData.cs" />
     <Compile Include="Services\Authorization.cs" />
     <Compile Include="Services\Fr8Account.cs" />
     <Compile Include="Services\EmailAddress.cs" />

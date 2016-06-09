@@ -8,7 +8,7 @@ using NUnit.Framework;
 using terminalDocuSign.Activities;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Tests.Fixtures;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace terminalDocuSign.Tests.Actions
 {

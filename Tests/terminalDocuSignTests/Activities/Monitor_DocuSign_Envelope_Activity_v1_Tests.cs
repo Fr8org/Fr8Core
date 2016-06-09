@@ -11,7 +11,7 @@ using terminalDocuSign;
 using terminalDocuSign.Actions;
 using terminalDocuSign.Services.New_Api;
 using terminalDocuSignTests.Fixtures;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace terminalDocuSignTests.Activities
 {

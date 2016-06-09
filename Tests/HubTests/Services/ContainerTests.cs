@@ -4,7 +4,7 @@ using Hub.Exceptions;
 using HubTests.Fixtures;
 using NUnit.Framework;
 using StructureMap;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace HubTests.Services
 {

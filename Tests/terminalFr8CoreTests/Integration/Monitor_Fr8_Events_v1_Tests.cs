@@ -1,4 +1,4 @@
-﻿using HealthMonitor.Utility;
+﻿using Fr8.Testing.Integration;
 using NUnit.Framework;
 using System;
 using Fr8.Infrastructure.Data.Crates;
