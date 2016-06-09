@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Dispatcher;
+using System.Web.Http.Routing;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.StructureMap;
 using Fr8.TerminalBase.Infrastructure;
@@ -20,14 +22,23 @@ namespace Fr8.TerminalBase.BaseClasses
         protected HttpConfiguration _configuration = new HttpConfiguration();
         private IContainer _container;
         private IActivityStore _activityStore;
+        private readonly TerminalDTO _terminal;
 
         public IContainer Container => _container;
         public IActivityStore ActivityStore => _activityStore;
 
+        protected BaseConfiguration(TerminalDTO terminal)
+        {
+            if (terminal == null)
+                throw new ArgumentNullException(nameof(terminal));
+
+            _terminal = terminal;
+        }
+
         protected virtual void ConfigureProject(bool selfHost, Action<ConfigurationExpression> terminalStructureMapRegistryConfigExpression)
         {
             _container = new Container(StructureMapBootStrapper.LiveConfiguration);
-            _activityStore = new ActivityStore(_container);
+            _activityStore = new ActivityStore(_terminal, _container);
 
             _container.Configure(x => x.AddRegistry<TerminalBootstrapper.LiveMode>());
             _container.Configure(x => x.For<IActivityStore>().Use(_activityStore));
@@ -44,7 +55,7 @@ namespace Fr8.TerminalBase.BaseClasses
                 // Web API routes
                 _configuration.Services.Replace(typeof(IHttpControllerTypeResolver), this);
             }
-
+            
             _configuration.Services.Replace(typeof(IHttpControllerActivator), this);
 
             RegisterActivities();
@@ -63,21 +74,17 @@ namespace Fr8.TerminalBase.BaseClasses
             settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
         }
 
-        protected virtual void StartHosting(string terminalName)
+        protected virtual void StartHosting()
         {
             Task.Run(() =>
             {
                 BaseTerminalController curController = new BaseTerminalController(Container.GetInstance<IRestfulServiceClient>());
-                curController.AfterStartup(terminalName);
+                curController.AfterStartup(_activityStore.Terminal.Name ?? "terminal_" + Guid.NewGuid());
             });
         }
 
-        public virtual ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
-        {
-            // this method should be implemented by the child classes; hence virtual but since it 
-            // has to implement IHttpControllerTypeResolver therefore the access is public
-            throw new NotImplementedException();
-        }
+        public abstract ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver);
+        
 
         public IHttpController Create(HttpRequestMessage request, HttpControllerDescriptor controllerDescriptor, Type controllerType)
         {

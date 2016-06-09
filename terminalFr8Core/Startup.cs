@@ -16,6 +16,11 @@ namespace terminalFr8Core
 {
     public class Startup: BaseConfiguration
     {
+        public Startup()
+            : base(TerminalData.TerminalDTO)
+        {
+        }
+
         public void Configuration(IAppBuilder app)
         {
             Configuration(app, false);
@@ -35,7 +40,7 @@ namespace terminalFr8Core
 
             if (!selfHost)
             {
-                StartHosting("terminalAzure");
+                StartHosting();
             }
         }
 

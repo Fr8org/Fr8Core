@@ -18,6 +18,11 @@ namespace terminalDocuSign
 {
     public class Startup : BaseConfiguration
     {
+        public Startup()
+            : base(TerminalData.TerminalDTO)
+        {
+        }
+
         public void Configuration(IAppBuilder app)
         {
             Configuration(app, false);
@@ -34,7 +39,7 @@ namespace terminalDocuSign
             app.UseWebApi(_configuration);
             if (!selfHost)
             {
-                StartHosting("terminalDocuSign");
+                StartHosting();
             }
         }
 

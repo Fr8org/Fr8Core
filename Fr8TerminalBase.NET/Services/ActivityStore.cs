@@ -11,6 +11,8 @@ namespace Fr8.TerminalBase.Services
 {
     public interface IActivityStore
     {
+        TerminalDTO Terminal { get; }
+
         void RegisterActivity(ActivityTemplateDTO activityTemplate, IActivityFactory activityFactory);
 
         /// <summary>
@@ -30,7 +32,7 @@ namespace Fr8.TerminalBase.Services
         /// so we are providing terminal information to seperate terminal activities
         /// </param>
         /// <returns></returns>
-        List<ActivityTemplateDTO> GetAllActivities(TerminalDTO terminal);
+        List<ActivityTemplateDTO> GetAllActivities();
     }
 
     public class ActivityStore : IActivityStore
@@ -38,8 +40,11 @@ namespace Fr8.TerminalBase.Services
         public readonly ConcurrentDictionary<ActivityRegistrationKey, IActivityFactory> _activityRegistrations = new ConcurrentDictionary<ActivityRegistrationKey, IActivityFactory>();
         private readonly IContainer _container;
 
-        public ActivityStore(IContainer container)
+        public TerminalDTO Terminal { get; }
+
+        public ActivityStore(TerminalDTO terminal, IContainer container)
         {
+            Terminal = terminal;
             _container = container;
         }
 
@@ -70,20 +75,10 @@ namespace Fr8.TerminalBase.Services
             }
             return factory;
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="terminal">
-        /// Terminals on integrations tests share same environment
-        /// so we are providing terminal information to seperate terminal activities
-        /// </param>
-        /// <returns></returns>
-        public List<ActivityTemplateDTO> GetAllActivities(TerminalDTO terminal)
+        
+        public List<ActivityTemplateDTO> GetAllActivities()
         {
-            return _activityRegistrations
-                .Select(y => y.Key.ActivityTemplateDTO)
-                .Where(t => t.Terminal.Name == terminal.Name)
-                .ToList();
+            return _activityRegistrations.Select(x=>x.Key.ActivityTemplateDTO).ToList();
         }
     }
 }

@@ -17,12 +17,17 @@ namespace terminalYammer
 {
     public class Startup : BaseConfiguration
     {
+        public Startup()
+            : base(TerminalData.TerminalDTO)
+        {
+        }
+
         public void Configuration(IAppBuilder app, bool selfHost)
         {
             ConfigureProject(selfHost, null);
             WebApiConfig.Register(_configuration);
             app.UseWebApi(_configuration);
-            StartHosting("terminalYammer");
+            StartHosting();
         }
 
         public void Configuration(IAppBuilder app)
