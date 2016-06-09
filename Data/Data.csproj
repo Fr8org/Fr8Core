@@ -679,10 +679,6 @@
     <Compile Include="Migrations\201606071223281_Delete FindObjects solution.Designer.cs">
       <DependentUpon>201606071223281_Delete FindObjects solution.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201606072048398_FillManifestRegistry.cs" />
-    <Compile Include="Migrations\201606072048398_FillManifestRegistry.Designer.cs">
-      <DependentUpon>201606072048398_FillManifestRegistry.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201606081850360_UpdateMTDatabaseWithNewCLRTypes1.cs" />
     <Compile Include="Migrations\201606081850360_UpdateMTDatabaseWithNewCLRTypes1.Designer.cs">
       <DependentUpon>201606081850360_UpdateMTDatabaseWithNewCLRTypes1.cs</DependentUpon>
@@ -690,6 +686,10 @@
     <Compile Include="Migrations\201606090249437_RemovingUnusedObjects.cs" />
     <Compile Include="Migrations\201606090249437_RemovingUnusedObjects.Designer.cs">
       <DependentUpon>201606090249437_RemovingUnusedObjects.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606091512284_FillManifestRegistry.cs" />
+    <Compile Include="Migrations\201606091512284_FillManifestRegistry.Designer.cs">
+      <DependentUpon>201606091512284_FillManifestRegistry.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1267,14 +1267,14 @@
     <EmbeddedResource Include="Migrations\201606071223281_Delete FindObjects solution.resx">
       <DependentUpon>201606071223281_Delete FindObjects solution.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201606072048398_FillManifestRegistry.resx">
-      <DependentUpon>201606072048398_FillManifestRegistry.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606081850360_UpdateMTDatabaseWithNewCLRTypes1.resx">
       <DependentUpon>201606081850360_UpdateMTDatabaseWithNewCLRTypes1.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606090249437_RemovingUnusedObjects.resx">
       <DependentUpon>201606090249437_RemovingUnusedObjects.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606091512284_FillManifestRegistry.resx">
+      <DependentUpon>201606091512284_FillManifestRegistry.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
