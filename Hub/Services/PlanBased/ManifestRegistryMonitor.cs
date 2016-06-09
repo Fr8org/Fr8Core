@@ -18,20 +18,20 @@ using Hub.Managers;
 
 namespace Hub.Services
 {
+    // The class purpose is to allow our manifest registry submission to be represented as internal Fr8 plan. The plan consists of the following steps:
+    // 1. Start monitoring responses from particular Google Form (form belongs to account fr8test1@gmail.com and is selected based on current environment)
+    // 2. When response is received use its fields to compose a message
+    // 3. Create a JIRA issue with built message as description and assign it to specific user (Admin in our case)
     public class ManifestRegistryMonitor : IManifestRegistryMonitor
     {
         private readonly IActivity _activity;
-
         private readonly ICrateManager _crateManager;
-
         private readonly IPlan _plan;
-
         private readonly IUnitOfWorkProvider _unitOfWorkProvider;
-
+        private readonly Fr8Account _fr8Account;
         private readonly IConfigRepository _configRepository;
 
         private const string MonitoringPlanName = "Monitoring Manifest Submissions";
-
         private const string MessageName = "JIRA description";
 
         public ManifestRegistryMonitor(
@@ -39,6 +39,7 @@ namespace Hub.Services
             ICrateManager crateManager,
             IPlan plan, 
             IUnitOfWorkProvider unitOfWorkProvider, 
+            Fr8Account fr8Account,
             IConfigRepository configRepository)
         {
             if (activity == null)
@@ -57,6 +58,10 @@ namespace Hub.Services
             {
                 throw new ArgumentNullException(nameof(unitOfWorkProvider));
             }
+            if (fr8Account == null)
+            {
+                throw new ArgumentNullException(nameof(fr8Account));
+            }
             if (configRepository == null)
             {
                 throw new ArgumentNullException(nameof(configRepository));
@@ -65,12 +70,15 @@ namespace Hub.Services
             _crateManager = crateManager;
             _plan = plan;
             _unitOfWorkProvider = unitOfWorkProvider;
+            _fr8Account = fr8Account;
             _configRepository = configRepository;
         }
-
+        /// <summary>
+        /// Checks if there is already monitoring plan and activates it (if necessary). Otherwise creates a new plan and activates it
+        /// </summary>
         public async Task<ManifestRegistryMonitorResult> StartMonitoringManifestRegistrySubmissions()
         {
-            var systemUser = GetSystemUser();
+            var systemUser = _fr8Account.GetSystemUser();
             if (systemUser == null)
             {
                 throw new ApplicationException("System user doesn't exist");
@@ -291,22 +299,6 @@ namespace Hub.Services
                                                                                            && x.Fr8AccountId == systemUser.Id
                                                                                            && x.Visibility == PlanVisibility.Internal
                                                                                            && x.PlanState != PlanState.Deleted);
-            }
-        }
-
-        private Fr8AccountDO GetSystemUser()
-        {
-            try
-            {
-                var systemUserEmail = _configRepository.Get("SystemUserEmail");
-                using (var uow = _unitOfWorkProvider.GetNewUnitOfWork())
-                {
-                    return uow.UserRepository.GetQuery().FirstOrDefault(x => x.EmailAddress.Address == systemUserEmail);
-                }
-            }
-            catch (ConfigurationException)
-            {
-                throw new ApplicationException("Configuration repository doesn't contain system user email");
             }
         }
     }

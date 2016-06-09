@@ -14,7 +14,6 @@ using Newtonsoft.Json;
 using terminalAtlassian.Interfaces;
 using terminalAtlassian.Helpers;
 using System.Threading.Tasks;
-using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Control;
 
 namespace terminalAtlassian.Services
@@ -200,28 +199,29 @@ namespace terminalAtlassian.Services
             return result;
         }
 
+        public async Task<List<ListItem>> GetSprints(AuthorizationToken authToken, string projectName)
+        {
+            List<ListItem> list = new List<ListItem>();
+
+            var jira = CreateRestClient(authToken.Token);
+            var board = await jira.RestClient.ExecuteRequestAsync(RestSharp.Method.GET, "/rest/agile/1.0/board?projectKeyOrId=" + projectName);
+            var boardId = board["values"].First()["id"].ToString();
+            var sprints = await jira.RestClient.ExecuteRequestAsync(RestSharp.Method.GET, "/rest/agile/1.0/board/" + boardId + "/sprint");
+
+            foreach (var value in sprints["values"])
+            {
+                if (value["state"].ToString().ToLower() != "closed")
+                {
+                    list.Add(new ListItem() { Key = value["name"].ToString(), Value = value["id"].ToString() });
+                }
+            }
+
+            return list;
+        }
+
         #region Implementation details
 
         private const int MaxResults = 1000;
-
-        private void InterceptJiraExceptions(Action process)
-        {
-            try
-            {
-                process();
-            }
-            catch (Exception ex)
-            {
-                if (ex.Message.IndexOf("Unauthorized (401)") > -1)
-                {
-                    throw new AuthorizationTokenExpiredOrInvalidException("Please make sure that username, password and domain are correct.");
-                }
-                else
-                {
-                    throw;
-                }
-            }
-        }
 
         private T InterceptJiraExceptions<T>(Func<T> process)
         {
@@ -329,26 +329,6 @@ namespace terminalAtlassian.Services
                 return token["key"].ToString();
             });
 
-        }
-
-        public async Task<List<ListItem>> GetSprints(AuthorizationToken authToken, string projectName)
-        {
-            List<ListItem> list = new List<ListItem>();
-
-            var jira = CreateRestClient(authToken.Token);
-            var board = await jira.RestClient.ExecuteRequestAsync(RestSharp.Method.GET, "/rest/agile/1.0/board?projectKeyOrId=" + projectName);
-            var boardId = board["values"].First()["id"].ToString();
-            var sprints = await jira.RestClient.ExecuteRequestAsync(RestSharp.Method.GET, "/rest/agile/1.0/board/" + boardId + "/sprint");
-
-            foreach (var value in sprints["values"])
-            {
-                if (value["state"].ToString().ToLower() != "closed")
-                {
-                    list.Add(new ListItem() { Key = value["name"].ToString(), Value = value["id"].ToString() });
-                }
-            }
-
-            return list;
         }
 
         #endregion

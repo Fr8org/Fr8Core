@@ -35,6 +35,17 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
 {
     public class SegmentIO : ITracker
     {
+        private readonly Fr8Account _fr8Account;
+
+        public SegmentIO(Fr8Account fr8Account)
+        {
+            if (fr8Account == null)
+            {
+                throw new ArgumentNullException(nameof(fr8Account));
+            }
+            _fr8Account = fr8Account;
+        }
+
         public void Identify(String userID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -45,15 +56,13 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
 
         private Dictionary<String, object> GetProperties(Fr8AccountDO fr8AccountDO)
         {
-            var user = new Fr8Account();
-
             return new Dictionary<string, object>
             {
                 {"First Name", fr8AccountDO.FirstName},
                 {"Last Name", fr8AccountDO.LastName},
                 {"Username", fr8AccountDO.UserName},
                 {"Email", fr8AccountDO.EmailAddress.Address},
-                {"Delegate Account", user.GetMode(fr8AccountDO) == CommunicationMode.Delegate },
+                {"Delegate Account", _fr8Account.GetMode(fr8AccountDO) == CommunicationMode.Delegate },
                 {"Class", fr8AccountDO.Class }
             };
         }

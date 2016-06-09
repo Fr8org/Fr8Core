@@ -21,6 +21,24 @@ namespace Hub.Services
 {
     public class Fr8Account
     {
+        private readonly IUnitOfWorkProvider _uowProvider;
+
+        private readonly IConfigRepository _configRepository;
+
+        public Fr8Account(IUnitOfWorkProvider uowProvider, IConfigRepository configRepository)
+        {
+            if (uowProvider == null)
+            {
+                throw new ArgumentNullException(nameof(uowProvider));
+            }
+            if (configRepository == null)
+            {
+                throw new ArgumentNullException(nameof(configRepository));
+            }
+            _uowProvider = uowProvider;
+            _configRepository = configRepository;
+        }
+
         public void UpdatePassword(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO, string password)
         {
             if (dockyardAccountDO != null)
@@ -193,6 +211,22 @@ namespace Hub.Services
             }
         }
 
+        public Fr8AccountDO GetSystemUser()
+        {
+            try
+            {
+                var systemUserEmail = _configRepository.Get("SystemUserEmail");
+                using (var uow = _uowProvider.GetNewUnitOfWork())
+                {
+                    return uow.UserRepository.GetQuery().FirstOrDefault(x => x.EmailAddress.Address == systemUserEmail);
+                }
+            }
+            catch (ConfigurationException)
+            {
+                return null;
+            }
+        }
+
         /// <summary>
         /// Returns the list of all processes to run for the specified user.
         /// </summary>
@@ -231,7 +265,7 @@ namespace Hub.Services
                     if (existingUserDO.PasswordHash == null)
                     {
                         //this is an existing implicit user, who sent in a request in the past, had a DockyardAccountDO created, and now is registering. Add the password
-                        new Fr8Account().UpdatePassword(uow, existingUserDO, password);
+                        UpdatePassword(uow, existingUserDO, password);
                         existingUserDO.Organization = organizationDO;
 
                         curRegStatus = RegistrationStatus.Successful;

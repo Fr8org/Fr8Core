@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using Hub.Services;
 using Moq;
 using NUnit.Framework;
@@ -22,7 +22,7 @@ namespace terminalIntegrationTests.Integration
         [SetUp]
         public void SetUp()
         {
-            ObjectFactory.Container.Inject<IPusherNotifier>(new Mock<IPusherNotifier>().Object);
+            ObjectFactory.Container.Inject(new Mock<IPusherNotifier>().Object);
             if (_originalConfigRepository == null)
             {
                 _originalConfigRepository = ObjectFactory.GetInstance<IConfigRepository>();
@@ -43,7 +43,7 @@ namespace terminalIntegrationTests.Integration
         }
 
         [Test]
-        [ExpectedException(typeof(ApplicationException), ExpectedMessage = "Configuration repository doesn't contain system user email")]
+        [ExpectedException(typeof(ApplicationException), ExpectedMessage = "System user doesn't exist")]
         public async Task ManifestRegistryMonitor_WhenNoSystemUserEmailIsStored_ThrowsException()
         {
             var target = CreateTarget();
