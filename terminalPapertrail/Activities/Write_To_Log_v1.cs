@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.BaseClasses;
 using StructureMap;
 using terminalPapertrail.Interfaces;
-using TerminalBase.BaseClasses;
-using Utilities.Configuration.Azure;
-using Fr8Data.States;
-using TerminalBase.Infrastructure;
 
 namespace terminalPapertrail.Actions
 {
@@ -84,7 +83,7 @@ namespace terminalPapertrail.Actions
                 });
 
                 Payload.RemoveByLabel("Log Messages");
-                Payload.Add(Fr8Data.Crates.Crate.FromContent("Log Messages", curLogMessages));
+                Payload.Add(Crate.FromContent("Log Messages", curLogMessages));
              }
              Success();
         }

@@ -2,7 +2,6 @@
 using System.Xml.Linq;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
-using TerminalBase.Infrastructure;
 using StructureMap;
 using System;
 using System.Collections.Generic;
@@ -10,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using Fr8.TerminalBase.Infrastructure;
 
 namespace terminalSalesforce.Controllers
 {

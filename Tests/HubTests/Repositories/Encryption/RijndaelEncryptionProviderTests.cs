@@ -3,7 +3,7 @@ using System.Linq;
 using Data.Repositories.Encryption;
 using Data.Repositories.Encryption.Impl.Rijndael;
 using NUnit.Framework;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace HubTests.Repositories.Encryption
 {

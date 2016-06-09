@@ -5,8 +5,8 @@ using Data.Entities;
 using Data.Interfaces;
 using Hub.Managers;
 using Hub.StructureMap;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace HubTests.Models
 {

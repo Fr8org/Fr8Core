@@ -1,14 +1,13 @@
-﻿
-using Data.Interfaces;
-using HealthMonitor.Utility;
+﻿using Data.Interfaces;
+using Fr8.Testing.Integration;
 using HubTests.Fixtures;
 using NUnit.Framework;
 using StructureMap;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.States;
 
 namespace HubTests.Integration
 {

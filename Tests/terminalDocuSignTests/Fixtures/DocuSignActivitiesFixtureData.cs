@@ -1,15 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Data.Entities;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
 using Moq;
-using Moq.Protected;
 using terminalDocuSign;
-using terminalDocuSign.Actions;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.Infrastructure;
 using terminalDocuSign.Activities;
 
 namespace terminalDocuSignTests.Fixtures

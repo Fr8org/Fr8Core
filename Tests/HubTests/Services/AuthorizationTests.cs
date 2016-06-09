@@ -4,15 +4,15 @@ using Hub.StructureMap;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
 using System.Threading.Tasks;
 using Moq;
 using Hub.Services;
 using System.Collections.Generic;
 using Data.Interfaces;
-using Fr8Data.DataTransferObjects;
-using UtilitiesTesting;
-using Fr8Infrastructure.Interfaces;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Testing.Unit;
 
 namespace HubTests.Services
 {

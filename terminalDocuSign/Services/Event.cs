@@ -2,18 +2,17 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using AutoMapper;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using StructureMap;
-using Hub.Managers;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Infrastructure;
-using TerminalBase.Infrastructure;
-using TerminalBase.Models;
 
 namespace terminalDocuSign.Services
 {

@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Communication;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Utilities.Logging;
 using Google.GData.Client;
 using Newtonsoft.Json.Linq;
-using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
-using TerminalBase.Infrastructure;
-using Utilities.Configuration.Azure;
-using Utilities.Logging;
-using Fr8Infrastructure.Interfaces;
-using Fr8Infrastructure.Communication;
-using Newtonsoft.Json;
 
 namespace terminalGoogle.Services.Authorization
 {

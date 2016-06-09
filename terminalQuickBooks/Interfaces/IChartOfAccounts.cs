@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using Fr8Data.Manifests;
-using Intuit.Ipp.Data;
-using TerminalBase.Infrastructure;
-using TerminalBase.Models;
+﻿using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 
 namespace terminalQuickBooks.Interfaces
 {

@@ -155,6 +155,8 @@
     <Compile Include="DataTransferObjects\PlanFullDTO.cs" />
     <Compile Include="DataTransferObjects\ProfileDTO.cs" />
     <Compile Include="DataTransferObjects\QueryDTO.cs" />
+    <Compile Include="DataTransferObjects\RequestParameters\PlansGetParams.cs" />
+    <Compile Include="DataTransferObjects\RequestParameters\PlansPostParams.cs" />
     <Compile Include="DataTransferObjects\SlackPayloadDTO.cs" />
     <Compile Include="DataTransferObjects\DocumentationResponseDTO.cs" />
     <Compile Include="DataTransferObjects\StandardAccountingTransactionDTO.cs" />

@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Utilities.Logging;
 using ServiceStack;
-using ServiceStack.Text;
 using terminalSlack.RtmClient;
 using terminalSlack.RtmClient.Entities;
 using terminalSlack.RtmClient.Events;
-using Utilities.Logging;
 
 namespace terminalSlack.Services
 {

@@ -3,9 +3,9 @@ using Data.Interfaces;
 using StructureMap;
 using System.Linq;
 using System.Web.Http;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Utilities;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Utilities;
 
 namespace HubWeb.Controllers.Api
 {

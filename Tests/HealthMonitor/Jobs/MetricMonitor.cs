@@ -7,7 +7,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Collections.Generic;
-using HealthMonitorUtility;
+using Fr8.Testing.Integration;
 
 namespace HealthMonitor.Jobs
 {
