@@ -13,9 +13,8 @@ using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
 using StructureMap;
 using terminalAtlassian.Interfaces;
-using TerminalBase.Models;
-using Fr8Data.Control;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.Control;
 
 namespace terminalAtlassian.Services
 {
