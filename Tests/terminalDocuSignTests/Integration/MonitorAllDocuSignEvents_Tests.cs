@@ -8,7 +8,6 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Fr8.Testing.Integration;
-using Fr8.Testing.Integration;
 using terminalDocuSign.Services.New_Api;
 using Newtonsoft.Json;
 using System.Diagnostics;
@@ -174,12 +173,12 @@ namespace terminalDocuSignTests.Integration
                 IsDemoAccount = true
             };
 
-            string endpoint = GetTerminalUrl() + "/authentication/internal";
+            string endpoint = GetTerminalUrl() + "/authentication/token";
             var jobject = await HttpPostAsync<CredentialsDTO, JObject>(endpoint, creds);
             var docuSignToken = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(jobject.ToString());
             Assert.IsTrue(
                 string.IsNullOrEmpty(docuSignToken.Error),
-                $"terminalDocuSign call to /authentication/internal has failed with following error: {docuSignToken.Error}"
+                $"terminalDocuSign call to /authentication/token has failed with following error: {docuSignToken.Error}"
             );
 
             return docuSignToken;

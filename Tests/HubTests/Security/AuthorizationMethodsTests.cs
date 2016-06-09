@@ -242,7 +242,7 @@ namespace HubTests.Security
             //verify that the post call is made 
             restClientMock.Verify(
                 client => client.PostAsync<CredentialsDTO>(
-                new Uri(activityTemplateDO.Terminal.Endpoint + "/authentication/internal"),
+                new Uri(activityTemplateDO.Terminal.Endpoint + "/authentication/token"),
                 It.Is<CredentialsDTO>(it => it.Username == credentialsDTO.Username &&
                                            it.Password == credentialsDTO.Password &&
                                            it.Domain == credentialsDTO.Domain), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()), Times.Exactly(1));
