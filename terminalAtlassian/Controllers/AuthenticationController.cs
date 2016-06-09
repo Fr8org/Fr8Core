@@ -20,8 +20,8 @@ namespace terminalAtlassian.Controllers
         }
 
         [HttpPost]
-        [Route("internal")]
-        public  AuthorizationTokenDTO GenerateInternalOAuthToken(CredentialsDTO curCredential)
+        [Route("token")]
+        public AuthorizationTokenDTO GenerateInternalOAuthToken(CredentialsDTO curCredential)
         {
             try
             {

@@ -14,7 +14,7 @@ namespace terminalDropbox.Controllers
         private Authentication _authentication = new Authentication();
         
         [HttpPost]
-        [Route("initial_url")]
+        [Route("request_url")]
         public ExternalAuthUrlDTO GenerateOAuthInitiationURL()
         {
             return _authentication.GetExternalAuthUrl();
