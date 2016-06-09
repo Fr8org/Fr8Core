@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
-using Data.States;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
 
 namespace Hub.Interfaces
 {
@@ -18,8 +16,6 @@ namespace Hub.Interfaces
 
         List<CrateDescriptionCM> GetCrateManifestsByDirection(Guid activityId, CrateDirection direction,
             AvailabilityType availability, bool includeCratesFromActivity = true);
-
-        //Task Process(Guid curActivityId, ActivityExecutionMode curActionExecutionMode, ContainerDO curContainerDO);
 
         IncomingCratesDTO GetIncomingData(Guid activityId, CrateDirection direction, AvailabilityType availability);
         IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, IFr8AccountDO curAccount);

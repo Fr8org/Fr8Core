@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://github.com/Fr8org/Fr8Core.NET</licenseUrl>
+    <projectUrl>https://github.com/Fr8org/Fr8Core.NET</projectUrl>
+    <iconUrl>https://fr8.co/Content/img/dockyard_logo_white.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>Initial release</releaseNotes>
+    <copyright>Copyright 2016</copyright>
+    <tags>fr8 fr8Utilities</tags>
+  </metadata>
+</package>

@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
 using NUnit.Framework;
 using terminalDocuSign.Activities;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Tests.Fixtures;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace terminalDocuSign.Tests.Actions
 {

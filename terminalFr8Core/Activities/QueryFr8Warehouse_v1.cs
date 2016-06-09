@@ -7,19 +7,18 @@ using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.Internal;
 using Data.Interfaces;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
 using Hub.Services;
 using Hub.Services.MT;
 using Newtonsoft.Json;
 using StructureMap;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
 
 namespace terminalFr8Core.Activities
@@ -126,24 +125,7 @@ namespace terminalFr8Core.Activities
             }
         }
 
-        /*private async Task<Crate<FieldDescriptionsCM>>
-            ExtractUpstreamQueryCrates(ActivityDO activityDO)
-        {
-            var upstreamCrates = await GetCratesByDirection<StandardQueryCM>(
-                activityDO,
-                CrateDirection.Upstream
-            );
-
-            var fields = upstreamCrates
-                .Select(x => new FieldDTO() { Key = x.Label, Value = x.Label })
-                .ToList();
-
-            var crate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
-
-            return crate;
-        }*/
-
-        private async Task<StandardQueryCM> ExtractUpstreamQuery(UpstreamCrateChooser queryPicker)
+        /*private async Task<StandardQueryCM> ExtractUpstreamQuery(UpstreamCrateChooser queryPicker)
         {
             var upstreamQueryCrateLabel = queryPicker.SelectedCrates[0].Label.Value;
             if (string.IsNullOrEmpty(upstreamQueryCrateLabel))
@@ -154,7 +136,7 @@ namespace terminalFr8Core.Activities
                 .FirstOrDefault(x => x.Label == upstreamQueryCrateLabel);
 
             return upstreamQueryCrate?.Content;
-        }
+        }*/
 
         // This is weird to use query's name as the way to address MT type. 
         // MT type has unique ID that should be used for this reason. Query name is something that is displayed to user. It should not contain any internal data.
@@ -169,7 +151,7 @@ namespace terminalFr8Core.Activities
 
         private string GetCurrentEnvelopeId()
         {
-            var envelopePayloadCrate = Payload.CrateContentsOfType<StandardPayloadDataCM>(c => c.Label == "DocuSign Envelope Payload Data").Single();
+            var envelopePayloadCrate = Payload.CrateContentsOfType<StandardPayloadDataCM>(c => c.Label == "DocuSign Envelope Fields").Single();
             var envelopeId = envelopePayloadCrate.PayloadObjects.SelectMany(o => o.PayloadObject).Single(po => po.Key == "EnvelopeId").Value;
             return envelopeId;
         }
@@ -257,13 +239,13 @@ namespace terminalFr8Core.Activities
             return fields.Select(x => new ListItem() { Key = x.Key, Value = x.Value }).ToList();
         }
 
-        private async Task FillUpstreamCrateLabelDDLSource(Crate configurationCrate)
+        /*private async Task FillUpstreamCrateLabelDDLSource(Crate configurationCrate)
         {
             var selectedCrateDetails = GetSelectedCrateDetails(configurationCrate);
             var control = selectedCrateDetails.Label;
             control.ListItems = await GetExtractUpstreamQueryList();
-        }
-
+        }*/
+        /*
         private async Task<List<ListItem>> GetExtractUpstreamQueryList()
         {
             var upstreamCrates = await HubCommunicator.GetCratesByDirection<StandardQueryCM>(ActivityId, CrateDirection.Upstream);
@@ -271,11 +253,11 @@ namespace terminalFr8Core.Activities
                  .Select(x => new ListItem() { Key = x.Label, Value = x.Label })
                  .ToList();
         }
-
+        */
         #endregion
 
         public QueryFr8Warehouse_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 
@@ -288,8 +270,14 @@ namespace terminalFr8Core.Activities
             if (queryPicker.Radios[0].Selected)
             {
                 var upstreamCrateChooser = (UpstreamCrateChooser)(queryPicker).Radios[0].Controls[0];
+                var selectedCrate = upstreamCrateChooser.SelectedCrates.FirstOrDefault();
+                StandardQueryCM queryCM = null;
 
-                var queryCM = await ExtractUpstreamQuery(upstreamCrateChooser);
+                if (selectedCrate != null)
+                {
+                    queryCM = Payload.CratesOfType<StandardQueryCM>().FirstOrDefault(x => x.Label == selectedCrate.Label.selectedKey)?.Content;
+                }
+
                 if (queryCM?.Queries == null || queryCM.Queries.Count == 0)
                 {
                     RaiseError("No upstream crate found");
@@ -372,7 +360,7 @@ namespace terminalFr8Core.Activities
             var configurationCrate = PackControls(new ActivityUi());
             FillObjectsSource(configurationCrate, "AvailableObjects");
             FillUpstreamCrateManifestTypeDDLSource(configurationCrate);
-            await FillUpstreamCrateLabelDDLSource(configurationCrate);
+           // await FillUpstreamCrateLabelDDLSource(configurationCrate);
 
             Storage.Add(configurationCrate);
             Storage.Add(Crate.FromContent("Found MT Objects", new FieldDescriptionsCM(

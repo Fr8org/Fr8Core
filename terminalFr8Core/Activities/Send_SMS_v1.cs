@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Infrastructure;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
 using PhoneNumbers;
 using StructureMap;
 using terminalUtilities.Twilio;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 using Twilio;
 
 namespace terminalFr8Core.Activities
@@ -78,30 +77,10 @@ namespace terminalFr8Core.Activities
 
         public override async Task Initialize()
         {
-            Storage.Add(await CreateAvailableFieldsCrate());
         }
 
         public override async Task FollowUp()
         {
-            Storage.RemoveByLabel("Upstream Terminal-Provided Fields");
-            Storage.Add(await CreateAvailableFieldsCrate());
-        }
-
-        /// <summary>
-        /// Creates a crate with available design-time fields.
-        /// </summary>
-        /// <param name="terminalActivity">ActionDO.</param>
-        /// <returns></returns>
-        protected async Task<Crate> CreateAvailableFieldsCrate()
-        {
-            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(ActivityId, CrateDirection.Upstream, AvailabilityType.RunTime) ?? new FieldDescriptionsCM();
-
-            var availableFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(
-                    "Upstream Terminal-Provided Fields",
-                    curUpstreamFields.Fields,
-                    AvailabilityType.Configuration);
-
-            return availableFieldsCrate;
         }
 
         public override async Task Run()

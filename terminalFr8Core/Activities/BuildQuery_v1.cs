@@ -2,21 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.TerminalBase.BaseClasses;
 using Newtonsoft.Json;
 using terminalFr8Core.Infrastructure;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
-    public class BuildQuery_v1 : BaseTerminalActivity
+   public class BuildQuery_v1 : BaseTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -139,8 +138,7 @@ namespace terminalFr8Core.Activities
 
         private StandardQueryCM ExtractSelectedQueryFromCrate()
         {
-            var queryCM = Storage
-                .CrateContentsOfType<StandardQueryCM>(x => x.Label == "Selected Query")
+            var queryCM = Storage.CrateContentsOfType<StandardQueryCM>(x => x.Label == "Selected Query")
                 .FirstOrDefault();
 
             return queryCM;
@@ -179,7 +177,7 @@ namespace terminalFr8Core.Activities
 
             if (queryCrate == null)
             {
-                queryCrate = Crate<StandardQueryCM>.FromContent(
+                queryCrate = Fr8.Infrastructure.Data.Crates.Crate<StandardQueryCM>.FromContent(
                     "Selected Query",
                     new StandardQueryCM()
                     {
@@ -254,7 +252,7 @@ namespace terminalFr8Core.Activities
         #endregion Configuration.
 
         public BuildQuery_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
         public override async Task Run()
@@ -265,7 +263,7 @@ namespace terminalFr8Core.Activities
                 RaiseError("Selected Query crate was not found in Action's CrateStorage");
                 return;
             }
-            var sqlQueryCrate = Crate<StandardQueryCM>.FromContent("Sql Query", sqlQueryCM);
+            var sqlQueryCrate = Fr8.Infrastructure.Data.Crates.Crate<StandardQueryCM>.FromContent("Sql Query", sqlQueryCM);
             Payload.Add(sqlQueryCrate);
             Success();
             await Task.Yield();

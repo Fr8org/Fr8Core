@@ -3,7 +3,7 @@
         <md-divider></md-divider>
         <div class="row" style="margin-right: 0px;">
             <div class="col-md-10">
-                <h5 style="font-weight: bold;">{{metaDescription.description}}-{{getIndex(metaDescription)}}</h5> 
+                <h5 style="font-weight: bold;">{{metaDescription.description}}{{getIndex(metaDescription)}}</h5> 
             </div>
             <div class="col-md-2">
                 <img style="margin-top: 10px; float: right;" src="/Content/img/PlanBuilder/delete-icon.png" width="15" height="15"
@@ -13,7 +13,7 @@
         </div>
 
         <div ng-repeat="control in metaDescription.controls" style="margin-top: 5px;">
-            <delayed-control plan="plan" current-action="currentAction" field="control"/>
+            <delayed-control plan="plan" current-action="currentAction" field="control" change="change"/>
         </div>
     </div>
     <div class="col-md-12" style="padding-left: 0px;">

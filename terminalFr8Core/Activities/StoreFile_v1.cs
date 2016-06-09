@@ -1,19 +1,14 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using Hub.Managers;
-using StructureMap.Diagnostics;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Activities
 {
@@ -40,26 +35,7 @@ namespace terminalFr8Core.Activities
             stream.Position = 0;
             return stream;
         }
-
-        public async Task UpdateUpstreamFileCrates()
-        {
-            // Build a crate with the list of available upstream fields
-            var curUpstreamFieldsCrate = Storage.SingleOrDefault(c => c.ManifestType.Id == (int)MT.FieldDescription
-                                                                                && c.Label == "Upstream Terminal-Provided File Crates");
-            if (curUpstreamFieldsCrate != null)
-            {
-                Storage.Remove(curUpstreamFieldsCrate);
-            }
-
-            var upstreamFileCrates = await HubCommunicator.GetCratesByDirection<StandardFileDescriptionCM>(ActivityId, CrateDirection.Upstream);
-
-            var curUpstreamFields = upstreamFileCrates.Select(c => new FieldDTO(c.Label, c.Label)).ToArray();
-
-            curUpstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided File Crates", curUpstreamFields);
-            Storage.Add(curUpstreamFieldsCrate);
-            
-        }
-
+        
         private Crate CreateControlsCrate()
         {
             var fileNameTextBox = new TextBox
@@ -67,12 +43,12 @@ namespace terminalFr8Core.Activities
                 Label = "Name of file",
                 Name = "File_Name"
             };
-            var textSource = new TextSource("File Crate Label", "Upstream Terminal-Provided File Crates", "File Crate label");
+            var textSource = new TextSource("File Crate Label", null, "File Crate label");
             return PackControlsCrate(fileNameTextBox, textSource);
         }
 
         public StoreFile_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 
@@ -118,7 +94,7 @@ namespace terminalFr8Core.Activities
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
             Storage.Add(configurationControlsCrate);
-            await UpdateUpstreamFileCrates();
+           // await UpdateUpstreamFileCrates();
         }
 
         public override Task FollowUp()

@@ -3,13 +3,13 @@ using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
 using Salesforce.Common;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 
 namespace terminalIntegrationTests.Fixtures
 {
@@ -108,7 +108,7 @@ namespace terminalIntegrationTests.Fixtures
                 IsDemoAccount = true
             };
 
-            string endpoint = integrationTest.GetTerminalUrl() + "/authentication/internal";
+            string endpoint = integrationTest.GetTerminalUrl() + "/authentication/token";
             var jobject = await integrationTest.HttpPostAsync<CredentialsDTO, JObject>(endpoint, creds);
             var result = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(jobject.ToString());
             Assert.IsNullOrEmpty(result.Error, "Failed to aquire DocuSign auth token");

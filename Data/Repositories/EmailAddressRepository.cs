@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Globalization;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Validations;
-using Utilities;
 
 namespace Data.Repositories
 {

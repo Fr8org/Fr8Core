@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Data.Entities;
 using System.Collections.Generic;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace Hub.Interfaces
 {

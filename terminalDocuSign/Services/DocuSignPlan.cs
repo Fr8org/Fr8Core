@@ -6,24 +6,20 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Data.Entities;
 using Data.States;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 using log4net;
 using StructureMap;
 using terminalDocuSign.Interfaces;
-using TerminalBase.Infrastructure;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.Models;
-using Utilities.Configuration.Azure;
-using Utilities;
-using Utilities.Logging;
-using CrateManagerExtensions = Fr8Data.Managers.CrateManagerExtensions;
 
 namespace terminalDocuSign.Services
 {
@@ -146,7 +142,7 @@ namespace terminalDocuSign.Services
 
         private bool CheckIfSaveToFr8WarehouseConfiguredWithOldManifest(PlanDTO val)
         {
-            return (CrateManagerExtensions.GetStorage(_crateManager, val.Plan.SubPlans.ElementAt(0).Activities[1]).CrateContentsOfType<StandardConfigurationControlsCM>()
+            return (Hub.Managers.CrateManagerExtensions.GetStorage(_crateManager, val.Plan.SubPlans.ElementAt(0).Activities[1]).CrateContentsOfType<StandardConfigurationControlsCM>()
                      .First().FindByName("UpstreamCrateChooser") as UpstreamCrateChooser).SelectedCrates.Count > 1;
         }
 
@@ -167,7 +163,7 @@ namespace terminalDocuSign.Services
                         //second condition
                         val.Plan.SubPlans.ElementAt(0).Activities.Any() &&
                         //third condtion
-                        CrateManagerExtensions.GetStorage(_crateManager, val.Plan.SubPlans.ElementAt(0).Activities[0]).FirstOrDefault(t => t.Label == "DocuSignUserCrate") != null &&
+                        Hub.Managers.CrateManagerExtensions.GetStorage(_crateManager, val.Plan.SubPlans.ElementAt(0).Activities[0]).FirstOrDefault(t => t.Label == "DocuSignUserCrate") != null &&
                         //fourth condition -> check if SaveToFr8Warehouse configured with old manifests
                         !(plan_name == "MonitorAllDocuSignEvents" && CheckIfSaveToFr8WarehouseConfiguredWithOldManifest(val))
 
@@ -180,7 +176,7 @@ namespace terminalDocuSign.Services
 
                         existingPlans = newPlans.Where(
                               a => a.Plan.SubPlans.Any(b =>
-                                  CrateManagerExtensions.GetStorage(_crateManager, b.Activities[0])
+                                  Hub.Managers.CrateManagerExtensions.GetStorage(_crateManager, b.Activities[0])
                                   .FirstOrDefault(t => t.Label == "DocuSignUserCrate").Get<StandardPayloadDataCM>().GetValues("DocuSignUserEmail").FirstOrDefault() == authToken.ExternalAccountId)).ToList();
 
                         if (existingPlans.Count > 1)
@@ -258,8 +254,8 @@ namespace terminalDocuSign.Services
             var existingLabelDdlb = upstreamCrateChooser.SelectedCrates[0].Label;
             var docusignEnvelope = new DropDownList
             {
-                selectedKey = Fr8Data.Constants.MT.DocuSignEnvelope_v2.ToString(),
-                Value = ((int)Fr8Data.Constants.MT.DocuSignEnvelope_v2).ToString(),
+                selectedKey = Fr8.Infrastructure.Data.Constants.MT.DocuSignEnvelope_v2.ToString(),
+                Value = ((int)Fr8.Infrastructure.Data.Constants.MT.DocuSignEnvelope_v2).ToString(),
                 Name = "UpstreamCrateChooser_mnfst_dropdown_0",
                 Source = existingDdlbSource
             };

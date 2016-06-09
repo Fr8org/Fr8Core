@@ -4,7 +4,7 @@ using System.Web.Http;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;
@@ -39,9 +39,9 @@ namespace HubWeb.Controllers
             {
                 var userId = User.Identity.GetUserId();
                 var result = await _activity.CreateAndConfigure(uow, userId, activityTemplateId, label, name, order, parentNodeId, false, authorizationTokenId) as ActivityDO;
-                    return Ok(Mapper.Map<ActivityDTO>(result));
-                }
-                }
+                return Ok(Mapper.Map<ActivityDTO>(result));
+            }
+        }
 
 
         //WARNING. there's lots of potential for confusion between this POST method and the GET method following it.
@@ -53,10 +53,10 @@ namespace HubWeb.Controllers
             // WebMonitor.Tracer.Monitor.StartMonitoring("Configuring action " + curActionDesignDTO.Name);
             curActionDesignDTO.CurrentView = null;
             ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDesignDTO);
-
+            var userId = User.Identity.GetUserId();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                ActivityDTO activityDTO = await _activity.Configure(uow, User.Identity.GetUserId(), curActivityDO);
+                ActivityDTO activityDTO = await _activity.Configure(uow, userId, curActivityDO);
                 return Ok(activityDTO);
             }
         }

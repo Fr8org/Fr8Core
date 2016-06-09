@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Microsoft.AspNet.Identity;
 using Newtonsoft.Json.Linq;
 using StructureMap;
-using Fr8Data.DataTransferObjects;
-using Fr8Infrastructure.Interfaces;
 using Hub.Infrastructure;
 using PlanDirectory.Infrastructure;
 using PlanDirectory.Interfaces;
-using Utilities.Configuration.Azure;
 
-namespace PlanDirectory.Controllers
+namespace PlanDirectory.Controllers.Api
 {
+    [RoutePrefix("plan_templates")]
     public class PlanTemplatesController : ApiController
     {
         private readonly IPlanTemplate _planTemplate;
@@ -28,13 +29,37 @@ namespace PlanDirectory.Controllers
         [HttpPost]
         [Fr8ApiAuthorize]
         [PlanDirectoryHMACAuthenticate]
-        public async Task<IHttpActionResult> Post(PublishPlanTemplateDTO dto)
+        public Task<IHttpActionResult> Post(PublishPlanTemplateDTO dto)
         {
-            var fr8AccountId = User.Identity.GetUserId();
-            var planTemplateCM = await _planTemplate.CreateOrUpdate(fr8AccountId, dto);
-            await _searchProvider.CreateOrUpdate(planTemplateCM);
+            return ExceptionWrapper(async () =>
+            {
+                var fr8AccountId = User.Identity.GetUserId();
 
-            return Ok();
+                var planTemplateCM = await _planTemplate.CreateOrUpdate(fr8AccountId, dto);
+                await _searchProvider.CreateOrUpdate(planTemplateCM);
+
+                return Ok();
+            });
+        }
+
+        [HttpDelete]
+        [Fr8ApiAuthorize]
+        [PlanDirectoryHMACAuthenticate]
+        public Task<IHttpActionResult> Delete(Guid id)
+        {
+            return ExceptionWrapper(async () =>
+            {
+                var fr8AccountId = User.Identity.GetUserId();
+                var planTemplateCM = await _planTemplate.Get(fr8AccountId, id);
+
+                if (planTemplateCM != null)
+                {
+                    await _planTemplate.Remove(fr8AccountId, id);
+                    await _searchProvider.Remove(id);
+                }
+
+                return Ok();
+            });
         }
 
         [HttpGet]
@@ -67,28 +92,54 @@ namespace PlanDirectory.Controllers
         [HttpPost]
         [Fr8ApiAuthorize]
         [PlanDirectoryHMACAuthenticate]
-        public async Task<IHttpActionResult> CreatePlan(Guid id)
+        public Task<IHttpActionResult> CreatePlan(Guid id)
         {
-            var fr8AccountId = User.Identity.GetUserId();
+            return ExceptionWrapper(async () =>
+            {
+                var fr8AccountId = User.Identity.GetUserId();
 
-            var hmacService = ObjectFactory.GetInstance<IHMACService>();
-            var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+                var hmacService = ObjectFactory.GetInstance<IHMACService>();
+                var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
-            var planTemplateDTO = await _planTemplate.Get(fr8AccountId, id);
+                var planTemplateDTO = await _planTemplate.Get(fr8AccountId, id);
 
-            var uri = new Uri(CloudConfigurationManager.GetSetting("HubUrl") + "/api/v1/plans/load");
-            var headers = await hmacService.GenerateHMACHeader(
-                uri,
-                "PlanDirectory",
-                CloudConfigurationManager.GetSetting("PlanDirectorySecret"),
-                User.Identity.GetUserId(),
-                planTemplateDTO.PlanContents
-            );
+                var uri = new Uri(CloudConfigurationManager.GetSetting("HubUrl") + "/api/v1/plans/load");
+                var headers = await hmacService.GenerateHMACHeader(
+                    uri,
+                    "PlanDirectory",
+                    CloudConfigurationManager.GetSetting("PlanDirectorySecret"),
+                    User.Identity.GetUserId(),
+                    planTemplateDTO.PlanContents
+                );
 
-            var plan = await client.PostAsync<JToken, Fr8Data.DataTransferObjects.PlanNoChildrenDTO>(
-                uri, planTemplateDTO.PlanContents, headers: headers);
+                var plan = await client.PostAsync<JToken, PlanNoChildrenDTO>(
+                    uri, planTemplateDTO.PlanContents, headers: headers);
 
-            return Ok(new { RedirectUrl = CloudConfigurationManager.GetSetting("HubUrl") + "/dashboard/plans/" + plan.Id.ToString() + "/builder?viewMode=plan" });
+                return Ok(new { RedirectUrl = CloudConfigurationManager.GetSetting("HubUrl") + "/dashboard/plans/" + plan.Id.ToString() + "/builder?viewMode=plan" });
+            });
+        }
+
+        // Added for PD <-> Hub debugging purposes only, to be removed in future.
+        private Task<IHttpActionResult> ExceptionWrapper(Func<Task<IHttpActionResult>> handler)
+        {
+            try
+            {
+                return handler();
             }
+            catch (Exception ex)
+            {
+                var sb = new System.Text.StringBuilder();
+
+                while (ex != null)
+                {
+                    sb.AppendLine(ex.Message);
+                    sb.AppendLine(ex.StackTrace);
+
+                    ex = ex.InnerException;
+                }
+
+                return Task.FromResult<IHttpActionResult>(Ok(new { exception = sb.ToString() }));
+            }
+        }
     }
 }

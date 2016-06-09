@@ -6,12 +6,10 @@ using FluentValidation;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Data.Entities;
-using Data.Infrastructure;
 using Data.Interfaces;
-using Data.Validations;
+using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Services;
-using Utilities;
-using Utilities.Logging;
 using HubWeb.ViewModels;
 
 namespace HubWeb.Controllers
@@ -47,7 +45,7 @@ namespace HubWeb.Controllers
                     dockyardAccountDO = uow.UserRepository.GetByKey(userID);
                 }
 
-                var returnVM = new HomeVM { SegmentWriteKey = new ConfigRepository().Get("SegmentWriteKey") };
+                var returnVM = new HomeVM { SegmentWriteKey = Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey") };
 
                 if (dockyardAccountDO != null)
                 {

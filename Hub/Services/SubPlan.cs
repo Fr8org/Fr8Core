@@ -5,13 +5,9 @@ using System.Threading.Tasks;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Interfaces;
 using StructureMap;
-using Utilities.Logging;
 
 namespace Hub.Services
 {

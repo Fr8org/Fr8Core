@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Infrastructure;
 using PhoneNumbers;
-using StructureMap;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 using Twilio;
 using terminalUtilities.Twilio;
 
@@ -37,7 +36,7 @@ namespace terminalTwilio.Activities
         protected ITwilioService Twilio;
 
         public Send_Via_Twilio_v1(ICrateManager crateManager, ITwilioService twilioService)
-            : base(false, crateManager)
+            : base(crateManager)
         {
             Twilio = twilioService;
         }
@@ -46,20 +45,8 @@ namespace terminalTwilio.Activities
         {
             Storage.Clear();
             Storage.Add(PackCrate_ConfigurationControls());
-            Storage.Add(await CreateAvailableFieldsCrate());
         }
-
-        private async Task<Crate> CreateAvailableFieldsCrate()
-        {
-            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(ActivityId, CrateDirection.Upstream, AvailabilityType.RunTime) ?? new FieldDescriptionsCM();
-
-            var availableFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(
-                    "Upstream Terminal-Provided Fields",
-                    curUpstreamFields.Fields,
-                    AvailabilityType.Configuration);
-
-            return availableFieldsCrate;
-        }
+        
 
         private Crate PackCrate_ConfigurationControls()
         {
@@ -79,9 +66,8 @@ namespace terminalTwilio.Activities
 
         public override async Task FollowUp()
         {
-            Storage.RemoveByLabel("Upstream Terminal-Provided Fields");
-            Storage.Add(await CreateAvailableFieldsCrate());
-            }
+          
+        }
 
         public override async Task Run()
         {
@@ -209,7 +195,7 @@ namespace terminalTwilio.Activities
         }
         private Crate PackCrate_TwilioMessageDetails(List<FieldDTO> curTwilioMessage)
         {
-            return Fr8Data.Crates.Crate.FromContent("Message Data", new StandardPayloadDataCM(curTwilioMessage));
+            return Crate.FromContent("Message Data", new StandardPayloadDataCM(curTwilioMessage));
         }
 
         private void PackCrate_WarningMessage(string warningMessage, string warningLabel)

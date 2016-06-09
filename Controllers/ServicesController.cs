@@ -3,7 +3,7 @@ using StructureMap;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace HubWeb.Controllers
 {
@@ -14,7 +14,7 @@ namespace HubWeb.Controllers
         {
             _terminal = ObjectFactory.GetInstance<ITerminal>();
         }
-        private async Task<List<SolutionPageDTO>> getDocumentationSolutionList(string terminalName)
+        private async Task<List<DocumentationResponseDTO>> getDocumentationSolutionList(string terminalName)
         {
             var solutionNameList = await _terminal.GetSolutionDocumentations(terminalName);
             return solutionNameList;

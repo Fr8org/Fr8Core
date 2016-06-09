@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Fr8Data.DataTransferObjects;
-using TerminalBase.BaseClasses;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Utilities.Logging;
+using Fr8.TerminalBase.BaseClasses;
 using terminalSalesforce.Infrastructure;
-using Utilities.Logging;
 
 namespace terminalSalesforce.Controllers
 {
@@ -17,7 +17,7 @@ namespace terminalSalesforce.Controllers
 
 
         [HttpPost]
-        [Route("initial_url")]
+        [Route("request_url")]
         public ExternalAuthUrlDTO GenerateOAuthInitiationURL()
         {
             return _authentication.GetExternalAuthUrl();

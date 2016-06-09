@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Errors;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
 namespace terminalSlack.Activities
 {
@@ -84,7 +84,7 @@ namespace terminalSlack.Activities
                 await _slackIntegration.PostMessageToChat(AuthorizationToken.Token,
                     actionChannelId, StripHTML(messageField.GetValue(Payload)));
             }
-            catch (TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException)
+            catch (AuthorizationTokenExpiredOrInvalidException)
             {
                 RaiseInvalidTokenError();
             }
@@ -102,7 +102,7 @@ namespace terminalSlack.Activities
         }
 
         public Publish_To_Slack_v1(ICrateManager crateManager)
-            : base(true, crateManager)
+            : base(crateManager)
         {
             _slackIntegration = new SlackIntegration();
         }

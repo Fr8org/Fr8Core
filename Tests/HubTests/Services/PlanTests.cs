@@ -6,7 +6,7 @@ using Data.Entities;
 using Data.Interfaces;
 using HubTests.Services.Container;
 using NUnit.Framework;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace HubTests.Services
 {

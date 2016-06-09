@@ -48,8 +48,14 @@ namespace PlanDirectory.Controllers
             catch (System.Exception ex)
             {
                 var sb = new System.Text.StringBuilder();
-                sb.AppendLine(ex.Message);
-                sb.AppendLine(ex.StackTrace);
+
+                while (ex != null)
+                {
+                    sb.AppendLine(ex.Message);
+                    sb.AppendLine(ex.StackTrace);
+
+                    ex = ex.InnerException;
+                }
 
                 return Content(sb.ToString());
             }

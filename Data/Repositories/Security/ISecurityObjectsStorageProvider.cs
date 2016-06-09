@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
 using Data.Repositories.Security.Entities;
-using Data.States;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace Data.Repositories.Security
 {

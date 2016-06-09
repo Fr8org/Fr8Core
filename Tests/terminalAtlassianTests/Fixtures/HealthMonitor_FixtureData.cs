@@ -1,6 +1,6 @@
 ﻿using System;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Newtonsoft.Json;
-using Fr8Data.DataTransferObjects;
 
 namespace terminalAtlassianTests.Fixtures
 {
@@ -12,7 +12,7 @@ namespace terminalAtlassianTests.Fixtures
             {
                 Domain = "https://maginot.atlassian.net",
                 Username = "fr8_atlassian_test",
-                Password = "yakima29"
+                Password = "shoggoth34"
             };
 
             return new AuthorizationTokenDTO()

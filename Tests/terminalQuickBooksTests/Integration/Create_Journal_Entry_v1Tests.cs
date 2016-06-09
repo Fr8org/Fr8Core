@@ -1,10 +1,9 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using HealthMonitor.Utility;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
 using terminalQuickBooksTests.Fixtures;
 
@@ -41,27 +40,6 @@ namespace terminalQuickBooksTests.Integration
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls;
             Assert.AreEqual(0, controls.Count);
-        }
-
-        [Test, Category("Integration.terminalQuickBooks")]
-        public async Task Create_Journal_Entry_Configuration_Check_With_Upstream_Crate()
-        {
-            //Arrange
-            var configureUrl = GetTerminalConfigureUrl();
-            var dataDTO = HealthMonitor_FixtureData.Activity_Create_Journal_Entry_v1_InitialConfiguration_Fr8DataDTO();
-            var curStandAccTransCrate = HealthMonitor_FixtureData.GetAccountingTransactionCM();
-            AddUpstreamCrate(dataDTO, curStandAccTransCrate);
-            //Act
-            var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
-                    configureUrl,
-                    dataDTO
-                );
-            //Assert
-            Assert.NotNull(responseActionDTO);
-            Assert.NotNull(responseActionDTO.CrateStorage);
-            var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            var upstream = crateStorage.CrateContentsOfType<StandardAccountingTransactionCM>().Single();
-            Assert.NotNull(upstream);
         }
     }
 }

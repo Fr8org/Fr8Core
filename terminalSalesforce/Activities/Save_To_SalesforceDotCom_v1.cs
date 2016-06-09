@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Infrastructure;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
 using ServiceStack;
-using Salesforce.Common;
 
 namespace terminalSalesforce.Actions
 {
@@ -39,7 +39,7 @@ namespace terminalSalesforce.Actions
         readonly ISalesforceManager _salesforce = new SalesforceManager();
         
         public Save_To_SalesforceDotCom_v1(ICrateManager crateManager)
-            : base(true, crateManager)
+            : base(crateManager)
         {
         }
 
@@ -146,7 +146,7 @@ namespace terminalSalesforce.Actions
                 {
                     result = await _salesforce.Create(chosenObject.ToEnum<SalesforceObjectType>(), jsonInputObject, AuthorizationToken);
                 }
-                catch (TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException ex)
+                catch (AuthorizationTokenExpiredOrInvalidException ex)
                 {
                     RaiseInvalidTokenError();
                     return;
