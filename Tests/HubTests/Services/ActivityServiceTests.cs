@@ -21,8 +21,8 @@ using Fr8.TerminalBase.Infrastructure;
 using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
 using Hub.Services;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 using Action = Hub.Services.Activity;
 using IContainer = StructureMap.IContainer;
 

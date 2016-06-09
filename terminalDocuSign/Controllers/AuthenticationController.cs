@@ -24,12 +24,11 @@ namespace terminalDocuSign.Controllers
         }
 
         [HttpPost]
-        [Route("internal")]
+        [Route("token")]
         public async Task<AuthorizationTokenDTO> GenerateInternalOAuthToken(CredentialsDTO curCredentials)
         {
             try
             {
-                
                 var authToken = await ObtainAuthToken(curCredentials);
 
                 if (authToken == null)

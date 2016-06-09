@@ -11,7 +11,7 @@ using Data.States;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using HubTests.Controllers.Api;
 using HubWeb.Controllers;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
 
 
 namespace HubTests.Controllers

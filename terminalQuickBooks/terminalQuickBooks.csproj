@@ -366,15 +366,11 @@
       <Project>{bf96675e-6baf-4ac9-b247-1551d62e8c44}</Project>
       <Name>Fr8TerminalBase.NET</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
-      <Project>{6B855C3F-07A9-4787-9FDE-29FA567C43E2}</Project>
-      <Name>UtilitiesTesting</Name>
-    </ProjectReference>
+
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
-  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -425,6 +421,12 @@
   -->
   <ItemGroup>
     <Log4netConfigFiles Include="..\Config\log4net.terminals.*" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Tests\Fr8.Testing\Fr8.Testing.csproj">
+      <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
+      <Name>Fr8.Testing</Name>
+    </ProjectReference>
   </ItemGroup>
   <Target Name="BeforeBuild">
     <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />

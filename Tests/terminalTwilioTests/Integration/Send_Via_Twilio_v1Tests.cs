@@ -7,7 +7,8 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.DataTransferObjects.Helpers;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
+
 using terminalTwilioTests.Fixture;
 using NUnit.Framework;
 

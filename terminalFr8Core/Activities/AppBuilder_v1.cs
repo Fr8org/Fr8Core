@@ -86,19 +86,21 @@ namespace terminalFr8Core.Activities
         {
             var controlContainer = GetControl<MetaControlContainer>("control_container");
             var collectionControls = controlContainer.CreateControls();
+            var fieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(RuntimeFieldCrateLabelPrefix, AvailabilityType.RunTime, new FieldDTO[] { });
 
-                var fieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(RuntimeFieldCrateLabelPrefix, AvailabilityType.RunTime, new FieldDTO[] { });
             Storage.RemoveByLabel(RuntimeFieldCrateLabelPrefix);
             Storage.Add(fieldsCrate);
 
-                foreach (var controlDefinitionDTO in collectionControls)
-                {
+            foreach (var controlDefinitionDTO in collectionControls)
+            {
                 PublishCollectionControl(controlDefinitionDTO);
-                }
-
-                //TODO this part should be modified with 2975
-                //PublishFilePickers(pStorage, collectionControls.Controls.Where(a => a.Type == ControlTypes.FilePicker));
             }
+            
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeFieldCrateLabelPrefix, true);
+
+            //TODO this part should be modified with 2975
+            //PublishFilePickers(pStorage, collectionControls.Controls.Where(a => a.Type == ControlTypes.FilePicker));
+        }
 
         private void PublishCollectionControl(ControlDefinitionDTO controlDefinitionDTO)
         {
@@ -364,7 +366,8 @@ namespace terminalFr8Core.Activities
                     return;
                 }
             }
-            PublishCollectionControls();
+            PublishCollectionControls();   
+           
         }
     }
 }

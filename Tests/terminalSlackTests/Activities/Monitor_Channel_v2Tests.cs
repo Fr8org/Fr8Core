@@ -15,7 +15,7 @@ using NUnit.Framework;
 using StructureMap;
 using terminalSlack.Interfaces;
 using terminalSlackTests.Fixtures;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 using terminalSlack.Activities;
 
 namespace terminalSlackTests.Activities

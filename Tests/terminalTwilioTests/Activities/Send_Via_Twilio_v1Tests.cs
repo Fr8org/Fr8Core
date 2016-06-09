@@ -4,7 +4,7 @@ using Moq;
 using NUnit.Framework;
 using StructureMap;
 using terminalTwilio.Tests.Fixtures;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 using terminalTwilio.Activities;
 using System.Linq;
 using Fr8.Infrastructure.Data.Crates;

@@ -11,11 +11,10 @@
         </div>
         <div class="col-xs-12">
             <md-button class="md-raised" ng-class="{'md-primary':planFile.name}" ngf-select ngf-pattern=".json" ngf-accept=".json" name="planFile" ng-model="planFile" ngf-change="fileChanged()" >
-                Chose .JSON file to upload plan template
+                Choose .JSON file to upload plan template
             </md-button>
             <i ng-show="planFile.name" class="fa fa-2x fa-check text-success">&nbsp;</i> {{planFile.name}}
         </div>
-
     </div>
     <div class="modal-footer">
         <button class="btn btn-primary" type="submit" >Load plan template</button>

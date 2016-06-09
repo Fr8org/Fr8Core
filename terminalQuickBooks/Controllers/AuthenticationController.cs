@@ -23,7 +23,7 @@ namespace terminalQuickBooks.Controllers
         }
 
         [HttpPost]
-        [Route("initial_url")]
+        [Route("request_url")]
         public ExternalAuthUrlDTO GenerateOAuthInitiationURL()
         {
             var url = _authenticator.CreateAuthUrl();

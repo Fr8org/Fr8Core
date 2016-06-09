@@ -16,7 +16,7 @@ using terminalSalesforce;
 using terminalSalesforce.Actions;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforceTests.Fixtures;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace terminalSalesforceTests.Actions
 {

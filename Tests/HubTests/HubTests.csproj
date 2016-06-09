@@ -398,13 +398,9 @@
       <Project>{e46b602a-287b-450f-b455-5eed20c93eb7}</Project>
       <Name>terminalUtilities</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HealthMonitorUtility\HealthMonitorUtility.csproj">
+    <ProjectReference Include="..\Fr8.Testing\Fr8.Testing.csproj">
       <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
-      <Name>HealthMonitorUtility</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\UtilitiesTesting\UtilitiesTesting.csproj">
-      <Project>{6B855C3F-07A9-4787-9FDE-29FA567C43E2}</Project>
-      <Name>UtilitiesTesting</Name>
+      <Name>Fr8.Testing</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -416,6 +412,34 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
+    <None Include="Tools\FileTools\TestFiles\10Columns.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\FileTools\TestFiles\10Columns.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\FileTools\TestFiles\1Column.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\FileTools\TestFiles\1Column.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\FileTools\TestFiles\2Columns.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\FileTools\TestFiles\2Columns.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\FileTools\TestFiles\3Columns.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\FileTools\TestFiles\3Columns.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\FileTools\TestFiles\SampleFile1.xlsx" />
+    <None Include="Tools\FileTools\TestFiles\small_pdf_file.pdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Service References\" />

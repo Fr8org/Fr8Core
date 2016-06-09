@@ -11,11 +11,11 @@ using NUnit.Framework;
 using StructureMap;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services.New_Api;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace terminalDocuSignTests.Activities
 {
-    public class BaseTest : UtilitiesTesting.BaseTest
+    public class BaseTest : Fr8.Testing.Unit.BaseTest
     {
         protected readonly AuthorizationToken FakeToken = new AuthorizationToken { Token = "1" };
         [SetUp]

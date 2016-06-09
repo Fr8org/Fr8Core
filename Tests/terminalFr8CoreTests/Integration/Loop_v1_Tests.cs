@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
-using HealthMonitor.Utility;
+using Data.States;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
 
 namespace terminalFr8CoreTests.Integration

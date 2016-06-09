@@ -10,8 +10,7 @@ using Data.Interfaces;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
-using HealthMonitor.Utility;
-
+using Fr8.Testing.Integration;
 namespace terminalIntegrationTests.EndToEnd
 {
     [Explicit]

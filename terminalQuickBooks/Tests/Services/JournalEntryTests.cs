@@ -5,7 +5,7 @@ using Intuit.Ipp.Data;
 using NUnit.Framework;
 using StructureMap;
 using terminalQuickBooks.Interfaces;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace terminalQuickBooks.Tests.Services
 {

@@ -8,7 +8,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using NUnit.Framework;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using terminalDocuSignTests.Fixtures;
 
 namespace terminalDocuSignTests.Integration

@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
-using UtilitiesTesting;
+using terminalFr8Core.Actions;
+using Fr8.Testing.Unit;
 using System.Threading.Tasks;
 using Moq;
 using StructureMap;

@@ -16,7 +16,7 @@ using terminalSendGrid.Activities;
 using terminalSendGridTests.Fixtures;
 using terminalUtilities.Interfaces;
 using terminalUtilities.SendGrid;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace terminalSendGridTests.Unit.Activities
 {

@@ -3,8 +3,9 @@ using NUnit.Framework;
 using StructureMap;
 using terminalDocuSign.Services.New_Api;
 using terminalDocuSignTests.Fixtures;
-using UtilitiesTesting.Asserts;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Asserts;
+using Fr8.Testing.Unit.Fixtures;
+
 
 namespace terminalDocuSignTests.Activities
 {

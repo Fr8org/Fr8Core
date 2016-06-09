@@ -8,8 +8,8 @@ using Data.Interfaces;
 using Data.States;
 using Fr8.Infrastructure.Utilities;
 using Hub.Services;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 using Hub.Security;
 using Microsoft.Owin.Security.DataProtection;
 
