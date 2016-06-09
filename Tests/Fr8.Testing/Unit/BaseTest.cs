@@ -32,7 +32,7 @@ namespace Fr8.Testing.Unit
             ConfigureAutoMapper();
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             CrateManager = ObjectFactory.Container.GetInstance<ICrateManager>();
-            ObjectFactory.Configure(x => x.AddRegistry<Fr8Infrastructure.StructureMap.StructureMapBootStrapper.TestMode>());
+            ObjectFactory.Configure(x => x.AddRegistry<Fr8.Infrastructure.StructureMap.StructureMapBootStrapper.TestMode>());
             
             
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>()) //Get the seeding done first
