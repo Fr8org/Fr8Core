@@ -22,7 +22,7 @@ namespace terminalBox.Controllers
         //https://account.box.com/api/oauth2/authorize?response_type=code&client_id=MY_CLIENT_ID&state=security_token%3DKnhMJatFipTAnM0nHlZA
         //http://localhost:30643/AuthenticationCallback/ProcessSuccessfulOAuthResponse
         [HttpPost]
-        [Route("initial_url")]
+        [Route("request_url")]
         public ExternalAuthUrlDTO GenerateOAuthInitiationURL()
         {
             var url = CloudConfigurationManager.GetSetting("BoxAuthUrl");

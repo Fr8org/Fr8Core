@@ -26,7 +26,7 @@ namespace terminalDocuSignTests.Fixtures
                     IsDemoAccount = true
                 };
 
-                string endpoint = integrationTest.GetTerminalUrl() + "/authentication/internal";
+                string endpoint = integrationTest.GetTerminalUrl() + "/authentication/token";
                 var jobject = await integrationTest.HttpPostAsync<CredentialsDTO, JObject>(endpoint, creds);
                 DocuSignToken = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(jobject.ToString());
                 Assert.IsTrue(string.IsNullOrEmpty(DocuSignToken.Error));
