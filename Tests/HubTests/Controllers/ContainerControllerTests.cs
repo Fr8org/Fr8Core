@@ -73,7 +73,7 @@ namespace HubTests.Controllers
             ShouldHaveFr8ApiAuthorizeOnFunction(typeof(ContainersController), "GetPayload");
         }
 
-        [Test]
+        [Test, Ignore]
         public void ContainerController_ShouldHaveFr8ApiAuthorizeOnGetMethod()
         {
             ShouldHaveFr8ApiAuthorizeOnFunction(typeof(ContainersController), "Get");
