@@ -4439,7 +4439,6 @@
     <Content Include="Views\DockyardAccount\Register.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\_Blank.cshtml" />
-    <Content Include="Views\MandrillWebhook\Index.cshtml" />
     <Content Include="Views\DockyardAccount\Confirm.cshtml" />
     <Content Include="Views\Shared\404.cshtml" />
     <Content Include="Views\DockyardAccount\RegistrationConfirmation.cshtml" />
@@ -4496,13 +4495,7 @@
     <Folder Include="Scripts\tests\templates\" />
     <Folder Include="ViewModelServices\" />
     <Folder Include="Views\CommunicationManager\" />
-    <Folder Include="Views\Data\" />
     <Folder Include="Views\DockyardEvent\" />
-    <Folder Include="Views\DocuSignTemplate\" />
-    <Folder Include="Views\Envelope\" />
-    <Folder Include="Views\Portal\" />
-    <Folder Include="Views\Process\" />
-    <Folder Include="Views\Settings\" />
     <Folder Include="Webhooks\" />
   </ItemGroup>
   <ItemGroup>
