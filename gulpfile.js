@@ -122,6 +122,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Controls/DatePicker.js',
         'Scripts/app/directives/Controls/UpstreamDataChooser.js',
         'Scripts/app/directives/Controls/UpstreamFieldChooser.js',
+        'Scripts/app/directives/Controls/UpstreamFieldChooserButton.js',
         'Scripts/app/directives/Controls/UpstreamCrateChooser.js',
         'Scripts/app/directives/Controls/CrateChooser.js',
         'Scripts/app/directives/Controls/ContainerTransition.js',
