@@ -13,17 +13,18 @@ namespace Fr8.TerminalBase.Infrastructure
 {
     public class BaseTerminalEvent
     {
+        private readonly IRestfulServiceClient _restfulServiceClient;
         private readonly EventReportCrateFactory _eventReportCrateFactory;
         private readonly LoggingDataCrateFactory _loggingDataCrateFactory;
-        private readonly ICrateManager _crateManager;
         
         public delegate Task<Crate> EventParser(string externalEventPayload);
         
         private string eventWebServerUrl = string.Empty;
         private bool eventsDisabled = false;
 
-        public BaseTerminalEvent()
+        public BaseTerminalEvent(IRestfulServiceClient restfulServiceClient)
         {
+            _restfulServiceClient = restfulServiceClient;
             //Missing CoreWebServerUrl most likely means that terminal is running in an integration test environment. 
             //Disable event distribution in such case since we don't need it (nor do we have a Hub instance 
             //to send events too).
@@ -39,7 +40,6 @@ namespace Fr8.TerminalBase.Infrastructure
 
             _eventReportCrateFactory = new EventReportCrateFactory();
             _loggingDataCrateFactory = new LoggingDataCrateFactory();
-            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
 
 
@@ -49,7 +49,6 @@ namespace Fr8.TerminalBase.Infrastructure
             //SF DEBUG -- Skip this event call for local testing
             //return;
             //make Post call
-            var restClient = PrepareRestClient();
             var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingDataCM
             {
                 ObjectId = terminalName,
@@ -60,8 +59,8 @@ namespace Fr8.TerminalBase.Infrastructure
             });
             //TODO inpect this
             //I am not sure what to supply for parameters eventName and palletId, so i passed terminalName and eventType
-            return restClient.PostAsync(new Uri(eventWebServerUrl, UriKind.Absolute),
-                _crateManager.ToDto(_eventReportCrateFactory.Create(eventType, terminalName, loggingDataCrate)));
+            return _restfulServiceClient.PostAsync(new Uri(eventWebServerUrl, UriKind.Absolute),
+                CrateStorageSerializer.Default.ConvertToDto(_eventReportCrateFactory.Create(eventType, terminalName, loggingDataCrate)));
         }
 
         public Task<string> SendEventReport(string terminalName, string message)
@@ -70,7 +69,6 @@ namespace Fr8.TerminalBase.Infrastructure
             //return;
             if (eventsDisabled) return Task.FromResult(string.Empty);
             //make Post call
-            var restClient = PrepareRestClient();
             var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingDataCM
             {
                 ObjectId = terminalName,
@@ -81,8 +79,8 @@ namespace Fr8.TerminalBase.Infrastructure
             });
             //TODO inpect this
             //I am not sure what to supply for parameters eventName and palletId, so i passed terminalName and eventType
-            return restClient.PostAsync(new Uri(eventWebServerUrl, UriKind.Absolute),
-                _crateManager.ToDto(_eventReportCrateFactory.Create("Terminal Fact", terminalName, loggingDataCrate)));
+            return _restfulServiceClient.PostAsync(new Uri(eventWebServerUrl, UriKind.Absolute),
+                 CrateStorageSerializer.Default.ConvertToDto(_eventReportCrateFactory.Create("Terminal Fact", terminalName, loggingDataCrate)));
         }
 
         /// <summary>
@@ -96,10 +94,7 @@ namespace Fr8.TerminalBase.Infrastructure
         public Task<string> SendTerminalErrorIncident(string terminalName, string exceptionMessage, string exceptionName, string fr8UserId=null)
         {
             if (eventsDisabled) return Task.FromResult(string.Empty);
-
-            //prepare the REST client to make the POST to fr8's Event Controller
-            var restClient = PrepareRestClient();
-
+            
             //create event logging data with required information
             var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingDataCM
             {
@@ -112,20 +107,10 @@ namespace Fr8.TerminalBase.Infrastructure
             });
 
             //return the response from the fr8's Event Controller
-            return restClient.PostAsync(new Uri(eventWebServerUrl, UriKind.Absolute),
-                _crateManager.ToDto(_eventReportCrateFactory.Create("Terminal Incident", terminalName, loggingDataCrate)));
+            return _restfulServiceClient.PostAsync(new Uri(eventWebServerUrl, UriKind.Absolute),
+                 CrateStorageSerializer.Default.ConvertToDto(_eventReportCrateFactory.Create("Terminal Incident", terminalName, loggingDataCrate)));
         }
-
-        /// <summary>
-        /// Initializes a new rest call
-        /// </summary>
-        /// <returns>The protected access specifier is only for Unit Test purpose. 
-        /// In all other scenarios it should be teated as private</returns>
-        protected virtual IRestfulServiceClient PrepareRestClient()
-        {
-            return ObjectFactory.GetInstance<IRestfulServiceClient>();
-        }
-
+        
         /// <summary>
         /// Processing the external event pay load received
         /// </summary>
@@ -133,10 +118,8 @@ namespace Fr8.TerminalBase.Infrastructure
         /// <param name="parser">delegate method</param>
         public async Task Process(string curExternalEventPayload, EventParser parser)
         {
-            var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
-
             var fr8EventUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") + "api/v1/events";
-            var eventReportCrateDTO = _crateManager.ToDto(await parser.Invoke(curExternalEventPayload));
+            var eventReportCrateDTO = CrateStorageSerializer.Default.ConvertToDto(await parser.Invoke(curExternalEventPayload));
             
             if (eventReportCrateDTO != null)
             {
@@ -144,7 +127,7 @@ namespace Fr8.TerminalBase.Infrastructure
                 try
                 {
                     //TODO are we expecting a timeout??
-                    await client.PostAsync(url, eventReportCrateDTO);
+                    await _restfulServiceClient.PostAsync(url, eventReportCrateDTO);
                 }
                 catch (TaskCanceledException)
                 {

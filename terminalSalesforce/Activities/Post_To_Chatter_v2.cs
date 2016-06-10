@@ -51,7 +51,7 @@ namespace terminalSalesforce.Actions
 
             public RadioButtonOption UseIncomingChatterIdOption { get; set; }
 
-            public TextSource IncomingChatterIdSelector { get; set; }
+            public UpstreamFieldChooser IncomingChatterIdSelector { get; set; }
 
             public ActivityUi() : this(new UiBuilder()) { }
 
@@ -82,15 +82,13 @@ namespace terminalSalesforce.Actions
                     Value = "Query for chatter objects",
                     Controls = new List<ControlDefinitionDTO> { ChatterSelector, ChatterFilter }
                 };
-                IncomingChatterIdSelector = new TextSource
+                IncomingChatterIdSelector = new UpstreamFieldChooser
                 {
                     Name = nameof(IncomingChatterIdSelector),
-                    InitialLabel = "Incoming value as chatter id",
                     Source = new FieldSourceDTO
                     {
                         AvailabilityType = AvailabilityType.RunTime,
-                        ManifestType = CrateManifestTypes.StandardDesignTimeFields,
-                        RequestUpstream = true
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     }
                 };
                 UseIncomingChatterIdOption = new RadioButtonOption

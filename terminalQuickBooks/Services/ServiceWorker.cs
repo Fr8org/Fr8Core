@@ -22,9 +22,9 @@ namespace terminalQuickBooks.Services
 
         private readonly IAuthenticator _authenticator;
 
-        public ServiceWorker()
+        public ServiceWorker(IAuthenticator authenticator)
         {
-            _authenticator = ObjectFactory.GetInstance<IAuthenticator>();
+            _authenticator = authenticator;
         }
 
         public ServiceContext CreateServiceContext(AuthorizationToken authToken, IHubCommunicator hubCommunicator)
