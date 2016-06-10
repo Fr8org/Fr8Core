@@ -324,6 +324,10 @@ namespace terminalAtlassian.Services
                 {
                     obj.fields.Add("issuetype", new { id = issue.Type.Id });
                 }
+                if (issue.Assignee != null)
+                {
+                    obj.fields.Add("assignee", new { name = issue.Assignee });
+                }
 
                 token = await jira.RestClient.ExecuteRequestAsync(RestSharp.Method.POST, "/rest/api/2/issue", JsonConvert.SerializeObject(obj));
                 return token["key"].ToString();
