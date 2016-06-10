@@ -1,4 +1,6 @@
-﻿namespace Fr8.TerminalBase.Services
+﻿using Fr8.Infrastructure.Data.Managers;
+
+namespace Fr8.TerminalBase.Services
 {
     public class ExplicitDataHubCommunicator : DataHubCommunicatorBase
     {
@@ -7,7 +9,8 @@
             get { return "ExplicitData"; }
         }
 
-        public ExplicitDataHubCommunicator(string explicitData) : base(explicitData)
+        public ExplicitDataHubCommunicator(string explicitData, ICrateManager crateManager)
+            : base(explicitData, crateManager)
         {
         }
     }

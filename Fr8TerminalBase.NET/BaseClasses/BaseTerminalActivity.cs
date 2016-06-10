@@ -25,24 +25,7 @@ namespace Fr8.TerminalBase.BaseClasses
         {
             CrateSignaller = new CrateSignaller(Storage, MyTemplate.Name, ActivityId);
         }
-
-        protected string ExtractPayloadFieldValue(string fieldKey)
-        {
-            var fieldValues = Payload.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.GetValues(fieldKey))
-                .Where(s => !string.IsNullOrEmpty(s))
-                .ToArray();
-            if (fieldValues.Length > 0)
-                return fieldValues[0];
-            var baseEvent = new BaseTerminalEvent();
-            var exceptionMessage = $"No field found with specified key: {fieldKey}.";
-            //This is required for proper logging of the Incidents
-            baseEvent.SendTerminalErrorIncident(MyTemplate.Terminal.Name, exceptionMessage, MyTemplate.Name, CurrentUserId);
-
-            SendEventReport(exceptionMessage);
-
-            throw new ApplicationException(exceptionMessage);
-        }
-
+        
         protected StandardConfigurationControlsCM GetConfigurationControls()
         {
             return ControlHelper.GetConfigurationControls(Storage);

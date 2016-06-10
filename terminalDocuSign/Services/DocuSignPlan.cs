@@ -12,6 +12,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Interfaces;
@@ -33,6 +34,7 @@ namespace terminalDocuSign.Services
         private readonly ICrateManager _crateManager;
         private readonly IDocuSignManager _docuSignManager;
         private readonly IDocuSignConnect _docuSignConnect;
+        private readonly IRestfulServiceClient _restfulServiceClient;
 
         private readonly string DevConnectName = "(dev) Fr8 Company DocuSign integration";
         private readonly string DemoConnectName = "(demo) Fr8 Company DocuSign integration";
@@ -40,11 +42,12 @@ namespace terminalDocuSign.Services
         private readonly string TemporaryConnectName = "int-tests-Fr8";
 
 
-        public DocuSignPlan()
+        public DocuSignPlan(ICrateManager crateManager, IDocuSignManager docuSignManager, IDocuSignConnect docuSignConnect, IRestfulServiceClient restfulServiceClient)
         {
-            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
-            _docuSignManager = ObjectFactory.GetInstance<IDocuSignManager>();
-            _docuSignConnect = ObjectFactory.GetInstance<IDocuSignConnect>();
+            _crateManager = crateManager;
+            _docuSignManager = docuSignManager;
+            _docuSignConnect = docuSignConnect;
+            _restfulServiceClient = restfulServiceClient;
         }
 
         /// <summary>
@@ -135,7 +138,7 @@ namespace terminalDocuSign.Services
 
         public async void CreateOrUpdatePolling(IHubCommunicator hubCommunicator, AuthorizationToken authToken)
         {
-            DocuSignPolling polling = new DocuSignPolling();
+            DocuSignPolling polling = new DocuSignPolling(_docuSignManager, _restfulServiceClient, _crateManager);
             polling.SchedulePolling(hubCommunicator, authToken.ExternalAccountId);
         }
 

@@ -75,10 +75,10 @@ namespace terminalYammer.Actions
             }
         }
 
-        public Post_To_Yammer_v1(ICrateManager crateManager)
+        public Post_To_Yammer_v1(ICrateManager crateManager, Yammer yammer)
             : base(crateManager)
         {
-            _yammer = new Yammer();
+            _yammer = yammer;
         }
 
         public override Task FollowUp()

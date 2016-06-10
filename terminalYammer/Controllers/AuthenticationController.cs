@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
 using Fr8.TerminalBase.BaseClasses;
 using terminalYammer.Interfaces;
 using terminalYammer.Services;
@@ -15,10 +16,10 @@ namespace terminalYammer.Controllers
 
         private readonly IYammer _yammerIntegration;
 
-
-        public AuthenticationController()
+        public AuthenticationController(Yammer yammer, IRestfulServiceClient restfulServiceClient) 
+            : base(restfulServiceClient)
         {
-            _yammerIntegration = new Yammer();
+            _yammerIntegration = yammer;
         }
 
         [HttpPost]

@@ -2,10 +2,8 @@
 using System.Net.Http;
 using System.Web.Http;
 using System.Threading.Tasks;
-using System;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.TerminalBase.Services;
-using StructureMap;
 
 namespace terminalAtlassian.Controllers
 {
@@ -15,9 +13,9 @@ namespace terminalAtlassian.Controllers
         private const string curTerminal = "terminalAtlassian";
         private readonly ActivityExecutor _activityExecutor;
 
-        public ActivityController()
+        public ActivityController(ActivityExecutor activityExecutor)
         {
-            _activityExecutor = ObjectFactory.GetInstance<ActivityExecutor>();
+            _activityExecutor = activityExecutor;
         }
 
         [HttpPost]

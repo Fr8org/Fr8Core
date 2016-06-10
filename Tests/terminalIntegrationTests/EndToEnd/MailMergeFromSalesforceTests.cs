@@ -23,6 +23,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Models;
+using StructureMap;
 using terminalDocuSign.Actions;
 
 namespace terminalIntegrationTests.EndToEnd
@@ -198,13 +199,13 @@ namespace terminalIntegrationTests.EndToEnd
         private async Task<bool> DeleteCase(string caseId, AuthorizationTokenDO authToken)
         {
             var token = Mapper.Map<AuthorizationToken>(authToken);
-            return await new SalesforceManager().Delete(SalesforceObjectType.Case, caseId, token);
+            return await ObjectFactory.GetInstance<SalesforceManager>().Delete(SalesforceObjectType.Case, caseId, token);
         }
 
         private async Task<Tuple<string, string>> CreateCase(AuthorizationTokenDO authToken)
         {
             var token = Mapper.Map<AuthorizationToken>(authToken);
-            var manager = new SalesforceManager();
+            var manager = ObjectFactory.GetInstance<SalesforceManager>();
             var name = Guid.NewGuid().ToString();
             var data = new Dictionary<string, object> { { "SuppliedEmail", TestEmail }, { "SuppliedName", name } };
             return new Tuple<string, string>(await manager.Create(SalesforceObjectType.Case, data, token), name);

@@ -255,7 +255,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Twilio.Api, Version=3.4.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Twilio.3.6.11\lib\3.5\Twilio.Api.dll</HintPath>
+      <HintPath>..\..\packages\Twilio.4.1.0\lib\3.5\Twilio.Api.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="YamlDotNet, Version=2.0.1.20271, Culture=neutral, PublicKeyToken=2b53052c5884d7a1, processorArchitecture=MSIL">

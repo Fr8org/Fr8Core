@@ -80,10 +80,10 @@ namespace terminalFr8Core.Activities
             }
         }
 
-        public Send_Email_v1(ICrateManager crateManager)
+        public Send_Email_v1(ICrateManager crateManager, IEmailPackager emailPackager)
             : base(crateManager)
         {
-            _emailPackager = ObjectFactory.GetInstance<IEmailPackager>();
+            _emailPackager = emailPackager;
         }
 
         public override Task Initialize()

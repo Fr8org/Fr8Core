@@ -101,10 +101,10 @@ namespace terminalSlack.Activities
             Storage.Add(configurationCrate);
         }
 
-        public Publish_To_Slack_v1(ICrateManager crateManager)
+        public Publish_To_Slack_v1(ICrateManager crateManager, ISlackIntegration slackIntegration)
             : base(crateManager)
         {
-            _slackIntegration = new SlackIntegration();
+            _slackIntegration = slackIntegration;
         }
 
         public static string StripHTML(string input)
