@@ -78,7 +78,7 @@ module dockyard.tests.unit.directives.controls {
         });
 
         it('Should contain a button that open modal with upstream fields initially', () => {
-            expect(element.find("upstream-field-chooser").length).toBeGreaterThan(0);
+            expect(element.find("upstream-field-chooser-button").length).toBeGreaterThan(0);
         });
 
         it('Should contain a button that open modal when upstream radio is selected', () => {
@@ -86,7 +86,7 @@ module dockyard.tests.unit.directives.controls {
             curScope.field = angular.copy(fx.FieldDTO.textSource);
             curScope.onChange = function() {}
             triggerRadioHandler(curScope, element, 'input[value="upstream"]');
-            expect(element.find("upstream-field-chooser").length).toBe(1);
+            expect(element.find("upstream-field-chooser-button").length).toBe(1);
         });
 
 
@@ -154,8 +154,8 @@ module dockyard.tests.unit.directives.controls {
 
             triggerRadioHandler(scope1, element1, 'input[value="upstream"]');
             triggerRadioHandler(scope2, element2, 'input[value="upstream"]');
-            expect(element1.find("upstream-field-chooser").length).toBe(1);
-            expect(element2.find("upstream-field-chooser").length).toBe(1);
+            expect(element1.find("upstream-field-chooser-button").length).toBe(1);
+            expect(element2.find("upstream-field-chooser-button").length).toBe(1);
         });
         
         it('Should call onChange of input field on blur in it\'s own scope', () => {
