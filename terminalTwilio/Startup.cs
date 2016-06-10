@@ -14,6 +14,11 @@ namespace terminalTwilio
 {
     public class Startup : BaseConfiguration
     {
+        public Startup()
+            : base(TerminalData.TerminalDTO)
+        {
+        }
+
         public void Configuration(IAppBuilder app)
         {
             Configuration(app, false);
@@ -29,7 +34,7 @@ namespace terminalTwilio
 
             if (!selfHost)
             {
-                StartHosting("terminalTwilio");
+                StartHosting();
             }
         }
 

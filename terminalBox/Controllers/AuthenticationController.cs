@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Web;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.BaseClasses;
 using Newtonsoft.Json;
@@ -18,6 +19,12 @@ namespace terminalBox.Controllers
     public class AuthenticationController : BaseTerminalController
     {
         private const string CurTerminal = "terminalBox";
+
+
+        public AuthenticationController(IRestfulServiceClient restfulServiceClient) 
+            : base(restfulServiceClient)
+        {
+        }
 
         //https://account.box.com/api/oauth2/authorize?response_type=code&client_id=MY_CLIENT_ID&state=security_token%3DKnhMJatFipTAnM0nHlZA
         //http://localhost:30643/AuthenticationCallback/ProcessSuccessfulOAuthResponse

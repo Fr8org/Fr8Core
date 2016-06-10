@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
+using Fr8.Infrastructure.Interfaces;
 using Fr8.TerminalBase.Infrastructure;
-using StructureMap;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
 
@@ -10,13 +10,13 @@ namespace terminalSlack.Controllers
     [RoutePrefix("terminals/terminalSlack")]
     public class EventController : ApiController
     {
-        private IEvent _event;
-        private BaseTerminalEvent _baseTerminalEvent;
+        private readonly IEvent _event;
+        private readonly BaseTerminalEvent _baseTerminalEvent;
 
-        public EventController()
+        public EventController(IRestfulServiceClient restfulServiceClient)
         {
             _event = new Event();
-            _baseTerminalEvent = new BaseTerminalEvent();
+            _baseTerminalEvent = new BaseTerminalEvent(restfulServiceClient);
         }
 
         [HttpPost]

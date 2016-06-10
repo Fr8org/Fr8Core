@@ -11,12 +11,6 @@ namespace Fr8.TerminalBase.Infrastructure
     {
         public const string TestHubCommunicatorKey = "TestHubCommunicator";
 
-
-        public static void ConfigureLive()
-        {
-            ObjectFactory.Configure(x => x.AddRegistry<LiveMode>());
-        }
-
         public static void ConfigureTest()
         {
             ObjectFactory.Configure(x => x.AddRegistry<TestMode>());

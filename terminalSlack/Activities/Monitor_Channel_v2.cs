@@ -89,11 +89,11 @@ namespace terminalSlack.Activities
         private readonly ISlackIntegration _slackIntegration;
         private readonly ISlackEventManager _slackEventManager;
 
-        public Monitor_Channel_v2(ICrateManager crateManager)
+        public Monitor_Channel_v2(ICrateManager crateManager, ISlackIntegration slackIntegration, ISlackEventManager eventManager)
             : base(crateManager)
         {
-            _slackIntegration = ObjectFactory.GetInstance<ISlackIntegration>();
-            _slackEventManager = ObjectFactory.GetInstance<ISlackEventManager>();
+            _slackIntegration = slackIntegration;
+            _slackEventManager = eventManager;
         }
 
         public override async Task Initialize()

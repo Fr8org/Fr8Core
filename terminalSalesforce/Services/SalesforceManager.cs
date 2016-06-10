@@ -17,19 +17,17 @@ using Salesforce.Common;
 using Salesforce.Chatter;
 using Newtonsoft.Json.Linq;
 using Salesforce.Chatter.Models;
-using StructureMap;
 
 namespace terminalSalesforce.Services
 {
     public class SalesforceManager : ISalesforceManager
     {
-        private Authentication _authentication = new Authentication();
+        private readonly Authentication _authentication = new Authentication();
+        private readonly ICrateManager _crateManager;
 
-        private ICrateManager _crateManager;
-
-        public SalesforceManager()
+        public SalesforceManager(ICrateManager crateManager)
         {
-            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
+            _crateManager = crateManager;
         }
         
         public async Task<string> Create(SalesforceObjectType type, IDictionary<string, object> @object, AuthorizationToken authToken)
@@ -326,6 +324,15 @@ namespace terminalSalesforce.Services
         {
             authToken = isRefreshTokenRequired ? await _authentication.RefreshAccessToken(authToken) : authToken;
             var salesforceToken = ToSalesforceToken(authToken);
+
+            // When debugging, decimal point gets messed up and Salesforce client rejects to work properly.
+            // var ci = new System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.Name);
+            // if (ci.NumberFormat.NumberDecimalSeparator != ".")
+            // {
+            //     ci.NumberFormat.NumberDecimalSeparator = ".";
+            //     System.Threading.Thread.CurrentThread.CurrentCulture = ci;
+            // }
+
             return new ChatterClient(salesforceToken.InstanceUrl, salesforceToken.Token, salesforceToken.ApiVersion);
         }
 

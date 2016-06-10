@@ -213,7 +213,6 @@
     <Compile Include="Fixtures\FixtureData - HandleFr8Request.cs" />
     <Compile Include="Fixtures\terminalActivityMock_v1.cs" />
     <Compile Include="Infrastructure\BaseTerminalEventTests.cs" />
-    <Compile Include="Infrastructure\TestBaseTerminalEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\TabularUtilitiesTests.cs" />
   </ItemGroup>

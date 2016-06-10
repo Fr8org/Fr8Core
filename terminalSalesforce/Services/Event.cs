@@ -6,15 +6,20 @@ using System.Linq;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Interfaces;
 using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalSalesforce.Services
 {
     public class Event : IEvent
     {
-       
-        private readonly BaseTerminalController _baseTerminalController = new BaseTerminalController();
-      
+        private readonly BaseTerminalController _baseTerminalController;
+
+        public Event(IRestfulServiceClient restfulServiceClient)
+        {
+            _baseTerminalController = new BaseTerminalController(restfulServiceClient);
+        }
+
 
         public Task<Crate> ProcessEvent(string curExternalEventPayload)
         {
