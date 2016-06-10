@@ -109,33 +109,34 @@
 
                             <!------SINGUP/LOGIN UPRIGHT OR WELCOMING MESSAGE----------------------------------->
                             @using Microsoft.AspNet.Identity
-                            @if (Request.IsAuthenticated)
-                            {
-                                <h1 class="site-logo"><a class="navbar-brand" href="http://www.fr8.company" title="fr8"><img src="~/Content/img/site/site-logo.png" alt="fr8" title="fr8"></a></h1>
+                            @if (Request.IsAuthenticated) {
+                                <h1 class="site-logo">
+                                    <a class="navbar-brand" href="/" title="fr8">
+                                        <img src="~/Content/img/site/site-logo.png" alt="fr8" title="fr8">
+                                    </a>
+                                </h1>
                                 <div class="pull-right visible-desktop visible-tablet">
-                                    <a href="/Dashboard#/myaccount" title="Manage">
+                                    <a href="/Dashboard/#myaccount" title="Manage">
                                         Hello
-                                        @if (User.IsInRole("Guest"))
-                                        {
+                                        @if (User.IsInRole("Guest")) {
                                             <text>Guest User!</text>
-                                        }
-                                        else
-                                        {
+                                        } else {
                                             <text>@User.Identity.GetUserName()!</text>
                                         }
                                     </a>
-                                    @if (User.IsInRole("Guest"))
-                                    {
+                                    @if (User.IsInRole("Guest")) {
                                         <span>&nbsp;&nbsp;</span>
                                         <a href="/DockyardAccount/Logoff">
                                             <span>Have an Account? Login</span>
                                         </a>
                                     }
                                 </div>
-                            }
-                            else
-                            {
-                                <h1 class="site-logo"><a class="navbar-brand" href="/" title="fr8"><img src="~/Content/img/site/site-logo.png" alt="fr8" title="fr8"></a></h1>
+                            } else {
+                                <h1 class="site-logo">
+                                    <a class="navbar-brand" href="/" title="fr8">
+                                        <img src="~/Content/img/site/site-logo.png" alt="fr8" title="fr8">
+                                    </a>
+                                </h1>
                                 <div class="pull-right visible-desktop visible-tablet"><a href="/DockyardAccount" title="SignUp/Login">SignUp/Login</a></div>
                             }
                             <!------END OF SINGUP/LOGIN UPRIGHT OR WELCOMING MESSAGE-------------------------->
