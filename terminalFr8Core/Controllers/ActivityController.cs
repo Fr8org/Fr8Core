@@ -14,9 +14,9 @@ namespace terminalFr8Core.Controllers
         private const string curTerminal = "terminalFr8Core";
         private readonly ActivityExecutor _activityExecutor;
 
-        public ActivityController()
+        public ActivityController(ActivityExecutor activityExecutor)
         {
-            _activityExecutor = ObjectFactory.GetInstance<ActivityExecutor>();
+            _activityExecutor = activityExecutor;
         }
 
         [HttpPost]

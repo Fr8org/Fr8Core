@@ -156,7 +156,8 @@ namespace HubWeb.Controllers
                 {
 
                     string username = model.Email.Trim();
-                    LoginStatus curLoginStatus = await ObjectFactory.GetInstance<Fr8Account>().ProcessLoginRequest(username, model.Password, model.RememberMe);
+                    LoginStatus curLoginStatus =
+                        await _account.ProcessLoginRequest(username, model.Password, model.RememberMe);
                     switch (curLoginStatus)
                     {
                         case LoginStatus.InvalidCredential:

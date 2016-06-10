@@ -12,6 +12,11 @@ namespace terminalSendGrid
 {
     public class Startup : BaseConfiguration
     {
+        public Startup()
+            : base(TerminalData.TerminalDTO)
+        {
+        }
+
         public void Configuration(IAppBuilder app)
         {
             Configuration(app, false);
@@ -27,7 +32,7 @@ namespace terminalSendGrid
 
             if (!selfHost)
             {
-                StartHosting("terminalSendGrid");
+                StartHosting();
             }
         }
 

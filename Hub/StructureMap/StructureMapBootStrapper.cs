@@ -108,7 +108,7 @@ namespace Hub.StructureMap
                 For<ITerminal>().Use<Terminal>().Singleton();
                 For<ICrateManager>().Use<CrateManager>();
                 For<IReport>().Use<Report>();
-                For<IManifest>().Use<Manifest>();
+                For<IManifest>().Use<ManifestService>();
                 For<ITime>().Use<Time>();
                 For<IPusherNotifier>().Use<PusherNotifier>();
                 For<IAuthorization>().Use<Authorization>();
@@ -175,7 +175,7 @@ namespace Hub.StructureMap
 
                 For<ICrateManager>().Use<CrateManager>();
 
-                For<IManifest>().Use<Manifest>();
+                For<IManifest>().Use<ManifestService>();
                 For<IAuthorization>().Use<Authorization>();
                 For<IReport>().Use<Report>();
                 var timeMock = new Mock<ITime>();

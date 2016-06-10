@@ -16,9 +16,9 @@ namespace terminalUtilities.SendGrid
     public class SendGridPackager : IEmailPackager
     {
         private readonly ITransport _transport;
-        public SendGridPackager()
+        public SendGridPackager(IConfigRepository configRepository)
         {
-            _transport = TransportFactory.CreateWeb(ObjectFactory.GetInstance<IConfigRepository>());
+            _transport = TransportFactory.CreateWeb(configRepository);
         }
         public delegate void EmailSuccessArgs(int emailID);
         public static event EmailSuccessArgs EmailSent;

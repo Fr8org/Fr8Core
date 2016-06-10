@@ -8,10 +8,12 @@ namespace Fr8.TerminalBase.Services
     public class DefaultActivityFactory : IActivityFactory
     {
         private readonly Type _type;
+        private readonly IContainer _container;
 
-        public DefaultActivityFactory(Type type)
+        public DefaultActivityFactory(Type type, IContainer container)
         {
             _type = type;
+            _container = container;
         }
 
         public IActivity Create()
@@ -29,7 +31,7 @@ namespace Fr8.TerminalBase.Services
             for (int index = 0; index < parameters.Length; index++)
             {
                 var parameterInfo = parameters[index];
-                paramArguments[index] = ObjectFactory.GetInstance(parameterInfo.ParameterType);
+                paramArguments[index] = _container.GetInstance(parameterInfo.ParameterType);
             }
 
             var instance = firstConstructor.Invoke(paramArguments.ToArray()) as IActivity;
