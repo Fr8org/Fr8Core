@@ -190,6 +190,7 @@
     <Compile Include="Data\DataTransferObjects\ManifestRegistryParams .cs" />
     <Compile Include="Data\DataTransferObjects\ManufacturerDTO.cs" />
     <Compile Include="Data\DataTransferObjects\OrganizationDTO.cs" />
+    <Compile Include="Data\DataTransferObjects\PageDefinitionDTO.cs" />
     <Compile Include="Data\DataTransferObjects\PayloadDTO.cs" />
     <Compile Include="Data\DataTransferObjects\PermissionDTO.cs" />
     <Compile Include="Data\DataTransferObjects\PlanDTO.cs" />
