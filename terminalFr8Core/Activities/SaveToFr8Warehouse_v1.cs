@@ -15,6 +15,8 @@ namespace terminalFr8Core.Activities
 {
     public class SaveToFr8Warehouse_v1 : BaseTerminalActivity
     {
+        private readonly IContainer _container;
+
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "SaveToFr8Warehouse",
@@ -25,17 +27,20 @@ namespace terminalFr8Core.Activities
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO
         };
+
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
-        public SaveToFr8Warehouse_v1(ICrateManager crateManager)
+
+        public SaveToFr8Warehouse_v1(ICrateManager crateManager, IContainer container)
             : base(crateManager)
         {
+            _container = container;
         }
 
         public override Task Run()
         {
             // get the selected event from the drop down
             var crateChooser = GetControl<UpstreamCrateChooser>("UpstreamCrateChooser");
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var uow = _container.GetInstance<IUnitOfWork>())
             {
                 var manifestTypes = crateChooser.SelectedCrates.Select(c => c.ManifestType.Value);
                 var curCrates = Payload.CratesOfType<Manifest>().Where(c => manifestTypes.Contains(c.ManifestType.Id.ToString(CultureInfo.InvariantCulture)));

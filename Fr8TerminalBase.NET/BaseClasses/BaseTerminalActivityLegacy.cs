@@ -26,8 +26,6 @@ namespace Fr8.TerminalBase.BaseClasses
         protected bool DisableValidationOnFollowup { get; set; }
         private PlanHelper _planHelper;
         private ControlHelper _controlHelper;
-        private readonly BaseTerminalEvent _eventLogger;
-
 
         protected int LoopIndex => GetLoopIndex();
         protected ControlHelper ControlHelper => _controlHelper ?? (_controlHelper = new ControlHelper(ActivityContext));
@@ -35,14 +33,12 @@ namespace Fr8.TerminalBase.BaseClasses
         protected PlanHelper PlanHelper => _planHelper ?? (_planHelper = new PlanHelper(HubCommunicator));
         protected Guid ActivityId => ActivityContext.ActivityPayload.Id;
         protected string CurrentUserId => ActivityContext.UserId;
-        protected void SendEventReport(string message) => _eventLogger.SendEventReport(MyTemplate.Terminal.Name, message);
         protected UpstreamQueryManager UpstreamQueryManager { get; private set; }
 
         protected abstract ActivityTemplateDTO MyTemplate { get; }
 
         protected BaseTerminalActivityLegacy(ICrateManager crateManager)
         {
-            _eventLogger = new BaseTerminalEvent();
             CrateManager = crateManager;
             IsAuthenticationRequired = MyTemplate.NeedsAuthentication;
         }

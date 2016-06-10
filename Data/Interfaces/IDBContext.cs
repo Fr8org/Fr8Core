@@ -10,13 +10,6 @@ namespace Data.Interfaces
 
         int SaveChanges();
 
-/*
-        List<KwasantDbContext.PropertyChangeInformation> GetEntityModifications<T>(T entity)
-            where T : class;
-
-        List<KwasantDbContext.EntityChangeInformation> GetModifiedEntities();
-*/
-
         void DetectChanges();
 
         object[] AddedEntities { get; }

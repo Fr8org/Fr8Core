@@ -15,13 +15,6 @@ namespace terminalGoogle.Services
 {
     public class Event : IEvent
     {
-        private readonly ICrateManager _crate;
-
-        public Event()
-        {
-            _crate = ObjectFactory.GetInstance<ICrateManager>();
-        }
-
         public async Task<Crate> Process(string externalEventPayload)
         {
             if (string.IsNullOrEmpty(externalEventPayload))

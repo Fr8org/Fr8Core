@@ -12,13 +12,11 @@ namespace Fr8.TerminalBase.Infrastructure.Behaviors
         public const string ConfigurationControlsLabel = "Configuration_Controls";
         public static string BehaviorPrefix = "";
 
-        protected ICrateManager _crateManager;
         protected ICrateStorage _crateStorage;
         protected string _behaviorName;
         
         protected BaseControlMappingBehavior(ICrateStorage crateStorage,string behaviorName)
         {
-            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
             _crateStorage = crateStorage;
             BehaviorPrefix = behaviorName;
         }
@@ -35,10 +33,8 @@ namespace Fr8.TerminalBase.Infrastructure.Behaviors
 
             if (controlsCM == null)
             {
-                var crate = _crateManager.CreateStandardConfigurationControlsCrate(ConfigurationControlsLabel);
-                _crateStorage.Add(crate);
-
-                controlsCM = crate.Content;
+                controlsCM = new StandardConfigurationControlsCM();
+                _crateStorage.Add(Crate.FromContent(ConfigurationControlsLabel, controlsCM));
             }
 
             return controlsCM;

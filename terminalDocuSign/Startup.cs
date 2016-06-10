@@ -18,6 +18,11 @@ namespace terminalDocuSign
 {
     public class Startup : BaseConfiguration
     {
+        public Startup()
+            : base(TerminalData.TerminalDTO)
+        {
+        }
+
         public void Configuration(IAppBuilder app)
         {
             Configuration(app, false);
@@ -26,7 +31,7 @@ namespace terminalDocuSign
         public void Configuration(IAppBuilder app, bool selfHost)
         {
             ConfigureProject(selfHost, TerminalDocusignStructureMapBootstrapper.LiveConfiguration);
-            ObjectFactory.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
+            Container.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
 
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             RoutesConfig.Register(_configuration);
@@ -34,7 +39,7 @@ namespace terminalDocuSign
             app.UseWebApi(_configuration);
             if (!selfHost)
             {
-                StartHosting("terminalDocuSign");
+                StartHosting();
             }
         }
 

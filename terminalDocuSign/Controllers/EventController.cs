@@ -13,15 +13,17 @@ namespace terminalDocuSign.Controllers
     [RoutePrefix("terminals/terminalDocuSign")]
     public class EventController : ApiController
     {
-        private IEvent _event;
-        private BaseTerminalEvent _baseTerminalEvent;
-        private DocuSignPolling _polling;
+        private readonly IEvent _event;
+        private readonly BaseTerminalEvent _baseTerminalEvent;
+        private readonly DocuSignPolling _polling;
+        private readonly IContainer _container;
 
-        public EventController()
+        public EventController(IEvent @event, BaseTerminalEvent baseTerminalEvent, DocuSignPolling polling, IContainer container)
         {
-            _event = new Event();
-            _baseTerminalEvent = new BaseTerminalEvent();
-            _polling = ObjectFactory.GetInstance<DocuSignPolling>();
+            _event = @event;
+            _baseTerminalEvent = baseTerminalEvent;
+            _polling = polling;
+            _container = container;
         }
 
         [HttpPost]
@@ -38,8 +40,7 @@ namespace terminalDocuSign.Controllers
         [Route("polling_notifications")]
         public async Task<IHttpActionResult> ProcessPollingRequest(string job_id, string fr8_account_id, string polling_interval)
         {
-            var hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
-
+            var hubCommunicator = _container.GetInstance<IHubCommunicator>();
             hubCommunicator.Configure("terminalDocuSign", fr8_account_id);
 
             var result = await _polling.Poll(hubCommunicator, job_id, polling_interval);

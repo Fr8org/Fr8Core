@@ -20,6 +20,8 @@ namespace terminalExcel.Actions
 {
     public class Save_To_Excel_v1 : EnhancedTerminalActivity<Save_To_Excel_v1.ActivityUi>
     {
+        private readonly ExcelUtils _excelUtils;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public CrateChooser UpstreamCrateChooser { get; set; }
@@ -131,9 +133,10 @@ namespace terminalExcel.Actions
         private const string SelectedSpreadsheetCrateLabel = "Selected Spreadsheet";
 
 
-        public Save_To_Excel_v1(ICrateManager crateManager)
+        public Save_To_Excel_v1(ICrateManager crateManager, ExcelUtils excelUtils)
             : base(crateManager)
         {
+            _excelUtils = excelUtils;
         }
 
         public override async Task Initialize()
@@ -276,7 +279,7 @@ namespace terminalExcel.Actions
                 if (ActivityUI.UseExistingWorksheetOption.Selected
                     || ActivityUI.ExistingWorksheetsList.ListItems.Any(x => x.Key == ActivityUI.NewWorksheetName.Value))
                 {
-                    var existingData = ExcelUtils.GetExcelFile(existingFileBytes, fileName, true, worksheetName);
+                    var existingData = _excelUtils.GetExcelFile(existingFileBytes, fileName, true, worksheetName);
 
                     StandardTableDataCMTools.AppendToStandardTableData(existingData, tableToSave);
                     dataToInsert = existingData;
