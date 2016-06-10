@@ -10,7 +10,7 @@ namespace terminalGoogle.Interfaces
     public interface IGoogleAppsScript
     {
         Task<List<GoogleFormField>> GetGoogleFormFields(GoogleAuthDTO authDTO, string formId);
-        Task<bool> CreateFr8TriggerForDocument(GoogleAuthDTO authDTO, string formId, string email);
+        Task CreateFr8TriggerForDocument(GoogleAuthDTO authDTO, string formId, string email);
         Task<string> CreateManualFr8TriggerForDocument(GoogleAuthDTO authDTO, string formId, string desription = "Script uploaded from Fr8 application");
     }
 }

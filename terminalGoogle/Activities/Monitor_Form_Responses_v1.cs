@@ -9,6 +9,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Errors;
 using Newtonsoft.Json;
 using terminalGoogle.Services;
 using terminalGoogle.Interfaces;
@@ -137,28 +138,13 @@ namespace terminalGoogle.Actions
             if (string.IsNullOrEmpty(formId))
                 throw new ArgumentNullException("Google Form selected is empty. Please select google form to receive.");
 
-            bool triggerEvent = false;
             try
             {
-                triggerEvent = await _googleAppsScript.CreateFr8TriggerForDocument(googleAuth, formId, AuthorizationToken.ExternalAccountId);
+                await _googleAppsScript.CreateFr8TriggerForDocument(googleAuth, formId, AuthorizationToken.ExternalAccountId);
             }
-            finally
+            catch
             {
-                if (!triggerEvent)
-                {
-                    //in case of fail as a backup plan use old manual script notification
-                    var scriptUrl = await _googleAppsScript.CreateManualFr8TriggerForDocument(googleAuth, formId);
-                    await HubCommunicator.NotifyUser(new TerminalNotificationDTO
-                    {
-                        Type = "Success",
-                        ActivityName = "Monitor_Form_Responses",
-                        ActivityVersion = "1",
-                        TerminalName = "terminalGoogle",
-                        TerminalVersion = "1",
-                        Message = "You need to create fr8 trigger on current form please go to this url and run Initialize function manually. Ignore this message if you completed this step before. " + scriptUrl,
-                        Subject = "Trigger creation URL"
-                    });
-                }
+                throw new ActivityExecutionException($"Failed to activate {ActivityPayload.Name} because of problem with activating trigger on google form.");
             }
         }
 

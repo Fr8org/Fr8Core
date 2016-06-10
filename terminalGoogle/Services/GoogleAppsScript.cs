@@ -81,7 +81,7 @@ namespace terminalGoogle.Services
             }
         }
 
-        public async Task<bool> CreateFr8TriggerForDocument(GoogleAuthDTO authDTO, string formId, string email)
+        public async Task CreateFr8TriggerForDocument(GoogleAuthDTO authDTO, string formId, string email)
         {
             try
             {
@@ -100,11 +100,8 @@ namespace terminalGoogle.Services
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer",
                     authDTO.AccessToken);
 
-                //check received response
                 var responseMessage = await client.GetAsync(new Uri(appScriptUrl));
-                var contents = await responseMessage.Content.ReadAsStringAsync();
-
-                return contents == "OK" ? await Task.FromResult(true) : await Task.FromResult(false);
+                await responseMessage.Content.ReadAsStringAsync();
             }
             catch (Exception e)
             {
