@@ -43,7 +43,13 @@ namespace Hub.Services
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     var pageDefinitionToUpdate = uow.PageDefinitionRepository.GetByKey(pageDefinitionDO.Id);
-                    pageDefinitionToUpdate = pageDefinitionDO;
+                    pageDefinitionToUpdate.Title = pageDefinitionDO.Title;
+                    pageDefinitionToUpdate.Description = pageDefinitionDO.Description;
+                    pageDefinitionToUpdate.PageName = pageDefinitionDO.PageName;
+                    pageDefinitionToUpdate.Tags = pageDefinitionDO.Tags;
+                    pageDefinitionToUpdate.Type = pageDefinitionDO.Type;
+                    pageDefinitionToUpdate.Url = pageDefinitionDO.Url;
+                    pageDefinitionToUpdate.LastUpdated = DateTimeOffset.Now;
                     uow.SaveChanges();
                 }
             }
