@@ -5,11 +5,11 @@ using Fr8.TerminalBase.Services;
 
 namespace Fr8.TerminalBase.BaseClasses
 {
-    public class DefaultTerminalController : ApiController
+    public abstract class DefaultTerminalController : ApiController
     {
         private readonly IActivityStore _activityStore;
 
-        public DefaultTerminalController(IActivityStore activityStore)
+        protected DefaultTerminalController(IActivityStore activityStore)
         {
             _activityStore = activityStore;
         }
