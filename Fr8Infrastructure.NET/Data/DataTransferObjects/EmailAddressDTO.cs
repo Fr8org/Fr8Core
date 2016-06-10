@@ -5,14 +5,11 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
     public class EmailAddressDTO
     {
-        private string emailAddress;
-
         public EmailAddressDTO()
         {
         }
         public EmailAddressDTO(string emailAddress)
         {
-            this.emailAddress = emailAddress;
             this.Address = emailAddress;
         }
 
