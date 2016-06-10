@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class AddPageDefinition : IMigrationMetadata
+    public sealed partial class AddCanManagePageDefinitionsToFr8Account : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddPageDefinition));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddCanManagePageDefinitionsToFr8Account));
         
         string IMigrationMetadata.Id
         {
-            get { return "201606080054264_AddPageDefinition"; }
+            get { return "201606101207325_AddCanManagePageDefinitionsToFr8Account"; }
         }
         
         string IMigrationMetadata.Source
