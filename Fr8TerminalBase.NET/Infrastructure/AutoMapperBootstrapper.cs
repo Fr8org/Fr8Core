@@ -53,20 +53,17 @@ namespace Fr8.TerminalBase.Infrastructure
 
         public static ICrateStorage GetCrateStorage(ActivityDTO activityDTO)
         {
-            var crateManager = ObjectFactory.GetInstance<ICrateManager>();
-            return crateManager.GetStorage(activityDTO);
+            return CrateStorageSerializer.Default.ConvertFromDto(activityDTO?.CrateStorage);
         }
 
         public static CrateStorageDTO CrateStorageDTOResolver(ContainerExecutionContext executionContext)
         {
-            var crateManager = ObjectFactory.GetInstance<ICrateManager>();
-            return crateManager.ToDto(executionContext.PayloadStorage);
+            return CrateStorageSerializer.Default.ConvertToDto(executionContext.PayloadStorage);
         }
 
         public static CrateStorageDTO CrateStorageDTOResolver(ActivityPayload activityPayload)
         {
-            var crateManager = ObjectFactory.GetInstance<ICrateManager>();
-            return crateManager.ToDto(activityPayload.CrateStorage);
+            return CrateStorageSerializer.Default.ConvertToDto(activityPayload.CrateStorage);
         }
     }
 }

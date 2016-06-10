@@ -816,11 +816,27 @@ namespace Fr8.Infrastructure.Data.Control
         }
     }
 
-    public class UpstreamFieldChooser : ControlDefinitionDTO
+    public class UpstreamFieldChooser : DropDownList
     {
         public UpstreamFieldChooser()
         {
             Type = ControlTypes.UpstreamFieldChooser;
+        }
+
+        public string GetValue(ICrateStorage payloadCrateStorage)
+        {
+            if (payloadCrateStorage == null)
+            {
+                throw new Exception("Can't resolve upstream value without payload crate storage provided");
+            }
+
+            //This is for backward compatibility as controls in existing activites may not be reconfigured to use full field information
+            if (SelectedItem == null)
+            {
+                return payloadCrateStorage.FindField(this.selectedKey);
+            }
+
+            return payloadCrateStorage.FindField(SelectedItem);
         }
     }
 

@@ -15,11 +15,13 @@ namespace Fr8.TerminalBase.Services
         private IHubCommunicator _hubCommunicator;
 
         protected readonly ICrateManager CrateManager;
+        private readonly IActivityStore _activityStore;
 
-        public ActivityExecutor(IHubCommunicator hubCommunicator, ICrateManager crateManager)
+        public ActivityExecutor(IHubCommunicator hubCommunicator, ICrateManager crateManager, IActivityStore activityStore)
         {
             _hubCommunicator = hubCommunicator;
             CrateManager = crateManager;
+            _activityStore = activityStore;
         }
 
         public async Task<object> HandleFr8Request(
@@ -53,16 +55,16 @@ namespace Fr8.TerminalBase.Services
             {
                 var originalName = activityTemplate.Name;
 
-                _hubCommunicator = new TestMonitoringHubCommunicator(curDataDTO.ExplicitData);
+                _hubCommunicator = new TestMonitoringHubCommunicator(curDataDTO.ExplicitData, CrateManager);
                 activityTemplate.Name = activityTemplate.Name.Substring(0, activityTemplate.Name.Length - "_TEST".Length);
 
-                factory = ActivityStore.GetValue(activityTemplate);
+                factory = _activityStore.GetValue(activityTemplate);
 
                 activityTemplate.Name = originalName;
             }
             else
             {
-                factory = ActivityStore.GetValue(curDataDTO.ActivityDTO.ActivityTemplate);
+                factory = _activityStore.GetValue(curDataDTO.ActivityDTO.ActivityTemplate);
             }
 
 

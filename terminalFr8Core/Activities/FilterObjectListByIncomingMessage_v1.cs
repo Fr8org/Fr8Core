@@ -35,7 +35,7 @@ namespace terminalFr8Core.Activities
 
         public class ActivityUi : StandardConfigurationControlsCM
         {
-            public DropDownList IncomingTextSelector { get; set; }
+            public UpstreamFieldChooser IncomingTextSelector { get; set; }
 
             public DropDownList DataSourceSelector { get; set; }
 
@@ -55,7 +55,7 @@ namespace terminalFr8Core.Activities
                     Label = "Build the CheckList of objects",
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
-                IncomingTextSelector = new DropDownList
+                IncomingTextSelector = new UpstreamFieldChooser
                 {
                     Name = nameof(IncomingTextSelector),
                     Label = "Compare CheckList against which incoming text",
@@ -121,7 +121,7 @@ namespace terminalFr8Core.Activities
                 var activityTemplate = await GetActivityTemplate(Guid.Parse(ActivityUI.DataSourceSelector.Value));
                 await HubCommunicator.DeleteExistingChildNodesFromActivity(ActivityId);
                 ActivityContext.ActivityPayload.ChildrenActivities.Clear();
-                await AddAndConfigureChildActivity(ActivityId, activityTemplate, order: 1);
+                await AddAndConfigureChildActivity(ActivityContext.ActivityPayload, activityTemplate, order: 1);
                 PreviousSelectedDataSourceId = ActivityUI.DataSourceSelector.Value;
                 CachedData = null;
             }

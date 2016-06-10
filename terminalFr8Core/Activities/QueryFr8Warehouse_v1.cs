@@ -25,6 +25,8 @@ namespace terminalFr8Core.Activities
 {
     public class QueryFr8Warehouse_v1 : BaseTerminalActivity
     {
+        private readonly IContainer _container;
+
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "QueryFr8Warehouse",
@@ -142,7 +144,7 @@ namespace terminalFr8Core.Activities
         // MT type has unique ID that should be used for this reason. Query name is something that is displayed to user. It should not contain any internal data.
         private Guid? ExtractUpstreamTypeId(QueryDTO query)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var uow = _container.GetInstance<IUnitOfWork>())
             {
                 var type = uow.MultiTenantObjectRepository.ListTypeReferences().FirstOrDefault(x => x.Alias == query.Name);
                 return type?.Id;
@@ -206,7 +208,7 @@ namespace terminalFr8Core.Activities
 
         private List<ListItem> GetObjects()
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var uow = _container.GetInstance<IUnitOfWork>())
             {
                 var listTypeReferences = uow.MultiTenantObjectRepository.ListTypeReferences();
                 return listTypeReferences.Select(c => new ListItem() { Key = c.Alias, Value = c.Id.ToString("N") }).ToList();
@@ -256,9 +258,10 @@ namespace terminalFr8Core.Activities
         */
         #endregion
 
-        public QueryFr8Warehouse_v1(ICrateManager crateManager)
+        public QueryFr8Warehouse_v1(ICrateManager crateManager, IContainer container)
             : base(crateManager)
         {
+            _container = container;
         }
 
         public override async Task Run()
@@ -330,7 +333,7 @@ namespace terminalFr8Core.Activities
             }
             //END OF NASTY CODE
 
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var uow = _container.GetInstance<IUnitOfWork>())
             {
                 var objectId = selectedObjectId.GetValueOrDefault();
                 var mtType = uow.MultiTenantObjectRepository.FindTypeReference(objectId);
@@ -383,12 +386,15 @@ namespace terminalFr8Core.Activities
             Storage.RemoveByLabel("Queryable Criteria");
             if (Guid.TryParse(config.AvailableObjects.Value, out selectedObjectId))
             {
-                // crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", GetFieldsByTypeId(selectedObjectId).ToArray()));
-                Storage.Add(
-                    Crate.FromContent("Queryable Criteria",
-                        new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(selectedObjectId))
-                    )
-                );
+                using (var uow = _container.GetInstance<IUnitOfWork>())
+                {
+                    // crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", GetFieldsByTypeId(selectedObjectId).ToArray()));
+                    Storage.Add(
+                        Crate.FromContent("Queryable Criteria",
+                            new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(uow, selectedObjectId))
+                            )
+                        );
+                }
             }
             return Task.FromResult(0);
         }

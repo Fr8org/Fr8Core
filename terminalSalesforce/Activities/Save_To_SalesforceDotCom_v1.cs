@@ -36,14 +36,14 @@ namespace terminalSalesforce.Actions
 
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        readonly ISalesforceManager _salesforce = new SalesforceManager();
+        private readonly ISalesforceManager _salesforce;
         
-        public Save_To_SalesforceDotCom_v1(ICrateManager crateManager)
+        public Save_To_SalesforceDotCom_v1(ICrateManager crateManager, ISalesforceManager salesforceManager)
             : base(crateManager)
         {
+            _salesforce = salesforceManager;
         }
-
-
+        
         public override async Task Initialize()
         {
                 //In initial config, just create a DDLB 

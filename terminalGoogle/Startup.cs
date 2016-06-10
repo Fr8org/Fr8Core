@@ -14,6 +14,11 @@ namespace terminalGoogle
 {
     public class Startup : BaseConfiguration
     {
+        public Startup()
+            : base(TerminalData.TerminalDTO)
+        {
+        }
+
         public void Configuration(IAppBuilder app)
         {
             Configuration(app, false);
@@ -28,7 +33,7 @@ namespace terminalGoogle
 
             if (!selfHost)
             {
-                StartHosting("terminalGoogle");
+                StartHosting();
             }
         }
 

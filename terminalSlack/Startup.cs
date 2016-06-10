@@ -19,12 +19,17 @@ namespace terminalSlack
 {
     public class Startup : BaseConfiguration
     {
+        public Startup()
+            : base(TerminalData.TerminalDTO)
+        {
+        }
+
         public void Configuration(IAppBuilder app, bool selfHost)
         {
             ConfigureProject(selfHost, TerminalSlackBootstrapper.ConfigureLive);
             WebApiConfig.Register(_configuration);
             app.UseWebApi(_configuration);
-            StartHosting("terminalSlack");
+            StartHosting();
         }
 
         public void Configuration(IAppBuilder app)
