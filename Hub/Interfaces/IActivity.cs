@@ -5,6 +5,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.States;
 
 
 namespace Hub.Interfaces
@@ -15,8 +16,16 @@ namespace Hub.Interfaces
         Task<ActivityDTO> Configure(IUnitOfWork uow, string userId, ActivityDO curActivityDO);
         ActivityDO GetById(IUnitOfWork uow, Guid id);
 
-        Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid activityTemplateId, 
-                                             string label = null, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null);
+        Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, 
+            string userId, 
+            Guid activityTemplateId,
+            string label = null, 
+            string name = null, 
+            int? order = null, 
+            Guid? parentNodeId = null, 
+            bool createPlan = false, 
+            Guid? authorizationTokenId = null,
+            PlanVisibility newPlanVisibility = PlanVisibility.Standard);
 
         Task<PayloadDTO> Run(IUnitOfWork uow, ActivityDO curActivityDO, ActivityExecutionMode curActionExecutionMode, ContainerDO curContainerDO);
         Task<ActivityDTO> Activate(ActivityDO curActivityDO);

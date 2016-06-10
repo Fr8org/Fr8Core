@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using Fr8.Infrastructure.Interfaces;
 using Fr8.TerminalBase.Infrastructure;
 using terminalGoogle.Infrastructure;
 using terminalGoogle.Interfaces;
@@ -18,10 +19,10 @@ namespace terminalGoogle.Controllers
         private IEvent _event;
         private BaseTerminalEvent _baseTerminalEvent;
 
-        public EventController()
+        public EventController(IRestfulServiceClient restfulServiceClient)
         {
             _event = new Event();
-            _baseTerminalEvent = new BaseTerminalEvent();
+            _baseTerminalEvent = new BaseTerminalEvent(restfulServiceClient);
         }
 
         [HttpPost]

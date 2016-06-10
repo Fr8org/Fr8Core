@@ -20,11 +20,13 @@ namespace terminalDocuSign.Services
     {
         private readonly IDocuSignPlan _docuSignPlan;
         private readonly ICrateManager _crateManager;
+        private readonly IContainer _container;
 
-        public Event()
+        public Event(IDocuSignPlan docuSignPlan, ICrateManager crateManager, IContainer container)
         {
-            _docuSignPlan = ObjectFactory.GetInstance<IDocuSignPlan>();
-            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
+            _docuSignPlan = docuSignPlan;
+            _crateManager = crateManager;
+            _container = container;
         }
 
         public async Task<Crate> Process(string curExternalEventPayload)
@@ -35,7 +37,7 @@ namespace terminalDocuSign.Services
             {
                 var curFr8UserAndToken = ConfirmAuthentication(curExternalEventPayload);
 
-                var hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
+                var hubCommunicator = _container.GetInstance<IHubCommunicator>();
 
                 hubCommunicator.Configure("terminalDocuSign", curFr8UserAndToken.Item1);
 

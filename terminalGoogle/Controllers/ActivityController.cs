@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.TerminalBase.Services;
-using StructureMap;
 
 namespace terminalGoogle.Controllers
 {
@@ -13,9 +12,10 @@ namespace terminalGoogle.Controllers
     {
         private const string curTerminal = "terminalGoogle";
         private readonly ActivityExecutor _activityExecutor;
-        public ActivityController()
+
+        public ActivityController(ActivityExecutor activityExecutor)
         {
-            _activityExecutor = ObjectFactory.GetInstance<ActivityExecutor>();
+            _activityExecutor = activityExecutor;
         }
 
         [HttpPost]

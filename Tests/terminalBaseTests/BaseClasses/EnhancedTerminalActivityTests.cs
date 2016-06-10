@@ -391,7 +391,7 @@ namespace terminaBaselTests.BaseClasses
             ObjectFactory.Configure(x =>
             {
                 x.For<IRestfulServiceClient>().Use<RestfulServiceClient>().SelectConstructor(() => new RestfulServiceClient());
-                x.For<IHubCommunicator>().Use(new ExplicitDataHubCommunicator(samplePayload)).Singleton();
+                x.For<IHubCommunicator>().Use(new ExplicitDataHubCommunicator(samplePayload, _crateManager)).Singleton();
             });
             
             FixtureData.AddTestActivityTemplate();

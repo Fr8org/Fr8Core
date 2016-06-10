@@ -19,6 +19,11 @@ namespace terminalBox
 {
     public class Startup : BaseConfiguration
     {
+        public Startup()
+            : base(TerminalData.TerminalDTO)
+        {
+        }
+
         public void Configuration(IAppBuilder app)
         {
             Configuration(app, false);
@@ -36,7 +41,7 @@ namespace terminalBox
 
             if (!selfHost)
             {
-                StartHosting("terminalAzure");
+                StartHosting();
             }
         }
 

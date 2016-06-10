@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
@@ -19,7 +20,7 @@ namespace Fr8.Testing.Integration
         public BaseTerminalIntegrationTest()
         {
             ObjectFactory.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
-            HMACService = new Fr8HMACService();
+            HMACService = new Fr8HMACService(ObjectFactory.GetInstance<MediaTypeFormatter>());
         }
 
         public void AddCrate<T>(Fr8DataDTO dataDTO, T crateManifest, string label)
