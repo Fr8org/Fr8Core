@@ -264,6 +264,9 @@
         isCollapsed: boolean;
     }
 
+    export class UpstreamFieldChooser extends DropDownList {
+    }
+
     export class TextBlockField extends ControlDefinitionDTO {
         public class: string;
     }
