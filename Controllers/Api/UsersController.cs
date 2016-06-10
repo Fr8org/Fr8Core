@@ -134,7 +134,6 @@ namespace HubWeb.Controllers
 
                 if (_securityServices.UserHasPermission(PermissionType.ManageFr8Users, nameof(Fr8AccountDO)))
                 {
-                    user.CanManagePageDefinitions = userDTO.CanManagePageDefinitions;
                     user.Class = userDTO.Class;
                     user.ProfileId = userDTO.ProfileId;
                     uow.SaveChanges();

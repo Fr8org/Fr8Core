@@ -108,7 +108,6 @@ namespace Data.Entities
             set { Subscriptions = value.Cast<SubscriptionDO>().ToList(); }
         }
 
-        public bool CanManagePageDefinitions { get; set; }
     }
 }
 
