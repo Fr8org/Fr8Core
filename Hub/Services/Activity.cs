@@ -20,6 +20,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Exceptions;
 using Hub.Infrastructure;
 using Hub.Interfaces;
@@ -177,7 +178,6 @@ namespace Hub.Services
                 {
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
-                        AuthorizationTokenDO authToken;
                         var existingAction = uow.PlanRepository.GetById<ActivityDO>(submittedActivity.Id);
 
                         if (existingAction == null)
@@ -189,8 +189,9 @@ namespace Hub.Services
                         {
                             return Mapper.Map<ActivityDTO>(submittedActivity);
                         }
-
+                        Logger.LogInfo($"Before calling terminal activation of activity (Id - {submittedActivity.Id})");
                         var activatedActivityDTO = await CallTerminalActivityAsync<ActivityDTO>(uow, "activate", null, submittedActivity, Guid.Empty);
+                        Logger.LogInfo($"Call to terminal activation of activity (Id - {submittedActivity.Id}) completed");
                         var activatedActivityDo = Mapper.Map<ActivityDO>(activatedActivityDTO);
 
                         var storage = _crate.GetStorage(activatedActivityDo);
@@ -577,7 +578,7 @@ namespace Hub.Services
             return Mapper.Map<ActivityDO>(tempActionDTO);
         }
 
-        private Task<TResult> CallTerminalActivityAsync<TResult>(
+        private async Task<TResult> CallTerminalActivityAsync<TResult>(
             IUnitOfWork uow,
             string activityName,
             IEnumerable<KeyValuePair<string, string>> parameters,
@@ -610,13 +611,13 @@ namespace Hub.Services
                 var containerDO = uow.ContainerRepository.GetByKey(containerId);
                 EventManager.ContainerSent(containerDO, curActivityDO);
 
-                var reponse = ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<TResult>(activityName, parameters, fr8DataDTO, containerId.ToString());
+                var response = ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<TResult>(activityName, parameters, fr8DataDTO, containerId.ToString());
 
                 EventManager.ContainerReceived(containerDO, curActivityDO);
-                return reponse;
+                return await response;
             }
 
-            return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<TResult>(activityName, parameters, fr8DataDTO, containerId.ToString());
+            return await ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<TResult>(activityName, parameters, fr8DataDTO, containerId.ToString());
         }
 
         private void ReportActivityInvocationError(ActivityDO activity, string error, string containerId, string objectId, Action<string, string, string, string> reportingAction)
