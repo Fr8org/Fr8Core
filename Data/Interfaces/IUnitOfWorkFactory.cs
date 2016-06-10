@@ -1,6 +1,6 @@
 ﻿namespace Data.Interfaces
 {
-    public interface IUnitOfWorkProvider
+    public interface IUnitOfWorkFactory
     {
         IUnitOfWork GetNewUnitOfWork();
     }

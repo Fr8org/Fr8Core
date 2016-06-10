@@ -10,9 +10,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using Newtonsoft.Json;
-using StructureMap;
 using terminalAtlassian.Interfaces;
-using terminalAtlassian.Services;
 
 namespace terminalAtlassian.Actions
 {
@@ -231,7 +229,13 @@ namespace terminalAtlassian.Actions
 
 
         private const string ConfigurationPropertiesLabel = "ConfigurationProperties";
+        private const string RuntimeCrateLabel = "JIRA proprties";
+
+        private const string JiraUrlField = "JIRA link";
+        private const string JiraIdField = "JIRA Id";
+
         private readonly IAtlassianService _atlassianService;
+
 
         public Save_Jira_Issue_v1(ICrateManager crateManager, IAtlassianService atlassianService)
             : base(crateManager)
@@ -247,7 +251,9 @@ namespace terminalAtlassian.Actions
                 .GetProjects(AuthorizationToken)
                 .ToListItems()
                 .ToList();
-
+            CrateSignaller.MarkAvailableAtRuntime<FieldDescriptionsCM>(RuntimeCrateLabel)
+                          .AddField(JiraIdField)
+                          .AddField(JiraUrlField);
             await Task.Yield();
         }
 
@@ -377,9 +383,11 @@ namespace terminalAtlassian.Actions
             await _atlassianService.CreateIssue(issueInfo, AuthorizationToken);
 
             var credentialsDTO = JsonConvert.DeserializeObject<CredentialsDTO>(AuthorizationToken.Token);
-            await
-                PushUserNotification("Success", "Jira issue created",
-                    "Created new jira issue: " + credentialsDTO.Domain + "/browse/" + issueInfo.Key);
+            var jiraUrl = $"{credentialsDTO.Domain}/browse/{issueInfo.Key}";
+            await PushUserNotification("Success", "Jira issue created", $"Created new jira issue: {jiraUrl}");
+            Payload.Add(Crate<FieldDescriptionsCM>.FromContent(RuntimeCrateLabel, new FieldDescriptionsCM(
+                                                                                      new FieldDTO(JiraIdField, issueInfo.Key),
+                                                                                      new FieldDTO(JiraUrlField, jiraUrl))));
         }
 
         private IssueInfo ExtractIssueInfo()
