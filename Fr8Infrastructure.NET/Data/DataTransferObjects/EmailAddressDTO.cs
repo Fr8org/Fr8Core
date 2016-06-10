@@ -13,6 +13,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         public EmailAddressDTO(string emailAddress)
         {
             this.emailAddress = emailAddress;
+            this.Address = emailAddress;
         }
 
         public int Id { get; set; }
