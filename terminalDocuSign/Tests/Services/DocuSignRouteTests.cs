@@ -10,6 +10,7 @@ using Fr8.Testing.Unit;
 using Fr8.Testing.Unit.Fixtures;
 using Data.Entities;
 using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Interfaces;
 using IActivity = Hub.Interfaces.IActivity;
 

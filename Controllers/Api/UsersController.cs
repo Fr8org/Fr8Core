@@ -27,7 +27,7 @@ namespace HubWeb.Controllers
 
         public UsersController()
         {
-            _account = ObjectFactory.GetInstance<Fr8Account>();
+            _fr8Account = ObjectFactory.GetInstance<Fr8Account>();
             _securityServices = ObjectFactory.GetInstance<ISecurityServices>();
             _mappingEngine = ObjectFactory.GetInstance<IMappingEngine>();
             _fr8Account = ObjectFactory.GetInstance<Fr8Account>();

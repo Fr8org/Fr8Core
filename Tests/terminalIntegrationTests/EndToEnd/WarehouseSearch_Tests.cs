@@ -81,11 +81,10 @@ namespace terminalIntegrationTests.EndToEnd
         public async Task WarehouseAdd()
         {
             var url = GetHubApiBaseUrl() + "warehouse/add";
-            var dataToAdd = new DocuSignEnvelopeCM()
+            var dataToAdd = new ManifestDescriptionCM()
             {
-                EnvelopeId = Guid.NewGuid().ToString(),
+                Id = Guid.NewGuid().ToString(),
                 Name = "test envelope added by WarehouseAdd test",
-                SentDate = new DateTime(2021, 04, 20)
             };
 
             var crateStorage = new CrateStorage(Fr8.Infrastructure.Data.Crates.Crate.FromContent(null, dataToAdd));
@@ -101,12 +100,13 @@ namespace terminalIntegrationTests.EndToEnd
 
                 Assert.NotNull(user, "Could not find test user in the database.");
 
-                var addedEnvelope = uow.MultiTenantObjectRepository.Query<DocuSignEnvelopeCM>(user.Id, x=>x.EnvelopeId == dataToAdd.EnvelopeId).FirstOrDefault();
+                var addedEnvelope = uow.MultiTenantObjectRepository.Query<ManifestDescriptionCM>(user.Id, x => x.Id == dataToAdd.Id).FirstOrDefault();
 
                 Assert.NotNull(addedEnvelope, "Failed to add new record to Warehouse using API");
 
-                Assert.AreEqual(dataToAdd.Name, addedEnvelope.Name, "Invalid Name of stored envelope");
-                Assert.AreEqual(dataToAdd.SentDate, addedEnvelope.SentDate, "Invalid SentDate of stored envelope");
+                uow.MultiTenantObjectRepository.Delete<ManifestDescriptionCM>(user.Id, x => x.Id == dataToAdd.Id);
+
+                Assert.AreEqual(dataToAdd.Name, addedEnvelope.Name, "Invalid value of Name property for stored data");
             }
         }
 
