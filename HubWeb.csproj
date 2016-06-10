@@ -4068,8 +4068,6 @@
     <Content Include="Content\templates\metronic\views\tree.html" />
     <Content Include="Content\templates\metronic\views\ui_bootstrap.html" />
     <Content Include="Content\templates\metronic\views\ui_select.html" />
-    <Content Include="Content\templates\inline_html_template_v1.html" />
-    <Content Include="Content\templates\googletemplate1.html" />
     <Content Include="gulpfile.js" />
     <Content Include="Content\backgroundsize.min.htc" />
     <Content Include="Content\gadegets.xml" />
@@ -4357,7 +4355,6 @@
     <None Include="Properties\PublishProfiles\kwasant-rc - Web Deploy %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\kwasant-rc - Web Deploy %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\kwasant-rc - Web Deploy.pubxml" />
-    <Content Include="TestWidgetLibrary.html" />
     <Content Include="Themes\areas.css" />
     <Content Include="Themes\areas\icons.png" />
     <Content Include="Themes\bubble_default.css" />
