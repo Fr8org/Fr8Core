@@ -671,10 +671,6 @@
     <Compile Include="Migrations\201605231150066_AddOrganizationAndAccountToObjectRolePermissions.Designer.cs">
       <DependentUpon>201605231150066_AddOrganizationAndAccountToObjectRolePermissions.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201606070712251_RemoveFr8CoreActivities.cs" />
-    <Compile Include="Migrations\201606070712251_RemoveFr8CoreActivities.Designer.cs">
-      <DependentUpon>201606070712251_RemoveFr8CoreActivities.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201606071223281_Delete FindObjects solution.cs" />
     <Compile Include="Migrations\201606071223281_Delete FindObjects solution.Designer.cs">
       <DependentUpon>201606071223281_Delete FindObjects solution.cs</DependentUpon>
@@ -1260,9 +1256,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201605231150066_AddOrganizationAndAccountToObjectRolePermissions.resx">
       <DependentUpon>201605231150066_AddOrganizationAndAccountToObjectRolePermissions.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201606070712251_RemoveFr8CoreActivities.resx">
-      <DependentUpon>201606070712251_RemoveFr8CoreActivities.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606071223281_Delete FindObjects solution.resx">
       <DependentUpon>201606071223281_Delete FindObjects solution.cs</DependentUpon>
