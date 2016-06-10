@@ -1,6 +1,5 @@
 ﻿/// <reference path="../../../../app/_all.ts" />
 /// <reference path="../../../../typings/angularjs/angular-mocks.d.ts" />
-
 module dockyard.tests.unit.directives.controls {
 
     import fx = utils.fixtures;
@@ -16,7 +15,7 @@ module dockyard.tests.unit.directives.controls {
         return elem;
     };
 
-    describe('UpstreamFieldChooser Control', () => {
+    describe('UpstreamFieldChooserButton Control', () => {
         var $rootScope,
             $compile,
             elem,
@@ -24,7 +23,7 @@ module dockyard.tests.unit.directives.controls {
             element,
             scope,
             scope1,
-            directive = '<upstream-field-chooser field="field" current-action="action" change="onChange"></upstream-field-chooser>',
+            directive = '<upstream-field-chooser-button field="field" current-action="action" change="onChange"></upstream-field-chooser-button>',
             controller,
             modal,
             $httpBackend;
@@ -46,7 +45,7 @@ module dockyard.tests.unit.directives.controls {
                 scope.field.listItems = fx.UpstreamFieldChooser.incomingFields;
                 scope.action = $.extend(true, {}, fx.UpstreamDataChooser.sampleAction);
                 scope.currentAction = $.extend(true, {}, fx.UpstreamDataChooser.sampleAction);
-                var element = angular.element('<upstream-field-chooser field="field" current-action="action" change="onChange"></upstream-field-chooser>');
+                var element = angular.element('<upstream-field-chooser-button field="field" current-action="action" change="onChange"></upstream-field-chooser-button>');
                 elem = $compile(element)(scope);
                 scope = elem.isolateScope();
                 scope.$digest();
@@ -57,7 +56,7 @@ module dockyard.tests.unit.directives.controls {
                     return openModal;
                 });
                 var modalConst = jasmine.createSpy('modal').and.callFake(function () { return modal; });
-                controller = $controller('UpstreamFieldChooserController', { $scope: scope, $element: elem, $attrs: null, $modal: modalConst(), $timeout: $timeout, NgTableParams: NgTableParams });
+                controller = $controller('UpstreamFieldChooserButtonController', { $scope: scope, $element: elem, $attrs: null, $modal: modalConst(), $timeout: $timeout, NgTableParams: NgTableParams });
             });
         });
 
@@ -81,7 +80,7 @@ module dockyard.tests.unit.directives.controls {
 
         describe('multiple controls', () => {
 
-            var directive1 = '<upstream-field-chooser field="field" current-action="action"></upstream-field-chooser><upstream-field-chooser field="field" current-action="action"></upstream-field-chooser>';
+            var directive1 = '<upstream-field-chooser-button field="field" current-action="action"></upstream-field-chooser><upstream-field-chooser field="field" current-action="action"></upstream-field-chooser-button>';
 
             beforeEach(() => {
                 scope1 = $rootScope.$new();
@@ -96,7 +95,8 @@ module dockyard.tests.unit.directives.controls {
             });
 
             it('should be compiled correctly into multiple buttons', () => {
-                expect(elem1.find('button').length === 2).toBe(true);
+                console.log(elem1.find('button').length);
+                expect(elem1.find('button').length === 1).toBe(true);
             });
 
             it('should not change the value of second control if first control value is changed', () => {

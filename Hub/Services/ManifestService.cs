@@ -10,11 +10,11 @@ using StructureMap;
 
 namespace Hub.Services
 {
-    public class Manifest : IManifest
+    public class ManifestService : IManifest
     {
         private readonly ICrateManager _curCrateManager;
 
-        public Manifest()
+        public ManifestService()
         {
             _curCrateManager = ObjectFactory.GetInstance<ICrateManager>();
         }

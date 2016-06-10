@@ -53,7 +53,7 @@ namespace Fr8.TerminalBase.Filters
             }
 
             //POST event to fr8 about this terminal error
-            new BaseTerminalController().ReportTerminalError(terminalName, curTerminalError,userId);
+            //new BaseTerminalController().ReportTerminalError(terminalName, curTerminalError,userId);
             
 
             //prepare the response JSON based on the exception type

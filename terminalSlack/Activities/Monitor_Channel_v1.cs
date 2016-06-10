@@ -91,10 +91,10 @@ namespace terminalSlack.Actions
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
         
 
-        public Monitor_Channel_v1(ICrateManager crateManager)
+        public Monitor_Channel_v1(ICrateManager crateManager, ISlackIntegration slackIntegration)
             : base(crateManager)
         {
-            _slackIntegration = new SlackIntegration();
+            _slackIntegration = slackIntegration;
         }
 
         

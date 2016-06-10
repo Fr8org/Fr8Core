@@ -94,7 +94,7 @@ $(document).ready(function () {
     if ($('.navbar').hasClass('navbar-light')) {
         $('.navbar-brand img').attr('src', '/Content/img/dockyard_logo.png');
     }
-    if (window.location.pathname === "/Services/DocuSign") {
+    if (window.location.pathname === "/Services/DocuSign" || window.location.pathname === "/Services/Salesforce") {
         $('.navbar-brand img').attr('src', '/Content/img/dockyard_logo_dark.png');
     }
 
