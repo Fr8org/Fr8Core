@@ -1075,7 +1075,7 @@
     <TypeScriptCompile Include="Scripts\tests\unit\directives\ActionPicker.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\collapse.directive.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\QueryBuilder.spec.ts" />
-    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamFieldChooser.spec.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamFieldChooserButton.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\filters\FilterByTagTests.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalListController.ts" />
