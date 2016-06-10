@@ -5,17 +5,16 @@ using NUnit.Framework;
 using StructureMap;
 using Data.Entities;
 using Hub.Managers;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
-using TerminalBase.Infrastructure;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 using terminalFr8Core.Actions;
 using Moq;
 using System.Threading.Tasks;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Infrastructure.Interfaces;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Models;
 using terminalFr8Core.Activities;
-using TerminalBase.Models;
 
 namespace terminalFr8CoreTests.Unit
 {

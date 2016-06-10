@@ -1,11 +1,9 @@
-﻿using System.Web.Http;
-using TerminalBase.BaseClasses;
+﻿using System;
+using System.Net.Http;
+using System.Web.Http;
 using System.Threading.Tasks;
-using System;
-using Fr8Data.DataTransferObjects;
-using StructureMap;
-using TerminalBase.Infrastructure;
-using TerminalBase.Services;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.TerminalBase.Services;
 
 namespace terminalAtlassian.Controllers
 {
@@ -15,17 +13,16 @@ namespace terminalAtlassian.Controllers
         private const string curTerminal = "terminalAtlassian";
         private readonly ActivityExecutor _activityExecutor;
 
-        public ActivityController()
+        public ActivityController(ActivityExecutor activityExecutor)
         {
-            _activityExecutor = ObjectFactory.GetInstance<ActivityExecutor>();
+            _activityExecutor = activityExecutor;
         }
 
         [HttpPost]
-        [fr8TerminalHMACAuthenticate(curTerminal)]
-        [Authorize]
-        public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
+        public async Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
         {
-            return _activityExecutor.HandleFr8Request(curTerminal, actionType, curDataDTO);
+            var queryParams = Request.GetQueryNameValuePairs();
+            return await _activityExecutor.HandleFr8Request(curTerminal, actionType, queryParams, curDataDTO);
         }
     }
 }

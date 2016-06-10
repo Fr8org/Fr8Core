@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
 
 namespace HubTests.Services
@@ -12,11 +12,12 @@ namespace HubTests.Services
     {
         public Uri BaseUri { get; set; }
 
-        public Func<string, Fr8DataDTO, object> CallActivityBody { get; set; }
+        public Func<string, IEnumerable<KeyValuePair<string, string>>, Fr8DataDTO, object> CallActivityBody { get; set; }
         
-        public Task<TResponse> CallActivityAsync<TResponse>(string actionType, Fr8DataDTO dataDTO, string correlationId)
+        public Task<TResponse> CallActivityAsync<TResponse>(string actionType,
+            IEnumerable<KeyValuePair<string, string>> parameters, Fr8DataDTO dataDTO, string correlationId)
         {
-            return Task.FromResult((TResponse) CallActivityBody(actionType, dataDTO));
+            return Task.FromResult((TResponse) CallActivityBody(actionType, parameters, dataDTO));
         }
 
         public Task<Stream> DownloadAsync(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)

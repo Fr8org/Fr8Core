@@ -5,11 +5,11 @@ using Data.Exceptions;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Interfaces;
 using Hub.Services;
-using Utilities.Configuration.Azure;
-using Utilities.Logging;
 
 namespace Hub.Managers
 {

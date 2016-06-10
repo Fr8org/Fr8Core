@@ -1,28 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using Fr8Infrastructure.Interfaces;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.BaseClasses;
 using Newtonsoft.Json;
 using StructureMap;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using Utilities.Configuration.Azure;
 
 namespace terminalFr8Core.Activities
 {
     // The generic interface inheritance.
     public class Select_Fr8_Object_v1 : BaseTerminalActivity
     {
+        private readonly IRestfulServiceClient _restfulServiceClient;
+
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "Select_Fr8_Object",
@@ -85,17 +83,17 @@ namespace terminalFr8Core.Activities
         // Get the Design time fields crate.
         private async Task<Crate> GetDesignTimeFieldsCrateOfSelectedFr8Object(string fr8Object)
         {
-            var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/manifests?id="
                 + int.Parse(fr8Object);
-            var response = await client.GetAsync<CrateDTO>(new Uri(url));
+            var response = await _restfulServiceClient.GetAsync<CrateDTO>(new Uri(url));
             return CrateManager.FromDto(response);
 		}
 
-        public Select_Fr8_Object_v1(ICrateManager crateManager)
+        public Select_Fr8_Object_v1(ICrateManager crateManager, IRestfulServiceClient restfulServiceClient)
             : base(crateManager)
         {
+            _restfulServiceClient = restfulServiceClient;
         }
 
         public override Task Run()

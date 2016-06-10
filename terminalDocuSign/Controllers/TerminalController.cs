@@ -1,31 +1,13 @@
-using System.Collections.Generic;
-using System.Web.Http;
-using Data.States;
-using Utilities.Configuration.Azure;
-using System.Web.Http.Description;
-using Fr8Data.Constants;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using TerminalBase.Services;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 
 namespace terminalDocuSign.Controllers
 {
-    [RoutePrefix("terminals")]
-    public class TerminalController : ApiController
+    public class TerminalController : DefaultTerminalController
     {
-        [HttpGet]
-        [Route("discover")]
-        [ResponseType(typeof(StandardFr8TerminalCM))]
-        public IHttpActionResult Get()
+        public TerminalController(IActivityStore activityStore)
+            : base(activityStore)
         {
-            var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
-            {
-                Definition = TerminalData.TerminalDTO,
-                Activities = ActivityStore.GetAllActivities(TerminalData.TerminalDTO)
-            };
-
-            return Json(curStandardFr8TerminalCM);
         }
     }
 }

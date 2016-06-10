@@ -1,24 +1,20 @@
-﻿using Data.Entities;
-using Hub.Managers;
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
 using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Constants;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using TerminalBase.Infrastructure;
-using terminalFr8Core.Actions;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Helpers;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 using terminalFr8Core.Activities;
 using terminalTests.Fixtures;
-using TerminalBase.Helpers;
-using UtilitiesTesting;
-using TerminalBase.Models;
+using Fr8.Testing.Unit;
 
 namespace terminalTests.Integration
 {
@@ -51,6 +47,10 @@ namespace terminalTests.Integration
 
             hubMock.Setup(x => x.GetActivityTemplates(It.IsAny<string>(), It.IsAny<bool>()))
                    .Returns<string, bool>((tags, getLatest) => Task.FromResult(ActivityTemplates.Where(x => x.Tags.Contains(tags)).ToList()));
+
+            hubMock.Setup(x => x.CreateAndConfigureActivity(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid?>(), It.IsAny<bool>(), It.IsAny<Guid?>()))
+                .Returns(() => Task.FromResult(new ActivityPayload() { ActivityTemplate = ActivityTemplates[0], Ordering = 1 }));
+                
             ObjectFactory.Container.Inject(hubMock);
             ObjectFactory.Container.Inject(hubMock.Object);
         }
@@ -120,11 +120,13 @@ namespace terminalTests.Integration
             await activity.Configure(activityContext);
             activityContext.ActivityPayload.CrateStorage.UpdateControls<FilterObjectListByIncomingMessage_v1.ActivityUi>(x => x.DataSourceSelector.Value = ActivityTemplates[0].Id.ToString());
             await activity.Configure(activityContext);
-            var childActivity = new ActivityPayload
-            {
-                ActivityTemplate = ActivityTemplates[0]
-            };
-            AddChild(activityContext.ActivityPayload, childActivity, 1);
+            
+            // var childActivity = new ActivityPayload
+            // {
+            //     ActivityTemplate = ActivityTemplates[0]
+            // };
+            // AddChild(activityContext.ActivityPayload, childActivity, 1);
+            
             //Run
             await activity.Run(activityContext, containerExecutionContext);
             var operationalState = containerExecutionContext.PayloadStorage.FirstCrate<OperationalStateCM>().Content;

@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Interfaces;
 using NUnit.Framework;
 using StructureMap;
-using Fr8Data.DataTransferObjects;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 using terminalExcel.Actions;
-using TerminalBase.Infrastructure;
-using TerminalBase.Interfaces;
-using Fr8Data.Managers;
 using terminalExcel.Activities;
 
 namespace terminalExcel.PluginExcelTests
@@ -20,7 +20,6 @@ namespace terminalExcel.PluginExcelTests
 
         public const string filesCommand = "files";
 
-        private IActivity _activity;
         private ICrateManager _crate;
         private FixtureData _fixtureData;
 
@@ -31,7 +30,6 @@ namespace terminalExcel.PluginExcelTests
             TerminalBootstrapper.ConfigureTest();
 
             //_fixtureData = new FixtureData(ObjectFactory.GetInstance<IUnitOfWork>());
-            _activity = ObjectFactory.GetInstance<IActivity>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 

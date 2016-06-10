@@ -3,15 +3,19 @@ using Owin;
 using System;
 using System.Collections.Generic;
 using System.Web.Http.Dispatcher;
+using Fr8.TerminalBase.BaseClasses;
 using terminalTest.Actions;
-using TerminalBase.BaseClasses;
-using TerminalBase.Services;
 
 [assembly: OwinStartup(typeof(terminalTest.Startup))]
 namespace terminalTest
 {
     public class Startup: BaseConfiguration
     {
+        public Startup() 
+            : base(TerminalData.TerminalDTO)
+        {
+        }
+
         public void Configuration(IAppBuilder app)
         {
             Configuration(app, false);
@@ -27,7 +31,7 @@ namespace terminalTest
 
             if (!selfHost)
             {
-                StartHosting("terminalAzure");
+                StartHosting();
             }
         }
 

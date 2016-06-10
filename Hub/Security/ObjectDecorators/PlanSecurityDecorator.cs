@@ -6,10 +6,10 @@ using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
 using Hub.Interfaces;
 
 namespace Hub.Security.ObjectDecorators
@@ -54,9 +54,10 @@ namespace Hub.Security.ObjectDecorators
             return _target.IsMonitoringPlan(uow, planDo);
         }
         
-        public PlanDO Create(IUnitOfWork uow, string name, string category = "")
+        public PlanDO Create(IUnitOfWork uow, string name, string category = "", string ownerId = "", PlanVisibility visibility = PlanVisibility.Standard)
         {
-            return _target.Create(uow, name, category);
+            //TODO: probably worth add a check that only admin can create plan with specific owner Id and internal plan visibility
+            return _target.Create(uow, name, category, ownerId, visibility);
         }
 
         public PlanDO GetFullPlan(IUnitOfWork uow, Guid planId)

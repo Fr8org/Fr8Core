@@ -3,7 +3,7 @@ using Data.Entities;
 using Data.Repositories.Plan;
 using Hub.StructureMap;
 using NUnit.Framework;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 using Assert = NUnit.Framework.Assert;
 
 namespace HubTests.Repositories.Plan

@@ -4,23 +4,24 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.Manifests.Helpers;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.Manifests.Helpers;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using terminalUtilities.Excel;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using TerminalBase.Services;
 
 namespace terminalExcel.Actions
 {
     public class Save_To_Excel_v1 : EnhancedTerminalActivity<Save_To_Excel_v1.ActivityUi>
     {
+        private readonly ExcelUtils _excelUtils;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public CrateChooser UpstreamCrateChooser { get; set; }
@@ -132,9 +133,10 @@ namespace terminalExcel.Actions
         private const string SelectedSpreadsheetCrateLabel = "Selected Spreadsheet";
 
 
-        public Save_To_Excel_v1(ICrateManager crateManager)
+        public Save_To_Excel_v1(ICrateManager crateManager, ExcelUtils excelUtils)
             : base(crateManager)
         {
+            _excelUtils = excelUtils;
         }
 
         public override async Task Initialize()
@@ -277,7 +279,7 @@ namespace terminalExcel.Actions
                 if (ActivityUI.UseExistingWorksheetOption.Selected
                     || ActivityUI.ExistingWorksheetsList.ListItems.Any(x => x.Key == ActivityUI.NewWorksheetName.Value))
                 {
-                    var existingData = ExcelUtils.GetExcelFile(existingFileBytes, fileName, true, worksheetName);
+                    var existingData = _excelUtils.GetExcelFile(existingFileBytes, fileName, true, worksheetName);
 
                     StandardTableDataCMTools.AppendToStandardTableData(existingData, tableToSave);
                     dataToInsert = existingData;

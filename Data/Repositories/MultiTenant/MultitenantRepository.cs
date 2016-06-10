@@ -6,8 +6,8 @@ using Data.Interfaces;
 using Data.Repositories.MultiTenant.Ast;
 using Data.Repositories.MultiTenant.Queryable;
 using Data.Repositories.SqlBased;
-using Fr8Data.Crates;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace Data.Repositories.MultiTenant
 {

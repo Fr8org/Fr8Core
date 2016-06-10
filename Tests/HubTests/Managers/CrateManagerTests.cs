@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Linq;
 using Data.Entities;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
 using Hub.StructureMap;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
-using UtilitiesTesting.Fixtures;
-using UtilitiesTesting;
-using Fr8Data.Managers;
+using Fr8.Testing.Unit.Fixtures;
+using Fr8.Testing.Unit;
+
 
 namespace HubTests.Managers
 {

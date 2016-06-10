@@ -8,18 +8,20 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Validations;
+using Fr8.Infrastructure.Utilities;
 using Hub.Services;
-using Utilities;
 
 namespace HubWeb.Controllers
 {
     public class DataController : Controller
     {
         readonly EmailAddress _emailAddress;
-        
+        private IConfigRepository _configRepository;
+
         public DataController()
         {
             _emailAddress = ObjectFactory.GetInstance<EmailAddress>();
+            _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
         }
 
         [HttpPost]
@@ -30,7 +32,7 @@ namespace HubWeb.Controllers
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     EmailAddressDO emailAddressDO = _emailAddress.ConvertFromString(emailString, uow);
-                    if (!(RegexUtilities.IsValidEmailAddress(emailAddressDO.Address)))
+                    if (!(RegexUtilities.IsValidEmailAddress(_configRepository, emailAddressDO.Address)))
                         return Json("Invalid email format");
                     else
                         return Json(true);

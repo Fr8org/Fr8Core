@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 using StructureMap;
 using terminalQuickBooks.Interfaces;
-using TerminalBase.Infrastructure;
-using TerminalBase.Models;
 
 namespace terminalQuickBooks.Services
 {
@@ -18,10 +18,9 @@ namespace terminalQuickBooks.Services
         /// <param name="authTokenDO"></param>
         /// <param name="userId"/>
         /// <returns>List of Accounts of Intuit type</returns>
-        public List<Intuit.Ipp.Data.Account> GetAccountList(AuthorizationToken authToken,  IHubCommunicator hubCommunicator)
+        public List<Intuit.Ipp.Data.Account> GetAccountList(AuthorizationToken authToken,  IHubCommunicator hubCommunicator, IServiceWorker serviceWorker)
         {
-            var _serviceWorker = ObjectFactory.GetInstance<IServiceWorker>();
-            var curDataService = _serviceWorker.GetDataService(authToken,  hubCommunicator);
+            var curDataService = serviceWorker.GetDataService(authToken,  hubCommunicator);
             var curAccountList = curDataService.FindAll(new Intuit.Ipp.Data.Account()).ToList();
             return curAccountList;
         }
@@ -31,9 +30,9 @@ namespace terminalQuickBooks.Services
         /// <param name="authTokenDO"></param>
         /// <param name="userId"/>
         /// <returns></returns>
-        public ChartOfAccountsCM GetChartOfAccounts(AuthorizationToken authToken,  IHubCommunicator hubCommunicator)
+        public ChartOfAccountsCM GetChartOfAccounts(AuthorizationToken authToken,  IHubCommunicator hubCommunicator, IServiceWorker serviceWorker)
         {
-            var listOfAccounts = GetAccountList(authToken, hubCommunicator);
+            var listOfAccounts = GetAccountList(authToken, hubCommunicator, serviceWorker);
             if (listOfAccounts.Count == 0)
             {
                 throw new Exception("No Accounts found in the QuickBooks account");

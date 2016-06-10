@@ -2,27 +2,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
 using Data.Interfaces;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Utilities.Logging;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Models;
 using Hub.Services.MT;
 using Newtonsoft.Json;
 using StructureMap;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using TerminalBase.Models;
-using Utilities.Logging;
 
 namespace terminalFr8Core.Activities
 {
     public class SearchFr8Warehouse_v1 : BaseTerminalActivity
     {
+        private readonly IContainer _container;
+
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "SearchFr8Warehouse",
@@ -100,9 +101,10 @@ namespace terminalFr8Core.Activities
             }
         }
 
-        public SearchFr8Warehouse_v1(ICrateManager crateManager)
+        public SearchFr8Warehouse_v1(ICrateManager crateManager, IContainer container)
             : base(crateManager)
         {
+            _container = container;
         }
 
         public override Task RunChildActivities()
@@ -180,13 +182,16 @@ namespace terminalFr8Core.Activities
 
         private void LoadAvailableFr8ObjectNames(string fr8ObjectID)
         {
-            var designTimeQueryFields = MTTypesHelper.GetFieldsByTypeId(Guid.Parse(fr8ObjectID));
-            var criteria = Storage.FirstOrDefault(d => d.Label == "Queryable Criteria");
-            if (criteria != null)
+            using (var uow = _container.GetInstance<IUnitOfWork>())
             {
-                Storage.Remove(criteria);
+                var designTimeQueryFields = MTTypesHelper.GetFieldsByTypeId(uow, Guid.Parse(fr8ObjectID));
+                var criteria = Storage.FirstOrDefault(d => d.Label == "Queryable Criteria");
+                if (criteria != null)
+                {
+                    Storage.Remove(criteria);
+                }
+                Storage.Add(Crate.FromContent("Queryable Criteria", new FieldDescriptionsCM(designTimeQueryFields)));
             }
-            Storage.Add(Crate.FromContent("Queryable Criteria", new FieldDescriptionsCM(designTimeQueryFields)));
         }
 
         private void UpdateOperationCrate(string errorMessage = null)
@@ -277,7 +282,7 @@ namespace terminalFr8Core.Activities
         // create the dropdown design time fields.
         private List<FieldDTO> GetFr8WarehouseTypes(AuthorizationToken oAuthToken)
         {
-            using (var unitWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var unitWork = _container.GetInstance<IUnitOfWork>())
             {
                 var warehouseTypes = new List<FieldDTO>();
 

@@ -5,7 +5,9 @@
         <div class="container">
             <!-- BEGIN LOGO -->
             <div class="page-logo">
-                <a href="http://www.fr8.company"><img src="/Content/img/dockyard_logo.png" alt="logo" class="logo-default"></a>
+                <a href="/">
+                    <img src="/Content/img/dockyard_logo.png" alt="logo" class="logo-default">
+                </a>
                 <!--BEGIN STICKER-->
                 <div class="page-sticker">
                     <p>beta</p>
@@ -116,7 +118,7 @@
                         <ul class="dropdown-menu">
                             <li><a ui-sref="planList">Show All</a></li>
                             <li event-add><a ui-sref="planForm" >Add</a></li>
-                            <li ng-controller="PlanDetailsController" ng-show="$state.is('planDetails')" ><a href="{{href}}"  download='{{ptvm.plan.name}}.json'  type='application/json'  ng-click="sharePlan()">Share Plan</a></li>
+                            <li><a ng-click="goToPlanDirectory('@System.Configuration.ConfigurationManager.AppSettings["PlanDirectoryUrl"]')">Plan Directory</a></li>
                             <li ng-controller="PlanUploadController"><a ng-click="showModal()" >Load from JSON file</a></li>
                         </ul>
                     </li>
@@ -145,7 +147,7 @@
                         <ul class="dropdown-menu">
                             <li><a href="https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md">Developer Home</a></li>
                             <li><a href="/Documentation/RestAPIGuide.html">Fr8 Development Resources - DocuSign</a></li>
-                            <li><a ng-click="goToPlanDirectory('@System.Configuration.ConfigurationManager.AppSettings["PlanDirectoryUrl"]')">Plan Directory</a></li>
+                            <li><a ui-sref="manifestregistry">Manage Manifest Registry</a></li>
                         </ul>
                     </li>
 
@@ -166,7 +168,6 @@
                             <a data-toggle="dropdown" href="#" class="dropdown-toggle">Admin <i class="fa fa-angle-down"></i></a>
                             <ul class="dropdown-menu">
                                 <li><a ui-sref="accounts">Manage Users</a></li>
-                                <li><a ui-sref="manifestregistry">Manage ManifestRegistry</a></li>
                                 <li><a ui-sref="webservices">Show Web Services</a></li>
                                 <li><a ui-sref="showFacts">Show Facts</a></li>
                                 <li><a ui-sref="showIncidents">Show Incidents</a></li>

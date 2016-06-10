@@ -2,18 +2,17 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using AutoMapper;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using StructureMap;
-using Hub.Managers;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Infrastructure;
-using TerminalBase.Infrastructure;
-using TerminalBase.Models;
 
 namespace terminalDocuSign.Services
 {
@@ -21,11 +20,13 @@ namespace terminalDocuSign.Services
     {
         private readonly IDocuSignPlan _docuSignPlan;
         private readonly ICrateManager _crateManager;
+        private readonly IContainer _container;
 
-        public Event()
+        public Event(IDocuSignPlan docuSignPlan, ICrateManager crateManager, IContainer container)
         {
-            _docuSignPlan = ObjectFactory.GetInstance<IDocuSignPlan>();
-            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
+            _docuSignPlan = docuSignPlan;
+            _crateManager = crateManager;
+            _container = container;
         }
 
         public async Task<Crate> Process(string curExternalEventPayload)
@@ -36,7 +37,7 @@ namespace terminalDocuSign.Services
             {
                 var curFr8UserAndToken = ConfirmAuthentication(curExternalEventPayload);
 
-                var hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
+                var hubCommunicator = _container.GetInstance<IHubCommunicator>();
 
                 hubCommunicator.Configure("terminalDocuSign", curFr8UserAndToken.Item1);
 

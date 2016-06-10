@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
 using Microsoft.Owin;
-using Newtonsoft.Json;
 using Owin;
-using TerminalBase;
-using TerminalBase.BaseClasses;
 using System.Web.Http.Dispatcher;
+using Fr8.TerminalBase.BaseClasses;
 using terminalPapertrail.Tests.Infrastructure;
-using TerminalBase.Services;
 using terminalPapertrail.Actions;
 
 [assembly: OwinStartup(typeof(terminalPapertrail.Startup))]
@@ -19,12 +13,17 @@ namespace terminalPapertrail
 {
     public class Startup : BaseConfiguration
     {
+        public Startup()
+            : base(TerminalData.TerminalDTO)
+        {
+        }
+
         public void Configuration(IAppBuilder app, bool selfHost)
         {
             ConfigureProject(selfHost, TerminalPapertrailMapBootstrapper.LiveConfiguration);
             WebApiConfig.Register(_configuration);
             app.UseWebApi(_configuration);
-            StartHosting("terminalPapertrail");
+            StartHosting();
         }
 
         public void Configuration(IAppBuilder app)

@@ -5,12 +5,11 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.Repositories.Authorization;
-using Data.States;
+using Fr8.Infrastructure.Data.States;
 using Hub.StructureMap;
 using NUnit.Framework;
 using StructureMap;
-using UtilitiesTesting;
-using Fr8Data.States;
+using Fr8.Testing.Unit;
 
 namespace HubTests.Repositories
 {

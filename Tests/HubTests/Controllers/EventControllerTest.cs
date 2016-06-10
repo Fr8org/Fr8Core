@@ -1,19 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Web.Http.Results;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using StructureMap;
-using Data.Entities;
-using Data.Interfaces;
 using Hub.Managers;
 using HubWeb.Controllers;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 using System.Threading.Tasks;
 using System;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Crates.Helpers;
-using Fr8Data.Managers;
+using Fr8.Infrastructure.Data.Crates.Helpers;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
 
 namespace HubTests.Controllers
 {

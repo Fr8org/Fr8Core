@@ -3,10 +3,10 @@ using Data.Entities;
 using NUnit.Framework;
 using StructureMap;
 using Data.Interfaces;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Manifests;
 using Hub.Interfaces;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace HubTests.Entities
 {

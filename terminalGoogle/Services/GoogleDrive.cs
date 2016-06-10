@@ -12,6 +12,7 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Google.Apis.Requests;
 using Google.Apis.Script.v1;
 using Newtonsoft.Json;
@@ -20,8 +21,6 @@ using RestSharp;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
 using terminalGoogle.Services.Authorization;
-using TerminalBase.Infrastructure;
-using Utilities.Configuration.Azure;
 
 namespace terminalGoogle.Services
 {

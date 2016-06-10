@@ -1,6 +1,5 @@
 ﻿@using Data.Infrastructure.StructureMap
 @using StructureMap
-@using Utilities
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
@@ -9,20 +8,6 @@
 
 <html class="no-js">
 <!--<![endif]-->
-<!--Google Analytics code block. should probably be moved to a common js file -->
-<script>
-    (function (i, s, o, g, r, a, m) {
-        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
-            (i[r].q = i[r].q || []).push(arguments)
-        }, i[r].l = 1 * new Date(); a = s.createElement(o),
-                m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
-    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-
-    ga('create', 'UA-52048536-1', 'kwasant.com');
-    ga('send', 'pageview');
-
-</script>
-
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -48,7 +33,7 @@
 
     <script type="text/javascript">
         window.analytics = window.analytics || [], window.analytics.methods = ["identify", "group", "track", "page", "pageview", "alias", "ready", "on", "once", "off", "trackLink", "trackForm", "trackClick", "trackSubmit"], window.analytics.factory = function (t) { return function () { var a = Array.prototype.slice.call(arguments); return a.unshift(t), window.analytics.push(a), window.analytics } }; for (var i = 0; i < window.analytics.methods.length; i++) { var key = window.analytics.methods[i]; window.analytics[key] = window.analytics.factory(key) } window.analytics.load = function (t) { if (!document.getElementById("analytics-js")) { var a = document.createElement("script"); a.type = "text/javascript", a.id = "analytics-js", a.async = !0, a.src = ("https:" === document.location.protocol ? "https://" : "http://") + "cdn.segment.io/analytics.js/v1/" + t + "/analytics.min.js"; var n = document.getElementsByTagName("script")[0]; n.parentNode.insertBefore(a, n) } }, window.analytics.SNIPPET_VERSION = "2.0.9",
-               window.analytics.load("@(Utilities.Configuration.Azure.CloudConfigurationManager.GetSetting("SegmentWriteKey"))");
+               window.analytics.load("@(Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey"))");
         @{
             var userID = ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser();
             if (String.IsNullOrWhiteSpace(userID))
@@ -124,33 +109,34 @@
 
                             <!------SINGUP/LOGIN UPRIGHT OR WELCOMING MESSAGE----------------------------------->
                             @using Microsoft.AspNet.Identity
-                            @if (Request.IsAuthenticated)
-                            {
-                                <h1 class="site-logo"><a class="navbar-brand" href="http://www.fr8.company" title="fr8"><img src="~/Content/img/site/site-logo.png" alt="fr8" title="fr8"></a></h1>
+                            @if (Request.IsAuthenticated) {
+                                <h1 class="site-logo">
+                                    <a class="navbar-brand" href="/" title="fr8">
+                                        <img src="~/Content/img/site/site-logo.png" alt="fr8" title="fr8">
+                                    </a>
+                                </h1>
                                 <div class="pull-right visible-desktop visible-tablet">
-                                    <a href="/Dashboard#/myaccount" title="Manage">
+                                    <a href="/Dashboard/#myaccount" title="Manage">
                                         Hello
-                                        @if (User.IsInRole("Guest"))
-                                        {
+                                        @if (User.IsInRole("Guest")) {
                                             <text>Guest User!</text>
-                                        }
-                                        else
-                                        {
+                                        } else {
                                             <text>@User.Identity.GetUserName()!</text>
                                         }
                                     </a>
-                                    @if (User.IsInRole("Guest"))
-                                    {
+                                    @if (User.IsInRole("Guest")) {
                                         <span>&nbsp;&nbsp;</span>
                                         <a href="/DockyardAccount/Logoff">
                                             <span>Have an Account? Login</span>
                                         </a>
                                     }
                                 </div>
-                            }
-                            else
-                            {
-                                <h1 class="site-logo"><a class="navbar-brand" href="/" title="fr8"><img src="~/Content/img/site/site-logo.png" alt="fr8" title="fr8"></a></h1>
+                            } else {
+                                <h1 class="site-logo">
+                                    <a class="navbar-brand" href="/" title="fr8">
+                                        <img src="~/Content/img/site/site-logo.png" alt="fr8" title="fr8">
+                                    </a>
+                                </h1>
                                 <div class="pull-right visible-desktop visible-tablet"><a href="/DockyardAccount" title="SignUp/Login">SignUp/Login</a></div>
                             }
                             <!------END OF SINGUP/LOGIN UPRIGHT OR WELCOMING MESSAGE-------------------------->
@@ -228,7 +214,7 @@
             </div>
             <div class="page-footer ng-scope">
                 <div class="container">
-                    @DateTime.Now.Year © Maginot Technologies, LLC. All Rights Reserved.
+                    @DateTime.Now.Year © The Fr8 Company. All Rights Reserved.
                 </div>
             </div>
         </footer>

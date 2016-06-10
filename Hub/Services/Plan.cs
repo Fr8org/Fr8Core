@@ -12,20 +12,18 @@ using Data.States;
 using Hub.Interfaces;
 using InternalInterface = Hub.Interfaces;
 using System.Threading.Tasks;
-using System.Web.Http.Controllers;
-using System.Web.Routing;
 using Data.Infrastructure;
 using Data.Repositories.Plan;
-using Fr8Data.Constants;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.DataTransferObjects.Helpers;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects.Helpers;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Exceptions;
-using Utilities.Logging;
-using Utilities.Interfaces;
 
 namespace Hub.Services
 {
@@ -196,14 +194,15 @@ namespace Hub.Services
             return uow.PlanRepository.GetById<PlanDO>(id);
         }
 
-        public PlanDO Create(IUnitOfWork uow, string name, string category = "")
+        public PlanDO Create(IUnitOfWork uow, string name, string category = "", string ownerId = "", PlanVisibility visibility = PlanVisibility.Standard)
         {
             var plan = new PlanDO
             {
                 Id = Guid.NewGuid(),
                 Name = name,
-                Fr8Account = _security.GetCurrentAccount(uow),
+                Fr8Account = string.IsNullOrEmpty(ownerId) ? _security.GetCurrentAccount(uow) : uow.UserRepository.FindOne(x => x.Id == ownerId),
                 PlanState = PlanState.Inactive,
+                Visibility = visibility,
                 Category = category
             };
 

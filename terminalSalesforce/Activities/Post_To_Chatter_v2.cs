@@ -1,24 +1,23 @@
 ﻿using System;
 using StructureMap;
 using System.Threading.Tasks;
-using TerminalBase.BaseClasses;
 using terminalSalesforce.Infrastructure;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Helpers;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Helpers;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Services;
 using log4net;
 using Newtonsoft.Json;
 using ServiceStack;
-using TerminalBase.Errors;
-using TerminalBase.Infrastructure;
-using TerminalBase.Services;
 
 namespace terminalSalesforce.Actions
 {
@@ -37,6 +36,7 @@ namespace terminalSalesforce.Actions
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public TextSource FeedTextSource { get; set; }
@@ -51,7 +51,7 @@ namespace terminalSalesforce.Actions
 
             public RadioButtonOption UseIncomingChatterIdOption { get; set; }
 
-            public DropDownList IncomingChatterIdSelector { get; set; }
+            public UpstreamFieldChooser IncomingChatterIdSelector { get; set; }
 
             public ActivityUi() : this(new UiBuilder()) { }
 
@@ -82,14 +82,13 @@ namespace terminalSalesforce.Actions
                     Value = "Query for chatter objects",
                     Controls = new List<ControlDefinitionDTO> { ChatterSelector, ChatterFilter }
                 };
-                IncomingChatterIdSelector = new DropDownList
+                IncomingChatterIdSelector = new UpstreamFieldChooser
                 {
                     Name = nameof(IncomingChatterIdSelector),
                     Source = new FieldSourceDTO
                     {
                         AvailabilityType = AvailabilityType.RunTime,
-                        ManifestType = CrateManifestTypes.StandardDesignTimeFields,
-                        RequestUpstream = true
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     }
                 };
                 UseIncomingChatterIdOption = new RadioButtonOption
@@ -116,7 +115,7 @@ namespace terminalSalesforce.Actions
         public const string PostedFeedPropertiesCrateLabel = "Posted Feeds";
         public const string FeedIdKeyName = "FeedId";
 
-        private static readonly ILog Logger = Utilities.Logging.Logger.GetCurrentClassLogger();
+        private static readonly ILog Logger = Fr8.Infrastructure.Utilities.Logging.Logger.GetCurrentClassLogger();
             
 
         private readonly ISalesforceManager _salesforceManager;

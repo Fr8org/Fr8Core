@@ -65,6 +65,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private EnvelopeRepository _envelopeRepository;
+        public EnvelopeRepository EnvelopeRepository
+        {
+            get
+            {
+                return _envelopeRepository ?? (_envelopeRepository = new EnvelopeRepository(this));
+            }
+        }
+
+
         private RecipientRepository _recipientRepository;
         public RecipientRepository RecipientRepository
         {
@@ -89,27 +99,6 @@ namespace Data.Infrastructure
                 return _SlipRepository ?? (_SlipRepository = new SlipRepository(this));
             }
         }
-
-        private RemoteServiceProviderRepository _remoteServiceProviderRepository;
-
-        public RemoteServiceProviderRepository RemoteServiceProviderRepository
-        {
-            get
-            {
-                return _remoteServiceProviderRepository ?? (_remoteServiceProviderRepository = new RemoteServiceProviderRepository(this));
-            }
-        }
-
-        private RemoteServiceAuthDataRepository _remoteServiceAuthDataRepository;
-
-        public RemoteServiceAuthDataRepository RemoteServiceAuthDataRepository
-        {
-            get
-            {
-                return _remoteServiceAuthDataRepository ?? (_remoteServiceAuthDataRepository = new RemoteServiceAuthDataRepository(this));
-            }
-        }
-
         
         private CommunicationConfigurationRepository _communicationConfigurationRepository;
 
@@ -148,29 +137,6 @@ namespace Data.Infrastructure
             get
             {
                 return _emailStatusRepository ?? (_emailStatusRepository = new EmailStatusRepository(this));
-            }
-        }
-
-/*
-        private EnvelopeRepository _envelopeRepository;
-
-        public EnvelopeRepository EnvelopeRepository
-        {
-            get
-            {
-                return _envelopeRepository ?? (_envelopeRepository = new EnvelopeRepository(this));
-            }
-        }
-*/
-
-
-        private EnvelopeRepository _envelopeRepository;
-
-        public EnvelopeRepository EnvelopeRepository
-        {
-            get
-            {
-                return _envelopeRepository ?? (_envelopeRepository = new EnvelopeRepository(this));
             }
         }
 

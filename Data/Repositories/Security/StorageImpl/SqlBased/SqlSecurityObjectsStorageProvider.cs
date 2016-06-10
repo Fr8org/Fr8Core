@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
 using Data.Repositories.Security.Entities;
 using Data.Repositories.SqlBased;
-using Data.States;
 using Data.States.Templates;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace Data.Repositories.Security.StorageImpl.SqlBased
 {

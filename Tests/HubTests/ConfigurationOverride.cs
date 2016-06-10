@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Utilities.Configuration;
+using Fr8.Infrastructure.Utilities.Configuration;
 
 namespace HubTests
 {
