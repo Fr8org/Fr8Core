@@ -181,9 +181,11 @@ module dockyard.controllers {
                 $mdOpenMenu(ev);
             };
             $scope.reConfigureAction = (action: model.ActivityDTO) => {
-                var actionsArray = new Array<model.ActivityDTO>();
-                actionsArray.push(action);
-                this.reConfigure(actionsArray);
+                if (action) {
+                    var actionsArray = new Array<model.ActivityDTO>();
+                    actionsArray.push(action);
+                    this.reConfigure(actionsArray);
+                }
             };
 
             $scope.openAddLabelModal = (action: model.ActivityDTO) => { 

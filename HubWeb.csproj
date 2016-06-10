@@ -47,6 +47,7 @@
     <DefineConstants>TRACE;RELEASE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\HubWeb.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Analytics.NET, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -96,22 +97,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Utilities\Fr8.AI.DependencyCollector.dll</HintPath>
     </Reference>
-    <Reference Include="Fr8Data, Version=1.0.0.9, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Fr8Data.1.0.0.9\lib\net45\Fr8Data.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Fr8Infrastructure, Version=1.0.0.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Fr8Infrastructure.1.0.0.3\lib\net45\Fr8Infrastructure.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="fr8TerminalBase, Version=1.0.0.14, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\fr8TerminalBase.1.0.0.14\lib\net45\fr8TerminalBase.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="fr8Utilities, Version=1.0.0.5, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\fr8Utilities.1.0.0.5\lib\net45\fr8Utilities.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Google.Apis, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
       <HintPath>packages\Google.Apis.1.11.1\lib\net45\Google.Apis.dll</HintPath>
       <Private>True</Private>
@@ -152,8 +137,8 @@
       <HintPath>packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="LogentriesCore, Version=2.4.4.0, Culture=neutral, processorArchitecture=MSIL">
@@ -424,13 +409,13 @@
     <Compile Include="Controllers\Api\ActivitiesController.cs" />
     <Compile Include="Controllers\Api\ActivityTemplatesController.cs" />
     <Compile Include="Controllers\Api\DocumentationController.cs" />
+    <Compile Include="Controllers\Api\ManifestRegistriesController.cs" />
     <Compile Include="Controllers\Api\OrganizationsController.cs" />
     <Compile Include="Controllers\Api\Fr8BaseApiController.cs" />
     <Compile Include="Controllers\Api\NotificationsController.cs" />
     <Compile Include="Controllers\Api\AlarmsController.cs" />
     <Compile Include="Controllers\Api\AuthenticationController.cs" />
     <Compile Include="Controllers\Api\ConfigurationController.cs" />
-    <Compile Include="Controllers\Api\ManifestRegistriesController.cs" />
     <Compile Include="Controllers\Api\ManifestsController.cs" />
     <Compile Include="Controllers\Api\SubPlansController.cs" />
     <Compile Include="Controllers\Api\PlansController.cs" />
@@ -1017,8 +1002,10 @@
     <Content Include="_PowerShellScripts\Copy-ImagesBetweenAccount.ps1" />
     <Content Include="Views\JsTests\endpoints.cshtml" />
     <Content Include="Views\AngularTemplate\PlanUploadModal.cshtml" />
+    <Content Include="_PowerShellScripts\Combine-Sources.ps1" />
     <Content Include="_PowerShellScripts\Set-Config.ps1" />
     <Content Include="_PowerShellScripts\Get-StagingHostname.ps1" />
+    <Content Include="Views\Redirect\ClonePlan.cshtml" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\KioskModeOrganizationHeaderController.ts" />
@@ -4080,8 +4067,6 @@
     <Content Include="Content\templates\metronic\views\tree.html" />
     <Content Include="Content\templates\metronic\views\ui_bootstrap.html" />
     <Content Include="Content\templates\metronic\views\ui_select.html" />
-    <Content Include="Content\templates\inline_html_template_v1.html" />
-    <Content Include="Content\templates\googletemplate1.html" />
     <Content Include="gulpfile.js" />
     <Content Include="Content\backgroundsize.min.htc" />
     <Content Include="Content\gadegets.xml" />
@@ -4369,7 +4354,6 @@
     <None Include="Properties\PublishProfiles\kwasant-rc - Web Deploy %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\kwasant-rc - Web Deploy %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\kwasant-rc - Web Deploy.pubxml" />
-    <Content Include="TestWidgetLibrary.html" />
     <Content Include="Themes\areas.css" />
     <Content Include="Themes\areas\icons.png" />
     <Content Include="Themes\bubble_default.css" />
@@ -4442,7 +4426,6 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\index_docusign.cshtml" />
     <Content Include="Views\DockyardAccount\_ChangePasswordPartial.cshtml" />
@@ -4455,62 +4438,17 @@
     <Content Include="Views\DockyardAccount\Manage.cshtml" />
     <Content Include="Views\DockyardAccount\Register.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
-    <Content Include="Views\User\Create.cshtml" />
-    <Content Include="Views\User\Delete.cshtml" />
-    <Content Include="Views\User\Details.cshtml" />
-    <Content Include="Views\User\Index.cshtml" />
-    <Content Include="Views\Message\Create.cshtml" />
-    <Content Include="Views\Message\Delete.cshtml" />
-    <Content Include="Views\Message\Details.cshtml" />
-    <Content Include="Views\Message\Edit.cshtml" />
-    <Content Include="Views\Message\Index.cshtml" />
-    <Content Include="Views\Email\Create.cshtml" />
-    <Content Include="Views\Email\Delete.cshtml" />
-    <Content Include="Views\Email\Details.cshtml" />
-    <Content Include="Views\Email\Edit.cshtml" />
-    <Content Include="Views\Email\Index.cshtml" />
-    <Content Include="Views\Event\Edit.cshtml" />
     <Content Include="Views\Shared\_Blank.cshtml" />
-    <Content Include="Views\Event\ConfirmChanges.cshtml" />
-    <Content Include="Views\Event\ConfirmEventEdits.cshtml" />
-    <Content Include="Views\Event\DeleteEvent.cshtml" />
-    <Content Include="Views\MandrillWebhook\Index.cshtml" />
     <Content Include="Views\DockyardAccount\Confirm.cshtml" />
-    <Content Include="Views\NegotiationResponse\ProcessResponse.cshtml" />
-    <Content Include="Views\User\MyAccount.cshtml" />
-    <Content Include="Views\Report\Index.cshtml" />
-    <Content Include="Views\NegotiationResponse\View.cshtml" />
     <Content Include="Views\Shared\404.cshtml" />
     <Content Include="Views\DockyardAccount\RegistrationConfirmation.cshtml" />
-    <Content Include="Views\User\ChooseCalendars.cshtml" />
-    <Content Include="Views\User\FindUser.cshtml" />
-    <Content Include="Views\User\ShowAddUser.cshtml" />
-    <Content Include="Views\User\ShowCalendarEvents.cshtml" />
-    <Content Include="Views\User\ShowUserCreationSettings.cshtml" />
-    <Content Include="Views\User\ShowUserDetails.cshtml" />
     <Content Include="Views\Dashboard\Index.cshtml" />
-    <Content Include="Views\Diagnostics\Index.cshtml" />
-    <Content Include="Views\Email\Show.cshtml" />
-    <Content Include="Views\Profile\Index.cshtml" />
-    <Content Include="Views\Profile\ProfilesForUser.cshtml" />
     <Content Include="Views\DockyardAccount\ForgotPassword.cshtml" />
     <Content Include="Views\DockyardAccount\ForgotPasswordConfirmation.cshtml" />
     <Content Include="Views\DockyardAccount\ResetPassword.cshtml" />
     <Content Include="Views\DockyardAccount\ResetPasswordConfirmation.cshtml" />
-    <Content Include="Views\Email\Send.cshtml" />
-    <Content Include="Views\Report\History.cshtml" />
-    <Content Include="Views\Report\_History.cshtml" />
     <Content Include="Views\Shared\_HomeNav.cshtml" />
-    <Content Include="Views\Report\TimeSpanNavigator.cshtml" />
-    <Content Include="Views\User\ExistingUserAlert.cshtml" />
-    <Content Include="Views\User\UserRoles.cshtml" />
     <Content Include="Views\Shared\AccessDenied.cshtml" />
-    <Content Include="Views\NegotiationResponse\ThankYouView.cshtml" />
-    <Content Include="Views\Email\ShowReport.cshtml" />
-    <Content Include="Views\User\MakeNewBookingRequest.cshtml" />
-    <Content Include="Views\User\RemoteServices.cshtml" />
-    <Content Include="Views\User\LearnHowToUseKwasant.cshtml" />
-    <Content Include="Views\Shared\403.cshtml" />
     <Content Include="Views\AngularTemplate\TextSource.cshtml" />
     <Content Include="Views\AngularTemplate\_PlanList.cshtml" />
     <Content Include="Views\AngularTemplate\SolutionList.cshtml" />
@@ -4557,16 +4495,14 @@
     <Folder Include="Scripts\tests\templates\" />
     <Folder Include="ViewModelServices\" />
     <Folder Include="Views\CommunicationManager\" />
-    <Folder Include="Views\Data\" />
     <Folder Include="Views\DockyardEvent\" />
-    <Folder Include="Views\DocuSignTemplate\" />
-    <Folder Include="Views\Envelope\" />
-    <Folder Include="Views\Portal\" />
-    <Folder Include="Views\Process\" />
-    <Folder Include="Views\Settings\" />
     <Folder Include="Webhooks\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj">
+      <Project>{bba91af2-7636-41b6-87c4-c1575ae8b04b}</Project>
+      <Name>Fr8Infrastructure.NET</Name>
+    </ProjectReference>
     <ProjectReference Include="Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
@@ -4599,6 +4535,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\HubWeb.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Demo|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -4608,6 +4545,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\HubWeb.XML</DocumentationFile>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Any CPU'">

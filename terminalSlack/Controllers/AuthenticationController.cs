@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Fr8Data.DataTransferObjects;
-using TerminalBase.BaseClasses;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.TerminalBase.BaseClasses;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
 
@@ -14,15 +15,15 @@ namespace terminalSlack.Controllers
         private const string curTerminal = "terminalSlack";
 
         private readonly ISlackIntegration _slackIntegration;
-
-
-        public AuthenticationController()
+        
+        public AuthenticationController(ISlackIntegration slackIntegration, IRestfulServiceClient restfulServiceClient)
+            :base(restfulServiceClient)
         {
-            _slackIntegration = new SlackIntegration();
+            _slackIntegration = slackIntegration;
         }
 
         [HttpPost]
-        [Route("initial_url")]
+        [Route("request_url")]
         public ExternalAuthUrlDTO GenerateOAuthInitiationURL()
         {
             var externalStateToken = Guid.NewGuid().ToString();

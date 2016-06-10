@@ -1,22 +1,21 @@
 ﻿using System;
+using Fr8.Testing.Unit;
 using System.Collections.Generic;
-using UtilitiesTesting;
 using NUnit.Framework;
-using TerminalBase.BaseClasses;
 using System.Threading.Tasks;
 using terminalTests.Fixtures;
-using Hub.Managers;
 using System.Linq;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Services;
 using Hub.StructureMap;
 using StructureMap;
-using TerminalBase.Infrastructure;
-using Fr8Data.Managers;
 using Moq;
 using terminaBaselTests.BaseClasses;
-using TerminalBase.Services;
 
 namespace terminalBaseTests.BaseClasses
 {
@@ -27,30 +26,36 @@ namespace terminalBaseTests.BaseClasses
         ActivityExecutor _activityExecutor;
         string terminalName = "terminalBaseTests";
         ICrateManager CrateManagerHelper;
-
+        private IActivityStore _activityStore;
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
+
             AutoMapperBootstrapper.ConfigureAutoMapper();
             ObjectFactory.Configure(x => x.AddRegistry<StructureMapBootStrapper.TestMode>());
-
+            ObjectFactory.Configure(x => x.For<IActivityStore>().Use<ActivityStore>().Singleton());
+            
             var crateStorage = new CrateStorage(Crate.FromContent("", new OperationalStateCM()));
             var crateDTO = CrateManager.ToDto(crateStorage);
             var hubCommunicatorMock = new Mock<IHubCommunicator>();
+
             hubCommunicatorMock.Setup(x => x.GetPayload(It.IsAny<Guid>()))
                 .ReturnsAsync(new PayloadDTO(Guid.NewGuid())
                 {
                      CrateStorage = crateDTO
                 });
+
             ObjectFactory.Configure(cfg => cfg.For<IHubCommunicator>().Use(hubCommunicatorMock.Object));
 
             CrateManagerHelper = new CrateManager();
             _activityExecutor = ObjectFactory.GetInstance<ActivityExecutor>();
-            if(ActivityStore.GetValue(BaseTerminalActivityMock.ActivityTemplate) == null)
-            { 
-                ActivityStore.RegisterActivity<BaseTerminalActivityMock>(BaseTerminalActivityMock.ActivityTemplate);
+            _activityStore = ObjectFactory.GetInstance<IActivityStore>();
+
+            if (_activityStore.GetValue(BaseTerminalActivityMock.ActivityTemplate) == null)
+            {
+                _activityStore.RegisterActivity<BaseTerminalActivityMock>(BaseTerminalActivityMock.ActivityTemplate);
             }
         }
 

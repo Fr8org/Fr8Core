@@ -1,26 +1,20 @@
 ﻿using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.DataTransferObjects.PlanTemplates;
-using Data.States;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.DataTransferObjects.PlanTemplates;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using HealthMonitor.Utility;
-using Hub.Interfaces;
+using Fr8.Testing.Integration;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using terminaBaselTests.Tools.Activities;
-using terminaBaselTests.Tools.Plans;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Integration.Tools.Plans;
+using Fr8.Testing.Unit.Fixtures;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
 
 namespace terminalIntegrationTests.EndToEnd
 {

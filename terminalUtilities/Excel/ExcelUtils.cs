@@ -6,13 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Excel;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Interfaces;
 using StructureMap;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using Fr8Infrastructure.Interfaces;
 using RestSharp.Extensions;
 
 namespace terminalUtilities.Excel
@@ -20,9 +20,12 @@ namespace terminalUtilities.Excel
     public class ExcelUtils
     {
         private readonly IRestfulServiceClient _restfulServiceClient;
-        public ExcelUtils()
+        private readonly ICrateManager _crateManager;
+
+        public ExcelUtils(IRestfulServiceClient restfulServiceClient, ICrateManager crateManager)
         {
-            _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
+            _restfulServiceClient = restfulServiceClient;
+            _crateManager = crateManager;
         }
 
         public static void ConvertToCsv(string pathToExcel, string pathToCsv)
@@ -245,10 +248,9 @@ namespace terminalUtilities.Excel
         }
 
 
-        public static StandardTableDataCM GetExcelFile(byte[] fileAsByteArray, string selectedFilePath, bool isFirstRowAsColumnNames = true, string sheetName = null)
+        public StandardTableDataCM GetExcelFile(byte[] fileAsByteArray, string selectedFilePath, bool isFirstRowAsColumnNames = true, string sheetName = null)
         {
             var ext = Path.GetExtension(selectedFilePath);
-            var crateManager = ObjectFactory.GetInstance<ICrateManager>();
             // Read file from repository
             // Fetch column headers in Excel file
             var headersArray = GetColumnHeaders(fileAsByteArray, ext, sheetName);
@@ -263,7 +265,7 @@ namespace terminalUtilities.Excel
                 var rows = CreateTableCellPayloadObjects(rowsDictionary, headersArray, isFirstRowAsColumnNames);
                 if (rows != null && rows.Count > 0)
                 {
-                    curExcelPayloadRowsCrateDTO = crateManager.CreateStandardTableDataCrate("Excel Payload Rows", isFirstRowAsColumnNames, rows.ToArray());
+                    curExcelPayloadRowsCrateDTO = _crateManager.CreateStandardTableDataCrate("Excel Payload Rows", isFirstRowAsColumnNames, rows.ToArray());
                 }
             }
 

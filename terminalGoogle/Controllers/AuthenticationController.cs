@@ -2,13 +2,13 @@
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using Fr8Data.DataTransferObjects;
-using Fr8Infrastructure.Interfaces;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.TerminalBase.BaseClasses;
 using Newtonsoft.Json;
 using StructureMap;
 using terminalGoogle.Interfaces;
 using terminalGoogle.Services.Authorization;
-using TerminalBase.BaseClasses;
 
 namespace terminalGoogle.Controllers
 {
@@ -20,13 +20,14 @@ namespace terminalGoogle.Controllers
         private readonly IGoogleIntegration _googleIntegration;
 
 
-        public AuthenticationController()
+        public AuthenticationController(IRestfulServiceClient restfulServiceClient)
+            : base(restfulServiceClient)
         {
-            _googleIntegration = new GoogleIntegration(ObjectFactory.GetInstance<IRestfulServiceClient>());
+            _googleIntegration = new GoogleIntegration(restfulServiceClient);
         }
 
         [HttpPost]
-        [Route("initial_url")]
+        [Route("request_url")]
         public ExternalAuthUrlDTO GenerateOAuthInitiationURL()
         {
             var externalStateToken = Guid.NewGuid().ToString();

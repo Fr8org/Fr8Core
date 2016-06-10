@@ -6,8 +6,8 @@ using System.Linq;
 using Data.Interfaces;
 using Data.States;
 using Data.States.Templates;
+using Fr8.Infrastructure.Utilities;
 using StructureMap;
-using Utilities;
 
 namespace Data.Entities
 {

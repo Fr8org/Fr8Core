@@ -2,11 +2,10 @@
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using Fr8Data.DataTransferObjects;
-using StructureMap;
-using TerminalBase.BaseClasses;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.TerminalBase.BaseClasses;
 using terminalQuickBooks.Interfaces;
-using terminalQuickBooks.Services;
 
 namespace terminalQuickBooks.Controllers
 {
@@ -17,13 +16,14 @@ namespace terminalQuickBooks.Controllers
 
         private readonly IAuthenticator _authenticator;
 
-        public AuthenticationController()
+        public AuthenticationController(IAuthenticator authenticator, IRestfulServiceClient restfulServiceClient)
+            :base (restfulServiceClient)
         {
-            _authenticator = ObjectFactory.GetInstance<IAuthenticator>();
+            _authenticator = authenticator;
         }
 
         [HttpPost]
-        [Route("initial_url")]
+        [Route("request_url")]
         public ExternalAuthUrlDTO GenerateOAuthInitiationURL()
         {
             var url = _authenticator.CreateAuthUrl();

@@ -2,9 +2,9 @@
 using System.Net.Http;
 using System.Web.Http;
 using System.Threading.Tasks;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.TerminalBase.Services;
 using StructureMap;
-using TerminalBase.Services;
 
 namespace terminalBox.Controllers
 {
@@ -15,9 +15,9 @@ namespace terminalBox.Controllers
         private const string curTerminal = "terminalBox";
         private readonly ActivityExecutor _activityExecutor;
 
-        public ActivityController()
+        public ActivityController(ActivityExecutor activityExecutor)
         {
-            _activityExecutor = ObjectFactory.GetInstance<ActivityExecutor>();
+            _activityExecutor = activityExecutor;
         }
 
         [HttpPost]

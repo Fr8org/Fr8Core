@@ -2,9 +2,8 @@
 using System.Net.Http;
 using System.Web.Http;
 using System.Threading.Tasks;
-using Fr8Data.DataTransferObjects;
-using StructureMap;
-using TerminalBase.Services;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.TerminalBase.Services;
 
 namespace terminalAtlassian.Controllers
 {
@@ -14,16 +13,16 @@ namespace terminalAtlassian.Controllers
         private const string curTerminal = "terminalAtlassian";
         private readonly ActivityExecutor _activityExecutor;
 
-        public ActivityController()
+        public ActivityController(ActivityExecutor activityExecutor)
         {
-            _activityExecutor = ObjectFactory.GetInstance<ActivityExecutor>();
+            _activityExecutor = activityExecutor;
         }
 
         [HttpPost]
-        public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
+        public async Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
         {
             var queryParams = Request.GetQueryNameValuePairs();
-            return _activityExecutor.HandleFr8Request(curTerminal, actionType, queryParams, curDataDTO);
+            return await _activityExecutor.HandleFr8Request(curTerminal, actionType, queryParams, curDataDTO);
         }
     }
 }

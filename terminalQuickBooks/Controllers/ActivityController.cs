@@ -2,11 +2,9 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.TerminalBase.Services;
 using StructureMap;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using TerminalBase.Services;
 
 namespace terminalQuickBooks.Controllers
 {    
@@ -16,9 +14,9 @@ namespace terminalQuickBooks.Controllers
         private const string curTerminal = "terminalQuickBooks";
         private readonly ActivityExecutor _activityExecutor;
 
-        public ActivityController()
+        public ActivityController(ActivityExecutor activityExecutor)
         {
-            _activityExecutor = ObjectFactory.GetInstance<ActivityExecutor>();
+            _activityExecutor = activityExecutor;
         }
 
         [HttpPost]

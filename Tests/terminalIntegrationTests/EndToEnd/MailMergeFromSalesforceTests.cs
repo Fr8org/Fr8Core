@@ -8,22 +8,23 @@ using terminalIntegrationTests.Fixtures;
 using terminalSalesforce.Services;
 using Data.Entities;
 using terminalSalesforce.Infrastructure;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using terminalSalesforce.Actions;
-using terminaBaselTests.Tools.Terminals;
+using Fr8.Testing.Integration.Tools.Terminals;
 using Data.States;
 using terminalDocuSign.Services.New_Api;
 using terminalDocuSign.Services;
 using DocuSign.eSign.Api;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Helpers;
+using Fr8.TerminalBase.Models;
+using StructureMap;
 using terminalDocuSign.Actions;
-using TerminalBase.Helpers;
-using TerminalBase.Models;
 
 namespace terminalIntegrationTests.EndToEnd
 {
@@ -198,13 +199,13 @@ namespace terminalIntegrationTests.EndToEnd
         private async Task<bool> DeleteCase(string caseId, AuthorizationTokenDO authToken)
         {
             var token = Mapper.Map<AuthorizationToken>(authToken);
-            return await new SalesforceManager().Delete(SalesforceObjectType.Case, caseId, token);
+            return await ObjectFactory.GetInstance<SalesforceManager>().Delete(SalesforceObjectType.Case, caseId, token);
         }
 
         private async Task<Tuple<string, string>> CreateCase(AuthorizationTokenDO authToken)
         {
             var token = Mapper.Map<AuthorizationToken>(authToken);
-            var manager = new SalesforceManager();
+            var manager = ObjectFactory.GetInstance<SalesforceManager>();
             var name = Guid.NewGuid().ToString();
             var data = new Dictionary<string, object> { { "SuppliedEmail", TestEmail }, { "SuppliedName", name } };
             return new Tuple<string, string>(await manager.Create(SalesforceObjectType.Case, data, token), name);

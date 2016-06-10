@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace terminalAtlassian.Interfaces
 {
@@ -12,6 +12,8 @@ namespace terminalAtlassian.Interfaces
         public string IssueTypeKey { get; set; }
 
         public string PriorityKey { get; set; }
+
+        public string Assignee { get; set; }
 
         public string Summary { get; set; }
 

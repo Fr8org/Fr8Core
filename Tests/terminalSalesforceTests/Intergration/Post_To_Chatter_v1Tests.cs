@@ -1,18 +1,19 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Crates;
-using HealthMonitor.Utility;
+using Fr8.Infrastructure.Communication;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Helpers;
+using Fr8.TerminalBase.Models;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
+using StructureMap;
 using terminalSalesforceTests.Fixtures;
 using terminalSalesforce.Actions;
 using terminalSalesforce.Services;
 using terminalSalesforce.Infrastructure;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Fr8Infrastructure.Communication;
-using Fr8Data.Managers;
-using TerminalBase.Helpers;
-using TerminalBase.Models;
 
 namespace terminalSalesforceTests.Intergration
 {
@@ -91,7 +92,7 @@ namespace terminalSalesforceTests.Intergration
                                          .CratesOfType<StandardPayloadDataCM>()
                                          .SingleOrDefault();
             Assert.IsNotNull(newFeedIdCrate, "Feed is not created");
-            Assert.IsTrue(await new SalesforceManager().Delete(SalesforceObjectType.FeedItem, 
+            Assert.IsTrue(await ObjectFactory.GetInstance<SalesforceManager>().Delete(SalesforceObjectType.FeedItem, 
                 newFeedIdCrate.Content.PayloadObjects[0].PayloadObject[0].Value, new AuthorizationToken { Token = authToken.Token, AdditionalAttributes = authToken.AdditionalAttributes }), "Test feed created is not deleted");
         }
         

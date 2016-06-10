@@ -2,9 +2,8 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Fr8Data.DataTransferObjects;
-using StructureMap;
-using TerminalBase.Services;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.TerminalBase.Services;
 
 namespace terminalSlack.Controllers
 {
@@ -13,9 +12,10 @@ namespace terminalSlack.Controllers
     {
         private const string curTerminal = "terminalSlack";
         private readonly ActivityExecutor _activityExecutor;
-        public ActivityController()
+
+        public ActivityController(ActivityExecutor activityExecutor)
         {
-            _activityExecutor = ObjectFactory.GetInstance<ActivityExecutor>();
+            _activityExecutor = activityExecutor;
         }
 
         [HttpPost]

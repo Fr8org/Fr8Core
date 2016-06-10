@@ -2,27 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
 using Data.Interfaces;
 using StructureMap;
 using Data.Repositories.MultiTenant;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Models;
+using Hub.Services.MT;
 using Newtonsoft.Json;
-using terminalDocuSign.Services.MT;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.Infrastructure;
-using TerminalBase.Models;
 
 namespace terminalDocuSign.Activities
 {
     public class Track_DocuSign_Recipients_v1 : BaseDocuSignActivity
     {
+        private readonly IContainer _container;
+
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "Track_DocuSign_Recipients",
@@ -127,9 +126,10 @@ namespace terminalDocuSign.Activities
             }
         }
 
-        public Track_DocuSign_Recipients_v1(ICrateManager crateManager, IDocuSignManager docuSignManager)
+        public Track_DocuSign_Recipients_v1(ICrateManager crateManager, IDocuSignManager docuSignManager, IContainer container)
             : base(crateManager, docuSignManager)
         {
+            _container = container;
         }
 
         protected override async Task InitializeDS()
@@ -370,16 +370,16 @@ namespace terminalDocuSign.Activities
                 Conditions = conditions
             });
 
-            var queryCriteria = Crate.FromContent(
-                "Queryable Criteria",
-                new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(selectedObject.Id))
-            );
-            crateStorage.Add(queryCriteria);
+            using (var uow = _container.GetInstance<IUnitOfWork>())
+            {
+                var queryCriteria = Crate.FromContent("Queryable Criteria", new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(uow, selectedObject.Id)));
+                crateStorage.Add(queryCriteria);
+            }
         }
 
         private MtTypeReference GetMtType(Type clrType)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var uow = _container.GetInstance<IUnitOfWork>())
             {
                 return uow.MultiTenantObjectRepository.FindTypeReference(clrType);
             }

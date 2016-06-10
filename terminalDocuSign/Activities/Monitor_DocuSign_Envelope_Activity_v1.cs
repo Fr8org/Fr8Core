@@ -1,28 +1,25 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
-using Data.Validations;
 using DocuSign.eSign.Api;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Utilities;
+using Fr8.TerminalBase.Infrastructure;
 using terminalDocuSign.Activities;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.Infrastructure;
-using Utilities;
 
 namespace terminalDocuSign.Actions
 {
     public class Monitor_DocuSign_Envelope_Activity_v1 : BaseDocuSignActivity
     {
+        private readonly IConfigRepository _configRepository;
+
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Version = "1",
@@ -43,9 +40,10 @@ namespace terminalDocuSign.Actions
 
         private const string AllFieldsCrateName = "DocuSign Envelope Fields";
 
-        public Monitor_DocuSign_Envelope_Activity_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+        public Monitor_DocuSign_Envelope_Activity_v1(ICrateManager crateManager, IDocuSignManager docuSignManager, IConfigRepository configRepository) 
             : base(crateManager, docuSignManager)
         {
+            _configRepository = configRepository;
         }
 
         private void GetTemplateRecipientPickerValue(out string selectedOption, out string selectedValue, out string selectedTemplate)
@@ -90,7 +88,7 @@ namespace terminalDocuSign.Actions
             {
                 if (DocuSignValidationUtils.ValueIsSet(activityUi.Recipient))
                 {
-                    ValidationManager.ValidateEmail(activityUi.Recipient, DocuSignValidationUtils.RecipientIsNotValidErrorMessage);
+                    ValidationManager.ValidateEmail(_configRepository, activityUi.Recipient, DocuSignValidationUtils.RecipientIsNotValidErrorMessage);
                 }
                 else
                 {

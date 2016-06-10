@@ -1,5 +1,5 @@
-﻿using FluentValidation;
-using Fr8Data.DataTransferObjects;
+﻿using Fr8.Infrastructure.Data.DataTransferObjects;
+using FluentValidation;
 
 namespace Data.Validations
 {

@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Infrastructure;
 using PhoneNumbers;
-using StructureMap;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 using Twilio;
 using terminalUtilities.Twilio;
 
@@ -88,13 +87,13 @@ namespace terminalTwilio.Activities
                 try
                 {
                     curMessage = Twilio.SendSms(smsNumber, smsBody);
-                    SendEventReport($"Twilio SMS Sent -> SMSBody: {smsBody} smsNumber: {smsNumber}");
+                    //SendEventReport($"Twilio SMS Sent -> SMSBody: {smsBody} smsNumber: {smsNumber}");
                     var curFieldDTOList = CreateKeyValuePairList(curMessage);
                     Payload.Add(PackCrate_TwilioMessageDetails(curFieldDTOList));
                 }
                 catch (Exception ex)
                 {
-                    SendEventReport($"TwilioSMSSendFailure -> SMSBody: {smsBody} smsNumber: {smsNumber}, Exception {ex.Message}");
+                   // SendEventReport($"TwilioSMSSendFailure -> SMSBody: {smsBody} smsNumber: {smsNumber}, Exception {ex.Message}");
                     PackCrate_WarningMessage(ex.Message, "Twilio Service Failure");
                     RaiseError("Twilio Service Failure");
                     return;
@@ -196,7 +195,7 @@ namespace terminalTwilio.Activities
         }
         private Crate PackCrate_TwilioMessageDetails(List<FieldDTO> curTwilioMessage)
         {
-            return Fr8Data.Crates.Crate.FromContent("Message Data", new StandardPayloadDataCM(curTwilioMessage));
+            return Crate.FromContent("Message Data", new StandardPayloadDataCM(curTwilioMessage));
         }
 
         private void PackCrate_WarningMessage(string warningMessage, string warningLabel)

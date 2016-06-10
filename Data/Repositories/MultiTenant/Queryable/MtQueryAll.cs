@@ -1,4 +1,4 @@
-﻿using Fr8Data.Manifests;
+﻿using Fr8.Infrastructure.Data.Manifests;
 
 namespace Data.Repositories.MultiTenant.Queryable
 {

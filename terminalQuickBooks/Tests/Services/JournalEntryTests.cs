@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Linq;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.StructureMap;
+using Fr8.TerminalBase.Infrastructure;
 using Intuit.Ipp.Data;
 using NUnit.Framework;
 using StructureMap;
 using terminalQuickBooks.Interfaces;
-using TerminalBase.Infrastructure;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace terminalQuickBooks.Tests.Services
 {
@@ -17,9 +16,13 @@ namespace terminalQuickBooks.Tests.Services
         public override void SetUp()
         {
             base.SetUp();
+
             TerminalBootstrapper.ConfigureTest();
-            _journalEntry = new terminalQuickBooks.Services.JournalEntry();
+            ObjectFactory.Container.ConfigureQuickbooksDependencies(StructureMapBootStrapper.DependencyType.LIVE);
+
             _serviceWorker = ObjectFactory.GetInstance<IServiceWorker>();
+            _journalEntry = new terminalQuickBooks.Services.JournalEntry(_serviceWorker);
+            
         }
         
         [Test]

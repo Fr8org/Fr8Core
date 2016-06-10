@@ -2,21 +2,22 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Fr8Data.DataTransferObjects;
-using Fr8Infrastructure.Interfaces;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.Errors;
 using Newtonsoft.Json.Linq;
-using StructureMap;
 using terminalSlack.Interfaces;
-using Utilities.Configuration.Azure;
 
 namespace terminalSlack.Services
 {
     public class SlackIntegration : ISlackIntegration
     {
         private readonly IRestfulServiceClient _client;
-        public SlackIntegration()
+
+        public SlackIntegration(IRestfulServiceClient client)
         {
-            _client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+            _client = client;
         }
 
         /// <summary>
@@ -150,7 +151,7 @@ namespace terminalSlack.Services
                 string reason = responseJson.Value<string>("error");
                 if (reason.IndexOf("token") > -1)
                 {
-                    throw new TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException();
+                    throw new AuthorizationTokenExpiredOrInvalidException();
                 }
             }
             return isOk;

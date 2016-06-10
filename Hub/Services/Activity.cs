@@ -12,22 +12,19 @@ using Data.Infrastructure.Security;
 using Data.Repositories.Plan;
 using Data.Infrastructure.StructureMap;
 using Data.States;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using Fr8Infrastructure.Communication;
+using Fr8.Infrastructure.Communication;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Utilities;
 using Hub.Exceptions;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
-using Utilities;
-using Hub.Exceptions;
-using Segment;
 
 namespace Hub.Services
 {
@@ -69,7 +66,7 @@ namespace Hub.Services
             return uow.PlanRepository.GetById<ActivityDO>(id);
         }
 
-        public async Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
+        public async Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null, PlanVisibility newPlanVisibility = PlanVisibility.Standard)
         {
             if (parentNodeId != null && createPlan)
             {
@@ -84,7 +81,7 @@ namespace Hub.Services
             // to avoid null pointer exception while creating parent node if label is null 
             if (name == null)
             {
-                name = userId + "_" + activityTemplateId.ToString();
+                name = userId + "_" + activityTemplateId;
             }
 
             PlanNodeDO parentNode;
@@ -92,7 +89,7 @@ namespace Hub.Services
 
             if (createPlan)
             {
-                plan = ObjectFactory.GetInstance<IPlan>().Create(uow, name);
+                plan = ObjectFactory.GetInstance<IPlan>().Create(uow, name, ownerId: userId, visibility: newPlanVisibility);
 
                 plan.ChildNodes.Add(parentNode = new SubplanDO
                 {

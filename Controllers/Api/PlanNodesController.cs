@@ -8,11 +8,11 @@ using StructureMap;
 using Data.Infrastructure.StructureMap;
 using Data.Entities;
 using Data.Interfaces;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.States;
 using Hub.Infrastructure;
 using Hub.Interfaces;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.States;
 using HubWeb.Infrastructure_HubWeb;
 
 namespace HubWeb.Controllers

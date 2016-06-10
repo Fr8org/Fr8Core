@@ -2,12 +2,13 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using Newtonsoft.Json;
-using TerminalBase.BaseClasses;
-using Utilities.Configuration.Azure;
 using DocuSign.eSign.Client;
 using DocuSign.eSign.Model;
 using DocuSign.eSign.Api;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.BaseClasses;
 using terminalDocuSign.DataTransferObjects;
 
 namespace terminalDocuSign.Controllers
@@ -16,14 +17,18 @@ namespace terminalDocuSign.Controllers
     public class AuthenticationController : BaseTerminalController
     {
         private const string curTerminal = "terminalDocuSign";
-        
+
+        public AuthenticationController(IRestfulServiceClient restfulServiceClient) 
+            : base(restfulServiceClient)
+        {
+        }
+
         [HttpPost]
-        [Route("internal")]
+        [Route("token")]
         public async Task<AuthorizationTokenDTO> GenerateInternalOAuthToken(CredentialsDTO curCredentials)
         {
             try
             {
-                
                 var authToken = await ObtainAuthToken(curCredentials);
 
                 if (authToken == null)

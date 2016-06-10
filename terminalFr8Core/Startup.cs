@@ -4,11 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Web.Http.Dispatcher;
 using Data.Infrastructure.AutoMapper;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Services;
 using terminalFr8Core.Actions;
 using terminalFr8Core.Activities;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using TerminalBase.Services;
 
 [assembly: OwinStartup(typeof(terminalFr8Core.Startup))]
 
@@ -16,6 +16,11 @@ namespace terminalFr8Core
 {
     public class Startup: BaseConfiguration
     {
+        public Startup()
+            : base(TerminalData.TerminalDTO)
+        {
+        }
+
         public void Configuration(IAppBuilder app)
         {
             Configuration(app, false);
@@ -23,10 +28,11 @@ namespace terminalFr8Core
 
         public void Configuration(IAppBuilder app, bool selfHost)
         {
-            Hub.StructureMap.StructureMapBootStrapper.ConfigureDependencies(Hub.StructureMap.StructureMapBootStrapper.DependencyType.LIVE);
-            DataAutoMapperBootStrapper.ConfigureAutoMapper();
-            TerminalBootstrapper.ConfigureLive();
             ConfigureProject(selfHost, Fr8CoreStructureMapConfiguration.LiveConfiguration);
+
+            Container.Configure(x => x.AddRegistry<Hub.StructureMap.StructureMapBootStrapper.LiveMode>());
+            DataAutoMapperBootStrapper.ConfigureAutoMapper();
+            
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
 
@@ -34,7 +40,7 @@ namespace terminalFr8Core
 
             if (!selfHost)
             {
-                StartHosting("terminalAzure");
+                StartHosting();
             }
         }
 

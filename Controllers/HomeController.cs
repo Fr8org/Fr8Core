@@ -6,12 +6,10 @@ using FluentValidation;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Data.Entities;
-using Data.Infrastructure;
 using Data.Interfaces;
-using Data.Validations;
+using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Services;
-using Utilities;
-using Utilities.Logging;
 using HubWeb.ViewModels;
 
 namespace HubWeb.Controllers
@@ -47,7 +45,7 @@ namespace HubWeb.Controllers
                     dockyardAccountDO = uow.UserRepository.GetByKey(userID);
                 }
 
-                var returnVM = new HomeVM { SegmentWriteKey = Utilities.Configuration.Azure.CloudConfigurationManager.GetSetting("SegmentWriteKey") };
+                var returnVM = new HomeVM { SegmentWriteKey = Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey") };
 
                 if (dockyardAccountDO != null)
                 {
@@ -149,7 +147,7 @@ namespace HubWeb.Controllers
         [HttpPost]
         public ActionResult ProcessHomePageBookingRequest(string emailAddress, string meetingInfo)
         {
-            RegexUtilities.ValidateEmailAddress(emailAddress);
+            RegexUtilities.ValidateEmailAddress(_configRepository, emailAddress);
             if (meetingInfo.Trim().Length < 30)
                 return Json(new { Message = "Meeting information must have at least 30 characters" });
 
@@ -166,7 +164,7 @@ namespace HubWeb.Controllers
             {
                 EmailAddressDO emailAddressDO = new EmailAddressDO(emailId);
 
-                RegexUtilities.ValidateEmailAddress(emailAddressDO.Address);
+                RegexUtilities.ValidateEmailAddress(_configRepository, emailAddressDO.Address);
                 using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     _emailAddress.ConvertFromMailAddress(uow, new MailAddress(emailId, name));
