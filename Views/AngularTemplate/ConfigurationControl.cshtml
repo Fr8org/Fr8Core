@@ -162,7 +162,7 @@
 
     <!-- UpstreamFieldChooser -->
     <div ng-if='field.type === "UpstreamFieldChooser"'>
-        <upstream-field-chooser field="field" current-action="currentAction"></upstream-field-chooser>
+        <upstream-field-chooser field="field" current-action="currentAction" change="onChange"></upstream-field-chooser>
         <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
             <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
         </div>
