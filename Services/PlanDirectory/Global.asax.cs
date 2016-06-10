@@ -3,7 +3,6 @@ using System.Web.Http;
 using System.Web.Routing;
 using Segment;
 using StructureMap;
-using Utilities;
 using Data.Infrastructure.AutoMapper;
 using PlanDirectory.Infrastructure;
 
@@ -17,15 +16,15 @@ namespace PlanDirectory
             RouteConfig.RegisterRoutes(RouteTable.Routes);
 
             ObjectFactory.Initialize();
-            ObjectFactory.Configure(Fr8Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
+            ObjectFactory.Configure(Fr8.Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
             ObjectFactory.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
             ObjectFactory.Configure(PlanDirectoryBootStrapper.LiveConfiguration);
 
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
 
-            Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
-            var segmentWriteKey = Utilities.Configuration.Azure.CloudConfigurationManager.GetSetting("SegmentWriteKey");
-            if (!segmentWriteKey.IsNullOrEmpty())
+            Fr8.Infrastructure.Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
+            var segmentWriteKey = Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey");
+            if (!string.IsNullOrEmpty(segmentWriteKey))
                 Analytics.Initialize(segmentWriteKey);
 
             await ObjectFactory.GetInstance<ISearchProvider>().Initialize(false);

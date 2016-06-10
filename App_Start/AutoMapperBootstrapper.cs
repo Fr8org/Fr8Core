@@ -4,8 +4,7 @@ using System.Linq;
 using System.Web.Optimization;
 using AutoMapper;
 using Data.Entities;
-using fr8.Data.DataTransferObjects;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Hub.Interfaces;
 using HubWeb.ViewModels;
 

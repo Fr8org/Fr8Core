@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
 using NUnit.Framework;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using terminalDocuSignTests.Fixtures;
 using terminalDocuSign.Infrastructure;
-using Fr8Data.Managers;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -377,7 +377,7 @@ namespace terminalDocuSignTests.Integration
                 {
                     EventPayload = new CrateStorage()
                     {
-                        Fr8Data.Crates.Crate.FromContent(
+                        Fr8.Infrastructure.Data.Crates.Crate.FromContent(
                             "EventReport",
                             new StandardPayloadDataCM(
                                 new FieldDTO("TemplateName", activityDTO.Item2),

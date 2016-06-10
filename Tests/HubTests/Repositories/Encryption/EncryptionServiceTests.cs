@@ -5,7 +5,7 @@ using Data.Repositories.Encryption;
 using Data.Repositories.Encryption.Impl;
 using NUnit.Framework;
 using StructureMap;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace HubTests.Repositories.Encryption
 {

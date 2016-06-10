@@ -7,12 +7,12 @@ using Data.Interfaces;
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.States;
-using Fr8Data.Constants;
-using Fr8Data.Crates;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.Manifests;
 using HubTests.Services.Container;
 using Hub.Exceptions;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace HubTests.Services
 {

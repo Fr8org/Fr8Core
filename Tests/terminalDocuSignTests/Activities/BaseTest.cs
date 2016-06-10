@@ -1,24 +1,21 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
-using Fr8Data.Crates;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.Infrastructure;
-using UtilitiesTesting.Fixtures;
-using TerminalBase.BaseClasses;
-using Fr8Data.Manifests;
-using Fr8Data.Managers;
-using TerminalBase.Models;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace terminalDocuSignTests.Activities
 {
-    public class BaseTest : UtilitiesTesting.BaseTest
+    public class BaseTest : Fr8.Testing.Unit.BaseTest
     {
         protected readonly AuthorizationToken FakeToken = new AuthorizationToken { Token = "1" };
         [SetUp]

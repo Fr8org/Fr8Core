@@ -1,6 +1,8 @@
 ﻿using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Routing;
+using System.Web.Http.Dispatcher;
+using Hub.Infrastructure;
 
 namespace PlanDirectory
 {
@@ -8,6 +10,9 @@ namespace PlanDirectory
 	{
 		public static void Register(HttpConfiguration config)
 		{
+            // Web API configuration and services
+            config.Services.Replace(typeof(IHttpControllerSelector), new CustomSelector(config));
+
             config.Routes.MapHttpRoute(
 				name : "DefaultApiWithAction",
 				routeTemplate : "api/{controller}/{action}/{id}",

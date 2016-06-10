@@ -9,12 +9,12 @@ using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Utilities;
 using Hub.Managers;
 using Hub.Services;
 using Microsoft.AspNet.Identity.EntityFramework;
 using StructureMap;
-using Utilities;
 
 namespace HubWeb.Controllers
 {
@@ -23,11 +23,13 @@ namespace HubWeb.Controllers
     {
         private readonly IMappingEngine _mappingEngine;
         private readonly ISecurityServices _securityServices;
+        private readonly Fr8Account _fr8Account;
 
         public UsersController()
         {
             _securityServices = ObjectFactory.GetInstance<ISecurityServices>();
             _mappingEngine = ObjectFactory.GetInstance<IMappingEngine>();
+            _fr8Account = ObjectFactory.GetInstance<Fr8Account>();
         }
 
         #region API Endpoints 
@@ -109,10 +111,9 @@ namespace HubWeb.Controllers
             {
                 var user = uow.UserRepository.FindOne(u => u.EmailAddress.Address == User.Identity.Name);
 
-                Fr8Account fr8Account = new Fr8Account();
-                if (fr8Account.IsValidHashedPassword(user, oldPassword))
+                if (_fr8Account.IsValidHashedPassword(user, oldPassword))
                 {
-                    fr8Account.UpdatePassword(uow, user, newPassword);
+                    _fr8Account.UpdatePassword(uow, user, newPassword);
                     uow.SaveChanges();
                 }
                 else

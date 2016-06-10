@@ -25,6 +25,8 @@ module dockyard.directives.paneConfigureAction {
         currentAction: interfaces.IActionVM;
         field: model.ControlDefinitionDTO;
         plan: any;
+        //change made for MetaControlContainer with delayed control
+        change: any;
         onChange: (radio: model.ControlDefinitionDTO) => void;
         onClick: (event: any) => void;
     }
@@ -37,7 +39,8 @@ module dockyard.directives.paneConfigureAction {
         public scope = {
             currentAction: '=',
             field: '=',
-            plan: '='
+            plan: '=',
+            change:'='
         };
         public templateUrl = '/AngularTemplate/ConfigurationControl';
         public restrict = 'E';
@@ -55,6 +58,12 @@ module dockyard.directives.paneConfigureAction {
                 $attrs: ng.IAttributes) => {
                 
                 $scope.onChange = (event: any) => {
+
+                    // we need this thing ↓ because of delayed controls
+                    if ($scope.change) {
+                        $scope.change({ target : true});
+                        return;
+                    }
 
                     var field: model.ControlDefinitionDTO;
                     if (!!event.target === true) {

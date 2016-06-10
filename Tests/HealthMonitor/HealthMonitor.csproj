@@ -96,18 +96,6 @@
       <HintPath>..\..\packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Fr8Infrastructure, Version=1.0.0.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Fr8Infrastructure.1.0.0.3\lib\net45\Fr8Infrastructure.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="fr8TerminalBase, Version=1.0.0.13, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\fr8TerminalBase.1.0.0.13\lib\net45\fr8TerminalBase.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="fr8Utilities, Version=1.0.0.5, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\fr8Utilities.1.0.0.5\lib\net45\fr8Utilities.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Hyak.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Hyak.Common.1.0.2\lib\net45\Hyak.Common.dll</HintPath>
       <Private>True</Private>
@@ -116,8 +104,8 @@
       <HintPath>..\..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AI.Agent.Intercept, Version=1.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -192,12 +180,12 @@
       <HintPath>..\..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Owin.Host.HttpListener, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Owin.Host.HttpListener.3.0.1\lib\net45\Microsoft.Owin.Host.HttpListener.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="nunit.core">
@@ -369,6 +357,10 @@
       <Project>{2b78433b-ba79-470b-bef6-dba5c1904865}</Project>
       <Name>PlanDirectory</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Fr8.Testing\Fr8.Testing.csproj">
+      <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
+      <Name>Fr8.Testing</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HubTests\HubTests.csproj">
       <Project>{1e8dd13a-846b-4c36-a9c4-5997c5fd74ff}</Project>
       <Name>HubTests</Name>
@@ -468,10 +460,6 @@
     <ProjectReference Include="..\..\terminalYammer\terminalYammer.csproj">
       <Project>{e8bf04ac-1a7d-4cbe-80b9-e20f53699f2d}</Project>
       <Name>terminalYammer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\HealthMonitorUtility\HealthMonitorUtility.csproj">
-      <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
-      <Name>HealthMonitorUtility</Name>
     </ProjectReference>
     <ProjectReference Include="..\terminalAzureTests\terminalAzureTests.csproj">
       <Project>{36ed6f21-1a8f-4f07-a08a-a55639891e9b}</Project>

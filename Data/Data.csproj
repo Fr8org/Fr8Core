@@ -74,18 +74,6 @@
       <HintPath>..\packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Fr8Data, Version=1.0.0.9, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fr8Data.1.0.0.9\lib\net45\Fr8Data.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="fr8TerminalBase, Version=1.0.0.13, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\fr8TerminalBase.1.0.0.13\lib\net45\fr8TerminalBase.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="fr8Utilities, Version=1.0.0.5, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\fr8Utilities.1.0.0.5\lib\net45\fr8Utilities.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Google.Apis.Core, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Apis.Core.1.11.1\lib\net45\Google.Apis.Core.dll</HintPath>
       <Private>True</Private>
@@ -98,8 +86,8 @@
       <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.ApplicationInsights, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -301,9 +289,11 @@
     <Compile Include="Entities\ActivityDO.cs" />
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
     <Compile Include="Entities\BaseDO.cs" />
+    <Compile Include="Infrastructure\StructureMapUnitOfWorkProvider.cs" />
     <Compile Include="Interfaces\IAspNetUserClaimDO.cs" />
     <Compile Include="Interfaces\IFileRepository.cs" />
     <Compile Include="Interfaces\ITrackingChangesRepository.cs" />
+    <Compile Include="Interfaces\IUnitOfWorkProvider.cs" />
     <Compile Include="Interfaces\IUtilizationDataProvider.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.Designer.cs">
@@ -690,6 +680,18 @@
     <Compile Include="Migrations\201606071223281_Delete FindObjects solution.Designer.cs">
       <DependentUpon>201606071223281_Delete FindObjects solution.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201606081850360_UpdateMTDatabaseWithNewCLRTypes1.cs" />
+    <Compile Include="Migrations\201606081850360_UpdateMTDatabaseWithNewCLRTypes1.Designer.cs">
+      <DependentUpon>201606081850360_UpdateMTDatabaseWithNewCLRTypes1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606090249437_RemovingUnusedObjects.cs" />
+    <Compile Include="Migrations\201606090249437_RemovingUnusedObjects.Designer.cs">
+      <DependentUpon>201606090249437_RemovingUnusedObjects.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606091512284_FillManifestRegistry.cs" />
+    <Compile Include="Migrations\201606091512284_FillManifestRegistry.Designer.cs">
+      <DependentUpon>201606091512284_FillManifestRegistry.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201606011034503_AddCanManagePageDefinitionsToFr8Account.cs" />
     <Compile Include="Migrations\201606011034503_AddCanManagePageDefinitionsToFr8Account.Designer.cs">
       <DependentUpon>201606011034503_AddCanManagePageDefinitionsToFr8Account.cs</DependentUpon>
@@ -712,6 +714,7 @@
     <Compile Include="Repositories\Authorization\Impl\EfAuthorizationTokenStorageProvider.cs" />
     <Compile Include="Repositories\Authorization\Impl\KeyVaultAuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\Authorization\Impl\MockedDbAuthorizationTokenStorageProvider.cs" />
+    <Compile Include="Repositories\EnvelopeRepository.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtObjectStorage.Queries.cs" />
     <Compile Include="Repositories\PageDefinitionRepository.cs" />
     <Compile Include="Repositories\PlanTemplates\ActivityDescriptionRepository.cs" />
@@ -842,7 +845,6 @@
     <Compile Include="Repositories\ActivityTemplateRepository.cs" />
     <Compile Include="Repositories\Plan\Internal\ActivityRepository.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
-    <Compile Include="Repositories\EnvelopeRepository.cs" />
     <Compile Include="Repositories\Plan\Internal\SubPlanRepository.cs" />
     <Compile Include="Repositories\Plan\Internal\PlansRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
@@ -879,7 +881,6 @@
     <Compile Include="States\Templates\_ContainerStateTemplate.cs" />
     <Compile Include="States\Templates\IStateTemplate.cs" />
     <Compile Include="States\InstructionConstants.cs" />
-    <Compile Include="States\ServiceAuthorizationType.cs" />
     <Compile Include="Entities\AspNetRolesDO.cs" />
     <Compile Include="Entities\AspNetUserRolesDO.cs" />
     <Compile Include="Entities\ConceptDO.cs" />
@@ -895,10 +896,6 @@
     <Compile Include="States\AnswerState.cs" />
     <Compile Include="States\NegotiationState.cs" />
     <Compile Include="Entities\IncidentDO.cs" />
-    <Compile Include="Interfaces\IRemoteOAuthDataDO.cs" />
-    <Compile Include="Entities\RemoteOAuthDataDo.cs" />
-    <Compile Include="States\Templates\_ServiceAuthorizationTypeTemplate.cs" />
-    <Compile Include="Interfaces\IRemoteServiceProviderDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
     <Compile Include="Entities\FactDO.cs" />
     <Compile Include="States\QuestionState.cs" />
@@ -909,7 +906,6 @@
     <Compile Include="States\Templates\_UserStateTemplate.cs" />
     <Compile Include="States\TrackingState.cs" />
     <Compile Include="States\TrackingType.cs" />
-    <Compile Include="Entities\RemoteServiceProviderDO.cs" />
     <Compile Include="Infrastructure\JoinTables\EventEmailDO.cs" />
     <Compile Include="Entities\GenericCustomField.cs" />
     <Compile Include="Entities\UserAgentInfoDO.cs" />
@@ -934,8 +930,6 @@
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />
-    <Compile Include="Repositories\RemoteServiceAuthDataRepository.cs" />
-    <Compile Include="Repositories\RemoteServiceProviderRepository.cs" />
     <Compile Include="Repositories\IncidentRepository.cs" />
     <Compile Include="Repositories\FactRepository.cs" />
     <Compile Include="Repositories\EmailEmailAddressRepository.cs" />
@@ -1283,12 +1277,27 @@
     <EmbeddedResource Include="Migrations\201606071223281_Delete FindObjects solution.resx">
       <DependentUpon>201606071223281_Delete FindObjects solution.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606081850360_UpdateMTDatabaseWithNewCLRTypes1.resx">
+      <DependentUpon>201606081850360_UpdateMTDatabaseWithNewCLRTypes1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606090249437_RemovingUnusedObjects.resx">
+      <DependentUpon>201606090249437_RemovingUnusedObjects.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606091512284_FillManifestRegistry.resx">
+      <DependentUpon>201606091512284_FillManifestRegistry.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606011034503_AddCanManagePageDefinitionsToFr8Account.resx">
       <DependentUpon>201606011034503_AddCanManagePageDefinitionsToFr8Account.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606080054264_AddPageDefinition.resx">
       <DependentUpon>201606080054264_AddPageDefinition.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj">
+      <Project>{bba91af2-7636-41b6-87c4-c1575ae8b04b}</Project>
+      <Name>Fr8Infrastructure.NET</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

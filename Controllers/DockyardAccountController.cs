@@ -6,13 +6,13 @@ using System.Web;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
+using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Services;
 using HubWeb.ViewModels;
 using StructureMap;
-using Utilities;
-using Utilities.Logging;
 
 namespace HubWeb.Controllers
 {
@@ -156,8 +156,7 @@ namespace HubWeb.Controllers
                 {
 
                     string username = model.Email.Trim();
-                    LoginStatus curLoginStatus =
-                        await new Fr8Account().ProcessLoginRequest(username, model.Password, model.RememberMe);
+                    LoginStatus curLoginStatus = await ObjectFactory.GetInstance<Fr8Account>().ProcessLoginRequest(username, model.Password, model.RememberMe);
                     switch (curLoginStatus)
                     {
                         case LoginStatus.InvalidCredential:

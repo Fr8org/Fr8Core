@@ -44,7 +44,8 @@ namespace Data.Interfaces
         UserStatusRepository UserStatusRepository { get; }
         //NegotiationAnswerEmailRepository NegotiationAnswerEmailRepository { get; }
         ExpectedResponseRepository ExpectedResponseRepository { get; }
-        
+        EnvelopeRepository EnvelopeRepository { get; }
+
         SlipRepository SlipRepository { get; }
         //ActivityRepository ActivityRepository { get; }
         ActivityTemplateRepository ActivityTemplateRepository { get; }
@@ -85,11 +86,7 @@ namespace Data.Interfaces
         /// </summary>
         IDBContext Db { get; }
 
-        RemoteServiceProviderRepository RemoteServiceProviderRepository { get; }
-        RemoteServiceAuthDataRepository RemoteServiceAuthDataRepository { get; }
-        //RemoteCalendarLinkRepository RemoteCalendarLinkRepository { get; }
         HistoryRepository HistoryRepository { get; }
-        EnvelopeRepository EnvelopeRepository { get; }
 
         /// <summary>
         /// Starts a transaction on this unit of work

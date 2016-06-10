@@ -18,22 +18,19 @@ using Data.Interfaces;
 using Data.States;
 using Hub.Interfaces;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Newtonsoft.Json;
 using Hub.Infrastructure;
-using Utilities.Interfaces;
-
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-
-using Fr8Data.DataTransferObjects.PlanTemplates;
-using Fr8Data.Managers;
-using Fr8Data.States;
 using HubWeb.Infrastructure_HubWeb;
-using Fr8Infrastructure.Interfaces;
 using HubWeb.ViewModels.RequestParameters;
-using Utilities.Configuration.Azure;
 using Newtonsoft.Json.Linq;
-using Utilities;
 
 namespace HubWeb.Controllers
 {
@@ -438,7 +435,7 @@ namespace HubWeb.Controllers
                 PlanContents = JsonConvert.DeserializeObject<JToken>(JsonConvert.SerializeObject(planTemplateDTO))
             };
 
-            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/plantemplates/");
+            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/plan_templates/");
             var headers = await hmacService.GenerateHMACHeader(
                 uri,
                 "PlanDirectory",
@@ -448,6 +445,29 @@ namespace HubWeb.Controllers
             );
 
             await client.PostAsync<PublishPlanTemplateDTO>(uri, dto, headers: headers);
+
+            return Ok();
+        }
+
+        [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
+        [Fr8HubWebHMACAuthenticate]
+        [HttpPost]
+        public async Task<IHttpActionResult> Unpublish(Guid planId)
+        {
+            var planTemplateDTO = _planTemplates.GetPlanTemplate(planId, User.Identity.GetUserId());
+
+            var hmacService = ObjectFactory.GetInstance<IHMACService>();
+            var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+
+            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/plan_templates/?id=" + planId.ToString());
+            var headers = await hmacService.GenerateHMACHeader(
+                uri,
+                "PlanDirectory",
+                CloudConfigurationManager.GetSetting("PlanDirectorySecret"),
+                User.Identity.GetUserId()
+            );
+
+            await client.DeleteAsync(uri, headers: headers);
 
             return Ok();
         }

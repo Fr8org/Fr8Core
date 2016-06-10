@@ -5,8 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Infrastructure;
 using terminalGoogle.Infrastructure;
+using terminalGoogle.Interfaces;
 using terminalGoogle.Services;
 
 namespace terminalGoogle.Controllers

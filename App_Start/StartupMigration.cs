@@ -1,11 +1,7 @@
 ﻿using Data.Interfaces;
 using Data.States;
 using StructureMap;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Utilities;
+using Fr8.Infrastructure.Utilities;
 
 namespace HubWeb.App_Start
 {

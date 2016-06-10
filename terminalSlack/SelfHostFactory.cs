@@ -2,7 +2,6 @@
 using System.Web.Http;
 using Microsoft.Owin.Hosting;
 using Owin;
-using TerminalBase.BaseClasses;
 
 namespace terminalSlack
 {

@@ -23,16 +23,16 @@ using ExtternalStructureMap = StructureMap;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 using System.Threading.Tasks;
-using Utilities;
-using Utilities.Interfaces;
 using System.Net.Http;
 using Microsoft.ApplicationInsights;
 using System.Linq.Expressions;
 using Castle.DynamicProxy;
 using Data.Interfaces;
 using Data.Repositories.Utilization;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities;
 using Hub.Security.ObjectDecorators;
 using Hub.Services.Timers;
 
@@ -124,6 +124,7 @@ namespace Hub.StructureMap
                 For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
                 For<ITimer>().Use<Win32Timer>();
+                For<IManifestRegistryMonitor>().Use<ManifestRegistryMonitor>();
             }
         }
 

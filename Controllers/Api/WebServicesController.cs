@@ -5,9 +5,9 @@ using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using Fr8Data.Constants;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.States;
 using Hub.Interfaces;
 using StructureMap;
 using Hub.Services;
@@ -39,7 +39,7 @@ namespace HubWeb.Controllers
                     // resulting set is grouped into batches 1 x web service - n x actions
 
                     var unknwonService = uow.WebServiceRepository.GetQuery().FirstOrDefault(x => x.Name == UknownWebServiceName);
-                    Fr8Account fr8Account = new Fr8Account();
+                    var fr8Account = ObjectFactory.GetInstance<Fr8Account>();
 
                     var activityTemplate = _activityTemplate.GetQuery()
                         .Where(x => x.ActivityTemplateState == ActivityTemplateState.Active)
