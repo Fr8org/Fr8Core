@@ -21,21 +21,21 @@ namespace Hub.Services
 {
     public class Fr8Account
     {
-        private readonly IUnitOfWorkProvider _uowProvider;
+        private readonly IUnitOfWorkFactory _uowFactory;
 
         private readonly IConfigRepository _configRepository;
 
-        public Fr8Account(IUnitOfWorkProvider uowProvider, IConfigRepository configRepository)
+        public Fr8Account(IUnitOfWorkFactory uowFactory, IConfigRepository configRepository)
         {
-            if (uowProvider == null)
+            if (uowFactory == null)
             {
-                throw new ArgumentNullException(nameof(uowProvider));
+                throw new ArgumentNullException(nameof(uowFactory));
             }
             if (configRepository == null)
             {
                 throw new ArgumentNullException(nameof(configRepository));
             }
-            _uowProvider = uowProvider;
+            _uowFactory = uowFactory;
             _configRepository = configRepository;
         }
 
@@ -216,7 +216,7 @@ namespace Hub.Services
             try
             {
                 var systemUserEmail = _configRepository.Get("SystemUserEmail");
-                using (var uow = _uowProvider.GetNewUnitOfWork())
+                using (var uow = _uowFactory.GetNewUnitOfWork())
                 {
                     return uow.UserRepository.GetQuery().FirstOrDefault(x => x.EmailAddress.Address == systemUserEmail);
                 }
