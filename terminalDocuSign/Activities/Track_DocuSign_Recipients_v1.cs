@@ -254,7 +254,7 @@ namespace terminalDocuSign.Activities
 
         private void SetNotifierActivityBody(ActivityPayload notifierActivity)
         {
-            if (notifierActivity.ActivityTemplate.Name == "SendEmailViaSendGrid")
+            if (notifierActivity.ActivityTemplate.Name == "Send_Email_Via_SendGrid")
             {
                 var configControls = ControlHelper.GetConfigurationControls(notifierActivity.CrateStorage);
                 var emailBodyField = ControlHelper.GetControl<TextSource>(configControls, "EmailBody", ControlTypes.TextSource);
