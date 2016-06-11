@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Fr8.Infrastructure.Data.Crates;
@@ -6,7 +5,6 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
-using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Services;
 
 namespace Fr8.TerminalBase.BaseClasses

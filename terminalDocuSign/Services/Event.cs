@@ -16,30 +16,27 @@ using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Services
 {
-    public class Event : terminalDocuSign.Interfaces.IEvent
+    public class Event : IEvent
     {
         private readonly IDocuSignPlan _docuSignPlan;
         private readonly ICrateManager _crateManager;
-        private readonly IContainer _container;
 
-        public Event(IDocuSignPlan docuSignPlan, ICrateManager crateManager, IContainer container)
+        public Event(IDocuSignPlan docuSignPlan, ICrateManager crateManager)
         {
             _docuSignPlan = docuSignPlan;
             _crateManager = crateManager;
-            _container = container;
         }
 
-        public async Task<Crate> Process(string curExternalEventPayload)
+        public async Task<Crate> Process(IContainer container, string curExternalEventPayload)
         {
 
             //if the event payload is Fr8 User ID, it is DocuSign Authentication Completed event
             if (curExternalEventPayload.Contains("fr8_user_id"))
             {
                 var curFr8UserAndToken = ConfirmAuthentication(curExternalEventPayload);
+                var hubCommunicator = container.GetInstance<IHubCommunicator>();
 
-                var hubCommunicator = _container.GetInstance<IHubCommunicator>();
-
-                hubCommunicator.Configure("terminalDocuSign", curFr8UserAndToken.Item1);
+                hubCommunicator.Authorize(curFr8UserAndToken.Item1);
 
                 try
                 {
@@ -60,34 +57,14 @@ namespace terminalDocuSign.Services
 
             //If this is a connect event
             Debug.WriteLine($"Received external payload: {curExternalEventPayload}");
+
             if (curExternalEventPayload.Contains("DocuSignEnvelopeInformation"))
             {
                 Console.WriteLine("Connect event received by DocuSign terminal");
                 return ProcessConnectEvent(curExternalEventPayload);
             }
 
-            if (curExternalEventPayload.Contains("Polling Event"))
-            {
-                return ProcessPollingEvent(curExternalEventPayload);
-            }
-
             return null;
-        }
-
-        private Crate ProcessPollingEvent(string curExternalEventPayload)
-        {
-            var eventCrate = JsonConvert.DeserializeObject<CrateDTO>(curExternalEventPayload);
-            var eventManifest = _crateManager.FromDto(eventCrate).Get<DocuSignEnvelopeCM_v2>();
-            var eventReportContent = new EventReportCM
-            {
-                EventNames = DocuSignEventParser.GetEventNames(eventManifest),
-                ContainerDoId = "",
-                EventPayload = new CrateStorage(Crate.FromContent("DocuSign Connect Event", eventManifest)),
-                Manufacturer = "DocuSign",
-                ExternalAccountId = eventManifest.ExternalAccountId
-            };
-
-            return Crate.FromContent("Standard Event Report", eventReportContent);
         }
 
         private Crate ProcessConnectEvent(string curExternalEventPayload)

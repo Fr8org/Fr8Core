@@ -3,20 +3,17 @@ using Newtonsoft.Json;
 using terminalAtlassian.Services;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using terminalAtlassian.Helpers;
-using Fr8.TerminalBase.BaseClasses;
 using System.Threading.Tasks;
-using Fr8.Infrastructure.Interfaces;
 using terminalAtlassian.Interfaces;
 
 namespace terminalAtlassian.Controllers
 {
     [RoutePrefix("authentication")]
-    public class AuthenticationController : BaseTerminalController
+    public class AuthenticationController : ApiController
     {
         private readonly IAtlassianService _atlassianService;
 
-        public AuthenticationController(AtlassianService atlassianService, IRestfulServiceClient restfulServiceClient)
-            :base (restfulServiceClient)
+        public AuthenticationController(AtlassianService atlassianService)
         {
             _atlassianService = atlassianService;
         }

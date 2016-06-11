@@ -15,7 +15,7 @@ namespace Fr8.Testing.Unit.Fixtures
         public static EventReportCM TestTerminalIncidentDto()
         {
 
-            var loggingDataCrate = new LoggingDataCrateFactory().Create(new LoggingDataCM
+            var loggingDataCrate = LoggingDataCrateFactory.Create(new LoggingDataCM
                 {
                     PrimaryCategory = "Operations",
                     SecondaryCategory = "Action"
@@ -33,7 +33,7 @@ namespace Fr8.Testing.Unit.Fixtures
 
         public static EventReportCM TestTerminalEventDto()
         {
-            var loggingDataCrate = new LoggingDataCrateFactory().Create(new LoggingDataCM
+            var loggingDataCrate = LoggingDataCrateFactory.Create(new LoggingDataCM
                 {
                     PrimaryCategory = "Operations",
                     SecondaryCategory = "Action"
