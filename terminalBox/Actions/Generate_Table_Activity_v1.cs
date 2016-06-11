@@ -9,12 +9,12 @@ using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalBox.Actions
 {
-    public class GenerateTableActivity_v1 : EnhancedTerminalActivity<GenerateTableActivity_v1.ActivityUi>
+    public class Generate_Table_Activity_v1 : EnhancedTerminalActivity<Generate_Table_Activity_v1.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "GenerateTableActivity",
-            Label = "GenerateTableActivity",
+            Name = "Generate_Table_Activity",
+            Label = "Generate Table Activity",
             Category = ActivityCategory.Receivers,
             Version = "1",
             WebService = TerminalData.WebServiceDTO,
@@ -35,7 +35,7 @@ namespace terminalBox.Actions
             }
         }
 
-        public GenerateTableActivity_v1(ICrateManager crateManager) 
+        public Generate_Table_Activity_v1(ICrateManager crateManager) 
             : base(crateManager)
         {
         }

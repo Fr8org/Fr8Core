@@ -17,13 +17,13 @@ using terminalUtilities.Excel;
 
 namespace terminalExcel.Activities
 {
-    public class SetExcelTemplate_v1 : BaseTerminalActivity
+    public class Set_Excel_Template_v1 : BaseTerminalActivity
     {
         private const string DataTableLabel = "Standard Data Table";
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "SetExcelTemplate",
+            Name = "Set_Excel_Template",
             Label = "Set Excel Template",
             Version = "1",
             MinPaneWidth = 330,
@@ -181,7 +181,7 @@ namespace terminalExcel.Activities
                         ManifestType = MT.StandardTableData.GetEnumDisplayName(),
                         Label = descriptionLabel,
                         ManifestId = (int)MT.StandardTableData,
-                        ProducedBy = "SetExcelTemplate_v1"
+                        ProducedBy = "Set_Excel_Template_v1"
                     }), AvailabilityType.Always);
 
             return availableRunTimeCrates;
@@ -248,7 +248,7 @@ namespace terminalExcel.Activities
             return uploadFilePath;
         }
 
-        public SetExcelTemplate_v1(ICrateManager crateManager)
+        public Set_Excel_Template_v1(ICrateManager crateManager)
             : base(crateManager)
         {
         }
