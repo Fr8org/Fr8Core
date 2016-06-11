@@ -299,11 +299,14 @@
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
     <Compile Include="DataTransferObjects\GoogleAuthDTO.cs" />
+    <Compile Include="DataTransferObjects\GoogleForm.cs" />
+    <Compile Include="DataTransferObjects\GoogleFormField.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\JSONDataStore.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
+    <Compile Include="Interfaces\IGoogleAppsScript.cs" />
     <Compile Include="Interfaces\IGoogleIntegration.cs" />
     <Compile Include="Interfaces\IGoogleSheet.cs" />
     <Compile Include="Interfaces\IOAuthAuthorizationResult.cs" />
@@ -314,7 +317,7 @@
     <Compile Include="Services\Authorization\AuthorizationCodeFlow.cs" />
     <Compile Include="Services\Authorization\GoogleAuthorizer.cs" />
     <Compile Include="Services\Event.cs" />
-    <Compile Include="Services\GoogleAppScript.cs" />
+    <Compile Include="Services\GoogleAppsScript.cs" />
     <Compile Include="Services\GoogleAuthHelper.cs" />
     <Compile Include="Services\GoogleDrive.cs" />
     <Compile Include="Services\Authorization\GoogleIntegration.cs" />
@@ -382,6 +385,7 @@
     </None>
     <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
     <EmbeddedResource Include="Template\googleAppScriptFormResponse.json" />
+    <Compile Include="Interfaces\IGoogleDrive.cs" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

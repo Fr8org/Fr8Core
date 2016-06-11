@@ -442,23 +442,6 @@
     <Compile Include="ExceptionHandling\Fr8ExceptionHandler.ErrorResult.cs" />
     <Compile Include="Fr8ApiAuthorizeAttribute.cs" />
     <Compile Include="ExceptionHandling\Fr8ExceptionHandler.cs" />
-    <Compile Include="Api\EventResponse.aspx.cs">
-      <DependentUpon>EventResponse.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Api\EventResponse.aspx.designer.cs">
-      <DependentUpon>EventResponse.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Api\GetAttachment.ashx.cs">
-      <DependentUpon>GetAttachment.ashx</DependentUpon>
-    </Compile>
-    <Compile Include="Api\GetEmailHTML.aspx.cs">
-      <DependentUpon>GetEmailHTML.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Api\GetEmailHTML.aspx.designer.cs">
-      <DependentUpon>GetEmailHTML.aspx</DependentUpon>
-    </Compile>
     <Compile Include="App_Start\AutoMapperBootstrapper.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -503,8 +486,6 @@
     <Compile Include="ExceptionHandling\WebApiExceptionFilterAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Api\EventResponse.aspx" />
-    <Content Include="Api\GetEmailHTML.aspx" />
     <Content Include="Content\css\CDNRelatedStyles.css" />
     <Content Include="Content\css\dockyard\activity-stream.css" />
     <Content Include="Content\css\dockyard\authentication-dialog.css" />
@@ -578,7 +559,6 @@
     <Content Include="Content\css\NegotiationWidgets.css" />
     <Content Include="Content\css\toolbar.min.css" />
     <Content Include="Content\css\welcome.css" />
-    <Content Include="Content\Databases\DO-823.sql" />
     <Content Include="Content\DO-823.sql" />
     <Content Include="Content\documents\Medical_Form_v2.xml" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
@@ -4072,9 +4052,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="Api\GetAttachment.ashx" />
     <Content Include="Content\img\.DS_Store" />
-    <Content Include="Api\GetAttachment.ashx" />
     <Content Include="Content\css\additionalcss\bootstrap30\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\css\additionalcss\bootstrap30\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="Content\css\additionalcss\bootstrap30\fonts\glyphicons-halflings-regular.woff" />
@@ -4423,7 +4401,6 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\index_docusign.cshtml" />
     <Content Include="Views\DockyardAccount\_ChangePasswordPartial.cshtml" />
@@ -4436,61 +4413,17 @@
     <Content Include="Views\DockyardAccount\Manage.cshtml" />
     <Content Include="Views\DockyardAccount\Register.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
-    <Content Include="Views\User\Create.cshtml" />
-    <Content Include="Views\User\Delete.cshtml" />
-    <Content Include="Views\User\Details.cshtml" />
-    <Content Include="Views\User\Index.cshtml" />
-    <Content Include="Views\Message\Create.cshtml" />
-    <Content Include="Views\Message\Delete.cshtml" />
-    <Content Include="Views\Message\Details.cshtml" />
-    <Content Include="Views\Message\Edit.cshtml" />
-    <Content Include="Views\Message\Index.cshtml" />
-    <Content Include="Views\Email\Create.cshtml" />
-    <Content Include="Views\Email\Delete.cshtml" />
-    <Content Include="Views\Email\Details.cshtml" />
-    <Content Include="Views\Email\Edit.cshtml" />
-    <Content Include="Views\Email\Index.cshtml" />
-    <Content Include="Views\Event\Edit.cshtml" />
     <Content Include="Views\Shared\_Blank.cshtml" />
-    <Content Include="Views\Event\ConfirmChanges.cshtml" />
-    <Content Include="Views\Event\ConfirmEventEdits.cshtml" />
-    <Content Include="Views\Event\DeleteEvent.cshtml" />
-    <Content Include="Views\MandrillWebhook\Index.cshtml" />
     <Content Include="Views\DockyardAccount\Confirm.cshtml" />
-    <Content Include="Views\NegotiationResponse\ProcessResponse.cshtml" />
-    <Content Include="Views\User\MyAccount.cshtml" />
-    <Content Include="Views\Report\Index.cshtml" />
-    <Content Include="Views\NegotiationResponse\View.cshtml" />
     <Content Include="Views\Shared\404.cshtml" />
     <Content Include="Views\DockyardAccount\RegistrationConfirmation.cshtml" />
-    <Content Include="Views\User\ChooseCalendars.cshtml" />
-    <Content Include="Views\User\FindUser.cshtml" />
-    <Content Include="Views\User\ShowAddUser.cshtml" />
-    <Content Include="Views\User\ShowCalendarEvents.cshtml" />
-    <Content Include="Views\User\ShowUserCreationSettings.cshtml" />
-    <Content Include="Views\User\ShowUserDetails.cshtml" />
     <Content Include="Views\Dashboard\Index.cshtml" />
-    <Content Include="Views\Diagnostics\Index.cshtml" />
-    <Content Include="Views\Email\Show.cshtml" />
-    <Content Include="Views\Profile\Index.cshtml" />
-    <Content Include="Views\Profile\ProfilesForUser.cshtml" />
     <Content Include="Views\DockyardAccount\ForgotPassword.cshtml" />
     <Content Include="Views\DockyardAccount\ForgotPasswordConfirmation.cshtml" />
     <Content Include="Views\DockyardAccount\ResetPassword.cshtml" />
     <Content Include="Views\DockyardAccount\ResetPasswordConfirmation.cshtml" />
-    <Content Include="Views\Email\Send.cshtml" />
-    <Content Include="Views\Report\History.cshtml" />
-    <Content Include="Views\Report\_History.cshtml" />
     <Content Include="Views\Shared\_HomeNav.cshtml" />
-    <Content Include="Views\Report\TimeSpanNavigator.cshtml" />
-    <Content Include="Views\User\ExistingUserAlert.cshtml" />
-    <Content Include="Views\User\UserRoles.cshtml" />
     <Content Include="Views\Shared\AccessDenied.cshtml" />
-    <Content Include="Views\NegotiationResponse\ThankYouView.cshtml" />
-    <Content Include="Views\Email\ShowReport.cshtml" />
-    <Content Include="Views\User\MakeNewBookingRequest.cshtml" />
-    <Content Include="Views\User\RemoteServices.cshtml" />
-    <Content Include="Views\User\LearnHowToUseKwasant.cshtml" />
     <Content Include="Views\Shared\403.cshtml" />
     <Content Include="Views\AngularTemplate\TextSource.cshtml" />
     <Content Include="Views\AngularTemplate\_PlanList.cshtml" />
@@ -4542,10 +4475,7 @@
     <Folder Include="Views\DockyardEvent\" />
     <Folder Include="Views\DocuSignTemplate\" />
     <Folder Include="Views\Envelope\" />
-    <Folder Include="Views\Portal\" />
-    <Folder Include="Views\Process\" />
     <Folder Include="Views\Settings\" />
-    <Folder Include="Webhooks\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj">
