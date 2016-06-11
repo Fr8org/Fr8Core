@@ -29,7 +29,7 @@ namespace terminalFr8Core.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "QueryFr8Warehouse",
+            Name = "Query_Fr8_Warehouse",
             Label = "Query Fr8 Warehouse",
             Category = ActivityCategory.Processors,
             Version = "1",
