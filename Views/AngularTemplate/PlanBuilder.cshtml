@@ -81,6 +81,7 @@
                                                                 Delete
                                                             </md-button>
                                                         </md-menu-item>
+                                                        <md-menu-divider ng-if="hasHelpMenuItem(envelope.activity)"></md-menu-divider>
                                                         <md-menu-item ng-if="hasHelpMenuItem(envelope.activity)">
                                                             <md-button ng-if="showActivityHelpDocumentation(envelope.activity);">
                                                                 <md-icon style="padding-top: 3px" md-font-icon="fa fa-info"></md-icon>

@@ -291,11 +291,12 @@ module dockyard.controllers {
                         if (failResponse.data.details === "GuestFail") {
                             location.href = "DockyardAccount/RegisterGuestUser";
                         } else {
-                            if (isInactive && failResponse.toLowercase() === '1') {
+                            if (isInactive) {
                                 // mark plan as Inactive as it is Run Once and then rearrange
                                 plan.planState = 1;
                                 this.reArrangePlans(plan);
                                 this.getInactivePlans();
+                                this.goToPlanPage(plan.id);
                                 //this.$scope.inActivePlans = this.PlanService.getbystatus({ id: null, status: 1, category: '' });
                             }
                         }

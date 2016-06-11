@@ -51,7 +51,7 @@ namespace Data.Infrastructure.StructureMap
                 For<IAspNetRolesDO>().Use<AspNetRolesDO>();
                 For<IAspNetUserRolesDO>().Use<AspNetUserRolesDO>();
                 For<IUnitOfWork>().Use<UnitOfWork>();
-                For<IUnitOfWorkProvider>().Use<StructureMapUnitOfWorkProvider>().Singleton();
+                For<IUnitOfWorkFactory>().Use<StructureMapUnitOfWorkFactory>().Singleton();
                 For<IMultiTenantObjectRepository>().Use<MultitenantRepository>();
                 For<IMtObjectConverter>().Use<MtObjectConverter>().Singleton();
                 For<IMtTypeStorage>().Use<MtTypeStorage>().Singleton();
