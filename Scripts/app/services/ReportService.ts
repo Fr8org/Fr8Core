@@ -10,12 +10,12 @@
             'getIncidentsByQuery': {
                 method: 'GET',
                 isArray: false,
-                url: '/api/report/getIncidentsByQuery'
+                url: '/api/report/?type=incidents'
             },
             'getFactsByQuery': {
                 method: 'GET',
                 isArray: false,
-                url: '/api/report/getFactsByQuery'
+                url: '/api/report/?type=facts'
             }
         })
     ]);
