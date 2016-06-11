@@ -19,7 +19,7 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "ExecuteSql",
+            Name = "Execute_Sql",
             Label = "Execute Sql Query",
             Category = ActivityCategory.Processors,
             Version = "1",
