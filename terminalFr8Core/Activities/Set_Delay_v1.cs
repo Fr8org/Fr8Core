@@ -14,7 +14,7 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "SetDelay",
+            Name = "Set_Delay",
             Label = "Delay Action Processing",
             Category = ActivityCategory.Processors,
             Version = "1",
