@@ -683,6 +683,10 @@
     <Compile Include="Migrations\201606091512284_FillManifestRegistry.Designer.cs">
       <DependentUpon>201606091512284_FillManifestRegistry.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201606111326120_FR-3514 Make activity classes naming consistent.cs" />
+    <Compile Include="Migrations\201606111326120_FR-3514 Make activity classes naming consistent.Designer.cs">
+      <DependentUpon>201606111326120_FR-3514 Make activity classes naming consistent.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -1264,6 +1268,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606091512284_FillManifestRegistry.resx">
       <DependentUpon>201606091512284_FillManifestRegistry.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606111326120_FR-3514 Make activity classes naming consistent.resx">
+      <DependentUpon>201606111326120_FR-3514 Make activity classes naming consistent.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

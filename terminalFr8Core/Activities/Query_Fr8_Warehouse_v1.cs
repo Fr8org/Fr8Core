@@ -23,7 +23,7 @@ using StructureMap;
 
 namespace terminalFr8Core.Activities
 {
-    public class QueryFr8Warehouse_v1 : BaseTerminalActivity
+    public class Query_Fr8_Warehouse_v1 : BaseTerminalActivity
     {
         private readonly IContainer _container;
 
@@ -258,7 +258,7 @@ namespace terminalFr8Core.Activities
         */
         #endregion
 
-        public QueryFr8Warehouse_v1(ICrateManager crateManager, IContainer container)
+        public Query_Fr8_Warehouse_v1(ICrateManager crateManager, IContainer container)
             : base(crateManager)
         {
             _container = container;

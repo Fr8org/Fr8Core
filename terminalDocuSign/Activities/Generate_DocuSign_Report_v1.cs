@@ -440,10 +440,10 @@ namespace terminalDocuSign.Activities
                     ActivityPayload.ChildrenActivities.Clear();
 
                     var queryFr8WarehouseActivityTemplate = activityTemplates
-                        .FirstOrDefault(x => x.Name == "QueryFr8Warehouse");
+                        .FirstOrDefault(x => x.Name == "Query_Fr8_Warehouse");
                     if (queryFr8WarehouseActivityTemplate == null) { return; }
 
-                    var queryFr8WarehouseTemplate = await GetActivityTemplate("terminalFr8Core", "QueryFr8Warehouse");
+                    var queryFr8WarehouseTemplate = await GetActivityTemplate("terminalFr8Core", "Query_Fr8_Warehouse");
 
                     var queryFr8WarehouseAction = await AddAndConfigureChildActivity(
                         ActivityId,queryFr8WarehouseTemplate

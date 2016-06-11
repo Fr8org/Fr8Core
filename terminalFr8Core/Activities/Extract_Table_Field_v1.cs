@@ -12,11 +12,11 @@ using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Activities
 {
-    public class ExtractTableField_v1 : BaseTerminalActivity
+    public class Extract_Table_Field_v1 : BaseTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "ExtractTableField",
+            Name = "Extract_Table_Field",
             Label = "Extract Table Field",
             Version = "1",
             MinPaneWidth = 330,
@@ -204,7 +204,7 @@ namespace terminalFr8Core.Activities
             return PackControlsCrate(crateChooser, controlList);
         }
 
-        public ExtractTableField_v1(ICrateManager crateManager)
+        public Extract_Table_Field_v1(ICrateManager crateManager)
             : base(crateManager)
         {
         }

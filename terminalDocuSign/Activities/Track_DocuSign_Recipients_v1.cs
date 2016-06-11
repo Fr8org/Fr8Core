@@ -173,9 +173,9 @@ namespace terminalDocuSign.Activities
             }
 
             var monitorDocusignAT = await GetActivityTemplate("terminalDocuSign", "Monitor_DocuSign_Envelope_Activity");
-            var setDelayAT = await GetActivityTemplate("terminalFr8Core", "SetDelay");
-            var queryFr8WareHouseAT = await GetActivityTemplate("terminalFr8Core", "QueryFr8Warehouse");
-            var testIncomingDataAT = await GetActivityTemplate("terminalFr8Core", "TestIncomingData");
+            var setDelayAT = await GetActivityTemplate("terminalFr8Core", "Set_Delay");
+            var queryFr8WareHouseAT = await GetActivityTemplate("terminalFr8Core", "Query_Fr8_Warehouse");
+            var testIncomingDataAT = await GetActivityTemplate("terminalFr8Core", "Test_Incoming_Data");
             var buildMessageAT = await GetActivityTemplate("terminalFr8Core", "Build_Message");
            
             //DocuSign

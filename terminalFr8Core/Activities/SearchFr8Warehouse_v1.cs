@@ -139,7 +139,7 @@ namespace terminalFr8Core.Activities
 
         protected async Task GenerateSolutionActivities(string fr8ObjectID)
         {
-            var queryFr8WarehouseAT = await GetActivityTemplate("terminalFr8Core", "QueryFr8Warehouse");
+            var queryFr8WarehouseAT = await GetActivityTemplate("terminalFr8Core", "Query_Fr8_Warehouse");
             var queryFr8WarehouseAction = await AddAndConfigureChildActivity(
                 ActivityId, queryFr8WarehouseAT
             );
