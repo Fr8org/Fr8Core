@@ -8,7 +8,10 @@
 
 param(
     [Parameter(Mandatory = $true)]
-	[string]$serviceName
+	[string]$serviceName,
+
+    [Parameter(Mandatory = $true)]
+	[string]$filePath	
 )
 
 $ErrorActionPreference = 'Stop'
@@ -20,4 +23,4 @@ $deployment = Get-AzureDeployment -ServiceName $serviceName -Slot Staging
 $stagingHostname = $deployment.Url.Host
 $planDirectoryURL = "http://{0}:{1}" -f $stagingHostname, $planDirectoryPort 
 Echo "Plan Directory URL: $planDirectoryURL"
-& "$rootDir\Set-Config.ps1" -as:PlanDirectoryBaseUrl "$planDirectoryURL" -as:PlanDirectoryBaseApiUrl "$planDirectoryURL/api" -filePath "Tests\HealthMonitor\bin\Debug\HealthMonitor.exe.config"
+& "$rootDir\Set-Config.ps1" -as:PlanDirectoryBaseUrl "$planDirectoryURL" -as:PlanDirectoryBaseApiUrl "$planDirectoryURL/api" -filePath "$filePath"
