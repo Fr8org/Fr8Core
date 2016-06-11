@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 
-namespace Hub.Infrastructure
+namespace Fr8.Infrastructure.Utilities
 {
     public partial class AsyncMultiLock
     {
-        private readonly Dictionary<object, LockScope> _tails = new Dictionary<object, LockScope>();
+        private readonly Dictionary<object, AsyncMultiLock.LockScope> _tails = new Dictionary<object, AsyncMultiLock.LockScope>();
         private readonly object _sync = new object();
 
         public async Task<IDisposable> Lock(object token)
         {
-            var scope = new LockScope(this, token);
-            LockScope waitScope;
+            var scope = new AsyncMultiLock.LockScope(this, token);
+            AsyncMultiLock.LockScope waitScope;
 
             lock (_sync)
             {
-                LockScope tail;
+                AsyncMultiLock.LockScope tail;
 
                 // if there is no currently executing tasks create new scope and set is as currently executing task
                 // we will immediately return current scope, because we do not have to wait anyone
@@ -38,12 +37,12 @@ namespace Hub.Infrastructure
             return scope;
         }
 
-        private void Release(LockScope lockScope)
+        private void Release(AsyncMultiLock.LockScope lockScope)
         {
             lock (_sync)
             {
                 // we are the last task in the queue.
-                LockScope tail;
+                AsyncMultiLock.LockScope tail;
                 if (_tails.TryGetValue(lockScope.Token, out tail) && tail == lockScope)
                 {
                     _tails.Remove(lockScope.Token);

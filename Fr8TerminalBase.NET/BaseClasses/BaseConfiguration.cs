@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net.Http;
-using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Dispatcher;
@@ -88,24 +88,23 @@ namespace Fr8.TerminalBase.BaseClasses
         public IHttpController Create(HttpRequestMessage request, HttpControllerDescriptor controllerDescriptor, Type controllerType)
         {
             var childContainer = _container.CreateChildContainer();
-            string apiUrl;
-            string secret;
-
+            Expression<Func<IContext, IHubCommunicator>> hubCommunicatorFactoryExpression;
+            
             if (request.Headers.Contains("Fr8HubCallBackUrl") && request.Headers.Contains("Fr8HubCallbackSecret"))
             {
-                apiUrl = request.Headers.GetValues("Fr8HubCallBackUrl").First();
-                secret = request.Headers.GetValues("Fr8HubCallbackSecret").First();
+                var apiUrl = request.Headers.GetValues("Fr8HubCallBackUrl").First();
+                var secret = request.Headers.GetValues("Fr8HubCallbackSecret").First();
+                var terminalId = CloudConfigurationManager.GetSetting("TerminalId") ?? ConfigurationManager.AppSettings[_activityStore.Terminal.Name + "TerminalId"];
+
+                hubCommunicatorFactoryExpression = c => new DefaultHubCommunicator(c.GetInstance<IRestfulServiceClient>(), c.GetInstance<IHMACService>(), apiUrl, terminalId, secret);
             }
             else
             {
-                secret = CloudConfigurationManager.GetSetting("TerminalSecret") ?? ConfigurationManager.AppSettings[_activityStore.Terminal.Name + "TerminalSecret"];
-                apiUrl = $"{CloudConfigurationManager.GetSetting("CoreWebServerUrl")}api/{CloudConfigurationManager.GetSetting("HubApiVersion")}";
+                hubCommunicatorFactoryExpression = c => new DealyedhubCommunicator(c.GetInstance<IHubEventReporter>());
             }
-
-            var terminalId = CloudConfigurationManager.GetSetting("TerminalId") ?? ConfigurationManager.AppSettings[_activityStore.Terminal.Name + "TerminalId"];
-
-            childContainer.Configure(x => x.For<IHubCommunicator>().Use(c => new DefaultHubCommunicator(c.GetInstance<IRestfulServiceClient>(), c.GetInstance<IHMACService>(), apiUrl, terminalId, secret)));
-            childContainer.Configure(x=>x.For<IContainer>().Use(childContainer));
+            
+            childContainer.Configure(x => x.For<IHubCommunicator>().Use(hubCommunicatorFactoryExpression));
+            childContainer.Configure(x => x.For<IContainer>().Use(childContainer));
 
             request.RegisterForDispose(childContainer);
 

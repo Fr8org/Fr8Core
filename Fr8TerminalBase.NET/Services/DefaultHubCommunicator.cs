@@ -381,7 +381,7 @@ namespace Fr8.TerminalBase.Services
             
             if (eventReportCrateDTO != null)
             {
-                var url = $"{GetHubUrlWithApiVersion()}/event";
+                var url = $"{GetHubUrlWithApiVersion()}/events";
                 var uri = new Uri(url);
                 await _restfulServiceClient.PostAsync(uri, eventReportCrateDTO, null, await GetHMACHeader(uri, eventReportCrateDTO));
             }

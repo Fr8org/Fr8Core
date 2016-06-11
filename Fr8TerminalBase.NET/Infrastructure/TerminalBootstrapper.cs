@@ -19,7 +19,7 @@ namespace Fr8.TerminalBase.Infrastructure
             {
                 For<IConfigRepository>().Use<ConfigRepository>();
                 For<ICrateManager>().Use<CrateManager>();
-                For<ActivityExecutor>().Use<ActivityExecutor>();
+                For<IActivityExecutor>().Use<ActivityExecutor>();
                 For<IHubEventReporter>().Use<HubEventReporter>();
             }            
         }
@@ -30,7 +30,7 @@ namespace Fr8.TerminalBase.Infrastructure
             {
                 For<IConfigRepository>().Use<MockedConfigRepository>();
                 For<ICrateManager>().Use<CrateManager>();
-                For<ActivityExecutor>().Use<ActivityExecutor>();
+                For<IActivityExecutor>().Use<ActivityExecutor>();
                 For<IHubEventReporter>().Use<HubEventReporter>();
             }
         }
