@@ -6,6 +6,14 @@
                 Edit
             </md-tooltip>
         </md-button>
+        <a class="md-raised md-button" ng-click="sharePlan()"   style="float: right">
+            Share plan
+        </a>
+
+        <a class="md-raised md-button" ng-click="unpublishPlan()" style="float: right">
+            Unpublish plan
+        </a>
+
         <a class="md-raised md-button" ng-click="download($event)"  download='{{ptvm.plan.name}}.json'  type='application/json' style="float: right">
             Download template as JSON file
         </a>

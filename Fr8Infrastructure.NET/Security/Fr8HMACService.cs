@@ -8,7 +8,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Interfaces;
-using StructureMap;
 
 namespace Fr8.Infrastructure.Security
 {
@@ -17,9 +16,9 @@ namespace Fr8.Infrastructure.Security
         private readonly MediaTypeFormatter _formatter;
         private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-        public Fr8HMACService()
+        public Fr8HMACService(MediaTypeFormatter formatter)
         {
-            _formatter = ObjectFactory.GetInstance<MediaTypeFormatter>();
+            _formatter = formatter;
         }
 
         private async Task<string> GetHMACHash(Uri requestUri, string userId, string terminalId, string terminalSecret, string timeStamp, string nonce, string contentBase64String)

@@ -1,14 +1,9 @@
 ﻿using System.Net;
 using System.Xml.Linq;
 using terminalSalesforce.Infrastructure;
-using terminalSalesforce.Services;
-using StructureMap;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Http;
+using Fr8.Infrastructure.Interfaces;
 using Fr8.TerminalBase.Infrastructure;
 
 namespace terminalSalesforce.Controllers
@@ -16,13 +11,13 @@ namespace terminalSalesforce.Controllers
     [RoutePrefix("terminals/terminalSalesforce")]
     public class EventController : ApiController
     {
-        private IEvent _event;
-        private BaseTerminalEvent _baseTerminalEvent;
+        private readonly IEvent _event;
+        private readonly BaseTerminalEvent _baseTerminalEvent;
 
-        public EventController()
+        public EventController(IEvent @event, IRestfulServiceClient restfulServiceClient)
         {
-            _event = ObjectFactory.GetInstance<IEvent>();
-            _baseTerminalEvent = new BaseTerminalEvent();
+            _event = @event;
+            _baseTerminalEvent = new BaseTerminalEvent(restfulServiceClient);
         }
 
         [HttpPost]

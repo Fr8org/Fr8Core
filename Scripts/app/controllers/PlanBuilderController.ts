@@ -182,11 +182,9 @@ module dockyard.controllers {
                 $mdOpenMenu(ev);
             };
             $scope.reConfigureAction = (action: model.ActivityDTO) => {
-                if (action) {
-                    var actionsArray = new Array<model.ActivityDTO>();
-                    actionsArray.push(action);
-                    this.reConfigure(actionsArray);
-                }
+                var actionsArray = new Array<model.ActivityDTO>();
+                actionsArray.push(action);
+                this.reConfigure(actionsArray);
             };
 
             $scope.openAddLabelModal = (action: model.ActivityDTO) => { 
@@ -459,7 +457,12 @@ module dockyard.controllers {
 
         private reloadFirstActions() {
             this.$timeout(() => {
-                this.$scope.current.plan.subPlans.forEach(plan => this.$scope.reConfigureAction(plan.activities[0]));
+                this.$scope.current.plan.subPlans.forEach(
+                    plan => {
+                        if (plan.activities.length > 0) {
+                            this.$scope.reConfigureAction(plan.activities[0])
+                        }
+                    });
             }, 1500);
         }
 

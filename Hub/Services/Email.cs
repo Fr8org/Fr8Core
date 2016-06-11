@@ -17,29 +17,16 @@ namespace Hub.Services
 {
     public class Email
     {
+        private readonly IConfigRepository _configRepository;
 
         public const string DateStandardFormat = @"yyyy-MM-ddTHH\:mm\:ss.fffffff"; //This allows javascript to parse the date properly
         //private EventValidator _curEventValidator;
-        private readonly EmailAddress _emailAddress;
 
-        #region Constructor
-        public Email()
+
+        public Email(IConfigRepository configRepository)
         {
+            _configRepository = configRepository;
         }
-
-      
-        /// <summary>
-        /// Initialize EmailManager
-        /// </summary>
-        /// 
-        //this constructor enables the creation of an email that doesn't necessarily have anything to do with an Event. It gets called by the other constructors
-        public Email(EmailAddress emailAddress)
-        {
-            _emailAddress = emailAddress;
-            //_curEventValidator = new EventValidator();
-        }
-
-        #endregion
 
         #region Method
 
@@ -204,7 +191,7 @@ namespace Hub.Services
         
         public EmailDO GenerateBasicMessage(IUnitOfWork uow, string subject, string message, string fromAddress ,string toRecipient)
         {
-            RegexUtilities.ValidateEmailAddress(toRecipient);
+            RegexUtilities.ValidateEmailAddress(_configRepository, toRecipient);
             EmailDO curEmail = new EmailDO
             {
                 Subject = subject,

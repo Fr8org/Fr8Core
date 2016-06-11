@@ -24,11 +24,11 @@ namespace terminalDocuSign.Services
         private readonly IRestfulServiceClient _restfulServiceClient;
         private readonly ICrateManager _crateManager;
 
-        public DocuSignPolling()
+        public DocuSignPolling(IDocuSignManager docuSignManager, IRestfulServiceClient restfulServiceClient, ICrateManager crateManager)
         {
-            _docuSignManager = ObjectFactory.GetInstance<IDocuSignManager>();
-            _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
-            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
+            _docuSignManager = docuSignManager;
+            _restfulServiceClient = restfulServiceClient;
+            _crateManager = crateManager;
         }
 
         public void SchedulePolling(IHubCommunicator hubCommunicator, string externalAccountId)

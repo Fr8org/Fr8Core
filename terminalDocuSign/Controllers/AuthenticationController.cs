@@ -6,6 +6,7 @@ using DocuSign.eSign.Client;
 using DocuSign.eSign.Model;
 using DocuSign.eSign.Api;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.BaseClasses;
 using terminalDocuSign.DataTransferObjects;
@@ -16,7 +17,12 @@ namespace terminalDocuSign.Controllers
     public class AuthenticationController : BaseTerminalController
     {
         private const string curTerminal = "terminalDocuSign";
-        
+
+        public AuthenticationController(IRestfulServiceClient restfulServiceClient) 
+            : base(restfulServiceClient)
+        {
+        }
+
         [HttpPost]
         [Route("token")]
         public async Task<AuthorizationTokenDTO> GenerateInternalOAuthToken(CredentialsDTO curCredentials)

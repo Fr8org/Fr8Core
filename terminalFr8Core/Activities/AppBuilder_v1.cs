@@ -18,6 +18,7 @@ namespace terminalFr8Core.Activities
 {
     public class AppBuilder_v1 : BaseTerminalActivity
     {
+        private readonly ExcelUtils _excelUtils;
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -36,7 +37,6 @@ namespace terminalFr8Core.Activities
         private const string RuntimeFieldCrateLabelPrefix = "Run Time Fields From AppBuilder";
         private const string RunFromSubmitButtonLabel = "RunFromSubmitButton";
         public const string CollectionControlsLabel = "Collection";
-
         /// <summary>
         /// We don't want false clicked events from submit button
         /// after we read it's state we reset it to unclicked state
@@ -168,8 +168,8 @@ namespace terminalFr8Core.Activities
 
         private async Task<byte[]> ProcessExcelFile(string filePath)
         {
-            var byteArray = await new ExcelUtils().GetExcelFileAsByteArray(filePath);
-            var payloadCrate = Crate.FromContent(RuntimeCrateLabelPrefix, ExcelUtils.GetExcelFile(byteArray, filePath, false), AvailabilityType.RunTime);
+            var byteArray = await _excelUtils.GetExcelFileAsByteArray(filePath);
+            var payloadCrate = Crate.FromContent(RuntimeCrateLabelPrefix, _excelUtils.GetExcelFile(byteArray, filePath, false), AvailabilityType.RunTime);
             Payload.Add(payloadCrate);
             return byteArray;
         }
@@ -292,12 +292,13 @@ namespace terminalFr8Core.Activities
             return PackControlsCrate(Label,infoText, cc);
         }
 
-        public AppBuilder_v1(ICrateManager crateManager)
+        public AppBuilder_v1(ICrateManager crateManager, ExcelUtils excelUtils)
             : base(crateManager)
         {
+            _excelUtils = excelUtils;
         }
 
-        
+
         public override async Task Run()
         {
             //let's put the file to payload

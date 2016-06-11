@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Logging;
 using Fr8.TerminalBase.Infrastructure;
@@ -13,9 +15,9 @@ namespace Fr8.TerminalBase.BaseClasses
     {
         private readonly BaseTerminalEvent _baseTerminalEvent;
 
-        public BaseTerminalController()
+        public BaseTerminalController(IRestfulServiceClient restfulServiceClient)
         {
-            _baseTerminalEvent = new BaseTerminalEvent();
+            _baseTerminalEvent = new BaseTerminalEvent(restfulServiceClient);
         }
 
         /// <summary>
