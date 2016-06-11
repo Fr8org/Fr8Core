@@ -20,13 +20,13 @@ using StructureMap;
 
 namespace terminalFr8Core.Activities
 {
-    public class SearchFr8Warehouse_v1 : BaseTerminalActivity
+    public class Search_Fr8_Warehouse_v1 : BaseTerminalActivity
     {
         private readonly IContainer _container;
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "SearchFr8Warehouse",
+            Name = "Search_Fr8_Warehouse",
             Label = "Search Fr8 Warehouse",
             Version = "1",
             Category = ActivityCategory.Solution,
@@ -101,7 +101,7 @@ namespace terminalFr8Core.Activities
             }
         }
 
-        public SearchFr8Warehouse_v1(ICrateManager crateManager, IContainer container)
+        public Search_Fr8_Warehouse_v1(ICrateManager crateManager, IContainer container)
             : base(crateManager)
         {
             _container = container;

@@ -64,7 +64,7 @@ namespace terminalFr8Core
             ActivityStore.RegisterActivity<Monitor_Fr8_Events_v1>(Monitor_Fr8_Events_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Query_Fr8_Warehouse_v1>(Query_Fr8_Warehouse_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Save_To_Fr8_Warehouse_v1>(Save_To_Fr8_Warehouse_v1.ActivityTemplateDTO);
-            ActivityStore.RegisterActivity<SearchFr8Warehouse_v1>(SearchFr8Warehouse_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Search_Fr8_Warehouse_v1>(Search_Fr8_Warehouse_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Select_Fr8_Object_v1>(Select_Fr8_Object_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Set_Delay_v1>(Set_Delay_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Show_Report_Onscreen_v1>(Show_Report_Onscreen_v1.ActivityTemplateDTO);

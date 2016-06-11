@@ -245,7 +245,7 @@
     <Compile Include="Activities\Build_Message_v1.cs" />
     <Compile Include="Activities\Connect_To_Sql_v1.cs" />
     <Compile Include="Activities\Get_File_From_Fr8_Store_v1.cs" />
-    <Compile Include="Activities\SearchFr8Warehouse_v1.cs" />
+    <Compile Include="Activities\Search_Fr8_Warehouse_v1.cs" />
     <Compile Include="Activities\Extract_Table_Field_v1.cs" />
     <Compile Include="Activities\Send_Email_v1.cs" />
     <Compile Include="Activities\Send_SMS_v1.cs" />
