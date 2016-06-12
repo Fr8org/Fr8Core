@@ -6,21 +6,20 @@ using DocuSign.eSign.Client;
 using DocuSign.eSign.Model;
 using DocuSign.eSign.Api;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
-using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using terminalDocuSign.DataTransferObjects;
 
 namespace terminalDocuSign.Controllers
 {
     [RoutePrefix("authentication")]
-    public class AuthenticationController : BaseTerminalController
+    public class AuthenticationController : ApiController
     {
-        private const string curTerminal = "terminalDocuSign";
+        private readonly IHubEventReporter _eventReporter;
 
-        public AuthenticationController(IRestfulServiceClient restfulServiceClient) 
-            : base(restfulServiceClient)
+        public AuthenticationController(IHubEventReporter eventReporter)
         {
+            _eventReporter = eventReporter;
         }
 
         [HttpPost]
@@ -66,7 +65,7 @@ namespace terminalDocuSign.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerminal, ex,curCredentials.Fr8UserId);
+                await _eventReporter.ReportTerminalError(ex, curCredentials.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {

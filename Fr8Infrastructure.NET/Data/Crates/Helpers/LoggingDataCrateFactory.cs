@@ -1,11 +1,10 @@
-﻿using Fr8.Infrastructure.Data.Crates;
-using Fr8.Infrastructure.Data.DataTransferObjects;
+﻿using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace Fr8.Infrastructure.Data.Crates.Helpers
 {
-    public class LoggingDataCrateFactory
+    public static class LoggingDataCrateFactory
     {
-        public Crate Create(LoggingDataCM loggingDataCm)
+        public static Crate Create(LoggingDataCM loggingDataCm)
         {
             return Crate.FromContent("Dockyard Terminal Fact or Incident Report", loggingDataCm);
         }

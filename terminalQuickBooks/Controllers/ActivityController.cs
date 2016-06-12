@@ -1,29 +1,13 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Web.Http;
-using Fr8.Infrastructure.Data.DataTransferObjects;
+﻿using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Services;
-using StructureMap;
 
 namespace terminalQuickBooks.Controllers
-{    
-    [RoutePrefix("activities")]
-    public class ActivityController : ApiController
+{
+    public class ActivityController : DefaultActivityController
     {
-        private const string curTerminal = "terminalQuickBooks";
-        private readonly ActivityExecutor _activityExecutor;
-
-        public ActivityController(ActivityExecutor activityExecutor)
+        public ActivityController(IActivityExecutor activityExecutor)
+            : base(activityExecutor)
         {
-            _activityExecutor = activityExecutor;
-        }
-
-        [HttpPost]
-        public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
-        {
-            var queryParams = Request.GetQueryNameValuePairs();
-            return _activityExecutor.HandleFr8Request(curTerminal, actionType, queryParams, curDataDTO);
         }
     }
 }

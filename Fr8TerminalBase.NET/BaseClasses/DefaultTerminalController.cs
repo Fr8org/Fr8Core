@@ -22,7 +22,7 @@ namespace Fr8.TerminalBase.BaseClasses
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM
             {
                 Definition = _activityStore.Terminal,
-                Activities = _activityStore.GetAllActivities()
+                Activities = _activityStore.GetAllTemplates()
             };
 
             return Json(curStandardFr8TerminalCM);
