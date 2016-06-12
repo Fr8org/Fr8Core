@@ -22,6 +22,8 @@ namespace terminalFr8Core.Activities
 {
     public class SearchFr8Warehouse_v1 : BaseTerminalActivity
     {
+        private readonly IContainer _container;
+
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "SearchFr8Warehouse",
@@ -99,9 +101,10 @@ namespace terminalFr8Core.Activities
             }
         }
 
-        public SearchFr8Warehouse_v1(ICrateManager crateManager)
+        public SearchFr8Warehouse_v1(ICrateManager crateManager, IContainer container)
             : base(crateManager)
         {
+            _container = container;
         }
 
         public override Task RunChildActivities()
@@ -179,13 +182,16 @@ namespace terminalFr8Core.Activities
 
         private void LoadAvailableFr8ObjectNames(string fr8ObjectID)
         {
-            var designTimeQueryFields = MTTypesHelper.GetFieldsByTypeId(Guid.Parse(fr8ObjectID));
-            var criteria = Storage.FirstOrDefault(d => d.Label == "Queryable Criteria");
-            if (criteria != null)
+            using (var uow = _container.GetInstance<IUnitOfWork>())
             {
-                Storage.Remove(criteria);
+                var designTimeQueryFields = MTTypesHelper.GetFieldsByTypeId(uow, Guid.Parse(fr8ObjectID));
+                var criteria = Storage.FirstOrDefault(d => d.Label == "Queryable Criteria");
+                if (criteria != null)
+                {
+                    Storage.Remove(criteria);
+                }
+                Storage.Add(Crate.FromContent("Queryable Criteria", new FieldDescriptionsCM(designTimeQueryFields)));
             }
-            Storage.Add(Crate.FromContent("Queryable Criteria", new FieldDescriptionsCM(designTimeQueryFields)));
         }
 
         private void UpdateOperationCrate(string errorMessage = null)
@@ -276,7 +282,7 @@ namespace terminalFr8Core.Activities
         // create the dropdown design time fields.
         private List<FieldDTO> GetFr8WarehouseTypes(AuthorizationToken oAuthToken)
         {
-            using (var unitWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var unitWork = _container.GetInstance<IUnitOfWork>())
             {
                 var warehouseTypes = new List<FieldDTO>();
 

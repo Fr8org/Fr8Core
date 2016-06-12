@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Net.Http;
+using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 using StructureMap;
 using Fr8.Infrastructure.Communication;
@@ -42,7 +43,7 @@ namespace Fr8.Testing.Integration
             _httpClient.Timeout = TimeSpan.FromMinutes(2);
 
             Crate = new CrateManager();
-            _hmacService = new Fr8HMACService();
+            _hmacService = new Fr8HMACService(ObjectFactory.GetInstance<MediaTypeFormatter>());
             _baseUrl = GetPlanDirectoryBaseApiUrl();
             RestfulServiceClient = new RestfulServiceClient(_httpClient);
 

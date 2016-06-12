@@ -391,7 +391,7 @@ namespace terminaBaselTests.BaseClasses
             ObjectFactory.Configure(x =>
             {
                 x.For<IRestfulServiceClient>().Use<RestfulServiceClient>().SelectConstructor(() => new RestfulServiceClient());
-                x.For<IHubCommunicator>().Use(new ExplicitDataHubCommunicator(samplePayload)).Singleton();
+                x.For<IHubCommunicator>().Use(new ExplicitDataHubCommunicator(samplePayload, _crateManager)).Singleton();
             });
             
             FixtureData.AddTestActivityTemplate();
@@ -450,7 +450,7 @@ namespace terminaBaselTests.BaseClasses
         {
             var activity = New<ActivityOverrideCheckMock>();
             var executionContext = CreateContainerExecutionContext();
-            ObjectFactory.GetInstance<IHubCommunicator>().Configure("testTerminal", null);
+            ObjectFactory.GetInstance<IHubCommunicator>().Authorize(null);
             await activity.Run(CreateActivityContext(Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, new StandardConfigurationControlsCM())), executionContext);
             Assert.IsTrue(activity.CalledMethods == (CalledMethod.Run | CalledMethod.Validate));
         }
@@ -460,7 +460,7 @@ namespace terminaBaselTests.BaseClasses
         {
             var activity = New<ActivityOverrideCheckMock>();
             var executionContext = CreateContainerExecutionContext();
-            ObjectFactory.GetInstance<IHubCommunicator>().Configure("testTerminal", null);
+            ObjectFactory.GetInstance<IHubCommunicator>().Authorize(null);
             await activity.RunChildActivities(CreateActivityContext(Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, new StandardConfigurationControlsCM())), executionContext);
             Assert.IsTrue(activity.CalledMethods == (CalledMethod.ChildActivitiesExecuted | CalledMethod.Validate));
         }
@@ -482,7 +482,7 @@ namespace terminaBaselTests.BaseClasses
 
             var executionContext = CreateContainerExecutionContext();
 
-            ObjectFactory.GetInstance<IHubCommunicator>().Configure("testTerminal", null);
+            ObjectFactory.GetInstance<IHubCommunicator>().Authorize(null);
 
             var activityContext = CreateActivityContext(Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, new StandardConfigurationControlsCM()));
 

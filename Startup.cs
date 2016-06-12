@@ -42,7 +42,16 @@ namespace HubWeb
             if (!selfHostMode)
             {
                 await RegisterTerminalActions();
+#pragma warning disable 4014 
+                //We don't await this call as this is Hangfire dispatcher job
+                ObjectFactory.GetInstance<IJobDispatcher>().Enqueue(() => StartMonitoringManifestRegistrySubmissions());
+#pragma warning restore 4014
             }
+        }
+
+        public static async Task StartMonitoringManifestRegistrySubmissions()
+        {
+            await ObjectFactory.GetInstance<IManifestRegistryMonitor>().StartMonitoringManifestRegistrySubmissions();
         }
 
         public void ConfigureHangfire(IAppBuilder app, string connectionString)

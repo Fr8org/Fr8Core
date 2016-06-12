@@ -10,14 +10,11 @@ using AutoMapper;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Interfaces;
-using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
-using StructureMap;
 
 namespace Fr8.TerminalBase.Services
 {
@@ -25,37 +22,25 @@ namespace Fr8.TerminalBase.Services
     {
         private readonly IRestfulServiceClient _restfulServiceClient;
         private readonly IHMACService _hmacService;
-        private readonly ICrateManager _crate;
+        private readonly string _apiUrl;
         private string _userId;
-        private ActivityContext _activityContext;
 
         protected string TerminalSecret { get; set; }
         protected string TerminalId { get; set; }
 
         public string UserId => _userId;
 
-        public DefaultHubCommunicator()
+        public DefaultHubCommunicator(IRestfulServiceClient restfulServiceClient, IHMACService hmacService, string apiUrl, string terminalId, string apiSecret)
         {
-            _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
-            _crate = ObjectFactory.GetInstance<ICrateManager>();
-            _hmacService = ObjectFactory.GetInstance<IHMACService>();
+            TerminalSecret = apiSecret;
+            TerminalId = terminalId;
+            _restfulServiceClient = restfulServiceClient;
+            _hmacService = hmacService;
+            _apiUrl = apiUrl;
         }
 
-        public void Configure(string terminalName, string userId)
+        public void Authorize(string userId)
         {
-            if (string.IsNullOrEmpty(terminalName))
-                throw new ArgumentNullException(nameof(terminalName));
-
-            TerminalSecret = CloudConfigurationManager.GetSetting("TerminalSecret");
-            TerminalId = CloudConfigurationManager.GetSetting("TerminalId");
-
-            //we might be on integration test currently
-            if (TerminalSecret == null || TerminalId == null)
-            {
-                TerminalSecret = ConfigurationManager.AppSettings[terminalName + "TerminalSecret"];
-                TerminalId = ConfigurationManager.AppSettings[terminalName + "TerminalId"];
-            }
-
             _userId = userId;
         }
 
@@ -112,7 +97,7 @@ namespace Fr8.TerminalBase.Services
 
             foreach (var curAction in curActivities)
             {
-                var storage = _crate.FromDto(curAction.CrateStorage);
+                var storage = CrateStorageSerializer.Default.ConvertFromDto(curAction.CrateStorage);
 
                 curCrates.AddRange(storage.CratesOfType<TManifest>());
             }
@@ -132,7 +117,7 @@ namespace Fr8.TerminalBase.Services
 
             foreach (var curAction in curActivities)
             {
-                var storage = _crate.FromDto(curAction.CrateStorage);
+                var storage = CrateStorageSerializer.Default.ConvertFromDto(curAction.CrateStorage);
                 curCrates.AddRange(storage);
             }
 
@@ -310,7 +295,6 @@ namespace Fr8.TerminalBase.Services
 
         public async Task DeleteExistingChildNodesFromActivity(Guid curActivityId)
         {
-            //var hubAlarmsUrl = $"{GetHubUrlWithApiVersion()}/activities/deletechildnodes?activityId={curActivityId}";
             var hubAlarmsUrl = $"{GetHubUrlWithApiVersion()}/activities?id={curActivityId}&delete_child_nodes=true";
             var uri = new Uri(hubAlarmsUrl);
             await _restfulServiceClient.DeleteAsync(uri, null, await GetHMACHeader(uri));
@@ -318,7 +302,6 @@ namespace Fr8.TerminalBase.Services
 
         public async Task DeleteActivity(Guid curActivityId)
         {
-            //var hubDeleteUrl = $"{GetHubUrlWithApiVersion()}/activities/deleteactivity?id={curActivityId}";
             var hubDeleteUrl = $"{GetHubUrlWithApiVersion()}/activities?id={curActivityId}";
             var uri = new Uri(hubDeleteUrl);
             var headers = await GetHMACHeader(uri);
@@ -392,19 +375,30 @@ namespace Fr8.TerminalBase.Services
             await _restfulServiceClient.PostAsync(uri, token, null, await GetHMACHeader(uri, token));
         }
 
+        public async Task SendEvent(Crate eventPayload)
+        {
+            var eventReportCrateDTO = CrateStorageSerializer.Default.ConvertToDto(eventPayload);
+            
+            if (eventReportCrateDTO != null)
+            {
+                var url = $"{GetHubUrlWithApiVersion()}/events";
+                var uri = new Uri(url);
+                await _restfulServiceClient.PostAsync(uri, eventReportCrateDTO, null, await GetHMACHeader(uri, eventReportCrateDTO));
+            }
+        }
+
         public async Task ScheduleEvent(string externalAccountId, string minutes)
         {
-            var hubAlarmsUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-               + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion")
+            var hubAlarmsUrl = GetHubUrlWithApiVersion()
                + string.Format("/alarms/polling?job_id={0}&fr8_account_id={1}&minutes={2}&terminal_id={3}",
                externalAccountId, _userId, minutes, TerminalId);
             var uri = new Uri(hubAlarmsUrl);
             await _restfulServiceClient.PostAsync(uri, null, await GetHMACHeader(uri));
         }
 
-        private static string GetHubUrlWithApiVersion()
+        private string GetHubUrlWithApiVersion()
         {
-            return $"{CloudConfigurationManager.GetSetting("CoreWebServerUrl")}api/{CloudConfigurationManager.GetSetting("HubApiVersion")}";
+            return _apiUrl;
         }
     }
 }

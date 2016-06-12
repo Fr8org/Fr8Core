@@ -36,6 +36,7 @@ namespace terminalSalesforce.Actions
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public TextSource FeedTextSource { get; set; }
@@ -50,7 +51,7 @@ namespace terminalSalesforce.Actions
 
             public RadioButtonOption UseIncomingChatterIdOption { get; set; }
 
-            public DropDownList IncomingChatterIdSelector { get; set; }
+            public UpstreamFieldChooser IncomingChatterIdSelector { get; set; }
 
             public ActivityUi() : this(new UiBuilder()) { }
 
@@ -81,14 +82,13 @@ namespace terminalSalesforce.Actions
                     Value = "Query for chatter objects",
                     Controls = new List<ControlDefinitionDTO> { ChatterSelector, ChatterFilter }
                 };
-                IncomingChatterIdSelector = new DropDownList
+                IncomingChatterIdSelector = new UpstreamFieldChooser
                 {
                     Name = nameof(IncomingChatterIdSelector),
                     Source = new FieldSourceDTO
                     {
                         AvailabilityType = AvailabilityType.RunTime,
-                        ManifestType = CrateManifestTypes.StandardDesignTimeFields,
-                        RequestUpstream = true
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     }
                 };
                 UseIncomingChatterIdOption = new RadioButtonOption

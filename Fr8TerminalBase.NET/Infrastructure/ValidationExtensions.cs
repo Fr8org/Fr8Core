@@ -7,15 +7,15 @@ namespace Fr8.TerminalBase.Infrastructure
 {
     public static class ValidationExtensions
     {
-        public static void ValidateEmail(this ValidationManager validationManager, ControlDefinitionDTO control, string errorMessage = null)
+        public static void ValidateEmail(this ValidationManager validationManager, IConfigRepository configRepository, ControlDefinitionDTO control, string errorMessage = null)
         {
-            if (!RegexUtilities.IsValidEmailAddress(control.Value))
+            if (!RegexUtilities.IsValidEmailAddress(configRepository, control.Value))
             {
                 validationManager.SetError(errorMessage ?? "Not a valid e-mail address", control);
             }
         }
 
-        public static void ValidateEmail(this ValidationManager validationManager, TextSource textSource, string errorMessage = null)
+        public static void ValidateEmail(this ValidationManager validationManager, IConfigRepository configRepository, TextSource textSource, string errorMessage = null)
         {
             //The validation actually won't go further only if Upstream is set as source but payload is not avaialable. That means we can't yet validate
             if (!textSource.CanGetValue(validationManager.Payload) && !textSource.ValueSourceIsNotSet)
@@ -23,7 +23,7 @@ namespace Fr8.TerminalBase.Infrastructure
                 return;
             }
             var value = textSource.CanGetValue(validationManager.Payload) ? textSource.GetValue(validationManager.Payload) : string.Empty;
-            if (!RegexUtilities.IsValidEmailAddress(value))
+            if (!RegexUtilities.IsValidEmailAddress(configRepository, value))
             {
                 validationManager.SetError(errorMessage ?? "Not a valid e-mail address", textSource);
             }

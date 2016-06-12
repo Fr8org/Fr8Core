@@ -11,8 +11,8 @@ using Fr8.Infrastructure.Interfaces;
 using Fr8.TerminalBase.Errors;
 using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
-using StructureMap;
 using terminalAtlassian.Interfaces;
+using terminalAtlassian.Helpers;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Control;
 
@@ -22,76 +22,26 @@ namespace terminalAtlassian.Services
     {
         private readonly IRestfulServiceClient _client;
 
-
-        public AtlassianService()
+        public AtlassianService(IRestfulServiceClient client)
         {
-            _client = ObjectFactory.GetInstance<IRestfulServiceClient>();
-        }
-
-        public bool IsValidUser(CredentialsDTO curCredential)
-        {
-            using (HttpClient client = new HttpClient())
+            if (client == null)
             {
-                client.DefaultRequestHeaders.Accept.Add(
-                    new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
-                    Convert.ToBase64String(
-                        System.Text.ASCIIEncoding.ASCII.GetBytes(
-                            string.Format("{0}:{1}", curCredential.Username, curCredential.Password))));
-
-                using (HttpResponseMessage response = client.GetAsync(
-                            curCredential.Domain).Result)
-                {
-                    return response.StatusCode == HttpStatusCode.OK;
-                }
+                throw new ArgumentNullException(nameof(client));
             }
-           
+            _client = client;
         }
 
-        public void SetBasicAuthHeader(WebRequest request, String userName, String userPassword)
-        {
-            string authInfo = userName + ":" + userPassword;
-            authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(authInfo));
-            request.Headers["Authorization"] = "Basic " + authInfo;
-        }
-
-        private void InterceptJiraExceptions(Action process)
+        public async Task<bool> CheckAuthenticationAsync(CredentialsDTO credentials)
         {
             try
             {
-                process();
+                await GetAsync("configuration", credentials).ConfigureAwait(false);
+                return true;
             }
-            catch (Exception ex)
+            catch (AuthorizationTokenExpiredOrInvalidException)
             {
-                if (ex.Message.IndexOf("Unauthorized (401)") > -1)
-                {
-                    throw new AuthorizationTokenExpiredOrInvalidException("Please make sure that username, password and domain are correct.");
-                }
-                else
-                {
-                    throw;
-                }
-            }
-        }
-
-        private T InterceptJiraExceptions<T>(Func<T> process)
-        {
-            try
-            {
-                return process();
-            }
-            catch (Exception ex)
-            {
-                if (ex.Message.IndexOf("Unauthorized (401)") > -1)
-                {
-                    throw new AuthorizationTokenExpiredOrInvalidException("Please make sure that username, password and domain are correct.");
-                }
-                else
-                {
-                    throw;
-                }
-            }
+                return false;
+            }           
         }
 
         public List<FieldDTO> GetJiraIssue(string jiraKey, AuthorizationToken authToken)
@@ -124,8 +74,7 @@ namespace terminalAtlassian.Services
             });
         }
 
-        public List<FieldDTO> GetIssueTypes(string projectKey,
-            AuthorizationToken authToken)
+        public List<FieldDTO> GetIssueTypes(string projectKey, AuthorizationToken authToken)
         {
             return InterceptJiraExceptions(() =>
             {
@@ -213,6 +162,7 @@ namespace terminalAtlassian.Services
                  issue.Priority = priority;
                  issue.Summary = issueInfo.Summary;
                  issue.Description = issueInfo.Description;
+                issue.Assignee = issueInfo.Assignee;
 
                  if (issueInfo.CustomFields != null)
                  {
@@ -233,6 +183,91 @@ namespace terminalAtlassian.Services
                  issueInfo.Key = token;
              });
         }
+
+        public async Task<List<UserInfo>> GetUsersAsync(string projectCode, AuthorizationToken token)
+        {
+            if (string.IsNullOrWhiteSpace(projectCode))
+            {
+                throw new ArgumentException("Project code can't be empty", nameof(projectCode));
+            }
+            if (token == null)
+            {
+                throw new ArgumentNullException(nameof(token));
+            }
+            var response = await GetAsync($"user/assignable/search?project={projectCode}&maxResults={MaxResults}", token);
+            var result = JsonConvert.DeserializeObject<List<UserInfo>>(response);
+            return result;
+        }
+
+        public async Task<List<ListItem>> GetSprints(AuthorizationToken authToken, string projectName)
+        {
+            List<ListItem> list = new List<ListItem>();
+
+            var jira = CreateRestClient(authToken.Token);
+            var board = await jira.RestClient.ExecuteRequestAsync(RestSharp.Method.GET, "/rest/agile/1.0/board?projectKeyOrId=" + projectName);
+            var boardId = board["values"].First()["id"].ToString();
+            var sprints = await jira.RestClient.ExecuteRequestAsync(RestSharp.Method.GET, "/rest/agile/1.0/board/" + boardId + "/sprint");
+
+            foreach (var value in sprints["values"])
+            {
+                if (value["state"].ToString().ToLower() != "closed")
+                {
+                    list.Add(new ListItem() { Key = value["name"].ToString(), Value = value["id"].ToString() });
+                }
+            }
+
+            return list;
+        }
+
+        #region Implementation details
+
+        private const int MaxResults = 1000;
+
+        private T InterceptJiraExceptions<T>(Func<T> process)
+        {
+            try
+            {
+                return process();
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.IndexOf("Unauthorized (401)") > -1)
+                {
+                    throw new AuthorizationTokenExpiredOrInvalidException("Please make sure that username, password and domain are correct.");
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+
+        private async Task<string> GetAsync(string apiRequest, CredentialsDTO credentials)
+        {
+            credentials = credentials.EnforceDomainSchema();
+            using (var httpClient = new HttpClient())
+            {
+                var userPassword = $"{credentials.Username}:{credentials.Password}";
+                userPassword = Convert.ToBase64String(Encoding.Default.GetBytes(userPassword));
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", userPassword);
+                var result = await httpClient.GetAsync($"{credentials.Domain}/rest/api/2/{apiRequest}");
+                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    throw new AuthorizationTokenExpiredOrInvalidException("Please make sure that username, password and domain are correct");
+                }
+                if (!result.IsSuccessStatusCode)
+                {
+                    throw new Exception($"Response code ({(int)result.StatusCode}) doesn't indicate a successfull request");
+                }
+                return await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+            }
+        }
+
+        private async Task<string> GetAsync(string apiRequest, AuthorizationToken token)
+        {
+            return await GetAsync(apiRequest, JsonConvert.DeserializeObject<CredentialsDTO>(token.Token)).ConfigureAwait(false);
+        }
         
         private List<FieldDTO> CreateKeyValuePairList(Issue curIssue)
         {
@@ -245,12 +280,7 @@ namespace terminalAtlassian.Services
 
         private Jira CreateRestClient(string token)
         {
-            var credentialsDTO = JsonConvert.DeserializeObject<CredentialsDTO>(token);
-            credentialsDTO.Domain = credentialsDTO.Domain.Replace("http://", "https://");
-            if (!credentialsDTO.Domain.StartsWith("https://"))
-            {
-                credentialsDTO.Domain = "https://" + credentialsDTO.Domain;
-            }
+            var credentialsDTO = JsonConvert.DeserializeObject<CredentialsDTO>(token).EnforceDomainSchema();
             return Jira.CreateRestClient(credentialsDTO.Domain, credentialsDTO.Username, credentialsDTO.Password);
         }
 
@@ -294,6 +324,10 @@ namespace terminalAtlassian.Services
                 {
                     obj.fields.Add("issuetype", new { id = issue.Type.Id });
                 }
+                if (issue.Assignee != null)
+                {
+                    obj.fields.Add("assignee", new { name = issue.Assignee });
+                }
 
                 token = await jira.RestClient.ExecuteRequestAsync(RestSharp.Method.POST, "/rest/api/2/issue", JsonConvert.SerializeObject(obj));
                 return token["key"].ToString();
@@ -301,24 +335,6 @@ namespace terminalAtlassian.Services
 
         }
 
-        public async Task<List<ListItem>> GetSprints(AuthorizationToken authToken, string projectName)
-        {
-            List<ListItem> list = new List<ListItem>();
-
-            var jira = CreateRestClient(authToken.Token);
-            var board = await jira.RestClient.ExecuteRequestAsync(RestSharp.Method.GET, "/rest/agile/1.0/board?projectKeyOrId=" + projectName);
-            var boardId = board["values"].First()["id"].ToString();
-            var sprints = await jira.RestClient.ExecuteRequestAsync(RestSharp.Method.GET, "/rest/agile/1.0/board/" + boardId + "/sprint");
-
-            foreach (var value in sprints["values"])
-            {
-                if (value["state"].ToString().ToLower() != "closed")
-                {
-                    list.Add(new ListItem() { Key = value["name"].ToString(), Value = value["id"].ToString() });
-                }
-            }
-
-            return list;
-        }
+        #endregion
     }
 }

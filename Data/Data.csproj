@@ -179,10 +179,6 @@
       <HintPath>..\packages\WindowsAzure.Storage.5.0.2\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Moq, Version=4.2.1507.118, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
-      <HintPath>..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -199,8 +195,8 @@
       <HintPath>..\packages\PusherServer.2.1.1.0\lib\net35\PusherServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="RestSharp, Version=105.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RestSharp.105.0.1\lib\net4\RestSharp.dll</HintPath>
+    <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.105.2.3\lib\net45\RestSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="StructureMap, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
@@ -288,9 +284,11 @@
     <Compile Include="Entities\ActivityDO.cs" />
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
     <Compile Include="Entities\BaseDO.cs" />
+    <Compile Include="Infrastructure\StructureMapUnitOfWorkFactory.cs" />
     <Compile Include="Interfaces\IAspNetUserClaimDO.cs" />
     <Compile Include="Interfaces\IFileRepository.cs" />
     <Compile Include="Interfaces\ITrackingChangesRepository.cs" />
+    <Compile Include="Interfaces\IUnitOfWorkFactory.cs" />
     <Compile Include="Interfaces\IUtilizationDataProvider.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.Designer.cs">
@@ -669,10 +667,6 @@
     <Compile Include="Migrations\201605231150066_AddOrganizationAndAccountToObjectRolePermissions.Designer.cs">
       <DependentUpon>201605231150066_AddOrganizationAndAccountToObjectRolePermissions.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201606070712251_RemoveFr8CoreActivities.cs" />
-    <Compile Include="Migrations\201606070712251_RemoveFr8CoreActivities.Designer.cs">
-      <DependentUpon>201606070712251_RemoveFr8CoreActivities.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201606071223281_Delete FindObjects solution.cs" />
     <Compile Include="Migrations\201606071223281_Delete FindObjects solution.Designer.cs">
       <DependentUpon>201606071223281_Delete FindObjects solution.cs</DependentUpon>
@@ -684,6 +678,10 @@
     <Compile Include="Migrations\201606090249437_RemovingUnusedObjects.cs" />
     <Compile Include="Migrations\201606090249437_RemovingUnusedObjects.Designer.cs">
       <DependentUpon>201606090249437_RemovingUnusedObjects.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606091512284_FillManifestRegistry.cs" />
+    <Compile Include="Migrations\201606091512284_FillManifestRegistry.Designer.cs">
+      <DependentUpon>201606091512284_FillManifestRegistry.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1255,9 +1253,6 @@
     <EmbeddedResource Include="Migrations\201605231150066_AddOrganizationAndAccountToObjectRolePermissions.resx">
       <DependentUpon>201605231150066_AddOrganizationAndAccountToObjectRolePermissions.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201606070712251_RemoveFr8CoreActivities.resx">
-      <DependentUpon>201606070712251_RemoveFr8CoreActivities.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606071223281_Delete FindObjects solution.resx">
       <DependentUpon>201606071223281_Delete FindObjects solution.cs</DependentUpon>
     </EmbeddedResource>
@@ -1266,6 +1261,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606090249437_RemovingUnusedObjects.resx">
       <DependentUpon>201606090249437_RemovingUnusedObjects.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606091512284_FillManifestRegistry.resx">
+      <DependentUpon>201606091512284_FillManifestRegistry.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
