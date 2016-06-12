@@ -296,6 +296,8 @@
     <Compile Include="Security\Fr8HMACService.cs" />
     <Compile Include="Security\HMACAuthenticator.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
+    <Compile Include="Utilities\AsyncMultiLock.cs" />
+    <Compile Include="Utilities\AsyncMultiLock.LockScope.cs" />
     <Compile Include="Utilities\AutoMapper\JTokenToStringConverter.cs" />
     <Compile Include="Utilities\AutoMapper\StringToJTokenConverter.cs" />
     <Compile Include="Utilities\ConfigRepository.cs" />

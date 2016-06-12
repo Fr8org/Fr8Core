@@ -109,6 +109,8 @@ app.controller('HeaderController', ['$scope', '$http', '$window', ($scope, $http
                 $window.location.href = url;
             });
     };
+
+    $scope.runManifestRegistryMonitoring = () => { $http.post('/api/manifest_registries/runMonitoring', {}); };
 }]);
 
 /* Setup Layout Part - Footer */

@@ -47,6 +47,10 @@ namespace terminalTests.Integration
 
             hubMock.Setup(x => x.GetActivityTemplates(It.IsAny<string>(), It.IsAny<bool>()))
                    .Returns<string, bool>((tags, getLatest) => Task.FromResult(ActivityTemplates.Where(x => x.Tags.Contains(tags)).ToList()));
+
+            hubMock.Setup(x => x.CreateAndConfigureActivity(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid?>(), It.IsAny<bool>(), It.IsAny<Guid?>()))
+                .Returns(() => Task.FromResult(new ActivityPayload() { ActivityTemplate = ActivityTemplates[0], Ordering = 1 }));
+                
             ObjectFactory.Container.Inject(hubMock);
             ObjectFactory.Container.Inject(hubMock.Object);
         }
@@ -116,11 +120,13 @@ namespace terminalTests.Integration
             await activity.Configure(activityContext);
             activityContext.ActivityPayload.CrateStorage.UpdateControls<FilterObjectListByIncomingMessage_v1.ActivityUi>(x => x.DataSourceSelector.Value = ActivityTemplates[0].Id.ToString());
             await activity.Configure(activityContext);
-            var childActivity = new ActivityPayload
-            {
-                ActivityTemplate = ActivityTemplates[0]
-            };
-            AddChild(activityContext.ActivityPayload, childActivity, 1);
+            
+            // var childActivity = new ActivityPayload
+            // {
+            //     ActivityTemplate = ActivityTemplates[0]
+            // };
+            // AddChild(activityContext.ActivityPayload, childActivity, 1);
+            
             //Run
             await activity.Run(activityContext, containerExecutionContext);
             var operationalState = containerExecutionContext.PayloadStorage.FirstCrate<OperationalStateCM>().Content;

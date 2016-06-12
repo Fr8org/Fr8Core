@@ -54,6 +54,7 @@ module dockyard.controllers {
     import pwd = dockyard.directives.paneWorkflowDesigner;
     import pca = dockyard.directives.paneConfigureAction;
     import psa = dockyard.directives.paneSelectAction;
+    import designHeaderEvents = dockyard.Fr8Events.DesignerHeader;
     import planEvents = dockyard.Fr8Events.Plan;
 
     export class PlanBuilderController {
@@ -181,11 +182,9 @@ module dockyard.controllers {
                 $mdOpenMenu(ev);
             };
             $scope.reConfigureAction = (action: model.ActivityDTO) => {
-                if (action) {
-                    var actionsArray = new Array<model.ActivityDTO>();
-                    actionsArray.push(action);
-                    this.reConfigure(actionsArray);
-                }
+                var actionsArray = new Array<model.ActivityDTO>();
+                actionsArray.push(action);
+                this.reConfigure(actionsArray);
             };
 
             $scope.openAddLabelModal = (action: model.ActivityDTO) => { 
@@ -458,7 +457,12 @@ module dockyard.controllers {
 
         private reloadFirstActions() {
             this.$timeout(() => {
-                this.$scope.current.plan.subPlans.forEach(plan => this.$scope.reConfigureAction(plan.activities[0]));
+                this.$scope.current.plan.subPlans.forEach(
+                    plan => {
+                        if (plan.activities.length > 0) {
+                            this.$scope.reConfigureAction(plan.activities[0])
+                        }
+                    });
             }, 1500);
         }
 
@@ -510,6 +514,8 @@ module dockyard.controllers {
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_SetSolutionMode], () => this.PaneConfigureAction_SetSolutionMode());
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ChildActionsDetected], () => this.PaneConfigureAction_ChildActionsDetected());
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ExecutePlan], () => this.PaneConfigureAction_ExecutePlan());
+
+            this.$scope.$on(<any>designHeaderEvents.PLAN_EXECUTION_FAILED, () => this.reloadFirstActions());
 
             // Handles Response from Configure call from PaneConfiguration
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ConfigureCallResponse],

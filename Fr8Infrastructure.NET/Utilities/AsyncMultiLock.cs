@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 
-namespace Hub.Infrastructure
+namespace Fr8.Infrastructure.Utilities
 {
     public partial class AsyncMultiLock
     {

@@ -78,8 +78,8 @@
     <Compile Include="BaseClasses\BaseConfiguration.cs" />
     <Compile Include="BaseClasses\BaseTerminalActivity.cs" />
     <Compile Include="BaseClasses\BaseTerminalActivityLegacy.cs" />
-    <Compile Include="BaseClasses\BaseTerminalController.cs" />
     <Compile Include="BaseClasses\BaseTerminalWebApiConfig.cs" />
+    <Compile Include="BaseClasses\DefaultActivityController.cs" />
     <Compile Include="BaseClasses\DefaultTerminalController.cs" />
     <Compile Include="BaseClasses\EnhancedTerminalActivity.cs" />
     <Compile Include="BaseClasses\RuntimeValidationScope.cs" />
@@ -92,7 +92,6 @@
     <Compile Include="Helpers\ControlHelper.cs" />
     <Compile Include="Helpers\PlanHelper.cs" />
     <Compile Include="Infrastructure\AutoMapperBootstrapper.cs" />
-    <Compile Include="Infrastructure\BaseTerminalEvent.cs" />
     <Compile Include="Infrastructure\Behaviors\BaseControlMappingBehavior.cs" />
     <Compile Include="Infrastructure\Behaviors\CheckBoxMappingBehavior.cs" />
     <Compile Include="Infrastructure\Behaviors\DropDownListMappingBehavior.cs" />
@@ -120,9 +119,14 @@
     <Compile Include="Services\ActivityStore.cs" />
     <Compile Include="Services\CrateSignaller.cs" />
     <Compile Include="Services\DataHubCommunicatorBase.cs" />
+    <Compile Include="Services\DealyedhubCommunicator.cs" />
     <Compile Include="Services\DefaultActivityFactory.cs" />
     <Compile Include="Services\DefaultHubCommunicator.cs" />
-    <Compile Include="Services\ExplicitDataHubCommunicator.cs" />
+    <Compile Include="Services\HubEventReporter.cs" />
+    <Compile Include="Services\HubEventReporterExtensions.cs" />
+    <Compile Include="Services\IActivityExecutor.cs" />
+    <Compile Include="Services\IActivityStore.cs" />
+    <Compile Include="Services\IHubEventReporter.cs" />
     <Compile Include="Services\TestMonitoringHubCommunicator.cs" />
     <Compile Include="Services\UiBuilder.cs" />
     <Compile Include="Services\UpstreamQueryManager.cs" />

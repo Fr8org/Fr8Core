@@ -2,20 +2,20 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Hub.Infrastructure
+namespace Fr8.Infrastructure.Utilities
 {
     partial class AsyncMultiLock
     {
         private class LockScope : IDisposable
         {
-            private readonly AsyncMultiLock _queue;
+            private readonly Fr8.Infrastructure.Utilities.AsyncMultiLock _queue;
             private readonly TaskCompletionSource<IDisposable> _wait;
             private int _isDisposed;
 
             public readonly object Token;
             public Task Task => _wait.Task;
 
-            public LockScope(AsyncMultiLock queue, object token)
+            public LockScope(Fr8.Infrastructure.Utilities.AsyncMultiLock queue, object token)
             {
                 _queue = queue;
                 Token = token;
