@@ -308,7 +308,6 @@
     <Compile Include="Exceptions\InvalidTokenException.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
-    <Compile Include="Infrastructure\AsyncMultiLock.cs" />
     <Compile Include="Infrastructure\CustomSelector.cs" />
     <Compile Include="Infrastructure\FilterConditionPredicateBuilder.cs" />
     <Compile Include="Infrastructure\Fr8Identity.cs" />
@@ -437,7 +436,6 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <Compile Include="Infrastructure\AsyncMultiLock.LockScope.cs" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

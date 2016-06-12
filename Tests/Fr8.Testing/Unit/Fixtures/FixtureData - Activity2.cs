@@ -313,7 +313,7 @@ namespace Fr8.Testing.Unit.Fixtures
             };
             var activityContext = new ActivityContext
             {
-                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
+               // HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = activityPayload,
                 AuthorizationToken = AuthToken_TerminalIntegration()
             };
@@ -329,7 +329,7 @@ namespace Fr8.Testing.Unit.Fixtures
             };
             var activityContext = new ActivityContext
             {
-                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
+               // HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = activityPayload,
             };
             return activityContext;

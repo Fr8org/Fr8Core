@@ -10,7 +10,7 @@ using Fr8.TerminalBase.Models;
 
 namespace Fr8.TerminalBase.Services
 {
-    public class ActivityExecutor
+    public class ActivityExecutor : IActivityExecutor
     {
         private IHubCommunicator _hubCommunicator;
 
@@ -25,7 +25,6 @@ namespace Fr8.TerminalBase.Services
         }
 
         public async Task<object> HandleFr8Request(
-            string curTerminal,
             string curActionPath,
             IEnumerable<KeyValuePair<string, string>> parameters,
             Fr8DataDTO curDataDTO)
@@ -58,13 +57,13 @@ namespace Fr8.TerminalBase.Services
                 _hubCommunicator = new TestMonitoringHubCommunicator(curDataDTO.ExplicitData, CrateManager);
                 activityTemplate.Name = activityTemplate.Name.Substring(0, activityTemplate.Name.Length - "_TEST".Length);
 
-                factory = _activityStore.GetValue(activityTemplate);
+                factory = _activityStore.GetFactory(activityTemplate);
 
                 activityTemplate.Name = originalName;
             }
             else
             {
-                factory = _activityStore.GetValue(curDataDTO.ActivityDTO.ActivityTemplate);
+                factory = _activityStore.GetFactory(curDataDTO.ActivityDTO.ActivityTemplate);
             }
 
 
@@ -75,7 +74,7 @@ namespace Fr8.TerminalBase.Services
 
             var activity = factory.Create();
 
-            _hubCommunicator.Configure(curTerminal, activityContext.UserId);
+            _hubCommunicator.Authorize(activityContext.UserId);
 
             activityContext.HubCommunicator = _hubCommunicator;
 

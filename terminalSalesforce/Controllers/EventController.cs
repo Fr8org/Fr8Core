@@ -3,8 +3,7 @@ using System.Xml.Linq;
 using terminalSalesforce.Infrastructure;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Fr8.Infrastructure.Interfaces;
-using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Services;
 
 namespace terminalSalesforce.Controllers
 {
@@ -12,12 +11,12 @@ namespace terminalSalesforce.Controllers
     public class EventController : ApiController
     {
         private readonly IEvent _event;
-        private readonly BaseTerminalEvent _baseTerminalEvent;
+        private readonly IHubEventReporter _eventReporter;
 
-        public EventController(IEvent @event, IRestfulServiceClient restfulServiceClient)
+        public EventController(IEvent @event, IHubEventReporter eventReporter)
         {
             _event = @event;
-            _baseTerminalEvent = new BaseTerminalEvent(restfulServiceClient);
+            _eventReporter = eventReporter;
         }
 
         [HttpPost]
@@ -25,7 +24,8 @@ namespace terminalSalesforce.Controllers
         public async Task<IHttpActionResult> ProcessIncomingNotification()
         {
             string eventPayLoadContent = Request.Content.ReadAsStringAsync().Result;
-            await _baseTerminalEvent.Process(eventPayLoadContent, _event.ProcessEvent);
+
+            await _eventReporter.Broadcast(await _event.ProcessEvent(eventPayLoadContent));
 
             //We need to acknowledge the request from Salesforce
             //Creating a SOAP XML response to acknowledge
