@@ -551,7 +551,7 @@ namespace Hub.Managers
                 }
                 finally
                 {
-                    LogHistoryItem(incidentDO);
+                    LogHistoryItem(incidentDO,EventType.Error);
                 }
             }
             
