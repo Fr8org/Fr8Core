@@ -3,16 +3,21 @@
 
 describe('PusherNotifierServic', () => {
 
+
+    let pusher: pusherjs.pusher.Pusher;
     let pnSvc: dockyard.services.IPusherNotifierService;
     let httpBackend: ng.IHttpBackendService;
+    let timeout: ng.ITimeoutService;
+
 
     beforeEach(module('app'));
 
     beforeEach(() => {
-        inject((_PusherNotifierService_, _$httpBackend_) => {
+        inject((_PusherNotifierService_, _$httpBackend_, _$timeout_) => {
             pnSvc = _PusherNotifierService_;
             httpBackend = _$httpBackend_;
-
+            timeout = _$timeout_;
+            pusher = new Pusher("Test", null);
         });
     });
     it('should have channels');

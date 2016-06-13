@@ -3,10 +3,10 @@
 module dockyard.tests.unit.directives.controls {
 
     import fx = utils.fixtures;
-    import CrateHelper = dockyard.services.CrateHelper;
+    //import CrateHelper = dockyard.services.CrateHelper;
     import filterByTagFactory = dockyard.filters.filterByTag.factory;
 
-    var CH = new CrateHelper(filterByTagFactory);
+    //var CH = new CrateHelper(filterByTagFactory);
 
     var compileTemplate = (localScope, rawTemplate, $compile) => {
         var template = angular.element(rawTemplate);
@@ -48,6 +48,7 @@ module dockyard.tests.unit.directives.controls {
                 var element = angular.element('<upstream-field-chooser-button field="field" current-action="action" change="onChange"></upstream-field-chooser-button>');
                 elem = $compile(element)(scope);
                 scope = elem.isolateScope();
+                debugger;
                 scope.$digest();
                 scope.change = null;
                 var openModal = jasmine.createSpyObj('openModal', ['close']);
