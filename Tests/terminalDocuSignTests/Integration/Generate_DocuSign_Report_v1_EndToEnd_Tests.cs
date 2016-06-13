@@ -14,6 +14,7 @@ using Fr8.Testing.Integration;
 
 namespace terminalDocuSignTests.Integration
 {
+    [Ignore("Commented out due to FR-2845, Generate_DocuSign_Report activity is no longer available for discovery")]
     [Explicit]
     [Category("terminalDocuSignTests.Integration")]
     public class Generate_DocuSign_Report_v1_EndToEnd_Tests : BaseHubIntegrationTest

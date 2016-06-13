@@ -83,7 +83,7 @@ namespace terminalAtlassianTests.Integration
             Assert.AreEqual(1, controls.Controls.Count);
             Assert.AreEqual("TextSource", controls.Controls[0].Type);
             Assert.AreEqual("IssueNumber", controls.Controls[0].Name);
-
+                
             return activityDTO;
         }
 
