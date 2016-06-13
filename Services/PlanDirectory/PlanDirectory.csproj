@@ -231,11 +231,32 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\dockyard_logo.png" />
+    <Content Include="Content\icons\plus.png" />
+    <Content Include="Content\icons\web_services\aws-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\Box-logo_64x64.png" />
+    <Content Include="Content\icons\web_services\docusign-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\DocuSign-Logo.png" />
+    <Content Include="Content\icons\web_services\dropbox-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\fr8-core-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\google-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\jira-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\ms-azure-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\ms-excel-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\papertrail-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\quickbooks-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\salesforce-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\sendgrid-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\slack-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\twilio-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\unknown-service.png" />
+    <Content Include="Content\icons\web_services\yammer-64x64.png" />
     <Content Include="Content\metronic\components.css" />
     <Content Include="Content\metronic\jquery.blockui.min.js" />
     <Content Include="Content\metronic\loading.gif" />
     <Content Include="Content\metronic\ui.js" />
+    <Content Include="Content\plan-category.css" />
     <Content Include="Content\plan-directory.css" />
+    <Content Include="CategoryPages\PlanCategoryTemplate.html" />
     <Content Include="Global.asax" />
     <Content Include="gulpfile.js" />
     <Content Include="packages.config" />
