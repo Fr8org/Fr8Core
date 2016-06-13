@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+﻿using System;
+using System.Web.Http;
 using StructureMap;
 using Hub.Infrastructure;
 using Hub.Interfaces;
@@ -17,27 +18,27 @@ namespace HubWeb.Controllers
             _report = ObjectFactory.GetInstance<IReport>();
         }
 
+        // TODO: prev endpoints: /getIncidentsByQuery and /getFactsByQuery
         [Fr8ApiAuthorize]
-        [ActionName("getIncidentsByQuery")]
         [HttpGet]
-        public IHttpActionResult GetIncidentsByQuery([FromUri] HistoryQueryDTO historyQueryDTO)
+        public IHttpActionResult Get([FromUri] string type, [FromUri] HistoryQueryDTO historyQueryDTO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var result = _report.GetIncidents(uow, historyQueryDTO);
-                return Ok(result);
-            }
-        }
-
-        [Fr8ApiAuthorize]
-        [ActionName("getFactsByQuery")]
-        [HttpGet]
-        public IHttpActionResult GetFactsByQuery([FromUri] HistoryQueryDTO historyQueryDTO)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var result = _report.GetFacts(uow, historyQueryDTO);
-                return Ok(result);
+                if (type == "incidents")
+                {
+                    var result = _report.GetIncidents(uow, historyQueryDTO);
+                    return Ok(result);
+                }
+                else if (type == "facts")
+                {
+                    var result = _report.GetFacts(uow, historyQueryDTO);
+                    return Ok(result);
+                }
+                else
+                {
+                    throw new NotSupportedException("Specified report type is not supported");
+                }
             }
         }
     }

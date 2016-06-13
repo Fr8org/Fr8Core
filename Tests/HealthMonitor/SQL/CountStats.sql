@@ -16,7 +16,7 @@ WHERE
     i.OBJECT_ID > 255 AND   
     i.index_id <= 1 AND
 	t.NAME NOT LIKE '_%Template' AND 
-	t.NAME IN ('Actions', 'Containers', 'MT_Data', 'Plans', 'Job', 'JobQueue', 'History')
+	t.NAME IN ('Actions', 'Containers', 'MtData', 'Plans', 'Job', 'JobQueue', 'History')
 GROUP BY 
     t.NAME, i.object_id, i.index_id, i.name, p.[Rows]
 ORDER BY 

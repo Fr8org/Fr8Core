@@ -10,20 +10,21 @@ using Fr8.TerminalBase.Models;
 
 namespace Fr8.TerminalBase.Services
 {
-    public class ActivityExecutor
+    public class ActivityExecutor : IActivityExecutor
     {
         private IHubCommunicator _hubCommunicator;
 
         protected readonly ICrateManager CrateManager;
+        private readonly IActivityStore _activityStore;
 
-        public ActivityExecutor(IHubCommunicator hubCommunicator, ICrateManager crateManager)
+        public ActivityExecutor(IHubCommunicator hubCommunicator, ICrateManager crateManager, IActivityStore activityStore)
         {
             _hubCommunicator = hubCommunicator;
             CrateManager = crateManager;
+            _activityStore = activityStore;
         }
 
         public async Task<object> HandleFr8Request(
-            string curTerminal,
             string curActionPath,
             IEnumerable<KeyValuePair<string, string>> parameters,
             Fr8DataDTO curDataDTO)
@@ -53,16 +54,16 @@ namespace Fr8.TerminalBase.Services
             {
                 var originalName = activityTemplate.Name;
 
-                _hubCommunicator = new TestMonitoringHubCommunicator(curDataDTO.ExplicitData);
+                _hubCommunicator = new TestMonitoringHubCommunicator(curDataDTO.ExplicitData, CrateManager);
                 activityTemplate.Name = activityTemplate.Name.Substring(0, activityTemplate.Name.Length - "_TEST".Length);
 
-                factory = ActivityStore.GetValue(activityTemplate);
+                factory = _activityStore.GetFactory(activityTemplate);
 
                 activityTemplate.Name = originalName;
             }
             else
             {
-                factory = ActivityStore.GetValue(curDataDTO.ActivityDTO.ActivityTemplate);
+                factory = _activityStore.GetFactory(curDataDTO.ActivityDTO.ActivityTemplate);
             }
 
 
@@ -73,7 +74,7 @@ namespace Fr8.TerminalBase.Services
 
             var activity = factory.Create();
 
-            _hubCommunicator.Configure(curTerminal, activityContext.UserId);
+            _hubCommunicator.Authorize(activityContext.UserId);
 
             activityContext.HubCommunicator = _hubCommunicator;
 

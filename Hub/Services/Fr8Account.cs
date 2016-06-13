@@ -21,6 +21,24 @@ namespace Hub.Services
 {
     public class Fr8Account
     {
+        private readonly IUnitOfWorkFactory _uowFactory;
+
+        private readonly IConfigRepository _configRepository;
+
+        public Fr8Account(IUnitOfWorkFactory uowFactory, IConfigRepository configRepository)
+        {
+            if (uowFactory == null)
+            {
+                throw new ArgumentNullException(nameof(uowFactory));
+            }
+            if (configRepository == null)
+            {
+                throw new ArgumentNullException(nameof(configRepository));
+            }
+            _uowFactory = uowFactory;
+            _configRepository = configRepository;
+        }
+
         public void UpdatePassword(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO, string password)
         {
             if (dockyardAccountDO != null)
@@ -100,7 +118,7 @@ namespace Hub.Services
         //else if we have a first name only, use that
         //else if we have just an email address, use the portion preceding the @ unless there's a name
         //else throw
-        public static string GetDisplayName(Fr8AccountDO curDockyardAccount)
+        public string GetDisplayName(Fr8AccountDO curDockyardAccount)
         {
             string firstName = curDockyardAccount.FirstName;
             string lastName = curDockyardAccount.LastName;
@@ -116,7 +134,7 @@ namespace Hub.Services
             if (curEmailAddress.Name != null)
                 return curEmailAddress.Name;
 
-            RegexUtilities.ValidateEmailAddress(curEmailAddress.Address);
+            RegexUtilities.ValidateEmailAddress(_configRepository, curEmailAddress.Address);
             return curEmailAddress.Address.Split(new[] {'@'})[0];
         }
 
@@ -153,11 +171,10 @@ namespace Hub.Services
 
         public Fr8AccountDO GetExisting(IUnitOfWork uow, string emailAddress)
         {
-            Fr8AccountDO existingDockyardAccount =
-                uow.UserRepository.GetQuery().Where(e => e.EmailAddress.Address == emailAddress).FirstOrDefault();
+            Fr8AccountDO existingDockyardAccount = uow.UserRepository.GetQuery().FirstOrDefault(e => e.EmailAddress.Address == emailAddress);
             return existingDockyardAccount;
         }
-
+        
         public void Update(IUnitOfWork uow, Fr8AccountDO submittedDockyardAccountData,
             Fr8AccountDO existingDockyardAccount)
         {
@@ -191,6 +208,22 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 return uow.UserRepository.GetOrCreateUser(emailAddress).Id;
+            }
+        }
+
+        public Fr8AccountDO GetSystemUser()
+        {
+            try
+            {
+                var systemUserEmail = _configRepository.Get("SystemUserEmail");
+                using (var uow = _uowFactory.GetNewUnitOfWork())
+                {
+                    return uow.UserRepository.GetQuery().FirstOrDefault(x => x.EmailAddress.Address == systemUserEmail);
+                }
+            }
+            catch (ConfigurationException)
+            {
+                return null;
             }
         }
 
@@ -232,7 +265,7 @@ namespace Hub.Services
                     if (existingUserDO.PasswordHash == null)
                     {
                         //this is an existing implicit user, who sent in a request in the past, had a DockyardAccountDO created, and now is registering. Add the password
-                        new Fr8Account().UpdatePassword(uow, existingUserDO, password);
+                        UpdatePassword(uow, existingUserDO, password);
                         existingUserDO.Organization = organizationDO;
 
                         curRegStatus = RegistrationStatus.Successful;

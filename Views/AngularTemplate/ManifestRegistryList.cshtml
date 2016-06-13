@@ -9,11 +9,16 @@
                         <span class="caption-subject font-green-haze bold uppercase">Manifest Registry</span>
                     </div>
                     <div class="actions">
-                        <a class="btn green" ng-click="showAddManifestDescriptionModal()" href="#">Add ManifestDescription</a>
+                        <a class="btn green" ng-click="goToManifestSubmissionForm()">Add Manifest Description</a>
                     </div>
                 </div>
 
                 <div class="portlet-body">
+                    <div>
+                        <span class="text-block">
+                            These are defined Manifests that are shared by Fr8 Activities. You can submit additional Manifests to this registry. Use of these is optional, but when you save your activity's crate data in a json format specified by a defined Manifest, you increase the ability of other downstream activities to work with the data structures you've created.
+                        </span>
+                    </div>
                     <div ng-show="manifestRegistry.length == 0" class="ng-hide">No manifest descriptions found.</div>
                     <div ng-show="manifestRegistry.length > 0">
                         <table datatable="ng" class="row-border hover">
@@ -28,12 +33,12 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="manifestDescription in manifestRegistry" ng-click="showModalWithPopulatedValues(manifestDescription)">
+                                <tr ng-repeat="manifestDescription in manifestRegistry">
                                     <td>{{manifestDescription.id}}</td>
                                     <td>{{manifestDescription.name}}</td>
                                     <td>{{manifestDescription.version}}</td>
                                     <td>{{manifestDescription.sampleJSON}}</td>
-                                    <td>{{manifestDescription.description}}</td>
+                                    <td class="manifest-registry-description">{{manifestDescription.description}}</td>
                                     <td>{{manifestDescription.registeredBy}}</td>
                                 </tr>
                             </tbody>
@@ -44,50 +49,4 @@
             </div>
         </div>
     </div>
-
-    <script type="text/ng-template" id="manifestDescriptionFormModal" >
-        <form role="form" ng-submit="submit(form.$valid)" name="form" novalidate>
-
-            <div class="modal-header">
-                <h3 class="modal-title">Add ManifestDescription</h3>
-            </div>
-
-            <div class="modal-body">
-                <div class="alert alert-danger" ng-show="form.$submitted && !form.$valid">
-                    Some fields do not contain correct data. Please check below.
-                </div>
-                <div class="alert alert-danger" ng-show="errorMessage != null">
-                    {{errorMessage}}
-                </div>
-                <div class="form-group">
-                    <label class="control-label">Name</label>
-                    <input type="text" name="name" placeholder="" maxlength="100" class="form-control" ng-model="manifestDescription.name" required />
-                </div>
-                <div class="form-group">
-                    <label class="control-label">Version</label>
-                    <input type="text" name="version" placeholder="" maxlength="100" class="form-control" ng-model="manifestDescription.version" required />
-                </div>
-                <div class="form-group">
-                    <label class="control-label">SampleJSON</label>
-                    <input type="text" placeholder="" name="sampleJSON" class="form-control" ng-model="manifestDescription.sampleJSON" required/>
-                </div>
-                <div class="form-group">
-                    <label class="control-label">Description</label>
-                    <input type="text" placeholder="" name="description" maxlength="100" class="form-control" ng-model="manifestDescription.description" required/>
-                </div>
-                <div class="form-group">
-                    <label class="control-label">RegisteredBy</label>
-                    <input type="text" placeholder="" name="registeredBy" maxlength="100" class="form-control" ng-model="manifestDescription.registeredBy" required/>
-                </div>
-
-            </div>
-
-            <div class="modal-footer">
-                <button class="btn btn-primary" type="submit" ng-disabled="!form.$valid">Ok</button>
-                <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
-            </div>
-
-        </form>
-    </script>
-
 </div>

@@ -156,7 +156,7 @@ namespace Data.Repositories.Security.StorageImpl.Cache
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //check for existing permission set with this default permissions
-                var permissionSet = uow.PermissionSetRepository.GetQuery().FirstOrDefault(x => x.ObjectType == dataObjectType && x.Permissions.Count == 4 &&
+                var permissionSet = uow.PermissionSetRepository.GetQuery().FirstOrDefault(x => x.ObjectType == dataObjectType && x.Permissions.Count == 5 &&
                                              x.Permissions.Any(l => l.Id == (int) PermissionType.ReadObject) && x.Permissions.Any(l => l.Id == (int) PermissionType.CreateObject) && x.Permissions.Any(l => l.Id == (int) PermissionType.EditObject) && x.Permissions.Any(l => l.Id == (int) PermissionType.DeleteObject) && x.Permissions.Any(l => l.Id == (int)PermissionType.RunObject));
 
                 if (permissionSet != null)
