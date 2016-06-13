@@ -52,7 +52,6 @@ namespace terminalFr8Core
             ActivityStore.RegisterActivity<Build_Message_v1>(Build_Message_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<BuildQuery_v1>(BuildQuery_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<ConnectToSql_v1>(ConnectToSql_v1.ActivityTemplateDTO);
-            ActivityStore.RegisterActivity<ConvertCrates_v1>(ConvertCrates_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<ConvertRelatedFieldsIntoTable_v1>(ConvertRelatedFieldsIntoTable_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<ExecuteSql_v1>(ExecuteSql_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<ExtractTableField_v1>(ExtractTableField_v1.ActivityTemplateDTO);

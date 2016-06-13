@@ -21,7 +21,6 @@ namespace terminalFr8CoreTests.Integration
         private const string ManagePlanName = "ManagePlan";        
         private const string LoopName = "Loop";
         private const string SetDelayName = "SetDelay";
-        private const string ConvertCratesName = "ConvertCrates";
         private const string ConvertRelatedFieldsIntoTableName = "ConvertRelatedFieldsIntoTable";
         private const string QueryFr8WarehouseName = "QueryFr8Warehouse";
         private const string ShowReportName = "Show_Report_Onscreen";
@@ -62,7 +61,6 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ManagePlanName));            
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == LoopName));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SetDelayName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ConvertCratesName));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ConvertRelatedFieldsIntoTableName));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == QueryFr8WarehouseName));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ShowReportName));

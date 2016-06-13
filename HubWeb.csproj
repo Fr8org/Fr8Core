@@ -423,7 +423,6 @@
     <Compile Include="Controllers\SupportController.cs" />
     <Compile Include="Controllers\WelcomeController.cs" />
     <Compile Include="Controllers\Api\FieldController.cs" />
-    <Compile Include="Controllers\DocuSignTemplateController.cs" />
     <Compile Include="Controllers\Api\PlanNodesController.cs" />
     <Compile Include="Controllers\AuthenticationCallbackController.cs" />
     <Compile Include="Controllers\Api\FilesController.cs" />
@@ -4474,7 +4473,6 @@
     <Folder Include="Views\CommunicationManager\" />
     <Folder Include="Views\Data\" />
     <Folder Include="Views\DockyardEvent\" />
-    <Folder Include="Views\DocuSignTemplate\" />
     <Folder Include="Views\Envelope\" />
     <Folder Include="Views\Settings\" />
   </ItemGroup>
