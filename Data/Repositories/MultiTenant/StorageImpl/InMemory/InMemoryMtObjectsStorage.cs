@@ -96,6 +96,11 @@ namespace Data.Repositories.MultiTenant.InMemory
             }
         }
 
+        public int? GetObjectId(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode where)
+        {
+            return null;
+        }
+
         public int Delete(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode @where)
         {
             int changed = 0;
