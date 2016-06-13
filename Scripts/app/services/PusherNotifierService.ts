@@ -1,6 +1,6 @@
 ﻿/// <reference path="../_all.ts"/>
 
-module dockyard.services {
+module dockyard.services {    
 
     export const pusherNotifierSuccessEvent = 'fr8pusher_generic_success';
     export const pusherNotifierFailureEvent = 'fr8pusher_generic_failure';
@@ -16,6 +16,10 @@ module dockyard.services {
         removeHandlerForAllEvents(channel: string, handler: Function): void;
         removeAllEvents(channel: string): void;
         disconnect(): void;
+
+        frontendEvent(message: string, eventType: string);
+        frontendFailure(message: string): void;
+        frontendSuccess(message: string): void;
     }
 
     declare var appKey: string;
@@ -24,10 +28,10 @@ module dockyard.services {
         private client: pusherjs.pusher.Pusher;
         private pusher: any;
 
-        constructor(private $pusher: any) {
+        constructor(private $pusher: any, private UserService: IUserService) {
             this.client = new Pusher(appKey, { encrypted: true });
             this.pusher = $pusher(this.client);
-        }
+        }       
 
         public bindEventToChannel(channel: string, event: string, callback: Function, context?: any): void {
             channel = this.buildChannelName(channel);
@@ -90,9 +94,31 @@ module dockyard.services {
             // Channel name. Since it also does not support %, we replace it either. 
             return 'fr8pusher_' + encodeURI(email).replace('%', '=');
         }
+
+
+
+        public frontendEvent(message: string, eventType: string) {
+            this.UserService.getCurrentUser().$promise.then(data => {
+
+                let channelName = this.buildChannelName(data.emailAddress);
+
+                // this makes me sick but i can`t see other way now except roundabout call server side notification endpoint to trigger frontend, like loop...
+                let callback = this.client.channels.channels[channelName].callbacks._callbacks["_" + eventType][0];
+                callback.fn(message);
+            });
+        }
+
+        public frontendFailure(message: string) {
+            this.frontendEvent(message, pusherNotifierFailureEvent);
+        }
+
+        public frontendSuccess(message: string) {
+            this.frontendEvent(message, pusherNotifierSuccessEvent);
+        }
+
     }
 
-    app.factory('PusherNotifierService', ['$pusher', ($pusher: any): IPusherNotifierService =>
-        new PusherNotifierService($pusher)
+    app.factory('PusherNotifierService', ['$pusher', 'UserService', ($pusher: any, UserService:IUserService): IPusherNotifierService =>
+        new PusherNotifierService($pusher, UserService)
     ]);
 }  
