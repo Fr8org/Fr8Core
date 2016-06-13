@@ -15,7 +15,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .icons {
-    background: blanchedalmond;
+    background: lightcoral;
     padding: 10px;
     text-align: center;
 }
@@ -32,3 +32,7 @@ h1, h2, h3, h4, h5, h6 {
         -ms-border-radius: 8px !important;
         border-radius: 8px !important;
     }
+
+.table th {
+    text-align: center;
+}

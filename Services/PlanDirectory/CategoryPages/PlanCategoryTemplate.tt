@@ -1,0 +1,67 @@
+﻿<#@ template language="C#" #>
+<#@ parameter name="Name" type="System.String" #>
+<#@ parameter name="Tags" type="System.Collections.Generic.IList<System.String>" #>
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="../Content/metronic/components.css"/>
+
+    <link href='https://fonts.googleapis.com/css?family=Francois+One' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Didact+Gothic' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" href="../Content/plan-category.css" />
+	<link rel="stylesheet" href="../Content/plan-directory.css" />
+
+    <title></title>
+    <meta charset="utf-8"/>
+</head>
+<body
+	 <div class="header-container">
+        <div class="header">
+            <div class="logo"></div>                        
+        </div>
+    </div>
+    <div class="container">        
+        <p style="font-size: 30px">Plan Directory - <#=Name#></p>
+        <div class="icons">
+			<# for (int i = 0; i < Tags.Count; i++)
+			{ #>
+			<img class="web-service-icon" src="../Content/icons/web_services/<#=Tags[i] #>-icon-64x64.png"/>		
+				<# if (i < Tags.Count - 1)
+				{ #>
+				<img src="../Content/icons/plus.png"/>
+				<# } #>                        
+		<# } #>
+        </div>
+        <br/>
+        <p style="font-size: 15px">Plan Definition Description</p>
+        <p style="font-size: 22px">Related Plans</p>
+            <table class="table"> 
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Plan Name</th>
+                        <th>Plan Description</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <# int number = 1;
+                    foreach (var tag in Tags) 
+                    {#>
+                    <tr>
+                        <th scope="row"><#=number++#></th>
+                        <td><#=tag#></td>
+                        <td><#=tag#></td>
+                        <td><a href="http://google.com">Create</a></td>
+                    </tr>                   
+                    <# } #>
+                    
+                </tbody>
+            </table>
+</div>
+
+
+</body>
+</html>

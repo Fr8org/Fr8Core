@@ -77,7 +77,7 @@ namespace Hub.Services
         /// </summary>
         /// <param name="pageDefinitionDO"></param>
         /// <returns></returns>
-        private static string GeneratePageNameFromTags(PageDefinitionDO pageDefinitionDO)
+        private string GeneratePageNameFromTags(PageDefinitionDO pageDefinitionDO)
         {
             return string.Join(
                 TagsSeparator,

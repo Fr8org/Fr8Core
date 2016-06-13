@@ -275,6 +275,7 @@
     <Compile Include="Integration\ManifestRegistryMonitorTests.cs" />
     <Compile Include="Integration\PlanDirectory_Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Unit\PageGeneratorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
