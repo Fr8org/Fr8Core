@@ -91,6 +91,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/EventArgsBase.js',
         'Scripts/app/directives/directives.js',
         'Scripts/app/directives/indiClick.js',
+        'Scripts/app/directives/fillHeight.js',
         'Scripts/app/directives/layout.js',
         'Scripts/app/directives/PaneWorkflowDesigner/Messages.js',
         'Scripts/app/directives/PaneWorkflowDesigner/PaneWorkflowDesigner.js',

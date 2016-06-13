@@ -167,6 +167,9 @@
     {
       "Path": "../app/directives/indiClick.js"
     },
+    {
+      "Path": "../app/directives/fillHeight.js"
+    },
     { "Path": "../app/directives/PaneConfigureAction/configurationControl.js" },
     { "Path": "../app/directives/PaneConfigureAction/paneConfigureAction.js" },
     {

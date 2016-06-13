@@ -13,13 +13,13 @@
     <designer-header class="designer-header-fixed" ng-show="current.plan" plan="current.plan"></designer-header>
     <div ng-if="editingMode=='advanced'" class="col-md-12" style="border-bottom: 1px solid; margin-bottom: 10px;"></div>
     <div class="plan-loading-message" block-if="current.plan"></div>
-    <div class="sub-plan-container">
+    <div class="sub-plan-container" style="overflow: auto;width: 100%;" fill-height footer-element-id="footer" additional-padding="100">
         <div ng-repeat="pSubPlan in processedSubPlans">
             <subplan-header ng-if="editingMode=='advanced'" subplan="pSubPlan.subPlan"></subplan-header>
             <div class="route-builder-container" layout-container>
                 <div ng-repeat="group in pSubPlan.actionGroups" layout-action-group class="action-group" ng-style="{left: group.offsetLeft, top: group.offsetTop}">
                     <div ng-if="mode !== 'solution' || $index === 0">
-                        <div class="action-arrow-bottom" ng-style="{top: -group.arrowLength - 60, height: group.arrowLength + 35, left: group.arrowOffsetLeft}"></div>
+                        <div ng-show="group.arrowOffsetLeft != 0" class="action-arrow-bottom" ng-style="{top: -group.arrowLength - 60, height: group.arrowLength + 35, left: group.arrowOffsetLeft}"></div>
                         <div dnd-list="group.envelopes" dnd-external-sources="true" dnd-drop="onActionDrop(group, item, index)" style="display: inline-block;">
                             <div ng-repeat="envelope in group.envelopes track by $index">
                                 <div class="action" ng-class="{'solution-action': envelope.activity.activityTemplate.category==='Solution'  && mode !== 'solution'}" layout-action popover-toggle="envelope.activity.showAdvisoryPopup" popover-template="'/AngularTemplate/AdvisoryMessagesPopup'" popover-placement="right-top">
