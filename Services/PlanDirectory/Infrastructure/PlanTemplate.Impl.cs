@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using StructureMap;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
@@ -45,6 +46,15 @@ namespace PlanDirectory.Infrastructure
                 );
 
                 uow.SaveChanges();
+
+                var objectId = uow.MultiTenantObjectRepository
+                    .GetObjectId<PlanTemplateCM>(fr8AccountId, x => x.ParentPlanId == planIdString);
+
+                if (existingPlanTemplateCM == null && objectId.HasValue)
+                {
+                    ObjectFactory.GetInstance<ISecurityServices>()
+                        .SetDefaultObjectSecurity(objectId.ToString(), "Plan Template");
+                }
 
                 return Task.FromResult(planTemplateCM);
             }
