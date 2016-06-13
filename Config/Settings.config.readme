@@ -1,0 +1,73 @@
+﻿<?xml version="1.0"?>
+
+<!--- 
+====================================
+The Fr8 Hub Configuration File
+====================================
+
+Add your own configuration settings in this file and remove the ".readme" extension from filename.
+
+You may also need to modify settings in the appSettings section of web.config. 
+
+Note that all the settings defined in this file cannot take advantage of XML transformation. 
+If you need a setting to be able to change depending on build configuration (Debug/Release/etc),
+define it in web.config. 
+-->
+
+<appSettings>
+  <!-- This settings file is referenced by all the projects which need HubWeb settings: 
+  HubWeb itself, HealthMonitor and HealthMonitor.HubLauncher -->
+  
+  <!-- Plan Directory connection -->
+  <add key="PlanDirectorySecret" value="" />
+
+  <!-- System user account -->
+  <add key="SystemUserEmail" value="system1@fr8.co" />
+  <add key="SystemUserPassword" value="foobar" />
+  
+  <!-- Azure storage -->
+  <add key="AzureStorageDefaultConnectionString" value="DefaultEndpointsProtocol=https;AccountName=yardstore1;AccountKey=Or8iJLqkutxYCSKHiOo8iwSwyALCdFfR/RUTWSEZ9BPhLY4+L2QKVEean0bYSmVzCNSNSqBt2/zVA5HMgkwayg==" />
+  <!-- NOTE: see also the DefaultAzureStorageContainer setting in web.config -->
+  
+  <!-- Key Vault -->
+  <!-- If you don't use Azure keyVault, leave the AuthorizationTokenStorageMode value 'Local', 
+  otherwise change it to 'KeyVault' and specify the KeyVault configuration below. 
+  KeyVault is used to store the keys to encrypt and decrypt 3rd party service access tokens.
+  -->
+  <add key="AuthorizationTokenStorageMode" value="Local" />
+  <add key="KeyVaultUrl" value="" />
+  <add key="KeyVaultClientId" value="" />
+  <add key="KeyVaultClientSecret" value="" />
+
+  <!-- Email Delivery with SendGrid -->
+  <!-- Fr8 uses SendGrid to send email. Specify your SendGrid account details in the section below. -->
+  <add key="OutboundEmailHost" value="" />
+  <add key="OutboundEmailPort" value="" />
+  <add key="OutboundUserName" value="" />
+  <add key="OutboundUserPassword" value="" />
+  <add key="ForgotPassword_template" value="" />
+
+  <!-- Realtime notifications using Pusher -->
+  <!-- Fr8 uses Pusher to send realtime notifications to users. 
+  Specify your Pusher account details in the section below. -->
+  <add key="pusherAppId" value="" />
+  <add key="pusherAppKey" value="" />
+  <add key="pusherAppSecret" value="" />
+  
+  <!-- ASP.NET MVC -->
+  <!-- Usually you don't have to change these. -->
+  <add key="webpages:Version" value="3.0.0.0" />
+  <add key="webpages:Enabled" value="false" />
+  <add key="ClientValidationEnabled" value="true" />
+  <add key="UnobtrusiveJavaScriptEnabled" value="true" />
+  
+  <!-- Details of the Google form which is used to submit new crate manifests. -->
+  <add key="ManifestSubmissionFormUrl" value="" />
+  <add key="ManifestSubmissionFormId" value="" />
+
+  <!-- Other settings -->
+  <add key="CustomerSupportEmail" value="support@yourdomain.com" />
+  <add key="EmailAddress_GeneralInfo" value="info@yourdomain.com" />
+  <add key="DocumentationFr8Site_SMSLink" value="http://documentation.fr8.co/sms" />
+  <add key="log4net.Internal.Debug" value="true" />
+</appSettings>

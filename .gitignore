@@ -7,6 +7,9 @@
 *.sln.docstates
 .vs
 
+# Fr8 settings file
+Config/Settings.config
+
 # Build results
 
 [Dd]ebug/
