@@ -5,6 +5,8 @@ using System.Linq;
 using NUnit.Core;
 using HealthMonitor.Configuration;
 using Fr8.Testing.Integration;
+using System.Reflection;
+using System.IO;
 
 namespace HealthMonitor
 {
@@ -27,7 +29,7 @@ namespace HealthMonitor
 
             public bool Match(ITest test)
             {
-                return test.RunState != RunState.NotRunnable;
+                return test.RunState != RunState.NotRunnable && test.RunState != RunState.Ignored;
             }
 
             public bool Pass(ITest test)
@@ -143,7 +145,7 @@ namespace HealthMonitor
 
         public TestReport Run(string specificTestName = null, bool skipLocal = false)
         {
-            var testSuiteTypes = GetTestSuiteTypes(skipLocal);
+            var testSuiteTypes = GetTestSuiteTypesUsingReflection(skipLocal);
             if (testSuiteTypes == null || testSuiteTypes.Length == 0)
             {
                 return new TestReport()
