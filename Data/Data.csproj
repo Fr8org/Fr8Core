@@ -179,10 +179,6 @@
       <HintPath>..\packages\WindowsAzure.Storage.5.0.2\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Moq, Version=4.2.1507.118, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
-      <HintPath>..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -686,6 +682,14 @@
     <Compile Include="Migrations\201606091512284_FillManifestRegistry.cs" />
     <Compile Include="Migrations\201606091512284_FillManifestRegistry.Designer.cs">
       <DependentUpon>201606091512284_FillManifestRegistry.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606122001330_HistoryDateIndex.cs" />
+    <Compile Include="Migrations\201606122001330_HistoryDateIndex.Designer.cs">
+      <DependentUpon>201606122001330_HistoryDateIndex.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606131241031_PlanTemplate-Permissions.cs" />
+    <Compile Include="Migrations\201606131241031_PlanTemplate-Permissions.Designer.cs">
+      <DependentUpon>201606131241031_PlanTemplate-Permissions.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1268,6 +1272,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606091512284_FillManifestRegistry.resx">
       <DependentUpon>201606091512284_FillManifestRegistry.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606122001330_HistoryDateIndex.resx">
+      <DependentUpon>201606122001330_HistoryDateIndex.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606131241031_PlanTemplate-Permissions.resx">
+      <DependentUpon>201606131241031_PlanTemplate-Permissions.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

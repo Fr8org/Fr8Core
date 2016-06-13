@@ -2,23 +2,21 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Logging;
-using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using terminalSalesforce.Infrastructure;
 
 namespace terminalSalesforce.Controllers
 {
     [RoutePrefix("authentication")]
-    public class AuthenticationController : BaseTerminalController
+    public class AuthenticationController : ApiController
     {
-        private const string curTerminal = "terminalSalesforce";
-        
-        private Authentication _authentication = new Authentication();
+        private readonly Authentication _authentication = new Authentication();
+        private readonly IHubEventReporter _eventReporter;
 
-        public AuthenticationController(IRestfulServiceClient restfulServiceClient)
-            : base(restfulServiceClient)
+        public AuthenticationController(IHubEventReporter eventReporter)
         {
+            _eventReporter = eventReporter;
         }
 
         [HttpPost]
@@ -30,12 +28,12 @@ namespace terminalSalesforce.Controllers
 
         [HttpPost]
         [Route("token")]
-        public Task<AuthorizationTokenDTO> GenerateOAuthToken(
+        public async Task<AuthorizationTokenDTO> GenerateOAuthToken(
             ExternalAuthenticationDTO externalAuthDTO)
         {
             try
             {
-                return Task.FromResult(_authentication.Authenticate(externalAuthDTO));
+                return _authentication.Authenticate(externalAuthDTO);
             }
             catch (Exception ex)
             {
@@ -45,14 +43,13 @@ namespace terminalSalesforce.Controllers
                 Logger.LogError($"Terminal SalesForce Authentication error happened. Fr8UserId = {externalAuthDTO.Fr8UserId} The error message is {ex.Message} ");
 
                 //Report the terminal error in the standard Fr8 Event Reporting mechanism
-                ReportTerminalError(curTerminal, ex,externalAuthDTO.Fr8UserId);
+                await _eventReporter.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
 
-                return Task.FromResult(
-                    new AuthorizationTokenDTO()
+                return new AuthorizationTokenDTO
                     {
                         Error = string.Format("An error occured ({0}) while trying to authenticate, please try again later.", ex.Message)
-                    }
-                );
+                    };
+
             }
         }
     }

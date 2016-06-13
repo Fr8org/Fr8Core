@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Net.Http;
-using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Dispatcher;
-using System.Web.Http.Routing;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.StructureMap;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -76,11 +79,7 @@ namespace Fr8.TerminalBase.BaseClasses
 
         protected virtual void StartHosting()
         {
-            Task.Run(() =>
-            {
-                BaseTerminalController curController = new BaseTerminalController(Container.GetInstance<IRestfulServiceClient>());
-                curController.AfterStartup(_activityStore.Terminal.Name ?? "terminal_" + Guid.NewGuid());
-            });
+
         }
 
         public abstract ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver);
@@ -88,7 +87,28 @@ namespace Fr8.TerminalBase.BaseClasses
 
         public IHttpController Create(HttpRequestMessage request, HttpControllerDescriptor controllerDescriptor, Type controllerType)
         {
-            return _container.GetInstance(controllerType) as IHttpController;
+            var childContainer = _container.CreateChildContainer();
+            Expression<Func<IContext, IHubCommunicator>> hubCommunicatorFactoryExpression;
+            
+            if (request.Headers.Contains("Fr8HubCallBackUrl") && request.Headers.Contains("Fr8HubCallbackSecret"))
+            {
+                var apiUrl = request.Headers.GetValues("Fr8HubCallBackUrl").First();
+                var secret = request.Headers.GetValues("Fr8HubCallbackSecret").First();
+                var terminalId = CloudConfigurationManager.GetSetting("TerminalId") ?? ConfigurationManager.AppSettings[_activityStore.Terminal.Name + "TerminalId"];
+
+                hubCommunicatorFactoryExpression = c => new DefaultHubCommunicator(c.GetInstance<IRestfulServiceClient>(), c.GetInstance<IHMACService>(), apiUrl, terminalId, secret);
+            }
+            else
+            {
+                hubCommunicatorFactoryExpression = c => new DealyedhubCommunicator(c.GetInstance<IHubEventReporter>());
+            }
+            
+            childContainer.Configure(x => x.For<IHubCommunicator>().Use(hubCommunicatorFactoryExpression));
+            childContainer.Configure(x => x.For<IContainer>().Use(childContainer));
+
+            request.RegisterForDispose(childContainer);
+
+            return childContainer.GetInstance(controllerType) as IHttpController;
         }
     }
 }

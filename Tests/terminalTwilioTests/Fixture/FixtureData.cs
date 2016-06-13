@@ -29,7 +29,6 @@ namespace terminalTwilio.Tests.Fixtures
             };
             var activityContext = new ActivityContext
             {
-                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = activityPayload,
                 AuthorizationToken = AuthTokenDOTest1()
             };

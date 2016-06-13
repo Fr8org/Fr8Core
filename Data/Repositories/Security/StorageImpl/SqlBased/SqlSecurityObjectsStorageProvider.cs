@@ -57,7 +57,8 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                     const string cmd = @"select rp.Id, anr.Id as roleId, anr.Name as roleName, rp.lastUpdated, rp.createDate, p.Id as PermissionSetId, p.ObjectType
                                         from dbo.RolePermissions rp          
                                         inner join dbo.PermissionSets p on rp.PermissionSetId = p.Id                                                                  
-                                        inner join dbo.AspNetRoles anr on rp.RoleId = anr.Id   ";
+                                        inner join dbo.AspNetRoles anr on rp.RoleId = anr.Id
+                                        where anr.[Name] = @roleName and p.Id = @permissionSetId";
 
                     command.Parameters.AddWithValue("@roleName", roleName);
                     command.Parameters.AddWithValue("@permissionSetId", permissionSetId);
