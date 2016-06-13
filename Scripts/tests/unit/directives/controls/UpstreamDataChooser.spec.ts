@@ -144,7 +144,7 @@ module dockyard.tests.unit.directives.controls {
         });
 
         describe('multiple usage', () => {
-            var mElement
+            var mElement;
 
             beforeEach(() => {
                 var mDirective = '<div><upstream-data-chooser field="field" current-action="action" change="changeCallback"></upstream-data-chooser><upstream-data-chooser field="field1" current-action="action1" change="changeCallback"></upstream-data-chooser></div>';

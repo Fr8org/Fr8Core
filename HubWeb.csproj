@@ -1066,7 +1066,6 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamDataChooser.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamDataChooser.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\services\ManifestRegistryServiceTests.ts" />
-    <TypeScriptCompile Include="Scripts\tests\unit\services\PusherNotifierServiceTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\directives\controls\fixture_UpstreamDataChooser.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\directives\controls\fixture_UpstreamFieldChooser.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\jpattern.ts" />

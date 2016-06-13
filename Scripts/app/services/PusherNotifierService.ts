@@ -104,6 +104,10 @@ module dockyard.services {
 
                 let channelName = this.buildChannelName(data.emailAddress);
 
+                // to use this way we must enable client side notifications in Pusher.com 
+                //var channel = this.client.subscribe(channelName);
+                //channel.trigger('client-' + eventType, message);
+
                 // this makes me sick but i can`t see other way now except roundabout call server side notification endpoint to trigger frontend, like loop...
                 let callback = this.client.channels.channels[channelName].callbacks._callbacks["_" + eventType][0];
 
