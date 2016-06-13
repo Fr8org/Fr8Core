@@ -1296,6 +1296,10 @@ footer p {
     z-index: 1001;
 }
 
+.manifest-registry-description {
+    word-break: break-word !important;
+}
+
 .dataTable td {
     word-break: break-all;
 }
