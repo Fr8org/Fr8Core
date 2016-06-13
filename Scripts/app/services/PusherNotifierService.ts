@@ -27,10 +27,12 @@ module dockyard.services {
     class PusherNotifierService implements IPusherNotifierService {
         private client: pusherjs.pusher.Pusher;
         private pusher: any;
+        private timeout: ng.ITimeoutService;
 
-        constructor(private $pusher: any, private UserService: IUserService) {
+        constructor(private $pusher: any, private UserService: IUserService, $timeout: ng.ITimeoutService) {
             this.client = new Pusher(appKey, { encrypted: true });
             this.pusher = $pusher(this.client);
+            this.timeout = $timeout;
         }       
 
         public bindEventToChannel(channel: string, event: string, callback: Function, context?: any): void {
@@ -104,7 +106,10 @@ module dockyard.services {
 
                 // this makes me sick but i can`t see other way now except roundabout call server side notification endpoint to trigger frontend, like loop...
                 let callback = this.client.channels.channels[channelName].callbacks._callbacks["_" + eventType][0];
-                callback.fn(message);
+
+                // we don`t want see '$digest already in progress'
+                this.timeout(() => { callback.fn(message);},500,true) ;
+                
             });
         }
 
@@ -118,7 +123,7 @@ module dockyard.services {
 
     }
 
-    app.factory('PusherNotifierService', ['$pusher', 'UserService', ($pusher: any, UserService:IUserService): IPusherNotifierService =>
-        new PusherNotifierService($pusher, UserService)
+    app.factory('PusherNotifierService', ['$pusher', 'UserService','$timeout', ($pusher: any, UserService:IUserService, $timeout:ng.ITimeoutService): IPusherNotifierService =>
+        new PusherNotifierService($pusher, UserService, $timeout)
     ]);
 }  
