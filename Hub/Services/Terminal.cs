@@ -82,6 +82,7 @@ namespace Hub.Services
             {new TerminalKey("terminalAtlassian", "1"), new TerminalIdSecretMatch("d770ec3c-975b-4ca8-910e-a55ac43af383", "f747e49c-63a8-4a1b-8347-dd2e436c3b36")},
             {new TerminalKey("terminalTest", "1"), new TerminalIdSecretMatch("BFA77F6B-969D-4976-B752-930EEB11A4A3", "F4497516-0134-4523-B93C-EB15EE4D0697")},
             {new TerminalKey("terminalBox", "1"), new TerminalIdSecretMatch("1293c430-818d-4326-896b-dd5c512ca1a4","2eb36a7b-6365-4d8f-ad73-a44cdd1d1ebb")},
+            {new TerminalKey("terminalDemo", "1"), new TerminalIdSecretMatch("6a5c763f-4355-49c1-8b25-3e0423d7ed97","b6b813ad-3ae3-435f-a2b2-578ce16969ff")}
         };
 
         private readonly Dictionary<int, TerminalDO> _terminals = new Dictionary<int, TerminalDO>();
