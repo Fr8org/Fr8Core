@@ -128,7 +128,7 @@ namespace terminalFr8CoreTests.Integration
 			Assert.AreEqual("String", fr8PlansCrateFields[5].Value);
 
 			Assert.AreEqual("SubPlans", fr8PlansCrateFields[6].Key);
-			Assert.AreEqual("System.Collections.Generic.List`1[[Data.Interfaces.DataTransferObjects.SubplanDTO, Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]", fr8PlansCrateFields[6].Value);
+			Assert.AreEqual("System.Collections.Generic.List`1[[Fr8.Infrastructure.Data.DataTransferObjects.SubplanDTO, Fr8Infrastructure.NET, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]", fr8PlansCrateFields[6].Value);
 
 			Assert.AreEqual("ManifestType", fr8PlansCrateFields[7].Key);
 			Assert.AreEqual("CrateManifestType", fr8PlansCrateFields[7].Value);
@@ -330,7 +330,7 @@ namespace terminalFr8CoreTests.Integration
 
 			Assert.IsInstanceOf<DropDownList>(configurationControl);
 			Assert.AreEqual("Selected_Fr8_Object", configurationControl.Name);
-			Assert.AreEqual("Select Fr8 Object", configurationControl.Label);
+			Assert.AreEqual("Select Fr8 Object Properties", configurationControl.Label);
 
 			var configurationControlEvents = configurationControl.Events;
 

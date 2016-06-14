@@ -42,8 +42,7 @@ namespace terminalFr8Core.Activities
             return queryCM.Queries[0];
         }
 
-        private ColumnInfo CreateColumnInfo(
-            string columnName, Dictionary<string, DbType> columnTypes)
+        private ColumnInfo CreateColumnInfo(string columnName, Dictionary<string, DbType> columnTypes)
         {
             DbType dbType;
             if (!columnTypes.TryGetValue(columnName, out dbType))
@@ -67,8 +66,7 @@ namespace terminalFr8Core.Activities
             return returnedQuery;
         }
 
-        private StandardPayloadDataCM BuildStandardPayloadData(
-            Table data, Dictionary<string, DbType> columnTypes)
+        private StandardPayloadDataCM BuildStandardPayloadData(Table data, Dictionary<string, DbType> columnTypes)
         {
             var findObjectHelper = new FindObjectHelper();
 
