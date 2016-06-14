@@ -314,7 +314,8 @@ Please register first.");
             {
                 try
                 {
-                    var result = await _account.ResetPasswordAsync(viewModel.UserId, viewModel.Code, viewModel.Password);
+                    var token = viewModel.Code.Replace(" ", "+"); // since html replaces '+' with space, we should fix it.
+                    var result = await _account.ResetPasswordAsync(viewModel.UserId, token, viewModel.Password);
                     if (result.Succeeded)
                     {
                         return View("ResetPasswordConfirmation", viewModel);
