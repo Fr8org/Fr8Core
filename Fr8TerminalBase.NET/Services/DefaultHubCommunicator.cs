@@ -36,7 +36,7 @@ namespace Fr8.TerminalBase.Services
             TerminalId = terminalId;
             _restfulServiceClient = restfulServiceClient;
             _hmacService = hmacService;
-            _apiUrl = apiUrl;
+            _apiUrl = apiUrl?.TrimEnd('/', '\\');
         }
 
         public void Authorize(string userId)

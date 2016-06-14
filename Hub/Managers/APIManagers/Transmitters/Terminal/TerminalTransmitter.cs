@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Fr8.Infrastructure.Communication;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Logging;
 using StructureMap;
 using Hub.Interfaces;
@@ -85,8 +86,15 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
                 Logger.LogError($"Terminal record not found for activityTemplate: {dataDTO.ActivityDTO.ActivityTemplate.Name} Throwing exception.");
                 throw new Exception("Unknown terminal or terminal endpoint");
             }
+
             requestUri = new Uri(new Uri(terminal.Endpoint), requestUri);
-            return await PostAsync<Fr8DataDTO, TResponse>(requestUri, dataDTO, correlationId);
+            var headers = new Dictionary<string, string>
+            {
+                {"Fr8HubCallbackSecret", terminal.Secret},
+                {"Fr8HubCallBackUrl", Server.ServerUrl}
+            };
+            
+            return await PostAsync<Fr8DataDTO, TResponse>(requestUri, dataDTO, correlationId, headers);
         }
     }
 }

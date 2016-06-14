@@ -136,46 +136,11 @@ namespace HubWeb
 
         public async Task RegisterTerminalActions()
         {
-            var alertReporter = ObjectFactory.GetInstance<EventReporter>();
+            var terminalDiscovery = ObjectFactory.GetInstance<ITerminalDiscoveryService>();
 
-            var terminalUrls = FileUtils.LoadFileHostList();
-            int count = 0;
-            var activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
-            var terminalService = ObjectFactory.GetInstance<ITerminal>();
-
-
-            foreach (string url in terminalUrls)
-            {
-                try
-                {
-                    var activityTemplateList = (await terminalService.GetAvailableActivities(url)).ToList();
-
-                    foreach (var curItem in activityTemplateList)
-                    {
-                        try
-                        {
-                            activityTemplate.RegisterOrUpdate(curItem);
-                            count++;
-                        }
-                        catch (Exception ex)
-                        {
-                            alertReporter.ActivityTemplateTerminalRegistrationError(
-                                $"Failed to register {curItem.Terminal.Name} terminal. Error Message: {ex.Message}",
-                                ex.GetType().Name);
-                        }
-                    }
-
-                    activityTemplate.RemoveInactiveActivities(activityTemplateList);
-                }
-                catch (Exception ex)
-                {
-                    alertReporter.ActivityTemplateTerminalRegistrationError(
-                        string.Format("Failed terminal service: {0}. Error Message: {1} ", url, ex.Message),
-                        ex.GetType().Name);
-                }
-            }
-
-            alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
+#pragma warning disable 4014
+            terminalDiscovery.Discover();
+#pragma warning restore 4014
         }
 
         public static IDisposable CreateServer(string url)

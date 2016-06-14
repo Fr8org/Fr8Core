@@ -12,19 +12,19 @@ using Fr8.TerminalBase.Models;
 
 namespace Fr8.TerminalBase.Services
 {
-    class DealyedhubCommunicator : IHubCommunicator
+    class DelayedHubCommunicator : IHubCommunicator
     {
         private IHubCommunicator _underlyingHubCommunicator;
         private readonly object _sync = new object();
         private readonly AsyncMultiLock _lock = new AsyncMultiLock();
-        private readonly IHubEventReporter _eventReporter;
+        private readonly Task<IHubCommunicator> _resolveHubCommunicatorTask;
         private string _userId;
 
         public string UserId => _userId;
 
-        public DealyedhubCommunicator(IHubEventReporter eventReporter)
+        public DelayedHubCommunicator(Task<IHubCommunicator> resolveHubCommunicatorTask)
         {
-            _eventReporter = eventReporter;
+            _resolveHubCommunicatorTask = resolveHubCommunicatorTask;
         }
 
         public void Authorize(string userId)
@@ -229,7 +229,7 @@ namespace Fr8.TerminalBase.Services
             {
                 if (_underlyingHubCommunicator == null)
                 {
-                    var result = await _eventReporter.GetMasterHubCommunicator();
+                    var result = await _resolveHubCommunicatorTask;
 
                     lock (_sync)
                     {

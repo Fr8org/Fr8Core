@@ -124,6 +124,7 @@ namespace Hub.StructureMap
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
                 For<ITimer>().Use<Win32Timer>();
                 For<IManifestRegistryMonitor>().Use<ManifestRegistryMonitor>().Singleton();
+                For<ITerminalDiscoveryService>().Use<TerminalDiscoveryService>().Singleton();
             }
         }
 
@@ -193,6 +194,7 @@ namespace Hub.StructureMap
                 For<IUtilizationMonitoringService>().Use<UtilizationMonitoringService>().Singleton();
                 For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
                 For<ITimer>().Use<Win32Timer>();
+                For<ITerminalDiscoveryService>().Use<TerminalDiscoveryService>().Singleton();
             }
         }
 
