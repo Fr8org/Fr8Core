@@ -222,3 +222,4 @@ Views/Shared/CDN/
 *.csproj.DotSettings
 /_PrivateSettings/Content/Config/Settings.config
 /Tests/HealthMonitor.HubLauncher/Config/Settings.config
+/Tests/HealthMonitor/Config/Settings.config

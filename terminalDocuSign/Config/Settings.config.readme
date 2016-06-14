@@ -1,0 +1,42 @@
+﻿<?xml version="1.0"?>
+
+<!--- 
+====================================
+terminalDocuSign Configuration File
+====================================
+
+Add your own configuration settings in this file and remove the ".readme" extension from filename.
+
+You may also need to modify settings in the appSettings section of web.config. 
+
+Note that all the settings defined in this file cannot take advantage of XML transformation. 
+If you need a setting to be able to change depending on build configuration (Debug/Release/etc),
+define it in web.config. 
+-->
+
+<appSettings>
+  <!-- This settings file is referenced by all the projects which need HubWeb settings: 
+  HubWeb itself, HealthMonitor and HealthMonitor.HubLauncher -->
+  
+  <add key="HubApiVersion" value="v1" />
+  <add key="DocusignTemplateCacheExpirationTimeout" value="30" />
+  <add key="terminalDocuSign.PollingInterval" value="15" />
+  <add key="terminalDocuSign.DefaultProductionUrl" value="terminaldocusign.fr8.co" />
+  <add key="terminalDocuSign.DefaultDevUrl" value="dev-terminals.fr8.co" />
+  <add key="terminalDocuSign.DefaultDemoUrl" value="demo-terminaldocusign.fr8.co" />
+  <add key="terminalDocuSign.OverrideDevUrl" value="http://dev-terminaldocusign.fr8.co" />
+  <add key="environment_DEMO" value="https://demo.docusign.net/" />
+  <add key="DemoAccountAttributeString" value="demoAccount;" />
+  <add key="environment" value="https://eu.docusign.net/" />
+  
+  <!-- Terminal identification -->
+  <!-- TerminalId and TerminalSecret MUST match in the Hub and Terminal configuration files -->
+  <add key="TerminalSecret" value="-new-terminal-secret-" />
+  <add key="TerminalId" value="ee29c5bc-b9e7-49c5-90e1-b462c7e320e9" />
+  
+  <!-- You can get the Demo integrator key when you sign up for a Demo DocuSign account -->
+  <add key="DocuSignIntegratorKey_DEMO" value="" />
+  
+  <!-- You will get the Production integrator key from DocuSign when your integration is approved by DocuSign -->
+  <add key="DocuSignIntegratorKey" value="" />
+</appSettings>

@@ -70,4 +70,36 @@ define it in web.config.
   <add key="EmailAddress_GeneralInfo" value="info@yourdomain.com" />
   <add key="DocumentationFr8Site_SMSLink" value="http://documentation.fr8.co/sms" />
   <add key="log4net.Internal.Debug" value="true" />
+
+  <!-- Terminal Secret-Id -->
+  <!-- For production use be sure to change the secrets and keep the new secrets confidential. Don't change Ids -->
+  <!-- TerminalId and TerminalSecret MUST match in the Hub and Terminal configuration files -->
+  <add key="terminalAtlassianTerminalSecret" value="" />
+  <add key="terminalAtlassianTerminalId" value="d770ec3c-975b-4ca8-910e-a55ac43af383" />
+  <add key="terminalAzureTerminalSecret" value="" />
+  <add key="terminalAzureTerminalId" value="e134e36f-9f63-4109-b913-03498d9356b1" />
+  <add key="terminalDocuSignTerminalSecret" value="" />
+  <add key="terminalDocuSignTerminalId" value="ee29c5bc-b9e7-49c5-90e1-b462c7e320e9" />
+  <add key="terminalDropboxTerminalSecret" value="" />
+  <add key="terminalDropboxTerminalId" value="c471e51e-1b2d-4751-b155-4af03ef51c3a" />
+  <add key="terminalExcelTerminalSecret" value="" />
+  <add key="terminalExcelTerminalId" value="551acd9b-d91d-4de7-a0ba-8c61be413635" />
+  <add key="terminalFr8CoreTerminalSecret" value="" />
+  <add key="terminalFr8CoreTerminalId" value="2db48191-cda3-4922-9cc2-a636e828063f" />
+  <add key="terminalGoogleTerminalSecret" value="" />
+  <add key="terminalGoogleTerminalId" value="1a170d44-841f-4fa2-aae4-b17ad6c469ec" />
+  <add key="terminalPapertrailTerminalSecret" value="" />
+  <add key="terminalPapertrailTerminalId" value="9b21279b-efb4-493a-a02b-fe8694262cc8" />
+  <add key="terminalQuickBooksTerminalSecret" value="" />
+  <add key="terminalQuickBooksTerminalId" value="75ec4967-6113-43b5-bb4c-6b3468696e57" />
+  <add key="terminalSalesforceTerminalSecret" value="" />
+  <add key="terminalSalesforceTerminalId" value="d814af88-72b3-444c-9198-8c62292f0be5" />
+  <add key="terminalSendGridTerminalSecret" value="" />
+  <add key="terminalSendGridTerminalId" value="7eab0e81-288c-492b-88e5-c49e9aae38da" />
+  <add key="terminalSlackTerminalSecret" value="" />
+  <add key="terminalSlackTerminalId" value="8783174f-7fb7-4947-98af-4f1cdd8b394f" />
+  <add key="terminalTwilioTerminalSecret" value="" />
+  <add key="terminalTwilioTerminalId" value="2dd73dda-411d-4e18-8e0a-54bbe1aa015b" />
+  <add key="terminalYammerTerminalSecret" value="" />
+  <add key="terminalYammerTerminalId" value="f2b999be-be3f-42b5-b0d5-611d0606723b" />
 </appSettings>
