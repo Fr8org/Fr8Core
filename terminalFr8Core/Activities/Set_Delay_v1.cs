@@ -10,11 +10,11 @@ using Fr8.TerminalBase.Errors;
 
 namespace terminalFr8Core.Activities
 {
-    public class SetDelay_v1 : BaseTerminalActivity
+    public class Set_Delay_v1 : BaseTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "SetDelay",
+            Name = "Set_Delay",
             Label = "Delay Action Processing",
             Category = ActivityCategory.Processors,
             Version = "1",
@@ -59,7 +59,7 @@ namespace terminalFr8Core.Activities
             return PackControlsCrate(duration);
         }
 
-        public SetDelay_v1(ICrateManager crateManager)
+        public Set_Delay_v1(ICrateManager crateManager)
             : base(crateManager)
         {
         }

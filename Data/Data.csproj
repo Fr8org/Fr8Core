@@ -683,6 +683,10 @@
     <Compile Include="Migrations\201606091512284_FillManifestRegistry.Designer.cs">
       <DependentUpon>201606091512284_FillManifestRegistry.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201606141326120_FR-3514 Make activity classes naming consistent.cs" />
+    <Compile Include="Migrations\201606141326120_FR-3514 Make activity classes naming consistent.Designer.cs">
+      <DependentUpon>201606141326120_FR-3514 Make activity classes naming consistent.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201606122001330_HistoryDateIndex.cs" />
     <Compile Include="Migrations\201606122001330_HistoryDateIndex.Designer.cs">
       <DependentUpon>201606122001330_HistoryDateIndex.cs</DependentUpon>
@@ -1272,6 +1276,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606091512284_FillManifestRegistry.resx">
       <DependentUpon>201606091512284_FillManifestRegistry.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606141326120_FR-3514 Make activity classes naming consistent.resx">
+      <DependentUpon>201606141326120_FR-3514 Make activity classes naming consistent.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606122001330_HistoryDateIndex.resx">
       <DependentUpon>201606122001330_HistoryDateIndex.cs</DependentUpon>

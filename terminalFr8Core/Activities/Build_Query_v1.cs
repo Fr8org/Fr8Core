@@ -15,11 +15,11 @@ using terminalFr8Core.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
-   public class BuildQuery_v1 : BaseTerminalActivity
+   public class Build_Query_v1 : BaseTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "BuildQuery",
+            Name = "Build_Query",
             Label = "Build Query",
             Category = ActivityCategory.Processors,
             Version = "1",
@@ -251,7 +251,7 @@ namespace terminalFr8Core.Activities
 
         #endregion Configuration.
 
-        public BuildQuery_v1(ICrateManager crateManager)
+        public Build_Query_v1(ICrateManager crateManager)
             : base(crateManager)
         {
         }
