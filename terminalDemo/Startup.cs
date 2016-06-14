@@ -39,6 +39,7 @@ namespace terminalDemo
         protected override void RegisterActivities()
         {
             ActivityStore.RegisterActivity<DoMath_v1>(DoMath_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<MathMachine_v1>(MathMachine_v1.ActivityTemplateDTO);
         }
 
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)

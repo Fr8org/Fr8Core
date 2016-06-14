@@ -8,7 +8,8 @@ namespace terminalDemo
     {
         public static WebServiceDTO WebServiceDTO = new WebServiceDTO
         {
-            Name = "Demo Services"
+            Name = "Demo Activities",
+            IconPath = "/Content/icons/web_services/fr8-demo-icon-64x64.png"
         };
 
         public static TerminalDTO TerminalDTO = new TerminalDTO
