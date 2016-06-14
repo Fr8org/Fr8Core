@@ -15,14 +15,14 @@ using terminalUtilities.Models;
 
 namespace terminalSendGrid.Activities
 {
-    public class SendEmailViaSendGrid_v1 : BaseTerminalActivity
+    public class Send_Email_Via_SendGrid_v1 : BaseTerminalActivity
     {
         private readonly IConfigRepository _configRepository;
         private readonly IEmailPackager _emailPackager;
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "SendEmailViaSendGrid",
+            Name = "Send_Email_Via_SendGrid",
             Label = "Send Email",
             Version = "1",
             Tags = string.Join(",", Tags.Notifier, Tags.EmailDeliverer),
@@ -33,7 +33,7 @@ namespace terminalSendGrid.Activities
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        public SendEmailViaSendGrid_v1(ICrateManager crateManager, IConfigRepository configRepository, IEmailPackager emailPackager)
+        public Send_Email_Via_SendGrid_v1(ICrateManager crateManager, IConfigRepository configRepository, IEmailPackager emailPackager)
             : base(crateManager)
         {
             _configRepository = configRepository;

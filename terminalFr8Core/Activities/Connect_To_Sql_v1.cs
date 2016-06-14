@@ -11,11 +11,11 @@ using terminalFr8Core.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
-    public class ConnectToSql_v1 : BaseTerminalActivity
+    public class Connect_To_Sql_v1 : BaseTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "ConnectToSql",
+            Name = "Connect_To_Sql",
             Label = "Connect To SQL",
             Category = ActivityCategory.Processors,
             Version = "1",
@@ -27,7 +27,7 @@ namespace terminalFr8Core.Activities
 
         public FindObjectHelper FindObjectHelper { get; set; }
 
-        public ConnectToSql_v1(ICrateManager crateManager)
+        public Connect_To_Sql_v1(ICrateManager crateManager)
             : base(crateManager)
         {
             FindObjectHelper = new FindObjectHelper();

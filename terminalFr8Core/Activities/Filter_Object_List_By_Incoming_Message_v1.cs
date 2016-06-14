@@ -18,11 +18,11 @@ using Fr8.TerminalBase.Services;
 
 namespace terminalFr8Core.Activities
 {
-    public class FilterObjectListByIncomingMessage_v1 : EnhancedTerminalActivity<FilterObjectListByIncomingMessage_v1.ActivityUi>
+    public class Filter_Object_List_By_Incoming_Message_v1 : EnhancedTerminalActivity<Filter_Object_List_By_Incoming_Message_v1.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "FilterObjectListByIncomingMessage",
+            Name = "Filter_Object_List_By_Incoming_Message",
             Label = "Filter Object List by Incoming Message",
             Version = "1",
             Category = ActivityCategory.Processors,
@@ -91,7 +91,7 @@ namespace terminalFr8Core.Activities
 
         private static readonly TimeSpan CacheExpirationTime = TimeSpan.FromHours(1.0);
 
-        public FilterObjectListByIncomingMessage_v1(ICrateManager crateManager)
+        public Filter_Object_List_By_Incoming_Message_v1(ICrateManager crateManager)
             : base(crateManager)
         {
             //ActivityName = "Match Incoming Text and Build Object List";

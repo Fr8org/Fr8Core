@@ -15,11 +15,11 @@ using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Actions
 {
-    public class GetFileFromFr8Store_v1 : BaseTerminalActivity
+    public class Get_File_From_Fr8_Store_v1 : BaseTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "GetFileFromFr8Store",
+            Name = "Get_File_From_Fr8_Store",
             Label = "Get File From Fr8 Store",
             Category = ActivityCategory.Receivers,
             Version = "1",
@@ -70,7 +70,7 @@ namespace terminalFr8Core.Actions
         }
         #endregion
 
-        public GetFileFromFr8Store_v1(ICrateManager crateManager)
+        public Get_File_From_Fr8_Store_v1(ICrateManager crateManager)
             : base(crateManager)
         {
         }

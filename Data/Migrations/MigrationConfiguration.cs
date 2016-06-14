@@ -92,7 +92,7 @@ namespace Data.Migrations
             var activityToRename = activities.FirstOrDefault(x => x.Name == "TestAndBranch");
             if (activityToRename != null)
             {
-                activityToRename.Name = "MakeADecision";
+                activityToRename.Name = "Make_A_Decision";
                 activityToRename.Label = "Make a Decision";
             }
         }
