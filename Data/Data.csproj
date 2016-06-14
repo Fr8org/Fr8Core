@@ -695,6 +695,10 @@
     <Compile Include="Migrations\201606131241031_PlanTemplate-Permissions.Designer.cs">
       <DependentUpon>201606131241031_PlanTemplate-Permissions.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201606131429309_RemovedDocuSignAccountId.cs" />
+    <Compile Include="Migrations\201606131429309_RemovedDocuSignAccountId.Designer.cs">
+      <DependentUpon>201606131429309_RemovedDocuSignAccountId.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -828,7 +832,6 @@
     <Compile Include="Infrastructure\StructureMap\ISecurityServices.cs" />
     <Compile Include="Infrastructure\StructureMap\MockedSecurityServices.cs" />
     <Compile Include="Interfaces\IBookingRequestDO.cs" />
-    <Compile Include="Interfaces\IDocusignAccountDO.cs" />
     <Compile Include="Interfaces\IEmailDO.cs" />
     <Compile Include="Interfaces\IHistoryItemDO.cs" />
     <Compile Include="Interfaces\IMailerDO.cs" />
@@ -1285,6 +1288,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606131241031_PlanTemplate-Permissions.resx">
       <DependentUpon>201606131241031_PlanTemplate-Permissions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606131429309_RemovedDocuSignAccountId.resx">
+      <DependentUpon>201606131429309_RemovedDocuSignAccountId.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -21,8 +21,6 @@ namespace HubWeb.ViewModels
         [Display(Name = "Confirm new password")]
         [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
-
-        public bool HasDocusignToken { get; set; }
         public bool HasGoogleToken { get; set; }
         public bool HasLocalPassword { get; set; }
         public Dictionary<string, string> GoogleSpreadsheets { get; set; }
