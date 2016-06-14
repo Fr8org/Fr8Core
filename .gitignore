@@ -8,7 +8,10 @@
 .vs
 
 # Fr8 settings file
-Config/Settings.config
+[Cc]onfig/[Ss]ettings.config
+
+# Nuget packages
+.nupkg
 
 # Build results
 
@@ -217,3 +220,5 @@ Views/Shared/CDN/
 /terminalAzure/log4net.terminals.config
 *.csproj.DotSettings
 *.csproj.DotSettings
+/_PrivateSettings/Content/Config/Settings.config
+/Tests/HealthMonitor.HubLauncher/Config/Settings.config
