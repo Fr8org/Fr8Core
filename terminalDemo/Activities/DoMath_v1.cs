@@ -91,7 +91,8 @@ namespace terminalDemo.Activities
 
         public override Task Initialize()
         {
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel, true).AddField(new FieldDTO(ResultFieldLabel, AvailabilityType.RunTime));
+            var resultField = new FieldDTO(ResultFieldLabel, AvailabilityType.RunTime);
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel, true).AddField(resultField);
             return Task.FromResult(0);
         }
 
