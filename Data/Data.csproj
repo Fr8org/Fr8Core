@@ -683,6 +683,14 @@
     <Compile Include="Migrations\201606091512284_FillManifestRegistry.Designer.cs">
       <DependentUpon>201606091512284_FillManifestRegistry.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201606122001330_HistoryDateIndex.cs" />
+    <Compile Include="Migrations\201606122001330_HistoryDateIndex.Designer.cs">
+      <DependentUpon>201606122001330_HistoryDateIndex.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606131241031_PlanTemplate-Permissions.cs" />
+    <Compile Include="Migrations\201606131241031_PlanTemplate-Permissions.Designer.cs">
+      <DependentUpon>201606131241031_PlanTemplate-Permissions.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -1264,6 +1272,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606091512284_FillManifestRegistry.resx">
       <DependentUpon>201606091512284_FillManifestRegistry.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606122001330_HistoryDateIndex.resx">
+      <DependentUpon>201606122001330_HistoryDateIndex.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606131241031_PlanTemplate-Permissions.resx">
+      <DependentUpon>201606131241031_PlanTemplate-Permissions.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -126,6 +126,11 @@ namespace Hub.Security
         /// <param name="dataObjectType"></param>
         public void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType)
         {
+            SetDefaultObjectSecurity(dataObjectId.ToString(), dataObjectType);
+        }
+
+        public void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType)
+        {
             if (!IsAuthenticated()) return;
 
             var currentUserId = GetCurrentUser();
