@@ -13,11 +13,11 @@ using Fr8.Infrastructure.Data.States;
 
 namespace terminalFr8Core.Activities
 {
-    public class MakeADecision_v1 : TestIncomingData_v1
+    public class Make_A_Decision_v1 : Test_Incoming_Data_v1
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "MakeADecision",
+            Name = "Make_A_Decision",
             Label = "Make a Decision",
             Version = "1",
             Category = ActivityCategory.Processors,
@@ -39,7 +39,7 @@ namespace terminalFr8Core.Activities
         private const int MinAllowedElapsedTimeInSeconds = 12;
 
 
-        public MakeADecision_v1(ICrateManager crateManager) 
+        public Make_A_Decision_v1(ICrateManager crateManager) 
             : base(crateManager)
         {
         }
@@ -111,7 +111,7 @@ namespace terminalFr8Core.Activities
                             throw new NotImplementedException();
 
                         default:
-                            RaiseError("Invalid data was selected on MakeADecision_v1#Run", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                            RaiseError("Invalid data was selected on Make_A_Decision_v1#Run", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
                             return;
                     }
                 }

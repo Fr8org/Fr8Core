@@ -23,13 +23,13 @@ using StructureMap;
 
 namespace terminalFr8Core.Activities
 {
-    public class QueryFr8Warehouse_v1 : BaseTerminalActivity
+    public class Query_Fr8_Warehouse_v1 : BaseTerminalActivity
     {
         private readonly IContainer _container;
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "QueryFr8Warehouse",
+            Name = "Query_Fr8_Warehouse",
             Label = "Query Fr8 Warehouse",
             Category = ActivityCategory.Processors,
             Version = "1",
@@ -258,7 +258,7 @@ namespace terminalFr8Core.Activities
         */
         #endregion
 
-        public QueryFr8Warehouse_v1(ICrateManager crateManager, IContainer container)
+        public Query_Fr8_Warehouse_v1(ICrateManager crateManager, IContainer container)
             : base(crateManager)
         {
             _container = container;
