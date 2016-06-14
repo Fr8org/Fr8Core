@@ -55,6 +55,8 @@ namespace PlanDirectory.Infrastructure
 
             //1. getting ids of used templates
             var planTemplateDTO = JsonConvert.DeserializeObject<PlanTemplateDTO>(planTemplateCM.PlanContents);
+            if (planTemplateDTO.PlanNodeDescriptions == null || planTemplateDTO.PlanNodeDescriptions.Count == 0) return new List<TemplateTag>();
+
             var usedActivityTemplatesIds = planTemplateDTO.PlanNodeDescriptions.Select(a => a.ActivityDescription.ActivityTemplateId).Distinct().ToList();
             //2. getting used templates
             var usedActivityTemplates = usedActivityTemplatesIds.Intersect(activityDict.Keys)
