@@ -48,7 +48,7 @@ namespace terminalTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "GetDataFromFr8Warehouse_TEST",
+                Name = "Get_Data_From_Fr8_Warehouse_TEST",
                 Version = "1"
             };
         }
