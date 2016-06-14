@@ -183,7 +183,6 @@
 
 .route-builder-container {
     height: 800px;
-    overflow-y: auto;
     position: relative;
     white-space: nowrap;
     width: 100%;
@@ -1294,6 +1293,10 @@ footer p {
 
 .md-open-menu-container {
     z-index: 1001;
+}
+
+.manifest-registry-description {
+    word-break: break-word !important;
 }
 
 .dataTable td {
