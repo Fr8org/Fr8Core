@@ -23,7 +23,11 @@ namespace HubWeb.Controllers.Api
         /// <summary>
         /// Returns List of facts about ObjectId
         /// </summary>
-        /// <param name="query"></param>
+        /// <remarks>
+        /// Specify the ObjectId, facts about which you want to get
+        /// </remarks>
+        /// <param name="query">         
+        /// </param>
         /// <returns></returns>
         [Fr8ApiAuthorize]
         [HttpPost]
