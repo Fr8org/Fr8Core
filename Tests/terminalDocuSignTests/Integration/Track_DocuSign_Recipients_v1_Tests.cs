@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
 using NUnit.Framework;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using terminalDocuSignTests.Fixtures;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using UtilitiesTesting.Fixtures;
-using Fr8Data.Managers;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -76,7 +76,7 @@ namespace terminalDocuSignTests.Integration
             var setDelayActionTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
-                Name = "SetDelay",
+                Name = "Set_Delay",
                 Label = "Delay Action Processing",
                 Category = ActivityCategory.Processors,
                 Terminal = terminalCoreDO,
@@ -87,8 +87,8 @@ namespace terminalDocuSignTests.Integration
             var testIncomingDataTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
-                Name = "TestIncomingData",
-                Label = "TestIncomingData",
+                Name = "Test_Incoming_Data",
+                Label = "Test Incoming Data",
                 Category = ActivityCategory.Processors,
                 Terminal = terminalCoreDO,
                 NeedsAuthentication = false
@@ -107,7 +107,7 @@ namespace terminalDocuSignTests.Integration
             var queryFr8WarehouseActionTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
-                Name = "QueryFr8Warehouse",
+                Name = "Query_Fr8_Warehouse",
                 Label = "Query Fr8 Warehouse",
                 Category = ActivityCategory.Processors,
                 Terminal = terminalCoreDO,

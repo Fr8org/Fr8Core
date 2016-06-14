@@ -2,28 +2,26 @@
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using Fr8Data.DataTransferObjects;
-using StructureMap;
-using TerminalBase.BaseClasses;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.TerminalBase.Services;
 using terminalQuickBooks.Interfaces;
-using terminalQuickBooks.Services;
 
 namespace terminalQuickBooks.Controllers
 {
     [RoutePrefix("authentication")]
-    public class AuthenticationController : BaseTerminalController
+    public class AuthenticationController : ApiController
     {
-        private const string curTerminal = "terminalQuickBooks";
-
         private readonly IAuthenticator _authenticator;
+        private readonly IHubEventReporter _eventReporter;
 
-        public AuthenticationController()
+        public AuthenticationController(IAuthenticator authenticator, IHubEventReporter eventReporter)
         {
-            _authenticator = ObjectFactory.GetInstance<IAuthenticator>();
+            _eventReporter = eventReporter;
+            _authenticator = authenticator;
         }
 
         [HttpPost]
-        [Route("initial_url")]
+        [Route("request_url")]
         public ExternalAuthUrlDTO GenerateOAuthInitiationURL()
         {
             var url = _authenticator.CreateAuthUrl();
@@ -64,7 +62,7 @@ namespace terminalQuickBooks.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerminal, ex, externalAuthDTO.Fr8UserId);
+                await _eventReporter.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {

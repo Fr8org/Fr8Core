@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.Repositories.Security;
 using Data.States;
 using StructureMap;
@@ -76,6 +73,11 @@ namespace Data.Infrastructure.StructureMap
         }
 
         public void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType)
+        {
+            SetDefaultObjectSecurity(dataObjectId.ToString(), dataObjectType);
+        }
+
+        public void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType)
         {
             var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
             securityStorageProvider.SetDefaultObjectSecurity(GetCurrentUser(), dataObjectId.ToString(), dataObjectType, Guid.Empty, null);

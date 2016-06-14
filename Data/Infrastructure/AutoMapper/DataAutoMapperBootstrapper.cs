@@ -1,20 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using AutoMapper;
-using Fr8Data.Crates;
 using Data.Entities;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.DataTransferObjects.Helpers;
-using Fr8Data.Manifests;
-using Data.States;
-using Newtonsoft.Json;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Utilities.AutoMapper;
 using Newtonsoft.Json.Linq;
-using StructureMap;
-using Utilities.AutoMapper;
-using Fr8Data.DataTransferObjects.PlanTemplates;
-using Data.Interfaces.DataTransferObjects.PlanTemplates;
 
 namespace Data.Infrastructure.AutoMapper
 {
@@ -73,10 +67,11 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
                 .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
-                .ForMember(x => x.NeedsAuthentication, opts => opts.ResolveUsing(x => x.NeedsAuthentication));
+                .ForMember(x => x.NeedsAuthentication, opts => opts.ResolveUsing(x => x.NeedsAuthentication))
+                .ForMember(x => x.ShowDocumentation, opts => opts.Ignore());
 
             Mapper.CreateMap<ActivityTemplateDTO, ActivityTemplateDO>()
-                .ConstructUsing((Func<ResolutionContext, ActivityTemplateDO>)(r => new ActivityTemplateDO()))
+                .ConstructUsing((Func<ResolutionContext, ActivityTemplateDO>) (r => new ActivityTemplateDO()))
                 .ForMember(x => x.Id, opts => opts.MapFrom(x => x.Id))
                 .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
@@ -157,7 +152,7 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ContainerDO, ContainerDTO>()
                 .ForMember(
                     x => x.CurrentActivityResponse,
-                    x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentActivityResponse != null ? Enum.Parse(typeof(Fr8Data.Constants.ActivityResponse), z.CurrentActivityResponse.Type) : null))
+                    x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentActivityResponse != null ? Enum.Parse(typeof(Fr8.Infrastructure.Data.Constants.ActivityResponse), z.CurrentActivityResponse.Type) : null))
                 )
                 .ForMember(
                     x => x.CurrentClientActivityName,
@@ -198,10 +193,13 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<NodeTransitionDO, NodeTransitionDTO>();
             Mapper.CreateMap<NodeTransitionDTO, NodeTransitionDO>();
 
-            Mapper.CreateMap<PlanNodeTransitionType, String>().ConvertUsing(e => e.ToString().ToLower());
+            Mapper.CreateMap<PlanNodeTransitionType, string>().ConvertUsing(ConvertPlanNodeToString);
             Mapper.CreateMap<string, PlanNodeTransitionType>().ConvertUsing(e => (PlanNodeTransitionType)Enum.Parse(typeof(PlanNodeTransitionType), e, true));
+        }
 
-
+        public static string ConvertPlanNodeToString(PlanNodeTransitionType e)
+        {
+            return e.ToString().ToLower();
         }
 
         private static List<PlanNodeDO> MapActivities(IEnumerable<ActivityDTO> actions)

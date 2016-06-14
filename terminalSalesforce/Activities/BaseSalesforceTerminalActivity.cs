@@ -1,9 +1,8 @@
 ﻿using System;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.BaseClasses;
 using terminalSalesforce.Services;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
 namespace terminalSalesforce.Actions
 {
@@ -11,7 +10,7 @@ namespace terminalSalesforce.Actions
         where T : StandardConfigurationControlsCM
     {
         protected BaseSalesforceTerminalActivity(ICrateManager crateManager)
-            : base(true, crateManager)
+            : base(crateManager)
         {
         }
 

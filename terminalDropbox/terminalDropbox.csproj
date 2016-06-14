@@ -51,12 +51,24 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper, Version=4.0.4.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.4.0.4\lib\net45\AutoMapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Dropbox.Api, Version=0.1.5948.22265, Culture=neutral, PublicKeyToken=310f0e82fbb45d01, processorArchitecture=MSIL">
       <HintPath>..\packages\Dropbox.Api.3.0.6\lib\net45\Dropbox.Api.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AI.PerfCounterCollector, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -121,6 +133,10 @@
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="RestSharp, Version=105.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.105.2.3\lib\net4\RestSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="StructureMap, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
@@ -278,24 +294,6 @@
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Fr8Data\Fr8Data.csproj">
-      <Project>{a3178d71-a2c3-45b9-8334-adcc7c313541}</Project>
-      <Name>Fr8Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Infrastructure\Fr8Infrastructure.csproj">
-      <Project>{9f4b5c92-3535-4d4c-b1e4-37beb1ae5c42}</Project>
-      <Name>Fr8Infrastructure</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\terminalBase\TerminalBase.csproj">
-      <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
-      <Name>TerminalBase</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Utilities\Utilities.csproj">
-      <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
-      <Name>Utilities</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <PropertyGroup>
@@ -361,6 +359,16 @@
   -->
   <ItemGroup>
     <Log4netConfigFiles Include="..\Config\log4net.terminals.*" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj">
+      <Project>{bba91af2-7636-41b6-87c4-c1575ae8b04b}</Project>
+      <Name>Fr8Infrastructure.NET</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Fr8TerminalBase.NET\Fr8TerminalBase.NET.csproj">
+      <Project>{bf96675e-6baf-4ac9-b247-1551d62e8c44}</Project>
+      <Name>Fr8TerminalBase.NET</Name>
+    </ProjectReference>
   </ItemGroup>
   <Target Name="BeforeBuild">
     <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />

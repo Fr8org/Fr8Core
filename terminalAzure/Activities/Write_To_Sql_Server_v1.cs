@@ -3,24 +3,25 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Errors;
 using StructureMap;
 using terminalAzure.Infrastructure;
 using terminalAzure.Services;
-using TerminalBase;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 using TerminalSqlUtilities;
 
 namespace terminalAzure.Activities
 {
     public class Write_To_Sql_Server_v1 : BaseTerminalActivity
     {
+        private readonly IDbProvider _dbProvider;
+
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "Write_To_Sql_Server",
@@ -34,9 +35,10 @@ namespace terminalAzure.Activities
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
 
-        public Write_To_Sql_Server_v1(ICrateManager crateManager) 
-            : base(false, crateManager)
+        public Write_To_Sql_Server_v1(ICrateManager crateManager, IDbProvider dbProvider) 
+            : base(crateManager)
         {
+            _dbProvider = dbProvider;
         }
 
         //If the user provides no Connection String value, provide an empty Connection String field for the user to populate
@@ -110,9 +112,8 @@ namespace terminalAzure.Activities
         public List<string> GetFieldMappings()
         {
             var connStringField = ConfigurationControls.Controls.First();
-            var curProvider = ObjectFactory.GetInstance<IDbProvider>();
-
-            return (List<string>)curProvider.ConnectToSql(connStringField.Value, (command) =>
+            
+            return (List<string>)_dbProvider.ConnectToSql(connStringField.Value, (command) =>
             {
                 command.CommandText = FieldMappingQuery;
 

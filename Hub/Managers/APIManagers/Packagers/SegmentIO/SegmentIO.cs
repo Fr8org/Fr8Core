@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using Segment;
-using Segment.Model;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using Hub.Interfaces;
 using Hub.Services;
+using Segment.Model;
 
 namespace Hub.Managers.APIManagers.Packagers.SegmentIO
-//When a user visits Kwasant, we try three ways to get their ID:
+//When a user visits Fr8, we try three ways to get their ID:
 //1) If they're already logged in, we use their userID from the database
 //2) If they're not logged in, we check their userID from a cookie we set (sessionID)
 //3) If they don't have a cookie, we generate a new ID based on ASP's session
 //When an unknown user performs actions, we log it under their ID taken from above (usually from the ASP session ID). If they then sign in, we push an alias between their previous session ID, and their new logged-in ID.
 //This means, the following workflow:
-//Anonymous user visits kwasant.com
+//Anonymous user visits fr8.com
 //Anonymous user plays the video
 //Anonymous user signs in as 'rjrudman@gmail.com'.
 //When viewing the profile for 'rjrudman@gmail.com' - the first two actions are properly retrieved.
@@ -35,6 +35,17 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
 {
     public class SegmentIO : ITracker
     {
+        private readonly Fr8Account _fr8Account;
+
+        public SegmentIO(Fr8Account fr8Account)
+        {
+            if (fr8Account == null)
+            {
+                throw new ArgumentNullException(nameof(fr8Account));
+            }
+            _fr8Account = fr8Account;
+        }
+
         public void Identify(String userID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -43,43 +54,45 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
             }
         }
 
-        private Dictionary<String, object> GetProperties(Fr8AccountDO dockyardAccountDO)
+        private Dictionary<String, object> GetProperties(Fr8AccountDO fr8AccountDO)
         {
-            var user = new Fr8Account();
-
             return new Dictionary<string, object>
             {
-                {"First Name", dockyardAccountDO.FirstName},
-                {"Last Name", dockyardAccountDO.LastName},
-                {"Username", dockyardAccountDO.UserName},
-                {"Email", dockyardAccountDO.EmailAddress.Address},
-                {"Delegate Account", user.GetMode(dockyardAccountDO) == CommunicationMode.Delegate },
-                {"Class", dockyardAccountDO.Class }
+                {"First Name", fr8AccountDO.FirstName},
+                {"Last Name", fr8AccountDO.LastName},
+                {"Username", fr8AccountDO.UserName},
+                {"Email", fr8AccountDO.EmailAddress.Address},
+                {"Delegate Account", _fr8Account.GetMode(fr8AccountDO) == CommunicationMode.Delegate },
+                {"Class", fr8AccountDO.Class }
             };
         }
 
-        public void Identify(Fr8AccountDO dockyardAccountDO)
+        public void Identify(Fr8AccountDO fr8AccountDO)
         {
+            if (Analytics.Client == null)
+                return;
             var props = new Traits();
-            foreach (var prop in GetProperties(dockyardAccountDO))
+            foreach (var prop in GetProperties(fr8AccountDO))
                 props.Add(prop.Key, prop.Value);
-
-            Analytics.Client.Identify(dockyardAccountDO.Id, props);
+            Analytics.Client.Identify(fr8AccountDO.Id, props);
+            Track(fr8AccountDO, "User Logged In", props);
         }
 
-        public void Track(Fr8AccountDO dockyardAccountDO, String eventName, String action, Dictionary<String, object> properties = null)
+        public void Track(Fr8AccountDO fr8AccountDO, String eventName, String action, Dictionary<String, object> properties = null)
         {
             if (properties == null)
                 properties = new Dictionary<string, object>();
-            properties["Action"] = action;
+            properties["Activity Name"] = action;
 
-            Track(dockyardAccountDO, eventName, properties);
+            Track(fr8AccountDO, eventName, properties);
         }
 
-        public void Track(Fr8AccountDO dockyardAccountDO, String eventName, Dictionary<String, object> properties = null)
+        public void Track(Fr8AccountDO fr8AccountDO, String eventName, Dictionary<String, object> properties = null)
         {
+            if (Analytics.Client == null)
+                return;
             var props = new Segment.Model.Properties();
-            foreach (var prop in GetProperties(dockyardAccountDO))
+            foreach (var prop in GetProperties(fr8AccountDO))
                 props.Add(prop.Key, prop.Value);
 
             if (properties != null)
@@ -88,7 +101,32 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
                     props[prop.Key] = prop.Value;
             }
 
-            Analytics.Client.Track(dockyardAccountDO.Id, eventName, props);
+            Analytics.Client.Track(fr8AccountDO.Id, eventName, props);
+        }
+        public void Track(IUnitOfWork uow, string userId, string eventName, Segment.Model.Properties properties)
+        {
+            if (Analytics.Client == null)
+                return;
+            Fr8AccountDO fr8AccountDO;
+            using (uow) { fr8AccountDO = uow.UserRepository.GetByKey(userId); }
+
+            var props = new Segment.Model.Properties();
+            foreach (var prop in GetProperties(fr8AccountDO))
+                props.Add(prop.Key, prop.Value);
+
+            Analytics.Client.Track(fr8AccountDO.Id, eventName, props);
+        }
+        public void Track(string eventName, Segment.Model.Properties properties)
+        {
+            if (Analytics.Client == null)
+                return;
+            Analytics.Client.Track(null, eventName, properties);
+        }
+        public void Track(string userId, string eventName, Segment.Model.Properties properties)
+        {
+            if (Analytics.Client == null)
+                return;
+            Analytics.Client.Track(userId, eventName, properties);
         }
     }
 }

@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Http.Routing.Constraints;
-using System.Web.UI.WebControls;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.Repositories.Security.Entities;
 using Data.States;
 using Data.States.Templates;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using StructureMap;
 
 namespace Data.Repositories.Security.StorageImpl.Cache
@@ -161,7 +156,7 @@ namespace Data.Repositories.Security.StorageImpl.Cache
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //check for existing permission set with this default permissions
-                var permissionSet = uow.PermissionSetRepository.GetQuery().FirstOrDefault(x => x.ObjectType == dataObjectType && x.Permissions.Count == 4 &&
+                var permissionSet = uow.PermissionSetRepository.GetQuery().FirstOrDefault(x => x.ObjectType == dataObjectType && x.Permissions.Count == 5 &&
                                              x.Permissions.Any(l => l.Id == (int) PermissionType.ReadObject) && x.Permissions.Any(l => l.Id == (int) PermissionType.CreateObject) && x.Permissions.Any(l => l.Id == (int) PermissionType.EditObject) && x.Permissions.Any(l => l.Id == (int) PermissionType.DeleteObject) && x.Permissions.Any(l => l.Id == (int)PermissionType.RunObject));
 
                 if (permissionSet != null)

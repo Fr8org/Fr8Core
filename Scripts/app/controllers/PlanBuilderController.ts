@@ -41,10 +41,12 @@ module dockyard.controllers {
         solutionName: string;
         curAggReloadingActions: Array<string>;
         addSubPlan: () => void;
-        openMenu: ($mdOpenMenu: any , ev: any) => void;
+        openMenu: ($mdOpenMenu: any, ev: any) => void;
         view: string;
         viewMode: string;
         hasAnyActivity: (pSubPlan: any) => boolean;
+        hasHelpMenuItem: (activity: model.ActivityDTO) => boolean;
+        showActivityHelpDocumentation: (activity: model.ActivityDTO) => void;
 }
 
 
@@ -52,6 +54,7 @@ module dockyard.controllers {
     import pwd = dockyard.directives.paneWorkflowDesigner;
     import pca = dockyard.directives.paneConfigureAction;
     import psa = dockyard.directives.paneSelectAction;
+    import designHeaderEvents = dockyard.Fr8Events.DesignerHeader;
     import planEvents = dockyard.Fr8Events.Plan;
 
     export class PlanBuilderController {
@@ -63,6 +66,7 @@ module dockyard.controllers {
 
         public static $inject = [
             '$scope',
+            '$window',
             'LocalIdentityGenerator',
             '$state',
             'ActionService',
@@ -78,7 +82,8 @@ module dockyard.controllers {
             'AuthService',
             'ConfigureTrackerService',
             'SubPlanService',
-            '$stateParams'
+            '$stateParams',
+            '$window'
         ];
 
         private _longRunningActionsCounter: number;
@@ -86,6 +91,7 @@ module dockyard.controllers {
 
         constructor(
             private $scope: IPlanBuilderScope,
+            private $window: ng.IWindowService,
             private LocalIdentityGenerator: services.ILocalIdentityGenerator,
             private $state: ng.ui.IStateService,
             private ActionService: services.IActionService,
@@ -101,7 +107,8 @@ module dockyard.controllers {
             private AuthService: services.AuthService,
             private ConfigureTrackerService: services.ConfigureTrackerService,
             private SubPlanService: services.ISubPlanService,
-            private $stateParams: ng.ui.IStateParamsService
+            private $stateParams: ng.ui.IStateParamsService,
+            private documentationService: services.ISolutionDocumentationService
         ) {
 
             this.LayoutService.resetLayout();
@@ -119,6 +126,11 @@ module dockyard.controllers {
             this.$scope.view = $stateParams['view'];
             this.$scope.viewMode = $stateParams['viewMode'];
             
+
+            this.$scope.$on('$stateChangeStart', (event, toState, toParams, fromState, fromParams, options) => {
+                this.handleBackButton(event, toState, toParams, fromState, fromParams, options);
+            });
+            
             this.$scope.addAction = (group: model.ActionGroup) => {
                 this.addAction(group);
             }
@@ -130,6 +142,33 @@ module dockyard.controllers {
                     return actionGroup.envelopes.length > 0;
                 });
             };
+
+            this.$scope.hasHelpMenuItem = (activity) => {
+                if (activity.activityTemplate.showDocumentation != null) {
+                    if (activity.activityTemplate.showDocumentation.body.displayMechanism != undefined &&
+                        activity.activityTemplate.showDocumentation.body.displayMechanism.contains("HelpMenu")) {
+                        return true;
+                    }                    
+                }
+
+                return false;
+            }
+
+            this.$scope.showActivityHelpDocumentation = (activity) => {
+
+                var activityDTO = new model.ActivityDTO("", "", "");
+                activityDTO.toActionVM();
+                activityDTO.documentation = "HelpMenu";
+                activityDTO.activityTemplate = activity.activityTemplate;
+
+                documentationService.getDocumentationResponseDTO(activityDTO).$promise.then(data => {
+
+                    if (data) {
+                        var newWindow = this.$window.open();
+                        newWindow.document.writeln(data.body);
+                    }
+                });
+            }
 
             this.$scope.isBusy = () => {
                 return this._longRunningActionsCounter > 0 || this._loading;
@@ -163,15 +202,17 @@ module dockyard.controllers {
                     ActionService.save(action);
                 });
             }
+
             this.$scope.chooseAuthToken = (action: model.ActivityDTO) => {
                 this.chooseAuthToken(action);
             };
 
             this.$scope.selectAction = (action: model.ActivityDTO) => {
                 if (!this.$scope.current.activities || this.$scope.current.activities.id !== action.id)
-                    this.selectAction(action, null);
+                    this.selectAction(action, null, $window);
 
             }
+
 
             $scope.$watch(function () {
                 return $(".resizable").width();
@@ -232,6 +273,18 @@ module dockyard.controllers {
             };
 
             this.processState($state);
+        }
+
+        private handleBackButton(event, toState, toParams, fromState, fromParams, options) {
+            
+            if (fromParams.viewMode === "plan" && toParams.viewMode === undefined && fromState.name === "planBuilder" && toState.name === "planBuilder") {
+                event.preventDefault();
+                this.$state.go("planList");
+            }
+
+            if (toParams.viewMode === "plan" && fromParams.viewMode === undefined && fromState.name === "planBuilder" && toState.name === "planBuilder") {
+                this.reloadFirstActions();
+            }
         }
 
         private startLoader() {
@@ -382,6 +435,7 @@ module dockyard.controllers {
                 this.$scope.planId = $state.params.id;
             }
 
+   
             this.loadPlan($state.params.viewMode);
         }
 
@@ -401,6 +455,17 @@ module dockyard.controllers {
             planPromise.$promise.then(this.onPlanLoad.bind(this, mode));
         }
 
+        private reloadFirstActions() {
+            this.$timeout(() => {
+                this.$scope.current.plan.subPlans.forEach(
+                    plan => {
+                        if (plan.activities.length > 0) {
+                            this.$scope.reConfigureAction(plan.activities[0])
+                        }
+                    });
+            }, 1500);
+        }
+
         private onPlanLoad(mode: string, curPlan: interfaces.IPlanFullDTO) {
             this.AuthService.setCurrentPlan(<interfaces.IPlanVM>curPlan.plan);
             this.AuthService.clear();
@@ -412,7 +477,7 @@ module dockyard.controllers {
                 this.setAdvancedEditingMode();
             }
             this.renderPlan(<interfaces.IPlanVM>curPlan.plan);
-            this.$state.go('planBuilder', { id: curPlan.plan.id,  viewMode: mode });
+            this.$state.go('planBuilder', { id: curPlan.plan.id, viewMode: mode });
         }
 
         /*
@@ -450,9 +515,14 @@ module dockyard.controllers {
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ChildActionsDetected], () => this.PaneConfigureAction_ChildActionsDetected());
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ExecutePlan], () => this.PaneConfigureAction_ExecutePlan());
 
+            this.$scope.$on(<any>designHeaderEvents.PLAN_EXECUTION_FAILED, () => this.reloadFirstActions());
+
             // Handles Response from Configure call from PaneConfiguration
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ConfigureCallResponse],
                 (event: ng.IAngularEvent, callConfigureResponseEventArgs: pca.CallConfigureResponseEventArgs) => this.PaneConfigureAction_ConfigureCallResponse(callConfigureResponseEventArgs));
+            
+            this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ShowAdvisoryMessages],
+                (event: ng.IAngularEvent, eventArgs: pca.ShowAdvisoryMessagesEventArgs) => this.PaneConfigureAction_ShowAdvisoryMessage(eventArgs));
         }
 
 
@@ -566,7 +636,7 @@ module dockyard.controllers {
         private deleteAction(action: model.ActivityDTO) {
             var self = this;
             self.startLoader();
-            self.ActionService.deleteById({ id: action.id, confirmed: false }).$promise.then((response) => {
+            self.ActionService.deleteById({ id: action.id }).$promise.then((response) => {
                 self.reloadPlan();
                 self.stopLoader();
             }, (error) => {
@@ -580,7 +650,7 @@ module dockyard.controllers {
                     .openConfirmationModal(alertMessage)
                     .then(() => {
                         self.startLoader();
-                        self.ActionService.deleteById({ id: action.id, confirmed: true }).$promise.then(() => {
+                        self.ActionService.deleteById({ id: action.id }).$promise.then(() => {
                             self.reloadPlan();
                             self.stopLoader();
                         });
@@ -599,7 +669,7 @@ module dockyard.controllers {
             // Add action to Workflow Designer.
             this.$scope.current.activities = action.toActionVM();
             this.$scope.current.activities.activityTemplate = activityTemplate;
-            this.selectAction(action, eventArgs.group);
+            this.selectAction(action, eventArgs.group, this.$window);
         }
 
         private allowsChildren(action: model.ActivityDTO) {
@@ -608,7 +678,6 @@ module dockyard.controllers {
 
         private addActionToUI(action: model.ActivityDTO, group: model.ActionGroup) {
             this.$scope.current.activities = action;
-
             var parentAction = this.findActionById(action.parentPlanNodeId);
             if (parentAction != null) {
                 parentAction.childrenActivities.push(action);
@@ -638,7 +707,9 @@ module dockyard.controllers {
             Handles message 'WorkflowDesignerPane_ActionSelected'. 
             This message is sent when user is selecting an existing action or after addng a new action. 
         */
-        private selectAction(action: model.ActivityDTO, group: model.ActionGroup) {
+        private selectAction(action: model.ActivityDTO, group: model.ActionGroup, $window) {
+            //this performs a call to Segment service for analytics
+            $window['analytics'].track("Added Activity To Plan", { "Activity Name": action.name });
 
             console.log("Activity selected: " + action.id);
             var originalId,
@@ -794,6 +865,28 @@ module dockyard.controllers {
                 });
         }
 
+        private PaneConfigureAction_ShowAdvisoryMessage(eventArgs : pca.ShowAdvisoryMessagesEventArgs) {
+            for (var i = 0; i < this.$scope.processedSubPlans.length; ++i) {
+                var subPlan = this.$scope.processedSubPlans[i];
+                if (!subPlan.actionGroups) {
+                    continue;
+                }
+                for (var j = 0; j < subPlan.actionGroups.length; ++j) {
+                    var actionGroup = subPlan.actionGroups[j];
+                    if (!actionGroup.envelopes) {
+                        continue;
+                    }
+                    for (var k = 0; k < actionGroup.envelopes.length; ++k) {
+                        var envelope = actionGroup.envelopes[k];
+                        if (envelope.activity.id === eventArgs.id) {
+                            envelope.activity.showAdvisoryPopup = true;
+                            envelope.activity.advisoryMessages = eventArgs.advisories;
+                        } 
+                    }
+                }
+            }
+        }
+
         // This should handle everything that should be done when a configure call response arrives from server.
         private PaneConfigureAction_ConfigureCallResponse(callConfigureResponseEventArgs: pca.CallConfigureResponseEventArgs) {
             
@@ -885,7 +978,7 @@ module dockyard.controllers {
         }
     }
     app.controller('PlanBuilderController', PlanBuilderController);
-    app.controller('ActivityLabelModalController', ['$scope', '$modalInstance','label', ($scope: any, $modalInstance: any, label: string): void => {
+    app.controller('ActivityLabelModalController', ['$scope', '$modalInstance', 'label', ($scope: any, $modalInstance: any, label: string): void => {
 
         $scope.label = label;
 

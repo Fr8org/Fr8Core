@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Fr8Data.Crates;
@@ -34,17 +35,16 @@ namespace TerminalBase.BaseClasses
         protected PlanHelper PlanHelper => _planHelper ?? (_planHelper = new PlanHelper(HubCommunicator));
         protected Guid ActivityId => ActivityContext.ActivityPayload.Id;
         protected string CurrentUserId => ActivityContext.UserId;
-        public Task<FieldDescriptionsCM> GetDesignTimeFields(CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet) => HubCommunicator.GetDesignTimeFieldsByDirection(ActivityId, direction, availability);
         protected void SendEventReport(string message) => _eventLogger.SendEventReport(MyTemplate.Terminal.Name, message);
         protected UpstreamQueryManager UpstreamQueryManager { get; private set; }
 
         protected abstract ActivityTemplateDTO MyTemplate { get; }
 
-        protected BaseTerminalActivityLegacy(bool isAuthenticationRequired, ICrateManager crateManager)
+        protected BaseTerminalActivityLegacy(ICrateManager crateManager)
         {
             _eventLogger = new BaseTerminalEvent();
             CrateManager = crateManager;
-            IsAuthenticationRequired = isAuthenticationRequired;
+            IsAuthenticationRequired = MyTemplate.NeedsAuthentication;
         }
 
         protected override void InitializeInternalState()
@@ -182,14 +182,6 @@ namespace TerminalBase.BaseClasses
             return result;
         }
 
-        protected async Task<Crate<FieldDescriptionsCM>> MergeUpstreamFields(string label)
-        {
-            var curUpstreamFields = (await GetDesignTimeFields(CrateDirection.Upstream)).Fields.ToArray();
-            var upstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(label, curUpstreamFields);
-            return upstreamFieldsCrate;
-        }
-
-
         protected async Task<ActivityPayload> AddAndConfigureChildActivity(Guid parentActivityId, ActivityTemplateDTO activityTemplate, string name = null, string label = null, int? order = null)
         {
             //assign missing properties
@@ -251,9 +243,28 @@ namespace TerminalBase.BaseClasses
             await HubCommunicator.NotifyUser(notificationMsg);
         }
 
-        public SolutionPageDTO GetDefaultDocumentation(string solutionName, double solutionVersion, string terminalName, string body)
+        protected void AddAdvisoryCrate(string name, string content)
         {
-            var curSolutionPage = new SolutionPageDTO
+            var advisoryCrate = Storage.CratesOfType<AdvisoryMessagesCM>().FirstOrDefault();
+            var currentAdvisoryResults = advisoryCrate == null ? new AdvisoryMessagesCM() : advisoryCrate.Content;
+
+            var advisory = currentAdvisoryResults.Advisories.FirstOrDefault(x => x.Name == name);
+
+            if (advisory == null)
+            {
+                currentAdvisoryResults.Advisories.Add(new AdvisoryMessageDTO { Name = name, Content = content });
+            }
+            else
+            {
+                advisory.Content = content;
+            }
+
+            Storage.Add(Crate.FromContent("Advisories", currentAdvisoryResults));
+        }
+
+        public DocumentationResponseDTO GetDefaultDocumentation(string solutionName, double solutionVersion, string terminalName, string body)
+        {
+            var curSolutionPage = new DocumentationResponseDTO
             {
                 Name = solutionName,
                 Version = solutionVersion,
@@ -264,9 +275,9 @@ namespace TerminalBase.BaseClasses
             return curSolutionPage;
         }
 
-        public SolutionPageDTO GenerateErrorResponse(string errorMessage)
+        public DocumentationResponseDTO GenerateErrorResponse(string errorMessage)
         {
-            return new SolutionPageDTO
+            return new DocumentationResponseDTO
             {
                 Body = errorMessage,
                 //Type = ActivityResponse.ShowDocumentation.ToString()
@@ -274,9 +285,9 @@ namespace TerminalBase.BaseClasses
         }
 
 
-        public SolutionPageDTO GenerateDocumentationResponse(string documentation)
+        public DocumentationResponseDTO GenerateDocumentationResponse(string documentation)
         {
-            return new SolutionPageDTO
+            return new DocumentationResponseDTO
             {
                 Body = documentation,
                 //Type = ActivityResponse.ShowDocumentation.ToString()

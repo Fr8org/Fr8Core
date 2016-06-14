@@ -4,16 +4,27 @@ using NUnit.Framework;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
+using Fr8.Infrastructure.Utilities;
 using Hub.Interfaces;
-using Utilities;
-using UtilitiesTesting;
+
+using Fr8.Testing.Unit;
 
 namespace HubTests.Entities
 {
+    [Ignore("@alexavrutin: the functionality being tested seems to be related to Kwasant and not used in Fr8.")]
     [TestFixture]
     [Category("EmailAddress")]
     public class EmailAddressTests : BaseTest
     {
+        private IConfigRepository _configRepository;
+
+        [SetUp]
+        public override void SetUp()
+        {
+            base.SetUp();
+            _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+        }
+
         [Test, ExpectedException(ExpectedMessage = "Duplicate values for 'Address' on 'EmailAddressDO' are not allowed. Duplicated value: 'rjrudman@gmail.com'")]
         public void TestDuplicateEmailRejected()
         {
@@ -185,31 +196,31 @@ namespace HubTests.Entities
         [Test]
         public void TestIllegalSurroundingCharactersInvalid()
         {
-            Assert.False(RegexUtilities.IsValidEmailAddress("'rjrudman@gmail.com'"));
+            Assert.False(RegexUtilities.IsValidEmailAddress(_configRepository, "'rjrudman@gmail.com'"));
         }
 
         [Test]
         public void TestEmailNameWithPeriod()
         {
-            Assert.True(RegexUtilities.IsValidEmailAddress("rj.rudman@gmail.com"));
+            Assert.True(RegexUtilities.IsValidEmailAddress(_configRepository, "rj.rudman@gmail.com"));
         }
 
         [Test]
         public void TestEmailNameWithDash()
         {
-            Assert.True(RegexUtilities.IsValidEmailAddress("rj-rudman@gmail.com"));
+            Assert.True(RegexUtilities.IsValidEmailAddress(_configRepository, "rj-rudman@gmail.com"));
         }
 
         [Test]
         public void TestEmailDomainWithPeriod()
         {
-            Assert.True(RegexUtilities.IsValidEmailAddress("rjrudman@gmail.net.au"));
+            Assert.True(RegexUtilities.IsValidEmailAddress(_configRepository, "rjrudman@gmail.net.au"));
         }
 
         [Test]
         public void TestEmailUnderscore()
         {
-            Assert.True(RegexUtilities.IsValidEmailAddress("br_notify@kwasant.com"));
+            Assert.True(RegexUtilities.IsValidEmailAddress(_configRepository, "br_notify@kwasant.com"));
         }
 
         [Test]

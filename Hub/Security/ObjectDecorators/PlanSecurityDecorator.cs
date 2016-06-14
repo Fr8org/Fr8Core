@@ -6,10 +6,10 @@ using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
 using Hub.Interfaces;
 
 namespace Hub.Security.ObjectDecorators
@@ -54,9 +54,10 @@ namespace Hub.Security.ObjectDecorators
             return _target.IsMonitoringPlan(uow, planDo);
         }
         
-        public PlanDO Create(IUnitOfWork uow, string name, string category = "")
+        public PlanDO Create(IUnitOfWork uow, string name, string category = "", string ownerId = "", PlanVisibility visibility = PlanVisibility.Standard)
         {
-            return _target.Create(uow, name, category);
+            //TODO: probably worth add a check that only admin can create plan with specific owner Id and internal plan visibility
+            return _target.Create(uow, name, category, ownerId, visibility);
         }
 
         public PlanDO GetFullPlan(IUnitOfWork uow, Guid planId)
@@ -141,12 +142,12 @@ namespace Hub.Security.ObjectDecorators
         {
             return _target.MatchEvents(curPlans, curEventReport);
         }
-
-        public Task<ContainerDO> Run(IUnitOfWork uow, PlanDO plan, params Crate[] curPayload)
+        
+        public Task<ContainerDTO> Run(Guid planId, Crate[] payload, Guid? containerId)
         {
-            if (_securityServices.AuthorizeActivity(PermissionType.RunObject, plan.Id.ToString(), nameof(PlanNodeDO)))
+            if (_securityServices.AuthorizeActivity(PermissionType.RunObject, planId.ToString(), nameof(PlanNodeDO)))
             {
-                return _target.Run(uow, plan, curPayload);
+                return _target.Run(planId, payload, containerId);
             }
 
             throw new HttpException(403, "You are not authorized to perform this activity!");

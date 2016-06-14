@@ -7,15 +7,14 @@ using NUnit.Framework;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using HealthMonitor.Utility;
-using HealthMonitorUtility;
+using Fr8.Testing.Integration;
 using terminalDocuSign.Services.New_Api;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using AutoMapper;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using TerminalBase.Models;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Models;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -25,9 +24,10 @@ namespace terminalDocuSignTests.Integration
     {
         // private const string UserAccountName = "y.gnusin@gmail.com";
         private const string UserAccountName = "integration_test_runner@fr8.company";
-        private const int MaxAwaitPeriod = 300000;
 
+        private const int MaxAwaitPeriod = 300000;
         private const int SingleAwaitPeriod = 10000;
+        private const int MadseCreationPeriod = 30000;
 
         private const string templateId = "b0c8eb61-ff16-410d-be0b-6a2feec57f4c"; // "392f63c3-cabb-4b21-b331-52dabf1c2993"; // "SendEnvelopeIntegrationTest" template
 
@@ -96,7 +96,7 @@ namespace terminalDocuSignTests.Integration
                 var loginInfo = docuSignManager.SetUp(authToken);
 
                 //let's wait 10 seconds to ensure that MADSE plan was created/activated by re-authentication
-                await Task.Delay(SingleAwaitPeriod);
+                await Task.Delay(MadseCreationPeriod);
 
                 //send envelope
                 SendDocuSignTestEnvelope(docuSignManager, loginInfo, authTokenDO);
@@ -174,12 +174,12 @@ namespace terminalDocuSignTests.Integration
                 IsDemoAccount = true
             };
 
-            string endpoint = GetTerminalUrl() + "/authentication/internal";
+            string endpoint = GetTerminalUrl() + "/authentication/token";
             var jobject = await HttpPostAsync<CredentialsDTO, JObject>(endpoint, creds);
             var docuSignToken = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(jobject.ToString());
             Assert.IsTrue(
                 string.IsNullOrEmpty(docuSignToken.Error),
-                $"terminalDocuSign call to /authentication/internal has failed with following error: {docuSignToken.Error}"
+                $"terminalDocuSign call to /authentication/token has failed with following error: {docuSignToken.Error}"
             );
 
             return docuSignToken;

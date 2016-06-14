@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 using Data.Interfaces;
 using Data.Repositories.MultiTenant;
 using Data.Repositories.SqlBased;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using HealthMonitor.Utility;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
 using terminalFr8CoreTests.Fixtures;
 using StructureMap;
@@ -56,8 +56,7 @@ namespace terminalFr8CoreTests.Integration
             Assert.NotNull(responseActionDTO.CrateStorage);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            Assert.AreEqual(3, crateStorage.Count);
-            Assert.AreEqual(2, crateStorage.CratesOfType<FieldDescriptionsCM>().Count());
+            Assert.AreEqual(1, crateStorage.Count);
 
             AssertConfigureControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
         }
@@ -99,7 +98,7 @@ namespace terminalFr8CoreTests.Integration
                     }
                 });
 
-                storage.Add(Fr8Data.Crates.Crate.FromContent("Configuration_Controls", configControlCm));
+                storage.Add(Fr8.Infrastructure.Data.Crates.Crate.FromContent("Configuration_Controls", configControlCm));
             }
 
             string envelopeId = "testEnvelope_" + Guid.NewGuid().ToString("N");
@@ -176,7 +175,7 @@ namespace terminalFr8CoreTests.Integration
 
             debugInfo.AppendLine(DisplayTypeResolution<ISqlConnectionProvider>());
             debugInfo.AppendLine(DisplayTypeResolution<IMtTypeStorageProvider>());
-            debugInfo.AppendLine($"Current connection string for MT is: {Utilities.MiscUtils.MaskPassword(cs)}");
+            debugInfo.AppendLine($"Current connection string for MT is: {Fr8.Infrastructure.Utilities.MiscUtils.MaskPassword(cs)}");
 
             return debugInfo.ToString();
         }

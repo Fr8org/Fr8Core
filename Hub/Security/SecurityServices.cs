@@ -14,11 +14,10 @@ using StructureMap;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.Repositories.Security;
 using Data.Repositories.Security.Entities;
 using Data.States;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.States;
 using Hub.Exceptions;
 using Hub.Infrastructure;
 using Hub.Interfaces;
@@ -127,6 +126,11 @@ namespace Hub.Security
         /// <param name="dataObjectType"></param>
         public void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType)
         {
+            SetDefaultObjectSecurity(dataObjectId.ToString(), dataObjectType);
+        }
+
+        public void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType)
+        {
             if (!IsAuthenticated()) return;
 
             var currentUserId = GetCurrentUser();
@@ -226,7 +230,7 @@ namespace Hub.Security
                 fr8AccountId = planNode.Fr8AccountId;
                 var mainPlan = uow.PlanRepository.GetById<PlanDO>(planNode.RootPlanNodeId);
                 if (mainPlan.Visibility == PlanVisibility.Internal) return true;
-                return mainPlan.ChildNodes.OfType<SubplanDO>().Any(subPlan => subPlan.ChildNodes.OfType<ActivityDO>().Select(activity => activityTemplate.GetByKey(activity.ActivityTemplateId)).Any(template => template.Name == "AppBuilder"));
+                return mainPlan.ChildNodes.OfType<SubplanDO>().Any(subPlan => subPlan.ChildNodes.OfType<ActivityDO>().Select(activity => activityTemplate.GetByKey(activity.ActivityTemplateId)).Any(template => template.Name == "App_Builder"));
             }
         }
 

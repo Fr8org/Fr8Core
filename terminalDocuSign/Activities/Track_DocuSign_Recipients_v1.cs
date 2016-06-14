@@ -2,27 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
 using Data.Interfaces;
 using StructureMap;
 using Data.Repositories.MultiTenant;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Models;
+using Hub.Services.MT;
 using Newtonsoft.Json;
-using terminalDocuSign.Services.MT;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.Infrastructure;
-using TerminalBase.Models;
 
 namespace terminalDocuSign.Activities
 {
     public class Track_DocuSign_Recipients_v1 : BaseDocuSignActivity
     {
+        private readonly IContainer _container;
+
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "Track_DocuSign_Recipients",
@@ -127,9 +126,10 @@ namespace terminalDocuSign.Activities
             }
         }
 
-        public Track_DocuSign_Recipients_v1(ICrateManager crateManager, IDocuSignManager docuSignManager)
+        public Track_DocuSign_Recipients_v1(ICrateManager crateManager, IDocuSignManager docuSignManager, IContainer container)
             : base(crateManager, docuSignManager)
         {
+            _container = container;
         }
 
         protected override async Task InitializeDS()
@@ -173,9 +173,9 @@ namespace terminalDocuSign.Activities
             }
 
             var monitorDocusignAT = await GetActivityTemplate("terminalDocuSign", "Monitor_DocuSign_Envelope_Activity");
-            var setDelayAT = await GetActivityTemplate("terminalFr8Core", "SetDelay");
-            var queryFr8WareHouseAT = await GetActivityTemplate("terminalFr8Core", "QueryFr8Warehouse");
-            var testIncomingDataAT = await GetActivityTemplate("terminalFr8Core", "TestIncomingData");
+            var setDelayAT = await GetActivityTemplate("terminalFr8Core", "Set_Delay");
+            var queryFr8WareHouseAT = await GetActivityTemplate("terminalFr8Core", "Query_Fr8_Warehouse");
+            var testIncomingDataAT = await GetActivityTemplate("terminalFr8Core", "Test_Incoming_Data");
             var buildMessageAT = await GetActivityTemplate("terminalFr8Core", "Build_Message");
            
             //DocuSign
@@ -254,7 +254,7 @@ namespace terminalDocuSign.Activities
 
         private void SetNotifierActivityBody(ActivityPayload notifierActivity)
         {
-            if (notifierActivity.ActivityTemplate.Name == "SendEmailViaSendGrid")
+            if (notifierActivity.ActivityTemplate.Name == "Send_Email_Via_SendGrid")
             {
                 var configControls = ControlHelper.GetConfigurationControls(notifierActivity.CrateStorage);
                 var emailBodyField = ControlHelper.GetControl<TextSource>(configControls, "EmailBody", ControlTypes.TextSource);
@@ -370,16 +370,16 @@ namespace terminalDocuSign.Activities
                 Conditions = conditions
             });
 
-            var queryCriteria = Crate.FromContent(
-                "Queryable Criteria",
-                new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(selectedObject.Id))
-            );
-            crateStorage.Add(queryCriteria);
+            using (var uow = _container.GetInstance<IUnitOfWork>())
+            {
+                var queryCriteria = Crate.FromContent("Queryable Criteria", new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(uow, selectedObject.Id)));
+                crateStorage.Add(queryCriteria);
+            }
         }
 
         private MtTypeReference GetMtType(Type clrType)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var uow = _container.GetInstance<IUnitOfWork>())
             {
                 return uow.MultiTenantObjectRepository.FindTypeReference(clrType);
             }
@@ -437,9 +437,23 @@ namespace terminalDocuSign.Activities
 
         protected override string ActivityUserFriendlyName => SolutionName;
 
+        private void GetAllDescendants(ActivityPayload root, List<ActivityPayload> activties)
+        {
+            activties.AddRange(root.ChildrenActivities);
+
+            foreach (var childrenActivity in root.ChildrenActivities)
+            {
+                GetAllDescendants(childrenActivity, activties);
+            }
+        }
+
         protected override async Task RunDS()
         {
-            var configControls = (await HubCommunicator.GetCratesByDirection<StandardConfigurationControlsCM>(ActivityId, CrateDirection.Downstream)).SelectMany(c => c.Content.Controls);
+            var descendants = new List<ActivityPayload>();
+
+            GetAllDescendants(ActivityPayload, descendants);
+
+            var configControls = descendants.SelectMany(c => c.CrateStorage.FirstCrateOrDefault<StandardConfigurationControlsCM>()?.Content?.Controls).Where(x => x != null).ToArray();
             var delayValue = (Duration)configControls.Single(c => c.Name == "Delay_Duration" && c.Type == ControlTypes.Duration);
             var runTimePayloadData = new List<FieldDTO>();
             var delayTimeString = delayValue.Days + " days, " + delayValue.Hours + " hours and " + delayValue.Minutes + " minutes";
@@ -462,7 +476,7 @@ namespace terminalDocuSign.Activities
         /// <param name="activityDO"></param>
         /// <param name="curDocumentation"></param>
         /// <returns></returns>
-        protected override Task<SolutionPageDTO> GetDocumentation(string curDocumentation)
+        protected override Task<DocumentationResponseDTO> GetDocumentation(string curDocumentation)
         {
             if (curDocumentation.Contains("MainPage"))
             {

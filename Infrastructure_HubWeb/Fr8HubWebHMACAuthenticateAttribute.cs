@@ -2,7 +2,8 @@
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http.Filters;
-using Fr8Infrastructure.Security;
+using Fr8.Infrastructure.Security;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using StructureMap;
@@ -20,12 +21,24 @@ namespace HubWeb.Infrastructure_HubWeb
 
         protected override async Task<string> GetTerminalSecret(string terminalId)
         {
-            var terminal = await _terminalService.GetTerminalByPublicIdentifier(terminalId);
-            return terminal?.Secret;
+            if (terminalId == "PlanDirectory")
+            {
+                return CloudConfigurationManager.GetSetting("PlanDirectorySecret");
+            }
+            else
+            {
+                var terminal = await _terminalService.GetTerminalByPublicIdentifier(terminalId);
+                return terminal?.Secret;
+            }
         }
 
         protected override async Task<bool> CheckPermission(string terminalId, string userId)
         {
+            if (terminalId == "PlanDirectory")
+            {
+                return true;
+            }
+
             var terminal = await _terminalService.GetTerminalByPublicIdentifier(terminalId);
             if (terminal == null)
             {

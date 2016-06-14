@@ -4,9 +4,8 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using System.Web.Http.Routing;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 using Microsoft.Owin.Hosting;
 using Owin;
 
@@ -85,7 +84,7 @@ namespace terminalFr8CoreTests.Fixtures
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Label = "ConnectToSql Fr8Core",
+                Label = "Connect_To_Sql Fr8Core",
                 ActivityTemplate = activityTemplate
             };
 
@@ -97,7 +96,7 @@ namespace terminalFr8CoreTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "ConnectToSql_TEST",
+                Name = "Connect_To_Sql_TEST",
                 Version = "1"
             };
         }
@@ -109,7 +108,7 @@ namespace terminalFr8CoreTests.Fixtures
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Label = "ExecuteSql Fr8Core",
+                Label = "Execute_Sql Fr8Core",
                 ActivityTemplate = activityTemplate
             };
 
@@ -121,7 +120,7 @@ namespace terminalFr8CoreTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "ExecuteSql_TEST",
+                Name = "Execute_Sql_TEST",
                 Version = "1"
             };
         }
@@ -133,7 +132,7 @@ namespace terminalFr8CoreTests.Fixtures
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Label = "ExecuteSql Fr8Core",
+                Label = "Execute_Sql Fr8Core",
                 ActivityTemplate = activityTemplate
             };
 
@@ -145,7 +144,7 @@ namespace terminalFr8CoreTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "SaveToFr8Warehouse_TEST",
+                Name = "Save_To_Fr8_Warehouse_TEST",
                 Version = "1"
             };
         }

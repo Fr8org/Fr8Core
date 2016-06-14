@@ -1,10 +1,8 @@
 ﻿using System;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using StructureMap;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.BaseClasses;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
 namespace terminalDocuSign.Activities
 {
@@ -13,7 +11,7 @@ namespace terminalDocuSign.Activities
         protected readonly IDocuSignManager DocuSignManager;
       
         protected EnhancedDocuSignActivity(ICrateManager crateManager, IDocuSignManager docuSignManager)
-            : base(true, crateManager)
+            : base(crateManager)
         {
             if (docuSignManager == null)
             {

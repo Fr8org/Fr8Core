@@ -26,8 +26,6 @@ module dockyard.directives {
             controller: ['$scope', '$element', 'WebServiceService', '$timeout',
                 ($scope: IActionPickerScope, $element: ng.IRootElementService, webServiceService: services.IWebServiceService, $timeout: ng.ITimeoutService) => {
 
-                    console.log($scope);
-
                     $scope.actionCategories = [
                         { id: 1, name: "Monitor", description: "Learn when something happen", icon: "eye" },
                         { id: 2, name: "Get", description: "In-process Crates from a web service", icon: "download" },
@@ -47,7 +45,7 @@ module dockyard.directives {
                             var leftPositionOfContainer = parseInt(scrollToElement.closest('.action-group').css('left'), 10);
                             var windowSize = $(window).width(); // substracted from total width since we want activity to be shown center of the screen
 
-                            $element.closest('.route-builder-container').animate({
+                            $element.closest('.sub-plan-container').animate({
                                 scrollLeft: leftPositionOfElement + leftPositionOfContainer - (windowSize / 2)
                             }, 100);
                         }, 500);

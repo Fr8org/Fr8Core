@@ -2,19 +2,15 @@
 using System.Collections.Generic;
 using System.Web.Http.Dispatcher;
 using Data.Infrastructure.AutoMapper;
-using Fr8Infrastructure.StructureMap;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using Microsoft.Owin;
 using Owin;
 using StructureMap;
 using terminalDocuSign;
 using terminalDocuSign.Controllers;
-using TerminalBase.BaseClasses;
 using terminalDocuSign.Actions;
 using terminalDocuSign.Activities;
-using terminalDocuSign.Interfaces;
-using terminalDocuSign.Services;
-using terminalDocuSign.Services.New_Api;
-using TerminalBase.Services;
 
 [assembly: OwinStartup(typeof(Startup))]
 
@@ -22,6 +18,11 @@ namespace terminalDocuSign
 {
     public class Startup : BaseConfiguration
     {
+        public Startup()
+            : base(TerminalData.TerminalDTO)
+        {
+        }
+
         public void Configuration(IAppBuilder app)
         {
             Configuration(app, false);
@@ -30,7 +31,7 @@ namespace terminalDocuSign
         public void Configuration(IAppBuilder app, bool selfHost)
         {
             ConfigureProject(selfHost, TerminalDocusignStructureMapBootstrapper.LiveConfiguration);
-            ObjectFactory.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
+            Container.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
 
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             RoutesConfig.Register(_configuration);
@@ -38,7 +39,7 @@ namespace terminalDocuSign
             app.UseWebApi(_configuration);
             if (!selfHost)
             {
-                StartHosting("terminalDocuSign");
+                StartHosting();
             }
         }
 

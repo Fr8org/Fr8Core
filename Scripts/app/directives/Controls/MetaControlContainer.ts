@@ -6,8 +6,8 @@ module dockyard.directives.controlContainer {
     interface IMetaControlContainerScope extends ng.IScope {
         plan: model.PlanDTO;
         field: model.MetaControlContainer;
-        addControl: () => void;
-        change: () => (field: model.ControlDefinitionDTO) => void;
+        addControl: () => void;        
+        change: (field: model.ControlDefinitionDTO) => void;
         removeMetaDescription: (index: number) => void;
         currentAction: model.ActivityDTO;
         getIndex: (field: model.ControlMetaDescriptionDTO) => number;
@@ -18,9 +18,10 @@ module dockyard.directives.controlContainer {
     export function MetaControlContainer(): ng.IDirective {
         var controller = ['$scope', '$modal', 'SubPlanService',
             ($scope: IMetaControlContainerScope, $modal: any, SubPlanService: services.ISubPlanService) => {
-            var triggerChange = () => {
+                var triggerChange = () => {
+                    
                 if ($scope.change != null && angular.isFunction($scope.change)) {
-                    $scope.change()($scope.field);
+                    $scope.change($scope.field);
                 }
             };
 
@@ -78,6 +79,12 @@ module dockyard.directives.controlContainer {
            }
 
             $scope.addControl = () => {
+                // it means onChange was fired by Clicking, and modal window will not add control
+                // yes it`s funny and wrong, we need have helper for parent scope search
+                if ((<any>$scope.$parent.$parent.$parent.$parent.$parent.$parent).processing) {
+                    return;
+                }
+
                 var modalInstance = $modal.open({
                     animation: true,
                     templateUrl: 'TextTemplate-ControlContainerSelectionModal',
@@ -97,7 +104,8 @@ module dockyard.directives.controlContainer {
             scope: {
                 plan: '=',
                 field: '=',
-                currentAction: '='
+                currentAction: '=',
+                change: '='
             }
         };
     }

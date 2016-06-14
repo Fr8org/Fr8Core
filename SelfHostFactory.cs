@@ -80,7 +80,7 @@ namespace HubWeb
                     typeof(FilesController),
                     typeof(ManifestsController),
                     typeof(ReportController),
-                    typeof(PlanTemplatesController),
+                    // typeof(PlanTemplatesController),
                     typeof(PlanNodesController),
                     typeof(PlansController),
                     typeof(TerminalsController),
@@ -88,35 +88,6 @@ namespace HubWeb
                     typeof(WarehouseController),
                     typeof(WebServicesController)
                 };
-        }
-    }
-
-    public class CustomSelector : DefaultHttpControllerSelector
-    {
-        private readonly HttpConfiguration _configuration;
-
-        public CustomSelector(HttpConfiguration configuration) : base(configuration)
-        {
-            _configuration = configuration;
-        }
-
-        public override HttpControllerDescriptor SelectController(HttpRequestMessage request)
-        {
-                var controllerName = base.GetControllerName(request);
-                if (controllerName.Contains("_"))
-                {
-
-                IAssembliesResolver assembliesResolver = _configuration.Services.GetAssembliesResolver();
-                IHttpControllerTypeResolver httpControllerTypeResolver = this._configuration.Services.GetHttpControllerTypeResolver();
-                ICollection<Type> controllerTypes = httpControllerTypeResolver.GetControllerTypes(assembliesResolver);
-                    controllerName = controllerName.Replace("_", "");
-                    var matchedController =
-                        controllerTypes.FirstOrDefault(i => i.Name.ToLower() == controllerName.ToLower() + "controller");
-
-                    return new HttpControllerDescriptor(_configuration, controllerName, matchedController);
-                }
-
-            return base.SelectController(request);
         }
     }
 

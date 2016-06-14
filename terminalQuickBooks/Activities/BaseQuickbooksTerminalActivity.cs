@@ -1,9 +1,8 @@
 ﻿using System;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.BaseClasses;
 using terminalQuickBooks.Infrastructure;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
 namespace terminalQuickBooks.Actions
 {
@@ -11,7 +10,7 @@ namespace terminalQuickBooks.Actions
         where T : StandardConfigurationControlsCM
     {
         protected BaseQuickbooksTerminalActivity(ICrateManager crateManager)
-            : base(true, crateManager)
+            : base(crateManager)
         {
         }
 

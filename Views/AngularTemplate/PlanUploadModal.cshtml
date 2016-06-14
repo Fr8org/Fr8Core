@@ -1,0 +1,23 @@
+﻿<div class="modal-header">
+    <h3 class="modal-title">Load plan from JSON file</h3>
+</div>
+<form name="loadForm" ng-submit="loadPlan(planFile)" block-if="uploadFlag">
+    <div class="modal-body clearfix">
+        <div class="col-xs-12">
+            <md-input-container class="fr8-full-width">
+                <label>Plan name</label>
+                <input name="planName" ng-model="planName" required>
+            </md-input-container>    
+        </div>
+        <div class="col-xs-12">
+            <md-button class="md-raised" ng-class="{'md-primary':planFile.name}" ngf-select ngf-pattern=".json" ngf-accept=".json" name="planFile" ng-model="planFile" ngf-change="fileChanged()" >
+                Choose .JSON file to upload plan template
+            </md-button>
+            <i ng-show="planFile.name" class="fa fa-2x fa-check text-success">&nbsp;</i> {{planFile.name}}
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="submit" >Load plan template</button>
+        <button class="btn btn-warning" type="reset" ng-click="cancel()">Cancel</button>
+    </div>
+</form>

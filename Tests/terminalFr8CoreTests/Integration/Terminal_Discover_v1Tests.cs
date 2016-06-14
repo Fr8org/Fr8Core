@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Manifests;
-using HealthMonitor.Utility;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
 
 namespace terminalFr8CoreTests.Integration
@@ -9,32 +9,29 @@ namespace terminalFr8CoreTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
-        private const int Fr8CoreActivityCount = 28;
-        private const string TestIncomingDataName = "TestIncomingData";
-        private const string MapFieldsName = "MapFields";
-        private const string AddPayloadManuallyName = "AddPayloadManually";
-        private const string SaveToFr8WarehouseName = "SaveToFr8Warehouse";
+        private const int Fr8CoreActivityCount = 25;
+        private const string TestIncomingDataName = "Test_Incoming_Data";
+        private const string AddPayloadManuallyName = "Add_Payload_Manually";
+        private const string SaveToFr8WarehouseName = "Save_To_Fr8_Warehouse";
         private const string Select_Fr8_ObjectName = "Select_Fr8_Object";
-        private const string ConnectToSqlName = "ConnectToSql";
-        private const string BuildQueryName = "BuildQuery";
-        private const string ExecuteSqlName = "ExecuteSql";
-        private const string ManagePlanName = "ManagePlan";
-        private const string FindObjectsSolutionName = "FindObjects_Solution";
+        private const string ConnectToSqlName = "Connect_To_Sql";
+        private const string BuildQueryName = "Build_Query";
+        private const string ExecuteSqlName = "Execute_Sql";
+        private const string ManagePlanName = "Manage_Plan";        
         private const string LoopName = "Loop";
-        private const string SetDelayName = "SetDelay";
-        private const string ConvertCratesName = "ConvertCrates";
-        private const string ConvertRelatedFieldsIntoTableName = "ConvertRelatedFieldsIntoTable";
-        private const string QueryFr8WarehouseName = "QueryFr8Warehouse";
+        private const string SetDelayName = "Set_Delay";
+        private const string ConvertRelatedFieldsIntoTableName = "Convert_Related_Fields_Into_Table";
+        private const string QueryFr8WarehouseName = "Query_Fr8_Warehouse";
         private const string ShowReportName = "Show_Report_Onscreen";
-        private const string StoreFileName = "StoreFile";
+        private const string StoreFileName = "Store_File";
         private const string MonitorFr8Events = "Monitor_Fr8_Events";
-        private const string GetFileFromFr8Store = "GetFileFromFr8Store";
+        private const string GetFileFromFr8Store = "Get_File_From_Fr8_Store";
         private const string BuildMessage = "Build_Message";
-        private const string SearchFr8Warehouse = "SearchFr8Warehouse";
-        private const string MakeADecision = "MakeADecision";
-        private const string ExtractTableField = "ExtractTableField";
-        private const string AppBuilder = "AppBuilder";
-        private const string GetDataFromFr8Warehouse = "GetDataFromFr8Warehouse";
+        private const string SearchFr8Warehouse = "Search_Fr8_Warehouse";
+        private const string MakeADecision = "Make_A_Decision";
+        private const string ExtractTableField = "Extract_Table_Field";
+        private const string AppBuilder = "App_Builder";
+        private const string GetDataFromFr8Warehouse = "Get_Data_From_Fr8_Warehouse";
         private const string SendEmailViaSendGrid = "Send_Email";
         private const string SendSMSViaTwilio = "Send_SMS";
 
@@ -52,34 +49,31 @@ namespace terminalFr8CoreTests.Integration
             var terminalDiscoverResponse = await HttpGetAsync<StandardFr8TerminalCM>(discoverUrl);
 
             Assert.NotNull(terminalDiscoverResponse);
-            Assert.AreEqual(Fr8CoreActivityCount, terminalDiscoverResponse.Activities.Count);
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == TestIncomingDataName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == MapFieldsName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == AddPayloadManuallyName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SaveToFr8WarehouseName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == Select_Fr8_ObjectName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ConnectToSqlName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == BuildQueryName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ExecuteSqlName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ManagePlanName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == FindObjectsSolutionName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == LoopName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SetDelayName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ConvertCratesName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ConvertRelatedFieldsIntoTableName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == QueryFr8WarehouseName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ShowReportName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == StoreFileName));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == MonitorFr8Events));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == GetFileFromFr8Store));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == BuildMessage));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SearchFr8Warehouse));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == MakeADecision));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ExtractTableField));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == AppBuilder));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == GetDataFromFr8Warehouse));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SendEmailViaSendGrid));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SendSMSViaTwilio));
+            Assert.AreEqual(Fr8CoreActivityCount, terminalDiscoverResponse.Activities.Count, "Fr8CoreActivityCount not equal expected");
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == TestIncomingDataName), "TestIncomingDataName wasn`t found");
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == AddPayloadManuallyName), "AddPayloadManuallyName wasn`t found");
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SaveToFr8WarehouseName), "SaveToFr8WarehouseName wasn`t found");
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == Select_Fr8_ObjectName), "Select_Fr8_ObjectName wasn`t found");
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ConnectToSqlName), "ConnectToSqlName wasn`t found");
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == BuildQueryName), "BuildQueryName wasn`t found");
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ExecuteSqlName), "ExecuteSqlName wasn`t found");
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ManagePlanName), "ManagePlanName wasn`t found");
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == LoopName), "LoopName wasn`t found");
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SetDelayName), "SetDelayName wasn`t found");
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ConvertRelatedFieldsIntoTableName), "ConvertRelatedFieldsIntoTableName wasn`t found");
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == QueryFr8WarehouseName), "QueryFr8WarehouseName wasn`t found");
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ShowReportName), "ShowReportName wasn`t found");
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == StoreFileName), "StoreFileName wasn`t found");
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == MonitorFr8Events), "MonitorFr8Events wasn`t found");
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == GetFileFromFr8Store), "GetFileFromFr8Store wasn`t found");
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == BuildMessage), "BuildMessage wasn`t found");
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SearchFr8Warehouse), "SearchFr8Warehouse wasn`t found");
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == MakeADecision), "MakeADecision wasn`t found");
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ExtractTableField), "ExtractTableField wasn`t found");
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == AppBuilder), "AppBuilder wasn`t found");
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == GetDataFromFr8Warehouse), "GetDataFromFr8Warehouse wasn`t found");
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SendEmailViaSendGrid), "SendEmailViaSendGrid wasn`t found");
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SendSMSViaTwilio), "SendSMSViaTwilio wasn`t found");
         }
     }
 }

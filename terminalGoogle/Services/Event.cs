@@ -5,22 +5,16 @@ using System.Linq;
 using System.Web;
 using terminalGoogle.Infrastructure;
 using System.Threading.Tasks;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Fr8Data.Managers;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using terminalGoogle.Interfaces;
 
 namespace terminalGoogle.Services
 {
     public class Event : IEvent
     {
-        private readonly ICrateManager _crate;
-
-        public Event()
-        {
-            _crate = ObjectFactory.GetInstance<ICrateManager>();
-        }
-
         public async Task<Crate> Process(string externalEventPayload)
         {
             if (string.IsNullOrEmpty(externalEventPayload))
@@ -81,7 +75,7 @@ namespace terminalGoogle.Services
         private ICrateStorage WrapPayloadDataCrate(List<FieldDTO> payloadFields)
         {
 
-            return new CrateStorage(Fr8Data.Crates.Crate.FromContent("Payload Data", new StandardPayloadDataCM(payloadFields)));
+            return new CrateStorage(Crate.FromContent("Payload Data", new StandardPayloadDataCM(payloadFields)));
         }
     }
 }

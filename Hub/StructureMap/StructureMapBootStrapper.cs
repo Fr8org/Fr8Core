@@ -7,8 +7,6 @@ using Hub.Managers.APIManagers.Packagers.SendGrid;
 using InternalInterfaces = Hub.Interfaces;
 using Hub.Interfaces;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Authorizers;
-using Hub.Managers.APIManagers.Authorizers.Google;
 using Hub.Managers.APIManagers.Packagers;
 using Hub.Managers.APIManagers.Packagers.SegmentIO;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
@@ -25,16 +23,16 @@ using ExtternalStructureMap = StructureMap;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 using System.Threading.Tasks;
-using Utilities;
-using Utilities.Interfaces;
 using System.Net.Http;
 using Microsoft.ApplicationInsights;
 using System.Linq.Expressions;
 using Castle.DynamicProxy;
 using Data.Interfaces;
 using Data.Repositories.Utilization;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities;
 using Hub.Security.ObjectDecorators;
 using Hub.Services.Timers;
 
@@ -90,7 +88,6 @@ namespace Hub.StructureMap
                 For<ITracker>().Use<SegmentIO>();
                 For<IIntakeManager>().Use<IntakeManager>();
 
-                For<IOAuthAuthorizer>().Use<GoogleAuthorizer>().Named("Google");
 
                 For<IImapClient>().Use<ImapClientWrapper>();
                 For<ITerminalTransmitter>().Use<TerminalTransmitter>();
@@ -111,8 +108,7 @@ namespace Hub.StructureMap
                 For<ITerminal>().Use<Terminal>().Singleton();
                 For<ICrateManager>().Use<CrateManager>();
                 For<IReport>().Use<Report>();
-                For<IManifest>().Use<Manifest>();
-                For<IFindObjectsPlan>().Use<FindObjectsPlan>();
+                For<IManifest>().Use<ManifestService>();
                 For<ITime>().Use<Time>();
                 For<IPusherNotifier>().Use<PusherNotifier>();
                 For<IAuthorization>().Use<Authorization>();
@@ -127,6 +123,7 @@ namespace Hub.StructureMap
                 For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
                 For<ITimer>().Use<Win32Timer>();
+                For<IManifestRegistryMonitor>().Use<ManifestRegistryMonitor>().Singleton();
             }
         }
 
@@ -147,7 +144,6 @@ namespace Hub.StructureMap
 
                 For<ISecurityServices>().Use(new MockedSecurityServices());
 
-                For<IOAuthAuthorizer>().Use<GoogleAuthorizer>().Named("Google");
 
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
 
@@ -178,8 +174,7 @@ namespace Hub.StructureMap
 
                 For<ICrateManager>().Use<CrateManager>();
 
-                For<IManifest>().Use<Manifest>();
-                For<IFindObjectsPlan>().Use<FindObjectsPlan>();
+                For<IManifest>().Use<ManifestService>();
                 For<IAuthorization>().Use<Authorization>();
                 For<IReport>().Use<Report>();
                 var timeMock = new Mock<ITime>();
@@ -254,7 +249,7 @@ namespace Hub.StructureMap
 
             }
 
-            public Task<List<SolutionPageDTO>> GetSolutionDocumentations(string terminalName)
+            public Task<List<DocumentationResponseDTO>> GetSolutionDocumentations(string terminalName)
             {
                 return _terminal.GetSolutionDocumentations(terminalName);
             }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using Data.Entities;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Hub.Interfaces;
 using HubWeb.ViewModels;
 
@@ -50,7 +50,6 @@ namespace HubWeb.App_Start
 
             Mapper.CreateMap<Fr8AccountDO, ManageUserVM>()
                 .ForMember(mu => mu.HasLocalPassword, opts => opts.ResolveUsing(account => !string.IsNullOrEmpty(account.PasswordHash)))
-                .ForMember(mu => mu.HasDocusignToken, opts => opts.Ignore())
                 .ForMember(mu => mu.HasGoogleToken, opts => opts.Ignore())
                 .ForMember(mu => mu.GoogleSpreadsheets, opts => opts.Ignore());
 

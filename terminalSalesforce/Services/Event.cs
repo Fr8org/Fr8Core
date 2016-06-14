@@ -2,21 +2,24 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using terminalSalesforce.Infrastructure;
-using TerminalBase.BaseClasses;
 using System.Linq;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Services;
 
 namespace terminalSalesforce.Services
 {
     public class Event : IEvent
     {
-       
-        private readonly BaseTerminalController _baseTerminalController = new BaseTerminalController();
-      
+        private readonly IHubEventReporter _eventReporter;
 
-        public Task<Crate> ProcessEvent(string curExternalEventPayload)
+        public Event(IHubEventReporter eventReporter)
+        {
+            _eventReporter = eventReporter;
+        }
+
+        public async Task<Crate> ProcessEvent(string curExternalEventPayload)
         {
             try
             {
@@ -39,11 +42,11 @@ namespace terminalSalesforce.Services
                     Manufacturer = "Salesforce",
                 };
 
-                return Task.FromResult((Crate)Crate.FromContent("Standard Event Report", eventReportContent));
+                return Crate.FromContent("Standard Event Report", eventReportContent);
             }
             catch (Exception e)
             {
-                _baseTerminalController.ReportTerminalError("terminalSalesforce", e);
+                await _eventReporter.ReportTerminalError(e);
                 throw new Exception($"Error while processing. \r\n{curExternalEventPayload}");
             }
         }

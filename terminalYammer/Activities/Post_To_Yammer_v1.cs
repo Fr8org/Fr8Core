@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Errors;
 using Newtonsoft.Json;
 using terminalYammer.Interfaces;
 using terminalYammer.Services;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
 namespace terminalYammer.Actions
 {
@@ -75,10 +75,10 @@ namespace terminalYammer.Actions
             }
         }
 
-        public Post_To_Yammer_v1(ICrateManager crateManager)
-            : base(true, crateManager)
+        public Post_To_Yammer_v1(ICrateManager crateManager, Yammer yammer)
+            : base(crateManager)
         {
-            _yammer = new Yammer();
+            _yammer = yammer;
         }
 
         public override Task FollowUp()
@@ -91,11 +91,9 @@ namespace terminalYammer.Actions
             var oauthToken = AuthorizationToken.Token;
             var groups = await _yammer.GetGroupsList(oauthToken);
             var crateAvailableGroups = CreateAvailableGroupsCrate(groups);
-            var crateAvailableFields = await CreateAvailableFieldsCrate();
             Storage.Clear();
             Storage.Add(PackControls(new ActivityUi()));
             Storage.Add(crateAvailableGroups);
-            Storage.Add(crateAvailableFields);
         }
 
         public override async Task Run()
@@ -112,7 +110,7 @@ namespace terminalYammer.Actions
                 await _yammer.PostMessageToGroup(AuthorizationToken.Token,
                     groupMessageField.GroupID, groupMessageField.Message);
             }
-            catch (TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException)
+            catch (AuthorizationTokenExpiredOrInvalidException)
             {
                 RaiseInvalidTokenError();
                 return;
@@ -144,22 +142,7 @@ namespace terminalYammer.Actions
             return groupMessage;
         }
 
-        private async Task<Crate> CreateAvailableFieldsCrate()
-        {
-            var curUpstreamFields =
-                (await HubCommunicator.GetCratesByDirection<FieldDescriptionsCM>(ActivityId, CrateDirection.Upstream))
-
-                .Where(x => x.Label != "Available Groups")
-                .SelectMany(x => x.Content.Fields)
-                .ToArray();
-
-            var availableFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(
-                    "Available Fields",
-                    curUpstreamFields
-                );
-
-            return availableFieldsCrate;
-        }
+       
 
         private void ValidateYammerActivity(string value, string exceptionMessage)
         {

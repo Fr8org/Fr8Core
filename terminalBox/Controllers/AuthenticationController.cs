@@ -1,28 +1,33 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using TerminalBase.BaseClasses;
-using Utilities.Configuration.Azure;
 using System.Net.Http;
 using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Text;
 using System.Web;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
 using terminalBox.Infrastructure;
 
 namespace terminalBox.Controllers
 {
     [RoutePrefix("authentication")]
-    public class AuthenticationController : BaseTerminalController
+    public class AuthenticationController : ApiController
     {
-        private const string CurTerminal = "terminalBox";
+        private readonly IHubEventReporter _eventReporter;
+
+        public AuthenticationController(IHubEventReporter eventReporter)
+        {
+            _eventReporter = eventReporter;
+        }
 
         //https://account.box.com/api/oauth2/authorize?response_type=code&client_id=MY_CLIENT_ID&state=security_token%3DKnhMJatFipTAnM0nHlZA
         //http://localhost:30643/AuthenticationCallback/ProcessSuccessfulOAuthResponse
         [HttpPost]
-        [Route("initial_url")]
+        [Route("request_url")]
         public ExternalAuthUrlDTO GenerateOAuthInitiationURL()
         {
             var url = CloudConfigurationManager.GetSetting("BoxAuthUrl");
@@ -89,7 +94,8 @@ namespace terminalBox.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(CurTerminal, ex);
+                await _eventReporter.ReportTerminalError(ex);
+
                 return await Task.FromResult(
                     new AuthorizationTokenDTO()
                     {

@@ -1,23 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Data.Entities;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Infrastructure.Behaviors;
+using Fr8.TerminalBase.Infrastructure.States;
 using terminalDocuSign.Activities;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
-using TerminalBase.Infrastructure;
-using TerminalBase.Infrastructure.Behaviors;
 using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSign.Actions
@@ -39,6 +36,10 @@ namespace terminalDocuSign.Actions
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
         protected override string ActivityUserFriendlyName => "Send DocuSign Envelope";
+        private const string advisoryName = "DocuSign Template Warning";
+        private const string advisoryContent = "In your selected template you have fields with default values. Those can be changes inside advanced DocuSign UI to frendlier label.";
+
+
 
         public Send_DocuSign_Envelope_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
             : base(crateManager, docuSignManager)
@@ -248,8 +249,7 @@ namespace terminalDocuSign.Actions
               "DocuSignTemplateRolesFields",
               AvailabilityType.Configuration,
               roles.ToArray()
-
-          );
+            );
 
             Storage.RemoveByLabel("DocuSignTemplateRolesFields");
             Storage.Add(crateRolesDTO);
@@ -258,6 +258,27 @@ namespace terminalDocuSign.Actions
             var envelopeDataDTO = tabsandfields.Item2;
 
             var userDefinedFields = tabsandfields.Item1.Where(a => a.Tags.Contains(DocuSignConstants.DocuSignTabTag));
+
+            //check for DocuSign default template names and add advisory json
+            var hasDefaultNames = DocuSignManager.DocuSignTemplateDefaultNames(tabsandfields.Item2);
+            if (hasDefaultNames)
+            {
+                var advisoryCrate = Storage.CratesOfType<AdvisoryMessagesCM>().FirstOrDefault();
+                var currentAdvisoryResults = advisoryCrate == null ? new AdvisoryMessagesCM() : advisoryCrate.Content;
+
+                var advisory = currentAdvisoryResults.Advisories.FirstOrDefault(x => x.Name == advisoryName);
+
+                if (advisory == null)
+                {
+                    currentAdvisoryResults.Advisories.Add(new AdvisoryMessageDTO { Name = advisoryName, Content = advisoryContent });
+                }
+                else
+                {
+                    advisory.Content = advisoryContent;
+                }
+
+                Storage.Add(Crate.FromContent("Advisories", currentAdvisoryResults));
+            }
 
             var crateUserDefinedDTO = CrateManager.CreateDesignTimeFieldsCrate(
                 "DocuSignTemplateUserDefinedFields",
@@ -338,7 +359,7 @@ namespace terminalDocuSign.Actions
                 previousTemplateId = previousTemplateIdCrate.Get<StandardPayloadDataCM>().GetValueOrDefault("TemplateId");
             }
 
-            crateStorage.ReplaceByLabel(Fr8Data.Crates.Crate.FromContent("ChosenTemplateId", new StandardPayloadDataCM()
+            crateStorage.ReplaceByLabel(Crate.FromContent("ChosenTemplateId", new StandardPayloadDataCM()
             { PayloadObjects = new List<PayloadObjectDTO>() { new PayloadObjectDTO() { PayloadObject = new List<FieldDTO>() { new FieldDTO("TemplateId", docusignTemplateId) } } } }));
 
             return docusignTemplateId != previousTemplateId;

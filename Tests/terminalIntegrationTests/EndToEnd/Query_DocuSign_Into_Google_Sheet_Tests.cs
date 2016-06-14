@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Interfaces;
-using Fr8Infrastructure.Communication;
-using Fr8Infrastructure.Interfaces;
-using HealthMonitor.Utility;
-using Newtonsoft.Json;
+using Fr8.Infrastructure.Interfaces;
+
 using NUnit.Framework;
 using StructureMap;
-using terminaBaselTests.Tools.Activities;
-using terminaBaselTests.Tools.Plans;
-using terminalGoogle.DataTransferObjects;
+using Fr8.Testing.Integration;
+using Fr8.Testing.Integration.Tools.Activities;
+using Fr8.Testing.Integration.Tools.Plans;
 using terminalGoogle.Services;
 using terminalGoogle.Services.Authorization;
 
@@ -40,7 +36,7 @@ namespace terminalIntegrationTests.EndToEnd
         public async Task Query_DocuSign_Into_Google_Sheet_End_To_End()
         {
            
-            var terminalGoogleTools = new terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalGoogle(this);
+            var terminalGoogleTools = new Fr8.Testing.Integration.Tools.Terminals.IntegrationTestTools_terminalGoogle(this);
             var googleAuthTokenId = await terminalGoogleTools.ExtractGoogleDefaultToken();
             var defaultGoogleAuthToken = terminalGoogleTools.GetGoogleAuthToken(googleAuthTokenId);
 
@@ -52,7 +48,7 @@ namespace terminalIntegrationTests.EndToEnd
 
             //configure a save_to google activity
             var newSpeadsheetName = Guid.NewGuid().ToString();
-            var googleSheetApi = new GoogleSheet(new GoogleIntegration(ObjectFactory.GetInstance<IRestfulServiceClient>()));
+            var googleSheetApi = new GoogleSheet(new GoogleIntegration(ObjectFactory.GetInstance<IRestfulServiceClient>()), new GoogleDrive());
             var spreadsheetId = await googleSheetApi.CreateSpreadsheet(newSpeadsheetName, defaultGoogleAuthToken);
 
             await googleActivityConfigurator.AddAndConfigureSaveToGoogleSheet(thePlan, 2, "Docusign Envelope", "DocuSign Envelope Data", newSpeadsheetName);

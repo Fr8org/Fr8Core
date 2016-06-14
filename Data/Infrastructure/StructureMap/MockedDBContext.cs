@@ -13,9 +13,9 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Migrations;
 using Data.States.Templates;
+using Fr8.Infrastructure.Utilities;
 using Segment.Model;
 using StructureMap;
-using Utilities;
 
 namespace Data.Infrastructure.StructureMap
 {

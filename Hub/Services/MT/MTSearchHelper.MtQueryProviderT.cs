@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Reflection;
 using Hub.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories.MultiTenant.Queryable;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace Hub.Services
 {
@@ -17,7 +15,7 @@ namespace Hub.Services
         // We want to use reflection as little as possible. So we create generic class for converting Query Builder filters and will create instance if this class using reflection. To access members of this class we will use non-generic interface.
         // Se creating new instance will be the only place reflection is used.
         private class MtQueryProvider<T> : IMtQueryProvider
-            where  T : Fr8Data.Manifests.Manifest
+            where  T : Fr8.Infrastructure.Data.Manifests.Manifest
         {
             public Type Type
             {

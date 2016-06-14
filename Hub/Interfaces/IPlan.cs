@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
 using System.Threading.Tasks;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
 
 namespace Hub.Interfaces
 {
@@ -15,7 +15,7 @@ namespace Hub.Interfaces
         PlanResultDTO GetForUser(IUnitOfWork uow, Fr8AccountDO account, PlanQueryDTO planQueryDTO, bool isAdmin);
         IList<PlanDO> GetByName(IUnitOfWork uow, Fr8AccountDO account, string name, PlanVisibility visibility);
         void CreateOrUpdate(IUnitOfWork uow, PlanDO submittedPlan);
-        PlanDO Create(IUnitOfWork uow, string name, string category = "");
+        PlanDO Create(IUnitOfWork uow, string name, string category = "", string ownerId = "", PlanVisibility visibility = PlanVisibility.Standard);
         PlanDO GetFullPlan(IUnitOfWork uow, Guid id);
         Task Delete(Guid id);
 
@@ -28,7 +28,7 @@ namespace Hub.Interfaces
         bool IsMonitoringPlan(IUnitOfWork uow, PlanDO planDo);
 
         void Enqueue(Guid curPlanId, params Crate[] curEventReport);
-        Task<ContainerDO> Run(IUnitOfWork uow, PlanDO plan, Crate[] curPayload);
+        Task<ContainerDTO> Run(Guid planId, Crate[] payload, Guid? containerId);
         PlanDO Clone(Guid planId);
     }
 }

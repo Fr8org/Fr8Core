@@ -1,12 +1,7 @@
-﻿using StructureMap;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
+﻿using System.Threading.Tasks;
 using System.Web.Http;
-using TerminalBase.Infrastructure;
-using terminalGoogle.Infrastructure;
+using Fr8.TerminalBase.Services;
+using terminalGoogle.Interfaces;
 using terminalGoogle.Services;
 
 namespace terminalGoogle.Controllers
@@ -14,13 +9,13 @@ namespace terminalGoogle.Controllers
     [RoutePrefix("terminals/terminalGoogle")]
     public class EventController : ApiController
     {
-        private IEvent _event;
-        private BaseTerminalEvent _baseTerminalEvent;
+        private readonly IHubEventReporter _eventReporter;
+        private readonly IEvent _event;
 
-        public EventController()
+        public EventController(IHubEventReporter eventReporter)
         {
+            _eventReporter = eventReporter;
             _event = new Event();
-            _baseTerminalEvent = new BaseTerminalEvent();
         }
 
         [HttpPost]
@@ -28,7 +23,8 @@ namespace terminalGoogle.Controllers
         public async Task ProcessIncomingNotification()
         {
             string eventPayLoadContent = await Request.Content.ReadAsStringAsync();
-            await _baseTerminalEvent.Process(eventPayLoadContent, _event.Process);
+
+            await _eventReporter.Broadcast(await _event.Process(eventPayLoadContent));
         }
     }
 }

@@ -2,28 +2,32 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using Newtonsoft.Json;
-using TerminalBase.BaseClasses;
-using Utilities.Configuration.Azure;
 using DocuSign.eSign.Client;
 using DocuSign.eSign.Model;
 using DocuSign.eSign.Api;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.Services;
 using terminalDocuSign.DataTransferObjects;
 
 namespace terminalDocuSign.Controllers
 {
     [RoutePrefix("authentication")]
-    public class AuthenticationController : BaseTerminalController
+    public class AuthenticationController : ApiController
     {
-        private const string curTerminal = "terminalDocuSign";
-        
+        private readonly IHubEventReporter _eventReporter;
+
+        public AuthenticationController(IHubEventReporter eventReporter)
+        {
+            _eventReporter = eventReporter;
+        }
+
         [HttpPost]
-        [Route("internal")]
+        [Route("token")]
         public async Task<AuthorizationTokenDTO> GenerateInternalOAuthToken(CredentialsDTO curCredentials)
         {
             try
             {
-                
                 var authToken = await ObtainAuthToken(curCredentials);
 
                 if (authToken == null)
@@ -61,7 +65,7 @@ namespace terminalDocuSign.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerminal, ex,curCredentials.Fr8UserId);
+                await _eventReporter.ReportTerminalError(ex, curCredentials.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {

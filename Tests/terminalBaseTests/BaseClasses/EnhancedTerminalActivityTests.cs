@@ -3,24 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Entities;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Infrastructure.Communication;
-using Fr8Infrastructure.Interfaces;
-using Hub.Managers;
+using Fr8.Infrastructure.Communication;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Infrastructure.States;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
+using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using TerminalBase.Services;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
-using TerminalBase.Models;
+
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace terminaBaselTests.BaseClasses
 {
@@ -40,7 +42,7 @@ namespace terminaBaselTests.BaseClasses
     class BaseTerminalActivityMock : BaseTerminalActivity
     {
         public BaseTerminalActivityMock(ICrateManager crateManager) 
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 
@@ -74,7 +76,7 @@ namespace terminaBaselTests.BaseClasses
         public bool ValidationState = true;
 
         public ActivityOverrideCheckMock(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 
@@ -202,7 +204,7 @@ namespace terminaBaselTests.BaseClasses
 
 
         public UiSyncDynamicActivityMock(ICrateManager crateManager) 
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 
@@ -292,7 +294,7 @@ namespace terminaBaselTests.BaseClasses
 
 
         public UiSyncActivityMock(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 
@@ -333,7 +335,7 @@ namespace terminaBaselTests.BaseClasses
         }
 
         public ActivityWithUiBuilder(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 
@@ -389,7 +391,7 @@ namespace terminaBaselTests.BaseClasses
             ObjectFactory.Configure(x =>
             {
                 x.For<IRestfulServiceClient>().Use<RestfulServiceClient>().SelectConstructor(() => new RestfulServiceClient());
-                x.For<IHubCommunicator>().Use(new ExplicitDataHubCommunicator(samplePayload)).Singleton();
+                x.For<IHubCommunicator>().Use(new ExplicitDataHubCommunicator(samplePayload, _crateManager)).Singleton();
             });
             
             FixtureData.AddTestActivityTemplate();
@@ -448,7 +450,7 @@ namespace terminaBaselTests.BaseClasses
         {
             var activity = New<ActivityOverrideCheckMock>();
             var executionContext = CreateContainerExecutionContext();
-            ObjectFactory.GetInstance<IHubCommunicator>().Configure("testTerminal", null);
+            ObjectFactory.GetInstance<IHubCommunicator>().Authorize(null);
             await activity.Run(CreateActivityContext(Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, new StandardConfigurationControlsCM())), executionContext);
             Assert.IsTrue(activity.CalledMethods == (CalledMethod.Run | CalledMethod.Validate));
         }
@@ -458,7 +460,7 @@ namespace terminaBaselTests.BaseClasses
         {
             var activity = New<ActivityOverrideCheckMock>();
             var executionContext = CreateContainerExecutionContext();
-            ObjectFactory.GetInstance<IHubCommunicator>().Configure("testTerminal", null);
+            ObjectFactory.GetInstance<IHubCommunicator>().Authorize(null);
             await activity.RunChildActivities(CreateActivityContext(Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, new StandardConfigurationControlsCM())), executionContext);
             Assert.IsTrue(activity.CalledMethods == (CalledMethod.ChildActivitiesExecuted | CalledMethod.Validate));
         }
@@ -480,7 +482,7 @@ namespace terminaBaselTests.BaseClasses
 
             var executionContext = CreateContainerExecutionContext();
 
-            ObjectFactory.GetInstance<IHubCommunicator>().Configure("testTerminal", null);
+            ObjectFactory.GetInstance<IHubCommunicator>().Authorize(null);
 
             var activityContext = CreateActivityContext(Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, new StandardConfigurationControlsCM()));
 

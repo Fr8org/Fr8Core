@@ -183,7 +183,6 @@
 
 .route-builder-container {
     height: 800px;
-    overflow-y: auto;
     position: relative;
     white-space: nowrap;
     width: 100%;
@@ -1296,6 +1295,10 @@ footer p {
     z-index: 1001;
 }
 
+.manifest-registry-description {
+    word-break: break-word !important;
+}
+
 .dataTable td {
     word-break: break-all;
 }
@@ -1370,4 +1373,55 @@ md-checkbox.md-checked.green .md-icon {
     margin-top: 0px; 
     margin-bottom: 5px;
     font-size: 15px;
+}
+
+.activity-stream md-progress-linear {
+    height: 10px;
+}
+
+.activity-stream md-progress-linear .md-container {
+    height: 10px;
+}
+
+.activity-stream md-progress-linear.md-default-theme .md-container, md-progress-linear .md-container {
+    background-color: #fff;
+}
+
+.activity-stream md-progress-linear .md-container .md-bar {
+    height: 10px;
+}
+
+.activity-stream md-progress-linear.md-default-theme .md-bar, md-progress-linear .md-bar {
+
+}
+
+.advisory-glyphicon {
+    font-size: 2em;
+    color: rgb(38, 166, 154);
+    margin-top:10px            
+}
+
+.popover.right-top {
+    margin-left: 11px;
+}
+.popover.right-top > .arrow {
+    top: 10%;
+
+    border-left-width:0px !important;
+    border-right-color:#999;
+    border-right-style:solid !important;
+    border-right-width:11px !important;
+    height:22px;
+    left:-11px;
+    letter-spacing:normal;
+    line-height:20px;
+    margin-top:-11px;
+}
+
+.popover.right-top > .arrow:after {
+    bottom: -10px;
+    left: 1px;
+    content: " ";
+    border-right-color: #fff;
+    border-left-width: 0;
 }

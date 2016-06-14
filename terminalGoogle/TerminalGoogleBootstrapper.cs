@@ -1,9 +1,9 @@
-﻿using StructureMap;
+﻿using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.StructureMap;
+using StructureMap;
 using terminalGoogle.Interfaces;
 using terminalGoogle.Services;
 using terminalGoogle.Services.Authorization;
-using Fr8Infrastructure.StructureMap;
-using Fr8Data.Managers;
 
 namespace terminalGoogle
 {
@@ -28,7 +28,9 @@ namespace terminalGoogle
         public static void ConfigureLive(ConfigurationExpression configurationExpression)
         {
             configurationExpression.For<IGoogleIntegration>().Use<GoogleIntegration>();
+            configurationExpression.For<IGoogleDrive>().Use<GoogleDrive>();
             configurationExpression.For<IGoogleSheet>().Use<GoogleSheet>();
+            configurationExpression.For<IGoogleAppsScript>().Use<GoogleAppsScript>();
             configurationExpression.For<ICrateManager>().Use<CrateManager>();
         }
 

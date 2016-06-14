@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
 using Newtonsoft.Json;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
@@ -50,25 +46,9 @@ namespace terminalFr8Core.Activities
                 Controls.Add(new RunPlanButton());
             }
         }
-
-
-        private async Task<Crate> FindTables()
-        {
-            var fields = new List<FieldDTO>();
-            foreach (var table in (await HubCommunicator.GetCratesByDirection<FieldDescriptionsCM>(ActivityId, CrateDirection.Upstream))
-                                             .Select(x => x.Content)
-                                             .SelectMany(x => x.Fields)
-                                             .Where(x => x.Availability == AvailabilityType.RunTime && x.Value == "Table"))
-            {
-                fields.Add(new FieldDTO(table.Key, table.Key));    
-            }
-
-            return Crate.FromContent("Upstream Crate Label List", new FieldDescriptionsCM(fields));
-        }
-
-
+        
         public Show_Report_Onscreen_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 
@@ -97,12 +77,12 @@ namespace terminalFr8Core.Activities
         public override async Task Initialize()
         {
             Storage.Add(PackControls(new ActivityUi()));
-            Storage.Add(await FindTables());
+            
         }
 
         public override async Task FollowUp()
         {
-            Storage.ReplaceByLabel(await FindTables());
+          
         }
     }
 }

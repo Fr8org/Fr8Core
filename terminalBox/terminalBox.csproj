@@ -43,6 +43,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper, Version=4.0.4.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.4.0.4\lib\net45\AutoMapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Box.V2, Version=1.0.0.0, Culture=neutral, PublicKeyToken=ddda8fe64dde1ac3, processorArchitecture=MSIL">
       <HintPath>..\packages\Box.V2.2.6.2\lib\portable-net40+sl50+win+wp80\Box.V2.dll</HintPath>
       <Private>True</Private>
@@ -53,6 +57,18 @@
     </Reference>
     <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AI.Agent.Intercept, Version=1.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -83,6 +99,7 @@
       <HintPath>..\packages\Microsoft.ApplicationInsights.2.0.0\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
       <Private>True</Private>
@@ -115,8 +132,8 @@
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Nito.AsyncEx, Version=2.1.3.0, Culture=neutral, PublicKeyToken=09d695329ca273b7, processorArchitecture=MSIL">
@@ -135,6 +152,10 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="RestSharp, Version=105.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.105.2.3\lib\net4\RestSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="StructureMap, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\structuremap.3.1.6.186\lib\net40\StructureMap.dll</HintPath>
       <Private>True</Private>
@@ -144,6 +165,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net" />
     <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -180,8 +202,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\GenerateTableActivity_v1.cs" />
-    <Compile Include="Actions\SaveToFile_v1.cs" />
+    <Compile Include="Actions\Generate_Table_Activity_v1.cs" />
+    <Compile Include="Actions\Save_To_File_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
     <Compile Include="Controllers\ActivityController.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
@@ -217,21 +239,13 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Fr8Data\Fr8Data.csproj">
-      <Project>{a3178d71-a2c3-45b9-8334-adcc7c313541}</Project>
-      <Name>Fr8Data</Name>
+    <ProjectReference Include="..\Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj">
+      <Project>{bba91af2-7636-41b6-87c4-c1575ae8b04b}</Project>
+      <Name>Fr8Infrastructure.NET</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Infrastructure\Fr8Infrastructure.csproj">
-      <Project>{9f4b5c92-3535-4d4c-b1e4-37beb1ae5c42}</Project>
-      <Name>Fr8Infrastructure</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\terminalBase\TerminalBase.csproj">
-      <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
-      <Name>TerminalBase</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Utilities\Utilities.csproj">
-      <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
-      <Name>Utilities</Name>
+    <ProjectReference Include="..\Fr8TerminalBase.NET\Fr8TerminalBase.NET.csproj">
+      <Project>{bf96675e-6baf-4ac9-b247-1551d62e8c44}</Project>
+      <Name>Fr8TerminalBase.NET</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

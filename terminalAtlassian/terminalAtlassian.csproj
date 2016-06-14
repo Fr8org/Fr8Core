@@ -48,8 +48,20 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\Atlassian.Jira.dll</HintPath>
     </Reference>
-    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    <Reference Include="AutoMapper, Version=4.0.4.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.4.0.4\lib\net45\AutoMapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AI.PerfCounterCollector, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -109,8 +121,8 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="RestSharp, Version=105.2.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RestSharp.105.2.2\lib\net45\RestSharp.dll</HintPath>
+    <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.105.2.3\lib\net45\RestSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="StructureMap, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
@@ -124,8 +136,16 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Extensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives, Version=4.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Primitives.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.DynamicData" />
@@ -194,8 +214,10 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\Utils.cs" />
     <Compile Include="Interfaces\IAtlassianService.cs" />
     <Compile Include="Interfaces\IssueInfo.cs" />
+    <Compile Include="Interfaces\UserInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="Services\AtlassianService.cs" />
@@ -210,31 +232,15 @@
     <Content Include="Atlassian.Jira.dll" />
     <Content Include="Global.asax" />
     <Content Include="index.html" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Fr8Data\Fr8Data.csproj">
-      <Project>{a3178d71-a2c3-45b9-8334-adcc7c313541}</Project>
-      <Name>Fr8Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Infrastructure\Fr8Infrastructure.csproj">
-      <Project>{9f4b5c92-3535-4d4c-b1e4-37beb1ae5c42}</Project>
-      <Name>Fr8Infrastructure</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\terminalBase\TerminalBase.csproj">
-      <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
-      <Name>TerminalBase</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Utilities\Utilities.csproj">
-      <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
-      <Name>Utilities</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -347,7 +353,22 @@
   <ItemGroup>
     <Log4netConfigFiles Include="..\Config\log4net.terminals.*" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj">
+      <Project>{bba91af2-7636-41b6-87c4-c1575ae8b04b}</Project>
+      <Name>Fr8Infrastructure.NET</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Fr8TerminalBase.NET\Fr8TerminalBase.NET.csproj">
+      <Project>{bf96675e-6baf-4ac9-b247-1551d62e8c44}</Project>
+      <Name>Fr8TerminalBase.NET</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Target Name="BeforeBuild">
     <Copy SourceFiles="@(Log4netConfigFiles)" DestinationFolder="." />
+  </Target>
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
   </Target>
 </Project>

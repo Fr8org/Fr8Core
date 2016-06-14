@@ -17,7 +17,7 @@
             $scope.pages = [];
 
             var doSearch = function (pageStart) {
-                var url = urlPrefix + '/api/plantemplates/search'
+                var url = urlPrefix + '/api/plan_templates/search'
                     + '?text=' + $scope.searchForm.searchText
                     + '&pageStart=' + pageStart
                     + '&pageSize=' + $scope.pageSize;
@@ -25,7 +25,7 @@
                 Metronic.blockUI({ animate: true });
 
                 var promise = $q(function (resolve, reject) {
-                    $http.post(url)
+                    $http.get(url)
                         .then(function (res) {
                             $scope.totalCount = res.data.TotalCount;
                             $scope.planTemplates = res.data.PlanTemplates;
@@ -83,13 +83,16 @@
                             Metronic.unblockUI();
                         }
                         else {
-                            var url = urlPrefix + '/api/plantemplates/createplan';
-                            var data = { planTemplateId: planTemplate.PlanTemplateId };
-                            $http.post(url, data)
-                                .then(function () {
+                            var url = urlPrefix + '/api/plan_templates/createplan/?id=' + planTemplate.ParentPlanId;
+                            $http.post(url, null)
+                                .then(function (data) {
                                     $uibModal.open({
                                         templateUrl: '/PlanCreatedDialog.html',
                                         controller: 'PlanCreatedDialogController'
+                                    })
+                                    .result
+                                    .finally(function () {
+                                        window.location.href = data.data.RedirectUrl;
                                     });
 
                                     Metronic.unblockUI();

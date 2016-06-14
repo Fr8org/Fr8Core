@@ -1,5 +1,5 @@
 ﻿using System;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Ploeh.AutoFixture;
 
 namespace terminalDropboxTests.Fixtures

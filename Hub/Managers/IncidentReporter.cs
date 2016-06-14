@@ -5,11 +5,11 @@ using Data.Exceptions;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Interfaces;
 using Hub.Services;
-using Utilities.Configuration.Azure;
-using Utilities.Logging;
 
 namespace Hub.Managers
 {
@@ -37,32 +37,13 @@ namespace Hub.Managers
             EventManager.AlertResponseReceived += AlertManagerOnAlertResponseReceived;
             EventManager.AlertUserRegistrationError += ReportUserRegistrationError;
             EventManager.TerminalIncidentReported += LogTerminalIncident;
-            EventManager.IncidentDocuSignFieldMissing += IncidentDocuSignFieldMissing;
             EventManager.IncidentOAuthAuthenticationFailed += OAuthAuthenticationFailed;
             EventManager.KeyVaultFailure += KeyVaultFailure;
             EventManager.EventAuthTokenSilentRevoke += AuthTokenSilentRevoke;
             EventManager.EventContainerFailed += ContainerFailed;
             EventManager.EventUnexpectedError += UnexpectedError;
             EventManager.PlanActivationFailedEvent += PlanActivationFailed;
-            EventManager.EventMultipleMonitorAllDocuSignEventsPlansPerAccountArePresent += EventManager_EventMultipleMonitorAllDocuSignEventsPlansPerAccountArePresent;
             EventManager.EventTokenValidationFailed += TokenValidationFailed;
-        }
-
-        public void EventManager_EventMultipleMonitorAllDocuSignEventsPlansPerAccountArePresent(string external_email)
-        {
-            var incident = new IncidentDO
-            {
-                Fr8UserId = _sercurity.GetCurrentUser(),
-                Data = string.Join(
-                   "Multiple Monitor_All_DocuSign_Events plans were created for one DocuSign account: ", external_email
-               ),
-                PrimaryCategory = "Error",
-                SecondaryCategory = "Unexpected",
-                Component = "Terminal",
-                Activity = "Unexpected Error"
-            };
-
-            SaveAndLogIncident(incident);
         }
 
         private void UnexpectedError(Exception ex)
@@ -466,28 +447,6 @@ namespace Hub.Managers
                 uow.IncidentRepository.Add(incidentDO);
                 Logger.GetLogger().Info(incidentDO.Data);
                 uow.SaveChanges();
-            }
-        }
-
-        public void IncidentDocuSignFieldMissing(string envelopeId, string fieldName)
-        {
-            using (var _uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                IncidentDO incidentDO = new IncidentDO
-                {
-                    Fr8UserId = _sercurity.GetCurrentUser(),
-                    PrimaryCategory = "Envelope",
-                    SecondaryCategory = "",
-                    ObjectId = envelopeId,
-                    Activity = "Action processing",
-                    Data =
-                        String.Format("IncidentDocuSignFieldMissing: Envelope id: {0}, Field name: {1}", envelopeId,
-                            fieldName)
-                };
-                _uow.IncidentRepository.Add(incidentDO);
-                //Logger.GetLogger().Warn(incidentDO.Data);
-                Logger.LogWarning(incidentDO.Data);
-                _uow.SaveChanges();
             }
         }
 

@@ -13,12 +13,12 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Infrastructure.StructureMap;
-using Fr8Data.DataTransferObjects;
-using Fr8Infrastructure.Interfaces;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;
-using Utilities.Configuration.Azure;
 
 namespace HubWeb.Controllers
 {
@@ -131,14 +131,14 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> GetAuthToken(
-            [FromUri]string curFr8UserId,
             [FromUri]string externalAccountId,
             [FromUri]string terminalId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var userId = User.Identity.GetUserId();
                 var terminalDO = await ObjectFactory.GetInstance<ITerminal>().GetTerminalByPublicIdentifier(terminalId);
-                var token = uow.AuthorizationTokenRepository.FindTokenByExternalAccount(externalAccountId, terminalDO.Id, curFr8UserId);
+                var token = uow.AuthorizationTokenRepository.FindTokenByExternalAccount(externalAccountId, terminalDO.Id, userId);
                 if (token != null)
                     return Ok(token);
             }
@@ -153,7 +153,7 @@ namespace HubWeb.Controllers
             var hmacService = ObjectFactory.GetInstance<IHMACService>();
             var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
-            var uri = new Uri(ConfigurationManager.AppSettings["PlanDirectoryUrl"] + "/api/authentication/token");
+            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/authentication/token");
             var headers =
                 await
                     hmacService.GenerateHMACHeader(uri, "PlanDirectory",
@@ -212,7 +212,9 @@ namespace HubWeb.Controllers
                             IsMain = y.IsMain
                         })
                         .OrderBy(y => y.ExternalAccountName)
-                        .ToList()
+                        .ToList(),
+                    AuthenticationType = x.AuthenticationType,
+                    Version = x.Version
                 })
                 .ToList();
 

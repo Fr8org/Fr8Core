@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
 using StructureMap;
 using terminalSlack.Interfaces;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
 namespace terminalSlack.Activities
 {
@@ -90,11 +89,11 @@ namespace terminalSlack.Activities
         private readonly ISlackIntegration _slackIntegration;
         private readonly ISlackEventManager _slackEventManager;
 
-        public Monitor_Channel_v2(ICrateManager crateManager)
-            : base(true, crateManager)
+        public Monitor_Channel_v2(ICrateManager crateManager, ISlackIntegration slackIntegration, ISlackEventManager eventManager)
+            : base(crateManager)
         {
-            _slackIntegration = ObjectFactory.GetInstance<ISlackIntegration>();
-            _slackEventManager = ObjectFactory.GetInstance<ISlackEventManager>();
+            _slackIntegration = slackIntegration;
+            _slackEventManager = eventManager;
         }
 
         public override async Task Initialize()

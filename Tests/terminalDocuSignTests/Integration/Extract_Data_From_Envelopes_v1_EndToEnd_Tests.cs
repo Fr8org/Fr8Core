@@ -1,16 +1,16 @@
-﻿using HealthMonitor.Utility;
+﻿using Fr8.Testing.Integration;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using Fr8Data.Managers;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -33,7 +33,7 @@ namespace terminalDocuSignTests.Integration
 
             string baseUrl = GetHubApiBaseUrl();
 
-            var solutionCreateUrl = baseUrl + "plans/createSolution?solutionName=Extract_Data_From_Envelopes";
+            var solutionCreateUrl = baseUrl + "plans?solution_name=Extract_Data_From_Envelopes";
 
             //
             // Create solution
@@ -238,7 +238,7 @@ namespace terminalDocuSignTests.Integration
             // Add Add Payload Manually action
             var activityCategoryParam =(int)ActivityCategory.Processors;
             var activityTemplates = await HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseUrl + "webservices?id="+ activityCategoryParam);
-            var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == "AddPayloadManually");
+            var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == "Add_Payload_Manually");
 
             var apmAction = new ActivityDTO()
             {

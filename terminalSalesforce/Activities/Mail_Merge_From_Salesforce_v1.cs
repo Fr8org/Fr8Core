@@ -1,22 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using TerminalBase.BaseClasses;
 using terminalSalesforce.Infrastructure;
 using System.Threading.Tasks;
-using StructureMap;
-using TerminalBase.Infrastructure.Behaviors;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Infrastructure.Behaviors;
+using Fr8.TerminalBase.Models;
 using ServiceStack;
-using TerminalBase.Infrastructure;
-using TerminalBase.Models;
-using TerminalBase.Services;
 
 namespace terminalSalesforce.Actions
 {
@@ -188,12 +184,18 @@ namespace terminalSalesforce.Actions
             var loopActivity = await AddAndConfigureChildActivity(context.SolutionActivity, await GetActivityTemplate("terminalFr8Core", "Loop"), "Loop", "Loop", 2);
             var crateStorage = loopActivity.CrateStorage;
             var loopConfigControls = ControlHelper.GetConfigurationControls(crateStorage);
-                var crateChooser = loopConfigControls.Controls.OfType<CrateChooser>().Single();
-                var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(x => x.ManifestId == (int)MT.StandardTableData);
-                if (tableDescription != null)
-                {
-                    tableDescription.Selected = true;
-                }
+            var crateChooser = loopConfigControls.Controls.OfType<CrateChooser>().Single();
+            var firstActivity = context.SolutionActivity.ChildrenActivities.OrderBy(x => x.Ordering).First();
+            var firstActivityCrates = firstActivity.CrateStorage.CrateContentsOfType<CrateDescriptionCM>().FirstOrDefault();
+
+            crateChooser.CrateDescriptions = firstActivityCrates?.CrateDescriptions;
+
+            var tableDescription = crateChooser.CrateDescriptions?.FirstOrDefault(x => x.ManifestId == (int)MT.StandardTableData);
+            if (tableDescription != null)
+            {
+                tableDescription.Selected = true;
+            }
+
             var solutionActivityUi = new ActivityUi().ClonePropertiesFrom(context.SolutionActivity.CrateStorage.FirstCrate<StandardConfigurationControlsCM>().Content) as ActivityUi;
             var mailSenderActivityTemplate = await GetActivityTemplate(Guid.Parse(solutionActivityUi.MailSenderActivitySelector.Value));
             var sendEmailActivity = await AddAndConfigureChildActivity(loopActivity, mailSenderActivityTemplate, order: 1);
@@ -249,7 +251,7 @@ namespace terminalSalesforce.Actions
                 activityUi.SalesforceObjectSelector.selectedKey = solutionActivityUi.SalesforceObjectSelector.selectedKey;
                 activityUi.SalesforceObjectSelector.Value = solutionActivityUi.SalesforceObjectSelector.Value;
                 activityUi.SalesforceObjectFilter.Value = solutionActivityUi.SalesforceObjectFilter.Value;
-                storage.ReplaceByLabel(Crate.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
+                storage.ReplaceByLabel(Crate.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray())));
             }
 
         private async Task ConfigureSolutionActivityUi()
@@ -301,21 +303,21 @@ namespace terminalSalesforce.Actions
         /// <param name="activityDO"></param>
         /// <param name="curDocumentation"></param>
         /// <returns></returns>
-        public dynamic Documentation(ActivityPayload activityDO, string curDocumentation)
+        protected override Task<DocumentationResponseDTO> GetDocumentation(string documentationType)
         {
-            if (curDocumentation.Contains("MainPage"))
+            if (documentationType.Contains("MainPage"))
             {
                 var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
                 return Task.FromResult(curSolutionPage);
 
             }
-            if (curDocumentation.Contains("HelpMenu"))
+            if (documentationType.Contains("HelpMenu"))
             {
-                if (curDocumentation.Contains("ExplainMailMerge"))
+                if (documentationType.Contains("ExplainMailMerge"))
                 {
                     return Task.FromResult(GenerateDocumentationResponse(@"This solution helps you to work with email and move data from them to DocuSign service"));
                 }
-                if (curDocumentation.Contains("ExplainService"))
+                if (documentationType.Contains("ExplainService"))
                 {
                     return Task.FromResult(GenerateDocumentationResponse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
                 }

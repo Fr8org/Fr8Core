@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
-using Data.Infrastructure;
+using Fr8.Infrastructure.Communication;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Utilities.Logging;
 using Google.GData.Client;
 using Newtonsoft.Json.Linq;
-using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
-using TerminalBase.Infrastructure;
-using Utilities.Configuration.Azure;
-using Utilities.Logging;
-using Fr8Infrastructure.Interfaces;
-using Fr8Infrastructure.Communication;
-using Newtonsoft.Json;
 
 namespace terminalGoogle.Services.Authorization
 {
@@ -105,7 +101,7 @@ namespace terminalGoogle.Services.Authorization
                     && string.IsNullOrEmpty(googleAuthDTO.RefreshToken))
                 {
                     var message = "Google access token is expired. Token refresh will be executed";
-                    EventManager.TokenValidationFailed(JsonConvert.SerializeObject(googleAuthDTO), message);
+                    //EventManager.TokenValidationFailed(JsonConvert.SerializeObject(googleAuthDTO), message);
                     Logger.LogError(message);
                     return false;
                 }
@@ -123,7 +119,7 @@ namespace terminalGoogle.Services.Authorization
                 if (exception is RestfulServiceException || exception is WebException)
                 {
                     var message = "Google token validation fails with error: " + exception.Message;
-                    EventManager.TokenValidationFailed(JsonConvert.SerializeObject(googleAuthDTO), message);
+                    //EventManager.TokenValidationFailed(JsonConvert.SerializeObject(googleAuthDTO), message);
                     Logger.LogError(message);
                     return false;
                 }

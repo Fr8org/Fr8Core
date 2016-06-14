@@ -5,7 +5,6 @@ using System.Web.Http.Dispatcher;
 using Microsoft.Owin.Hosting;
 using Owin;
 using terminalGoogle.Controllers;
-using TerminalBase.BaseClasses;
 
 namespace terminalGoogle
 {

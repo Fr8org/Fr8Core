@@ -6,18 +6,20 @@ using Google.GData.Spreadsheets;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
 using System.Threading.Tasks;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace terminalGoogle.Services
 {
     public class GoogleSheet : IGoogleSheet
     {
         private readonly IGoogleIntegration _googleIntegration;
+        private readonly IGoogleDrive _googleDrive;
 
-        public GoogleSheet(IGoogleIntegration googleIntegration)
+        public GoogleSheet(IGoogleIntegration googleIntegration, IGoogleDrive googleDrive)
         {
             _googleIntegration = googleIntegration;
+            _googleDrive = googleDrive;
         }
 
         private IEnumerable<SpreadsheetEntry> GetSpreadsheetsImpl(GoogleAuthDTO authDTO)
@@ -139,15 +141,13 @@ namespace terminalGoogle.Services
 
         public async Task DeleteSpreadSheet(string spreadSheetId, GoogleAuthDTO authDTO)
         {
-            GoogleDrive googleDrive = new GoogleDrive();
-            var driveService = await googleDrive.CreateDriveService(authDTO);
+            var driveService = await _googleDrive.CreateDriveService(authDTO);
             driveService.Files.Delete(spreadSheetId).Execute();
         }
 
         public async Task<string> CreateSpreadsheet(string spreadsheetname, GoogleAuthDTO authDTO)
         {
-            GoogleDrive googleDrive = new GoogleDrive();
-            var driveService = await googleDrive.CreateDriveService(authDTO);
+            var driveService = await _googleDrive.CreateDriveService(authDTO);
 
             var file = new Google.Apis.Drive.v2.Data.File();
             file.Title = spreadsheetname;

@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Helpers;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Helpers;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Errors;
 using Newtonsoft.Json.Linq;
-using TerminalBase;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
@@ -200,7 +199,7 @@ namespace terminalFr8Core.Activities
 
         private async Task<Crate> CreateControlsCrate()
         {
-            var crateChooser = await ControlHelper.GenerateCrateChooser(
+            var crateChooser = ControlHelper.GenerateCrateChooser(
                 "Available_Crates",
                 "This Loop will process the data inside of",
                 true,
@@ -211,7 +210,7 @@ namespace terminalFr8Core.Activities
         }
 
         public Loop_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
     }

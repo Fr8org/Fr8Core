@@ -1,19 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Web.Http.Results;
-using NUnit.Framework;
-using StructureMap;
-using Data.Entities;
-using Data.Interfaces;
-using Hub.Managers;
+﻿using NUnit.Framework;
 using HubWeb.Controllers;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
 using System.Threading.Tasks;
 using System;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Crates.Helpers;
-using Fr8Data.Managers;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace HubTests.Controllers
 {
@@ -21,22 +11,12 @@ namespace HubTests.Controllers
     public class EventControllerTest : BaseTest
     {
         private EventsController _eventController;
-        private EventReporter _eventReporter;
-        private IncidentReporter _incidentReporter;
-        private EventReportCrateFactory _eventReportCrateFactoryHelper;
-        private ICrateManager _crate;
-
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
             _eventController = new EventsController();
-            _eventReporter = ObjectFactory.GetInstance <EventReporter>();
-            _incidentReporter = ObjectFactory.GetInstance <IncidentReporter>();
-            _eventReportCrateFactoryHelper = new EventReportCrateFactory();
-            _crate = ObjectFactory.GetInstance<ICrateManager>();
-
         }
 
         [Test]

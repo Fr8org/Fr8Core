@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using Microsoft.Owin;
 using Owin;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using TerminalBase.Services;
 using terminalQuickBooks.Actions;
 
 [assembly: OwinStartup(typeof(terminalQuickBooks.Startup))]
@@ -15,6 +14,11 @@ namespace terminalQuickBooks
 {
     public class Startup : BaseConfiguration
     {
+        public Startup()
+            : base(TerminalData.TerminalDTO)
+        {
+        }
+
         public void Configuration(IAppBuilder app)
         {
             Configuration(app, false);
@@ -30,7 +34,7 @@ namespace terminalQuickBooks
 
             if (!selfHost)
             {
-                StartHosting("terminalQuickBooks");
+                StartHosting();
             }
         }
 
@@ -45,7 +49,7 @@ namespace terminalQuickBooks
         }
         protected override void RegisterActivities()
         {
-            ActivityStore.RegisterActivity<Convert_TableData_To_AccountingTransactions_v1>(Convert_TableData_To_AccountingTransactions_v1.ActivityTemplateDTO);
+           // ActivityStore.RegisterActivity<Convert_TableData_To_AccountingTransactions_v1>(Convert_TableData_To_AccountingTransactions_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Create_Journal_Entry_v1>(Create_Journal_Entry_v1.ActivityTemplateDTO);
         }
     }

@@ -1,10 +1,9 @@
 ﻿//We rename .NET style "events" to "alerts" to avoid confusion with our business logic Alert concepts
-
 using System;
 using Data.Entities;
 using System.Data.Entity.Infrastructure;
-using Fr8Data.Constants;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace Data.Infrastructure
 {
@@ -98,9 +97,6 @@ namespace Data.Infrastructure
         public delegate void TerminalIncidentHandler(LoggingDataCM incidentItem);
         public static event TerminalIncidentHandler TerminalIncidentReported;
 
-        public delegate void EventDocuSignNotificationReceivedHandler();
-        public static event EventDocuSignNotificationReceivedHandler EventDocuSignNotificationReceived;
-
         public delegate void EventContainerLaunchedHandler(ContainerDO launchedContainer);
         public static event EventContainerLaunchedHandler EventContainerLaunched;
 
@@ -133,9 +129,6 @@ namespace Data.Infrastructure
 
         public delegate void TerminalEventHandler(LoggingDataCM eventDataCm);
         public static event TerminalEventHandler TerminalEventReported;
-
-        public delegate void IncidentDocuSignFieldMissingHandler(string envelopeId, string fieldName);
-        public static event IncidentDocuSignFieldMissingHandler IncidentDocuSignFieldMissing;
 
         public delegate void EventTwilioSMSSentHandler(string number, string message);
         public static event EventTwilioSMSSentHandler EventTwilioSMSSent;
@@ -177,9 +170,6 @@ namespace Data.Infrastructure
 
         public delegate void ProcessingTerminatedPerActivityResponseHandler(ContainerDO containerDO, ActivityResponse resposneType);
         public static event ProcessingTerminatedPerActivityResponseHandler EventProcessingTerminatedPerActivityResponse;
-
-        public delegate void MultipleMonitorAllDocuSignEventsPlansPerAccountArePresentHandler(string external_email);
-        public static event MultipleMonitorAllDocuSignEventsPlansPerAccountArePresentHandler EventMultipleMonitorAllDocuSignEventsPlansPerAccountArePresent;
 
         public delegate void TokenValidationFailedHandler(string token, string errorMessage);
         public static event TokenValidationFailedHandler EventTokenValidationFailed;
@@ -314,12 +304,6 @@ namespace Data.Infrastructure
             if (handler != null) handler(incidentItem);
         }
 
-        //public static void AttendeeUnresponsivenessThresholdReached(int expectedResponseId)
-        //{
-        //    AttendeeUnresponsivenessThresholdReachedHandler handler = AlertAttendeeUnresponsivenessThresholdReached;
-        //    if (handler != null) handler(expectedResponseId);
-        //}
-
         public static void ResponseReceived(int bookingRequestId, String bookerID, String customerID)
         {
             if (AlertResponseReceived != null)
@@ -338,18 +322,6 @@ namespace Data.Infrastructure
                 AlertTrackablePropertyUpdated(entityName, propertyName, id, value);
         }
 
-        //public static void ConversationMemberAdded(int bookingRequestID)
-        //{
-        //    if (AlertConversationMemberAdded != null)
-        //        AlertConversationMemberAdded(bookingRequestID);
-        //}
-
-        //public static void ConversationMatched(int emailID, string subject, int bookingRequestID)
-        //{
-        //    if (AlertConversationMatched != null)
-        //        AlertConversationMatched(emailID, subject, bookingRequestID);
-        //}
-
         /// <summary>
         /// Publish Customer Created event
         /// </summary>
@@ -359,19 +331,11 @@ namespace Data.Infrastructure
                 AlertExplicitCustomerCreated(curUserId);
         }
 
-
-
         public static void CustomerCreated(Fr8AccountDO user)
         {
             if (AlertCustomerCreated != null)
                 AlertCustomerCreated(user);
         }
-
-        //public static void BookingRequestCreated(int bookingRequestId)
-        //{
-        //    if (AlertBookingRequestCreated != null)
-        //        AlertBookingRequestCreated(bookingRequestId);
-        //}
 
         public static void EmailReceived(int emailId, string customerId)
         {
@@ -395,30 +359,6 @@ namespace Data.Infrastructure
                 AlertEmailProcessingFailure(dateReceived, errorMessage);
         }
 
-        //public static void BookingRequestProcessingTimeout(int bookingRequestId, string bookerId)
-        //{
-        //    if (AlertBookingRequestProcessingTimeout != null)
-        //        AlertBookingRequestProcessingTimeout(bookingRequestId, bookerId);
-        //}
-
-        //public static void BookingRequestReserved(int bookingRequestId, string bookerId)
-        //{
-        //    BookingRequestReservedHandler handler = AlertBookingRequestReserved;
-        //    if (handler != null) handler(bookingRequestId, bookerId);
-        //}
-
-        //public static void BookingRequestReservationTimeout(int bookingRequestId, string bookerId)
-        //{
-        //    BookingRequestReservationTimeoutHandler handler = AlertBookingRequestReservationTimeout;
-        //    if (handler != null) handler(bookingRequestId, bookerId);
-        //}
-
-        //public static void StaleBookingRequestsDetected(BookingRequestDO[] oldbookingrequests)
-        //{
-        //    StaleBookingRequestsDetectedHandler handler = AlertStaleBookingRequestsDetected;
-        //    if (handler != null) handler(oldbookingrequests);
-        //}
-
         public static void UserRegistration(Fr8AccountDO curUser)
         {
             if (AlertUserRegistration != null)
@@ -437,55 +377,17 @@ namespace Data.Infrastructure
                 AlertFr8AccountTerminalRegistration(terminalDO);
         }
 
-        //public static void BookingRequestCheckedOut(int bookingRequestId, string bookerId)
-        //{
-        //    if (AlertBookingRequestCheckedOut != null)
-        //        AlertBookingRequestCheckedOut(bookingRequestId, bookerId);
-        //}
-
-        //public static void BookingRequestMarkedProcessed(int bookingRequestId, string bookerId)
-        //{
-        //    if (AlertBookingRequestMarkedProcessed != null)
-        //        AlertBookingRequestMarkedProcessed(bookingRequestId, bookerId);
-        //}
-
-        //public static void BookingRequestBookerChange(int bookingRequestId, string bookerId)
-        //{
-        //    if (AlertBookingRequestOwnershipChange != null)
-        //        AlertBookingRequestOwnershipChange(bookingRequestId, bookerId);
-        //}
-
         public static void Error_EmailSendFailure(int emailId, string message)
         {
             if (AlertError_EmailSendFailure != null)
                 AlertError_EmailSendFailure(emailId, message);
         }
 
-        //public static void ErrorSyncingCalendar(IRemoteCalendarAuthDataDO authData, IRemoteCalendarLinkDO calendarLink = null)
-        //{
-        //    var handler = AlertErrorSyncingCalendar;
-        //    if (handler != null)
-        //        handler(authData, calendarLink);
-        //}
-
-        //public static void BookingRequestNeedsProcessing(int bookingRequestId)
-        //{
-        //    var handler = AlertBookingRequestNeedsProcessing;
-        //    if (handler != null)
-        //        handler(bookingRequestId);
-        //}
-
         public static void HighPriorityIncidentCreated(int incidentId)
         {
             HighPriorityIncidentCreatedHandler handler = AlertHighPriorityIncidentCreated;
             if (handler != null) handler(incidentId);
         }
-
-        //public static void BookingRequestMerged(int originalBRId, int targetBRId)
-        //{
-        //    BookingRequestMergedHandler handler = AlertBookingRequestMerged;
-        //    if (handler != null) handler(originalBRId, targetBRId);
-        //}
 
         public static void TokenRequestInitiated(string userId)
         {
@@ -503,12 +405,6 @@ namespace Data.Infrastructure
         {
             var handler = AlertTokenRevoked;
             if (handler != null) handler(userId);
-        }
-
-        public static void DocuSignNotificationReceived()
-        {
-            var handler = EventDocuSignNotificationReceived;
-            if (handler != null) handler();
         }
 
         public static void ContainerLaunched(ContainerDO launchedContainer)
@@ -551,12 +447,6 @@ namespace Data.Infrastructure
         {
             TerminalEventHandler handler = TerminalEventReported;
             if (handler != null) handler(eventDataCm);
-        }
-
-        public static void DocuSignFieldMissing(string envelopeId, string fieldName)
-        {
-            var handler = IncidentDocuSignFieldMissing;
-            if (handler != null) handler(envelopeId, fieldName);
         }
 
         public static void OAuthAuthenticationFailed(string requestQueryString, string errorMessage)
@@ -616,12 +506,6 @@ namespace Data.Infrastructure
         {
             var handler = EventAuthenticationCompleted;
             if (handler != null) handler(userId, authenticatedTerminal, authToken);
-        }
-
-        public static void MultipleMonitorAllDocuSignEventsPlansPerAccountArePresent(AuthorizationTokenDO authtoken, string external_account)
-        {
-            var handler = EventMultipleMonitorAllDocuSignEventsPlansPerAccountArePresent;
-            if (handler != null) handler(external_account);
         }
 
         public static void TokenValidationFailed(string token, string errorMessage)

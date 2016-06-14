@@ -19,6 +19,7 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_DownStreamReconfiguration,
         PaneConfigureAction_UpdateValidationMessages,
         PaneConfigureAction_ResetValidationMessages,
+        PaneConfigureAction_ShowAdvisoryMessages
     }
 
     export class ActionReconfigureEventArgs {
@@ -109,6 +110,16 @@ module dockyard.directives.paneConfigureAction {
             this.validationResults = validationResults;
         }
     }
+    
+    export class ShowAdvisoryMessagesEventArgs {
+        public id: string;
+        public advisories: model.AdvisoryMessages;
+
+        constructor(id: string, advisories: model.AdvisoryMessages) {
+            this.id = id;
+            this.advisories = advisories;
+        }
+    }
 
     export interface IPaneConfigureActionScope extends ng.IScope {
         onConfigurationChanged: (newValue: model.ControlsList, oldValue: model.ControlsList) => void;
@@ -129,6 +140,7 @@ module dockyard.directives.paneConfigureAction {
         populateAllActivities: () => void;
         allActivities: Array<interfaces.IActivityDTO>;
         view: string;
+        showAdvisoryPopup: boolean;
     }
     
     export class CancelledEventArgs extends CancelledEventArgsBase { }
@@ -175,8 +187,8 @@ module dockyard.directives.paneConfigureAction {
             private $window: ng.IWindowService, private $http: ng.IHttpService,
             private $q: ng.IQService, private LayoutService: services.ILayoutService)
         {
-            
             $scope.collapsed = false;
+            $scope.showAdvisoryPopup = false;
 
             $scope.$on("onChange", <() => void>angular.bind(this, this.onControlChange));
             $scope.$on("onClick", <() => void>angular.bind(this, this.onClickEvent));
@@ -531,8 +543,7 @@ module dockyard.directives.paneConfigureAction {
                         // emit ConfigureCallResponse for RouteBuilderController be able to reload actions with AgressiveReloadTag
                         this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ConfigureCallResponse], new CallConfigureResponseEventArgs(this.$scope.currentAction, this.$scope.currentActiveElement));
                     });
-
-                return deferred.promise;
+                    return deferred.promise;
             };
 
             public setJumpTargets(targets: Array<model.ActivityJumpTarget>) {
@@ -619,6 +630,16 @@ module dockyard.directives.paneConfigureAction {
                     }
                 }
 
+                if (this.crateHelper.hasCrateOfManifestType(this.$scope.currentAction.crateStorage, 'Advisory Messages')) {
+                    var advisoryCrate = this.crateHelper
+                        .findByManifestType(this.$scope.currentAction.crateStorage, 'Advisory Messages');
+                    var advisoryMessages = (<model.AdvisoryMessages>advisoryCrate.contents);
+                    if (advisoryMessages && advisoryMessages.advisories.length > 0) {
+                        this.$scope.showAdvisoryPopup = true;
+                        this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ShowAdvisoryMessages], new ShowAdvisoryMessagesEventArgs(this.$scope.currentAction.id, advisoryMessages));
+                    }
+                }
+
                 var hasConditionalBranching = _.any(this.$scope.currentAction.configurationControls.fields, (field: model.ControlDefinitionDTO) => {
                     return field.type === 'ContainerTransition';
                 });
@@ -631,7 +652,7 @@ module dockyard.directives.paneConfigureAction {
                 // useless call.
                 this.ignoreConfigurationChange = true;
 
-            
+                    
 
                 this.$timeout(() => { // let the control list create, we don't want false change notification during creation process
                     this.$scope.configurationWatchUnregisterer = this.$scope.$watch<model.ControlsList>(
@@ -640,7 +661,7 @@ module dockyard.directives.paneConfigureAction {
                         true);
                 }, 1000);
 
-        }
+        } 
 
             private setSolutionMode() {
                 this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_SetSolutionMode]);

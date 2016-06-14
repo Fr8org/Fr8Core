@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
 using StructureMap;
 using terminalAtlassian.Services;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
 namespace terminalAtlassian.Actions
 {
@@ -55,17 +54,19 @@ namespace terminalAtlassian.Actions
             }
         }
 
+        private const string RunTimeCrateLabel = "Jira Issue Details";
 
         private readonly AtlassianService _atlassianService;
 
         public Get_Jira_Issue_v1(ICrateManager crateManager, AtlassianService atlassianService) 
-            : base(true, crateManager)
+            : base(crateManager)
         {
             _atlassianService = atlassianService;
         }
 
         public override async Task Initialize()
         {
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel);
             await Task.Yield();
         }
 
@@ -75,7 +76,7 @@ namespace terminalAtlassian.Actions
             if (!string.IsNullOrEmpty(issueKey))
             {
                 var issueFields = _atlassianService.GetJiraIssue(issueKey, AuthorizationToken);
-                Storage.ReplaceByLabel(CrateJiraIssueDetailsDescriptionCrate(issueFields));
+                CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel).AddFields(issueFields);
             }
             await Task.Yield();
         }
@@ -92,14 +93,9 @@ namespace terminalAtlassian.Actions
             await Task.Yield();
         }
 
-        private Crate CrateJiraIssueDetailsDescriptionCrate(List<FieldDTO> curJiraIssue)
-        {
-            return Fr8Data.Crates.Crate.FromContent("Jira Issue Details", new FieldDescriptionsCM(curJiraIssue), Fr8Data.States.AvailabilityType.RunTime);
-        }
-
         private Crate CrateJiraIssueDetailsPayloadCrate(List<FieldDTO> curJiraIssue)
         {
-            return Fr8Data.Crates.Crate.FromContent("Jira Issue Details", new StandardPayloadDataCM(curJiraIssue), Fr8Data.States.AvailabilityType.RunTime);
+            return Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(curJiraIssue), AvailabilityType.RunTime);
         }
     }
 }

@@ -86,6 +86,9 @@
       "Path": "../../bower_components/angular-animate/angular-animate.min.js"
     },
     {
+      "Path": "../../bower_components/angular-popover-toggle/popover-toggle.js"
+    },
+    {
       "Path": "../../bower_components/angular-messages/angular-messages.min.js"
     },
     {
@@ -163,6 +166,9 @@
     },
     {
       "Path": "../app/directives/indiClick.js"
+    },
+    {
+      "Path": "../app/directives/fillHeight.js"
     },
     { "Path": "../app/directives/PaneConfigureAction/configurationControl.js" },
     { "Path": "../app/directives/PaneConfigureAction/paneConfigureAction.js" },

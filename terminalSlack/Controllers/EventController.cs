@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
-using StructureMap;
-using TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Services;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
 
@@ -10,13 +9,13 @@ namespace terminalSlack.Controllers
     [RoutePrefix("terminals/terminalSlack")]
     public class EventController : ApiController
     {
-        private IEvent _event;
-        private BaseTerminalEvent _baseTerminalEvent;
+        private readonly IHubEventReporter _eventReporter;
+        private readonly IEvent _event;
 
-        public EventController()
+        public EventController(IHubEventReporter eventReporter)
         {
+            _eventReporter = eventReporter;
             _event = new Event();
-            _baseTerminalEvent = new BaseTerminalEvent();
         }
 
         [HttpPost]
@@ -25,7 +24,7 @@ namespace terminalSlack.Controllers
         {
             //_event.Process(await Request.Content.ReadAsStringAsync());
             string eventPayLoadContent = await Request.Content.ReadAsStringAsync();
-            await _baseTerminalEvent.Process(eventPayLoadContent, _event.Process);
+            await _eventReporter.Broadcast(await _event.Process(eventPayLoadContent));
         }
     }
 }

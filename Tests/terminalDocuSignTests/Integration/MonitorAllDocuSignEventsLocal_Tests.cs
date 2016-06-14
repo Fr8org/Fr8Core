@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using StructureMap;
 using Data.Interfaces;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using System.Diagnostics;
 using System.Net.Http;
 using AutoMapper;
 using Data.Entities;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 using Newtonsoft.Json.Linq;
 
 namespace terminalDocuSignTests.Integration
@@ -71,6 +71,7 @@ namespace terminalDocuSignTests.Integration
 
         private const int MaxAwaitPeriod = 300000;
         private const int SingleAwaitPeriod = 10000;
+        private const int MadseCreationPeriod = 30000;
         private const string DocuSignEmail = "fr8.madse.testing@gmail.com"; // "freight.testing@gmail.com";
         private const string DocuSignApiPassword = "I6HmXEbCxN";
 
@@ -105,7 +106,7 @@ namespace terminalDocuSignTests.Integration
                         string.Format("No terminal found with Name = {0}", TerminalName)
                     );
                 }
-
+                
                 await RecreateDefaultAuthToken(unitOfWork, testAccount, docuSignTerminal);
 
                 var mtDataCountBefore = unitOfWork.MultiTenantObjectRepository
@@ -113,9 +114,11 @@ namespace terminalDocuSignTests.Integration
                     .Count();
 
 
+                Debug.WriteLine("Waiting for MADSE plan to be created");
                 //let's wait 10 seconds to ensure that MADSE plan was created/activated by re-authentication
-                await Task.Delay(SingleAwaitPeriod);
+                await Task.Delay(MadseCreationPeriod);
 
+                Debug.WriteLine("Sending test event");
                 string response = 
                     await HttpPostAsync<string>(GetTerminalEventsUrl(), new StringContent(string.Format(EnvelopeToSend, Guid.NewGuid())));
 
@@ -177,6 +180,8 @@ namespace terminalDocuSignTests.Integration
                 _baseUrl + "authentication/token",
                 creds
             );
+
+            Debug.WriteLine("Received new tokens.");
 
             Assert.NotNull(
                 tokenResponse["authTokenId"],

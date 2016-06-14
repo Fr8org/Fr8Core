@@ -3,22 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Infrastructure.Interfaces;
-using Fr8Infrastructure.StructureMap;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.StructureMap;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
 using terminalPapertrail.Actions;
 using terminalPapertrail.Interfaces;
 using terminalPapertrail.Tests.Infrastructure;
-using TerminalBase.Infrastructure;
-using TerminalBase.Models;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace terminalPapertrail.Tests.Actions
 {
@@ -33,13 +34,7 @@ namespace terminalPapertrail.Tests.Actions
             base.SetUp();
             TerminalBootstrapper.ConfigureTest();
             TerminalPapertrailMapBootstrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
-
-            //setup the rest client
-            Mock<IRestfulServiceClient> restClientMock = new Mock<IRestfulServiceClient>(MockBehavior.Default);
-            restClientMock.Setup(restClient => restClient.GetAsync<PayloadDTO>(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
-                .Returns(Task.FromResult(PreparePayloadDTOWithLogMessages()));
-            ObjectFactory.Container.Inject(typeof(IRestfulServiceClient), restClientMock.Object);
-
+            AutoMapperBootstrapper.ConfigureAutoMapper();
             _activity_under_test = New<Write_To_Log_v1>();
         }
 
@@ -55,7 +50,6 @@ namespace terminalPapertrail.Tests.Actions
                 },
                 AuthorizationToken = null,
                 UserId = null,
-                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
             };
             await _activity_under_test.Configure(testAction);
             ActivityDTO resultActionDTO = Mapper.Map<ActivityDTO>(testAction.ActivityPayload);
@@ -82,7 +76,7 @@ namespace terminalPapertrail.Tests.Actions
                 {
                     CrateStorage = new CrateStorage()
                 },
-                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
+                //HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 AuthorizationToken = null,
                 UserId = null
             };
@@ -117,11 +111,21 @@ namespace terminalPapertrail.Tests.Actions
                 {
                     CrateStorage = new CrateStorage()
                 },
-                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 AuthorizationToken = null,
                 UserId = null
             };
             var executionContext = new ContainerExecutionContext();
+
+            executionContext.PayloadStorage = new CrateStorage(Crate.FromContent("", new OperationalStateCM()));
+
+            executionContext.PayloadStorage.Add("Log Messages", new StandardLoggingCM
+            {
+                Item = new List<LogItemDTO>()
+                {
+                    new LogItemDTO() {Activity = "A", Data = "Test Log Message"}
+                }
+            });
+
             await _activity_under_test.Configure(testAction);
             await _activity_under_test.Configure(testAction);
 
@@ -129,7 +133,7 @@ namespace terminalPapertrail.Tests.Actions
             await _activity_under_test.Run(testAction, executionContext);
 
             //Assert
-            var loggedMessge = testAction.ActivityPayload.CrateStorage.CrateContentsOfType<StandardLoggingCM>().Single();
+            var loggedMessge = executionContext.PayloadStorage.CrateContentsOfType<StandardLoggingCM>().Single();
             Assert.IsNotNull(loggedMessge, "Logged message is missing from the payload");
             Assert.AreEqual(1, loggedMessge.Item.Count, "Logged message is missing from the payload");
 
@@ -152,7 +156,6 @@ namespace terminalPapertrail.Tests.Actions
                 {
                     CrateStorage = new CrateStorage()
                 },
-                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 AuthorizationToken = null,
                 UserId = null
             };
@@ -160,6 +163,16 @@ namespace terminalPapertrail.Tests.Actions
             await _activity_under_test.Configure(testAction);
 
             var executionContext = new ContainerExecutionContext();
+            executionContext.PayloadStorage = new CrateStorage(Crate.FromContent("", new OperationalStateCM()));
+
+            executionContext.PayloadStorage.Add("Log Messages", new StandardLoggingCM
+            {
+                Item = new List<LogItemDTO>()
+                {
+                    new LogItemDTO() {Activity = "A", Data = "Test Log Message"}
+                }
+            });
+
             //log first time
             await _activity_under_test.Run(testAction, executionContext);
 
@@ -168,7 +181,7 @@ namespace terminalPapertrail.Tests.Actions
             await _activity_under_test.Run(testAction, executionContext);
 
             //Assert
-            var loggedMessge = testAction.ActivityPayload.CrateStorage.CrateContentsOfType<StandardLoggingCM>().Single();
+            var loggedMessge = executionContext.PayloadStorage.CrateContentsOfType<StandardLoggingCM>().Single();
             Assert.IsNotNull(loggedMessge, "Logged message is missing from the payload");
             Assert.AreEqual(1, loggedMessge.Item.Count, "Logged message is missing from the payload");
 

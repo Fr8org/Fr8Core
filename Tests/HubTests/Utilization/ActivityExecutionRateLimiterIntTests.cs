@@ -2,12 +2,12 @@
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using Fr8Data.Constants;
+using Fr8.Infrastructure.Data.Constants;
 using Hub.Interfaces;
 using HubTests.Services.Container;
 using NUnit.Framework;
 using StructureMap;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace HubTests.Utilization
 {
@@ -116,7 +116,7 @@ namespace HubTests.Utilization
 
                 uow.SaveChanges();
 
-                await Plan.Run(uow, plan, null);
+                await Plan.Run(plan.Id, null, null);
 
                 AssertExecutionSequence(new[]
                 {

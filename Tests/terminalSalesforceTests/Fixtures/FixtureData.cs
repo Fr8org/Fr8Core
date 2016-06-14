@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Data.Entities;
-using Fr8Data.Crates;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 using Salesforce.Common;
-using TerminalBase.Models;
-using Fr8Data.DataTransferObjects;
 using StructureMap;
-using TerminalBase.Infrastructure;
 
 namespace terminalSalesforceTests.Fixtures
 {

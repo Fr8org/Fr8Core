@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using Data.Entities;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
 using StructureMap;
-using TerminalBase.Infrastructure;
-using TerminalBase.Models;
 
 namespace terminalTwilio.Tests.Fixtures
 {
@@ -30,7 +29,6 @@ namespace terminalTwilio.Tests.Fixtures
             };
             var activityContext = new ActivityContext
             {
-                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = activityPayload,
                 AuthorizationToken = AuthTokenDOTest1()
             };

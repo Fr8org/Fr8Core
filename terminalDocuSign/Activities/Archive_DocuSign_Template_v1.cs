@@ -1,21 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
-using Data.Entities;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Hub.Managers;
-using terminalDocuSign.Actions;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Utilities;
+using Fr8.TerminalBase.Models;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.Infrastructure;
-using TerminalBase.Models;
-using Utilities;
 
 namespace terminalDocuSign.Activities
 {
@@ -80,8 +74,8 @@ namespace terminalDocuSign.Activities
             }
 
             var getDocusignTemplate = await GetActivityTemplate("terminalDocusign", "Get_DocuSign_Template");
-            var convertCratesTemplate = await GetActivityTemplate("terminalFr8Core", "ConvertCrates");
-            var storeFileTemplate = await GetActivityTemplate("terminalFr8Core", "StoreFile");
+            var convertCratesTemplate = await GetActivityTemplate("terminalFr8Core", "Convert_Crates");
+            var storeFileTemplate = await GetActivityTemplate("terminalFr8Core", "Store_File");
 
             var getDocuSignTemplateActivity = await CreateGetDocuSignTemplateActivity(getDocusignTemplate, ActivityPayload);
             var convertCratesActivity = await CreateConvertCratesActivity(convertCratesTemplate, ActivityPayload);

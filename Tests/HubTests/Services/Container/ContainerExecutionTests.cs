@@ -7,12 +7,12 @@ using Data.Interfaces;
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.States;
-using Fr8Data.Constants;
-using Fr8Data.Crates;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.Manifests;
 using HubTests.Services.Container;
 using Hub.Exceptions;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace HubTests.Services
 {
@@ -86,7 +86,7 @@ namespace HubTests.Services
 
                 uow.SaveChanges();
 
-                await Plan.Run(uow, plan, null);
+                await Plan.Run(plan.Id, null, null);
 
                 AssertExecutionSequence(new[]
                 {
@@ -150,7 +150,7 @@ namespace HubTests.Services
 
                 uow.SaveChanges();
 
-                await Plan.Run(uow, plan, null);
+                await Plan.Run(plan.Id, null, null);
 
                 AssertExecutionSequence(new[]
                 {
@@ -266,7 +266,7 @@ namespace HubTests.Services
 
                 uow.SaveChanges();
 
-                await Plan.Run(uow, plan, null);
+                await Plan.Run(plan.Id, null, null);
 
                 AssertExecutionSequence(new[]
                 {
@@ -397,7 +397,7 @@ namespace HubTests.Services
 
                 uow.SaveChanges();
 
-                await Plan.Run(uow, plan, null);
+                await Plan.Run(plan.Id, null, null);
 
                 var container = uow.ContainerRepository.GetQuery().Single(x => x.PlanId == plan.Id);
 
@@ -493,7 +493,7 @@ namespace HubTests.Services
 
                 uow.SaveChanges();
 
-                await Plan.Run(uow, plan, null);
+                await Plan.Run(plan.Id, null, null);
 
                 AssertExecutionSequence(new[]
                 {
@@ -575,7 +575,7 @@ namespace HubTests.Services
 
                 uow.SaveChanges();
 
-                await Plan.Run(uow, plan, null);
+                await Plan.Run(plan.Id, null, null);
 
                 AssertExecutionSequence(new[]
                 {
@@ -632,7 +632,7 @@ namespace HubTests.Services
 
                 uow.SaveChanges();
 
-                await Plan.Run(uow, plan, null);
+                await Plan.Run(plan.Id, null, null);
 
                 AssertExecutionSequence(new[]
                 {
@@ -709,7 +709,7 @@ namespace HubTests.Services
 
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(2)] = new SubplanJumperActivityMock(CrateManager, FixtureData.GetTestGuidById(4));
 
-                await Plan.Run(uow, plan, null);
+                await Plan.Run(plan.Id, null, null);
 
                 AssertExecutionSequence(new[]
                 {
@@ -785,7 +785,7 @@ namespace HubTests.Services
 
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(2)] = new CallerActivityMock(CrateManager, FixtureData.GetTestGuidById(4));
 
-                await Plan.Run(uow, plan, null);
+                await Plan.Run(plan.Id, null, null);
 
                 AssertExecutionSequence(new[]
                 {
@@ -851,7 +851,7 @@ namespace HubTests.Services
 
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(3)] = new SuspenderActivityMock(CrateManager);
 
-                await Plan.Run(uow, plan, null);
+                await Plan.Run(plan.Id, null, null);
 
                 Assert.AreEqual(State.Suspended, uow.ContainerRepository.GetQuery().Single(x => x.PlanId == plan.Id).State, "Invalid container state");
                 AssertExecutionSequence(new[]
@@ -954,7 +954,7 @@ namespace HubTests.Services
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(3)] = new LooperActivityMock(CrateManager, 2);
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(4)] = new CallerActivityMock(CrateManager, FixtureData.GetTestGuidById(5));
 
-                await Plan.Run(uow, plan, null);
+                await Plan.Run(plan.Id, null, null);
 
                 AssertExecutionSequence(new[]
                 {
