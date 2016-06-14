@@ -17,11 +17,11 @@ using Newtonsoft.Json;
 
 namespace terminalFr8Core.Activities
 {
-    public class TestIncomingData_v1 : BaseTerminalActivity
+    public class Test_Incoming_Data_v1 : BaseTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "TestIncomingData",
+            Name = "Test_Incoming_Data",
             Label = "Test Incoming Data",
             Category = ActivityCategory.Processors,
             Version = "1",
@@ -31,7 +31,7 @@ namespace terminalFr8Core.Activities
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        public TestIncomingData_v1(ICrateManager crateManager)
+        public Test_Incoming_Data_v1(ICrateManager crateManager)
             : base(crateManager)
         {
         }
@@ -111,7 +111,7 @@ namespace terminalFr8Core.Activities
             var nameLeftExpr = Expression.Property(pe, namePropInfo);
             var nameRightExpr = Expression.Constant(condition.Field);
             var nameExpression = Expression.Equal(nameLeftExpr, nameRightExpr);
-            var comparisionExpr = Expression.Call(typeof(TestIncomingData_v1).GetMethod("Compare", BindingFlags.Public | BindingFlags.Static), new Expression[]
+            var comparisionExpr = Expression.Call(typeof(Test_Incoming_Data_v1).GetMethod("Compare", BindingFlags.Public | BindingFlags.Static), new Expression[]
             {
                 Expression.Property(pe, valuePropInfo),
                 Expression.Constant(condition.Value)

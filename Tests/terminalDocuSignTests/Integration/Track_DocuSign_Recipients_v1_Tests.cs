@@ -76,7 +76,7 @@ namespace terminalDocuSignTests.Integration
             var setDelayActionTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
-                Name = "SetDelay",
+                Name = "Set_Delay",
                 Label = "Delay Action Processing",
                 Category = ActivityCategory.Processors,
                 Terminal = terminalCoreDO,
@@ -87,8 +87,8 @@ namespace terminalDocuSignTests.Integration
             var testIncomingDataTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
-                Name = "TestIncomingData",
-                Label = "TestIncomingData",
+                Name = "Test_Incoming_Data",
+                Label = "Test Incoming Data",
                 Category = ActivityCategory.Processors,
                 Terminal = terminalCoreDO,
                 NeedsAuthentication = false
@@ -107,7 +107,7 @@ namespace terminalDocuSignTests.Integration
             var queryFr8WarehouseActionTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
-                Name = "QueryFr8Warehouse",
+                Name = "Query_Fr8_Warehouse",
                 Label = "Query Fr8 Warehouse",
                 Category = ActivityCategory.Processors,
                 Terminal = terminalCoreDO,

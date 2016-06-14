@@ -24,7 +24,7 @@ namespace terminalSendGridTests.Unit.Activities
     [Category("terminalSendGrid")]
     public class SendEmailViaSendGrid_v1Tests : BaseTest
     {
-        private SendEmailViaSendGrid_v1 _gridActivity;
+        private Send_Email_Via_SendGrid_v1 _gridActivity;
         private ICrateManager _crate;
         private ActivityPayload activityPayload;
 
@@ -76,7 +76,7 @@ namespace terminalSendGridTests.Unit.Activities
 
         private async Task<ActivityPayload> GetActivityResult()
         {
-            _gridActivity = New<SendEmailViaSendGrid_v1>();
+            _gridActivity = New<Send_Email_Via_SendGrid_v1>();
             var activityContext = FixtureData.TestActivityContext1();
             await _gridActivity.Configure(activityContext);
             return activityContext.ActivityPayload;
@@ -87,7 +87,7 @@ namespace terminalSendGridTests.Unit.Activities
         {
             // Arrange
             ICrateManager Crate = ObjectFactory.GetInstance<ICrateManager>();
-            _gridActivity = New<SendEmailViaSendGrid_v1>();
+            _gridActivity = New<Send_Email_Via_SendGrid_v1>();
             var activityContext = FixtureData.TestActivityContext1();
             var executionContext = FixtureData.CrateExecutionContextForSendEmailViaSendGridConfiguration;
             //updating controls

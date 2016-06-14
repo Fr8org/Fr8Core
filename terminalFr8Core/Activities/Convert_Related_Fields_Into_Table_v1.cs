@@ -14,11 +14,11 @@ using Fr8.TerminalBase.BaseClasses;
 namespace terminalFr8Core.Activities
 {
 
-    public class ConvertRelatedFieldsIntoTable_v1 : BaseTerminalActivity
+    public class Convert_Related_Fields_Into_Table_v1 : BaseTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "ConvertRelatedFieldsIntoTable",
+            Name = "Convert_Related_Fields_Into_Table",
             Label = "Convert Related Fields Into a Table",
             Category = ActivityCategory.Processors,
             Version = "1",
@@ -74,7 +74,7 @@ namespace terminalFr8Core.Activities
         }
 
 
-        public ConvertRelatedFieldsIntoTable_v1(ICrateManager crateManager)
+        public Convert_Related_Fields_Into_Table_v1(ICrateManager crateManager)
             : base(crateManager)
         {
         }

@@ -10,12 +10,12 @@ using terminalFr8Core.Infrastructure;
 namespace terminalFr8Core.Activities
 {
 
-    public class ManagePlan_v1 : BaseTerminalActivity
+    public class Manage_Plan_v1 : BaseTerminalActivity
     {
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "ManagePlan",
+            Name = "Manage_Plan",
             Label = "Manage Plan",
             Category = ActivityCategory.Processors,
             Version = "1",
@@ -42,14 +42,14 @@ namespace terminalFr8Core.Activities
             AddControl(
                 new ControlDefinitionDTO(ControlTypes.ManagePlan)
                 {
-                    Name = "ManagePlan",
+                    Name = "Manage_Plan",
                     Label = "Manage Plan"
                 });
         }
 
         #endregion Configuration.
 
-        public ManagePlan_v1(ICrateManager crateManager)
+        public Manage_Plan_v1(ICrateManager crateManager)
             : base(crateManager)
         {
 

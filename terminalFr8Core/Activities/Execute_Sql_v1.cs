@@ -15,11 +15,11 @@ using TerminalSqlUtilities;
 
 namespace terminalFr8Core.Activities
 {
-    public class ExecuteSql_v1 : BaseTerminalActivity
+    public class Execute_Sql_v1 : BaseTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "ExecuteSql",
+            Name = "Execute_Sql",
             Label = "Execute Sql Query",
             Category = ActivityCategory.Processors,
             Version = "1",
@@ -124,7 +124,7 @@ namespace terminalFr8Core.Activities
 
         #endregion Execution
 
-        public ExecuteSql_v1(ICrateManager crateManager)
+        public Execute_Sql_v1(ICrateManager crateManager)
             : base(crateManager)
         {
         }

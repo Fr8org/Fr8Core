@@ -13,13 +13,13 @@ using StructureMap;
 
 namespace terminalFr8Core.Activities
 {
-    public class SaveToFr8Warehouse_v1 : BaseTerminalActivity
+    public class Save_To_Fr8_Warehouse_v1 : BaseTerminalActivity
     {
         private readonly IContainer _container;
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "SaveToFr8Warehouse",
+            Name = "Save_To_Fr8_Warehouse",
             Label = "Save To Fr8 Warehouse",
             Category = ActivityCategory.Processors,
             Version = "1",
@@ -30,7 +30,7 @@ namespace terminalFr8Core.Activities
 
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        public SaveToFr8Warehouse_v1(ICrateManager crateManager, IContainer container)
+        public Save_To_Fr8_Warehouse_v1(ICrateManager crateManager, IContainer container)
             : base(crateManager)
         {
             _container = container;
