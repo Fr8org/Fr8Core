@@ -4,7 +4,7 @@ Fr8 Solutions are a set of preconfigured activities. It helps users to create pr
 
 ## Step 1 - Solution Configuration
 
-Let's assume you want to load data from Activity A (AA), process that data using Activity B (AB) and output that data to Activity C (AC). A newbie user might have hard time putting all those activities in a meaningful order with correct configuration. Solutions get in scene at this point. Let's call our solution Solution ABC. Solution ABC's UI will have necessary fields to gather information about AA, AB and AC. When starts to fill required information Solution's configuration gets triggered. On this stage solution checks if all required configuration is ready.
+Let's assume you want to load data from Activity A (AA), process that data using Activity B (AB) and output that data to Activity C (AC). A newbie user might have hard time putting all those activities in a meaningful order with correct configuration. Solutions get in scene at this point. Let's call our solution Solution ABC. Solution ABC's UI will have necessary fields to gather information about AA, AB and AC. When user starts to fill required information Solution's configuration gets triggered. On this stage solution checks if all required configuration is ready.
 
 ## Step 2 - Child Activity Creation and Configuration
 
