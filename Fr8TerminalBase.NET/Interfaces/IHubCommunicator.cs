@@ -14,7 +14,7 @@ namespace Fr8.TerminalBase.Interfaces
     {
         string UserId { get; }
 
-        void Configure(string terminalName, string userId);
+        void Authorize(string userId);
 
         Task<PayloadDTO> GetPayload(Guid containerId);
         Task<UserDTO> GetCurrentUser();
@@ -46,5 +46,6 @@ namespace Fr8.TerminalBase.Interfaces
         Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan);
         Task NotifyUser(TerminalNotificationDTO notificationMessage);
         Task RenewToken(AuthorizationTokenDTO token);
+        Task SendEvent(Crate eventPayload);
     }
 }

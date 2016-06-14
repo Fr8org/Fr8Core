@@ -12,7 +12,6 @@ using Data.Repositories;
 using Data.States;
 using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Configuration;
-using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using Hub.Managers;
@@ -52,19 +51,7 @@ namespace HubWeb
 
         public static async Task StartMonitoringManifestRegistrySubmissions()
         {
-            Logger.LogWarning("Preparing manifest registry monitoring plan");
-            try
-            {
-                var result = await ObjectFactory.GetInstance<IManifestRegistryMonitor>().StartMonitoringManifestRegistrySubmissions();
-                Logger.LogWarning(result.IsNewPlan 
-                    ? $"New manifest registry monitoring plan (Id - {result.PlanId} was created and activated" 
-                    : $"Existing manifest registry monitoring plan (Id - {result.PlanId} was activated");
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError($"Failed to start manifest registry monitoring plan. {ex}");
-                throw;
-            }
+            await ObjectFactory.GetInstance<IManifestRegistryMonitor>().StartMonitoringManifestRegistrySubmissions();
         }
 
         public void ConfigureHangfire(IAppBuilder app, string connectionString)

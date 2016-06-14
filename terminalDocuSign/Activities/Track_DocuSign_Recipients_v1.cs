@@ -12,14 +12,16 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.Models;
+using Hub.Services.MT;
 using Newtonsoft.Json;
-using terminalDocuSign.Services.MT;
 using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSign.Activities
 {
     public class Track_DocuSign_Recipients_v1 : BaseDocuSignActivity
     {
+        private readonly IContainer _container;
+
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "Track_DocuSign_Recipients",
@@ -124,9 +126,10 @@ namespace terminalDocuSign.Activities
             }
         }
 
-        public Track_DocuSign_Recipients_v1(ICrateManager crateManager, IDocuSignManager docuSignManager)
+        public Track_DocuSign_Recipients_v1(ICrateManager crateManager, IDocuSignManager docuSignManager, IContainer container)
             : base(crateManager, docuSignManager)
         {
+            _container = container;
         }
 
         protected override async Task InitializeDS()
@@ -170,9 +173,9 @@ namespace terminalDocuSign.Activities
             }
 
             var monitorDocusignAT = await GetActivityTemplate("terminalDocuSign", "Monitor_DocuSign_Envelope_Activity");
-            var setDelayAT = await GetActivityTemplate("terminalFr8Core", "SetDelay");
-            var queryFr8WareHouseAT = await GetActivityTemplate("terminalFr8Core", "QueryFr8Warehouse");
-            var testIncomingDataAT = await GetActivityTemplate("terminalFr8Core", "TestIncomingData");
+            var setDelayAT = await GetActivityTemplate("terminalFr8Core", "Set_Delay");
+            var queryFr8WareHouseAT = await GetActivityTemplate("terminalFr8Core", "Query_Fr8_Warehouse");
+            var testIncomingDataAT = await GetActivityTemplate("terminalFr8Core", "Test_Incoming_Data");
             var buildMessageAT = await GetActivityTemplate("terminalFr8Core", "Build_Message");
            
             //DocuSign
@@ -251,7 +254,7 @@ namespace terminalDocuSign.Activities
 
         private void SetNotifierActivityBody(ActivityPayload notifierActivity)
         {
-            if (notifierActivity.ActivityTemplate.Name == "SendEmailViaSendGrid")
+            if (notifierActivity.ActivityTemplate.Name == "Send_Email_Via_SendGrid")
             {
                 var configControls = ControlHelper.GetConfigurationControls(notifierActivity.CrateStorage);
                 var emailBodyField = ControlHelper.GetControl<TextSource>(configControls, "EmailBody", ControlTypes.TextSource);
@@ -367,16 +370,16 @@ namespace terminalDocuSign.Activities
                 Conditions = conditions
             });
 
-            var queryCriteria = Crate.FromContent(
-                "Queryable Criteria",
-                new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(selectedObject.Id))
-            );
-            crateStorage.Add(queryCriteria);
+            using (var uow = _container.GetInstance<IUnitOfWork>())
+            {
+                var queryCriteria = Crate.FromContent("Queryable Criteria", new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(uow, selectedObject.Id)));
+                crateStorage.Add(queryCriteria);
+            }
         }
 
         private MtTypeReference GetMtType(Type clrType)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var uow = _container.GetInstance<IUnitOfWork>())
             {
                 return uow.MultiTenantObjectRepository.FindTypeReference(clrType);
             }

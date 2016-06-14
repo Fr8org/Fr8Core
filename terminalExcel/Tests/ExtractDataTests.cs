@@ -20,7 +20,6 @@ namespace terminalExcel.PluginExcelTests
 
         public const string filesCommand = "files";
 
-        private IActivity _activity;
         private ICrateManager _crate;
         private FixtureData _fixtureData;
 
@@ -31,7 +30,6 @@ namespace terminalExcel.PluginExcelTests
             TerminalBootstrapper.ConfigureTest();
 
             //_fixtureData = new FixtureData(ObjectFactory.GetInstance<IUnitOfWork>());
-            _activity = ObjectFactory.GetInstance<IActivity>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 

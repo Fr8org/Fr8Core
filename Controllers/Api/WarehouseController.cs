@@ -2,7 +2,9 @@
 using StructureMap;
 using Microsoft.AspNet.Identity;
 using Data.Interfaces;
+using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 using Hub.Infrastructure;
 using Hub.Services;
 using HubWeb.Infrastructure_HubWeb;
@@ -29,6 +31,29 @@ namespace HubWeb.Controllers
 
                 return Ok(foundObjects);
             }
+        }
+        
+        [Fr8HubWebHMACAuthenticate]
+        [HttpPost]
+        public IHttpActionResult Add(CrateStorageDTO crateStorageDto)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var crateStorage = CrateStorageSerializer.Default.ConvertFromDto(crateStorageDto);
+                var userId = User.Identity.GetUserId();
+
+                foreach (var crate in crateStorage)
+                {
+                    if (crate.IsKnownManifest)
+                    {
+                        uow.MultiTenantObjectRepository.AddOrUpdate(userId, (Manifest) crate.Get());
+                    }
+                }
+
+                uow.SaveChanges();
+            }
+
+            return Ok();
         }
     }
 }

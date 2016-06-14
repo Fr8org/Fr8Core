@@ -1,4 +1,5 @@
 ﻿using System;
+using Fr8.Infrastructure.StructureMap;
 using Fr8.TerminalBase.Infrastructure;
 using Intuit.Ipp.Data;
 using NUnit.Framework;
@@ -15,9 +16,13 @@ namespace terminalQuickBooks.Tests.Services
         public override void SetUp()
         {
             base.SetUp();
+
             TerminalBootstrapper.ConfigureTest();
-            _journalEntry = new terminalQuickBooks.Services.JournalEntry();
+            ObjectFactory.Container.ConfigureQuickbooksDependencies(StructureMapBootStrapper.DependencyType.LIVE);
+
             _serviceWorker = ObjectFactory.GetInstance<IServiceWorker>();
+            _journalEntry = new terminalQuickBooks.Services.JournalEntry(_serviceWorker);
+            
         }
         
         [Test]

@@ -24,32 +24,37 @@ namespace terminalBaseTests.BaseClasses
     public class ActivityExecutorTests : BaseTest
     {
         ActivityExecutor _activityExecutor;
-        string terminalName = "terminalBaseTests";
         ICrateManager CrateManagerHelper;
-
+        private IActivityStore _activityStore;
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
+
             AutoMapperBootstrapper.ConfigureAutoMapper();
             ObjectFactory.Configure(x => x.AddRegistry<StructureMapBootStrapper.TestMode>());
-
+            ObjectFactory.Configure(x => x.For<IActivityStore>().Use<ActivityStore>().Singleton());
+            
             var crateStorage = new CrateStorage(Crate.FromContent("", new OperationalStateCM()));
             var crateDTO = CrateManager.ToDto(crateStorage);
             var hubCommunicatorMock = new Mock<IHubCommunicator>();
+
             hubCommunicatorMock.Setup(x => x.GetPayload(It.IsAny<Guid>()))
                 .ReturnsAsync(new PayloadDTO(Guid.NewGuid())
                 {
                      CrateStorage = crateDTO
                 });
+
             ObjectFactory.Configure(cfg => cfg.For<IHubCommunicator>().Use(hubCommunicatorMock.Object));
 
             CrateManagerHelper = new CrateManager();
             _activityExecutor = ObjectFactory.GetInstance<ActivityExecutor>();
-            if(ActivityStore.GetValue(BaseTerminalActivityMock.ActivityTemplate) == null)
-            { 
-                ActivityStore.RegisterActivity<BaseTerminalActivityMock>(BaseTerminalActivityMock.ActivityTemplate);
+            _activityStore = ObjectFactory.GetInstance<IActivityStore>();
+
+            if (_activityStore.GetFactory(BaseTerminalActivityMock.ActivityTemplate) == null)
+            {
+                _activityStore.RegisterActivity<BaseTerminalActivityMock>(BaseTerminalActivityMock.ActivityTemplate);
             }
         }
 
@@ -57,7 +62,7 @@ namespace terminalBaseTests.BaseClasses
         [ExpectedException(typeof(ArgumentNullException))]
         public async Task HandleFr8Request_NullActivityDTO_ThrowsException()
         {
-            await _activityExecutor.HandleFr8Request(terminalName, "", null, null);
+            await _activityExecutor.HandleFr8Request("", null, null);
         }
 
         [Test]
@@ -67,7 +72,7 @@ namespace terminalBaseTests.BaseClasses
             var activityDTO = Fixture_HandleRequest.terminalMockActivityDTO();
             activityDTO.ActivityTemplate = null;
             var fr8Data = new Fr8DataDTO { ActivityDTO = activityDTO };
-            await _activityExecutor.HandleFr8Request(terminalName, "", null, fr8Data);
+            await _activityExecutor.HandleFr8Request("", null, fr8Data);
         }
 
         [Test]
@@ -77,14 +82,14 @@ namespace terminalBaseTests.BaseClasses
             ActivityDTO activityDTO = new ActivityDTO();
             activityDTO.ActivityTemplate = new ActivityTemplateDTO() { Name = "terminalDummy", Version = "1.1" };
             var fr8Data = new Fr8DataDTO { ActivityDTO = activityDTO };
-            await _activityExecutor.HandleFr8Request(terminalName, "", null, fr8Data);
+            await _activityExecutor.HandleFr8Request("", null, fr8Data);
         }
 
         [Test]
         public async Task HandleFr8Request_Configure_ReturnsActivityDTO()
         {
             var result = await _activityExecutor.HandleFr8Request(
-                terminalName,
+                
                 "configure",
                 null,
                 Fixture_HandleRequest.terminalMockFr8DataDTO()
@@ -104,7 +109,7 @@ namespace terminalBaseTests.BaseClasses
         {
             var f8Data = Fixture_HandleRequest.terminalMockFr8DataDTO();
             f8Data.ContainerId = Guid.NewGuid();
-            var result = await _activityExecutor.HandleFr8Request(terminalName, "run", null, f8Data);
+            var result = await _activityExecutor.HandleFr8Request("run", null, f8Data);
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOf(typeof(PayloadDTO), result);
@@ -121,7 +126,7 @@ namespace terminalBaseTests.BaseClasses
                 new KeyValuePair<string, string>("scope", "childActivities")
             };
 
-            var result = await _activityExecutor.HandleFr8Request(terminalName, "run", parameters, f8Data);
+            var result = await _activityExecutor.HandleFr8Request("run", parameters, f8Data);
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOf(typeof(PayloadDTO), result);
@@ -130,7 +135,7 @@ namespace terminalBaseTests.BaseClasses
         [Test]
         public async Task HandleFr8Request_Activate_ReturnsActivityDTO()
         {
-            var result = await _activityExecutor.HandleFr8Request(terminalName, "activate", null, Fixture_HandleRequest.terminalMockFr8DataDTO());
+            var result = await _activityExecutor.HandleFr8Request("activate", null, Fixture_HandleRequest.terminalMockFr8DataDTO());
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOf(typeof(ActivityDTO), result);
@@ -144,7 +149,7 @@ namespace terminalBaseTests.BaseClasses
         [Test]
         public async Task HandleFr8Request_Deactivate_ReturnsActivityDTO()
         {
-            var result = await _activityExecutor.HandleFr8Request(terminalName, "deactivate", null, Fixture_HandleRequest.terminalMockFr8DataDTO());
+            var result = await _activityExecutor.HandleFr8Request("deactivate", null, Fixture_HandleRequest.terminalMockFr8DataDTO());
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOf(typeof(ActivityDTO), result);
@@ -159,7 +164,7 @@ namespace terminalBaseTests.BaseClasses
         [ExpectedException(typeof(ArgumentException))]
         public async Task HandleFr8Request_Othermethod_ShouldThrowException()
         {
-            var result = await _activityExecutor.HandleFr8Request(terminalName, "OtherMethod", null, Fixture_HandleRequest.terminalMockFr8DataDTO());
+            var result = await _activityExecutor.HandleFr8Request("OtherMethod", null, Fixture_HandleRequest.terminalMockFr8DataDTO());
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOf(typeof(ActivityDTO), result);

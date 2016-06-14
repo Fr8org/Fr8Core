@@ -201,7 +201,7 @@ namespace terminalDocuSignTests.Integration
         private void ValidateChildrenActivities(ActivityDTO solution)
         {
             Assert.AreEqual(1, solution.ChildrenActivities.Length);
-            Assert.AreEqual("QueryFr8Warehouse", solution.ChildrenActivities[0].ActivityTemplate.Name);
+            Assert.AreEqual("Query_Fr8_Warehouse", solution.ChildrenActivities[0].ActivityTemplate.Name);
         }
 
         private void ValidateSolutionOperationalState(ICrateStorage crateStorage)

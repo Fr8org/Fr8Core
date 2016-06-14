@@ -33,10 +33,10 @@ namespace terminalPapertrail.Actions
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        public Write_To_Log_v1(ICrateManager crateManager)
+        public Write_To_Log_v1(ICrateManager crateManager, IPapertrailLogger papertrailLogger)
             : base(crateManager)
         {
-            _papertrailLogger = ObjectFactory.GetInstance<IPapertrailLogger>();
+            _papertrailLogger = papertrailLogger;
         }
 
         public override async Task Initialize()

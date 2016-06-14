@@ -18,9 +18,11 @@ namespace HubWeb.Controllers
     {
         private const string UknownWebServiceName = "UnknownService";
         private readonly IActivityTemplate _activityTemplate;
+        private readonly Fr8Account _fr8Account;
 
         public WebServicesController()
         {
+            _fr8Account = ObjectFactory.GetInstance<Fr8Account>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
         }
 
@@ -39,14 +41,13 @@ namespace HubWeb.Controllers
                     // resulting set is grouped into batches 1 x web service - n x actions
 
                     var unknwonService = uow.WebServiceRepository.GetQuery().FirstOrDefault(x => x.Name == UknownWebServiceName);
-                    var fr8Account = ObjectFactory.GetInstance<Fr8Account>();
 
                     var activityTemplate = _activityTemplate.GetQuery()
                         .Where(x => x.ActivityTemplateState == ActivityTemplateState.Active)
                         .Where(x => id == 0 || category == x.Category)
                         .Where(x => x.Tags == null || !x.Tags.Contains(Tags.Internal));
 
-                    if (!fr8Account.IsCurrentUserInAdminRole())
+                    if (!_fr8Account.IsCurrentUserInAdminRole())
                         activityTemplate = activityTemplate.Where(x => x.ClientVisibility != false);
 
                     webServiceList = activityTemplate

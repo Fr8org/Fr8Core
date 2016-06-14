@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Data.Entity;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data.Entities;
@@ -11,8 +11,8 @@ using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
-using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Interfaces;
 using Hub.Managers;
 
@@ -27,18 +27,23 @@ namespace Hub.Services
         private readonly IActivity _activity;
         private readonly ICrateManager _crateManager;
         private readonly IPlan _plan;
-        private readonly IUnitOfWorkProvider _unitOfWorkProvider;
+        private readonly IUnitOfWorkFactory _unitOfWorkFactory;
         private readonly Fr8Account _fr8Account;
         private readonly IConfigRepository _configRepository;
 
         private const string MonitoringPlanName = "Monitoring Manifest Submissions";
         private const string MessageName = "JIRA description";
+        private const string ManifestMonitoringPrefix = "Manifest Monitoring - ";
+
+        private int _isRunning;
+
+        private TaskCompletionSource<ManifestRegistryMonitorResult> _currentRun;
 
         public ManifestRegistryMonitor(
             IActivity activity,
             ICrateManager crateManager,
-            IPlan plan, 
-            IUnitOfWorkProvider unitOfWorkProvider, 
+            IPlan plan,
+            IUnitOfWorkFactory unitOfWorkFactory,
             Fr8Account fr8Account,
             IConfigRepository configRepository)
         {
@@ -54,9 +59,9 @@ namespace Hub.Services
             {
                 throw new ArgumentNullException(nameof(plan));
             }
-            if (unitOfWorkProvider == null)
+            if (unitOfWorkFactory == null)
             {
-                throw new ArgumentNullException(nameof(unitOfWorkProvider));
+                throw new ArgumentNullException(nameof(unitOfWorkFactory));
             }
             if (fr8Account == null)
             {
@@ -69,7 +74,7 @@ namespace Hub.Services
             _activity = activity;
             _crateManager = crateManager;
             _plan = plan;
-            _unitOfWorkProvider = unitOfWorkProvider;
+            _unitOfWorkFactory = unitOfWorkFactory;
             _fr8Account = fr8Account;
             _configRepository = configRepository;
         }
@@ -78,31 +83,63 @@ namespace Hub.Services
         /// </summary>
         public async Task<ManifestRegistryMonitorResult> StartMonitoringManifestRegistrySubmissions()
         {
-            var systemUser = _fr8Account.GetSystemUser();
-            if (systemUser == null)
+            //If start attempt is already in progress we just reuse it and wait for the result
+            if (Interlocked.CompareExchange(ref _isRunning, 1, 0) != 0)
             {
-                throw new ApplicationException("System user doesn't exist");
+                Logger.LogInfo($"{ManifestMonitoringPrefix}Plan creation is in progress, skipping the new attempt");
+                return await _currentRun.Task;
             }
-            var isNewPlanCreated = false;
-            var plan = GetExistingPlan(systemUser);
-            if (plan == null)
-            {
-                isNewPlanCreated = true;
-                plan = await CreateAndConfigureNewPlan(systemUser);
-            }
+            //Otherwise we run a new attempt
             try
             {
-                await RunPlan(plan);
-            }
-            catch
-            {
-                if (isNewPlanCreated)
+                _currentRun = new TaskCompletionSource<ManifestRegistryMonitorResult>();
+                Logger.LogInfo($"{ManifestMonitoringPrefix}Retrieving system user");
+                var systemUser = _fr8Account.GetSystemUser();
+                if (systemUser == null)
                 {
-                    await _plan.Delete(plan.Id);
+                    Logger.LogError($"{ManifestMonitoringPrefix}System user doesn't exists");
+                    throw new ApplicationException("System user doesn't exist");
                 }
-                throw;
+                var isNewPlanCreated = false;
+                Logger.LogInfo($"{ManifestMonitoringPrefix}Trying to find existing plan");
+                var plan = GetExistingPlan(systemUser);
+                if (plan == null)
+                {
+                    Logger.LogInfo($"{ManifestMonitoringPrefix}No existing plan found. Creating new plan");
+                    isNewPlanCreated = true;
+                    plan = await CreateAndConfigureNewPlan(systemUser);
+                    Logger.LogInfo($"{ManifestMonitoringPrefix}New plan was created (Id - {plan.Id})");
+                }
+                else
+                {
+                    Logger.LogInfo($"{ManifestMonitoringPrefix}Existing plan was found (Id - {plan.Id})");
+                }
+                try
+                {
+                    Logger.LogInfo($"{ManifestMonitoringPrefix}Trying to launch the plan");
+                    await RunPlan(plan);
+                    Logger.LogInfo($"{ManifestMonitoringPrefix}Plan was successfully launched");
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError($"{ManifestMonitoringPrefix}Failed to launch a plan. {ex}");
+                    if (isNewPlanCreated)
+                    {
+                        await _plan.Delete(plan.Id);
+                    }
+                    throw;
+                }
+                _currentRun.SetResult(new ManifestRegistryMonitorResult(plan.Id, isNewPlanCreated));
             }
-            return new ManifestRegistryMonitorResult(plan.Id, isNewPlanCreated);
+            catch (Exception ex)
+            {
+                _currentRun.SetException(ex);
+            }
+            finally
+            {
+                Interlocked.Exchange(ref _isRunning, 0);
+            }
+            return await _currentRun.Task;
         }
 
         private async Task RunPlan(PlanDO plan)
@@ -111,20 +148,24 @@ namespace Hub.Services
             {
                 return;
             }
-            await _plan.Run(plan.Id, new[] { Crate<OperationalStateCM>.FromContent(string.Empty, new OperationalStateCM()) }, null);
+            await _plan.Run(plan.Id, null, null);
         }
 
         private async Task<PlanDO> CreateAndConfigureNewPlan(Fr8AccountDO systemUser)
         {
-            using (var uow = _unitOfWorkProvider.GetNewUnitOfWork())
+            using (var uow = _unitOfWorkFactory.GetNewUnitOfWork())
             {
                 var activityTemplates = uow.ActivityTemplateRepository.GetQuery().ToArray();
                 var result = await CreatePlanWithMonitoringActivity(uow, systemUser, activityTemplates).ConfigureAwait(false);
+                Logger.LogInfo($"{ManifestMonitoringPrefix}Created a plan");
                 try
                 {
                     await ConfigureMonitoringActivity(uow, systemUser, result.ChildNodes[0].ChildNodes[0] as ActivityDO).ConfigureAwait(false);
+                    Logger.LogInfo($"{ManifestMonitoringPrefix}Configured Monitor Form Response activity");
                     await ConfigureBuildMessageActivity(uow, systemUser, activityTemplates, result.Id).ConfigureAwait(false);
+                    Logger.LogInfo($"{ManifestMonitoringPrefix}Configured Build Message activity");
                     await ConfigureSaveJiraActivity(uow, systemUser, activityTemplates, result.Id).ConfigureAwait(false);
+                    Logger.LogInfo($"{ManifestMonitoringPrefix}Configured Save Jira activity");
                 }
                 catch
                 {
@@ -246,7 +287,7 @@ namespace Hub.Services
             }
             await _activity.Configure(uow, systemUser.Id, buildMessageActivity).ConfigureAwait(false);
         }
-    
+
         private async Task ConfigureMonitoringActivity(IUnitOfWork uow, Fr8AccountDO systemUser, ActivityDO monitoringActivity)
         {
             using (var activityStorage = _crateManager.GetUpdatableStorage(monitoringActivity))
@@ -287,18 +328,24 @@ namespace Hub.Services
             {
                 throw new ApplicationException("Monitor Form Responses v1 activity template was not found in Google terminal");
             }
-            return await _activity.CreateAndConfigure(uow, systemUser.Id, monitorFormResponseTemplate.Id, monitorFormResponseTemplate.Label, MonitoringPlanName, 1, createPlan: true)
-                                  .ConfigureAwait(false)as PlanDO;
+            return await _activity.CreateAndConfigure(
+                                    uow,
+                                    systemUser.Id, 
+                                    monitorFormResponseTemplate.Id, 
+                                    monitorFormResponseTemplate.Label, 
+                                    MonitoringPlanName, 
+                                    1, 
+                                    createPlan: true)
+                                  .ConfigureAwait(false) as PlanDO;
         }
 
         private PlanDO GetExistingPlan(Fr8AccountDO systemUser)
         {
-            using (var uow = _unitOfWorkProvider.GetNewUnitOfWork())
+            using (var uow = _unitOfWorkFactory.GetNewUnitOfWork())
             {
                 return uow.PlanRepository.GetPlanQueryUncached().FirstOrDefault(x => x.Name == MonitoringPlanName
-                                                                                           && x.Fr8AccountId == systemUser.Id
-                                                                                           && x.Visibility == PlanVisibility.Internal
-                                                                                           && x.PlanState != PlanState.Deleted);
+                                                                                     && x.Fr8AccountId == systemUser.Id
+                                                                                     && x.PlanState != PlanState.Deleted);
             }
         }
     }

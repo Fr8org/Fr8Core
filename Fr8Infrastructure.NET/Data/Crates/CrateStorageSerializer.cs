@@ -138,6 +138,11 @@ namespace Fr8.Infrastructure.Data.Crates
         /// <returns></returns>
         public Crate ConvertFromDto(CrateDTO proxy)
         {
+            if (proxy == null)
+            {
+                return null;
+            }
+
             var manifestType = new CrateManifestType(proxy.ManifestType, proxy.ManifestId);
             IManifestSerializer serializer = GetSerializer(manifestType);
             Crate crate;
@@ -174,6 +179,11 @@ namespace Fr8.Infrastructure.Data.Crates
         /// <returns></returns>
         public CrateDTO ConvertToDto(Crate crate)
         {
+            if (crate == null)
+            {
+                return null;
+            }
+
             IManifestSerializer serializer = GetSerializer(crate.ManifestType);
             CrateDTO crateDto = new CrateDTO
             {

@@ -7,7 +7,6 @@ using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Errors;
 using Newtonsoft.Json.Linq;
-using StructureMap;
 using terminalSlack.Interfaces;
 
 namespace terminalSlack.Services
@@ -15,9 +14,10 @@ namespace terminalSlack.Services
     public class SlackIntegration : ISlackIntegration
     {
         private readonly IRestfulServiceClient _client;
-        public SlackIntegration()
+
+        public SlackIntegration(IRestfulServiceClient client)
         {
-            _client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+            _client = client;
         }
 
         /// <summary>
