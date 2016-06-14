@@ -71,6 +71,7 @@ namespace terminalDocuSignTests.Integration
 
         private const int MaxAwaitPeriod = 300000;
         private const int SingleAwaitPeriod = 10000;
+        private const int MadseCreationPeriod = 30000;
         private const string DocuSignEmail = "fr8.madse.testing@gmail.com"; // "freight.testing@gmail.com";
         private const string DocuSignApiPassword = "I6HmXEbCxN";
 
@@ -115,7 +116,7 @@ namespace terminalDocuSignTests.Integration
 
                 Debug.WriteLine("Waiting for MADSE plan to be created");
                 //let's wait 10 seconds to ensure that MADSE plan was created/activated by re-authentication
-                await Task.Delay(SingleAwaitPeriod+5000);
+                await Task.Delay(MadseCreationPeriod);
 
                 Debug.WriteLine("Sending test event");
                 string response = 
