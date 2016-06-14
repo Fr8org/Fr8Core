@@ -39,7 +39,7 @@ namespace PlanDirectory.Infrastructure
             var hmacService = ObjectFactory.GetInstance<IHMACService>();
             var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
-            var uri = new Uri(CloudConfigurationManager.GetSetting("HubUrl") + "/api/v1/activitytemplates");
+            var uri = new Uri(CloudConfigurationManager.GetSetting("HubApiBaseUrl") + "activitytemplates");
             var headers = await hmacService.GenerateHMACHeader(
                 uri,
                 "PlanDirectory",
