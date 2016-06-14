@@ -12,11 +12,11 @@ using Newtonsoft.Json;
 
 namespace terminalFr8Core.Activities
 {
-    public class AddPayloadManually_v1 : BaseTerminalActivity
+    public class Add_Payload_Manually_v1 : BaseTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "AddPayloadManually",
+            Name = "Add_Payload_Manually",
             Label = "Add Payload Manually",
             Category = ActivityCategory.Processors,
             Terminal = TerminalData.TerminalDTO,
@@ -27,7 +27,7 @@ namespace terminalFr8Core.Activities
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
         private const string RunTimeCrateLabel = "ManuallyAddedPayload";
 
-        public AddPayloadManually_v1(ICrateManager crateManager)
+        public Add_Payload_Manually_v1(ICrateManager crateManager)
             : base(crateManager)
         {
 

@@ -16,11 +16,11 @@ using terminalFr8Core.Converters;
 
 namespace terminalFr8Core.Activities
 {
-    public class ConvertCrates_v1 : BaseTerminalActivity
+    public class Convert_Crates_v1 : BaseTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "ConvertCrates",
+            Name = "Convert_Crates",
             Label = "Convert Crates",
             Category = ActivityCategory.Processors,
             Version = "1",
@@ -105,7 +105,7 @@ namespace terminalFr8Core.Activities
             return PackControlsCrate(infoText, availableFromManifests, availableToManifests);
         }
 
-        public ConvertCrates_v1(ICrateManager crateManager)
+        public Convert_Crates_v1(ICrateManager crateManager)
             : base(crateManager)
         {
         }

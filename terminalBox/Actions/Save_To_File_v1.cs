@@ -15,12 +15,12 @@ using terminalBox.Infrastructure;
 
 namespace terminalBox.Actions
 {
-    public class SaveToFile_v1 : EnhancedTerminalActivity<SaveToFile_v1.ActivityUi>
+    public class Save_To_File_v1 : EnhancedTerminalActivity<Save_To_File_v1.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "SaveToFile",
-            Label = "SaveToFile",
+            Name = "Save_To_File",
+            Label = "Save To File",
             Version = "1",
             Category = ActivityCategory.Forwarders,
             NeedsAuthentication = true,
@@ -43,7 +43,7 @@ namespace terminalBox.Actions
             }
         }
 
-        public SaveToFile_v1(ICrateManager crateManager) 
+        public Save_To_File_v1(ICrateManager crateManager) 
             : base(crateManager)
         {
         }

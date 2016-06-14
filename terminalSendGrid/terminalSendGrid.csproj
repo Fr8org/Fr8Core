@@ -220,7 +220,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Activities\SendEmailViaSendGrid_v1.cs" />
+    <Compile Include="Activities\Send_Email_Via_SendGrid_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
     <Compile Include="Controllers\ActivityController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
