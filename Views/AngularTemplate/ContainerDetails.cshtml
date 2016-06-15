@@ -29,8 +29,8 @@
                         <div ng-show="facts.length === 0">No history exists!</div>
                         <div class="table-scrollable table-scrollable-borderless">
                             <!--Note:: reused the class table-process-templates-->
-                            <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-routes">
-                                <thead>
+                            <table  datatable="ng" dt-options="dtOptionsBuilder" style="" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-routes">
+                                <thead >
                                     <tr>
                                         <th>CreatedDate</th>
                                         <th>Primary Category</th>
@@ -38,11 +38,11 @@
                                         <th>Activity</th>
                                         <th>Status</th>
                                         <th>Object Id</th>
-                                        <th>Customer Id</th>
+                                        <th>Fr8User Id</th>
                                         <th>Data</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody >
                                     <tr ng-repeat="fact in facts">
                                         <td>{{ fact.createDate | datetime }}</td>
                                         <td>{{ fact.primaryCategory }}</td>
@@ -50,7 +50,7 @@
                                         <td>{{ fact.activity }}</td>
                                         <td>{{ fact.status }}</td>
                                         <td>{{ fact.objectId }}</td>
-                                        <td>{{ fact.customerId }}</td>
+                                        <td>{{ fact.fr8UserId }}</td>
                                         <td>{{ fact.data }}</td>
                                     </tr>
                                 </tbody>
