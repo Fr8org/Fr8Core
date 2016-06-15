@@ -251,7 +251,6 @@
     <Compile Include="Activities\Send_SMS_v1.cs" />
     <Compile Include="Activities\Make_A_Decision_v1.cs" />
     <Compile Include="Activities\Store_File_v1.cs" />
-    <Compile Include="Activities\Convert_Crates_v1.cs" />
     <Compile Include="Activities\Set_Delay_v1.cs" />
     <Compile Include="Activities\Convert_Related_Fields_Into_Table_v1.cs" />
     <Compile Include="Activities\Execute_Sql_v1.cs" />
@@ -265,7 +264,6 @@
     <Compile Include="Controllers\ActivityController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
-    <Compile Include="Converters\StandardFileDescriptionToDocuSignTemplateConversion.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -273,8 +271,6 @@
     <Compile Include="Interfaces\IEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SelfHostFactory.cs" />
-    <Compile Include="Converters\DocuSignTemplateToStandardFileDescriptionConversion.cs" />
-    <Compile Include="Converters\ICrateConversion.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="StructureMapConfiguration.cs" />
     <Compile Include="TerminalData.cs" />
