@@ -17,13 +17,11 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
 {
     public class TerminalTransmitter : RestfulServiceClient, ITerminalTransmitter
     {
-        private readonly IHMACService _hmacService;
-        log4net.ILog _logger;
+        private readonly ITerminal _terminalService;
 
-        public TerminalTransmitter()
+        public TerminalTransmitter(ITerminal terminalService)
         {
-            _hmacService = ObjectFactory.GetInstance<IHMACService>();
-            _logger = Logger.GetLogger();
+            _terminalService = terminalService;
         }
 
         /// <summary>
@@ -88,13 +86,8 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
             }
 
             requestUri = new Uri(new Uri(terminal.Endpoint), requestUri);
-            var headers = new Dictionary<string, string>
-            {
-                {"Fr8HubCallbackSecret", terminal.Secret},
-                {"Fr8HubCallBackUrl", Server.ServerUrl}
-            };
             
-            return await PostAsync<Fr8DataDTO, TResponse>(requestUri, dataDTO, correlationId, headers);
+            return await PostAsync<Fr8DataDTO, TResponse>(requestUri, dataDTO, correlationId, _terminalService.GetRequestHeaders(terminal));
         }
     }
 }

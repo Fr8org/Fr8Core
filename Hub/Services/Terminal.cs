@@ -10,6 +10,7 @@ using Data.Utility;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
 using StructureMap;
@@ -23,6 +24,7 @@ namespace Hub.Services
     {
         private readonly Dictionary<int, TerminalDO> _terminals = new Dictionary<int, TerminalDO>();
         private bool _isInitialized;
+        private string _serverUrl;
 
         public bool IsATandTCacheDisabled
         {
@@ -30,9 +32,15 @@ namespace Hub.Services
             private set;
         }
 
-        public Terminal()
+        public Terminal(IConfigRepository configRepository)
         {
             IsATandTCacheDisabled = string.Equals(CloudConfigurationManager.GetSetting("DisableATandTCache"), "true", StringComparison.InvariantCultureIgnoreCase);
+
+            var serverProtocol = configRepository.Get("ServerProtocol", String.Empty);
+            var domainName = configRepository.Get("ServerDomainName", String.Empty);
+            var domainPort = configRepository.Get<int?>("ServerPort", null);
+
+            _serverUrl = $"{serverProtocol}{domainName}{(domainPort == null || domainPort.Value == 80 ? String.Empty : (":" + domainPort.Value))}/";
         }
 
         private void Initialize()
@@ -150,6 +158,25 @@ namespace Hub.Services
                     return terminal;
                 }
             }
+        }
+
+        public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal)
+        {
+            Initialize();
+
+            lock (_terminals)
+            {
+                if (!_terminals.TryGetValue(terminal.Id, out terminal))
+                {
+                    throw new KeyNotFoundException(string.Format("Unable to find terminal with id {0}", terminal.Id));
+                }
+            }
+
+            return new Dictionary<string, string>
+            {
+                {"Fr8HubCallbackSecret", terminal.Secret},
+                {"Fr8HubCallBackUrl", _serverUrl}
+            };
         }
 
         private TerminalDO Clone(TerminalDO source)

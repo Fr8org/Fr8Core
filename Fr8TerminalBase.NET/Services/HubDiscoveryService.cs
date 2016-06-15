@@ -49,8 +49,14 @@ namespace Fr8.TerminalBase.Services
         public async Task<IHubCommunicator> GetHubCommunicator(string hubUrl)
         {
             TaskCompletionSource<string> setSecretTask;
+            var originalUrl = hubUrl;
 
             hubUrl = NormalizeHubUrl(hubUrl);
+
+            if (string.IsNullOrWhiteSpace(hubUrl))
+            {
+                throw new ArgumentException($"Invalid hub url: {originalUrl}", nameof(hubUrl));
+            }
 
             lock (_hubSecrets)
             {
@@ -82,8 +88,14 @@ namespace Fr8.TerminalBase.Services
         public void SetHubSecret(string hubUrl, string secret)
         {
             TaskCompletionSource<string> setSecretTask;
+            var originalUrl = hubUrl;
 
             hubUrl = NormalizeHubUrl(hubUrl);
+
+            if (string.IsNullOrWhiteSpace(hubUrl))
+            {
+                throw new ArgumentException($"Invalid hub url: {originalUrl}", nameof(hubUrl));
+            }
 
             lock (_hubSecrets)
             {
@@ -96,7 +108,16 @@ namespace Fr8.TerminalBase.Services
 
             SubscribeToHub(hubUrl);
 
-            setSecretTask.TrySetResult(secret);
+            if (!setSecretTask.TrySetResult(secret))
+            {
+                // may be we already set the result or previous secret resultion taks failed
+                lock (_hubSecrets)
+                {
+                    setSecretTask = new TaskCompletionSource<string>();
+                    _hubSecrets[hubUrl] = setSecretTask;
+                    setSecretTask.SetResult(secret);
+                }
+            }
         }
 
         /**********************************************************************************/
@@ -146,7 +167,7 @@ namespace Fr8.TerminalBase.Services
 
         /**********************************************************************************/
 
-        public void SubscribeToHub(string hubUrl)
+        private void SubscribeToHub(string hubUrl)
         {
             lock (_bindedHubs)
             {
@@ -163,7 +184,7 @@ namespace Fr8.TerminalBase.Services
 
         /**********************************************************************************/
 
-        public void UnsubscribeFromHub(string hubUrl)
+        private void UnsubscribeFromHub(string hubUrl)
         {
             hubUrl = NormalizeHubUrl(hubUrl);
 

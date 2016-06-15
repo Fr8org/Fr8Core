@@ -38,10 +38,9 @@ namespace HubWeb
 
 
             ConfigureHangfire(app, "DockyardDB");
-
+            
             if (!selfHostMode)
             {
-                await RegisterTerminalActions();
 #pragma warning disable 4014 
                 //We don't await this call as this is Hangfire dispatcher job
                 ObjectFactory.GetInstance<IJobDispatcher>().Enqueue(() => StartMonitoringManifestRegistrySubmissions());
@@ -134,14 +133,7 @@ namespace HubWeb
         //    }
         //}
 
-        public async Task RegisterTerminalActions()
-        {
-            var terminalDiscovery = ObjectFactory.GetInstance<ITerminalDiscoveryService>();
-
-#pragma warning disable 4014
-            terminalDiscovery.Discover();
-#pragma warning restore 4014
-        }
+       
 
         public static IDisposable CreateServer(string url)
         {

@@ -899,12 +899,9 @@ namespace Hub.Managers
         private static async Task PostToTerminalEventsEndPoint(string userId, TerminalDO authenticatedTerminal, AuthorizationTokenDTO authToken)
         {
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
+            var terminalService = ObjectFactory.GetInstance<ITerminal>();
 
-            var headers = new Dictionary<string, string>
-            {
-                {"Fr8HubCallbackSecret", authenticatedTerminal.Secret},
-                {"Fr8HubCallBackUrl", Server.ServerUrl}
-            };
+            var headers = terminalService.GetRequestHeaders(authenticatedTerminal);
 
             await
                 restClient.PostAsync<object>(
