@@ -294,7 +294,8 @@ namespace HubWeb.Controllers
             {
                 TerminalId = terminalDO.Id,
                 TerminalName = terminalDO.Name,
-                ClienId = response.ClientId,
+                ClientId = response.ClientId,
+                ClientName = response.ClientName,
                 PhoneNumber = response.PhoneNumber,
                 Error = response.Error
             });
@@ -318,7 +319,8 @@ namespace HubWeb.Controllers
                 terminalDO,
                 credentials.PhoneNumber,
                 credentials.VerificationCode,
-                credentials.ClientId);
+                credentials.ClientId,
+                credentials.ClientName);
 
             return Ok(new
             {

@@ -18,7 +18,8 @@ namespace terminalStatX.Services
         }
 
         private string StatXBaseApiUrl => CloudConfigurationManager.GetSetting("StatXApiUrl");
-        private const string AuthLoginRelativeUrl = "/auth/login";
+        private string AuthLoginRelativeUrl => CloudConfigurationManager.GetSetting("AuthLoginRelativeUrl");
+        private string AuthVerifyCodeRelativeUrl => CloudConfigurationManager.GetSetting("AuthVerifyCodeRelativeUrl");
 
         /// <summary>
         /// Returns Client Id for provided client name and phone number. 
@@ -64,9 +65,41 @@ namespace terminalStatX.Services
             };
         }
 
-        public Task<StatXAuthDTO> VerifyCodeAndGetAuthToken(string clientId, string phoneNumber, string verificationCode)
+        public async Task<StatXAuthDTO> VerifyCodeAndGetAuthToken(string clientId, string phoneNumber, string verificationCode)
         {
-            throw new NotImplementedException();
+            var statXAutVerifyDTO = new StatXAuthVerifyDTO()
+            {
+                PhoneNumber = phoneNumber,
+                ClientId = clientId,
+                VerificationCode = verificationCode
+            };
+
+            var uri = new Uri(StatXBaseApiUrl + AuthVerifyCodeRelativeUrl);
+            var response = await _restfulServiceClient.PostAsync<StatXAuthVerifyDTO>(
+                uri, statXAutVerifyDTO);
+
+            var jObject = JObject.Parse(response);
+
+            //check for errors
+            //JToken errorsToken;
+            //if (jObject.TryGetValue("errors", out errorsToken))
+            //{
+            //    if (errorsToken is JArray)
+            //    {
+            //        var firstError = (JArray)errorsToken.First;
+            //        return new StatXAuthResponseDTO()
+            //        {
+            //            Error = firstError["message"].ToString()
+            //        };
+            //    }
+            //}
+
+            //return response
+            return new StatXAuthDTO()
+            {
+                AuthToken = jObject["authToken"].ToString(),
+                ApiKey = jObject["apiKey"].ToString()
+            };
         }
    }
 }

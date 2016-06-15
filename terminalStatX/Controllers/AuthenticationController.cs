@@ -65,7 +65,7 @@ namespace terminalStatX.Controllers
                 {
                     Token = authResponseDTO.AuthToken,
                     ExternalAccountId = credentialsDTO.ClientName,
-                    ExternalStateToken = authResponseDTO.ApiKey
+                    AdditionalAttributes = "apiKey="+ authResponseDTO.ApiKey
                 };
             }
             catch (Exception ex)

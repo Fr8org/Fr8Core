@@ -22,6 +22,7 @@
                 clientId: '',
                 phoneNumber: '',
                 verificationCode: '',
+                clientName: '',
             };
 
             $scope.isLoading = function () {
@@ -29,9 +30,9 @@
             };
 
             $scope.sendCodeToPhone = function () {
-                if (!$scope.form.$valid) {
-                    return;
-                }
+                //if (!$scope.form.$valid) {
+                //    return;
+                //}
                 var data = {
                     Terminal: $scope.terminal,
                     PhoneNumber : $scope.formData.phoneNumber
@@ -48,6 +49,7 @@
                         else {
                             $scope.authErrorText = null;
                             $scope.formData.clientId = res.data.clientId;
+                            $scope.formData.clientName = res.data.clientName;
                             $scope.inVerifyMode = true;
                         }
                     })
@@ -61,13 +63,15 @@
 
 
             $scope.verifyCodeAndAuthenticate = function () {
-                if (!$scope.form.$valid) {
-                    return;
-                }
+                //if (!$scope.form.$valid) {
+                //    return;
+                //}
                 var data = {
                     Terminal: $scope.terminal,
                     PhoneNumber: $scope.formData.phoneNumber,
-                    clientId : $scope.formData.clientId
+                    ClientId: $scope.formData.clientId,
+                    ClientName: $scope.formData.clientName,
+                    VerificationCode : $scope.formData.verificationCode
                 };
 
                 _loading = true;

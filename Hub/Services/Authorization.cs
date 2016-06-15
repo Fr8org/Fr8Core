@@ -708,7 +708,8 @@ namespace Hub.Services
           TerminalDO terminal,
           string phoneNumber,
           string verificationCode,
-          string clientId)
+          string clientId,
+          string clientName)
         {
             if (terminal.AuthenticationType == AuthenticationType.None)
             {
@@ -722,7 +723,8 @@ namespace Hub.Services
                 PhoneNumber = phoneNumber,
                 ClientId = clientId,
                 VerificationCode = verificationCode,
-                Fr8UserId = account?.Id
+                Fr8UserId = account?.Id,
+                ClientName = clientName
             };
 
             var terminalResponse = await restClient.PostAsync<PhoneNumberCredentialsDTO>(

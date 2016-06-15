@@ -137,6 +137,8 @@
 
                 $modal.open({
                     animation: true,
+                    backdrop: 'static',
+                    keyboard: false,
                     templateUrl: '/AngularTemplate/PhoneNumberAuthentication',
                     controller: 'PhoneNumberAuthenticationController',
                     scope: modalScope

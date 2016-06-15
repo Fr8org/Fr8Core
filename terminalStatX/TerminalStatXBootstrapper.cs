@@ -1,6 +1,8 @@
 ﻿using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.StructureMap;
 using StructureMap;
+using terminalStatX.Interfaces;
+using terminalStatX.Services;
 
 namespace terminalStatX
 {
@@ -24,7 +26,9 @@ namespace terminalStatX
 
         public static void ConfigureLive(ConfigurationExpression configurationExpression)
         {
+            configurationExpression.For<IStatXIntegration>().Use<StatXIntegration>();
             configurationExpression.For<ICrateManager>().Use<CrateManager>();
+
         }
     }
 }

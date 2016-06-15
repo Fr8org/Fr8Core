@@ -65,6 +65,6 @@ namespace Hub.Interfaces
         /// <param name="verificationCode"></param>
         /// <param name="clientId"></param>
         /// <returns></returns>
-        Task<AuthenticateResponse> VerifyCodeAndGetAccessToken(Fr8AccountDO account, TerminalDO terminal, string phoneNumber, string verificationCode, string clientId);
+        Task<AuthenticateResponse> VerifyCodeAndGetAccessToken(Fr8AccountDO account, TerminalDO terminal, string phoneNumber, string verificationCode, string clientId, string clientName);
     }
 }
