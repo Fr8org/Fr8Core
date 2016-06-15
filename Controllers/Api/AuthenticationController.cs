@@ -265,5 +265,68 @@ namespace HubWeb.Controllers
 
             return Ok();
         }
+
+        /// <summary>
+        /// Enter phone number for authentication, that send a verification code to your phone device
+        /// </summary>
+        /// <param name="phoneNumberCredentials"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Fr8ApiAuthorize]
+        public async Task<IHttpActionResult> AuthenticatePhoneNumber(PhoneNumberCredentialsDTO phoneNumberCredentials)
+        {
+            Fr8AccountDO account;
+            TerminalDO terminalDO;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                terminalDO = _terminal.GetByNameAndVersion(phoneNumberCredentials.Terminal.Name, phoneNumberCredentials.Terminal.Version);
+                account = _security.GetCurrentAccount(uow);
+            }
+
+            var response = await _authorization.SendAuthenticationCodeToMobilePhone(
+                account,
+                terminalDO,
+                phoneNumberCredentials.PhoneNumber
+            );
+
+            return Ok(new
+            {
+                TerminalId = terminalDO.Id,
+                TerminalName = terminalDO.Name,
+                ClienId = response.ClientId,
+                PhoneNumber = response.PhoneNumber,
+                Error = response.Error
+            });
+        }
+
+        [HttpPost]
+        [Fr8ApiAuthorize]
+        public async Task<IHttpActionResult> VerifyPhoneNumberCode(PhoneNumberCredentialsDTO credentials)
+        {
+            Fr8AccountDO account;
+            TerminalDO terminalDO;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                terminalDO = _terminal.GetByNameAndVersion(credentials.Terminal.Name, credentials.Terminal.Version);
+                account = _security.GetCurrentAccount(uow);
+            }
+
+            var response = await _authorization.VerifyCodeAndGetAccessToken(
+                account,
+                terminalDO,
+                credentials.PhoneNumber,
+                credentials.VerificationCode,
+                credentials.ClientId);
+
+            return Ok(new
+            {
+                TerminalId = response.AuthorizationToken?.TerminalID,
+                TerminalName = terminalDO.Name,
+                AuthTokenId = response.AuthorizationToken?.Id.ToString(),
+                Error = response.Error
+            });
+        }
     }
 }

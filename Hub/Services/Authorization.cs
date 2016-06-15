@@ -231,6 +231,7 @@ namespace Hub.Services
             }
         }
 
+
         public async Task<AuthenticateResponse> GetOAuthToken(
             TerminalDO terminal,
             ExternalAuthenticationDTO externalAuthDTO)
@@ -700,6 +701,154 @@ namespace Hub.Services
 
                 uow.SaveChanges();
             }
+        }
+
+        public async Task<AuthenticateResponse> VerifyCodeAndGetAccessToken(
+          Fr8AccountDO account,
+          TerminalDO terminal,
+          string phoneNumber,
+          string verificationCode,
+          string clientId)
+        {
+            if (terminal.AuthenticationType == AuthenticationType.None)
+            {
+                throw new ApplicationException("Terminal does not require authentication.");
+            }
+
+            var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
+
+            var credentialsDTO = new PhoneNumberCredentialsDTO()
+            {
+                PhoneNumber = phoneNumber,
+                ClientId = clientId,
+                VerificationCode = verificationCode,
+                Fr8UserId = account?.Id
+            };
+
+            var terminalResponse = await restClient.PostAsync<PhoneNumberCredentialsDTO>(
+                new Uri(terminal.Endpoint + "/authentication/token"),
+                credentialsDTO
+            );
+
+            var terminalResponseAuthTokenDTO = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(terminalResponse);
+            if (!string.IsNullOrEmpty(terminalResponseAuthTokenDTO.Error))
+            {
+                return new AuthenticateResponse()
+                {
+                    Error = terminalResponseAuthTokenDTO.Error
+                };
+            }
+
+            if (terminalResponseAuthTokenDTO == null)
+            {
+                return new AuthenticateResponse()
+                {
+                    Error = "An error occured while authenticating, please try again."
+                };
+            }
+
+            var curTerminal = _terminal.GetByKey(terminal.Id);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curAccount = uow.UserRepository.GetByKey(account.Id);
+
+                AuthorizationTokenDO authToken = null;
+                if (!string.IsNullOrEmpty(terminalResponseAuthTokenDTO.ExternalAccountId))
+                {
+                    authToken = uow.AuthorizationTokenRepository
+                        .GetPublicDataQuery()
+                        .FirstOrDefault(x => x.TerminalID == curTerminal.Id
+                            && x.UserID == curAccount.Id
+                            && x.ExternalDomainId == terminalResponseAuthTokenDTO.ExternalDomainId
+                            && x.ExternalAccountId == terminalResponseAuthTokenDTO.ExternalAccountId
+                            && x.AdditionalAttributes == terminalResponseAuthTokenDTO.AdditionalAttributes
+                        );
+                }
+
+
+                var created = false;
+                if (authToken == null)
+                {
+                    authToken = new AuthorizationTokenDO()
+                    {
+                        Token = terminalResponseAuthTokenDTO.Token,
+                        ExternalAccountId = terminalResponseAuthTokenDTO.ExternalAccountId,
+                        ExternalAccountName = string.IsNullOrEmpty(terminalResponseAuthTokenDTO.ExternalAccountName) ? terminalResponseAuthTokenDTO.ExternalAccountId : terminalResponseAuthTokenDTO.ExternalAccountName,
+                        ExternalDomainId = terminalResponseAuthTokenDTO.ExternalDomainId,
+                        ExternalDomainName = string.IsNullOrEmpty(terminalResponseAuthTokenDTO.ExternalDomainName) ? terminalResponseAuthTokenDTO.ExternalDomainId : terminalResponseAuthTokenDTO.ExternalDomainName,
+                        TerminalID = curTerminal.Id,
+                        UserID = curAccount.Id,
+                        AdditionalAttributes = terminalResponseAuthTokenDTO.AdditionalAttributes,
+                        ExpiresAt = DateTime.Today.AddMonths(1)
+                    };
+
+                    uow.AuthorizationTokenRepository.Add(authToken);
+                    created = true;
+                }
+                else
+                {
+                    authToken.Token = terminalResponseAuthTokenDTO.Token;
+                    authToken.ExternalAccountId = terminalResponseAuthTokenDTO.ExternalAccountId;
+                    authToken.ExternalAccountName = string.IsNullOrEmpty(terminalResponseAuthTokenDTO.ExternalAccountName) ? terminalResponseAuthTokenDTO.ExternalDomainId : terminalResponseAuthTokenDTO.ExternalAccountName;
+                    authToken.ExternalDomainId = terminalResponseAuthTokenDTO.ExternalDomainId;
+                    authToken.ExternalDomainName = string.IsNullOrEmpty(terminalResponseAuthTokenDTO.ExternalDomainName) ? terminalResponseAuthTokenDTO.ExternalDomainId : terminalResponseAuthTokenDTO.ExternalDomainName;
+                }
+
+                uow.SaveChanges();
+
+                if (created)
+                {
+                    EventManager.AuthTokenCreated(authToken);
+                }
+
+                //if terminal requires Authentication Completed Notification, follow the existing terminal event notification protocol 
+                //to notify the terminal about authentication completed event
+                if (terminalResponseAuthTokenDTO.AuthCompletedNotificationRequired)
+                {
+                    //let's save id of DTO before informing related terminal
+                    terminalResponseAuthTokenDTO.Id = authToken.Id.ToString();
+                    EventManager.TerminalAuthenticationCompleted(curAccount.Id, curTerminal, terminalResponseAuthTokenDTO);
+                }
+
+                return new AuthenticateResponse()
+                {
+                    AuthorizationToken = Mapper.Map<AuthorizationTokenDTO>(authToken),
+                    Error = null
+                };
+            }
+        }
+
+        public async Task<PhoneNumberCredentialsDTO> SendAuthenticationCodeToMobilePhone(Fr8AccountDO account, TerminalDO terminal, string phoneNumber)
+        {
+            if (terminal.AuthenticationType == AuthenticationType.None)
+            {
+                throw new ApplicationException("Terminal does not require authentication.");
+            }
+
+            if (terminal.AuthenticationType != AuthenticationType.PhoneNumberWithCode)
+            {
+                throw new ApplicationException("Terminal support only authentication through phone number");
+            }
+
+            var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
+
+            var credentialsDTO = new PhoneNumberCredentialsDTO()
+            {
+                PhoneNumber = phoneNumber,
+                ClientName = (account != null ? account.UserName : "Fr8 Client Name"),
+                Fr8UserId = account?.Id
+            };
+
+            var terminalResponse = await restClient.PostAsync<PhoneNumberCredentialsDTO>(
+                new Uri(terminal.Endpoint + "/authentication/send_code"),
+                credentialsDTO
+            );
+
+            //response provides terminal 
+            var terminalResponseContent = JsonConvert.DeserializeObject<PhoneNumberCredentialsDTO>(terminalResponse);
+
+            return terminalResponseContent;
         }
     }
 }
