@@ -16,13 +16,13 @@ using terminalUtilities.Excel;
 
 namespace terminalFr8Core.Activities
 {
-    public class AppBuilder_v1 : BaseTerminalActivity
+    public class App_Builder_v1 : BaseTerminalActivity
     {
         private readonly ExcelUtils _excelUtils;
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "AppBuilder",
+            Name = "App_Builder",
             Label = "App Builder",
             Version = "1",
             Category = ActivityCategory.Processors,
@@ -292,7 +292,7 @@ namespace terminalFr8Core.Activities
             return PackControlsCrate(Label,infoText, cc);
         }
 
-        public AppBuilder_v1(ICrateManager crateManager, ExcelUtils excelUtils)
+        public App_Builder_v1(ICrateManager crateManager, ExcelUtils excelUtils)
             : base(crateManager)
         {
             _excelUtils = excelUtils;

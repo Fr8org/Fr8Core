@@ -183,7 +183,6 @@
 
 .route-builder-container {
     height: 800px;
-    overflow-y: auto;
     position: relative;
     white-space: nowrap;
     width: 100%;

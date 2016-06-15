@@ -74,8 +74,8 @@ namespace terminalDocuSign.Activities
             }
 
             var getDocusignTemplate = await GetActivityTemplate("terminalDocusign", "Get_DocuSign_Template");
-            var convertCratesTemplate = await GetActivityTemplate("terminalFr8Core", "ConvertCrates");
-            var storeFileTemplate = await GetActivityTemplate("terminalFr8Core", "StoreFile");
+            var convertCratesTemplate = await GetActivityTemplate("terminalFr8Core", "Convert_Crates");
+            var storeFileTemplate = await GetActivityTemplate("terminalFr8Core", "Store_File");
 
             var getDocuSignTemplateActivity = await CreateGetDocuSignTemplateActivity(getDocusignTemplate, ActivityPayload);
             var convertCratesActivity = await CreateConvertCratesActivity(convertCratesTemplate, ActivityPayload);

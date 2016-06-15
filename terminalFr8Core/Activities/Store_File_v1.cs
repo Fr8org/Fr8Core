@@ -12,11 +12,11 @@ using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Activities
 {
-    public class StoreFile_v1 : BaseTerminalActivity
+    public class Store_File_v1 : BaseTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "StoreFile",
+            Name = "Store_File",
             Label = "Store File",
             Category = ActivityCategory.Processors,
             Version = "1",
@@ -47,7 +47,7 @@ namespace terminalFr8Core.Activities
             return PackControlsCrate(fileNameTextBox, textSource);
         }
 
-        public StoreFile_v1(ICrateManager crateManager)
+        public Store_File_v1(ICrateManager crateManager)
             : base(crateManager)
         {
         }
