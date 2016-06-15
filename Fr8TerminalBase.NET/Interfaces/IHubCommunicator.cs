@@ -26,7 +26,7 @@ namespace Fr8.TerminalBase.Interfaces
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(bool getLatestsVersionsOnly = false);
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category, bool getLatestsVersionsOnly = false);
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, bool getLatestsVersionsOnly = false);
-        Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields);
+        //Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields);
         Task<AuthorizationToken> GetAuthToken(string authTokenId);
         Task ScheduleEvent(string externalAccountId, string minutes);
         Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload);

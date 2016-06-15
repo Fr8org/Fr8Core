@@ -91,11 +91,11 @@ namespace Fr8.TerminalBase.Services
             return await _underlyingHubCommunicator.GetActivityTemplates(tag, getLatestsVersionsOnly);
         }
 
-        public async Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields)
-        {
-            await InitializeUnderlyingCommunicator();
-            return await _underlyingHubCommunicator.ValidateFields(fields);
-        }
+        //public async Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields)
+        //{
+        //    await InitializeUnderlyingCommunicator();
+        //    return await _underlyingHubCommunicator.ValidateFields(fields);
+        //}
 
         public async Task<AuthorizationToken> GetAuthToken(string authTokenId)
         {
