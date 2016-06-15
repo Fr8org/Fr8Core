@@ -1,16 +1,17 @@
 namespace dockyard.directives {
     'use strict';
     
-    export class Fr8CollapseCtrl {
-        isCollapsed: boolean = true;
-        toggle(): void {
-            this.isCollapsed = !this.isCollapsed;
-        };
-    }
+    //export class Fr8CollapseCtrl {
+    //    isCollapsed: boolean = true;
+    //    toggle(): void {
+    //        this.isCollapsed = !this.isCollapsed;
+    //    };
+    //}
     
     export interface IFr8CollapseScope extends ng.IScope {
         ctrl: Fr8CollapseCtrl;
         domEl: ng.IAugmentedJQuery;
+        collapsed: boolean;
     }
     
     export function collapseHeading(): ng.IDirective {
@@ -23,7 +24,9 @@ namespace dockyard.directives {
     export function collapseContent($compile): ng.IDirective {
         return {
             require: '^^fr8CollapseHeading',
-            scope: {},
+            scope: {
+                collapsed: '='
+            },
             transclude: true,
             link: (scope: IFr8CollapseScope,
                 element: ng.IAugmentedJQuery,
@@ -37,7 +40,7 @@ namespace dockyard.directives {
                     </md-list-item>`;
                 scope.ctrl = ctrl;
                 scope.domEl = $compile(template)(scope);
-                
+
                 // Replace "height: auto" with computed height to be able to animate actual height instead of max-height
                 scope.$watch('ctrl.isCollapsed', (newValue, oldValue) => {
                     if (newValue && !oldValue) {
