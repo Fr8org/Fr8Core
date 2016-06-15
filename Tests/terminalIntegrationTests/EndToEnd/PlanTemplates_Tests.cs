@@ -34,7 +34,7 @@ namespace terminalIntegrationTests.EndToEnd
         // we run the plan and check if the subplan jump has happened
         // after that we create a template from a new plan and compare it to an old one 
 
-        [Test, Category("Integration.terminalFr8Core")]
+        [Test, Category("Integration.terminalFr8Core"), Ignore]
         public async Task Plan_Template_EndToEndTest()
         {
             string template = FixtureData.PlanTemplate();

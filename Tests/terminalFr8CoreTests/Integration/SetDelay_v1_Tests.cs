@@ -96,8 +96,9 @@ namespace terminalFr8CoreTests.Integration
             var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
 
             var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
-            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
-            SetDuration(responseActionDTO);
+            var operationalState = new OperationalStateCM();
+            operationalState.CallStack.PushFrame(new OperationalStateCM.StackFrame());
+            AddOperationalStateCrate(dataDTO, operationalState);
             var runUrl = GetTerminalRunUrl();
             dataDTO.ActivityDTO = responseActionDTO;
             var runResponse = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
@@ -117,10 +118,10 @@ namespace terminalFr8CoreTests.Integration
             dataDTO.ActivityDTO = HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO).Result;
             SetDuration(dataDTO.ActivityDTO);
             var runUrl = GetTerminalRunUrl();
-            var operationalState = new OperationalStateCM
-            {
-                CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestSuspend)
-            };
+            var operationalState = new OperationalStateCM();
+            operationalState.CallStack.PushFrame(new OperationalStateCM.StackFrame { CurrentActivityExecutionPhase = OperationalStateCM.ActivityExecutionPhase.ProcessingChildren });
+            operationalState.CallStack.PushFrame(new OperationalStateCM.StackFrame { CurrentActivityExecutionPhase = OperationalStateCM.ActivityExecutionPhase.WasNotExecuted });
+            operationalState.CallStack.StoreLocalData("Delay","suspended");
             AddOperationalStateCrate(dataDTO, operationalState);
 
             var runResponse = HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO).Result;
