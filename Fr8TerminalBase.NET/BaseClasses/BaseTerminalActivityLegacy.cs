@@ -234,7 +234,8 @@ namespace Fr8.TerminalBase.BaseClasses
                 ActivityName = MyTemplate.Name,
                 ActivityVersion = MyTemplate.Version,
                 TerminalName = MyTemplate.Terminal.Name,
-                TerminalVersion = MyTemplate.Terminal.Version
+                TerminalVersion = MyTemplate.Terminal.Version,
+                Collapsed = false
             };
             await HubCommunicator.NotifyUser(notificationMsg);
         }

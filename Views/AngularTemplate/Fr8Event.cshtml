@@ -1,23 +1,15 @@
 ﻿<md-list-item class="md-2-line fr8-collapse-heading" ng-click="toggle()" ng-class="{'fr8-collapse-collapsed': isCollapsed}">
     <md-icon md-font-icon="fa-{{::icon}}" class="fa fa-2x" style="color:{{::color}}"></md-icon>
-
     <div class="md-list-item-text" layout="column" ng-if="type=='fr8pusher_generic_success' || type=='fr8pusher_generic_failure'">
         <div style="width: 75%">
             <h3>{{::eventType}}</h3>
         </div>
-        <div ng-hide="isCollapsed">
-            <p>{{event}}</p>
-        </div>
+        
     </div>
-
     <div class="md-list-item-text" layout="column" ng-if="type=='fr8pusher_activity_execution_info'">
         <div style="width: 75%">
             <h3>Executing Activity</h3>
             <h4>{{event.ActivityName}}</h4>
-        </div>
-        <div ng-hide="isCollapsed">
-            <p>For Plan: {{event.PlanName}}</p>
-            <p>Container: {{event.ContainerId}}</p>
         </div>
     </div>
 
@@ -26,11 +18,27 @@
             <h3>{{::eventType}}</h3>
             <h4>{{event.ActivityName+'-v'+event.ActivityVersion}}</h4>
         </div>
-        <div ng-hide="isCollapsed">
-            <p>{{event.Subject}}</p>
-            <p ng-bind-html="event.Message | parseUrl"></p>
-        </div>
     </div>
-
     <md-divider ng-if="!$last"></md-divider>
+    <md-icon md-font-icon="fa-chevron-circle-down" class="fa fa-lg md-secondary fr8-collapse-marker"></md-icon>
+</md-list-item>
+
+<md-list-item class="fr8-collapse-content" ng-if="type=='fr8pusher_activity_execution_info'" ng-hide="isCollapsed" ng-class="{'fr8-collapse-collapsed': isCollapsed}">
+    <div style="overflow:auto" class="md-list-item-text" layout="column">
+        <p>For Plan: {{event.PlanName}}</p>
+        <p>Container: {{event.ContainerId}}</p>
+    </div>
+</md-list-item>
+
+<md-list-item class="fr8-collapse-content" ng-if="type=='fr8pusher_generic_success' || type=='fr8pusher_generic_failure'" ng-hide="isCollapsed" ng-class="{'fr8-collapse-collapsed': isCollapsed}">
+    <div style="overflow:auto" class="md-list-item-text" layout="column">
+        <p>{{event.Message}}</p>
+    </div>
+</md-list-item>
+
+<md-list-item class="fr8-collapse-content" ng-if="type=='fr8pusher_terminal_event'" ng-hide="isCollapsed" ng-class="{'fr8-collapse-collapsed': isCollapsed}">
+    <div style="overflow:auto" class="md-list-item-text" layout="column">
+        <p>{{event.Subject}}</p>
+        <p ng-bind-html="event.Message | parseUrl"></p>
+    </div>
 </md-list-item>
