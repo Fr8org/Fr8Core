@@ -700,6 +700,10 @@
     <Compile Include="Migrations\201606131429309_RemovedDocuSignAccountId.Designer.cs">
       <DependentUpon>201606131429309_RemovedDocuSignAccountId.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201606151014116_AddPageDefinition.cs" />
+    <Compile Include="Migrations\201606151014116_AddPageDefinition.Designer.cs">
+      <DependentUpon>201606151014116_AddPageDefinition.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -1293,6 +1297,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606131429309_RemovedDocuSignAccountId.resx">
       <DependentUpon>201606131429309_RemovedDocuSignAccountId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606151014116_AddPageDefinition.resx">
+      <DependentUpon>201606151014116_AddPageDefinition.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
