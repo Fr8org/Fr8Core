@@ -246,9 +246,7 @@
     <Content Include="Scripts\SearchController.js" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\Reauthenticate.cshtml" />
-    <Content Include="Config\Settings.config.readme" />
-    <Content Include="Config\Settings.Release.config" />
-    <None Include="Config\Settings.config" />
+    <Content Include="Config\PlanDirectory\Settings.config.readme" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

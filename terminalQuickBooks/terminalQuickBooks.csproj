@@ -282,7 +282,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Content Include="packages.config" />
-    <Content Include="Config\Settings.config.readme" />
+    <Content Include="Config\terminalQuickBooks\Settings.config.readme" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

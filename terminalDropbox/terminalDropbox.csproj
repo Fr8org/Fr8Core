@@ -212,7 +212,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Config\Settings.config" />
     <Content Include="Global.asax" />
     <Content Include="index.html" />
     <Content Include="Web.config">
@@ -277,7 +276,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
-    <Content Include="Config\Settings.config.readme" />
+    <Content Include="Config\terminalDropbox\Settings.config.readme" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

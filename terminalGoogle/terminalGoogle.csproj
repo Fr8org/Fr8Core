@@ -386,7 +386,7 @@
     <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
     <EmbeddedResource Include="Template\googleAppScriptFormResponse.json" />
     <Compile Include="Interfaces\IGoogleDrive.cs" />
-    <Content Include="Config\Settings.config.readme" />
+    <Content Include="Config\terminalGoogle\Settings.config.readme" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

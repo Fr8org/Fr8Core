@@ -266,11 +266,7 @@
       <IsTransformFile>True</IsTransformFile>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="Config\Settings.config.readme" />
-    <Content Include="Config\Settings.Dev.config" />
-    <None Include="Config\Settings.config" />
-    <Content Include="Config\Settings.Demo.config" />
-    <Content Include="Config\Settings.Release.config" />
+    <Content Include="Config\terminalYammer\Settings.config.readme" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
