@@ -405,7 +405,6 @@
     <Compile Include="Controllers\Api\ActivitiesController.cs" />
     <Compile Include="Controllers\Api\ActivityTemplatesController.cs" />
     <Compile Include="Controllers\Api\DocumentationController.cs" />
-    <Compile Include="Controllers\Api\FactsController.cs" />
     <Compile Include="Controllers\Api\OrganizationsController.cs" />
     <Compile Include="Controllers\Api\Fr8BaseApiController.cs" />
     <Compile Include="Controllers\Api\NotificationsController.cs" />
@@ -424,7 +423,7 @@
     <Compile Include="Controllers\ServicesController.cs" />
     <Compile Include="Controllers\SupportController.cs" />
     <Compile Include="Controllers\WelcomeController.cs" />
-    <Compile Include="Controllers\DocuSignTemplateController.cs" />
+    <Compile Include="Controllers\Api\FieldController.cs" />
     <Compile Include="Controllers\Api\PlanNodesController.cs" />
     <Compile Include="Controllers\AuthenticationCallbackController.cs" />
     <Compile Include="Controllers\Api\FilesController.cs" />
@@ -503,6 +502,7 @@
     <Content Include="Content\css\shared\main.css" />
     <Content Include="Content\css\shared\navbar.css" />
     <Content Include="Content\icons\web_services\Box-logo_64x64.png" />
+    <Content Include="Content\icons\web_services\fr8-demo-icon-64x64.png" />
     <Content Include="Content\img\background-7.png" />
     <Content Include="Content\img\background-cta-3.jpg" />
     <Content Include="Content\img\background-cta-3.png" />
@@ -993,8 +993,6 @@
     <TypeScriptCompile Include="Scripts\app\controllers\PlanUploadController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionDocumentationController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\collapse\collapse.directive.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\collapse\collapse.module.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\BuildMessageAppender.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ControlList.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ExternalObjectChooser.ts" />
@@ -1051,7 +1049,6 @@
     <TypeScriptCompile Include="Scripts\app\services\UpstreamExtractor.ts" />
     <TypeScriptCompile Include="Scripts\tests\endpoints\plansControllerRefactoring.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\ActionPicker.spec.ts" />
-    <TypeScriptCompile Include="Scripts\tests\unit\directives\collapse.directive.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\QueryBuilder.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamFieldChooserButton.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\filters\FilterByTagTests.ts" />
@@ -4475,7 +4472,6 @@
     <Folder Include="Views\CommunicationManager\" />
     <Folder Include="Views\Data\" />
     <Folder Include="Views\DockyardEvent\" />
-    <Folder Include="Views\DocuSignTemplate\" />
     <Folder Include="Views\Envelope\" />
     <Folder Include="Views\Settings\" />
   </ItemGroup>
@@ -4526,7 +4522,6 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>bin\HubWeb.XML</DocumentationFile>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Any CPU'">

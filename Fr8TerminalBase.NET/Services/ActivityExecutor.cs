@@ -75,11 +75,7 @@ namespace Fr8.TerminalBase.Services
             var activity = factory.Create();
 
             _hubCommunicator.Authorize(activityContext.UserId);
-
             activityContext.HubCommunicator = _hubCommunicator;
-
-            ContainerExecutionContext executionContext;
-
             var scope = parameters != null && parameters.Any(x => x.Key == "scope")
                 ? parameters.First(x => x.Key == "scope").Value
                 : null;
@@ -100,7 +96,7 @@ namespace Fr8.TerminalBase.Services
 
                 case "run":
                     {
-                        executionContext = await CreateContainerExecutionContext(curDataDTO);
+                        var executionContext = await CreateContainerExecutionContext(curDataDTO);
                         if (scope == "childActivities")
                         {
                             await activity.RunChildActivities(activityContext, executionContext);
