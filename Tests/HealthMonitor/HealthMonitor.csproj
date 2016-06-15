@@ -342,7 +342,8 @@
     <None Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Config\Settings.config" />
+    <None Include="Config\Settings.config.src.readme" />
+    <None Include="Config\Settings.config.src" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -525,7 +526,7 @@
     <Error Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>powershell.exe –NonInteractive –ExecutionPolicy Unrestricted –command "&amp; { $(ProjectDir)BuildSettings.ps1 }"</PostBuildEvent>
+    <PostBuildEvent>powershell.exe –NonInteractive –ExecutionPolicy Unrestricted –command "&amp; { $(ProjectDir)Build-Settings.ps1 }"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

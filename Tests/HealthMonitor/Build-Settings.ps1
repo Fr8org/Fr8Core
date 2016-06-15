@@ -10,7 +10,7 @@ powershell.exe –NonInteractive –ExecutionPolicy Unrestricted –command "& {
 $ErrorActionPreference = 'Stop'
 $includeNodesToDelete = New-Object System.Collections.ArrayList
 $healthMonitorPath = Split-Path -parent $PSCommandPath
-$configPath = "$healthMonitorPath\Config\Settings.config"
+$configPath = "$healthMonitorPath\Config\Settings.config.src"
 $solutionRootPath = Split-Path -parent (Split-Path -parent $configPath)
 $ignoredSettings = @('HubApiVersion', 'TerminalSecret', 'TerminalId', 'owin:AutomaticAppStartup', 'CoreWebServerUrl')
 
@@ -56,4 +56,6 @@ ForEach ($curInclude in $includeNodesToDelete) {
 	$hmConfigXml.appSettings.RemoveChild($curInclude)
 }
 
-$hmConfigXml.Save($configPath)
+# Save without the src extension
+$length = $configPath.Length;
+$hmConfigXml.Save($configPath.Substring(0, $length-4));

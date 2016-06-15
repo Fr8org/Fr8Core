@@ -12,6 +12,7 @@
 [Ss]ettings.Dev.config
 [Ss]ettings.Release.config
 [Ss]ettings.Demo.config
+[Ss]ettings.config.src
 
 # Nuget packages
 .nupkg
