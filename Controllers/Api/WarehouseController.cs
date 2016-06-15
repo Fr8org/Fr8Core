@@ -14,7 +14,7 @@ namespace HubWeb.Controllers
     [Fr8ApiAuthorize]
     public class WarehouseController : ApiController
     {
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8HubWebHMACAuthenticate(true)]
         [HttpPost]
         public IHttpActionResult Query(QueryDTO query)
         {
@@ -32,10 +32,29 @@ namespace HubWeb.Controllers
                 return Ok(foundObjects);
             }
         }
-        
-        [Fr8HubWebHMACAuthenticate]
+
+
+        [Fr8HubWebHMACAuthenticate(true)]
         [HttpPost]
-        public IHttpActionResult Add(CrateStorageDTO crateStorageDto)
+        public IHttpActionResult Delete(QueryDTO query)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var mtTypeRef = uow.MultiTenantObjectRepository.FindTypeReference(query.Name);
+                var queryBuilder = MTSearchHelper.CreateQueryProvider(mtTypeRef.ClrType);
+                queryBuilder.Delete(
+                    uow,
+                    User.Identity.GetUserId(),
+                    query.Criteria
+                    );
+
+                return Ok();
+            }
+        }
+
+        [Fr8HubWebHMACAuthenticate(true)]
+        [HttpPost]
+        public IHttpActionResult Post(CrateStorageDTO crateStorageDto)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

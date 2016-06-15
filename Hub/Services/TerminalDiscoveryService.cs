@@ -20,14 +20,22 @@ namespace Hub.Services
         private readonly IRestfulServiceClient _restfulServiceClient;
         private readonly EventReporter _eventReporter;
         private readonly IUnitOfWorkFactory _unitOfWorkFactory;
-        
-        public TerminalDiscoveryService(IActivityTemplate activityTemplateService, ITerminal terminal, IRestfulServiceClient restfulServiceClient, EventReporter eventReporter, IUnitOfWorkFactory unitOfWorkFactory)
+        private readonly string _serverUrl;
+
+
+        public TerminalDiscoveryService(IActivityTemplate activityTemplateService, ITerminal terminal, IRestfulServiceClient restfulServiceClient, EventReporter eventReporter, IUnitOfWorkFactory unitOfWorkFactory, IConfigRepository configRepository)
         {
             _activityTemplateService = activityTemplateService;
             _terminal = terminal;
             _restfulServiceClient = restfulServiceClient;
             _eventReporter = eventReporter;
             _unitOfWorkFactory = unitOfWorkFactory;
+
+            var serverProtocol = configRepository.Get("ServerProtocol", String.Empty);
+            var domainName = configRepository.Get("ServerDomainName", String.Empty);
+            var domainPort = configRepository.Get<int?>("ServerPort", null);
+
+            _serverUrl = $"{serverProtocol}{domainName}{(domainPort == null || domainPort.Value == 80 ? String.Empty : (":" + domainPort.Value))}/";
         }
 
         public async Task Discover()
@@ -62,7 +70,7 @@ namespace Hub.Services
                 var headers = new Dictionary<string, string>
                 {
                     {"Fr8HubCallbackSecret", secret},
-                    { "Fr8HubCallBackUrl", Server.ServerUrl}
+                    { "Fr8HubCallBackUrl", _serverUrl}
                 };
 
                 var terminalRegistrationInfo = await _restfulServiceClient.GetAsync<StandardFr8TerminalCM>(new Uri(terminalUrl, UriKind.Absolute), null, headers);

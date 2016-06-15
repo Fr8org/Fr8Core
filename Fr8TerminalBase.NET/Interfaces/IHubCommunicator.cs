@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.Models;
 
@@ -47,5 +48,8 @@ namespace Fr8.TerminalBase.Interfaces
         Task NotifyUser(TerminalNotificationDTO notificationMessage);
         Task RenewToken(AuthorizationTokenDTO token);
         Task SendEvent(Crate eventPayload);
+        Task<List<TManifest>> QueryWarehouse<TManifest>(List<FilterConditionDTO> query) where TManifest : Manifest;
+        Task AddOrUpdateWarehouse(params Manifest[] manifests);
+        Task DeleteFromWarehouse<TManifest>(List<FilterConditionDTO> query) where TManifest : Manifest;
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities;
 using Fr8.TerminalBase.Interfaces;
@@ -222,6 +223,25 @@ namespace Fr8.TerminalBase.Services
             await _underlyingHubCommunicator.SendEvent(eventPayload);
         }
 
+        public async Task<List<TManifest>> QueryWarehouse<TManifest>(List<FilterConditionDTO> query)
+            where TManifest : Manifest
+        {
+            await InitializeUnderlyingCommunicator();
+            return await _underlyingHubCommunicator.QueryWarehouse<TManifest>(query);
+        }
+
+        public async Task AddOrUpdateWarehouse(params Manifest[] manifests)
+        {
+            await InitializeUnderlyingCommunicator();
+            await _underlyingHubCommunicator.AddOrUpdateWarehouse(manifests);
+        }
+
+        public async Task DeleteFromWarehouse<TManifest>(List<FilterConditionDTO> query)
+            where TManifest : Manifest
+        {
+            await InitializeUnderlyingCommunicator();
+            await _underlyingHubCommunicator.DeleteFromWarehouse<TManifest>(query);
+        }
 
         private async Task InitializeUnderlyingCommunicator()
         {

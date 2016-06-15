@@ -1,72 +1,81 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
+using System.Linq;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Interfaces;
+using log4net;
 
 namespace Fr8.TerminalBase.Services
 {
     class HubDiscoveryService : IHubDiscoveryService
     {
-        /*private class HubDiscoveryInfo
-        {
-            public 
-        }*/
+        /**********************************************************************************/
+        // Declarations
+        /**********************************************************************************/
 
+        private static readonly ILog Logger = Fr8.Infrastructure.Utilities.Logging.Logger.GetCurrentClassLogger();
         private readonly IRestfulServiceClient _restfulServiceClient;
         private readonly IHMACService _hmacService;
         private readonly IActivityStore _activityStore;
         private readonly Dictionary<string, TaskCompletionSource<string>> _hubSecrets = new Dictionary<string, TaskCompletionSource<string>>(StringComparer.InvariantCultureIgnoreCase);
-        private readonly HashSet<string> _pendingDiscoveries = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
         private readonly string _masterHubUrl;
+        private readonly HashSet<string> _bindedHubs = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
+        private readonly AsyncMultiLock _hubListLock = new AsyncMultiLock();
+        private readonly string _apiSuffix;
+        private bool _hubListQueried;
+
+        /**********************************************************************************/
+        // Functions
+        /**********************************************************************************/
 
         public HubDiscoveryService(IRestfulServiceClient restfulServiceClient, IHMACService hmacService, IActivityStore activityStore)
         {
             _restfulServiceClient = restfulServiceClient;
             _hmacService = hmacService;
             _activityStore = activityStore;
-            _masterHubUrl = $"{CloudConfigurationManager.GetSetting("CoreWebServerUrl")}api/{CloudConfigurationManager.GetSetting("HubApiVersion")}";
-            
-            // TODO: remove this code. Terminal secret should be issued by the Hub during discovery
-            // SetHubSecret(_masterHubUrl, CloudConfigurationManager.GetSetting("TerminalSecret") ?? ConfigurationManager.AppSettings[activityStore.Terminal.Name + "TerminalSecret"]);
+            _apiSuffix = $"/api/{CloudConfigurationManager.GetSetting("HubApiVersion")}";
+            _masterHubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl");
         }
+
+        /**********************************************************************************/
 
         public async Task<IHubCommunicator> GetHubCommunicator(string hubUrl)
         {
             TaskCompletionSource<string> setSecretTask;
-            var searchUrl = NormalizeHubUrl(hubUrl);
+
+            hubUrl = NormalizeHubUrl(hubUrl);
 
             lock (_hubSecrets)
             {
-                if (!_hubSecrets.TryGetValue(searchUrl, out setSecretTask))
+                if (!_hubSecrets.TryGetValue(hubUrl, out setSecretTask))
                 {
                     setSecretTask = new TaskCompletionSource<string>();
-                    _hubSecrets[searchUrl] = setSecretTask;
-                }
-            }
+                    _hubSecrets[hubUrl] = setSecretTask;
 
-            lock (_pendingDiscoveries)
-            {
-                if (!_pendingDiscoveries.Contains(searchUrl))
-                {
-                    _pendingDiscoveries.Add(searchUrl);
 #pragma warning disable 4014
-                    Task.Factory.StartNew(() => RequestDiscovery(hubUrl));
+                    Task.Factory.StartNew(() => RequestDiscoveryTask(hubUrl));
 #pragma warning restore 4014
                 }
             }
-
+            
             var secret = await setSecretTask.Task;
 
-            return new DefaultHubCommunicator(_restfulServiceClient, _hmacService, hubUrl, _activityStore.Terminal.PublicIdentifier, secret);
+            return new DefaultHubCommunicator(_restfulServiceClient, _hmacService, string.Concat(hubUrl, _apiSuffix), _activityStore.Terminal.PublicIdentifier, secret);
         }
+
+        /**********************************************************************************/
 
         public Task<IHubCommunicator> GetMasterHubCommunicator()
         {
             return GetHubCommunicator(_masterHubUrl);
         }
+
+        /**********************************************************************************/
 
         public void SetHubSecret(string hubUrl, string secret)
         {
@@ -83,43 +92,147 @@ namespace Fr8.TerminalBase.Services
                 }
             }
 
-            lock (_pendingDiscoveries)
-            {
-                _pendingDiscoveries.Remove(hubUrl);
-            }
+            SubscribeToHub(hubUrl);
 
             setSecretTask.TrySetResult(secret);
         }
 
-        public async Task RequestDiscovery()
+        /**********************************************************************************/
+
+        public async Task<string[]> GetSubscribedHubs()
         {
-            await RequestDiscovery(_masterHubUrl);
+            var hubList = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
+
+            using (await _hubListLock.Lock(_bindedHubs))
+            {
+                if (_hubListQueried)
+                {
+                    lock (_bindedHubs)
+                    {
+                        return _bindedHubs.ToArray();
+                    }
+                }
+
+                var hubCommunicator = await GetMasterHubCommunicator();
+
+                hubCommunicator.Authorize(_activityStore.Terminal.PublicIdentifier);
+
+                var hubs = await hubCommunicator.QueryWarehouse<HubSubscriptionCM>(new List<FilterConditionDTO>());
+
+                if (hubs != null)
+                {
+                    foreach (var hubSubscriptionCm in hubs)
+                    {
+                        hubList.Add(hubSubscriptionCm.HubUrl);
+                    }
+                }
+
+                hubList.Add(NormalizeHubUrl(_masterHubUrl));
+                _hubListQueried = true;
+            }
+
+            lock (_bindedHubs)
+            {
+                foreach (var hub in hubList)
+                {
+                    _bindedHubs.Add(hub);
+                }
+            }
+
+            return hubList.ToArray();
         }
 
-        private async Task RequestDiscovery(string hubUrl)
+        /**********************************************************************************/
+
+        public void SubscribeToHub(string hubUrl)
+        {
+            lock (_bindedHubs)
+            {
+                if (string.IsNullOrWhiteSpace(hubUrl) || !_bindedHubs.Add(hubUrl))
+                {
+                    return;
+                }
+            }
+
+#pragma warning disable 4014
+            Task.Factory.StartNew(() => SubsribeToHubTask(hubUrl));
+#pragma warning restore 4014
+        }
+
+        /**********************************************************************************/
+
+        public void UnsubscribeFromHub(string hubUrl)
+        {
+            hubUrl = NormalizeHubUrl(hubUrl);
+
+            lock (_bindedHubs)
+            {
+                if (string.IsNullOrWhiteSpace(hubUrl) || !_bindedHubs.Remove(hubUrl))
+                {
+                    return;
+                }
+            }
+
+#pragma warning disable 4014
+            Task.Factory.StartNew(() => UnsubscribeFromHubTask(hubUrl));
+#pragma warning restore 4014
+        }
+
+        /**********************************************************************************/
+
+        private async Task SubsribeToHubTask(string hubUrl)
+        {
+            try
+            {
+                var masterHubCommunicator = await GetMasterHubCommunicator();
+
+                masterHubCommunicator.Authorize(_activityStore.Terminal.PublicIdentifier);
+                await masterHubCommunicator.AddOrUpdateWarehouse(new HubSubscriptionCM(hubUrl.ToLower()));
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Failed to add hub '{hubUrl}' to the subscription list of terminal {_activityStore.Terminal.Name} ({_activityStore.Terminal.PublicIdentifier})", ex);
+            }
+        }
+
+        /**********************************************************************************/
+
+        private async Task UnsubscribeFromHubTask(string hubUrl)
+        {
+            try
+            {
+                var masterHubCommunicator = await GetMasterHubCommunicator();
+
+                masterHubCommunicator.Authorize(_activityStore.Terminal.PublicIdentifier);
+
+                await masterHubCommunicator.DeleteFromWarehouse<HubSubscriptionCM>(new List<FilterConditionDTO>
+                {
+                    new FilterConditionDTO
+                    {
+                        Field = nameof(HubSubscriptionCM.HubUrl),
+                        Operator = "eq",
+                        Value = hubUrl.ToLower()
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Failed to remove hub '{hubUrl}' from the subscription list of terminal {_activityStore.Terminal.Name} ({_activityStore.Terminal.PublicIdentifier})", ex);
+            }
+        }
+        
+        /**********************************************************************************/
+
+        private async Task RequestDiscoveryTask(string hubUrl)
         {
             Exception lastException = null;
 
             for (int i = 0; i < 5; i++)
             {
-                lock (_pendingDiscoveries)
-                {
-                    if (!_pendingDiscoveries.Contains(hubUrl))
-                    {
-                        return;
-                    }
-                }
-
                 try
                 {
-                    await _restfulServiceClient.PostAsync(new Uri(hubUrl + "/terminals/discover"), null, _activityStore.Terminal.Endpoint);
-
-                    lock (_pendingDiscoveries)
-                    {
-                        _pendingDiscoveries.Remove(hubUrl);
-                    }
-
-                    break;
+                    await _restfulServiceClient.PostAsync(new Uri(string.Concat(hubUrl, _apiSuffix, "/terminals/forceDiscover")), _activityStore.Terminal.Endpoint, (string) null);
+                    return;
                 }
                 catch (Exception ex)
                 {
@@ -138,7 +251,11 @@ namespace Fr8.TerminalBase.Services
                     setSecretTask.SetException(new Exception($"Failed to request discovery from the Hub at : {hubUrl}", lastException));
                 }
             }
+
+            UnsubscribeFromHub(hubUrl);
         }
+
+        /**********************************************************************************/
 
         private string NormalizeHubUrl(string url)
         {
@@ -152,5 +269,7 @@ namespace Fr8.TerminalBase.Services
 
             return url.TrimEnd('/', '\\');
         }
+
+        /**********************************************************************************/
     }
 }

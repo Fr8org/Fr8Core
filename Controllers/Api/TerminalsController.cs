@@ -17,6 +17,7 @@ namespace HubWeb.Controllers
 	{
         private readonly ISecurityServices _security = ObjectFactory.GetInstance<ISecurityServices>();
         private readonly ITerminal _terminal = ObjectFactory.GetInstance<ITerminal>();
+        private readonly ITerminalDiscoveryService _terminalDiscovery = ObjectFactory.GetInstance<ITerminalDiscoveryService>();
         
         [HttpGet]
 		public IHttpActionResult Get()
@@ -82,12 +83,11 @@ namespace HubWeb.Controllers
 
 			return Ok(model);
 		}
-
+        
         [HttpPost]
-        public IHttpActionResult ForceDiscovery(string callbackUrl)
+        public IHttpActionResult ForceDiscover([FromBody] string callbackUrl)
         {
-
-
+            _terminalDiscovery.Discover(callbackUrl);
             return Ok();
         }
 	}

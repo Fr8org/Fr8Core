@@ -10,11 +10,13 @@ using AutoMapper;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Fr8.TerminalBase.Services
 {
@@ -394,6 +396,38 @@ namespace Fr8.TerminalBase.Services
                externalAccountId, _userId, minutes, TerminalId);
             var uri = new Uri(hubAlarmsUrl);
             await _restfulServiceClient.PostAsync(uri, null, await GetHMACHeader(uri));
+        }
+
+        public async Task<List<TManifest>> QueryWarehouse<TManifest>(List<FilterConditionDTO> query)
+            where TManifest : Manifest
+        {
+            var url = $"{GetHubUrlWithApiVersion()}/warehouse/query";
+            var uri = new Uri(url);
+
+            var payload = new QueryDTO(ManifestDiscovery.Default.GetManifestType<TManifest>().Type, query);
+            
+            return await _restfulServiceClient.PostAsync<QueryDTO, List<TManifest>>(uri, payload, null, await GetHMACHeader(uri, payload));
+        }
+
+        public async Task AddOrUpdateWarehouse(params Manifest[] manifests)
+        {
+            var url = $"{GetHubUrlWithApiVersion()}/warehouse";
+            var uri = new Uri(url);
+
+            var crateStorage = new CrateStorage(manifests.Select(x => Crate.FromContent(null, x)));
+            var payload = CrateStorageSerializer.Default.ConvertToDto(crateStorage);
+
+            await _restfulServiceClient.PostAsync(uri, payload, null, await GetHMACHeader(uri, payload));
+        }
+
+        public async Task DeleteFromWarehouse<TManifest>(List<FilterConditionDTO> query) 
+            where TManifest : Manifest
+        {
+            var url = $"{GetHubUrlWithApiVersion()}/warehouse/delete";
+            var uri = new Uri(url);
+            var payload = new QueryDTO(ManifestDiscovery.Default.GetManifestType<TManifest>().Type, query);
+
+             await _restfulServiceClient.PostAsync(uri, payload, null, await GetHMACHeader(uri, payload));
         }
 
         private string GetHubUrlWithApiVersion()

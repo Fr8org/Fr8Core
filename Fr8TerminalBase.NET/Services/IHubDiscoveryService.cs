@@ -8,6 +8,6 @@ namespace Fr8.TerminalBase.Services
         Task<IHubCommunicator> GetHubCommunicator(string hubUrl);
         Task<IHubCommunicator> GetMasterHubCommunicator();
         void SetHubSecret(string hubUrl, string secret);
-        Task RequestDiscovery();
+        Task<string[]> GetSubscribedHubs();
     }
 }
