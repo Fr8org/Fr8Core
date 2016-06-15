@@ -440,6 +440,7 @@ div.action-header {
     display: inline-block;
     vertical-align: top;
     min-height: 375px;
+    margin-top: 10px;
 }
 
 .jumptarget-wrapper .action-add {
