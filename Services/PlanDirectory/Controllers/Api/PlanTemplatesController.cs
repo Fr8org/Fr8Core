@@ -18,12 +18,13 @@ namespace PlanDirectory.Controllers.Api
     {
         private readonly IPlanTemplate _planTemplate;
         private readonly ISearchProvider _searchProvider;
-
+        private readonly ITagGenerator _tagGenerator;
 
         public PlanTemplatesController()
         {
             _planTemplate = ObjectFactory.GetInstance<IPlanTemplate>();
             _searchProvider = ObjectFactory.GetInstance<ISearchProvider>();
+            _tagGenerator = ObjectFactory.GetInstance<ITagGenerator>();
         }
 
         [HttpPost]
@@ -36,7 +37,12 @@ namespace PlanDirectory.Controllers.Api
                 var fr8AccountId = User.Identity.GetUserId();
 
                 var planTemplateCM = await _planTemplate.CreateOrUpdate(fr8AccountId, dto);
+
+                var tags = await _tagGenerator.GetTags(planTemplateCM, fr8AccountId);
+
                 await _searchProvider.CreateOrUpdate(planTemplateCM);
+
+                //TODO: update page definitions
 
                 return Ok();
             });
@@ -83,7 +89,7 @@ namespace PlanDirectory.Controllers.Api
                 PageStart = pageStart.GetValueOrDefault(),
                 PageSize = pageSize.GetValueOrDefault()
             };
-            
+
             var searchResult = await _searchProvider.Search(searchRequest);
 
             return Ok(searchResult);
@@ -103,7 +109,7 @@ namespace PlanDirectory.Controllers.Api
 
                 var planTemplateDTO = await _planTemplate.Get(fr8AccountId, id);
 
-                var uri = new Uri(CloudConfigurationManager.GetSetting("HubUrl") + "/api/v1/plans/load");
+                var uri = new Uri(CloudConfigurationManager.GetSetting("HubApiBaseUrl") + "plans/load");
                 var headers = await hmacService.GenerateHMACHeader(
                     uri,
                     "PlanDirectory",
@@ -115,7 +121,7 @@ namespace PlanDirectory.Controllers.Api
                 var plan = await client.PostAsync<JToken, PlanEmptyDTO>(
                     uri, planTemplateDTO.PlanContents, headers: headers);
 
-                return Ok(new { RedirectUrl = CloudConfigurationManager.GetSetting("HubUrl") + "/dashboard/plans/" + plan.Id.ToString() + "/builder?viewMode=plan" });
+                return Ok(new { RedirectUrl = CloudConfigurationManager.GetSetting("HubApiBaseUrl").Replace("/api/v1/", "") + "/dashboard/plans/" + plan.Id.ToString() + "/builder?viewMode=plan" });
             });
         }
 

@@ -173,9 +173,9 @@ namespace terminalDocuSign.Activities
             }
 
             var monitorDocusignAT = await GetActivityTemplate("terminalDocuSign", "Monitor_DocuSign_Envelope_Activity");
-            var setDelayAT = await GetActivityTemplate("terminalFr8Core", "SetDelay");
-            var queryFr8WareHouseAT = await GetActivityTemplate("terminalFr8Core", "QueryFr8Warehouse");
-            var testIncomingDataAT = await GetActivityTemplate("terminalFr8Core", "TestIncomingData");
+            var setDelayAT = await GetActivityTemplate("terminalFr8Core", "Set_Delay");
+            var queryFr8WareHouseAT = await GetActivityTemplate("terminalFr8Core", "Query_Fr8_Warehouse");
+            var testIncomingDataAT = await GetActivityTemplate("terminalFr8Core", "Test_Incoming_Data");
             var buildMessageAT = await GetActivityTemplate("terminalFr8Core", "Build_Message");
            
             //DocuSign
@@ -254,7 +254,7 @@ namespace terminalDocuSign.Activities
 
         private void SetNotifierActivityBody(ActivityPayload notifierActivity)
         {
-            if (notifierActivity.ActivityTemplate.Name == "SendEmailViaSendGrid")
+            if (notifierActivity.ActivityTemplate.Name == "Send_Email_Via_SendGrid")
             {
                 var configControls = ControlHelper.GetConfigurationControls(notifierActivity.CrateStorage);
                 var emailBodyField = ControlHelper.GetControl<TextSource>(configControls, "EmailBody", ControlTypes.TextSource);
