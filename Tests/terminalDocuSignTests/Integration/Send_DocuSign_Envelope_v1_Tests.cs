@@ -60,7 +60,7 @@ namespace terminalDocuSignTests
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(x => x.Label == "Configuration_Controls"));
             //Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Available Templates"));
             //Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Upstream Terminal-Provided Fields"));
-            
+
         }
 
         private void AssertFollowUpCrateTypes(ICrateStorage crateStorage)
@@ -71,7 +71,7 @@ namespace terminalDocuSignTests
             Assert.AreEqual(1, crateStorage.CratesOfType<ValidationResultsCM>().Count());
 
         }
-        
+
         private void AssertControls(StandardConfigurationControlsCM controls)
         {
             Assert.AreEqual(1, controls.Controls.Count);
@@ -144,10 +144,10 @@ namespace terminalDocuSignTests
         /// Wait for HTTP-500 exception when Auth-Token is not passed to followup configuration.
         /// </summary>
         [Test]
-        [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
-        )]
+        //[ExpectedException(
+        //    ExpectedException = typeof(RestfulServiceException),
+        //    ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
+        //)]
         public async Task Send_DocuSign_Envelope_FollowUp_Configuration_NoAuth()
         {
             var configureUrl = GetTerminalConfigureUrl();
@@ -167,13 +167,19 @@ namespace terminalDocuSignTests
 
             dataDTO.ActivityDTO.AuthToken = null;
 
-            await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
+            var response = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
+
+            Assert.NotNull(response);
+            Assert.NotNull(response.CrateStorage);
+            Assert.NotNull(response.CrateStorage.Crates);
+            Assert.True(response.CrateStorage.Crates.Any(x => x.ManifestType == "Standard Authentication"));
         }
 
         /// <summary>
         /// Test run-time for action from Monitor_DocuSign_FollowUp_Configuration_TemplateValue.
         /// </summary>
-        [Test]
+        /// This test is obsolete, we do not use Recipient in the Send_DocuSign_Envelope_v1
+        [Test, Ignore]
         public async Task Send_DocuSign_Envelope_Run_With_Specific_Recipient()
         {
             var runUrl = GetTerminalRunUrl();
@@ -188,7 +194,7 @@ namespace terminalDocuSignTests
             {
                 updatableStorage.Replace(storage);
             }
-            
+
             var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
             var crateStorage = Crate.GetStorage(responsePayloadDTO);
             Assert.AreEqual(0, crateStorage.Count());
@@ -198,10 +204,10 @@ namespace terminalDocuSignTests
         /// Wait for HTTP-500 exception when Auth-Token is not passed to run.
         /// </summary>
         [Test]
-        [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No auth token provided.""}"
-        )]
+        //[ExpectedException(
+        //    ExpectedException = typeof(RestfulServiceException),
+        //    ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No auth token provided.""}"
+        //)]
         public async Task Send_DocuSign_Envelope_Run_NoAuth()
         {
             var runUrl = GetTerminalRunUrl();
@@ -210,14 +216,19 @@ namespace terminalDocuSignTests
             var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
             var storage = Crate.GetStorage(responseActionDTO);
 
-            SendDocuSignEnvelope_SetSpecificRecipient(storage);
+           // SendDocuSignEnvelope_SetSpecificRecipient(storage);
 
             using (var crateStorage = Crate.GetUpdatableStorage(dataDTO.ActivityDTO))
             {
                 crateStorage.Replace(storage);
             }
             dataDTO.ActivityDTO.AuthToken = null;
-            await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
+            var response = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
+
+            Assert.NotNull(response);
+            Assert.NotNull(response.CrateStorage);
+            Assert.NotNull(response.CrateStorage.Crates);
+            Assert.True(response.CrateStorage.Crates.Any(x => x.ManifestType == "Standard Authentication"));
         }
 
 
