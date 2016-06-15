@@ -78,7 +78,7 @@ namespace terminalTests.Integration
                    EventNames = "RouteActivated"
                }
            );
-
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
             var runResponse = HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO).Result;
 
             Assert.NotNull(runResponse);

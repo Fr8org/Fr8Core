@@ -330,7 +330,7 @@ namespace terminalFr8CoreTests.Integration
 
 			Assert.IsInstanceOf<DropDownList>(configurationControl);
 			Assert.AreEqual("Selected_Fr8_Object", configurationControl.Name);
-			Assert.AreEqual("Select Fr8 Object Properties", configurationControl.Label);
+			Assert.AreEqual("Select Fr8 Object", configurationControl.Label);
 
 			var configurationControlEvents = configurationControl.Events;
 
