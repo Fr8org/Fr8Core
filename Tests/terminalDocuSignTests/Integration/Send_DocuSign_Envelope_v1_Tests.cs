@@ -223,12 +223,9 @@ namespace terminalDocuSignTests
                 crateStorage.Replace(storage);
             }
             dataDTO.ActivityDTO.AuthToken = null;
-            var response = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
-
-            Assert.NotNull(response);
-            Assert.NotNull(response.CrateStorage);
-            Assert.NotNull(response.CrateStorage.Crates);
-            Assert.True(response.CrateStorage.Crates.Any(x => x.ManifestType == "Standard Authentication"));
+            AddOperationalStateCrate(dataDTO,new OperationalStateCM());
+            var payload = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
+            CheckIfPayloadHasNeedsAuthenticationError(payload);
         }
 
 

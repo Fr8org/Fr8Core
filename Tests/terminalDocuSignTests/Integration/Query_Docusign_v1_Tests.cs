@@ -80,7 +80,8 @@ namespace terminalDocuSignTests.Integration
         /// <summary>
         /// Test run-time without Auth-Token.
         /// </summary>
-        [Test]
+        /// The test is obsolete as Query_DocuSign_v1 does not though exception if no Followup config was undergone
+        [Test, Ignore]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
             ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Sequence contains no elements""}",
