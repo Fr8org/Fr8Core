@@ -14,7 +14,7 @@
         * [Fr8 Security - Authorization](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Authorization.md)
         * [Solutions](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Solutions)
     - [Objects](ForDevelopers/Objects/Objects.md)  
-        * [Activities](/Docs/ForDevelopers/Objects/Activities.md)  
+        * [Activities](ForDevelopers/Objects/Activities.md)  
         * [Activity Templates](ForDevelopers/Objects/ActivityTemplates.md)  
         * [Crates](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Fr8Crates.md)  
         * [Fr8 Hubs](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Fr8Hubs.md)  

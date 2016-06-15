@@ -1,17 +1,17 @@
 # OBJECTS
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)
+[Go to Contents](/Docs/Home.md)
 
 ### Objects
-* [Activities](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Activities.md)  
-* [Activity Templates](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/ActivityTemplates.md)  
-* [Crates](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Fr8Crates.md)  
-* [Fr8 Hubs](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Fr8Hubs.md)  
-* [Plans](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Plans.md)  
-* [Plan Templates](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Plans/PlanTemplates.md)
-* [Subplans](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Subplans.md)  
-* [Containers](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Containers.md)  
-* [Container Execution](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/ContainerExecution.md)  
-* [Terminals](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Terminals.md)  
+* [Activities](ForDevelopers/Objects/Activities.md)  
+* [Activity Templates](ForDevelopers/Objects/ActivityTemplates.md)  
+* [Crates](ForDevelopers/Objects/Fr8Crates.md)  
+* [Fr8 Hubs](ForDevelopers/Objects/Fr8Hubs.md)  
+* [Plans](ForDevelopers/Objects/Plans.md)  
+* [Plan Templates](ForDevelopers/Objects/Plans/PlanTemplates.md)
+* [Subplans](ForDevelopers/Objects/Subplans.md)  
+* [Containers](ForDevelopers/Objects/Containers.md)  
+* [Container Execution](ForDevelopers/Objects/ContainerExecution.md)  
+* [Terminals](ForDevelopers/Objects/Terminals.md)  
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)
+[Go to Contents](/Docs/Home.md)
