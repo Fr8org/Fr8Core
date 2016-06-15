@@ -1,0 +1,26 @@
+﻿<?xml version="1.0"?>
+
+<!--- 
+====================================
+terminalDocuSign Configuration File
+====================================
+
+Add your own configuration settings in this file and remove the ".readme" extension from filename.
+
+You may also need to modify settings in the appSettings section of web.config. 
+
+Note that all the settings defined in this file cannot take advantage of XML transformation. 
+If you need a setting to be able to change depending on build configuration (Debug/Release/etc),
+define it in web.config. 
+-->
+
+<appSettings>
+  <!-- Add your QuickBooks integration details -->
+  <add key="QuickBooksAppToken" value="" />
+  <add key="QuickBooksConsumerKey" value="" />
+  <add key="QuickBooksConsumerSecret" value="" />
+  <add key="QuickBooksOAuthAuthorizeUrl" value="" />
+
+  <add key="TerminalSecret" value="-new-terminal-secret-" />
+  <add key="TerminalId" value="75ec4967-6113-43b5-bb4c-6b3468696e57" />
+</appSettings>

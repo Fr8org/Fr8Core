@@ -1,0 +1,25 @@
+﻿<?xml version="1.0"?>
+
+<!--- 
+====================================
+terminalDocuSign Configuration File
+====================================
+
+Add your own configuration settings in this file and remove the ".readme" extension from filename.
+
+You may also need to modify settings in the appSettings section of web.config. 
+
+Note that all the settings defined in this file cannot take advantage of XML transformation. 
+If you need a setting to be able to change depending on build configuration (Debug/Release/etc),
+define it in web.config. 
+-->
+
+<appSettings>
+  <add key="HubApiVersion" value="v1" />
+  
+  <!-- Add your Papertrail integration details -->
+  <add key="PapertrailDefaultLogUrl" value="logs3.papertrailapp.com:31611" />
+
+  <add key="TerminalSecret" value="-new-terminal-secret-" />
+  <add key="TerminalId" value="9b21279b-efb4-493a-a02b-fe8694262cc8" />
+</appSettings>

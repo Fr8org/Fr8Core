@@ -1,0 +1,24 @@
+﻿<?xml version="1.0"?>
+
+<!--- 
+====================================
+terminalDocuSign Configuration File
+====================================
+
+Add your own configuration settings in this file and remove the ".readme" extension from filename.
+
+You may also need to modify settings in the appSettings section of web.config. 
+
+Note that all the settings defined in this file cannot take advantage of XML transformation. 
+If you need a setting to be able to change depending on build configuration (Debug/Release/etc),
+define it in web.config. 
+-->
+
+<appSettings>
+  <!-- Add your Salesforce integration details below -->
+  <add key="SalesforceConsumerKey" value="" />
+  <add key="SalesforceConsumerSecret" value="" />
+ 
+  <add key="TerminalSecret" value="-new-terminal-secret-" />
+  <add key="TerminalId" value="d814af88-72b3-444c-9198-8c62292f0be5" />
+</appSettings>

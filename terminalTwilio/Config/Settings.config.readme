@@ -1,0 +1,27 @@
+﻿<?xml version="1.0"?>
+
+<!--- 
+====================================
+terminalDocuSign Configuration File
+====================================
+
+Add your own configuration settings in this file and remove the ".readme" extension from filename.
+
+You may also need to modify settings in the appSettings section of web.config. 
+
+Note that all the settings defined in this file cannot take advantage of XML transformation. 
+If you need a setting to be able to change depending on build configuration (Debug/Release/etc),
+define it in web.config. 
+-->
+
+<appSettings>
+  <add key="HubApiVersion" value="v1" />
+
+  <add key="TerminalSecret" value="-new-terminal-secret-" />
+  <add key="TerminalId" value="2dd73dda-411d-4e18-8e0a-54bbe1aa015b" />
+  
+  <!-- Specify your Twilio integration details below -->
+  <add key="TwilioSid" value="AC2ced9e056c9ffcc84ac7d63eb9281484" />
+  <add key="TwilioToken" value="d488f951a61bbaa13026229b947a5f67" />
+  <add key="TwilioFromNumber" value="+14158492168" />
+</appSettings>

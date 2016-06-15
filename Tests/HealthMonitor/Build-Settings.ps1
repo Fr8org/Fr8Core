@@ -32,13 +32,14 @@ ForEach ($curInclude in $includeNodes) {
 		# Get appSettings from the file and copy them to the HM external configuration file.
 		$curConfigXml = [xml](Get-Content $curExtSettingPath)
 		ForEach ($curSetting in $curConfigXml.appSettings.add) {
-			# Check if duplicating setting
-			$hmConfigXml.appSettings | Where-Object { $_.key -ieq $curSetting.key} | ForEach-Object {
-				Echo "Warning: attempt to add a duplicating setting $curSetting.key with value $curSetting.value. Skipping."
+			# Check if a duplicating setting
+			$hmConfigXml.appSettings.add | Where-Object { $_.key -ieq $curSetting.key} | ForEach-Object {
+				Write-Warning ("Attempt to add a duplicating setting '{0}' with value '{1}'. Skipping." -f $_.key, $curSetting.value)
 				Continue
 			}
 
-			If ($ignoredSettings.IndexOf($curSetting.key) -ieq -1) { # copy if not ignored 
+			# Copy only if setting not ignored 
+			If ($ignoredSettings.IndexOf($curSetting.key) -ieq -1) {
 				$clonedSetting = $hmConfigXml.ImportNode($curSetting, $false)
 				$hmConfigXml.appSettings.AppendChild($clonedSetting)
 			}

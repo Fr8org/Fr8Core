@@ -15,9 +15,6 @@ define it in web.config.
 -->
 
 <appSettings>
-  <!-- This settings file is referenced by all the projects which need HubWeb settings: 
-  HubWeb itself, HealthMonitor and HealthMonitor.HubLauncher -->
-  
   <add key="HubApiVersion" value="v1" />
   <add key="DocusignTemplateCacheExpirationTimeout" value="30" />
   <add key="terminalDocuSign.PollingInterval" value="15" />

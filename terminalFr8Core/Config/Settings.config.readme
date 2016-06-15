@@ -1,0 +1,35 @@
+﻿<?xml version="1.0"?>
+
+<!--- 
+====================================
+terminalDocuSign Configuration File
+====================================
+
+Add your own configuration settings in this file and remove the ".readme" extension from filename.
+
+You may also need to modify settings in the appSettings section of web.config. 
+
+Note that all the settings defined in this file cannot take advantage of XML transformation. 
+If you need a setting to be able to change depending on build configuration (Debug/Release/etc),
+define it in web.config. 
+-->
+
+<appSettings>
+  <add key="HubApiVersion" value="v1" />
+  <add key="TerminalSecret" value="-new-terminal-secret-" />
+  <add key="TerminalId" value="2db48191-cda3-4922-9cc2-a636e828063f" />
+  
+  <!-- SendGrid integration details-->
+  <!-- terminalFr8Core uses SendGrid to send email -->
+  <add key="OutboundFromAddress" value="your@email.com" />
+  <add key="OutboundEmailHost" value="smtp.sendgrid.net" />
+  <add key="OutboundEmailPort" value="587" />
+  <add key="OutboundUserName" value="" />
+  <add key="OutboundUserPassword" value="" />
+
+  <!-- Twilio integration details-->
+  <!-- terminalFr8Core uses Twilio to send SMS -->
+  <add key="TwilioSid" value="" />
+  <add key="TwilioToken" value="" />
+  <add key="TwilioFromNumber" value="" />
+</appSettings>

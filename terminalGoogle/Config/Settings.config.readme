@@ -1,0 +1,30 @@
+﻿<?xml version="1.0"?>
+
+<!--- 
+====================================
+terminalDocuSign Configuration File
+====================================
+
+Add your own configuration settings in this file and remove the ".readme" extension from filename.
+
+You may also need to modify settings in the appSettings section of web.config. 
+
+Note that all the settings defined in this file cannot take advantage of XML transformation. 
+If you need a setting to be able to change depending on build configuration (Debug/Release/etc),
+define it in web.config. 
+-->
+
+<appSettings>
+  <add key="TerminalSecret" value="-new-terminal-secret-" />
+  <add key="TerminalId" value="1a170d44-841f-4fa2-aae4-b17ad6c469ec" />
+
+  <!-- Specify your Google integration details -->
+  <add key="GoogleClientId" value="" />
+  <add key="GoogleClientSecret" value="" />
+ 
+  <!-- Google Forms integration. Specify your settings here -->
+  <add key="GoogleAppScriptWebApp" value="https://script.google.com/macros/s/AKfycbzOmYZtRQp4F-yo6MG0KPC4djSKDHHKDKSJSKhEK5mpd2QS-bXy/exec" />
+
+  <!-- Google Drive integration. Specify your settings here -->
+  <add key="GoogleMailAccount" value="your@email.com" />
+</appSettings>

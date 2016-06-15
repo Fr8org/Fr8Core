@@ -1,0 +1,24 @@
+﻿<?xml version="1.0"?>
+
+<!--- 
+====================================
+terminalDocuSign Configuration File
+====================================
+
+Add your own configuration settings in this file and remove the ".readme" extension from filename.
+
+You may also need to modify settings in the appSettings section of web.config. 
+
+Note that all the settings defined in this file cannot take advantage of XML transformation. 
+If you need a setting to be able to change depending on build configuration (Debug/Release/etc),
+define it in web.config. 
+-->
+
+<appSettings>
+  <add key="TerminalSecret" value="d14aaa44-22a1-4d2c-b14b-be559c8941b5" />
+  <add key="TerminalId" value="f2b999be-be3f-42b5-b0d5-611d0606723b" />
+
+  <!-- Specify your Yammer integration details below: redirect_uri, client_id and client_secret-->
+  <add key="YammerOAuthUrl" value="https://www.yammer.com/oauth2/authorize?client_id=your_client_id&amp;response_type=code&amp;redirect_uri=http://localhost:30643/AuthenticationCallback/ProcessSuccessfulOAuthResponse?terminalName=terminalYammer%26terminalVersion=1&amp;state=%STATE%" />
+  <add key="YammerOAuthAccessUrl" value="https://www.yammer.com/oauth2/access_token?client_id=your_client_id&amp;client_secret=your_client_secret&amp;code=%CODE%&amp;grant_type=authorization_code" />
+</appSettings>
