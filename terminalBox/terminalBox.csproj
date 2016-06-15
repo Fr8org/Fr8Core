@@ -202,8 +202,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\GenerateTableActivity_v1.cs" />
-    <Compile Include="Actions\SaveToFile_v1.cs" />
+    <Compile Include="Actions\Generate_Table_Activity_v1.cs" />
+    <Compile Include="Actions\Save_To_File_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
     <Compile Include="Controllers\ActivityController.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />

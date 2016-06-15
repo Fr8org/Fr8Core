@@ -246,6 +246,9 @@
     <Content Include="Scripts\SearchController.js" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\Reauthenticate.cshtml" />
+    <Content Include="Config\Settings.config.readme" />
+    <Content Include="Config\Settings.Release.config" />
+    <None Include="Config\Settings.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -257,6 +260,7 @@
     </None>
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -274,6 +278,8 @@
     </Compile>
     <Compile Include="Infrastructure\AuthTokenManager.cs" />
     <Compile Include="Infrastructure\ISearchProvider.cs" />
+    <Compile Include="Infrastructure\TagGenerator.cs" />
+    <Compile Include="Interfaces\ITagGenerator.cs" />
     <Compile Include="Infrastructure\PlanDirectoryHMACAuthenticateAttribute.cs" />
     <Compile Include="Infrastructure\IAuthTokenManager.cs" />
     <Compile Include="Infrastructure\PlanDirectoryAuthorizeAttribute.cs" />

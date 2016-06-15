@@ -213,7 +213,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activities\Save_To_Excel_v1.cs" />
-    <Compile Include="Activities\SetExcelTemplate_v1.cs" />
+    <Compile Include="Activities\Set_Excel_Template_v1.cs" />
     <Compile Include="Activities\Load_Excel_File_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
     <Compile Include="Controllers\ActivityController.cs" />

@@ -235,37 +235,35 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Activities\AppBuilder_v1.cs" />
-    <Compile Include="Activities\FilterObjectListByIncomingMessage_v1.cs" />
-    <Compile Include="Activities\GetDataFromFr8Warehouse_v1.cs" />
+    <Compile Include="Activities\App_Builder_v1.cs" />
+    <Compile Include="Activities\Filter_Object_List_By_Incoming_Message_v1.cs" />
+    <Compile Include="Activities\Get_Data_From_Fr8_Warehouse_v1.cs" />
     <Compile Include="Activities\Monitor_Fr8_Events_v1.cs" />
-    <Compile Include="Activities\QueryFr8Warehouse_v1.cs" />
-    <Compile Include="Activities\AddPayloadManually_v1.cs" />
-    <Compile Include="Activities\BuildQuery_v1.cs" />
+    <Compile Include="Activities\Query_Fr8_Warehouse_v1.cs" />
+    <Compile Include="Activities\Add_Payload_Manually_v1.cs" />
+    <Compile Include="Activities\Build_Query_v1.cs" />
     <Compile Include="Activities\Build_Message_v1.cs" />
-    <Compile Include="Activities\ConnectToSql_v1.cs" />
-    <Compile Include="Activities\GetFileFromFr8Store_v1.cs" />
-    <Compile Include="Activities\SearchFr8Warehouse_v1.cs" />
-    <Compile Include="Activities\ExtractTableField_v1.cs" />
+    <Compile Include="Activities\Connect_To_Sql_v1.cs" />
+    <Compile Include="Activities\Get_File_From_Fr8_Store_v1.cs" />
+    <Compile Include="Activities\Search_Fr8_Warehouse_v1.cs" />
+    <Compile Include="Activities\Extract_Table_Field_v1.cs" />
     <Compile Include="Activities\Send_Email_v1.cs" />
     <Compile Include="Activities\Send_SMS_v1.cs" />
-    <Compile Include="Activities\MakeADecision_v1.cs" />
-    <Compile Include="Activities\StoreFile_v1.cs" />
-    <Compile Include="Activities\ConvertCrates_v1.cs" />
-    <Compile Include="Activities\SetDelay_v1.cs" />
-    <Compile Include="Activities\ConvertRelatedFieldsIntoTable_v1.cs" />
-    <Compile Include="Activities\ExecuteSql_v1.cs" />
+    <Compile Include="Activities\Make_A_Decision_v1.cs" />
+    <Compile Include="Activities\Store_File_v1.cs" />
+    <Compile Include="Activities\Set_Delay_v1.cs" />
+    <Compile Include="Activities\Convert_Related_Fields_Into_Table_v1.cs" />
+    <Compile Include="Activities\Execute_Sql_v1.cs" />
     <Compile Include="Activities\Loop_v1.cs" />
-    <Compile Include="Activities\ManagePlan_v1.cs" />
+    <Compile Include="Activities\Manage_Plan_v1.cs" />
     <Compile Include="Activities\Select_Fr8_Object_v1.cs" />
     <Compile Include="Activities\Show_Report_Onscreen_v1.cs" />
-    <Compile Include="Activities\SaveToFr8Warehouse_v1.cs" />
-    <Compile Include="Activities\TestIncomingData_v1.cs" />
+    <Compile Include="Activities\Save_To_Fr8_Warehouse_v1.cs" />
+    <Compile Include="Activities\Test_Incoming_Data_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
     <Compile Include="Controllers\ActivityController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
-    <Compile Include="Converters\StandardFileDescriptionToDocuSignTemplateConversion.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -273,8 +271,6 @@
     <Compile Include="Interfaces\IEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SelfHostFactory.cs" />
-    <Compile Include="Converters\DocuSignTemplateToStandardFileDescriptionConversion.cs" />
-    <Compile Include="Converters\ICrateConversion.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="StructureMapConfiguration.cs" />
     <Compile Include="TerminalData.cs" />
