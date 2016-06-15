@@ -8,7 +8,10 @@
 .vs
 
 # Fr8 settings file
-[Cc]onfig/[Ss]ettings.config
+[Ss]ettings.config
+[Ss]ettings.Dev.config
+[Ss]ettings.Release.config
+[Ss]ettings.Demo.config
 
 # Nuget packages
 .nupkg
@@ -220,6 +223,3 @@ Views/Shared/CDN/
 /terminalAzure/log4net.terminals.config
 *.csproj.DotSettings
 *.csproj.DotSettings
-/_PrivateSettings/Content/Config/Settings.config
-/Tests/HealthMonitor.HubLauncher/Config/Settings.config
-/Tests/HealthMonitor/Config/Settings.config
