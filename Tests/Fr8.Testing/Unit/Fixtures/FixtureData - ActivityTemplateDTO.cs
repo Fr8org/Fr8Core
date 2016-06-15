@@ -31,7 +31,7 @@ namespace Fr8.Testing.Unit.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "SendEmailViaSendGrid",
+                Name = "Send_Email_Via_SendGrid",
                 Version = "1"
             };
         }

@@ -47,6 +47,7 @@
     <DefineConstants>TRACE;RELEASE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\HubWeb.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Analytics.NET, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -424,7 +425,6 @@
     <Compile Include="Controllers\SupportController.cs" />
     <Compile Include="Controllers\WelcomeController.cs" />
     <Compile Include="Controllers\Api\FieldController.cs" />
-    <Compile Include="Controllers\DocuSignTemplateController.cs" />
     <Compile Include="Controllers\Api\PlanNodesController.cs" />
     <Compile Include="Controllers\AuthenticationCallbackController.cs" />
     <Compile Include="Controllers\Api\FilesController.cs" />
@@ -503,6 +503,7 @@
     <Content Include="Content\css\shared\main.css" />
     <Content Include="Content\css\shared\navbar.css" />
     <Content Include="Content\icons\web_services\Box-logo_64x64.png" />
+    <Content Include="Content\icons\web_services\fr8-demo-icon-64x64.png" />
     <Content Include="Content\img\background-7.png" />
     <Content Include="Content\img\background-cta-3.jpg" />
     <Content Include="Content\img\background-cta-3.png" />
@@ -1016,6 +1017,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamCrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooserButton.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActivityResize.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\fillHeight.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ModalResizable.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\SubplanHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Validators\ManifestDescriptionValidators.ts" />
@@ -4480,7 +4482,6 @@
     <Folder Include="Views\CommunicationManager\" />
     <Folder Include="Views\Data\" />
     <Folder Include="Views\DockyardEvent\" />
-    <Folder Include="Views\DocuSignTemplate\" />
     <Folder Include="Views\Envelope\" />
     <Folder Include="Views\Settings\" />
   </ItemGroup>
@@ -4521,6 +4522,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\HubWeb.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Demo|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>

@@ -304,6 +304,8 @@
     <Compile Include="Infrastructure\AuthTokenManager.cs" />
     <Compile Include="Infrastructure\IPageGenerator.cs" />
     <Compile Include="Infrastructure\ISearchProvider.cs" />
+    <Compile Include="Infrastructure\TagGenerator.cs" />
+    <Compile Include="Interfaces\ITagGenerator.cs" />
     <Compile Include="Infrastructure\PlanCategoryPageGenerator.cs" />
     <Compile Include="Infrastructure\PlanDirectoryHMACAuthenticateAttribute.cs" />
     <Compile Include="Infrastructure\IAuthTokenManager.cs" />

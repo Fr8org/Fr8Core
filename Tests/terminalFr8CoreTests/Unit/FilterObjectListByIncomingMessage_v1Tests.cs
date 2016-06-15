@@ -58,7 +58,7 @@ namespace terminalTests.Integration
         [Test]
         public async Task Configure_AfterInitialConfiguration_DataSourceSelectorContainsTableDataGenerators()
         {
-            var activity = New<FilterObjectListByIncomingMessage_v1>();
+            var activity = New<Filter_Object_List_By_Incoming_Message_v1>();
             var activityContext = new ActivityContext
             {
                 HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
@@ -71,14 +71,14 @@ namespace terminalTests.Integration
             };
             //Initial config
             await activity.Configure(activityContext);
-            Assert.AreEqual(1, activityContext.ActivityPayload.CrateStorage.GetReadonlyActivityUi<FilterObjectListByIncomingMessage_v1.ActivityUi>().DataSourceSelector.ListItems.Count, "Data source list is not properly populated");
+            Assert.AreEqual(1, activityContext.ActivityPayload.CrateStorage.GetReadonlyActivityUi<Filter_Object_List_By_Incoming_Message_v1.ActivityUi>().DataSourceSelector.ListItems.Count, "Data source list is not properly populated");
         }
 
         [Test]
         public async Task Configure_WhenDataSourceIsChanged_RemoveAndReconfigureChildActivity()
         {
             var authToken = new AuthorizationToken { Token = "1" };
-            var activity = New<FilterObjectListByIncomingMessage_v1>();
+            var activity = New<Filter_Object_List_By_Incoming_Message_v1>();
             var activityContext = new ActivityContext
             {
                 HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
@@ -91,7 +91,7 @@ namespace terminalTests.Integration
             };
             //Initial config
             await activity.Configure(activityContext);
-            activityContext.ActivityPayload.CrateStorage.UpdateControls<FilterObjectListByIncomingMessage_v1.ActivityUi>(x => x.DataSourceSelector.Value = ActivityTemplates[0].Id.ToString());
+            activityContext.ActivityPayload.CrateStorage.UpdateControls<Filter_Object_List_By_Incoming_Message_v1.ActivityUi>(x => x.DataSourceSelector.Value = ActivityTemplates[0].Id.ToString());
             await activity.Configure(activityContext);
             var hubMock = ObjectFactory.GetInstance<Mock<IHubCommunicator>>();
 
@@ -104,7 +104,7 @@ namespace terminalTests.Integration
         public async Task Run_WhenNoDataIsCahced_RunsChildActivitiy()
         {
             var authToken = new AuthorizationToken { Token = "1" };
-            var activity = New<FilterObjectListByIncomingMessage_v1>();
+            var activity = New<Filter_Object_List_By_Incoming_Message_v1>();
             var activityContext = new ActivityContext
             {
                 HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
@@ -118,7 +118,7 @@ namespace terminalTests.Integration
             var containerExecutionContext = HealthMonitor_FixtureData.ExecutionContextWithOnlyOperationalState();
             //Initial and followup config
             await activity.Configure(activityContext);
-            activityContext.ActivityPayload.CrateStorage.UpdateControls<FilterObjectListByIncomingMessage_v1.ActivityUi>(x => x.DataSourceSelector.Value = ActivityTemplates[0].Id.ToString());
+            activityContext.ActivityPayload.CrateStorage.UpdateControls<Filter_Object_List_By_Incoming_Message_v1.ActivityUi>(x => x.DataSourceSelector.Value = ActivityTemplates[0].Id.ToString());
             await activity.Configure(activityContext);
             
             // var childActivity = new ActivityPayload
@@ -140,7 +140,7 @@ namespace terminalTests.Integration
             var containerExecutionContext = HealthMonitor_FixtureData.ExecutionContextWithOnlyOperationalState();
             containerExecutionContext.PayloadStorage.Add(Crate<FieldDescriptionsCM>.FromContent("Message is here", new FieldDescriptionsCM(new FieldDTO("Message", "This message should be checked for keywords"))));
             var authToken = new AuthorizationToken { Token = "1" };
-            var activity = New<FilterObjectListByIncomingMessage_v1>();
+            var activity = New<Filter_Object_List_By_Incoming_Message_v1>();
             var activityContext = new ActivityContext
             {
                 HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
@@ -153,7 +153,7 @@ namespace terminalTests.Integration
             };
             //Initial and followup config
             await activity.Configure(activityContext);
-            activityContext.ActivityPayload.CrateStorage.UpdateControls<FilterObjectListByIncomingMessage_v1.ActivityUi>(x =>
+            activityContext.ActivityPayload.CrateStorage.UpdateControls<Filter_Object_List_By_Incoming_Message_v1.ActivityUi>(x =>
             {
                 x.DataSourceSelector.Value = ActivityTemplates[0].Id.ToString();
                 x.IncomingTextSelector.selectedKey = "Message";

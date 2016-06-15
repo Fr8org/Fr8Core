@@ -684,9 +684,21 @@
     <Compile Include="Migrations\201606091512284_FillManifestRegistry.Designer.cs">
       <DependentUpon>201606091512284_FillManifestRegistry.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201606101439338_AddPageDefinition.cs" />
-    <Compile Include="Migrations\201606101439338_AddPageDefinition.Designer.cs">
-      <DependentUpon>201606101439338_AddPageDefinition.cs</DependentUpon>
+    <Compile Include="Migrations\201606141326120_FR-3514 Make activity classes naming consistent.cs" />
+    <Compile Include="Migrations\201606141326120_FR-3514 Make activity classes naming consistent.Designer.cs">
+      <DependentUpon>201606141326120_FR-3514 Make activity classes naming consistent.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606122001330_HistoryDateIndex.cs" />
+    <Compile Include="Migrations\201606122001330_HistoryDateIndex.Designer.cs">
+      <DependentUpon>201606122001330_HistoryDateIndex.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606131241031_PlanTemplate-Permissions.cs" />
+    <Compile Include="Migrations\201606131241031_PlanTemplate-Permissions.Designer.cs">
+      <DependentUpon>201606131241031_PlanTemplate-Permissions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606131429309_RemovedDocuSignAccountId.cs" />
+    <Compile Include="Migrations\201606131429309_RemovedDocuSignAccountId.Designer.cs">
+      <DependentUpon>201606131429309_RemovedDocuSignAccountId.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -822,7 +834,6 @@
     <Compile Include="Infrastructure\StructureMap\ISecurityServices.cs" />
     <Compile Include="Infrastructure\StructureMap\MockedSecurityServices.cs" />
     <Compile Include="Interfaces\IBookingRequestDO.cs" />
-    <Compile Include="Interfaces\IDocusignAccountDO.cs" />
     <Compile Include="Interfaces\IEmailDO.cs" />
     <Compile Include="Interfaces\IHistoryItemDO.cs" />
     <Compile Include="Interfaces\IMailerDO.cs" />
@@ -1271,8 +1282,17 @@
     <EmbeddedResource Include="Migrations\201606091512284_FillManifestRegistry.resx">
       <DependentUpon>201606091512284_FillManifestRegistry.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201606101439338_AddPageDefinition.resx">
-      <DependentUpon>201606101439338_AddPageDefinition.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201606141326120_FR-3514 Make activity classes naming consistent.resx">
+      <DependentUpon>201606141326120_FR-3514 Make activity classes naming consistent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606122001330_HistoryDateIndex.resx">
+      <DependentUpon>201606122001330_HistoryDateIndex.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606131241031_PlanTemplate-Permissions.resx">
+      <DependentUpon>201606131241031_PlanTemplate-Permissions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606131429309_RemovedDocuSignAccountId.resx">
+      <DependentUpon>201606131429309_RemovedDocuSignAccountId.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

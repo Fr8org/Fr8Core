@@ -8,6 +8,25 @@ namespace Data.Migrations
         public override void Up()
         {
             Sql(@"
+DECLARE @StringTypeId uniqueidentifier;
+
+SELECT @StringTypeId = Id FROM MtTypes WHERE ClrName = 'System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089';
+IF (@StringTypeId IS NULL)
+BEGIN
+	SET @StringTypeId = NEWID();
+	INSERT INTO MtTypes (Id, Alias, ClrName, IsPrimitive, IsComplex, ManifestId) 
+	VALUES (@StringTypeId, NULL, 'System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089', 1, 0, NULL);
+END;
+
+DECLARE @CrateManifestTypeId uniqueidentifier;
+SELECT @CrateManifestTypeId = Id FROM MtTypes WHERE ClrName = 'Fr8.Infrastructure.Data.Crates.CrateManifestType, Fr8Infrastructure.NET, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null';
+IF (@CrateManifestTypeId IS NULL)
+BEGIN
+	SET @CrateManifestTypeId = NEWID();
+	INSERT INTO MtTypes (Id, Alias, ClrName, IsPrimitive, IsComplex, ManifestId) 
+	VALUES (@CrateManifestTypeId, NULL, 'Fr8.Infrastructure.Data.Crates.CrateManifestType, Fr8Infrastructure.NET, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null', 0, 1, NULL);
+END;
+
 DECLARE @ManifestTypeId uniqueidentifier;
 
 SELECT @ManifestTypeId = Id FROM MtTypes WHERE Alias = 'Manifest Description';
@@ -17,7 +36,16 @@ BEGIN
 	SET @ManifestTypeId = NEWID();
 	INSERT INTO MtTypes (Id, Alias, ClrName, IsPrimitive, IsComplex, ManifestId) 
 	VALUES (@ManifestTypeId, 'Manifest Description', 'Fr8Data.Manifests.ManifestDescriptionCM, Fr8Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null', 0, 0, 30);
+
+	INSERT INTO MtProperties (Name, Offset, Type, DeclaringType) VALUES ('Id', 0, @StringTypeId, @ManifestTypeId);
+	INSERT INTO MtProperties (Name, Offset, Type, DeclaringType) VALUES ('Name', 1, @StringTypeId, @ManifestTypeId);
+	INSERT INTO MtProperties (Name, Offset, Type, DeclaringType) VALUES ('Version', 2, @StringTypeId, @ManifestTypeId);
+	INSERT INTO MtProperties (Name, Offset, Type, DeclaringType) VALUES ('SampleJSON', 3, @StringTypeId, @ManifestTypeId);
+	INSERT INTO MtProperties (Name, Offset, Type, DeclaringType) VALUES ('Description', 4, @StringTypeId, @ManifestTypeId);
+	INSERT INTO MtProperties (Name, Offset, Type, DeclaringType) VALUES ('RegisteredBy', 5, @StringTypeId, @ManifestTypeId);
+	INSERT INTO MtProperties (Name, Offset, Type, DeclaringType) VALUES ('ManifestType', 6, @CrateManifestTypeId, @ManifestTypeId);
 END;
+
 DELETE FROM MtData WHERE Type = @ManifestTypeId;
 
 INSERT INTO MtData (Type, CreatedAt, UpdatedAt, fr8AccountId, IsDeleted, Value1, Value2, Value3, Value4, Value5, Value6, Value7) 
