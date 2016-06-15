@@ -24,6 +24,7 @@ namespace terminalFr8Core.Actions
             Category = ActivityCategory.Receivers,
             Version = "1",
             Type = ActivityType.Standard,
+            MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO
         };
