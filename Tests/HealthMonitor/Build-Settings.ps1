@@ -10,7 +10,7 @@ powershell.exe –NonInteractive –ExecutionPolicy Unrestricted –command "& {
 $ErrorActionPreference = 'Stop'
 $includeNodesToDelete = New-Object System.Collections.ArrayList
 $healthMonitorPath = Split-Path -parent $PSCommandPath
-$configPath = "$healthMonitorPath\Config\Settings.config.src"
+$configPath = "$healthMonitorPath\Config\HealthMonitor\Settings.config.src"
 $solutionRootPath = Split-Path -parent (Split-Path -parent $configPath)
 $ignoredSettings = @('HubApiVersion', 'TerminalSecret', 'TerminalId', 'owin:AutomaticAppStartup', 'CoreWebServerUrl')
 
@@ -25,12 +25,12 @@ $includeNodes = $hmConfigXml.appSettings.include
 
 ForEach ($curInclude in $includeNodes) {
 	# Resovle relative path to absolute path
-	$curExtSettingPath =  [System.IO.Path]::GetFullPath((Join-Path (Split-Path -parent $configPath) $curInclude.src))
+	$curExtSettingPath =  [System.IO.Path]::GetFullPath((Join-Path $healthMonitorPath $curInclude.src))
 	if(Test-Path $curExtSettingPath) {
 		Echo ("Including appSettings from {0}" -f $curExtSettingPath)
-		$includeNodesToDelete.Add($curInclude);
+		$includeNodesToDelete.Add($curInclude) | Out-Null
 		# Get appSettings from the file and copy them to the HM external configuration file.
-		$curConfigXml = [xml](Get-Content $curExtSettingPath)
+		$curConfigXml = [xml](Get-Content $curExtSettingPath) | Out-Null
 		ForEach ($curSetting in $curConfigXml.appSettings.add) {
 			# Check if a duplicating setting
 			$hmConfigXml.appSettings.add | Where-Object { $_.key -ieq $curSetting.key} | ForEach-Object {
@@ -41,7 +41,7 @@ ForEach ($curInclude in $includeNodes) {
 			# Copy only if setting not ignored 
 			If ($ignoredSettings.IndexOf($curSetting.key) -ieq -1) {
 				$clonedSetting = $hmConfigXml.ImportNode($curSetting, $false)
-				$hmConfigXml.appSettings.AppendChild($clonedSetting)
+				$hmConfigXml.appSettings.AppendChild($clonedSetting) | Out-Null
 			}
 		}
 	}
@@ -53,9 +53,9 @@ ForEach ($curInclude in $includeNodes) {
 
 # Delete include nodes
 ForEach ($curInclude in $includeNodesToDelete) {
-	$hmConfigXml.appSettings.RemoveChild($curInclude)
+	$hmConfigXml.appSettings.RemoveChild($curInclude) | Out-Null
 }
 
 # Save without the src extension
 $length = $configPath.Length;
-$hmConfigXml.Save($configPath.Substring(0, $length-4));
+$hmConfigXml.Save($configPath.Substring(0, $length-4))

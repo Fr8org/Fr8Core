@@ -392,6 +392,7 @@
       <Name>Fr8TerminalBase.NET</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Target Name="BeforeBuild">
     <Copy SourceFiles="@(Log4netConfigFiles)" DestinationFolder="." />
   </Target>
