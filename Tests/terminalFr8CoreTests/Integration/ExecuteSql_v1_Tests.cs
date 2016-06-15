@@ -104,7 +104,7 @@ namespace terminalFr8CoreTests.Integration
             Assert.NotNull(responsePayloadDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responsePayloadDTO.CrateStorage);
-            Assert.AreEqual(2, crateStorage.Count);
+            Assert.AreEqual(3, crateStorage.Count);
 
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardPayloadDataCM>().Count(x => x.Label == "Sql Query Result"));
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardQueryCM>().Count(x => x.Label == "Sql Query"));
