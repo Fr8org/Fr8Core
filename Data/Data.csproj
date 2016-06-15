@@ -684,10 +684,6 @@
     <Compile Include="Migrations\201606091512284_FillManifestRegistry.Designer.cs">
       <DependentUpon>201606091512284_FillManifestRegistry.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201606101439338_AddPageDefinition.cs" />
-    <Compile Include="Migrations\201606101439338_AddPageDefinition.Designer.cs">
-      <DependentUpon>201606101439338_AddPageDefinition.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201606141326120_FR-3514 Make activity classes naming consistent.cs" />
     <Compile Include="Migrations\201606141326120_FR-3514 Make activity classes naming consistent.Designer.cs">
       <DependentUpon>201606141326120_FR-3514 Make activity classes naming consistent.cs</DependentUpon>
@@ -703,6 +699,10 @@
     <Compile Include="Migrations\201606131429309_RemovedDocuSignAccountId.cs" />
     <Compile Include="Migrations\201606131429309_RemovedDocuSignAccountId.Designer.cs">
       <DependentUpon>201606131429309_RemovedDocuSignAccountId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606151014116_AddPageDefinition.cs" />
+    <Compile Include="Migrations\201606151014116_AddPageDefinition.Designer.cs">
+      <DependentUpon>201606151014116_AddPageDefinition.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1286,9 +1286,6 @@
     <EmbeddedResource Include="Migrations\201606091512284_FillManifestRegistry.resx">
       <DependentUpon>201606091512284_FillManifestRegistry.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201606101439338_AddPageDefinition.resx">
-      <DependentUpon>201606101439338_AddPageDefinition.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606141326120_FR-3514 Make activity classes naming consistent.resx">
       <DependentUpon>201606141326120_FR-3514 Make activity classes naming consistent.cs</DependentUpon>
     </EmbeddedResource>
@@ -1300,6 +1297,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606131429309_RemovedDocuSignAccountId.resx">
       <DependentUpon>201606131429309_RemovedDocuSignAccountId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606151014116_AddPageDefinition.resx">
+      <DependentUpon>201606151014116_AddPageDefinition.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
