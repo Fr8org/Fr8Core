@@ -15,7 +15,7 @@ using terminalUtilities.Models;
 
 namespace terminalSendGrid.Activities
 {
-    public class Send_Email_Via_SendGrid_v1 : BaseTerminalActivity
+    public class Send_Email_Via_SendGrid_v1 : ExplicitTerminalActivity
     {
         private readonly IConfigRepository _configRepository;
         private readonly IEmailPackager _emailPackager;

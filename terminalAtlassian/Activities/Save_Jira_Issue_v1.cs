@@ -9,12 +9,13 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
 using terminalAtlassian.Interfaces;
 
 namespace terminalAtlassian.Actions
 {
-    public class Save_Jira_Issue_v1 : EnhancedTerminalActivity<Save_Jira_Issue_v1.ActivityUi>
+    public class Save_Jira_Issue_v1 : TerminalActivity<Save_Jira_Issue_v1.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -235,12 +236,14 @@ namespace terminalAtlassian.Actions
         private const string JiraIdField = "JIRA Id";
 
         private readonly IAtlassianService _atlassianService;
+        private readonly IPushNotificationService _pushNotificationService;
 
 
-        public Save_Jira_Issue_v1(ICrateManager crateManager, IAtlassianService atlassianService)
+        public Save_Jira_Issue_v1(ICrateManager crateManager, IAtlassianService atlassianService, IPushNotificationService pushNotificationService)
             : base(crateManager)
         {
             _atlassianService = atlassianService;
+            _pushNotificationService = pushNotificationService;
         }
 
         #region Configuration
@@ -384,7 +387,7 @@ namespace terminalAtlassian.Actions
 
             var credentialsDTO = JsonConvert.DeserializeObject<CredentialsDTO>(AuthorizationToken.Token);
             var jiraUrl = $"{credentialsDTO.Domain}/browse/{issueInfo.Key}";
-            await PushUserNotification("Success", "Jira issue created", $"Created new jira issue: {jiraUrl}");
+            await _pushNotificationService.PushUserNotification(MyTemplate, "Success", "Jira issue created", $"Created new jira issue: {jiraUrl}");
             Payload.Add(Crate<FieldDescriptionsCM>.FromContent(RuntimeCrateLabel, new FieldDescriptionsCM(
                                                                                       new FieldDTO(JiraIdField, issueInfo.Key),
                                                                                       new FieldDTO(JiraUrlField, jiraUrl))));

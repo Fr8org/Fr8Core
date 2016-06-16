@@ -16,7 +16,7 @@ using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSign.Activities
 {
-    public abstract class BaseDocuSignActivity : BaseTerminalActivity
+    public abstract class BaseDocuSignActivity : ExplicitTerminalActivity
     {
         protected IDocuSignManager DocuSignManager;
 

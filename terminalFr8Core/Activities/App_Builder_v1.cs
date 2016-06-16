@@ -12,13 +12,15 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using terminalUtilities.Excel;
 
 namespace terminalFr8Core.Activities
 {
-    public class App_Builder_v1 : BaseTerminalActivity
+    public class App_Builder_v1 : ExplicitTerminalActivity
     {
         private readonly ExcelUtils _excelUtils;
+        private readonly IPushNotificationService _pushNotificationService;
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -55,7 +57,7 @@ namespace terminalFr8Core.Activities
                                     CloudConfigurationManager.GetSetting("CoreWebServerUrl") +
                                 "redirect/cloneplan?id=" + ActivityId;
 
-            await PushUserNotification("success", "Plan URL", msg);
+            await _pushNotificationService.PushUserNotification(MyTemplate, "Success", "Plan URL", msg);
         }
 
         private async Task UpdateMetaControls()
@@ -292,10 +294,11 @@ namespace terminalFr8Core.Activities
             return PackControlsCrate(Label,infoText, cc);
         }
 
-        public App_Builder_v1(ICrateManager crateManager, ExcelUtils excelUtils)
+        public App_Builder_v1(ICrateManager crateManager, ExcelUtils excelUtils, IPushNotificationService pushNotificationService)
             : base(crateManager)
         {
             _excelUtils = excelUtils;
+            _pushNotificationService = pushNotificationService;
         }
 
 

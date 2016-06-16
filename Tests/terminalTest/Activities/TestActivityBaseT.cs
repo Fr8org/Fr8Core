@@ -8,7 +8,7 @@ using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalTest.Actions
 {
-    public abstract class TestActivityBase<T> : EnhancedTerminalActivity<T>
+    public abstract class TestActivityBase<T> : TerminalActivity<T>
         where T: StandardConfigurationControlsCM
     {
         protected TestActivityBase(ICrateManager crateManager) 
