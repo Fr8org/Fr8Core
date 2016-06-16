@@ -70,7 +70,7 @@ namespace HubTests.Utilization
                 Notifications.Add(message.ToString());
             }
 
-            public void NotifyUser(object message, string eventName, string userName)
+            public void NotifyUser(object message, string eventName, string userId)
             {
                 Notifications.Add(message.ToString());
             }
