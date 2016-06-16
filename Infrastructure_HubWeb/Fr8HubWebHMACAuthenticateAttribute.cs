@@ -12,11 +12,8 @@ namespace HubWeb.Infrastructure_HubWeb
 {
     public class Fr8HubWebHMACAuthenticateAttribute : fr8HMACAuthenticateAttribute
     {
-        private readonly bool _allowEmptyUserName;
-
-        public Fr8HubWebHMACAuthenticateAttribute (bool allowEmptyUserName = false)
+        public Fr8HubWebHMACAuthenticateAttribute ()
         {
-            _allowEmptyUserName = allowEmptyUserName;
             _terminalService = ObjectFactory.GetInstance<ITerminal>();
         }
 
@@ -48,7 +45,7 @@ namespace HubWeb.Infrastructure_HubWeb
                 return false;
             }
 
-            if (string.IsNullOrEmpty(userId) && _allowEmptyUserName)
+            if (string.IsNullOrEmpty(userId))
             {
                 //hmm think about this
                 //TODO with a empty userId a terminal can only call single Controller
@@ -71,7 +68,7 @@ namespace HubWeb.Infrastructure_HubWeb
 
         protected override void Success(HttpAuthenticationContext context, string terminalId, string userId)
         {
-            var identity = new Fr8Identity("terminal-" + terminalId, userId ?? terminalId);
+            var identity = new Fr8Identity("terminal-" + terminalId, userId);
             var principle = new Fr8Principle(terminalId, identity, new [] { "Terminal" });
             Thread.CurrentPrincipal = principle;
             context.Principal = principle;

@@ -12,7 +12,7 @@ using log4net;
 
 namespace Fr8.TerminalBase.Services
 {
-    class HubDiscoveryService : IHubDiscoveryService
+    public class HubDiscoveryService : IHubDiscoveryService
     {
         /**********************************************************************************/
         // Declarations
@@ -22,6 +22,7 @@ namespace Fr8.TerminalBase.Services
         private readonly IRestfulServiceClient _restfulServiceClient;
         private readonly IHMACService _hmacService;
         private readonly IActivityStore _activityStore;
+        private readonly IRetryPolicy _hubDiscoveryRetryPolicy;
         private readonly Dictionary<string, TaskCompletionSource<string>> _hubSecrets = new Dictionary<string, TaskCompletionSource<string>>(StringComparer.InvariantCultureIgnoreCase);
         private readonly string _masterHubUrl;
         private readonly HashSet<string> _bindedHubs = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
@@ -33,11 +34,12 @@ namespace Fr8.TerminalBase.Services
         // Functions
         /**********************************************************************************/
 
-        public HubDiscoveryService(IRestfulServiceClient restfulServiceClient, IHMACService hmacService, IActivityStore activityStore)
+        public HubDiscoveryService(IRestfulServiceClient restfulServiceClient, IHMACService hmacService, IActivityStore activityStore, IRetryPolicy hubDiscoveryRetryPolicy)
         {
             _restfulServiceClient = restfulServiceClient;
             _hmacService = hmacService;
             _activityStore = activityStore;
+            _hubDiscoveryRetryPolicy = hubDiscoveryRetryPolicy;
             _apiSuffix = $"/api/{CloudConfigurationManager.GetSetting("HubApiVersion")}";
             _masterHubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl");
         }
@@ -129,13 +131,13 @@ namespace Fr8.TerminalBase.Services
 
                 hubList.Add(NormalizeHubUrl(_masterHubUrl));
                 _hubListQueried = true;
-            }
 
-            lock (_bindedHubs)
-            {
-                foreach (var hub in hubList)
+                lock (_bindedHubs)
                 {
-                    _bindedHubs.Add(hub);
+                    foreach (var hub in hubList)
+                    {
+                        _bindedHubs.Add(hub);
+                    }
                 }
             }
 
@@ -225,34 +227,24 @@ namespace Fr8.TerminalBase.Services
 
         private async Task RequestDiscoveryTask(string hubUrl)
         {
-            Exception lastException = null;
-
-            for (int i = 0; i < 5; i++)
+            try
             {
-                try
-                {
-                    await _restfulServiceClient.PostAsync(new Uri(string.Concat(hubUrl, _apiSuffix, "/terminals/forceDiscover")), _activityStore.Terminal.Endpoint, (string) null);
-                    return;
-                }
-                catch (Exception ex)
-                {
-                    lastException = ex;
-                }
-
-                await Task.Delay(2000);
+                await _hubDiscoveryRetryPolicy.Do(() => _restfulServiceClient.PostAsync(new Uri(string.Concat(hubUrl, _apiSuffix, "/terminals/forceDiscover")), _activityStore.Terminal.Endpoint, (string) null));
             }
-
-            lock (_hubSecrets)
+            catch (Exception ex)
             {
-                TaskCompletionSource<string> setSecretTask;
-
-                if (_hubSecrets.TryGetValue(hubUrl, out setSecretTask))
+                lock (_hubSecrets)
                 {
-                    setSecretTask.SetException(new Exception($"Failed to request discovery from the Hub at : {hubUrl}", lastException));
-                }
-            }
+                    TaskCompletionSource<string> setSecretTask;
 
-            UnsubscribeFromHub(hubUrl);
+                    if (_hubSecrets.TryGetValue(hubUrl, out setSecretTask))
+                    {
+                        setSecretTask.SetException(new Exception($"Failed to request discovery from the Hub at : {hubUrl}", ex));
+                    }
+                }
+
+                UnsubscribeFromHub(hubUrl);
+            }
         }
 
         /**********************************************************************************/

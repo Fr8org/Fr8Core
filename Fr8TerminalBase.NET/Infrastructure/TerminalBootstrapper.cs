@@ -22,6 +22,7 @@ namespace Fr8.TerminalBase.Infrastructure
                 For<IActivityExecutor>().Use<ActivityExecutor>();
                 For<IHubEventReporter>().Use<HubEventReporter>().Singleton();
                 For<IHubDiscoveryService>().Use<HubDiscoveryService>().Singleton();
+                For<IRetryPolicy>().Use(() => new SimpleRetryPolicy(5, 2000));
             }            
         }
 
@@ -34,6 +35,7 @@ namespace Fr8.TerminalBase.Infrastructure
                 For<IActivityExecutor>().Use<ActivityExecutor>();
                 For<IHubEventReporter>().Use<HubEventReporter>().Singleton();
                 For<IHubDiscoveryService>().Use<HubDiscoveryService>().Singleton();
+                For<IRetryPolicy>().Use<SingleRunRetryPolicy>();
             }
         }
     }

@@ -14,7 +14,7 @@ namespace HubWeb.Controllers
     [Fr8ApiAuthorize]
     public class WarehouseController : ApiController
     {
-        [Fr8HubWebHMACAuthenticate(true)]
+        [Fr8HubWebHMACAuthenticate]
         [HttpPost]
         public IHttpActionResult Query(QueryDTO query)
         {
@@ -34,7 +34,7 @@ namespace HubWeb.Controllers
         }
 
 
-        [Fr8HubWebHMACAuthenticate(true)]
+        [Fr8HubWebHMACAuthenticate]
         [HttpPost]
         public IHttpActionResult Delete(QueryDTO query)
         {
@@ -52,7 +52,7 @@ namespace HubWeb.Controllers
             }
         }
 
-        [Fr8HubWebHMACAuthenticate(true)]
+        [Fr8HubWebHMACAuthenticate]
         [HttpPost]
         public IHttpActionResult Post(CrateStorageDTO crateStorageDto)
         {
