@@ -343,8 +343,8 @@
     <None Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Config\HealthMonitor\Settings.config.src.readme" />
     <None Include="Config\HealthMonitor\Settings.config.src" />
+    <None Include="Config\HealthMonitor\Settings.config.src.readme" />
     <None Include="Config\HubWeb\Settings.config" />
     <None Include="Config\PlanDirectory\Settings.config" />
     <None Include="Config\PlanDirectory\Settings.Release.config" />
