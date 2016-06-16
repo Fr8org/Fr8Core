@@ -269,7 +269,7 @@ namespace terminalDocuSign.Activities
 
         private async Task ConfigureFilterDataActivity(List<ActivityTemplateDTO> activityTemplates)
         {
-            var template = activityTemplates.Single(x => x.Terminal.Name == "terminalFr8Core" && x.Name == "TestIncomingData" && x.Version == "1");
+            var template = activityTemplates.Single(x => x.Terminal.Name == "terminalFr8Core" && x.Name == "Test_Incoming_Data" && x.Version == "1");
             var activity = await AddAndConfigureChildActivity(ActivityPayload, template, order: 4);
             var crateStorage = activity.CrateStorage;
             var configControlCM = crateStorage
@@ -299,7 +299,7 @@ namespace terminalDocuSign.Activities
 
         private async Task<ActivityPayload> ConfigureQueryFr8Activity(List<ActivityTemplateDTO> activityTemplates)
         {
-            var template = activityTemplates.Single(x => x.Terminal.Name == "terminalFr8Core" && x.Name == "QueryFr8Warehouse" && x.Version == "1");
+            var template = activityTemplates.Single(x => x.Terminal.Name == "terminalFr8Core" && x.Name == "Query_Fr8_Warehouse" && x.Version == "1");
             var activity = await AddAndConfigureChildActivity(ActivityPayload, template, order: 3);
             var crateStorage = activity.CrateStorage;
             var configControlCM = ControlHelper.GetConfigurationControls(crateStorage);
@@ -315,13 +315,14 @@ namespace terminalDocuSign.Activities
             objectList.Value = selectedObject.Id.ToString("N");
             objectList.selectedKey = selectedObject.Alias;
             var filterPane = (FilterPane)radioButtonGroup.Radios[1].Controls.First(c => c.Name == "Filter");
-            var conditions = new List<FilterConditionDTO>
-                            {
-                                new FilterConditionDTO{ Field = "EnvelopeId", Operator = "eq", Value = "FromPayload"}
-                            };
+            var conditions = new List<FilterConditionDTO>();
             if (ActivityUI.SentToSpecificRecipientOption.Selected)
             {
                 conditions.Add(new FilterConditionDTO { Field = "Email", Operator = "eq", Value = ActivityUI.SpecificRecipientEmailText.Value });
+            }
+            else
+            {
+                conditions.Add(new FilterConditionDTO { Field = "EnvelopeId", Operator = "eq", Value = "FromPayload" });
             }
             filterPane.Value = JsonConvert.SerializeObject(new FilterDataDTO
             {
@@ -338,7 +339,7 @@ namespace terminalDocuSign.Activities
 
         private MtTypeReference GetMtType(Type clrType)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var uow = _uowFactory.GetNewUnitOfWork())
             {
                 return uow.MultiTenantObjectRepository.FindTypeReference(clrType);
             }
@@ -346,7 +347,7 @@ namespace terminalDocuSign.Activities
 
         private async Task ConfigureSetDelayActivity(List<ActivityTemplateDTO> activityTemplates)
         {
-            var template = activityTemplates.Single(x => x.Terminal.Name == "terminalFr8Core" && x.Name == "SetDelay" && x.Version == "1");
+            var template = activityTemplates.Single(x => x.Terminal.Name == "terminalFr8Core" && x.Name == "Set_Delay" && x.Version == "1");
             var activity = await AddAndConfigureChildActivity(ActivityPayload, template, order: 2);
             ControlHelper.SetControlValue(activity, "Delay_Duration", ActivityUI.TimePeriod.Value);
         }
@@ -370,13 +371,13 @@ namespace terminalDocuSign.Activities
         public override Task Run()
         {
             var resultFields = new List<FieldDTO>();
-            var delayActivity = ActivityPayload.ChildrenActivities.FirstOrDefault(x => x.ActivityTemplate.Name == "SetDelay" && x.ActivityTemplate.Version == "1");
+            var delayActivity = ActivityPayload.ChildrenActivities.FirstOrDefault(x => x.ActivityTemplate.Name == "Set_Delay" && x.ActivityTemplate.Version == "1");
             if (delayActivity != null)
             {
                 var delayControl = delayActivity.CrateStorage.FirstCrate<StandardConfigurationControlsCM>().Content.Controls.OfType<Duration>().First();
                 resultFields.Add(new FieldDTO(DelayTimeProperty, GetDelayDescription(delayControl), AvailabilityType.RunTime));
             }
-            var filterActivity = ActivityPayload.ChildrenActivities.FirstOrDefault(x => x.ActivityTemplate.Name == "TestIncomingData" && x.ActivityTemplate.Version == "1");
+            var filterActivity = ActivityPayload.ChildrenActivities.FirstOrDefault(x => x.ActivityTemplate.Name == "Test_Incoming_Data" && x.ActivityTemplate.Version == "1");
             if (filterActivity != null)
             {
                 var filterPane = filterActivity.CrateStorage.FirstCrate<StandardConfigurationControlsCM>().Content.Controls.OfType<FilterPane>().First();
