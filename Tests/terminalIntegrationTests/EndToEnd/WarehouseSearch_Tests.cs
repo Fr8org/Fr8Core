@@ -80,7 +80,7 @@ namespace terminalIntegrationTests.EndToEnd
         [Test]
         public async Task WarehouseAdd()
         {
-            var url = GetHubApiBaseUrl() + "warehouse/add";
+            var url = GetHubApiBaseUrl() + "warehouse";
             var dataToAdd = new ManifestDescriptionCM()
             {
                 Id = Guid.NewGuid().ToString(),

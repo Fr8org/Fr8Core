@@ -35,6 +35,10 @@
       <HintPath>..\packages\AutoMapper.4.0.4\lib\net45\AutoMapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.ApplicationInsights, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ApplicationInsights.2.0.0\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
       <Private>True</Private>
@@ -119,14 +123,17 @@
     <Compile Include="Services\ActivityStore.cs" />
     <Compile Include="Services\CrateSignaller.cs" />
     <Compile Include="Services\DataHubCommunicatorBase.cs" />
-    <Compile Include="Services\DealyedhubCommunicator.cs" />
+    <Compile Include="Services\DelayedHubCommunicator.cs" />
     <Compile Include="Services\DefaultActivityFactory.cs" />
     <Compile Include="Services\DefaultHubCommunicator.cs" />
+    <Compile Include="Services\HubDiscoveryService.cs" />
     <Compile Include="Services\HubEventReporter.cs" />
     <Compile Include="Services\HubEventReporterExtensions.cs" />
     <Compile Include="Services\IActivityExecutor.cs" />
     <Compile Include="Services\IActivityStore.cs" />
+    <Compile Include="Services\IHubDiscoveryService.cs" />
     <Compile Include="Services\IHubEventReporter.cs" />
+    <Compile Include="Services\IRetryPolicy.cs" />
     <Compile Include="Services\TestMonitoringHubCommunicator.cs" />
     <Compile Include="Services\UiBuilder.cs" />
     <Compile Include="Services\UpstreamQueryManager.cs" />

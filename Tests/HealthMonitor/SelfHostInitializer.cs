@@ -67,7 +67,8 @@ namespace HealthMonitor
                     {
                         if (string.Equals(app.Name, "PlanDirectory", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            app.Endpoint = ConfigurationManager.AppSettings["PlanDirectoryBaseUrl"];
+                            var uri = new Uri(ConfigurationManager.AppSettings["PlanDirectoryBaseApiUrl"]);
+                            app.Endpoint = uri.GetLeftPart(UriPartial.Authority);
                         }
                         else
                         {

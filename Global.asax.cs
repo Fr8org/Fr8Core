@@ -100,6 +100,18 @@ namespace HubWeb
 
             ConfigureValidationEngine();
             StartupMigration.CreateSystemUser();
+
+            RegisterTerminalActions();
+        }
+
+
+        public void RegisterTerminalActions()
+        {
+            var terminalDiscovery = ObjectFactory.GetInstance<ITerminalDiscoveryService>();
+
+#pragma warning disable 4014
+            terminalDiscovery.Discover();
+#pragma warning restore 4014
         }
 
         private void ConfigureValidationEngine()
