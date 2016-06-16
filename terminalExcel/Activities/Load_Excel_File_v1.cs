@@ -17,7 +17,7 @@ using terminalUtilities.Excel;
 
 namespace terminalExcel.Activities
 {
-    public class Load_Excel_File_v1 : EnhancedTerminalActivity<Load_Excel_File_v1.ActivityUi>
+    public class Load_Excel_File_v1 : TerminalActivity<Load_Excel_File_v1.ActivityUi>
     {
         private readonly ExcelUtils _excelUtils;
 

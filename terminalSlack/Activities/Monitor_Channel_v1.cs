@@ -13,7 +13,7 @@ using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalSlack.Actions
 {
-    public class Monitor_Channel_v1 : EnhancedTerminalActivity<Monitor_Channel_v1.ActivityUi>
+    public class Monitor_Channel_v1 : TerminalActivity<Monitor_Channel_v1.ActivityUi>
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {

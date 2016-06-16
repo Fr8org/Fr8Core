@@ -15,7 +15,7 @@ using terminalSlack.Services;
 
 namespace terminalSlack.Activities
 {
-    public class Publish_To_Slack_v2 : EnhancedTerminalActivity<Publish_To_Slack_v2.ActivityUi>
+    public class Publish_To_Slack_v2 : TerminalActivity<Publish_To_Slack_v2.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
