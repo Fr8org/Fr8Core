@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -504,7 +505,7 @@ namespace Hub.Managers
                 }
                 finally
                 {
-                    LogHistoryItem(incidentDO);
+                    LogHistoryItem(incidentDO,EventType.Error);
                 }
             }
             
@@ -898,9 +899,13 @@ namespace Hub.Managers
         private static async Task PostToTerminalEventsEndPoint(string userId, TerminalDO authenticatedTerminal, AuthorizationTokenDTO authToken)
         {
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
+            var terminalService = ObjectFactory.GetInstance<ITerminal>();
+
+            var headers = terminalService.GetRequestHeaders(authenticatedTerminal);
+
             await
                 restClient.PostAsync<object>(
-                    new Uri(authenticatedTerminal.Endpoint + "/terminals/" + authenticatedTerminal.Name + "/events"), new { fr8_user_id = userId, auth_token = authToken });
+                    new Uri(authenticatedTerminal.Endpoint + "/terminals/" + authenticatedTerminal.Name + "/events"), new { fr8_user_id = userId, auth_token = authToken }, null, headers);
         }
 
     }

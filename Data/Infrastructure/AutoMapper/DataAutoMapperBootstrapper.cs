@@ -176,7 +176,6 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.LastUpdated, opts => opts.Ignore())
                 .ForMember(x => x.CreateDate, opts => opts.Ignore())
                 .ForMember(x => x.Id, opts => opts.Ignore())
-                .ForMember(x => x.PublicIdentifier, opts => opts.Ignore())
                 .ForMember(x => x.Secret, opts => opts.Ignore())
                 .ForMember(x => x.AuthenticationTypeTemplate, opts => opts.Ignore());
 
