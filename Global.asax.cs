@@ -26,6 +26,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Segment;
 using StructureMap;
+using Microsoft.ApplicationInsights.Extensibility;
 using Logger = Fr8.Infrastructure.Utilities.Logging.Logger;
 
 namespace HubWeb
@@ -150,6 +151,7 @@ namespace HubWeb
 
 #if DEBUG
             SetServerUrl(HttpContext.Current);
+            TelemetryConfiguration.Active.DisableTelemetry = true;
 #endif
             NormalizeUrl();
             RewriteAngularRequests();
