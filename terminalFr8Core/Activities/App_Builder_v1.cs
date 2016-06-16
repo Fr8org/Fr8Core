@@ -12,6 +12,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Models;
 using terminalUtilities.Excel;
 
 namespace terminalFr8Core.Activities
@@ -358,8 +359,12 @@ namespace terminalFr8Core.Activities
                     var flagCrate = CrateManager.CreateDesignTimeFieldsCrate(RunFromSubmitButtonLabel,
                         AvailabilityType.RunTime);
                     var payload = new List<CrateDTO>() { CrateManager.ToDto(flagCrate) };
-                    //we need to start the process - run current plan - that we belong to
+
+                    //we must save ourselves before running activity
+                    HubCommunicator.SaveActivity(ActivityContext.ActivityPayload);
                     HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, payload);
+                    
+                    //we need to start the process - run current plan - that we belong to
                     //after running the plan - let's reset button state
                     //so next configure calls will be made with a fresh state
                     UnClickSubmitButton();
