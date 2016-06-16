@@ -13,11 +13,11 @@ using StructureMap;
 
 namespace HubWeb.Controllers
 {
-    [Fr8ApiAuthorize]
 	public class TerminalsController : ApiController
 	{
         private readonly ISecurityServices _security = ObjectFactory.GetInstance<ISecurityServices>();
         private readonly ITerminal _terminal = ObjectFactory.GetInstance<ITerminal>();
+        private readonly ITerminalDiscoveryService _terminalDiscovery = ObjectFactory.GetInstance<ITerminalDiscoveryService>();
         
         [HttpGet]
 		public IHttpActionResult Get()
@@ -35,6 +35,7 @@ namespace HubWeb.Controllers
 		}
 
         [HttpGet]
+        [Fr8ApiAuthorize]
         public IHttpActionResult All()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -48,7 +49,8 @@ namespace HubWeb.Controllers
         }
 
 		[HttpPost]
-		public IHttpActionResult Post(TerminalDTO terminalDto)
+        [Fr8ApiAuthorize]
+        public IHttpActionResult Post(TerminalDTO terminalDto)
 		{
             TerminalDO terminal = Mapper.Map<TerminalDO>(terminalDto);
 
@@ -81,5 +83,12 @@ namespace HubWeb.Controllers
 
 			return Ok(model);
 		}
+        
+        [HttpPost]
+        public IHttpActionResult ForceDiscover([FromBody] string callbackUrl)
+        {
+            _terminalDiscovery.Discover(callbackUrl);
+            return Ok();
+        }
 	}
 }

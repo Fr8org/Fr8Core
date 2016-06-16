@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.Models;
 
@@ -25,7 +26,7 @@ namespace Fr8.TerminalBase.Interfaces
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(bool getLatestsVersionsOnly = false);
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category, bool getLatestsVersionsOnly = false);
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, bool getLatestsVersionsOnly = false);
-        Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields);
+        //Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields);
         Task<AuthorizationToken> GetAuthToken(string authTokenId);
         Task ScheduleEvent(string externalAccountId, string minutes);
         Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload);
@@ -47,5 +48,8 @@ namespace Fr8.TerminalBase.Interfaces
         Task NotifyUser(TerminalNotificationDTO notificationMessage);
         Task RenewToken(AuthorizationTokenDTO token);
         Task SendEvent(Crate eventPayload);
+        Task<List<TManifest>> QueryWarehouse<TManifest>(List<FilterConditionDTO> query) where TManifest : Manifest;
+        Task AddOrUpdateWarehouse(params Manifest[] manifests);
+        Task DeleteFromWarehouse<TManifest>(List<FilterConditionDTO> query) where TManifest : Manifest;
     }
 }

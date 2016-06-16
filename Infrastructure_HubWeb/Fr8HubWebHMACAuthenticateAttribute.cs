@@ -12,7 +12,7 @@ namespace HubWeb.Infrastructure_HubWeb
 {
     public class Fr8HubWebHMACAuthenticateAttribute : fr8HMACAuthenticateAttribute
     {
-        public Fr8HubWebHMACAuthenticateAttribute()
+        public Fr8HubWebHMACAuthenticateAttribute ()
         {
             _terminalService = ObjectFactory.GetInstance<ITerminal>();
         }
@@ -53,7 +53,7 @@ namespace HubWeb.Infrastructure_HubWeb
                 //until we figure out exceptions, we won't allow this
                 return false;
             }
-
+            
             //TODO discuss and enable this
             /*
             //let's check if user allowed this terminal to modify it's data

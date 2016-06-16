@@ -76,7 +76,7 @@ namespace HubWeb
                     typeof(ContainersController),
                     typeof(DocumentationController),
                     typeof(EventsController),
-                    typeof(FieldController),
+                    //typeof(FieldController),
                     typeof(FilesController),
                     typeof(ManifestsController),
                     typeof(ReportController),
