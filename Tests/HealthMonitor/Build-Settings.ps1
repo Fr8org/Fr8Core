@@ -30,7 +30,7 @@ ForEach ($curInclude in $includeNodes) {
 		Echo ("Including appSettings from {0}" -f $curExtSettingPath)
 		$includeNodesToDelete.Add($curInclude) | Out-Null
 		# Get appSettings from the file and copy them to the HM external configuration file.
-		$curConfigXml = [xml](Get-Content $curExtSettingPath) | Out-Null
+		$curConfigXml = [xml](Get-Content $curExtSettingPath)
 		ForEach ($curSetting in $curConfigXml.appSettings.add) {
 			# Check if a duplicating setting
 			$hmConfigXml.appSettings.add | Where-Object { $_.key -ieq $curSetting.key} | ForEach-Object {

@@ -347,8 +347,6 @@
     <None Include="Config\HubWeb\Settings.config" />
     <None Include="Config\PlanDirectory\Settings.config" />
     <None Include="Config\PlanDirectory\Settings.Release.config" />
-    <None Include="Config\Settings.config.src.readme" />
-    <None Include="Config\Settings.config.src" />
     <None Include="Config\terminalAtlassian\Settings.config" />
     <None Include="Config\terminalAzure\Settings.config" />
     <None Include="Config\terminalBox\Settings.config" />
