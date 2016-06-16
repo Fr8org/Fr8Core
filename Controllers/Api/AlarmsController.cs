@@ -79,6 +79,8 @@ namespace HubWeb.Controllers
         {
             try
             {
+                var terminalService = ObjectFactory.GetInstance<ITerminal>();
+
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     var terminal = uow.TerminalRepository.GetQuery().Where(a => a.PublicIdentifier == terminal_id).FirstOrDefault();
@@ -87,7 +89,13 @@ namespace HubWeb.Controllers
 
                     using (var client = new HttpClient())
                     {
+                        foreach (var header in terminalService.GetRequestHeaders(terminal))
+                        {
+                            client.DefaultRequestHeaders.Add(header.Key, header.Value);
+                        }
+
                         var response = await client.PostAsync(url, null);
+
                         return response.StatusCode == System.Net.HttpStatusCode.OK;
                     }
                 }

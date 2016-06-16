@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities;
 using Fr8.TerminalBase.Interfaces;
@@ -12,19 +13,19 @@ using Fr8.TerminalBase.Models;
 
 namespace Fr8.TerminalBase.Services
 {
-    class DealyedhubCommunicator : IHubCommunicator
+    class DelayedHubCommunicator : IHubCommunicator
     {
         private IHubCommunicator _underlyingHubCommunicator;
         private readonly object _sync = new object();
         private readonly AsyncMultiLock _lock = new AsyncMultiLock();
-        private readonly IHubEventReporter _eventReporter;
+        private readonly Task<IHubCommunicator> _resolveHubCommunicatorTask;
         private string _userId;
 
         public string UserId => _userId;
 
-        public DealyedhubCommunicator(IHubEventReporter eventReporter)
+        public DelayedHubCommunicator(Task<IHubCommunicator> resolveHubCommunicatorTask)
         {
-            _eventReporter = eventReporter;
+            _resolveHubCommunicatorTask = resolveHubCommunicatorTask;
         }
 
         public void Authorize(string userId)
@@ -222,6 +223,25 @@ namespace Fr8.TerminalBase.Services
             await _underlyingHubCommunicator.SendEvent(eventPayload);
         }
 
+        public async Task<List<TManifest>> QueryWarehouse<TManifest>(List<FilterConditionDTO> query)
+            where TManifest : Manifest
+        {
+            await InitializeUnderlyingCommunicator();
+            return await _underlyingHubCommunicator.QueryWarehouse<TManifest>(query);
+        }
+
+        public async Task AddOrUpdateWarehouse(params Manifest[] manifests)
+        {
+            await InitializeUnderlyingCommunicator();
+            await _underlyingHubCommunicator.AddOrUpdateWarehouse(manifests);
+        }
+
+        public async Task DeleteFromWarehouse<TManifest>(List<FilterConditionDTO> query)
+            where TManifest : Manifest
+        {
+            await InitializeUnderlyingCommunicator();
+            await _underlyingHubCommunicator.DeleteFromWarehouse<TManifest>(query);
+        }
 
         private async Task InitializeUnderlyingCommunicator()
         {
@@ -229,7 +249,7 @@ namespace Fr8.TerminalBase.Services
             {
                 if (_underlyingHubCommunicator == null)
                 {
-                    var result = await _eventReporter.GetMasterHubCommunicator();
+                    var result = await _resolveHubCommunicatorTask;
 
                     lock (_sync)
                     {
