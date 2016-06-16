@@ -13,6 +13,8 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Utilities;
+using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Models;
 using Hub.Services.MT;
 using Newtonsoft.Json;
@@ -143,9 +145,19 @@ namespace terminalDocuSign.Activities
 
         private const string NotificationMessageLabel = "NotificationMessage";
 
-        public Track_DocuSign_Recipients_v2(ICrateManager crateManager, IDocuSignManager docuSignManager)
+        private readonly IUnitOfWorkFactory _uowFactory;
+
+        private readonly IConfigRepository _configRepository;
+
+        public Track_DocuSign_Recipients_v2(
+            ICrateManager crateManager, 
+            IDocuSignManager docuSignManager, 
+            IUnitOfWorkFactory uowFactory,
+            IConfigRepository configRepository)
             : base(crateManager, docuSignManager)
         {
+            _uowFactory = uowFactory;
+            _configRepository = configRepository;
         }
 
         public override async Task Initialize()
@@ -316,8 +328,11 @@ namespace terminalDocuSign.Activities
                 ExecutionType = FilterExecutionType.WithFilter,
                 Conditions = conditions
             });
-            var queryCriteria = Crate.FromContent("Queryable Criteria", new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(selectedObject.Id)));
-            crateStorage.Add(queryCriteria);
+            using (var uow = _uowFactory.GetNewUnitOfWork())
+            {
+                var queryCriteria = Crate.FromContent("Queryable Criteria", new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(uow, selectedObject.Id)));
+                crateStorage.Add(queryCriteria);
+            }
             return await HubCommunicator.ConfigureActivity(activity);
         }
 
@@ -418,7 +433,7 @@ namespace terminalDocuSign.Activities
                 }
                 if (ActivityUI.SentToSpecificRecipientOption.Selected)
                 {
-                    ValidationManager.ValidateEmail(ActivityUI.SpecificRecipientEmailText);
+                    ValidationManager.ValidateEmail(_configRepository, ActivityUI.SpecificRecipientEmailText);
                 }
                 if (ActivityUI.BasedOnTemplateOption.Selected)
                 {
@@ -474,7 +489,7 @@ namespace terminalDocuSign.Activities
         /// </summary>
         /// <param name="curDocumentation"></param>
         /// <returns></returns>
-        protected override Task<SolutionPageDTO> GetDocumentation(string curDocumentation)
+        protected override Task<DocumentationResponseDTO> GetDocumentation(string curDocumentation)
         {
             if (curDocumentation.Contains("MainPage"))
             {
