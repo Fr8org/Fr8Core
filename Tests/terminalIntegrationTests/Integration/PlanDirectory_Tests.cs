@@ -25,7 +25,6 @@ namespace terminalIntegrationTests.Integration
             };
         }
 
-        /*
         [Test]
         public async Task PlanDirectory_PlanTemplateApi_Create_Update_Extract()
         {
@@ -62,7 +61,6 @@ namespace terminalIntegrationTests.Integration
 
             await HttpDeleteAsync(_baseUrl + "plan_templates/?id=" + planTemplateDTO.ParentPlanId.ToString());
         }
-        */
 
         [Test]
         public async Task PlanDirectory_CreatePlan()
