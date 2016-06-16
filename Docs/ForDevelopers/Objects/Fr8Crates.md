@@ -1,4 +1,4 @@
-# CRATES 
+# CRATES
 
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
 
@@ -13,16 +13,17 @@ At Run-Time, Crates are created into a [Container](https://github.com/Fr8org/Fr8
 
 In the real world, a Crate consists of the stuff inside the Crate (the “Storage”), and some amount of metadata about the Crate (such as receipts, logs, manifests, and directives) that is typically found taped, stapled, nailed, or painted onto the outside of the Crate.
 
-![crate_manifest](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/Fr8Crates_CrateManifest.png) 
+![crate_manifest](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/Fr8Crates_CrateManifest.png)
 
 Fr8 Crates are similar. Each Crate consists of a set of JSON properties. One property, CrateStorage, contains the Crate’s contents. The other properties, seen below, represent the publicly visible portion of the Crate.
 
 Organizationally, when constructing a Crate of data, expect that the metadata about the Crate will remain publicly viewable. CrateStorage is not automatically encrypted, but the Fr8 design anticipates that some users will want to encrypt their CrateStorage.
 
-[Crate JSON Definition](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CrateDTO.md) 
+### Additional information
+- [Crate JSON Definition](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Crate.md)
 
-[Property: Availability](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CratePropertyAvailability.md)
+- [Property: Availability](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CratePropertyAvailability.md)
 
-[Crate Manifests](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CratesManifest.md) 
+- [Crate Manifests](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CratesManifest.md)
 
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  

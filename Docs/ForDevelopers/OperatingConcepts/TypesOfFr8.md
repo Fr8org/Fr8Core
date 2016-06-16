@@ -1,13 +1,13 @@
 # HOW FR8 MANIPULATES DATA  
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)   
 
-Fr8 is data that is stored in [Crates](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CrateDTO.md).  When a Fr8 Hub executes a Fr8 Plan, it creates a Container that can be thought of as similar to a real-world shipping container. In that Container are put 1 or more Crates of data.
+Fr8 is data that is stored in [Crates](../ForDevelopers/Objects/Crate.md).  When a Fr8 Hub executes a Fr8 Plan, it creates a Container that can be thought of as similar to a real-world shipping container. In that Container are put 1 or more Crates of data.
 
 ### Going Deeper
- Type | Description 
+ Type | Description
  --- | ----   
- Design-Time Crates |  Used to design and link Actions together and is mostly generated at design-time and stored on fr8 Routes. Common examples: Crates of Controls that are used to render configuration UI on the client. Crates of Fields that allow users to map data from one service to another	
- Payload Crates |  Data that’s generated at run-time and carried from Terminal to Terminal by a Fr8 Container. Examples include rows of excel data, field information from inside a DocuSign envelope, and values pulled from a Sql Server	
+ Design-Time Crates |  Used to design and link Actions together and is mostly generated at design-time and stored on fr8 Routes. Common examples: Crates of Controls that are used to render configuration UI on the client. Crates of Fields that allow users to map data from one service to another
+ Payload Crates |  Data that’s generated at run-time and carried from Terminal to Terminal by a Fr8 Container. Examples include rows of excel data, field information from inside a DocuSign envelope, and values pulled from a Sql Server
 ### Design-Time Crates
  Design-Time Crates are stored on Activities and generally consist of two types:
 

@@ -6,4 +6,4 @@
 
 ##Technical Specification
 
-[CrateDTO](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CrateDTO.md)
+[Crate](../ForDevelopers/Objects/Crate.md)
