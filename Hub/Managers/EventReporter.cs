@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -50,7 +51,6 @@ namespace Hub.Managers
             EventManager.AlertTokenObtained += OnAlertTokenObtained;
             EventManager.AlertTokenRevoked += OnAlertTokenRevoked;
 
-            EventManager.EventDocuSignNotificationReceived += LogDocuSignNotificationReceived;
             EventManager.EventContainerLaunched += LogEventProcessLaunched;
             EventManager.EventCriteriaEvaluationStarted += LogEventCriteriaEvaluationStarted;
             EventManager.EventCriteriaEvaluationFinished += LogEventCriteriaEvaluationFinished;
@@ -91,7 +91,6 @@ namespace Hub.Managers
             EventManager.AlertTokenObtained -= OnAlertTokenObtained;
             EventManager.AlertTokenRevoked -= OnAlertTokenRevoked;
 
-            EventManager.EventDocuSignNotificationReceived -= LogDocuSignNotificationReceived;
             EventManager.EventContainerLaunched -= LogEventProcessLaunched;
             EventManager.EventCriteriaEvaluationStarted -= LogEventCriteriaEvaluationStarted;
             EventManager.EventCriteriaEvaluationFinished -= LogEventCriteriaEvaluationFinished;
@@ -180,6 +179,7 @@ namespace Hub.Managers
                     {
                         ActivityName = activityDo.Name,
                         PlanName = containerDO.Name,
+                        Collapsed = true,
                         ContainerId = containerDO.Id.ToString(),
                         PlanId = planId,
                         PlanLastUpdated = planLastUpdated,
@@ -454,27 +454,6 @@ namespace Hub.Managers
         }
 
         /// <summary>
-        /// The method logs the fact of receiving a notification from DocuSign.      
-        /// </summary>
-        /// <param name="userId">UserId received from DocuSign.</param>
-        /// <param name="envelopeId">EnvelopeId received from DocuSign.</param>
-        public void DocusignNotificationReceived(string userId, string envelopeId)
-        {
-            FactDO fact = new FactDO
-            {
-                PrimaryCategory = "Notification",
-                SecondaryCategory = null,
-                Activity = "Received",
-                Fr8UserId = userId,
-                ObjectId = null,
-                Data = string.Format("EnvelopeId: {0}.",
-                        envelopeId)
-            };
-            
-            SaveAndLogFact(fact);
-        }
-
-        /// <summary>
         /// The method logs the fact of Process Template creation.      
         /// </summary>
         /// <param name="userId">UserId received from DocuSign.</param>
@@ -493,31 +472,6 @@ namespace Hub.Managers
             };
             
             SaveAndLogFact(fact);
-        }
-
-        /// <summary>
-        /// The method logs the fact of receiving a notification from DocuSign.      
-        /// </summary>
-        /// <param name="userId">UserId received from DocuSign.</param>
-        /// <param name="envelopeId">EnvelopeId received from DocuSign.</param>
-        public void ImproperDocusignNotificationReceived(string message)
-        {
-            var fact = new IncidentDO
-            {
-                Fr8UserId = _security.GetCurrentUser(),
-                PrimaryCategory = "Notification",
-                Activity = "Received",
-                Data = message
-            };
-
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.IncidentRepository.Add(fact);
-                uow.SaveChanges();
-            }
-
-            LogHistoryItem(fact,EventType.Warning);
         }
 
         /// <summary>
@@ -551,7 +505,7 @@ namespace Hub.Managers
                 }
                 finally
                 {
-                    LogHistoryItem(incidentDO);
+                    LogHistoryItem(incidentDO,EventType.Error);
                 }
             }
             
@@ -736,21 +690,6 @@ namespace Hub.Managers
         private void OnAlertTokenRevoked(string userId)
         {
             AddFactOnToken(userId, "Revoked");
-        }
-
-        private void LogDocuSignNotificationReceived()
-        {
-            var fact = new FactDO
-            {
-                Fr8UserId = null,
-                Data = "DocuSign Notificaiton Received",
-                ObjectId = null,
-                PrimaryCategory = "External Event",
-                SecondaryCategory = "DocuSign",
-                Activity = "Received"
-            };
-
-            SaveAndLogFact(fact);
         }
 
         private void LogEventProcessLaunched(ContainerDO launchedContainer)
@@ -960,9 +899,13 @@ namespace Hub.Managers
         private static async Task PostToTerminalEventsEndPoint(string userId, TerminalDO authenticatedTerminal, AuthorizationTokenDTO authToken)
         {
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
+            var terminalService = ObjectFactory.GetInstance<ITerminal>();
+
+            var headers = terminalService.GetRequestHeaders(authenticatedTerminal);
+
             await
                 restClient.PostAsync<object>(
-                    new Uri(authenticatedTerminal.Endpoint + "/terminals/" + authenticatedTerminal.Name + "/events"), new { fr8_user_id = userId, auth_token = authToken });
+                    new Uri(authenticatedTerminal.Endpoint + "/terminals/" + authenticatedTerminal.Name + "/events"), new { fr8_user_id = userId, auth_token = authToken }, null, headers);
         }
 
     }
