@@ -257,6 +257,21 @@ namespace Fr8.TerminalBase.Services
             throw new NotImplementedException();
         }
 
+        public Task<List<TManifest>> QueryWarehouse<TManifest>(List<FilterConditionDTO> query) where TManifest : Manifest
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddOrUpdateWarehouse(params Manifest[] manifests)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteFromWarehouse<TManifest>(List<FilterConditionDTO> query) where TManifest : Manifest
+        {
+            throw new NotImplementedException();
+        }
+
         public Task RenewToken(string id, string externalAccountId, string token)
         {
             throw new NotImplementedException();

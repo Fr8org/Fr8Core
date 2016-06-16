@@ -245,6 +245,7 @@
     <Compile Include="Data\Manifests\ExternalObjectHandlesCM.cs" />
     <Compile Include="Data\Manifests\FieldDescriptionsCM.cs" />
     <Compile Include="Data\Manifests\Helpers\StandardTableDataCMTools.cs" />
+    <Compile Include="Data\Manifests\HubSubscriptionCM.cs" />
     <Compile Include="Data\Manifests\Manifest.cs" />
     <Compile Include="Data\Manifests\ManifestDescriptionCM.cs" />
     <Compile Include="Data\Manifests\ManifestFieldAttribute.cs" />
