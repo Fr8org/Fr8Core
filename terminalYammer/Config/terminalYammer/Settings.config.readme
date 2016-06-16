@@ -15,8 +15,11 @@ define it in web.config.
 -->
 
 <appSettings>
-  <add key="TerminalSecret" value="d14aaa44-22a1-4d2c-b14b-be559c8941b5" />
   <add key="TerminalId" value="f2b999be-be3f-42b5-b0d5-611d0606723b" />
+  
+  <add key="YammerGroupListUrl" value="https://www.yammer.com/api/v1/groups.json?mine=1" />
+  <add key="YammerPostMessageUrl" value="https://www.yammer.com/api/v1/messages" />
+  <add key="YammerOAuthCurrentUserUrl" value="https://www.yammer.com/api/v1/users/current.json" />
 
   <!-- Specify your Yammer integration details below: redirect_uri, client_id and client_secret-->
   <add key="YammerOAuthUrl" value="https://www.yammer.com/oauth2/authorize?client_id=your_client_id&amp;response_type=code&amp;redirect_uri=http://localhost:30643/AuthenticationCallback/ProcessSuccessfulOAuthResponse?terminalName=terminalYammer%26terminalVersion=1&amp;state=%STATE%" />

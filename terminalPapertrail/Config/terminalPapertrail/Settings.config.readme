@@ -16,10 +16,8 @@ define it in web.config.
 
 <appSettings>
   <add key="HubApiVersion" value="v1" />
+  <add key="TerminalId" value="9b21279b-efb4-493a-a02b-fe8694262cc8" />
   
   <!-- Add your Papertrail integration details -->
   <add key="PapertrailDefaultLogUrl" value="logs3.papertrailapp.com:31611" />
-
-  <add key="TerminalSecret" value="-new-terminal-secret-" />
-  <add key="TerminalId" value="9b21279b-efb4-493a-a02b-fe8694262cc8" />
 </appSettings>

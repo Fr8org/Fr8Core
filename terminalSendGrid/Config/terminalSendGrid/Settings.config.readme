@@ -16,8 +16,6 @@ define it in web.config.
 
 <appSettings>
   <add key="HubApiVersion" value="v1" />
-
-  <add key="TerminalSecret" value="-new-terminal-secret-" />
   <add key="TerminalId" value="7eab0e81-288c-492b-88e5-c49e9aae38da" />
 
   <!-- Specify your SendGrid integration details below -->

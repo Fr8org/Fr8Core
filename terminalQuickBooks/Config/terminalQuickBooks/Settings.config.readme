@@ -21,6 +21,5 @@ define it in web.config.
   <add key="QuickBooksConsumerSecret" value="" />
   <add key="QuickBooksOAuthAuthorizeUrl" value="" />
 
-  <add key="TerminalSecret" value="-new-terminal-secret-" />
   <add key="TerminalId" value="75ec4967-6113-43b5-bb4c-6b3468696e57" />
 </appSettings>

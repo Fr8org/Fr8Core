@@ -17,5 +17,4 @@ define it in web.config.
 <appSettings>
   <add key="HubApiVersion" value="v1" />
   <add key="TerminalId" value="e134e36f-9f63-4109-b913-03498d9356b1" />
-  <add key="TerminalSecret" value="-new-terminal-secret-" />
 </appSettings>

@@ -15,8 +15,11 @@ define it in web.config.
 -->
 
 <appSettings>
-  <add key="TerminalSecret" value="-new-terminal-secret-" />
   <add key="TerminalId" value="1a170d44-841f-4fa2-aae4-b17ad6c469ec" />
+
+  <add key="GoogleUserProfileUrl" value="https://www.googleapis.com/oauth2/v1/userinfo?alt=json&amp;access_token=%TOKEN%" />
+  <add key="GoogleTokenInfo" value="https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=%TOKEN%" />
+  <add key="GoogleScope" value="https://spreadsheets.google.com/feeds https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email" />
 
   <!-- Specify your Google integration details -->
   <add key="GoogleClientId" value="" />

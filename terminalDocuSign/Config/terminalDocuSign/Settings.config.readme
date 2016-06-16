@@ -27,8 +27,7 @@ define it in web.config.
   <add key="environment" value="https://eu.docusign.net/" />
   
   <!-- Terminal identification -->
-  <!-- TerminalId and TerminalSecret MUST match in the Hub and Terminal configuration files -->
-  <add key="TerminalSecret" value="-new-terminal-secret-" />
+  <!-- TerminalId must match in the Hub and Terminal configuration files -->
   <add key="TerminalId" value="ee29c5bc-b9e7-49c5-90e1-b462c7e320e9" />
   
   <!-- You can get the Demo integrator key when you sign up for a Demo DocuSign account -->

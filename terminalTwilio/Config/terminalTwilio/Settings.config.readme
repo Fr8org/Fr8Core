@@ -16,8 +16,6 @@ define it in web.config.
 
 <appSettings>
   <add key="HubApiVersion" value="v1" />
-
-  <add key="TerminalSecret" value="-new-terminal-secret-" />
   <add key="TerminalId" value="2dd73dda-411d-4e18-8e0a-54bbe1aa015b" />
   
   <!-- Specify your Twilio integration details below -->

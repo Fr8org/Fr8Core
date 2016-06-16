@@ -16,9 +16,7 @@ define it in web.config.
 
 <appSettings>
   <add key="HubApiVersion" value="v1" />
-
   <add key="TerminalId" value="c471e51e-1b2d-4751-b155-4af03ef51c3a" />
-  <add key="TerminalSecret" value="-new-terminal-secret-" />
   
   <!-- Add your Dropbox integration details -->
   <add key="DropboxAuthAppKey" value="" />

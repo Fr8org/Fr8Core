@@ -17,7 +17,6 @@ define it in web.config.
 <appSettings>
   <add key="HubApiVersion" value="v1" />
   <add key="TerminalId" value="1293c430-818d-4326-896b-dd5c512ca1a4" />
-  <add key="TerminalSecret" value="-new-terminal-secret-" />
   
   <!-- Add your Box integration details here-->
   <add key="BoxClientId" value="" />

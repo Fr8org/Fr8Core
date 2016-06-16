@@ -19,6 +19,5 @@ define it in web.config.
   <add key="SalesforceConsumerKey" value="" />
   <add key="SalesforceConsumerSecret" value="" />
  
-  <add key="TerminalSecret" value="-new-terminal-secret-" />
   <add key="TerminalId" value="d814af88-72b3-444c-9198-8c62292f0be5" />
 </appSettings>
