@@ -179,6 +179,7 @@ namespace Hub.Managers
                     {
                         ActivityName = activityDo.Name,
                         PlanName = containerDO.Name,
+                        Collapsed = true,
                         ContainerId = containerDO.Id.ToString(),
                         PlanId = planId,
                         PlanLastUpdated = planLastUpdated,
