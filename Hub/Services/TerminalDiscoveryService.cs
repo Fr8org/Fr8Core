@@ -21,7 +21,7 @@ namespace Hub.Services
         private readonly EventReporter _eventReporter;
         private readonly IUnitOfWorkFactory _unitOfWorkFactory;
         private readonly string _serverUrl;
-
+        private readonly HashSet<string> _knownTerminals = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
 
         public TerminalDiscoveryService(IActivityTemplate activityTemplateService, ITerminal terminal, IRestfulServiceClient restfulServiceClient, EventReporter eventReporter, IUnitOfWorkFactory unitOfWorkFactory, IConfigRepository configRepository)
         {
@@ -36,6 +36,28 @@ namespace Hub.Services
             var domainPort = configRepository.Get<int?>("ServerPort", null);
 
             _serverUrl = $"{serverProtocol}{domainName}{(domainPort == null || domainPort.Value == 80 ? String.Empty : (":" + domainPort.Value))}/";
+
+            var terminalUrls = FileUtils.LoadFileHostList();
+            
+
+            foreach (var url in terminalUrls)
+            {
+                string terminalAuthority = url;
+
+                if (url.Contains("http:"))
+                {
+                    try
+                    {
+                        terminalAuthority = new Uri(url).Authority;
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                }
+
+                _knownTerminals.Add(terminalAuthority);
+            }
         }
 
         public async Task Discover()
@@ -46,8 +68,16 @@ namespace Hub.Services
             await Task.WhenAll(discoverTerminalsTasts);
         }
 
-        public async Task Discover(string terminalUrl)
+        public async Task<bool> Discover(string terminalUrl)
         {
+            // validate terminal url
+            var uri = new Uri(terminalUrl);
+
+            if (!_knownTerminals.Contains(uri.Authority))
+            {
+                return false;
+            }
+
             try
             {
                 string secret = null;
@@ -102,7 +132,10 @@ namespace Hub.Services
             catch (Exception ex)
             {
                 _eventReporter.ActivityTemplateTerminalRegistrationError($"Failed terminal service: {terminalUrl}. Error Message: {ex.Message} ", ex.GetType().Name);
+                return false;
             }
+
+            return true;
         }
     }
 }

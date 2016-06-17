@@ -18,7 +18,7 @@ using TerminalSqlUtilities;
 
 namespace terminalAzure.Activities
 {
-    public class Write_To_Sql_Server_v1 : BaseTerminalActivity
+    public class Write_To_Sql_Server_v1 : ExplicitTerminalActivity
     {
         private readonly IDbProvider _dbProvider;
 

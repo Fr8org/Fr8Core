@@ -12,6 +12,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.Models;
+using Fr8.TerminalBase.Services;
 using Hub.Services.MT;
 using Newtonsoft.Json;
 using terminalDocuSign.Services.New_Api;
@@ -172,26 +173,26 @@ namespace terminalDocuSign.Activities
                 ActivityPayload.ChildrenActivities.Clear();
             }
 
-            var monitorDocusignAT = await GetActivityTemplate("terminalDocuSign", "Monitor_DocuSign_Envelope_Activity");
-            var setDelayAT = await GetActivityTemplate("terminalFr8Core", "Set_Delay");
-            var queryFr8WareHouseAT = await GetActivityTemplate("terminalFr8Core", "Query_Fr8_Warehouse");
-            var testIncomingDataAT = await GetActivityTemplate("terminalFr8Core", "Test_Incoming_Data");
-            var buildMessageAT = await GetActivityTemplate("terminalFr8Core", "Build_Message");
+            var monitorDocusignAT = await HubCommunicator.GetActivityTemplate("terminalDocuSign", "Monitor_DocuSign_Envelope_Activity");
+            var setDelayAT = await HubCommunicator.GetActivityTemplate("terminalFr8Core", "Set_Delay");
+            var queryFr8WareHouseAT = await HubCommunicator.GetActivityTemplate("terminalFr8Core", "Query_Fr8_Warehouse");
+            var testIncomingDataAT = await HubCommunicator.GetActivityTemplate("terminalFr8Core", "Test_Incoming_Data");
+            var buildMessageAT = await HubCommunicator.GetActivityTemplate("terminalFr8Core", "Build_Message");
            
             //DocuSign
             var tasks = new List<Task>();
-            var monitorDocuSignActionTask = AddAndConfigureChildActivity(ActivityPayload, monitorDocusignAT, "Monitor Docusign Envelope Activity", "Monitor Docusign Envelope Activity", 1);
+            var monitorDocuSignActionTask = HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, monitorDocusignAT, "Monitor Docusign Envelope Activity", "Monitor Docusign Envelope Activity", 1);
             tasks.Add(monitorDocuSignActionTask);
-            var setDelayActionTask = AddAndConfigureChildActivity(ActivityPayload, setDelayAT, "Set Delay", "Set Delay", 2);
+            var setDelayActionTask = HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, setDelayAT, "Set Delay", "Set Delay", 2);
             tasks.Add(setDelayActionTask);
-            var queryFr8WarehouseActionTask = AddAndConfigureChildActivity(ActivityPayload, queryFr8WareHouseAT, "Query Fr8 Warehouse", "Query Fr8 Warehouse", 3);
+            var queryFr8WarehouseActionTask = HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, queryFr8WareHouseAT, "Query Fr8 Warehouse", "Query Fr8 Warehouse", 3);
             tasks.Add(queryFr8WarehouseActionTask);
-            var filterActionTask = AddAndConfigureChildActivity(ActivityPayload, testIncomingDataAT, "Test Incoming Data", "Test Incoming Data", 4);
+            var filterActionTask = HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, testIncomingDataAT, "Test Incoming Data", "Test Incoming Data", 4);
             tasks.Add(filterActionTask);
             Task<ActivityPayload> buildMessageActivityTask = null;
             if (!hasChildren)
             {
-                buildMessageActivityTask = AddAndConfigureChildActivity((Guid)ActivityPayload.ParentPlanNodeId, buildMessageAT, "Build a Message", "Build a Message", 2);
+                buildMessageActivityTask = HubCommunicator.AddAndConfigureChildActivity((Guid)ActivityPayload.ParentPlanNodeId, buildMessageAT, "Build a Message", "Build a Message", 2);
                 tasks.Add(buildMessageActivityTask);
             }
 
@@ -225,8 +226,8 @@ namespace terminalDocuSign.Activities
 
             if (!hasChildren)
             {
-                var notifierAT = await GetActivityTemplate(Guid.Parse(howToBeNotifiedDdl.Value));
-                var notifierActivity = await AddAndConfigureChildActivity((Guid)ActivityPayload.ParentPlanNodeId, notifierAT, howToBeNotifiedDdl.selectedKey, howToBeNotifiedDdl.selectedKey, 3);
+                var notifierAT = await HubCommunicator.GetActivityTemplate(Guid.Parse(howToBeNotifiedDdl.Value));
+                var notifierActivity = await HubCommunicator.AddAndConfigureChildActivity((Guid)ActivityPayload.ParentPlanNodeId, notifierAT, howToBeNotifiedDdl.selectedKey, howToBeNotifiedDdl.selectedKey, 3);
                 SetNotifierActivityBody(notifierActivity);
                 await HubCommunicator.ConfigureActivity(notifierActivity);
             }
@@ -480,24 +481,24 @@ namespace terminalDocuSign.Activities
         {
             if (curDocumentation.Contains("MainPage"))
             {
-                var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
+                var curSolutionPage = new DocumentationResponseDTO(SolutionName, SolutionVersion, TerminalName, SolutionBody);
                 return Task.FromResult(curSolutionPage);
             }
             if (curDocumentation.Contains("HelpMenu"))
             {
                 if (curDocumentation.Contains("TrackDocuSignRecipients"))
                 {
-                    return Task.FromResult(GenerateDocumentationResponse(@"This solution work with notifications"));
+                    return Task.FromResult(new DocumentationResponseDTO(@"This solution work with notifications"));
                 }
                 if (curDocumentation.Contains("ExplainService"))
                 {
-                    return Task.FromResult(GenerateDocumentationResponse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                    return Task.FromResult(new DocumentationResponseDTO(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
                 }
-                return Task.FromResult(GenerateErrorResponse("Unknown contentPath"));
+                return Task.FromResult(new DocumentationResponseDTO("Unknown contentPath"));
             }
             return
                 Task.FromResult(
-                    GenerateErrorResponse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
+                    new DocumentationResponseDTO("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }
