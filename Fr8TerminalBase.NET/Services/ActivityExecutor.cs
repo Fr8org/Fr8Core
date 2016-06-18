@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
+using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
+using StructureMap;
 
 namespace Fr8.TerminalBase.Services
 {
@@ -16,12 +18,14 @@ namespace Fr8.TerminalBase.Services
 
         protected readonly ICrateManager CrateManager;
         private readonly IActivityStore _activityStore;
+        private readonly IContainer _container;
 
-        public ActivityExecutor(IHubCommunicator hubCommunicator, ICrateManager crateManager, IActivityStore activityStore)
+        public ActivityExecutor(IHubCommunicator hubCommunicator, ICrateManager crateManager, IActivityStore activityStore, IContainer container)
         {
             _hubCommunicator = hubCommunicator;
             CrateManager = crateManager;
             _activityStore = activityStore;
+            _container = container;
         }
 
         public async Task<object> HandleFr8Request(
@@ -74,11 +78,15 @@ namespace Fr8.TerminalBase.Services
 
             var activity = factory.Create();
 
+            _container.Configure(x =>
+            {
+                x.For<ActivityContext>().Use(activityContext);
+                x.For<UpstreamQueryManager>().Use<UpstreamQueryManager>().Singleton();
+            });
+
             _hubCommunicator.Authorize(activityContext.UserId);
 
             activityContext.HubCommunicator = _hubCommunicator;
-
-            ContainerExecutionContext executionContext;
 
             var scope = parameters != null && parameters.Any(x => x.Key == "scope")
                 ? parameters.First(x => x.Key == "scope").Value
@@ -100,7 +108,7 @@ namespace Fr8.TerminalBase.Services
 
                 case "run":
                     {
-                        executionContext = await CreateContainerExecutionContext(curDataDTO);
+                        var executionContext = await CreateContainerExecutionContext(curDataDTO);
                         if (scope == "childActivities")
                         {
                             await activity.RunChildActivities(activityContext, executionContext);

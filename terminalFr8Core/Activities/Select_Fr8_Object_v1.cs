@@ -17,7 +17,7 @@ using StructureMap;
 namespace terminalFr8Core.Activities
 {
     // The generic interface inheritance.
-    public class Select_Fr8_Object_v1 : BaseTerminalActivity
+    public class Select_Fr8_Object_v1 : ExplicitTerminalActivity
     {
         private readonly IRestfulServiceClient _restfulServiceClient;
 

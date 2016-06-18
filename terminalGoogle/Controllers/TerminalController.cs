@@ -5,8 +5,8 @@ namespace terminalGoogle.Controllers
 {
     public class TerminalController : DefaultTerminalController
     {
-        public TerminalController(IActivityStore activityStore)
-            : base(activityStore)
+        public TerminalController(IActivityStore activityStore, IHubDiscoveryService hubDiscovery)
+            : base(activityStore, hubDiscovery)
         {
         }
     }

@@ -8,7 +8,7 @@ namespace Fr8.Infrastructure.Utilities
     {
         public static IList<string> LoadFileHostList()
         {
-            var path = Server.ServerPhysicalPath + "fr8terminals.txt";
+            var path = Path.Combine(Server.ServerPhysicalPath,  "fr8terminals.txt");
 
             IList<string> urls = null;
             try

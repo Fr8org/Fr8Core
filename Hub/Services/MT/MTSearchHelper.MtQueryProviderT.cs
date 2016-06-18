@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using Hub.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories.MultiTenant.Queryable;
@@ -32,6 +31,12 @@ namespace Hub.Services
                 return result;
             }
 
+            public void Delete(IUnitOfWork uow, string accountId, List<FilterConditionDTO> conditions)
+            {
+                var predicateBuilder = new FilterConditionPredicateBuilder<T>(conditions);
+                uow.MultiTenantObjectRepository.Delete<T>(accountId, predicateBuilder.ToPredicate());
+            }
+
             private static IMtQueryable<T> CriteriaToMtQuery(
                 List<FilterConditionDTO> conditions, IMtQueryable<T> queryable)
             {
@@ -39,47 +44,6 @@ namespace Hub.Services
                 queryable = queryable.Where(predicateBuilder.ToPredicate());
 
                 return queryable;
-            }
-
-            private static Type GetMemberType(Type type, string memberName, out MemberInfo memberInfo)
-            {
-                var field = type.GetField(memberName);
-
-                if (field != null)
-                {
-                    memberInfo = field;
-                    return field.FieldType;
-                }
-
-                var prop = type.GetProperty(memberName);
-                if (prop != null)
-                {
-                    memberInfo = prop;
-                    return prop.PropertyType;
-                }
-
-                memberInfo = null;
-                return null;
-            }
-
-            private static bool TryConvert(Type targetType, string value, out object convertedValue)
-            {
-                if (targetType == typeof(string))
-                {
-                    convertedValue = value;
-                    return true;
-                }
-
-                try
-                {
-                    convertedValue = Convert.ChangeType(value, targetType);
-                    return true;
-                }
-                catch (Exception)
-                {
-                    convertedValue = null;
-                    return false;
-                }
             }
         }
     }

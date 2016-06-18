@@ -5,23 +5,17 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
-using Fr8.TerminalBase.Services;
 
 namespace Fr8.TerminalBase.BaseClasses
 {
-    public abstract partial class BaseTerminalActivity : BaseTerminalActivityLegacy
+    public abstract class ExplicitTerminalActivity : TerminalActivityBase
     {
         private StandardConfigurationControlsCM _configurationControls;
         protected StandardConfigurationControlsCM ConfigurationControls => _configurationControls ?? (_configurationControls = GetConfigurationControls());
 
-        protected BaseTerminalActivity(ICrateManager crateManager)
+        protected ExplicitTerminalActivity(ICrateManager crateManager)
           : base(crateManager)
         {
-        }
-
-        protected override void InitializeInternalState()
-        {
-            CrateSignaller = new CrateSignaller(Storage, MyTemplate.Name, ActivityId);
         }
         
         protected StandardConfigurationControlsCM GetConfigurationControls()

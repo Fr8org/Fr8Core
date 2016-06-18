@@ -18,7 +18,7 @@ using Fr8.TerminalBase.Services;
 
 namespace terminalFr8Core.Activities
 {
-    public class Filter_Object_List_By_Incoming_Message_v1 : EnhancedTerminalActivity<Filter_Object_List_By_Incoming_Message_v1.ActivityUi>
+    public class Filter_Object_List_By_Incoming_Message_v1 : TerminalActivity<Filter_Object_List_By_Incoming_Message_v1.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -118,10 +118,10 @@ namespace terminalFr8Core.Activities
             }
             else if (string.IsNullOrEmpty(PreviousSelectedDataSourceId) || PreviousSelectedDataSourceId != ActivityUI.DataSourceSelector.Value)
             {
-                var activityTemplate = await GetActivityTemplate(Guid.Parse(ActivityUI.DataSourceSelector.Value));
+                var activityTemplate = await HubCommunicator.GetActivityTemplate(Guid.Parse(ActivityUI.DataSourceSelector.Value));
                 await HubCommunicator.DeleteExistingChildNodesFromActivity(ActivityId);
                 ActivityContext.ActivityPayload.ChildrenActivities.Clear();
-                await AddAndConfigureChildActivity(ActivityContext.ActivityPayload, activityTemplate, order: 1);
+                await HubCommunicator.AddAndConfigureChildActivity(ActivityContext.ActivityPayload, activityTemplate, order: 1);
                 PreviousSelectedDataSourceId = ActivityUI.DataSourceSelector.Value;
                 CachedData = null;
             }

@@ -17,7 +17,7 @@ using Newtonsoft.Json;
 
 namespace terminalFr8Core.Activities
 {
-    public class Test_Incoming_Data_v1 : BaseTerminalActivity
+    public class Test_Incoming_Data_v1 : ExplicitTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -192,37 +192,37 @@ namespace terminalFr8Core.Activities
             return PackControlsCrate(fieldFilterPane);
         }
 
-        protected async Task<Crate> ValidateFields(List<FieldValidationDTO> requiredFieldList)
-        {
-            var result = await HubCommunicator.ValidateFields(requiredFieldList);
-            var validationErrorList = new List<FieldDTO>();
-            //lets create necessary validationError crates
-            for (var i = 0; i < result.Count; i++)
-            {
-                var fieldCheckResult = result[i];
-                if (fieldCheckResult == FieldValidationResult.NotExists)
-                {
-                    validationErrorList.Add(new FieldDTO() { Key = requiredFieldList[i].FieldName, Value = "Required" });
-                }
-            }
-            if (validationErrorList.Any())
-            {
-                return CrateManager.CreateDesignTimeFieldsCrate("Validation Errors", validationErrorList.ToArray());
-            }
-            return null;
-        }
+        //protected async Task<Crate> ValidateFields(List<FieldValidationDTO> requiredFieldList)
+        //{
+        //    var result = await HubCommunicator.ValidateFields(requiredFieldList);
+        //    var validationErrorList = new List<FieldDTO>();
+        //    //lets create necessary validationError crates
+        //    for (var i = 0; i < result.Count; i++)
+        //    {
+        //        var fieldCheckResult = result[i];
+        //        if (fieldCheckResult == FieldValidationResult.NotExists)
+        //        {
+        //            validationErrorList.Add(new FieldDTO() { Key = requiredFieldList[i].FieldName, Value = "Required" });
+        //        }
+        //    }
+        //    if (validationErrorList.Any())
+        //    {
+        //        return CrateManager.CreateDesignTimeFieldsCrate("Validation Errors", validationErrorList.ToArray());
+        //    }
+        //    return null;
+        //}
 
-        protected async Task<CrateDTO> ValidateByStandartDesignTimeFields(FieldDescriptionsCM designTimeFields)
-        {
-            var fields = designTimeFields.Fields;
-            var validationList = fields.Select(f => new FieldValidationDTO(ActivityId, f.Key)).ToList();
-            return CrateManager.ToDto(await ValidateFields(validationList));
-        }
+        //protected async Task<CrateDTO> ValidateByStandartDesignTimeFields(FieldDescriptionsCM designTimeFields)
+        //{
+        //    var fields = designTimeFields.Fields;
+        //    var validationList = fields.Select(f => new FieldValidationDTO(ActivityId, f.Key)).ToList();
+        //    return CrateManager.ToDto(await ValidateFields(validationList));
+        //}
 
-        protected async Task<CrateDTO> ValidateActivity()
-        {
-            return await ValidateByStandartDesignTimeFields(Storage.FirstCrate<FieldDescriptionsCM>(x => x.Label == "Queryable Criteria").Content);
-        }
+        //protected async Task<CrateDTO> ValidateActivity()
+        //{
+        //    return await ValidateByStandartDesignTimeFields(Storage.FirstCrate<FieldDescriptionsCM>(x => x.Label == "Queryable Criteria").Content);
+        //}
 
 
         public override async Task Run()
