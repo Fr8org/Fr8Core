@@ -1,13 +1,9 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
-using Data.Entities;
-using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Validations;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Hub.Infrastructure;
 using Hub.Interfaces;
@@ -36,55 +32,27 @@ namespace HubWeb.Controllers
             }
 		}
 
-        [HttpGet]
-        [Fr8ApiAuthorize]
-        public IHttpActionResult All()
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var terminals = _terminal.GetAll()
-                    .Select(Mapper.Map<TerminalDTO>)
-                    .ToList();
+	    [HttpGet]
+	    [Fr8ApiAuthorize]
+	    public IHttpActionResult All()
+	    {
+	        using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+	        {
+	            var terminals = uow.TerminalRegistrationRepository.GetAll()
+	                .Select(Mapper.Map<TerminalRegistrationDTO>)
+	                .ToList();
 
-                return Ok(terminals);
-            }
-        }
+	            return Ok(terminals);
+	        }
+	    }
 
-		[HttpPost]
-        [Fr8ApiAuthorize]
-        public IHttpActionResult Post(TerminalDTO terminalDto)
+	    [HttpPost]
+        //[Fr8ApiAuthorize]
+        public async Task<IHttpActionResult> Post([FromBody]TerminalRegistrationDTO registration)
 		{
-            TerminalDO terminal = Mapper.Map<TerminalDO>(terminalDto);
-
-            var validator = new TerminalValidator();
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                if (terminalDto == null || !validator.Validate(terminalDto).IsValid)
-                {
-                    return BadRequest("Some of the request data is invalid");
-                }
-
-                terminal.Version = "1";
-                terminal.UserDO = _security.GetCurrentAccount(uow);
-
-                terminal = _terminal.RegisterOrUpdate(terminal);
-                
-
-                var subscriptionDO = new TerminalSubscriptionDO
-                {
-                    TerminalId = terminal.Id,
-                    UserDO = terminal.UserDO
-                };
-                uow.TerminalSubscriptionRepository.Add(subscriptionDO);
-                uow.SaveChanges();
-            }
-            EventManager.Fr8AccountTerminalRegistration(terminal);
-
-            var model = Mapper.Map<TerminalDTO>(terminal);
-
-			return Ok(model);
-		}
+		    await _terminalDiscovery.RegisterTerminal(registration.Endpoint);
+		    return Ok();
+     	}
         
         [HttpPost]
         public async Task<ResponseMessageDTO> ForceDiscover([FromBody] string callbackUrl)

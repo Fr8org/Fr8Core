@@ -663,7 +663,6 @@
     <Content Include="Content\videos\motion_1920.mp4" />
     <Content Include="Documentation\DocuSignRESTAPI.html" />
     <Content Include="Documentation\UpstreamCrates.html" />
-    <Content Include="fr8terminals.txt" />
     <Content Include="Documentation\AccountCustomFields.html" />
     <Content Include="Documentation\AddaNewGroup.html" />
     <Content Include="Documentation\AddaUserSocialAccount.html" />
@@ -1025,6 +1024,7 @@
     <TypeScriptCompile Include="Scripts\app\model\ActivityResponseDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\AdvisoryMessages.ts" />
     <TypeScriptCompile Include="Scripts\app\model\AlertDTO.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\TerminalRegistrationDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ValidationResults.ts" />
     <TypeScriptCompile Include="Scripts\app\model\HistoryDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\IncomingCratesDTO.ts" />

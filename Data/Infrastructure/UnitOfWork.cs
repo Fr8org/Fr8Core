@@ -532,6 +532,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private TerminalRegistrationRepository _terminalRegistrationRepository;
+        public TerminalRegistrationRepository TerminalRegistrationRepository
+        {
+            get
+            {
+                return _terminalRegistrationRepository ?? (_terminalRegistrationRepository = new TerminalRegistrationRepository(this));
+            }
+        }
+
+
         public void Save()
         {
             _context.SaveChanges();
