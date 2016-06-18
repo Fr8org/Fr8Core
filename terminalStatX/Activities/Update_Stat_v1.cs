@@ -1,11 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Models;
+using Newtonsoft.Json;
+using terminalStatX.DataTransferObjects;
+using terminalStatX.Interfaces;
 
 namespace terminalStatX.Activities
 {
@@ -25,34 +32,110 @@ namespace terminalStatX.Activities
 
         protected override ActivityTemplateDTO MyTemplate { get; }
 
-        public class ActivityUi : StandardConfigurationControlsCM
+        private const string SelectedGroupCrateLabel = "Selected Group";
+
+        private string SelectedGroup
         {
-            public TextBox PhoneNumber { get; set; }
-
-            public ActivityUi()
+            get
             {
-                PhoneNumber = new TextBox()
-                    { Name = "PhoneNumber", Label = "Enter the phone number for authentication: " };
-                PhoneNumber.Events.Add(new ControlEvent("onChange", "requestConfig"));
-                Controls.Add(PhoneNumber);
-
-
-
+                var storedValue = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == SelectedGroupCrateLabel);
+                return storedValue?.Content.Fields.First().Key;
+            }
+            set
+            {
+                Storage.RemoveByLabel(SelectedGroupCrateLabel);
+                if (string.IsNullOrEmpty(value))
+                {
+                    return;
+                }
+                Storage.Add(Crate<FieldDescriptionsCM>.FromContent(SelectedGroupCrateLabel, new FieldDescriptionsCM(new FieldDTO(value)), AvailabilityType.Configuration));
             }
         }
 
-        public Update_Stat_v1(ICrateManager crateManager) : base(crateManager)
+        public class ActivityUi : StandardConfigurationControlsCM
         {
+            public DropDownList ExistingGroupsList { get; set; }
+
+            public DropDownList ExistingGroupStats { get; set; }
+
+            public TextSource StatValue { get; set; }
+
+            public ActivityUi()
+            {
+                ExistingGroupsList = new DropDownList()
+                {
+                    Label = "Choose a StatX Group",
+                    Name = nameof(ExistingGroupsList),
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
+                };
+
+                ExistingGroupStats = new DropDownList()
+                {
+                    Label = "Choose a Stat from selected Group",
+                    Name = nameof(ExistingGroupStats),
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
+                };
+
+                StatValue = new TextSource("Stat Value", string.Empty, nameof(StatValue))
+                {
+                    Source = new FieldSourceDTO
+                    {
+                        Label = string.Empty,
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields,
+                        FilterByTag = string.Empty,
+                        RequestUpstream = true
+                    }
+                };
+                StatValue.Events.Add(new ControlEvent("onChange", "requestConfig"));
+
+                Controls = new List<ControlDefinitionDTO>() {ExistingGroupsList, ExistingGroupStats, StatValue };
+            }
         }
 
-        public override Task Initialize()
+        private readonly IStatXIntegration _statXIntegration;
+
+        public Update_Stat_v1(ICrateManager crateManager, IStatXIntegration statXIntegration) : base(crateManager)
         {
-            throw new NotImplementedException();
+            _statXIntegration = statXIntegration;
         }
 
-        public override Task FollowUp()
+        public override async Task Initialize()
         {
-            throw new NotImplementedException();
+            ActivityUI.ExistingGroupsList.ListItems = (await _statXIntegration.GetGroups(GetStatXAuthToken()))
+                .Select(x => new ListItem { Key = x.Name, Value = x.Id }).ToList();
+        }
+
+        private StatXAuthDTO GetStatXAuthToken()
+        {
+            return JsonConvert.DeserializeObject<StatXAuthDTO>(AuthorizationToken.Token);
+        }
+
+        public override async Task FollowUp()
+        {
+            if (!string.IsNullOrEmpty(ActivityUI.ExistingGroupStats.Value))
+            {
+                var previousGroup = SelectedGroupCrateLabel;
+                if (string.IsNullOrEmpty(previousGroup) || !string.Equals(previousGroup, ActivityUI.ExistingGroupStats.Value))
+                {
+                    ActivityUI.ExistingGroupStats.ListItems = (await _statXIntegration.GetStatsForGroup(GetStatXAuthToken(), ActivityUI.ExistingGroupsList.Value))
+                        .Select(x => new ListItem { Key = x.Title, Value = x.Id }).ToList();
+
+                    var firstStat = ActivityUI.ExistingGroupStats.ListItems.FirstOrDefault();
+                    if (firstStat != null)
+                    {
+                        ActivityUI.ExistingGroupStats.SelectByValue(firstStat.Value);
+                    }
+
+                }
+                SelectedGroup = ActivityUI.ExistingGroupStats.Value;
+            }
+            else
+            {
+                ActivityUI.ExistingGroupStats.ListItems.Clear();
+                ActivityUI.ExistingGroupStats.selectedKey = string.Empty;
+                ActivityUI.ExistingGroupStats.Value = string.Empty;
+                SelectedGroup = string.Empty;
+            }
         }
 
         public override Task Run()

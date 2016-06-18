@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
@@ -101,5 +103,100 @@ namespace terminalStatX.Services
                 ApiKey = jObject["apiKey"].ToString()
             };
         }
-   }
+
+        public async Task<List<StatXGroupDTO>> GetGroups(StatXAuthDTO statXAuthDTO)
+        {
+            var uri = new Uri(StatXBaseApiUrl + "/groups");
+
+            var headers = new Dictionary<string, string>();
+            headers.Add("X-API-KEY", statXAuthDTO.ApiKey);
+            headers.Add("X-AUTH-TOKEN", statXAuthDTO.AuthToken);
+
+            var response = await _restfulServiceClient.GetAsync(uri, null, headers);
+
+            var jObject = JObject.Parse(response);
+
+            //check for errors
+            //JToken errorsToken;
+            //if (jObject.TryGetValue("errors", out errorsToken))
+            //{
+            //    if (errorsToken is JArray)
+            //    {
+            //        var firstError = (JArray)errorsToken.First;
+            //        return new StatXAuthResponseDTO()
+            //        {
+            //            Error = firstError["message"].ToString()
+            //        };
+            //    }
+            //}
+
+            var resultSet = new List<StatXGroupDTO>();
+
+            JToken dataToken;
+            if (jObject.TryGetValue("data", out dataToken))
+            {
+                if (dataToken is JArray)
+                {
+                    resultSet.AddRange(dataToken.Select(item => new StatXGroupDTO()
+                    {
+                        Id = item["id"].ToString(),
+                        Name = item["name"].ToString(),
+                        Description = item["description"].ToString()
+                    }));
+                }
+            }
+
+            return resultSet;
+        }
+
+        public async Task<List<StatDTO>> GetStatsForGroup(StatXAuthDTO statXAuthDTO, string groupId)
+        {
+            var headers = new Dictionary<string, string>
+            {
+                {"X-API-KEY", statXAuthDTO.ApiKey},
+                {"X-AUTH-TOKEN", statXAuthDTO.AuthToken}
+            };
+
+            var uri = new Uri(StatXBaseApiUrl + "/groups/" + groupId);
+            var response = await _restfulServiceClient.GetAsync(
+                uri, null, headers);
+
+            var jObject = JObject.Parse(response);
+
+            //check for errors
+            //JToken errorsToken;
+            //if (jObject.TryGetValue("errors", out errorsToken))
+            //{
+            //    if (errorsToken is JArray)
+            //    {
+            //        var firstError = (JArray)errorsToken.First;
+            //        return new StatXAuthResponseDTO()
+            //        {
+            //            Error = firstError["message"].ToString()
+            //        };
+            //    }
+            //}
+
+            //return response
+
+            var resultSet = new List<StatDTO>();
+
+            JToken dataToken;
+            if (jObject.TryGetValue("data", out dataToken))
+            {
+                if (dataToken is JArray)
+                {
+                    resultSet.AddRange(dataToken.Select(item => new StatDTO()
+                    {
+                        Id = item["id"].ToString(),
+                        Title = item["title"].ToString(),
+                        VisualType = item["visualType"].ToString(),
+                        Value = item["value"].ToString()
+                    }));
+                }
+            }
+
+            return resultSet;
+        }
+    }
 }

@@ -12,5 +12,9 @@ namespace terminalStatX.Interfaces
         Task<StatXAuthResponseDTO> Login(string clientName, string phoneNumber);
 
         Task<StatXAuthDTO> VerifyCodeAndGetAuthToken(string clientId, string phoneNumber, string verificationCode);
+
+        Task<List<StatXGroupDTO>> GetGroups(StatXAuthDTO statXAuthDTO);
+
+        Task<List<StatDTO>> GetStatsForGroup(StatXAuthDTO statXAuthDTO, string groupId);
     }
 }

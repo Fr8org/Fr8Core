@@ -42,7 +42,6 @@ namespace terminalStatX
         {
             return new Type[] {
                     typeof(ActivityController),
-                    typeof(EventController),
                     typeof(AuthenticationController),
                     typeof(TerminalController)
                 };

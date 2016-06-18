@@ -63,9 +63,8 @@ namespace terminalStatX.Controllers
 
                 return new AuthorizationTokenDTO()
                 {
-                    Token = authResponseDTO.AuthToken,
+                    Token = JsonConvert.SerializeObject(authResponseDTO),
                     ExternalAccountId = credentialsDTO.ClientName,
-                    AdditionalAttributes = "apiKey="+ authResponseDTO.ApiKey
                 };
             }
             catch (Exception ex)

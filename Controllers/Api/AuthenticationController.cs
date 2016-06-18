@@ -295,7 +295,7 @@ namespace HubWeb.Controllers
                 TerminalId = terminalDO.Id,
                 TerminalName = terminalDO.Name,
                 ClientId = response.ClientId,
-                ClientName = response.ClientName,
+                ClientName = response.PhoneNumber,//client name is used as external account id, which is nice to be the phone number
                 PhoneNumber = response.PhoneNumber,
                 Error = response.Error
             });
