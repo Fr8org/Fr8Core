@@ -22,7 +22,7 @@ using Hub.Services.MT;
 namespace terminalFr8Core.Actions
 {
     public class Get_Data_From_Fr8_Warehouse_v1
-        : EnhancedTerminalActivity<Get_Data_From_Fr8_Warehouse_v1.ActivityUi>
+        : TerminalActivity<Get_Data_From_Fr8_Warehouse_v1.ActivityUi>
     {
         private readonly IContainer _container;
 

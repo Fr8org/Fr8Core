@@ -15,7 +15,7 @@ using terminalUtilities.Models;
 
 namespace terminalFr8Core.Activities
 {
-    public class Send_Email_v1 : EnhancedTerminalActivity<Send_Email_v1.ActivityUi>
+    public class Send_Email_v1 : TerminalActivity<Send_Email_v1.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {

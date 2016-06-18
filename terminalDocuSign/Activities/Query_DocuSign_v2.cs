@@ -17,7 +17,7 @@ using FolderItem = DocuSign.eSign.Model.FolderItem;
 
 namespace terminalDocuSign.Activities
 {
-    public class Query_DocuSign_v2 : EnhancedDocuSignActivity<Query_DocuSign_v2.ActivityUi>
+    public class Query_DocuSign_v2 : DocuSignActivity<Query_DocuSign_v2.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
