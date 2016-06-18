@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
 using Data.Entities;
@@ -85,10 +87,14 @@ namespace HubWeb.Controllers
 		}
         
         [HttpPost]
-        public IHttpActionResult ForceDiscover([FromBody] string callbackUrl)
+        public async Task<ResponseMessageDTO> ForceDiscover([FromBody] string callbackUrl)
         {
-            _terminalDiscovery.Discover(callbackUrl);
-            return Ok();
+            if (!await _terminalDiscovery.Discover(callbackUrl))
+            {
+                return ErrorDTO.InternalError($"Failed to call /discover for enpoint {callbackUrl}");
+            }
+
+            return new ResponseMessageDTO();
         }
 	}
 }

@@ -184,6 +184,9 @@
     <Compile Include="SelfHostInitializer..cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="fr8terminals.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="App.config" />
     <Content Include="ApplicationInsights.config">
       <SubType>Designer</SubType>

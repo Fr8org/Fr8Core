@@ -5,25 +5,36 @@ using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.DataTransferObjects.Helpers;
+using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Helpers;
+using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Infrastructure.States;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
+using Fr8.TerminalBase.Services;
 
 namespace Fr8.TerminalBase.BaseClasses
 {
     // Almost minimal activity implementation
-    public abstract class StatefullTerminalActivity : IActivity
+    public abstract class TerminalActivityBase : IActivity
     {
         /**********************************************************************************/
         // Declarations
         /**********************************************************************************/
 
+        public const string ConfigurationControlsLabel = "Configuration_Controls";
+        public const string ValidationCrateLabel = "Validation Results";
+
+        /**********************************************************************************/
+
         private OperationalStateCM _operationalState;
         private ActivityContext _activityContext;
         private ContainerExecutionContext _containerExecutionContext;
-
+        private ControlHelper _controlHelper;
+        
         /**********************************************************************************/
 
         protected ICrateStorage Payload
@@ -60,11 +71,29 @@ namespace Fr8.TerminalBase.BaseClasses
         protected ActivityContext ActivityContext => _activityContext;
         protected bool IsRuntime => _containerExecutionContext != null;
         protected AuthenticationMode AuthenticationMode { get; set; } = AuthenticationMode.InternalMode;
+        protected bool DisableValidationOnFollowup { get; set; }
+        protected ICrateManager CrateManager { get; private set;}
+        protected int LoopIndex => GetLoopIndex();
+        protected ControlHelper ControlHelper => _controlHelper ?? (_controlHelper = new ControlHelper(ActivityContext));
+        protected ValidationManager ValidationManager { get; private set; }
+        protected Guid ActivityId => ActivityContext.ActivityPayload.Id;
+        protected string CurrentUserId => ActivityContext.UserId;
+
+        protected abstract ActivityTemplateDTO MyTemplate { get; }
+
+        public CrateSignaller CrateSignaller { get; private set; }
 
         /**********************************************************************************/
         // Functions
         /**********************************************************************************/
-        
+
+        protected TerminalActivityBase(ICrateManager crateManager)
+        {
+            CrateManager = crateManager;
+        }
+
+        /**********************************************************************************/
+
         private void InitializeInternalState(ActivityContext activityContext, ContainerExecutionContext containerExecutionContext)
         {
             _activityContext = activityContext;
@@ -87,7 +116,7 @@ namespace Fr8.TerminalBase.BaseClasses
 
         protected virtual Task<bool> CheckAuthentication()
         {
-            return Task.FromResult(true);
+            return Task.FromResult(!MyTemplate.NeedsAuthentication || !string.IsNullOrEmpty(AuthorizationToken?.Token));
         }
 
         /**********************************************************************************/
@@ -378,6 +407,31 @@ namespace Fr8.TerminalBase.BaseClasses
 
         protected virtual void InitializeInternalState()
         {
+            var terminalAuthType = MyTemplate.Terminal.AuthenticationType;
+
+            switch (terminalAuthType)
+            {
+                case AuthenticationType.Internal:
+                    AuthenticationMode = AuthenticationMode.InternalMode;
+                    break;
+
+                case AuthenticationType.External:
+                    AuthenticationMode = AuthenticationMode.ExternalMode;
+                    break;
+
+                case AuthenticationType.InternalWithDomain:
+                    AuthenticationMode = AuthenticationMode.InternalModeWithDomain;
+                    break;
+
+                case AuthenticationType.None:
+                    AuthenticationMode = AuthenticationMode.ExternalMode;
+                    break;
+
+                default:
+                    throw new Exception("Unknown authentication type: " + terminalAuthType);
+            }
+
+            CrateSignaller = new CrateSignaller(Storage, MyTemplate.Name, ActivityId);
         }
 
         /**********************************************************************************/
@@ -410,9 +464,19 @@ namespace Fr8.TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        protected virtual Task<bool> BeforeRun()
+        protected virtual async Task<bool> BeforeRun()
         {
-            return Task.FromResult(true);
+            ValidationManager = CreateValidationManager();
+
+            await Validate();
+
+            if (ValidationManager.HasErrors)
+            {
+                RaiseError("Activity was incorrectly configured. " + ValidationManager.ValidationResults);
+                return false;
+            }
+
+            return true;
         }
 
         /**********************************************************************************/
@@ -438,9 +502,21 @@ namespace Fr8.TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        protected virtual Task<bool> BeforeActivate()
+        protected virtual async Task<bool> BeforeActivate()
         {
-            return Task.FromResult(false);
+            Storage.Remove<ValidationResultsCM>();
+
+            ValidationManager = CreateValidationManager();
+
+            await Validate();
+
+            if (ValidationManager.HasErrors)
+            {
+                Storage.Add(Crate.FromContent(ValidationCrateLabel, ValidationManager.ValidationResults));
+                return false;
+            }
+
+            return true;
         }
 
         /**********************************************************************************/
@@ -452,9 +528,45 @@ namespace Fr8.TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        protected virtual Task<bool> BeforeConfigure(ConfigurationRequestType configurationRequestType)
+        protected virtual async Task<bool> BeforeConfigure(ConfigurationRequestType configurationRequestType)
         {
-            return Task.FromResult(true);
+            if (configurationRequestType == ConfigurationRequestType.Initial)
+            {
+                return true;
+            }
+
+            Storage.Remove<ValidationResultsCM>();
+
+            ValidationManager = CreateValidationManager();
+
+            ValidationManager.Reset();
+
+            if (!DisableValidationOnFollowup)
+            {
+                await Validate();
+            }
+
+            if (ValidationManager.HasErrors)
+            {
+                Storage.Add(Crate.FromContent(ValidationCrateLabel, ValidationManager.ValidationResults));
+                return false;
+            }
+
+            return true;
+        }
+
+        /**********************************************************************************/
+
+        protected virtual ValidationManager CreateValidationManager()
+        {
+            return new ValidationManager(IsRuntime ? Payload : null);
+        }
+
+        /**********************************************************************************/
+
+        protected virtual Task Validate()
+        {
+            return Task.FromResult(0);
         }
 
         /**********************************************************************************/
@@ -668,6 +780,28 @@ namespace Fr8.TerminalBase.BaseClasses
 
             return await GetDocumentation(documentationType);
         }
+
+        /**********************************************************************************/
+
+        #region Legacy helpers
+        /// <summary>
+        /// Method to be used with Loop Action
+        /// Is a helper method to decouple some of the GetCurrentElement Functionality
+        /// </summary>
+        /// <returns>Index or pointer of the current IEnumerable Object</returns>
+        protected int GetLoopIndex()
+        {
+            var loopState = OperationalState.CallStack.FirstOrDefault(x => x.LocalData?.Type == "Loop");
+
+            if (loopState != null) //this is a loop related data request
+            {
+                return loopState.LocalData.ReadAs<OperationalStateCM.LoopStatus>().Index;
+            }
+
+            throw new NullReferenceException("No Loop was found inside the provided OperationalStateCM crate");
+        }
+
+        #endregion
 
         /**********************************************************************************/
     }

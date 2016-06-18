@@ -13,7 +13,7 @@ using StructureMap;
 
 namespace terminalFr8Core.Activities
 {
-    public class Save_To_Fr8_Warehouse_v1 : BaseTerminalActivity
+    public class Save_To_Fr8_Warehouse_v1 : ExplicitTerminalActivity
     {
         private readonly IContainer _container;
 

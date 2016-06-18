@@ -5,6 +5,6 @@ namespace Hub.Interfaces
     public interface ITerminalDiscoveryService
     {
         Task Discover();
-        Task Discover(string terminalUrl);
+        Task<bool> Discover(string terminalUrl);
     }
 }

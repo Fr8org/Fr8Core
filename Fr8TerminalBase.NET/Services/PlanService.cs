@@ -4,13 +4,13 @@ using AutoMapper;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.TerminalBase.Interfaces;
 
-namespace Fr8.TerminalBase.Helpers
+namespace Fr8.TerminalBase.Services
 {
-    public class PlanHelper
+    public class PlanService
     {
         private readonly IHubCommunicator _hubCommunicator;
 
-        public PlanHelper(IHubCommunicator hubCommunicator)
+        public PlanService(IHubCommunicator hubCommunicator)
         {
             _hubCommunicator = hubCommunicator;
         }

@@ -15,7 +15,7 @@ using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Activities
 {
-    public class Prepare_DocuSign_Events_For_Storage_v1 : BaseTerminalActivity
+    public class Prepare_DocuSign_Events_For_Storage_v1 : ExplicitTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {

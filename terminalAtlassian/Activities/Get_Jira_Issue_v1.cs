@@ -14,7 +14,7 @@ using terminalAtlassian.Services;
 
 namespace terminalAtlassian.Actions
 {
-    public class Get_Jira_Issue_v1 : EnhancedTerminalActivity<Get_Jira_Issue_v1.ActivityUi>
+    public class Get_Jira_Issue_v1 : TerminalActivity<Get_Jira_Issue_v1.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {

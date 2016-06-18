@@ -17,7 +17,7 @@ using Twilio;
 
 namespace terminalFr8Core.Activities
 {
-    public class Send_SMS_v1 : EnhancedTerminalActivity<Send_SMS_v1.ActivityUi>
+    public class Send_SMS_v1 : TerminalActivity<Send_SMS_v1.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
