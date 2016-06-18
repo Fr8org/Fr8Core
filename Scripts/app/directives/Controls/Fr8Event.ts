@@ -8,13 +8,21 @@ module dockyard.directives {
         color: string;
         icon: string;
         eventType: string;
+        isCollapsed: boolean;
+        toggle: () => void;        
     }
 
-
     export function Fr8Event(): ng.IDirective {
-
-
-        var controller = ['$scope',  ($scope: IFr8EventScope) => {
+        var controller = ['$scope', ($scope: IFr8EventScope) => {
+            if ($scope.event.Collapsed != null) {
+                $scope.isCollapsed = $scope.event.Collapsed;
+            }
+            else {
+                $scope.isCollapsed = true;
+            }
+            $scope.toggle = function () {
+                $scope.isCollapsed = !$scope.isCollapsed;
+            }
             if ($scope.type === 'fr8pusher_generic_success') {
                 $scope.color = 'green';
                 $scope.eventType = 'Success';
@@ -33,7 +41,6 @@ module dockyard.directives {
                 $scope.eventType = $scope.event.TerminalName+ '-v' + $scope.event.TerminalVersion;
                 $scope.icon = 'fa fa-bolt';
             }
-                
         }];
 
         return {
@@ -45,8 +52,5 @@ module dockyard.directives {
             }
         };
     }
-
-
-
     app.directive('fr8Event', Fr8Event);
 }

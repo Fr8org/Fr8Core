@@ -25,12 +25,12 @@ namespace Hub.Services
         private readonly ICrateManager _crate;
         private readonly ITime _time;
         private readonly IActivityTemplate _activityTemplate;
-        private readonly ITerminal _terminal;
+        private readonly ITerminal _terminalService;
 
 
         public Authorization()
         {
-            _terminal = ObjectFactory.GetInstance<ITerminal>();
+            _terminalService = ObjectFactory.GetInstance<ITerminal>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _time = ObjectFactory.GetInstance<ITime>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
@@ -139,7 +139,7 @@ namespace Hub.Services
 
             var terminalResponse = await restClient.PostAsync<CredentialsDTO>(
                 new Uri(terminal.Endpoint + "/authentication/token"),
-                credentialsDTO
+                credentialsDTO, null, _terminalService.GetRequestHeaders(terminal)
             );
 
             var terminalResponseAuthTokenDTO = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(terminalResponse);
@@ -159,7 +159,7 @@ namespace Hub.Services
                 };
             }
 
-            var curTerminal = _terminal.GetByKey(terminal.Id);
+            var curTerminal = _terminalService.GetByKey(terminal.Id);
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -246,7 +246,7 @@ namespace Hub.Services
 
             var response = await restClient.PostAsync<ExternalAuthenticationDTO>(
                 new Uri(terminal.Endpoint + "/authentication/token"),
-                externalAuthDTO
+                externalAuthDTO, null, _terminalService.GetRequestHeaders(terminal)
                 );
 
             var authTokenDTO = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(response);
@@ -326,6 +326,7 @@ namespace Hub.Services
 
             var response = await restClient.PostAsync(
                 new Uri(terminal.Endpoint + "/authentication/request_url")
+                , null, _terminalService.GetRequestHeaders(terminal)
             );
 
             var externalAuthUrlDTO = JsonConvert.DeserializeObject<ExternalAuthUrlDTO>(response);
@@ -342,7 +343,7 @@ namespace Hub.Services
 
                 if (authToken == null)
                 {
-                    var curTerminal = _terminal.GetByKey(terminal.Id);
+                    var curTerminal = _terminalService.GetByKey(terminal.Id);
                     var curAccount = uow.UserRepository.GetByKey(user.Id);
 
                     authToken = new AuthorizationTokenDO()

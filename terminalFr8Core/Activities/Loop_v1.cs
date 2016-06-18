@@ -16,7 +16,7 @@ using Newtonsoft.Json.Linq;
 
 namespace terminalFr8Core.Activities
 {
-    public class Loop_v1 : BaseTerminalActivity
+    public class Loop_v1 : ExplicitTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {

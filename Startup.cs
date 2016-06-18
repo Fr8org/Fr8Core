@@ -38,10 +38,9 @@ namespace HubWeb
 
 
             ConfigureHangfire(app, "DockyardDB");
-
+            
             if (!selfHostMode)
             {
-                await RegisterTerminalActions();
 #pragma warning disable 4014 
                 //We don't await this call as this is Hangfire dispatcher job
                 ObjectFactory.GetInstance<IJobDispatcher>().Enqueue(() => StartMonitoringManifestRegistrySubmissions());
@@ -134,49 +133,7 @@ namespace HubWeb
         //    }
         //}
 
-        public async Task RegisterTerminalActions()
-        {
-            var alertReporter = ObjectFactory.GetInstance<EventReporter>();
-
-            var terminalUrls = FileUtils.LoadFileHostList();
-            int count = 0;
-            var activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
-            var terminalService = ObjectFactory.GetInstance<ITerminal>();
-
-
-            foreach (string url in terminalUrls)
-            {
-                try
-                {
-                    var activityTemplateList = (await terminalService.GetAvailableActivities(url)).ToList();
-
-                    foreach (var curItem in activityTemplateList)
-                    {
-                        try
-                        {
-                            activityTemplate.RegisterOrUpdate(curItem);
-                            count++;
-                        }
-                        catch (Exception ex)
-                        {
-                            alertReporter.ActivityTemplateTerminalRegistrationError(
-                                $"Failed to register {curItem.Terminal.Name} terminal. Error Message: {ex.Message}",
-                                ex.GetType().Name);
-                        }
-                    }
-
-                    activityTemplate.RemoveInactiveActivities(activityTemplateList);
-                }
-                catch (Exception ex)
-                {
-                    alertReporter.ActivityTemplateTerminalRegistrationError(
-                        string.Format("Failed terminal service: {0}. Error Message: {1} ", url, ex.Message),
-                        ex.GetType().Name);
-                }
-            }
-
-            alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
-        }
+       
 
         public static IDisposable CreateServer(string url)
         {

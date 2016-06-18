@@ -77,12 +77,12 @@ namespace terminalDocuSign.Services
             string prodUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultProductionUrl");
             string devUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultDevUrl");
             string demoUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultDemoUrl");
-
+            bool isSelfHosting = CloudConfigurationManager.GetSetting("terminalDocusign.NotSelfHosting") == null;
             string connectName = "";
             string connectId = "";
 
             Logger.Info($"CreateConnect terminalUrl {terminalUrl}");
-            if (!string.IsNullOrEmpty(terminalUrl))
+            if (!isSelfHosting)
             {
                 if (terminalUrl.Contains(devUrl, StringComparison.InvariantCultureIgnoreCase))
                 {

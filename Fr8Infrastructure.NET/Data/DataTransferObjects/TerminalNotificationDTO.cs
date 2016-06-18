@@ -26,5 +26,8 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 
         [JsonProperty("activityVersion")]
         public string ActivityVersion { get; set; }
+
+        [JsonProperty("collapsed")]
+        public bool Collapsed { get; set; }
     }
 }

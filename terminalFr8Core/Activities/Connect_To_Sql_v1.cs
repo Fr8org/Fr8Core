@@ -11,7 +11,7 @@ using terminalFr8Core.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
-    public class Connect_To_Sql_v1 : BaseTerminalActivity
+    public class Connect_To_Sql_v1 : ExplicitTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {

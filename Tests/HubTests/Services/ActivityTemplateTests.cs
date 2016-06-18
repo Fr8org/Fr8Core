@@ -156,6 +156,7 @@ namespace HubTests.Services
                 Label = prefix + "label" + id,
                 NeedsAuthentication = true,
                 Tags = prefix + "tags" + id,
+                TerminalId = terminal.Id,
                 Terminal = terminal,
                 Type = ActivityType.Standard,
                 Version = "1",
@@ -256,8 +257,12 @@ namespace HubTests.Services
         public void CanRegister()
         {
             var template = CreateActivityTemplate(Guid.NewGuid(), CreateTerminal(-234, "new"), CreateWebService(234234, "new"));
-            template.TerminalId = 23444234;
             template.WebServiceId = -2344;
+
+            var terminalService = ObjectFactory.GetInstance<Terminal>();
+
+            template.Terminal = terminalService.RegisterOrUpdate(template.Terminal);
+            template.TerminalId = template.Terminal.Id;
 
             var service = ObjectFactory.GetInstance<ActivityTemplate>();
             service.RegisterOrUpdate(template);
@@ -286,9 +291,13 @@ namespace HubTests.Services
             GenerateSeedData();
 
             var template = CreateActivityTemplate(FixtureData.GetTestGuidById(1), CreateTerminal(-234), CreateWebService(234234));
-            template.TerminalId = 23444234;
+
             template.WebServiceId = -2344;
             template.Id = Guid.Empty;
+
+            var terminalService = ObjectFactory.GetInstance<Terminal>();
+            template.Terminal = terminalService.RegisterOrUpdate(template.Terminal);
+            template.TerminalId = template.Terminal.Id;
 
             var service = ObjectFactory.GetInstance<ActivityTemplate>();
 

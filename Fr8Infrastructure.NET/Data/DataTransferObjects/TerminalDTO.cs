@@ -9,6 +9,8 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
             AuthenticationType = States.AuthenticationType.None;
         }
 
+        [JsonProperty("id")]
+        public string PublicIdentifier { get; set; }
         [JsonProperty("name")]
         public string Name { get; set; }
         [JsonProperty("label")]

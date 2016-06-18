@@ -19,7 +19,7 @@ using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSign.Actions
 {
-    public class Send_DocuSign_Envelope_v2 : EnhancedDocuSignActivity<Send_DocuSign_Envelope_v2.ActivityUi>
+    public class Send_DocuSign_Envelope_v2 : DocuSignActivity<Send_DocuSign_Envelope_v2.ActivityUi>
     {
         private readonly IConfigRepository _configRepository;
 

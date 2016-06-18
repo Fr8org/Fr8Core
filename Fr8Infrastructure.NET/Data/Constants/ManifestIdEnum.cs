@@ -122,7 +122,10 @@ namespace Fr8.Infrastructure.Data.Constants
         DocuSignEnvelope_v3 = 40,
 
         [Display(Name = "Advisory Messages")]
-        AdvisoryMessages = 41
+        AdvisoryMessages = 41,
+
+        [Display(Name = "Hub Subscription")]
+        HubSubscription = 42
     }
 }
 
