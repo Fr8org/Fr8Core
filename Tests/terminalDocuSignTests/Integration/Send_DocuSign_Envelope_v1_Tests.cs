@@ -173,33 +173,7 @@ namespace terminalDocuSignTests
             Assert.NotNull(response.CrateStorage);
             Assert.NotNull(response.CrateStorage.Crates);
             Assert.True(response.CrateStorage.Crates.Any(x => x.ManifestType == "Standard Authentication"));
-        }
-
-        /// <summary>
-        /// Test run-time for action from Monitor_DocuSign_FollowUp_Configuration_TemplateValue.
-        /// </summary>
-        /// This test is obsolete, we do not use Recipient in the Send_DocuSign_Envelope_v1
-        [Test, Ignore]
-        public async Task Send_DocuSign_Envelope_Run_With_Specific_Recipient()
-        {
-            var runUrl = GetTerminalRunUrl();
-            var configureUrl = GetTerminalConfigureUrl();
-            var dataDTO = await HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_Example_Fr8DataDTO(this);
-            var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
-            var storage = Crate.GetStorage(responseActionDTO);
-
-            SendDocuSignEnvelope_SetSpecificRecipient(storage);
-
-            using (var updatableStorage = Crate.GetUpdatableStorage(dataDTO.ActivityDTO))
-            {
-                updatableStorage.Replace(storage);
-            }
-
-            var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
-            var crateStorage = Crate.GetStorage(responsePayloadDTO);
-            Assert.AreEqual(0, crateStorage.Count());
-        }
-
+        }  
         /// <summary>
         /// Wait for HTTP-500 exception when Auth-Token is not passed to run.
         /// </summary>

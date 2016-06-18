@@ -77,25 +77,6 @@ namespace terminalDocuSignTests.Integration
             CheckIfPayloadHasNeedsAuthenticationError(payload);
         }
 
-        /// <summary>
-        /// Test run-time without Auth-Token.
-        /// </summary>
-        /// The test is obsolete as Query_DocuSign_v1 does not though exception if no Followup config was undergone
-        [Test, Ignore]
-        [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Sequence contains no elements""}",
-            MatchType = MessageMatch.Contains
-        )]
-        public async Task Query_DocuSign_Run_NoConfig()
-        {
-            var runUrl = GetTerminalRunUrl();
-
-            var dataDTO = await HealthMonitor_FixtureData.Query_DocuSign_v1_InitialConfiguration_Fr8DataDTO(this);
-
-            await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
-        }
-
         [Test]
         public async Task Query_DocuSign_Activate_Returns_ActivityDTO()
         {
