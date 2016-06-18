@@ -11,6 +11,8 @@ var gutil = require('gulp-util');
 gulp.task('bower', function (done) {
     return bower({ layout: "byComponent" });
 });
+
+
 gulp.task('concattemplates', function () {
     return gulp.src(['Views/AngularTemplate/**/*.cshtml',
         /*we are excluding those files - because they contain razor code*/
