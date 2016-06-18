@@ -36,14 +36,20 @@ namespace terminalFacebook.Activities
 
         public class ActivityUi : StandardConfigurationControlsCM
         {
-            public TextBox Message { get; set; }
+            public TextSource Message { get; set; }
 
             public ActivityUi()
             {
-                Message = new TextBox
+                Message = new TextSource
                 {
+                    InitialLabel = "Message",
+                    Label = "Message",
                     Name = nameof(Message),
-                    Label = "Post Message"
+                    Source = new FieldSourceDTO
+                    {
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields,
+                        RequestUpstream = true
+                    }
                 };
                 Controls = new List<ControlDefinitionDTO> { Message };
             }
@@ -75,7 +81,7 @@ namespace terminalFacebook.Activities
 
         public override Task Run()
         {
-            _fbIntegration.PostToTimeline(AuthorizationToken.Token, ActivityUI.Message.Value);
+            _fbIntegration.PostToTimeline(AuthorizationToken.Token, ActivityUI.Message.GetValue(Payload));
             return Task.FromResult(0);
         }
     }
