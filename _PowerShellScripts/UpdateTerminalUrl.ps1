@@ -17,7 +17,7 @@ IF (EXISTS (SELECT *
                  WHERE TABLE_SCHEMA = 'dbo' 
                  AND  TABLE_NAME = 'TerminalRegistration'))
 BEGIN
-    UPDATE Terminals SET [Endpoint] = '$newHostname" + ":' + RIGHT([Endpoint], 5)
+    UPDATE TerminalRegistration SET [Endpoint] = '$newHostname" + ":' + RIGHT([Endpoint], 5)
 END";
 
 

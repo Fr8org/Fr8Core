@@ -41,7 +41,8 @@ IF (EXISTS (SELECT *
                  WHERE TABLE_SCHEMA = 'dbo' 
                  AND  TABLE_NAME = 'TerminalRegistration'))
 BEGIN
-    UPDATE Terminals SET [Endpoint] = '$newHostname" + ":' + RIGHT([Endpoint], 5)
+	DELETE from TerminalRegistration where UserId is not null;
+    UPDATE TerminalRegistration SET [Endpoint] = '$newHostname" + ":' + RIGHT([Endpoint], 5);
 END";
 
 $command = new-object system.data.sqlclient.sqlcommand($commandText, $connection)
