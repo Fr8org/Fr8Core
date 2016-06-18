@@ -4,13 +4,13 @@ using System.Web.Http.Dispatcher;
 using Fr8.TerminalBase.BaseClasses;
 using Microsoft.Owin;
 using Owin;
-using terminalDemo;
-using terminalDemo.Activities;
-using terminalDemo.Controllers;
+using terminalFacebook;
+using terminalFacebook.Activities;
+using terminalFacebook.Controllers;
 
 [assembly: OwinStartup(typeof(Startup))]
 
-namespace terminalDemo
+namespace terminalFacebook
 {
     public class Startup : BaseConfiguration
     {
@@ -26,7 +26,7 @@ namespace terminalDemo
 
         public void Configuration(IAppBuilder app, bool selfHost)
         {
-            ConfigureProject(selfHost, null);
+            ConfigureProject(selfHost, TerminalFacebookBootstrapper.ConfigureLive);
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
             app.UseWebApi(_configuration);
@@ -38,8 +38,7 @@ namespace terminalDemo
 
         protected override void RegisterActivities()
         {
-            ActivityStore.RegisterActivity<DoMath_v1>(DoMath_v1.ActivityTemplateDTO);
-            ActivityStore.RegisterActivity<MathMachine_v1>(MathMachine_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Post_To_Timeline_v1>(Post_To_Timeline_v1.ActivityTemplateDTO);
         }
 
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
@@ -47,6 +46,7 @@ namespace terminalDemo
             return new Type[] {
                     typeof(ActivityController),
                     typeof(TerminalController),
+                    typeof(AuthenticationController)
                 };
         }
     }

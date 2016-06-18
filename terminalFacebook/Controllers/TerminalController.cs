@@ -1,7 +1,7 @@
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Services;
 
-namespace terminalDemo.Controllers
+namespace terminalFacebook.Controllers
 {
     public class TerminalController : DefaultTerminalController
     {

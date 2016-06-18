@@ -1,13 +1,13 @@
 ﻿using System.Web.Http;
 using Fr8.TerminalBase.BaseClasses;
 
-namespace terminalDemo
+namespace terminalFacebook
 {
     public static class RoutesConfig
     {
         public static void Register(HttpConfiguration config)
         {
-            BaseTerminalWebApiConfig.Register("Fr8Demo", config);
+            BaseTerminalWebApiConfig.Register("Facebook", config);
         }
     }
 }
