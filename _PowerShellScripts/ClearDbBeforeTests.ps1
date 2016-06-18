@@ -16,6 +16,7 @@ param(
 Write-Host "Remove dev specific data from the database to speedup tests"
 
 $commandText = "delete MtData from MtData inner join MtTypes on MtTypes.Id = MtData.Type where MtTypes.ManifestId = 42"
+$commandText = "delete from TerminalRegistration where UserId is not null"
 
 Write-Host $commandText
 
