@@ -157,7 +157,7 @@ namespace HubWeb.Controllers
 
                     string username = model.Email.Trim();
                     LoginStatus curLoginStatus =
-                        await new Fr8Account().ProcessLoginRequest(username, model.Password, model.RememberMe);
+                        await _account.ProcessLoginRequest(username, model.Password, model.RememberMe);
                     switch (curLoginStatus)
                     {
                         case LoginStatus.InvalidCredential:
@@ -314,7 +314,8 @@ Please register first.");
             {
                 try
                 {
-                    var result = await _account.ResetPasswordAsync(viewModel.UserId, viewModel.Code, viewModel.Password);
+                    var token = viewModel.Code.Replace(" ", "+"); // since html replaces '+' with space, we should fix it.
+                    var result = await _account.ResetPasswordAsync(viewModel.UserId, token, viewModel.Password);
                     if (result.Succeeded)
                     {
                         return View("ResetPasswordConfirmation", viewModel);

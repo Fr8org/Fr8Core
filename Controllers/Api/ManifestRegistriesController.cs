@@ -1,30 +1,67 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Configuration;
+using AutoMapper;
 using Data.Interfaces;
 using StructureMap;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
+using Data.States;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities;
+using Hub.Interfaces;
+using Hub.Managers;
 
 namespace HubWeb.Controllers.Api
 {
     public class ManifestRegistriesController : ApiController
     {
-        private static string systemUserAccountId = ObjectFactory.GetInstance<IConfigRepository>().Get("SystemUserEmail");
-        
+        private readonly IManifestRegistryMonitor _manifestRegistryMonitor;
+
+        private readonly string _systemUserAccountId;
+
+        //TODO: uncomment this constructor once constructor injection is enabled for HubWeb controllers
+        //public ManifestRegistriesController(IManifestRegistryMonitor manifestRegistryMonitor, IConfigRepository configRepository)
+        //{
+        //    if (manifestRegistryMonitor == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(manifestRegistryMonitor));
+        //    }
+        //    if (configRepository == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(configRepository));
+        //    }
+        //    _systemUserAccountId = configRepository.Get("SystemUserEmail");
+        //    _manifestRegistryMonitor = manifestRegistryMonitor;
+        //}
+
+        //TODO: remove this construcotr once constructor injection is enabled for HubWeb controllers
+        public ManifestRegistriesController()
+        {
+            _systemUserAccountId = ObjectFactory.GetInstance<IConfigRepository>().Get("SystemUserEmail");
+            _manifestRegistryMonitor = ObjectFactory.GetInstance<IManifestRegistryMonitor>();
+        }
+
         [HttpGet]
         public IHttpActionResult Get()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 
-                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(systemUserAccountId);
+                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(_systemUserAccountId);
                 var list = manifestDescriptions.Select(m => new { m.Id, m.Name, m.Version, m.SampleJSON, m.Description, m.RegisteredBy }).ToList();
 
                 return Ok(list);
             }
         }
+
+        [HttpGet]
+        public IHttpActionResult Submit()
+        {
+            return Ok(ConfigurationManager.AppSettings["ManifestSubmissionFormUrl"]);
+        }
+
 
         [HttpPost]
         public IHttpActionResult Post(ManifestDescriptionDTO description)
@@ -34,7 +71,7 @@ namespace HubWeb.Controllers.Api
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.MultiTenantObjectRepository.Add(manifestDescription, systemUserAccountId);
+                uow.MultiTenantObjectRepository.Add(manifestDescription, _systemUserAccountId);
 
                 uow.SaveChanges();
             }
@@ -42,6 +79,15 @@ namespace HubWeb.Controllers.Api
             var model = Mapper.Map<ManifestDescriptionDTO>(manifestDescription);
 
             return Ok(model);
+        }
+
+        [HttpPost]
+        [DockyardAuthorize(Roles = Roles.Admin)]
+        public async Task<IHttpActionResult> RunMonitoring()
+        {
+            //We don't need to wait for the result as the purpose of this method is just to initiate a start (as a double-check measure)
+            await _manifestRegistryMonitor.StartMonitoringManifestRegistrySubmissions();
+            return Ok();
         }
 
 
@@ -56,7 +102,7 @@ namespace HubWeb.Controllers.Api
                 if (data.version.IsNullOrEmpty())
                 // getDescriptionWithLastVersion
                 {
-                    var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(systemUserAccountId);
+                    var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(_systemUserAccountId);
                     var descriptions = manifestDescriptions.Where(md => md.Name == data.name).ToArray();
 
                     result = descriptions.First();
@@ -77,7 +123,7 @@ namespace HubWeb.Controllers.Api
                 else
                 // checkVersionAndName
                 {
-                    var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(systemUserAccountId);
+                    var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(_systemUserAccountId);
                     var isInDB = manifestDescriptions.Any(md => md.Name == data.name && md.Version == data.version);
                     result = new { Value = !isInDB };
 
@@ -93,7 +139,7 @@ namespace HubWeb.Controllers.Api
             int result = 1;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(systemUserAccountId);
+                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(_systemUserAccountId);
                 if (!manifestDescriptions.Any())
                 {
                     return result.ToString();

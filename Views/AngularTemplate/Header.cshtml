@@ -1,11 +1,13 @@
 <div style="padding-bottom: 115px;"></div>
-<div data-ng-controller="HeaderController" class="page-header" style="position:fixed;z-index: 500;top: 0px;right:0;left:0">
+<div data-ng-controller="HeaderController" class="page-header" style="position:fixed;z-index: 1025;top: 0px;right:0;left:0">
     <div class="page-header-top">
         <!-- BEGIN HEADER TOP -->
         <div class="container">
             <!-- BEGIN LOGO -->
             <div class="page-logo">
-                <a href="http://www.fr8.company"><img src="/Content/img/dockyard_logo.png" alt="logo" class="logo-default"></a>
+                <a href="/">
+                    <img src="/Content/img/dockyard_logo.png" alt="logo" class="logo-default">
+                </a>
                 <!--BEGIN STICKER-->
                 <div class="page-sticker">
                     <p>beta</p>
@@ -107,6 +109,14 @@
                                     </li>
                                 </ul>
                             </li>
+                            <li class="dropdown-submenu">
+                                <a href="/Services/Demo" class="dropdown-toggle">Demo</a>
+                                <ul class="dropdown-menu">
+                                    <li ng-repeat="activity in (activityCategories | filter: {name: 'Solution'})[0].activities | filter: { terminal: { name: 'terminalDemo' } }">
+                                        <a ui-sref="configureSolution({solutionName: activity.name})" ui-sref-opts="{reload: true}">{{activity.label}}</a>
+                                    </li>
+                                </ul>
+                            </li>
                         </ul>
                     </li>
 
@@ -116,8 +126,7 @@
                         <ul class="dropdown-menu">
                             <li><a ui-sref="planList">Show All</a></li>
                             <li event-add><a ui-sref="planForm" >Add</a></li>
-                            <li ng-controller="PlanDetailsController" ng-show="$state.is('planDetails')" ><a href="{{href}}" ng-click="sharePlan()">Share Plan</a></li>
-                            <li ng-controller="PlanDetailsController" ng-show="$state.is('planDetails')"><a href="{{href}}" ng-click="unpublishPlan()">Unpublish Plan</a></li>
+                            <li><a ng-click="goToPlanDirectory('@System.Configuration.ConfigurationManager.AppSettings["PlanDirectoryUrl"]')">Plan Directory</a></li>
                             <li ng-controller="PlanUploadController"><a ng-click="showModal()" >Load from JSON file</a></li>
                         </ul>
                     </li>
@@ -136,7 +145,7 @@
                         <ul class="dropdown-menu">
                             <!-- <li><a ui-sref="managefiles">Manage Files</a></li> -->
                             <li><a ui-sref="manageAuthTokens">Manage Auth Tokens</a></li>
-                            <li><a ui-sref="configureSolution({solutionName: 'SearchFr8Warehouse'})">Search Fr8 Warehouse</a></li>
+                            <li><a ui-sref="configureSolution({solutionName: 'Search_Fr8_Warehouse'})">Search Fr8 Warehouse</a></li>
                         </ul>
                     </li>
 
@@ -146,7 +155,8 @@
                         <ul class="dropdown-menu">
                             <li><a href="https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md">Developer Home</a></li>
                             <li><a href="/Documentation/RestAPIGuide.html">Fr8 Development Resources - DocuSign</a></li>
-                            <li><a ng-click="goToPlanDirectory('@System.Configuration.ConfigurationManager.AppSettings["PlanDirectoryUrl"]')">Plan Directory</a></li>
+                            <li><a ui-sref="manifestregistry">Manage Manifest Registry</a></li>
+                            <li><a ui-sref="terminals">Manage Terminals List</a></li>
                         </ul>
                     </li>
 
@@ -167,10 +177,10 @@
                             <a data-toggle="dropdown" href="#" class="dropdown-toggle">Admin <i class="fa fa-angle-down"></i></a>
                             <ul class="dropdown-menu">
                                 <li><a ui-sref="accounts">Manage Users</a></li>
-                                <li><a ui-sref="manifestregistry">Manage ManifestRegistry</a></li>
                                 <li><a ui-sref="webservices">Show Web Services</a></li>
                                 <li><a ui-sref="showFacts">Show Facts</a></li>
                                 <li><a ui-sref="showIncidents">Show Incidents</a></li>
+                                <li><a ng-click="runManifestRegistryMonitoring()">Run Manifest Registry Monitoring</a></li>
                                 <li><a onclick="window.parent.document.body.style.zoom = 0.6;">Ipad Mode</a></li>
                                 <li><a onclick="window.parent.document.body.style.zoom = 1;">Normal Mode</a></li>
                             </ul>

@@ -125,7 +125,9 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.PlanId, opts => opts.ResolveUsing(x => x.RootPlanNodeId))
                 .ForMember(x => x.SubPlanId, opts => opts.ResolveUsing(x => x.Id));
 
-     
+
+            Mapper.CreateMap<TerminalRegistrationDO, TerminalRegistrationDTO>();
+            Mapper.CreateMap<TerminalRegistrationDTO, TerminalRegistrationDO>();
 
             Mapper.CreateMap<PlanDO, PlanFullDTO>().ConvertUsing<PlanDOFullConverter>();
 
@@ -176,7 +178,6 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.LastUpdated, opts => opts.Ignore())
                 .ForMember(x => x.CreateDate, opts => opts.Ignore())
                 .ForMember(x => x.Id, opts => opts.Ignore())
-                .ForMember(x => x.PublicIdentifier, opts => opts.Ignore())
                 .ForMember(x => x.Secret, opts => opts.Ignore())
                 .ForMember(x => x.AuthenticationTypeTemplate, opts => opts.Ignore());
 

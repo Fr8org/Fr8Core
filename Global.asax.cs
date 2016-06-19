@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
@@ -14,6 +15,7 @@ using Fr8.Infrastructure.Utilities;
 using FluentValidation.WebApi;
 using Google.Apis.Util;
 using Hub.Infrastructure;
+using Hub.Interfaces;
 using Hub.Managers;
 using Hub.ModelBinders;
 using Hub.StructureMap;
@@ -24,6 +26,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Segment;
 using StructureMap;
+using Microsoft.ApplicationInsights.Extensibility;
 using Logger = Fr8.Infrastructure.Utilities.Logging.Logger;
 
 namespace HubWeb
@@ -99,6 +102,18 @@ namespace HubWeb
 
             ConfigureValidationEngine();
             StartupMigration.CreateSystemUser();
+
+            RegisterTerminalActions();
+        }
+
+
+        public void RegisterTerminalActions()
+        {
+            var terminalDiscovery = ObjectFactory.GetInstance<ITerminalDiscoveryService>();
+
+#pragma warning disable 4014
+            terminalDiscovery.Discover();
+#pragma warning restore 4014
         }
 
         private void ConfigureValidationEngine()
@@ -136,6 +151,7 @@ namespace HubWeb
 
 #if DEBUG
             SetServerUrl(HttpContext.Current);
+            TelemetryConfiguration.Active.DisableTelemetry = true;
 #endif
             NormalizeUrl();
             RewriteAngularRequests();

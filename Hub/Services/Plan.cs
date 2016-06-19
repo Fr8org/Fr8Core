@@ -194,14 +194,15 @@ namespace Hub.Services
             return uow.PlanRepository.GetById<PlanDO>(id);
         }
 
-        public PlanDO Create(IUnitOfWork uow, string name, string category = "")
+        public PlanDO Create(IUnitOfWork uow, string name, string category = "", string ownerId = "", PlanVisibility visibility = PlanVisibility.Standard)
         {
             var plan = new PlanDO
             {
                 Id = Guid.NewGuid(),
                 Name = name,
-                Fr8Account = _security.GetCurrentAccount(uow),
+                Fr8Account = string.IsNullOrEmpty(ownerId) ? _security.GetCurrentAccount(uow) : uow.UserRepository.FindOne(x => x.Id == ownerId),
                 PlanState = PlanState.Inactive,
+                Visibility = visibility,
                 Category = category
             };
 
@@ -588,7 +589,9 @@ namespace Hub.Services
                             // Just return empty container
                             if (currentPlanType == PlanType.Monitoring)
                             {
-                                _pusher.NotifyUser($"Plan \"{plan.Name}\" activated. It will wait and respond to specified external events.",
+                                _pusher.NotifyUser(new { Message = $"Plan \"{plan.Name}\" activated. It will wait and respond to specified external events." ,
+                                                         Collapsed = false
+                                                        },
                                     NotificationChannel.GenericSuccess,
                                     userName);
 
@@ -603,9 +606,11 @@ namespace Hub.Services
                         }
                         else
                         {
-                            _pusher.NotifyUser($"Continue execution of the supsended Plan \"{plan.Name}\"",
-                                NotificationChannel.GenericSuccess,
-                                userName);
+                            _pusher.NotifyUser(new  {   Message = $"Continue execution of the supsended Plan \"{plan.Name}\"",
+                                                        Collapsed = false
+                                                    },
+                                                NotificationChannel.GenericSuccess,
+                                                userName);
 
                             await _containerService.Continue(uow, container);
                         }
@@ -615,7 +620,9 @@ namespace Hub.Services
 
                         if (container.State != State.Failed)
                         {
-                            _pusher.NotifyUser($"Complete processing for Plan \"{plan.Name}\".{responseMsg}", NotificationChannel.GenericSuccess, userName);
+                        _pusher.NotifyUser(new {    Message = $"Complete processing for Plan \"{plan.Name}\".{responseMsg}",
+                                                    Collapsed = false
+                                                }, NotificationChannel.GenericSuccess, userName);
                         }
                         else
                         {

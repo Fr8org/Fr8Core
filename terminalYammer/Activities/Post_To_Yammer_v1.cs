@@ -16,7 +16,7 @@ using terminalYammer.Services;
 
 namespace terminalYammer.Actions
 {
-    public class Post_To_Yammer_v1 : BaseTerminalActivity
+    public class Post_To_Yammer_v1 : ExplicitTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -75,10 +75,10 @@ namespace terminalYammer.Actions
             }
         }
 
-        public Post_To_Yammer_v1(ICrateManager crateManager)
+        public Post_To_Yammer_v1(ICrateManager crateManager, Yammer yammer)
             : base(crateManager)
         {
-            _yammer = new Yammer();
+            _yammer = yammer;
         }
 
         public override Task FollowUp()

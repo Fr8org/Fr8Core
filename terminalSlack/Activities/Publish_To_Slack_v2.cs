@@ -15,7 +15,7 @@ using terminalSlack.Services;
 
 namespace terminalSlack.Activities
 {
-    public class Publish_To_Slack_v2 : EnhancedTerminalActivity<Publish_To_Slack_v2.ActivityUi>
+    public class Publish_To_Slack_v2 : TerminalActivity<Publish_To_Slack_v2.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -49,10 +49,10 @@ namespace terminalSlack.Activities
         private readonly ISlackIntegration _slackIntegration;
 
 
-        public Publish_To_Slack_v2(ICrateManager crateManager)
+        public Publish_To_Slack_v2(ICrateManager crateManager, ISlackIntegration slackIntegration)
             : base(crateManager)
         {
-            _slackIntegration = new SlackIntegration();
+            _slackIntegration = slackIntegration;
             DisableValidationOnFollowup = true;
         }
         public override async Task Initialize()

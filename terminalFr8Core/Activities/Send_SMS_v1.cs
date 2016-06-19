@@ -17,7 +17,7 @@ using Twilio;
 
 namespace terminalFr8Core.Activities
 {
-    public class Send_SMS_v1 : EnhancedTerminalActivity<Send_SMS_v1.ActivityUi>
+    public class Send_SMS_v1 : TerminalActivity<Send_SMS_v1.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -69,10 +69,10 @@ namespace terminalFr8Core.Activities
             }
         }
 
-        public Send_SMS_v1(ICrateManager crateManager)
+        public Send_SMS_v1(ICrateManager crateManager, ITwilioService twilioService)
             : base(crateManager)
         {
-            _twilio = ObjectFactory.GetInstance<ITwilioService>();
+            _twilio = twilioService;
         }
 
         public override async Task Initialize()

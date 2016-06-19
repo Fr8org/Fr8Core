@@ -135,7 +135,7 @@ namespace terminalFr8CoreTests.Integration
 			var activityTemplate = new ActivityTemplateDTO
 			{
 				Id = Guid.NewGuid(),
-				Name = "SetDelay_TEST",
+				Name = "Set_Delay_TEST",
 				Version = "1"
 			};
 

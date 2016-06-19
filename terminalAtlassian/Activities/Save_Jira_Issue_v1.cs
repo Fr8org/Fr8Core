@@ -9,14 +9,13 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
-using StructureMap;
 using terminalAtlassian.Interfaces;
-using terminalAtlassian.Services;
 
 namespace terminalAtlassian.Actions
 {
-    public class Save_Jira_Issue_v1 : EnhancedTerminalActivity<Save_Jira_Issue_v1.ActivityUi>
+    public class Save_Jira_Issue_v1 : TerminalActivity<Save_Jira_Issue_v1.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -47,6 +46,7 @@ namespace terminalAtlassian.Actions
 
             public DropDownList AvailablePriorities { get; set; }
 
+            public DropDownList AssigneeSelector { get; set; }
             public ControlDefinitionDTO SprintFieldName { get; set; }
 
 
@@ -110,6 +110,14 @@ namespace terminalAtlassian.Actions
                     IsHidden = true
                 };
                 Controls.Add(AvailablePriorities);
+
+                AssigneeSelector = new DropDownList
+                {
+                    Label = "Asignee",
+                    Name = "Asignee",
+                    IsHidden = true
+                };
+                Controls.Add(AssigneeSelector);
 
                 Summary = new TextSource()
                 {
@@ -222,12 +230,20 @@ namespace terminalAtlassian.Actions
 
 
         private const string ConfigurationPropertiesLabel = "ConfigurationProperties";
-        private readonly AtlassianService _atlassianService;
+        private const string RuntimeCrateLabel = "JIRA proprties";
 
-        public Save_Jira_Issue_v1(ICrateManager crateManager, AtlassianService atlassianService)
+        private const string JiraUrlField = "JIRA link";
+        private const string JiraIdField = "JIRA Id";
+
+        private readonly IAtlassianService _atlassianService;
+        private readonly IPushNotificationService _pushNotificationService;
+
+
+        public Save_Jira_Issue_v1(ICrateManager crateManager, IAtlassianService atlassianService, IPushNotificationService pushNotificationService)
             : base(crateManager)
         {
             _atlassianService = atlassianService;
+            _pushNotificationService = pushNotificationService;
         }
 
         #region Configuration
@@ -238,7 +254,9 @@ namespace terminalAtlassian.Actions
                 .GetProjects(AuthorizationToken)
                 .ToListItems()
                 .ToList();
-
+            CrateSignaller.MarkAvailableAtRuntime<FieldDescriptionsCM>(RuntimeCrateLabel)
+                          .AddField(JiraIdField)
+                          .AddField(JiraUrlField);
             await Task.Yield();
         }
 
@@ -246,7 +264,7 @@ namespace terminalAtlassian.Actions
         {
             ActivityUI.RestoreCustomFields(Storage);
             var configProps = GetConfigurationProperties();
-            
+
             var projectKey = ActivityUI.AvailableProjects.Value;
             if (!string.IsNullOrEmpty(projectKey))
             {
@@ -255,6 +273,7 @@ namespace terminalAtlassian.Actions
                 if (projectKey != configProps.SelectedProjectKey)
                 {
                     FillIssueTypeDdl(projectKey);
+                    await FillAssigneeSelector(projectKey);
                 }
 
                 var issueTypeKey = ActivityUI.AvailableIssueTypes.Value;
@@ -283,6 +302,12 @@ namespace terminalAtlassian.Actions
             SetConfigurationProperties(configProps);
 
             await Task.Yield();
+        }
+
+        private async Task FillAssigneeSelector(string projectKey)
+        {
+            var users = await _atlassianService.GetUsersAsync(projectKey, AuthorizationToken);
+            ActivityUI.AssigneeSelector.ListItems = users.Select(x => new ListItem { Key = x.DisplayName, Value = x.Key }).ToList();
         }
 
         private ConfigurationProperties GetConfigurationProperties()
@@ -333,6 +358,7 @@ namespace terminalAtlassian.Actions
             ActivityUI.AvailablePriorities.IsHidden = !visible;
             ActivityUI.Sprint.IsHidden = !visible;
             ActivityUI.SelectIssueTypeLabel.IsHidden = visible;
+            ActivityUI.AssigneeSelector.IsHidden = !visible;
         }
 
         private async Task FillFieldDdls()
@@ -360,11 +386,14 @@ namespace terminalAtlassian.Actions
             await _atlassianService.CreateIssue(issueInfo, AuthorizationToken);
 
             var credentialsDTO = JsonConvert.DeserializeObject<CredentialsDTO>(AuthorizationToken.Token);
+            var jiraUrl = $"{credentialsDTO.Domain}/browse/{issueInfo.Key}";
+            await _pushNotificationService.PushUserNotification(MyTemplate, "Success", "Jira issue created", $"Created new jira issue: {jiraUrl}");
+            Payload.Add(Crate<FieldDescriptionsCM>.FromContent(RuntimeCrateLabel, new FieldDescriptionsCM(
+                                                                                      new FieldDTO(JiraIdField, issueInfo.Key),
+                                                                                      new FieldDTO(JiraUrlField, jiraUrl))));
+
             Payload.Add(Crate.FromContent("jira issue", new StandardPayloadDataCM(new FieldDTO() { Key = "jira issue key", Value = issueInfo.Key })));
             Payload.Add(Crate.FromContent("jira issue", new StandardPayloadDataCM(new FieldDTO() { Key = "jira domain", Value = credentialsDTO.Domain })));
-            await
-                PushUserNotification("Success", "Jira issue created",
-                    "Created new jira issue: " + credentialsDTO.Domain + "/browse/" + issueInfo.Key);
         }
 
         private IssueInfo ExtractIssueInfo()
@@ -388,7 +417,8 @@ namespace terminalAtlassian.Actions
                 PriorityKey = ActivityUI.AvailablePriorities.Value,
                 Description = ActivityUI.Description.GetValue(Payload),
                 Summary = ActivityUI.Summary.GetValue(Payload),
-                CustomFields = ActivityUI.GetValues(Payload).ToList()
+                CustomFields = ActivityUI.GetValues(Payload).ToList(),
+                Assignee = ActivityUI.AssigneeSelector.Value
             };
 
 

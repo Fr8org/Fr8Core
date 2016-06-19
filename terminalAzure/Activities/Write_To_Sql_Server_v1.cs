@@ -18,8 +18,10 @@ using TerminalSqlUtilities;
 
 namespace terminalAzure.Activities
 {
-    public class Write_To_Sql_Server_v1 : BaseTerminalActivity
+    public class Write_To_Sql_Server_v1 : ExplicitTerminalActivity
     {
+        private readonly IDbProvider _dbProvider;
+
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "Write_To_Sql_Server",
@@ -33,9 +35,10 @@ namespace terminalAzure.Activities
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
 
-        public Write_To_Sql_Server_v1(ICrateManager crateManager) 
+        public Write_To_Sql_Server_v1(ICrateManager crateManager, IDbProvider dbProvider) 
             : base(crateManager)
         {
+            _dbProvider = dbProvider;
         }
 
         //If the user provides no Connection String value, provide an empty Connection String field for the user to populate
@@ -109,9 +112,8 @@ namespace terminalAzure.Activities
         public List<string> GetFieldMappings()
         {
             var connStringField = ConfigurationControls.Controls.First();
-            var curProvider = ObjectFactory.GetInstance<IDbProvider>();
-
-            return (List<string>)curProvider.ConnectToSql(connStringField.Value, (command) =>
+            
+            return (List<string>)_dbProvider.ConnectToSql(connStringField.Value, (command) =>
             {
                 command.CommandText = FieldMappingQuery;
 

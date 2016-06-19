@@ -7,7 +7,6 @@ using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Errors;
 using Newtonsoft.Json.Linq;
-using StructureMap;
 using terminalYammer.Interfaces;
 using terminalYammer.Model;
 
@@ -16,9 +15,9 @@ namespace terminalYammer.Services
     public class Yammer : IYammer
     {
         private readonly IRestfulServiceClient _client;
-        public Yammer()
+        public Yammer(IRestfulServiceClient restfulServiceClient)
         {
-            _client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+            _client = restfulServiceClient;
         }
         /// <summary>
         /// Build external Yammer OAuth url.

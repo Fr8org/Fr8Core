@@ -104,7 +104,6 @@ namespace terminalSendGridTests.Fixtures
             };
             var activityContext = new ActivityContext
             {
-                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = activityPayload
             };
             return activityContext;

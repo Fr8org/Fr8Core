@@ -17,7 +17,7 @@ using terminalSlack.Services;
 namespace terminalSlack.Activities
 {
 
-    public class Publish_To_Slack_v1 : BaseTerminalActivity
+    public class Publish_To_Slack_v1 : ExplicitTerminalActivity
     {
         private readonly ISlackIntegration _slackIntegration;
 
@@ -58,11 +58,6 @@ namespace terminalSlack.Activities
         {
             string message;
 
-            if (IsAuthenticationRequired)
-            {
-                RaiseNeedsAuthenticationError();
-            }
-
             var actionChannelId = GetControl<DropDownList>("Selected_Slack_Channel")?.Value;
             if (string.IsNullOrEmpty(actionChannelId))
             {
@@ -101,10 +96,10 @@ namespace terminalSlack.Activities
             Storage.Add(configurationCrate);
         }
 
-        public Publish_To_Slack_v1(ICrateManager crateManager)
+        public Publish_To_Slack_v1(ICrateManager crateManager, ISlackIntegration slackIntegration)
             : base(crateManager)
         {
-            _slackIntegration = new SlackIntegration();
+            _slackIntegration = slackIntegration;
         }
 
         public static string StripHTML(string input)

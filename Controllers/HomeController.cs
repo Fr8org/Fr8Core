@@ -147,7 +147,7 @@ namespace HubWeb.Controllers
         [HttpPost]
         public ActionResult ProcessHomePageBookingRequest(string emailAddress, string meetingInfo)
         {
-            RegexUtilities.ValidateEmailAddress(emailAddress);
+            RegexUtilities.ValidateEmailAddress(_configRepository, emailAddress);
             if (meetingInfo.Trim().Length < 30)
                 return Json(new { Message = "Meeting information must have at least 30 characters" });
 
@@ -164,7 +164,7 @@ namespace HubWeb.Controllers
             {
                 EmailAddressDO emailAddressDO = new EmailAddressDO(emailId);
 
-                RegexUtilities.ValidateEmailAddress(emailAddressDO.Address);
+                RegexUtilities.ValidateEmailAddress(_configRepository, emailAddressDO.Address);
                 using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     _emailAddress.ConvertFromMailAddress(uow, new MailAddress(emailId, name));

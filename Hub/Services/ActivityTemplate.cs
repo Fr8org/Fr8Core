@@ -199,16 +199,9 @@ namespace Hub.Services
             }
 
             activityTemplateDo = clone;
-
-            var registeredTerminal = _terminal.RegisterOrUpdate(activityTemplateDo.Terminal);
             
             activityTemplateDo.Terminal = null; // otherwise we can add dupliacte terminals into the DB
-
-            if (registeredTerminal != null)
-            {
-                activityTemplateDo.TerminalId = registeredTerminal.Id;
-            }
-
+            
             if (!IsATandTCacheDisabled)
             {
                 Initialize();

@@ -22,33 +22,18 @@ namespace Fr8.TerminalBase.Services
     {
         public ICrateManager Crate { get; set; }
         public string ExplicitData { get; set; }
-        protected string TerminalSecret { get; set; }
-        protected string TerminalId { get; set; }
-
         private string _userId;
 
         public string UserId => _userId;
 
-        protected DataHubCommunicatorBase(string explicitData)
+        protected DataHubCommunicatorBase(string explicitData, ICrateManager crateManager)
         {
-            Crate = ObjectFactory.GetInstance<ICrateManager>();
+            Crate = crateManager;
             ExplicitData = explicitData;
         }
         
-        public void Configure(string terminalName, string userId)
+        public void Authorize(string userId)
         {
-            if (string.IsNullOrEmpty(terminalName))
-                throw new ArgumentNullException(nameof(terminalName));
-
-            TerminalSecret = CloudConfigurationManager.GetSetting("TerminalSecret");
-            TerminalId = CloudConfigurationManager.GetSetting("TerminalId");
-
-            //we might be on integration test currently
-            if (TerminalSecret == null || TerminalId == null)
-            {
-                TerminalSecret = ConfigurationManager.AppSettings[terminalName + "TerminalSecret"];
-                TerminalId = ConfigurationManager.AppSettings[terminalName + "TerminalId"];
-            }
             _userId = userId;
             IsConfigured = true;
         }
@@ -265,6 +250,26 @@ namespace Fr8.TerminalBase.Services
         public Task RenewToken(AuthorizationTokenDTO token)
         {
             return Task.FromResult(0);
+        }
+
+        public Task SendEvent(Crate eventPayload)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<TManifest>> QueryWarehouse<TManifest>(List<FilterConditionDTO> query) where TManifest : Manifest
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddOrUpdateWarehouse(params Manifest[] manifests)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteFromWarehouse<TManifest>(List<FilterConditionDTO> query) where TManifest : Manifest
+        {
+            throw new NotImplementedException();
         }
 
         public Task RenewToken(string id, string externalAccountId, string token)

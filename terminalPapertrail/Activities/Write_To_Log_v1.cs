@@ -17,7 +17,7 @@ namespace terminalPapertrail.Actions
     /// <summary>
     /// Write To Log action which writes Log Messages to Papertrail at run time
     /// </summary>
-    public class Write_To_Log_v1 : BaseTerminalActivity
+    public class Write_To_Log_v1 : ExplicitTerminalActivity
     {
         private IPapertrailLogger _papertrailLogger;
 
@@ -33,10 +33,10 @@ namespace terminalPapertrail.Actions
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        public Write_To_Log_v1(ICrateManager crateManager)
+        public Write_To_Log_v1(ICrateManager crateManager, IPapertrailLogger papertrailLogger)
             : base(crateManager)
         {
-            _papertrailLogger = ObjectFactory.GetInstance<IPapertrailLogger>();
+            _papertrailLogger = papertrailLogger;
         }
 
         public override async Task Initialize()
