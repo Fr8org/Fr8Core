@@ -92,7 +92,7 @@ namespace terminalStatX.Activities
 
                 ExistingGroupStats = new DropDownList()
                 {
-                    Label = "Choose a Stat from selected Group",
+                    Label = "Choose a Stat from Selected Group",
                     Name = nameof(ExistingGroupStats),
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
