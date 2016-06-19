@@ -179,6 +179,7 @@
     <Compile Include="DataTransferObjects\StatXAuthResponseDTO.cs" />
     <Compile Include="DataTransferObjects\StatXAuthVerifyDTO.cs" />
     <Compile Include="DataTransferObjects\StatXGroupDTO.cs" />
+    <Compile Include="DataTransferObjects\UpdateStatDTO.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

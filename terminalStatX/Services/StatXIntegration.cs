@@ -194,21 +194,24 @@ namespace terminalStatX.Services
                 string response;
                 if (string.IsNullOrEmpty(currentStat.Value) && currentStat.StatItems.Any())
                 {
-                    response = await _restfulServiceClient.PutAsync(uri,
-                       JsonConvert.SerializeObject(
-                           new
-                           {
-                               lastUpdatedDateTime = currentStat.LastUpdatedDateTime,
-                               items = new object[]
-                               {
-                                   value = value
-                               }
-                           }), null, GetStatxAPIHeaders(statXAuthDTO));
+                    var updateStatContent = new UpdateStatWithItemsDTO() { LastUpdatedDateTime = DateTime.UtcNow };
+
+                    updateStatContent.Items.Add(new StatItemValueDTO()
+                    {
+                        Value = value
+                    });
+
+                    response = await _restfulServiceClient.PutAsync<UpdateStatWithItemsDTO>(uri, updateStatContent, null, GetStatxAPIHeaders(statXAuthDTO));
                 }
                 else
                 {
-                    response = await _restfulServiceClient.PutAsync(uri,
-                         JsonConvert.SerializeObject(new { lastUpdatedDateTime = currentStat.LastUpdatedDateTime, value = value }), null, GetStatxAPIHeaders(statXAuthDTO));
+                    var updateStatContent = new UpdateStatDTO
+                    {
+                        LastUpdatedDateTime = DateTime.UtcNow,
+                        Value = value
+                    };
+
+                    response = await _restfulServiceClient.PutAsync<UpdateStatDTO>(uri, updateStatContent, null, GetStatxAPIHeaders(statXAuthDTO));
                 }
 
                 var jObject = JObject.Parse(response);
