@@ -423,6 +423,10 @@ namespace Fr8.TerminalBase.BaseClasses
                     AuthenticationMode = AuthenticationMode.InternalModeWithDomain;
                     break;
 
+                case AuthenticationType.PhoneNumberWithCode:
+                    AuthenticationMode = AuthenticationMode.PhoneNumber;
+                    break;
+
                 case AuthenticationType.None:
                     AuthenticationMode = AuthenticationMode.ExternalMode;
                     break;
