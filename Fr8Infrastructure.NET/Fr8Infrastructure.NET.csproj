@@ -211,6 +211,7 @@
     <Compile Include="Data\DataTransferObjects\TerminalDiscoveryDTO.cs" />
     <Compile Include="Data\DataTransferObjects\TerminalDTO.cs" />
     <Compile Include="Data\DataTransferObjects\TerminalNotificationDTO.cs" />
+    <Compile Include="Data\DataTransferObjects\TerminalRegistrationDTO.cs" />
     <Compile Include="Data\DataTransferObjects\UserDTO.cs" />
     <Compile Include="Data\DataTransferObjects\ValidationErrorsDTO.cs" />
     <Compile Include="Data\DataTransferObjects\ValidationResultDTO.cs" />
@@ -314,7 +315,6 @@
     <Compile Include="Utilities\ExceptionExtesion.cs" />
     <Compile Include="Utilities\ExceptionHandling.cs" />
     <Compile Include="Utilities\Extensions.cs" />
-    <Compile Include="Utilities\FileUtils.cs" />
     <Compile Include="Utilities\FilterUtility.cs" />
     <Compile Include="Interfaces\ICsvReader.cs" />
     <Compile Include="Interfaces\IPusherNotifier.cs" />
