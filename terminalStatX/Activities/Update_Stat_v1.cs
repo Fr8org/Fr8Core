@@ -34,12 +34,31 @@ namespace terminalStatX.Activities
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
         private const string SelectedGroupCrateLabel = "Selected Group";
+        private const string SelectedStatCrateLabel = "Selected Stat";
 
         private string SelectedGroup
         {
             get
             {
                 var storedValue = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == SelectedGroupCrateLabel);
+                return storedValue?.Content.Fields.First().Key;
+            }
+            set
+            {
+                Storage.RemoveByLabel(SelectedGroupCrateLabel);
+                if (string.IsNullOrEmpty(value))
+                {
+                    return;
+                }
+                Storage.Add(Crate<FieldDescriptionsCM>.FromContent(SelectedGroupCrateLabel, new FieldDescriptionsCM(new FieldDTO(value)), AvailabilityType.Configuration));
+            }
+        }
+
+        private string SelectedStat
+        {
+            get
+            {
+                var storedValue = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == SelectedStatCrateLabel);
                 return storedValue?.Content.Fields.First().Key;
             }
             set
@@ -147,9 +166,39 @@ namespace terminalStatX.Activities
                 SelectedGroup = string.Empty;
             }
 
-            if (string.IsNullOrEmpty(ActivityUI.ExistingGroupStats.Value))
+            if (!string.IsNullOrEmpty(ActivityUI.ExistingGroupStats.Value))
+            {
+                var previousStat = SelectedStat;
+                if (string.IsNullOrEmpty(previousStat) || !string.Equals(previousStat, ActivityUI.ExistingGroupStats.Value))
+                {
+                    var stats = await _statXIntegration.GetStatsForGroup(GetStatXAuthToken(), ActivityUI.ExistingGroupsList.Value);
+
+                    var currentStat = stats.FirstOrDefault(x => x.Id == ActivityUI.ExistingGroupStats.Value);
+                    if (currentStat != null)
+                    {
+                        ActivityUI.ClearDynamicFields();
+                        if (currentStat.StatItems.Any())
+                        {
+                            foreach (var item in currentStat.StatItems)
+                            {
+                                ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(item.Name, item.Name, requestUpstream: true));
+                            }
+                        }
+                        else
+                        {
+                            ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(currentStat.Title, currentStat.Title, requestUpstream: true));
+                        }
+                    }
+                }
+                SelectedGroup = ActivityUI.ExistingGroupsList.Value;
+            }
+            else
             {
                 ActivityUI.ClearDynamicFields();
+                ActivityUI.ExistingGroupStats.ListItems.Clear();
+                ActivityUI.ExistingGroupStats.selectedKey = string.Empty;
+                ActivityUI.ExistingGroupStats.Value = string.Empty;
+                SelectedStat = string.Empty;
             }
         }
 
