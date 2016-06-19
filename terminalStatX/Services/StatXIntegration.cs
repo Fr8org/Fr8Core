@@ -35,7 +35,7 @@ namespace terminalStatX.Services
             var statXAuthLoginDTO = new StatXAuthLoginDTO()
             {
                 PhoneNumber = phoneNumber,
-                ClientName = clientName
+                ClientName = "Fr8"
             };
 
             var uri = new Uri(StatXBaseApiUrl + AuthLoginRelativeUrl);
@@ -62,7 +62,7 @@ namespace terminalStatX.Services
 
             //return response
             statXAuthResponse.PhoneNumber = jObject["phoneNumber"]?.ToString();
-            statXAuthResponse.ClientName = "Fr8";
+            statXAuthResponse.ClientName = clientName;
             statXAuthResponse.ClientId = jObject["clientId"]?.ToString();
 
             if (string.IsNullOrEmpty(statXAuthResponse.ClientId))
