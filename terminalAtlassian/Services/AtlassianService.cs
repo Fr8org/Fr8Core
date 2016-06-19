@@ -104,6 +104,19 @@ namespace terminalAtlassian.Services
             });
         }
 
+        public IEnumerable<Issue> GetIssueFromJql(string jql, AuthorizationToken authToken)
+        {
+            Jira jira = CreateRestClient(authToken.Token);
+            var issues = jira.GetIssuesFromJql(jql);
+            return issues;
+        }
+
+        public void DeleteIssue(Issue issue, AuthorizationToken authToken)
+        {
+            Jira jira = CreateRestClient(authToken.Token);
+            jira.DeleteIssue(issue);
+        }
+
         public List<FieldDTO> GetProjects(AuthorizationToken authToken)
         {
             return InterceptJiraExceptions(() =>

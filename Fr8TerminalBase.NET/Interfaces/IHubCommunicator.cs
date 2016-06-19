@@ -17,6 +17,8 @@ namespace Fr8.TerminalBase.Interfaces
         void Configure(string terminalName, string userId);
 
         Task<PayloadDTO> GetPayload(Guid containerId);
+        Task<List<AuthenticationTokenTerminalDTO>> GetTokens();
+        Task<AuthorizationTokenDTO> GenerateOAuthToken(ExternalAuthenticationDTO authDTO);
         Task<UserDTO> GetCurrentUser();
         Task<IncomingCratesDTO> GetAvailableData(Guid activityId, CrateDirection direction, AvailabilityType availability);
         Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(Guid activityId, CrateDirection direction);
@@ -46,5 +48,6 @@ namespace Fr8.TerminalBase.Interfaces
         Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan);
         Task NotifyUser(TerminalNotificationDTO notificationMessage);
         Task RenewToken(AuthorizationTokenDTO token);
+        Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri);
     }
 }

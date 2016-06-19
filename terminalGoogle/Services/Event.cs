@@ -10,6 +10,8 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using terminalGoogle.Interfaces;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace terminalGoogle.Services
 {
@@ -30,6 +32,16 @@ namespace terminalGoogle.Services
             }
 
             var payloadFields = ParseGoogleFormPayloadData(externalEventPayload);
+            if(payloadFields.Count == 0)
+            {
+                var jo = (JObject)JsonConvert.DeserializeObject(externalEventPayload);
+                var curFr8UserId = jo["fr8_user_id"].Value<string>();
+                if (!string.IsNullOrEmpty(curFr8UserId))
+                {
+                    var plan = new GoogleMTSFPlan(curFr8UserId, "alexed","dev");
+                    await plan.CreateAndActivateNewMTSFPlan();
+                }
+            }
 
             var externalAccountId = payloadFields.FirstOrDefault(x => x.Key == "user_id");
             if (externalAccountId == null || string.IsNullOrEmpty(externalAccountId.Value))
