@@ -200,6 +200,7 @@ namespace terminalStatX.Services
 
                     updateStatContent.Items.AddRange(statValues.Select(x=>new StatItemValueDTO()
                     {
+                        Name = x.Key,
                         Value = x.Value
                     }).ToList());
 

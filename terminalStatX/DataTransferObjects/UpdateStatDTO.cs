@@ -28,6 +28,8 @@ namespace terminalStatX.DataTransferObjects
 
     public class StatItemValueDTO
     {
+        [JsonProperty("name")]
+        public string Name { get; set; }
         [JsonProperty("value")]
         public string Value { get; set; }
     }
