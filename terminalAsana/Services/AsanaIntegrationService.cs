@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Fr8.Infrastructure.Utilities.Configuration;
 using terminalAsana.Infrastructure;
 using terminalAsana.Interfaces;
 
@@ -12,7 +13,9 @@ namespace terminalAsana.Services
     {
         public string CreateAuthUrl(string state)
         {
-            throw new NotImplementedException();
+            var resultUrl = CloudConfigurationManager.GetSetting("AsanaOAuthUrl");
+
+            return resultUrl;            
         }
 
         public Task<string> GetOAuthToken(string code)

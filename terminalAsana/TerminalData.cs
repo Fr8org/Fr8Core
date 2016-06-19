@@ -17,7 +17,7 @@ namespace terminalAsana
             Endpoint = CloudConfigurationManager.GetSetting("terminalAsana.TerminalEndpoint"),
             TerminalStatus = TerminalStatus.Active,
             Name = "terminalAsana",
-            Label = "terminalAsana",
+            Label = "Asana",
             Version = "1"
         };
     }
