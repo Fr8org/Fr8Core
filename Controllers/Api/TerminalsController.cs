@@ -34,7 +34,7 @@ namespace HubWeb.Controllers
 
 	    [HttpGet]
 	    [Fr8ApiAuthorize]
-	    public IHttpActionResult All()
+	    public IHttpActionResult Registrations()
 	    {
 	        using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 	        {
@@ -46,14 +46,28 @@ namespace HubWeb.Controllers
 	        }
 	    }
 
-	    [HttpPost]
+        [HttpGet]
+        [Fr8ApiAuthorize]
+        public IHttpActionResult All()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var terminals = _terminal.GetAll()
+                    .Select(Mapper.Map<TerminalDTO>)
+                    .ToList();
+
+                return Ok(terminals);
+            }
+        }
+
+        [HttpPost]
         //[Fr8ApiAuthorize]
         public async Task<IHttpActionResult> Post([FromBody]TerminalRegistrationDTO registration)
 		{
 		    await _terminalDiscovery.RegisterTerminal(registration.Endpoint);
 		    return Ok();
      	}
-        
+
         [HttpPost]
         public async Task<ResponseMessageDTO> ForceDiscover([FromBody] string callbackUrl)
         {

@@ -37,6 +37,8 @@ namespace terminalStatX.Controllers
                
                 credentialsDTO.ClientId = statXAuthResponse.ClientId;
 
+                credentialsDTO.Message = "* Verification code has been sent to your StatX mobile app. You can find the code in Settings -> Additional Authorizations.";
+
                 return credentialsDTO;
             }
             catch (Exception ex)

@@ -23,6 +23,7 @@
                 phoneNumber: '',
                 verificationCode: '',
                 clientName: '',
+                message: '',
             };
 
             $scope.isLoading = function () {
@@ -50,11 +51,13 @@
                             $scope.authErrorText = null;
                             $scope.formData.clientId = res.data.clientId;
                             $scope.formData.clientName = res.data.clientName;
+                            $scope.formData.message = res.data.message;
                             $scope.inVerifyMode = true;
                         }
                     })
                     .catch(function () {
                         $scope.authError = true;
+                        $scope.formData.message = '';
                     })
                     .finally(function () {
                         _loading = false;
@@ -78,6 +81,8 @@
 
                 $http.post('/api/authentication/VerifyPhoneNumberCode', data)
                     .then(function (res: any) {
+
+                        $scope.formData.message = '';
 
                         if (res.data.error) {
                             $scope.authErrorText = res.data.error;

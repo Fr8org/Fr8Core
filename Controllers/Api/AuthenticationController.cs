@@ -297,7 +297,8 @@ namespace HubWeb.Controllers
                 ClientId = response.ClientId,
                 ClientName = response.PhoneNumber,//client name is used as external account id, which is nice to be the phone number
                 PhoneNumber = response.PhoneNumber,
-                Error = response.Error
+                Error = response.Error, 
+                Message = response.Message
             });
         }
 
