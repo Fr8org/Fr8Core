@@ -9,28 +9,28 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
-using Fr8.TerminalBase.Models;
+using Fr8.TerminalBase.Errors;
 using Newtonsoft.Json;
 using terminalStatX.DataTransferObjects;
 using terminalStatX.Interfaces;
 
 namespace terminalStatX.Activities
 {
-    public class Update_Stat_v1 : EnhancedTerminalActivity<Update_Stat_v1.ActivityUi>
+    public class Update_Stat_v1 : TerminalActivity<Update_Stat_v1.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "Update_Stat",
             Label = "Update Stat",
             Version = "1",
-            Category = ActivityCategory.Processors,
+            Category = ActivityCategory.Forwarders,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             MinPaneWidth = 300,
             WebService = TerminalData.WebServiceDTO,
         };
 
-        protected override ActivityTemplateDTO MyTemplate { get; }
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
         private const string SelectedGroupCrateLabel = "Selected Group";
 
@@ -112,10 +112,10 @@ namespace terminalStatX.Activities
 
         public override async Task FollowUp()
         {
-            if (!string.IsNullOrEmpty(ActivityUI.ExistingGroupStats.Value))
+            if (!string.IsNullOrEmpty(ActivityUI.ExistingGroupsList.Value))
             {
-                var previousGroup = SelectedGroupCrateLabel;
-                if (string.IsNullOrEmpty(previousGroup) || !string.Equals(previousGroup, ActivityUI.ExistingGroupStats.Value))
+                var previousGroup = SelectedGroup;
+                if (string.IsNullOrEmpty(previousGroup) || !string.Equals(previousGroup, ActivityUI.ExistingGroupsList.Value))
                 {
                     ActivityUI.ExistingGroupStats.ListItems = (await _statXIntegration.GetStatsForGroup(GetStatXAuthToken(), ActivityUI.ExistingGroupsList.Value))
                         .Select(x => new ListItem { Key = x.Title, Value = x.Id }).ToList();
@@ -127,7 +127,7 @@ namespace terminalStatX.Activities
                     }
 
                 }
-                SelectedGroup = ActivityUI.ExistingGroupStats.Value;
+                SelectedGroup = ActivityUI.ExistingGroupsList.Value;
             }
             else
             {
@@ -138,10 +138,24 @@ namespace terminalStatX.Activities
             }
         }
 
-        public override Task Run()
+        public override async Task Run()
         {
-            throw new NotImplementedException();
-        }
+            var statValue = ActivityUI.StatValue.GetValue(Payload);
 
+            if (string.IsNullOrEmpty(ActivityUI.ExistingGroupsList.Value))
+            {
+                throw new ActivityExecutionException("Update Stat activity run failed!. Activity doesn't have selected Group.");
+            }
+
+            if (string.IsNullOrEmpty(ActivityUI.ExistingGroupStats.Value))
+            {
+                throw new ActivityExecutionException("Update Stat activity run failed!. Activity doesn't have selected Stat.");
+            }
+
+            await _statXIntegration.UpdateStatValue(GetStatXAuthToken(), ActivityUI.ExistingGroupsList.Value,
+                ActivityUI.ExistingGroupStats.Value, statValue);
+            
+            Success();
+        }
     }
 }

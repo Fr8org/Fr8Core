@@ -1,6 +1,6 @@
 ﻿namespace terminalStatX.DataTransferObjects
 {
-    public class StatDTO
+    public class StatDTO 
     {
         public string Id { get; set; }
         public string Title { get; set; }

@@ -9,7 +9,7 @@ namespace terminalStatX
         public static WebServiceDTO WebServiceDTO = new WebServiceDTO
         {
             Name = "StatX",
-            IconPath = "/Content/icons/web_services/statx-logo.png"
+            IconPath = "/Content/icons/web_services/statx-icon-64x64.png"
         };
 
         public static TerminalDTO TerminalDTO = new TerminalDTO

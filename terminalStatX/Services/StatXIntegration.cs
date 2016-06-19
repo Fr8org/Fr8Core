@@ -43,28 +43,34 @@ namespace terminalStatX.Services
                 uri,statXAuthLoginDTO);
 
             var jObject = JObject.Parse(response);
-            
-            //check for errors
+
+            var statXAuthResponse= new StatXAuthResponseDTO();
+
             JToken errorsToken;
             if (jObject.TryGetValue("errors", out errorsToken))
             {
-                if (errorsToken is JArray)
+                if ((errorsToken is JArray))
                 {
-                    var firstError = (JArray) errorsToken.First;
-                    return new StatXAuthResponseDTO()
+                    var firstError = (JArray)errorsToken.First;
+
+                    if (!string.IsNullOrEmpty(firstError["message"]?.ToString()))
                     {
-                        Error = firstError["message"].ToString()
-                    };
-                }                    
+                        statXAuthResponse.Error = firstError["message"].ToString();
+                    }
+                }
             }
 
             //return response
-            return new StatXAuthResponseDTO()
+            statXAuthResponse.PhoneNumber = jObject["phoneNumber"]?.ToString();
+            statXAuthResponse.ClientName = jObject["clientName"]?.ToString();
+            statXAuthResponse.ClientId = jObject["clientId"]?.ToString();
+
+            if (string.IsNullOrEmpty(statXAuthResponse.ClientId))
             {
-                PhoneNumber = jObject["phoneNumber"].ToString(),
-                ClientName = jObject["clientName"].ToString(),
-                ClientId = jObject["clientId"].ToString()
-            };
+                throw new ApplicationException("StatX internal login failed. Please try again!");
+            } 
+
+            return statXAuthResponse;
         }
 
         public async Task<StatXAuthDTO> VerifyCodeAndGetAuthToken(string clientId, string phoneNumber, string verificationCode)
@@ -82,19 +88,7 @@ namespace terminalStatX.Services
 
             var jObject = JObject.Parse(response);
 
-            //check for errors
-            //JToken errorsToken;
-            //if (jObject.TryGetValue("errors", out errorsToken))
-            //{
-            //    if (errorsToken is JArray)
-            //    {
-            //        var firstError = (JArray)errorsToken.First;
-            //        return new StatXAuthResponseDTO()
-            //        {
-            //            Error = firstError["message"].ToString()
-            //        };
-            //    }
-            //}
+            CheckForExistingErrors(jObject);
 
             //return response
             return new StatXAuthDTO()
@@ -108,27 +102,11 @@ namespace terminalStatX.Services
         {
             var uri = new Uri(StatXBaseApiUrl + "/groups");
 
-            var headers = new Dictionary<string, string>();
-            headers.Add("X-API-KEY", statXAuthDTO.ApiKey);
-            headers.Add("X-AUTH-TOKEN", statXAuthDTO.AuthToken);
-
-            var response = await _restfulServiceClient.GetAsync(uri, null, headers);
+            var response = await _restfulServiceClient.GetAsync(uri, null, GetStatxAPIHeaders(statXAuthDTO));
 
             var jObject = JObject.Parse(response);
 
-            //check for errors
-            //JToken errorsToken;
-            //if (jObject.TryGetValue("errors", out errorsToken))
-            //{
-            //    if (errorsToken is JArray)
-            //    {
-            //        var firstError = (JArray)errorsToken.First;
-            //        return new StatXAuthResponseDTO()
-            //        {
-            //            Error = firstError["message"].ToString()
-            //        };
-            //    }
-            //}
+            CheckForExistingErrors(jObject);
 
             var resultSet = new List<StatXGroupDTO>();
 
@@ -137,12 +115,15 @@ namespace terminalStatX.Services
             {
                 if (dataToken is JArray)
                 {
-                    resultSet.AddRange(dataToken.Select(item => new StatXGroupDTO()
+                    foreach (var item in dataToken)
                     {
-                        Id = item["id"].ToString(),
-                        Name = item["name"].ToString(),
-                        Description = item["description"].ToString()
-                    }));
+                        resultSet.Add(new StatXGroupDTO()
+                        {
+                            Id = item["id"]?.ToString(),
+                            Name = item["name"]?.ToString(),
+                            Description = item["description"]?.ToString()
+                        });
+                    }
                 }
             }
 
@@ -151,35 +132,14 @@ namespace terminalStatX.Services
 
         public async Task<List<StatDTO>> GetStatsForGroup(StatXAuthDTO statXAuthDTO, string groupId)
         {
-            var headers = new Dictionary<string, string>
-            {
-                {"X-API-KEY", statXAuthDTO.ApiKey},
-                {"X-AUTH-TOKEN", statXAuthDTO.AuthToken}
-            };
-
-            var uri = new Uri(StatXBaseApiUrl + "/groups/" + groupId);
-            var response = await _restfulServiceClient.GetAsync(
-                uri, null, headers);
+            var uri = new Uri($"{StatXBaseApiUrl}/groups/{groupId}/stats");
+            var response = await _restfulServiceClient.GetAsync(uri, null, GetStatxAPIHeaders(statXAuthDTO));
 
             var jObject = JObject.Parse(response);
 
-            //check for errors
-            //JToken errorsToken;
-            //if (jObject.TryGetValue("errors", out errorsToken))
-            //{
-            //    if (errorsToken is JArray)
-            //    {
-            //        var firstError = (JArray)errorsToken.First;
-            //        return new StatXAuthResponseDTO()
-            //        {
-            //            Error = firstError["message"].ToString()
-            //        };
-            //    }
-            //}
-
-            //return response
-
             var resultSet = new List<StatDTO>();
+
+            CheckForExistingErrors(jObject);
 
             JToken dataToken;
             if (jObject.TryGetValue("data", out dataToken))
@@ -188,15 +148,52 @@ namespace terminalStatX.Services
                 {
                     resultSet.AddRange(dataToken.Select(item => new StatDTO()
                     {
-                        Id = item["id"].ToString(),
-                        Title = item["title"].ToString(),
-                        VisualType = item["visualType"].ToString(),
-                        Value = item["value"].ToString()
+                        Id = item["id"]?.ToString(),
+                        Title = item["title"]?.ToString(),
+                        VisualType = item["visualType"]?.ToString(),
+                        Value = item["value"]?.ToString()
                     }));
                 }
             }
 
             return resultSet;
+        }
+
+        public async Task UpdateStatValue(StatXAuthDTO statXAuthDTO, string groupId, string statId, string value)
+        {
+            var uri = new Uri($"{StatXBaseApiUrl}/groups/{groupId}/stats/{statId}");
+            var response = await _restfulServiceClient.PutAsync(uri, 
+                JsonConvert.SerializeObject(new { visualType = "NUMBER",  value = value, lastUpdatedDateTime = DateTime.UtcNow.ToString()}), null, GetStatxAPIHeaders(statXAuthDTO));
+
+            var jObject = JObject.Parse(response);
+
+            CheckForExistingErrors(jObject);
+        }
+        
+        private Dictionary<string, string> GetStatxAPIHeaders(StatXAuthDTO statXAuthDTO)
+        {
+            var headers = new Dictionary<string, string>
+            {
+                {"X-API-KEY", statXAuthDTO.ApiKey},
+                {"X-AUTH-TOKEN", statXAuthDTO.AuthToken}
+            };
+
+            return headers;
+        }
+
+        private void CheckForExistingErrors(JObject jObject)
+        {
+            JToken errorsToken;
+            if (!jObject.TryGetValue("errors", out errorsToken)) return;
+
+            if (!(errorsToken is JArray)) return;
+
+            var firstError = (JArray)errorsToken.First;
+
+            if (!string.IsNullOrEmpty(firstError["message"]?.ToString()))
+            {
+                throw new ApplicationException(firstError["message"].ToString());
+            }
         }
     }
 }

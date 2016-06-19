@@ -1,8 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using System.CodeDom;
+using Newtonsoft.Json;
 
 namespace terminalStatX.DataTransferObjects
 {
-    public class StatXAuthDTO
+    public class StatXAuthDTO 
     {
         [JsonProperty("apiKey")]
         public string ApiKey { get; set; }

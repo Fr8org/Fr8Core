@@ -750,7 +750,7 @@ namespace Hub.Services
                 };
             }
 
-            var curTerminal = _terminal.GetByKey(terminal.Id);
+            var curTerminal = _terminalService.GetByKey(terminal.Id);
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
