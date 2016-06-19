@@ -183,7 +183,7 @@ namespace terminalStatX.Services
             return resultSet;
         }
 
-        public async Task UpdateStatValue(StatXAuthDTO statXAuthDTO, string groupId, string statId, string value)
+        public async Task UpdateStatValue(StatXAuthDTO statXAuthDTO, string groupId, string statId, Dictionary<string, string> statValues)
         {
             var uri = new Uri($"{StatXBaseApiUrl}/groups/{groupId}/stats/{statId}");
 
@@ -198,10 +198,10 @@ namespace terminalStatX.Services
                 {
                     var updateStatContent = new UpdateStatWithItemsDTO() { LastUpdatedDateTime = DateTime.UtcNow };
 
-                    updateStatContent.Items.Add(new StatItemValueDTO()
+                    updateStatContent.Items.AddRange(statValues.Select(x=>new StatItemValueDTO()
                     {
-                        Value = value
-                    });
+                        Value = x.Value
+                    }).ToList());
 
                     response = await _restfulServiceClient.PutAsync<UpdateStatWithItemsDTO>(uri, updateStatContent, null, GetStatxAPIHeaders(statXAuthDTO));
                 }
@@ -210,7 +210,7 @@ namespace terminalStatX.Services
                     var updateStatContent = new UpdateStatDTO
                     {
                         LastUpdatedDateTime = DateTime.UtcNow,
-                        Value = value
+                        Value = statValues.First().Value
                     };
 
                     response = await _restfulServiceClient.PutAsync<UpdateStatDTO>(uri, updateStatContent, null, GetStatxAPIHeaders(statXAuthDTO));

@@ -10,6 +10,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Infrastructure;
 using Newtonsoft.Json;
 using terminalStatX.DataTransferObjects;
 using terminalStatX.Interfaces;
@@ -58,7 +59,8 @@ namespace terminalStatX.Activities
 
             public DropDownList ExistingGroupStats { get; set; }
 
-            public TextSource StatValue { get; set; }
+            [DynamicControls]
+            public List<TextSource> StatValues { get; set; }
 
             public ActivityUi()
             {
@@ -76,19 +78,14 @@ namespace terminalStatX.Activities
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
 
-                StatValue = new TextSource("Stat Value", string.Empty, nameof(StatValue))
-                {
-                    Source = new FieldSourceDTO
-                    {
-                        Label = string.Empty,
-                        ManifestType = CrateManifestTypes.StandardDesignTimeFields,
-                        FilterByTag = string.Empty,
-                        RequestUpstream = true
-                    }
-                };
-                StatValue.Events.Add(new ControlEvent("onChange", "requestConfig"));
+                StatValues = new List<TextSource>();
 
-                Controls = new List<ControlDefinitionDTO>() {ExistingGroupsList, ExistingGroupStats, StatValue };
+                Controls = new List<ControlDefinitionDTO>() {ExistingGroupsList, ExistingGroupStats};
+            }
+
+            public void ClearDynamicFields()
+            {
+                StatValues?.Clear();
             }
         }
 
@@ -117,15 +114,28 @@ namespace terminalStatX.Activities
                 var previousGroup = SelectedGroup;
                 if (string.IsNullOrEmpty(previousGroup) || !string.Equals(previousGroup, ActivityUI.ExistingGroupsList.Value))
                 {
-                    ActivityUI.ExistingGroupStats.ListItems = (await _statXIntegration.GetStatsForGroup(GetStatXAuthToken(), ActivityUI.ExistingGroupsList.Value))
+                    var stats = await _statXIntegration.GetStatsForGroup(GetStatXAuthToken(), ActivityUI.ExistingGroupsList.Value);
+                    
+                    ActivityUI.ExistingGroupStats.ListItems = stats
                         .Select(x => new ListItem { Key = x.Title, Value = x.Id }).ToList();
 
-                    var firstStat = ActivityUI.ExistingGroupStats.ListItems.FirstOrDefault();
+                    var firstStat = stats.FirstOrDefault();
                     if (firstStat != null)
                     {
-                        ActivityUI.ExistingGroupStats.SelectByValue(firstStat.Value);
-                    }
+                        ActivityUI.ExistingGroupStats.SelectByValue(firstStat.Id);
 
+                        if (firstStat.StatItems.Any())
+                        {
+                            foreach (var item in firstStat.StatItems)
+                            {
+                                ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(item.Name, item.Name, requestUpstream: true));
+                            }
+                        }
+                        else
+                        {
+                            ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(firstStat.Title, firstStat.Title, requestUpstream: true));
+                        }
+                    }
                 }
                 SelectedGroup = ActivityUI.ExistingGroupsList.Value;
             }
@@ -136,12 +146,17 @@ namespace terminalStatX.Activities
                 ActivityUI.ExistingGroupStats.Value = string.Empty;
                 SelectedGroup = string.Empty;
             }
+
+            if (string.IsNullOrEmpty(ActivityUI.ExistingGroupStats.Value))
+            {
+                ActivityUI.ClearDynamicFields();
+            }
         }
 
         public override async Task Run()
         {
-            var statValue = ActivityUI.StatValue.GetValue(Payload);
-
+            var statValues = ActivityUI.StatValues.Select(x => new { x.Name, Value = x.GetValue(Payload) }).ToDictionary(x => x.Name, x => x.Value);
+            
             if (string.IsNullOrEmpty(ActivityUI.ExistingGroupsList.Value))
             {
                 throw new ActivityExecutionException("Update Stat activity run failed!. Activity doesn't have selected Group.");
@@ -153,7 +168,7 @@ namespace terminalStatX.Activities
             }
 
             await _statXIntegration.UpdateStatValue(GetStatXAuthToken(), ActivityUI.ExistingGroupsList.Value,
-                ActivityUI.ExistingGroupStats.Value, statValue);
+                ActivityUI.ExistingGroupStats.Value, statValues);
             
             Success();
         }
