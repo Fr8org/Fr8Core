@@ -4,7 +4,7 @@
 
 ####Required software:
 
-1. [Visual Studio 2015](https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx) is required (because the SDK uses C# 6.0). The Community Edition is known to work. 
+1. Visual Studio 2013 or later. 2015 is recommended.
 2. [Node.js](https://nodejs.org/en/)
 4. [TypeScript 1.5](http://blogs.msdn.com/b/typescript/archive/2015/07/20/announcing-typescript-1-5.aspx) (NOTE THAT 1.6 and later does NOT currently work!). Visual Studio 2015 will prompt you to upgrade TypeScript; close the dialog without updating TypeScript.
 5. .NET 4.5 is recommended.
