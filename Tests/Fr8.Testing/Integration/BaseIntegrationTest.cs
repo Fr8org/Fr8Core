@@ -152,10 +152,16 @@ namespace Fr8.Testing.Integration
             Assert.AreEqual("No AuthToken provided.", errorMessage.Message);
         }
 
-        private async Task<Dictionary<string, string>> GetHMACHeader<T>(Uri requestUri, string userId, T content)
+        public async Task<Dictionary<string, string>> GetHMACHeader<T>(Uri requestUri, string userId, T content)
         {
             return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId, content);
         }
+
+        public async Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri, string userId)
+        {
+            return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId);
+        }
+
         public async Task<TResponse> HttpPostAsync<TRequest, TResponse>(string url, TRequest request)
         {
             var uri = new Uri(url);
