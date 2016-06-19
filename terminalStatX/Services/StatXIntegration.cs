@@ -62,7 +62,7 @@ namespace terminalStatX.Services
 
             //return response
             statXAuthResponse.PhoneNumber = jObject["phoneNumber"]?.ToString();
-            statXAuthResponse.ClientName = jObject["clientName"]?.ToString();
+            statXAuthResponse.ClientName = "Fr8";
             statXAuthResponse.ClientId = jObject["clientId"]?.ToString();
 
             if (string.IsNullOrEmpty(statXAuthResponse.ClientId))
@@ -146,13 +146,35 @@ namespace terminalStatX.Services
             {
                 if (dataToken is JArray)
                 {
-                    resultSet.AddRange(dataToken.Select(item => new StatDTO()
+                    foreach (var item in dataToken)
                     {
-                        Id = item["id"]?.ToString(),
-                        Title = item["title"]?.ToString(),
-                        VisualType = item["visualType"]?.ToString(),
-                        Value = item["value"]?.ToString()
-                    }));
+                        var stat = new StatDTO()
+                        {
+                            Id = item["id"]?.ToString(),
+                            Title = item["title"]?.ToString(),
+                            VisualType = item["visualType"]?.ToString(),
+                            Value = item["value"]?.ToString(),
+                            LastUpdatedDateTime = item["lastUpdatedDateTime"]?.ToString()
+                        };
+
+                        //check for items 
+                        JToken itemsToken;
+
+                        var items = JObject.Parse(item.ToString());
+                        if (items.TryGetValue("items", out itemsToken))
+                        {
+                            foreach (var valueItem in itemsToken)
+                            {
+                                stat.StatItems.Add(new StatItemDTO()
+                                {
+                                    Name = valueItem["name"]?.ToString(),
+                                    Value = valueItem["value"]?.ToString()
+                                });
+                            }
+                        }
+
+                        resultSet.Add(stat);
+                    }
                 }
             }
 
@@ -162,12 +184,37 @@ namespace terminalStatX.Services
         public async Task UpdateStatValue(StatXAuthDTO statXAuthDTO, string groupId, string statId, string value)
         {
             var uri = new Uri($"{StatXBaseApiUrl}/groups/{groupId}/stats/{statId}");
-            var response = await _restfulServiceClient.PutAsync(uri, 
-                JsonConvert.SerializeObject(new { visualType = "NUMBER",  value = value, lastUpdatedDateTime = DateTime.UtcNow.ToString()}), null, GetStatxAPIHeaders(statXAuthDTO));
 
-            var jObject = JObject.Parse(response);
+            //get the stat and look for value
+            var stats = await GetStatsForGroup(statXAuthDTO, groupId);
 
-            CheckForExistingErrors(jObject);
+            var currentStat = stats.FirstOrDefault(x => x.Id == statId);
+            if (currentStat != null)
+            {
+                string response;
+                if (string.IsNullOrEmpty(currentStat.Value) && currentStat.StatItems.Any())
+                {
+                    response = await _restfulServiceClient.PutAsync(uri,
+                       JsonConvert.SerializeObject(
+                           new
+                           {
+                               lastUpdatedDateTime = currentStat.LastUpdatedDateTime,
+                               items = new object[]
+                               {
+                                   value = value
+                               }
+                           }), null, GetStatxAPIHeaders(statXAuthDTO));
+                }
+                else
+                {
+                    response = await _restfulServiceClient.PutAsync(uri,
+                         JsonConvert.SerializeObject(new { lastUpdatedDateTime = currentStat.LastUpdatedDateTime, value = value }), null, GetStatxAPIHeaders(statXAuthDTO));
+                }
+
+                var jObject = JObject.Parse(response);
+
+                CheckForExistingErrors(jObject);
+            }
         }
         
         private Dictionary<string, string> GetStatxAPIHeaders(StatXAuthDTO statXAuthDTO)
