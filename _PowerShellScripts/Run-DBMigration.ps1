@@ -9,7 +9,7 @@ param(
 
 $RootDir = Split-Path -parent $PSCommandPath
 
-$runMigrationCmd = "$migrationToolPath Data.dll /startupDirectory=`"$buildResultDirectory\bin`"  /startupConfigurationFile=`"$buildResultDirectory\web.config`"";
+$runMigrationCmd = "`"$RootDir\..\$migrationToolPath`" Data.dll /startupDirectory=`"$RootDir\..\$buildResultDirectory\bin`"  /startupConfigurationFile=`"$RootDir\..\$buildResultDirectory\web.config`"";
 
 Write-Host $runMigrationCmd
 
