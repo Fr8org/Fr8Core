@@ -504,6 +504,7 @@
     <Content Include="Content\css\shared\navbar.css" />
     <Content Include="Content\icons\web_services\Box-logo_64x64.png" />
     <Content Include="Content\icons\web_services\fr8-demo-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\statX-icon-64x64.png" />
     <Content Include="Content\img\background-7.png" />
     <Content Include="Content\img\background-cta-3.jpg" />
     <Content Include="Content\img\background-cta-3.png" />
@@ -947,6 +948,7 @@
     <Content Include="Views\AngularTemplate\ActivityLabelModal.cshtml" />
     <Content Include="Views\AngularTemplate\AdvisoryMessagesPopup.cshtml" />
     <Content Include="Config\Settings.config" />
+    <Content Include="Views\AngularTemplate\PhoneNumberAuthentication.cshtml" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="_PowerShellScripts\HM-job-run.cmd" />
@@ -990,6 +992,7 @@
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\OrganizationController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\PhoneNumberAuthenticationController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\PlanUploadModalController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\PlanUploadController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionDocumentationController.ts" />
