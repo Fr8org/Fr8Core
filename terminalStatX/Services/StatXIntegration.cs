@@ -6,6 +6,7 @@ using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PhoneNumbers;
 using terminalStatX.DataTransferObjects;
 using terminalStatX.Interfaces;
 
@@ -32,6 +33,7 @@ namespace terminalStatX.Services
         /// <returns></returns>
         public async Task<StatXAuthResponseDTO> Login(string clientName, string phoneNumber)
         {
+            phoneNumber = GeneralisePhoneNumber(phoneNumber);
             var statXAuthLoginDTO = new StatXAuthLoginDTO()
             {
                 PhoneNumber = phoneNumber,
@@ -77,7 +79,7 @@ namespace terminalStatX.Services
         {
             var statXAutVerifyDTO = new StatXAuthVerifyDTO()
             {
-                PhoneNumber = phoneNumber,
+                PhoneNumber = GeneralisePhoneNumber(phoneNumber),
                 ClientId = clientId,
                 VerificationCode = verificationCode
             };
@@ -244,6 +246,15 @@ namespace terminalStatX.Services
             {
                 throw new ApplicationException(firstError["message"].ToString());
             }
+        }
+
+        private string GeneralisePhoneNumber(string phoneNumber)
+        {
+            PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
+            phoneNumber = new string(phoneNumber.Where(s => char.IsDigit(s) || s == '+' || (phoneUtil.IsAlphaNumber(phoneNumber) && char.IsLetter(s))).ToArray());
+            if (phoneNumber.Length == 10 && !phoneNumber.Contains("+"))
+                phoneNumber = "+1" + phoneNumber; //we assume that default region is USA
+            return phoneNumber;
         }
     }
 }
