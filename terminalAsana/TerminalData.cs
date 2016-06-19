@@ -2,14 +2,14 @@
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities.Configuration;
 
-namespace terminalDemo
+namespace terminalAsana
 {
     public static class TerminalData
     {
         public static WebServiceDTO WebServiceDTO = new WebServiceDTO
         {
-            Name = "Asana Activities",
-            IconPath = "/Content/icons/web_services/fr8-demo-icon-64x64.png"
+            Name = "Asana",
+            IconPath = "http://d1gwm4cf8hecp4.cloudfront.net/images/favicons/favicon.ico"
         };
 
         public static TerminalDTO TerminalDTO = new TerminalDTO
@@ -17,7 +17,7 @@ namespace terminalDemo
             Endpoint = CloudConfigurationManager.GetSetting("terminalAsana.TerminalEndpoint"),
             TerminalStatus = TerminalStatus.Active,
             Name = "terminalAsana",
-            Label = "Asana terminal",
+            Label = "terminalAsana",
             Version = "1"
         };
     }

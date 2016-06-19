@@ -1,13 +1,13 @@
 ﻿using System.Web.Http;
 using Fr8.TerminalBase.BaseClasses;
 
-namespace terminalDemo
+namespace terminalAsana
 {
     public static class RoutesConfig
     {
         public static void Register(HttpConfiguration config)
         {
-            BaseTerminalWebApiConfig.Register("Fr8Asana", config);
+            BaseTerminalWebApiConfig.Register("terminalAsana", config);
         }
     }
 }

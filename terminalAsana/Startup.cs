@@ -4,13 +4,12 @@ using System.Web.Http.Dispatcher;
 using Fr8.TerminalBase.BaseClasses;
 using Microsoft.Owin;
 using Owin;
-using terminalDemo;
-using terminalDemo.Activities;
-using terminalDemo.Controllers;
+using terminalAsana.Controllers;
+using terminalAsana;
 
 [assembly: OwinStartup(typeof(Startup))]
 
-namespace terminalDemo
+namespace terminalAsana
 {
     public class Startup : BaseConfiguration
     {
@@ -38,8 +37,7 @@ namespace terminalDemo
 
         protected override void RegisterActivities()
         {
-            ActivityStore.RegisterActivity<DoMath_v1>(DoMath_v1.ActivityTemplateDTO);
-            ActivityStore.RegisterActivity<MathMachine_v1>(MathMachine_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Activities.Post_Comment_v1>(Activities.Post_Comment_v1.ActivityTemplateDTO);
         }
 
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
