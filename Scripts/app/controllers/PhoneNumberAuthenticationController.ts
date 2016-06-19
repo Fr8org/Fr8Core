@@ -82,6 +82,7 @@
                 $http.post('/api/authentication/VerifyPhoneNumberCode', data)
                     .then(function (res: any) {
 
+                        $scope.authError = "";
                         $scope.formData.message = '';
 
                         if (res.data.error) {

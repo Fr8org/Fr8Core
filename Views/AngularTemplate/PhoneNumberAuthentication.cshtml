@@ -16,9 +16,6 @@
             <label>Phone-number: </label>
             <input type="text" class="form-control" ng-model="formData.phoneNumber" name="phoneNumber" required/>
         </div>
-        <p ng-show="formData.message">
-            {{formData.message}}
-        </p>
         <button type="submit" class="btn btn-primary">Send Verification Code</button>
     </form>
     <form ng-if="inVerifyMode" name="form" novalidate ng-submit="verifyCodeAndAuthenticate()">
@@ -34,7 +31,9 @@
             <label>Enter verification code send to your mobile phone: </label>
             <input type="text" class="form-control" ng-model="formData.verificationCode" name="verificationCode" required />
         </div>
-
+        <p ng-show="formData.message">
+            {{formData.message}}
+        </p>
         <button type="submit" class="btn btn-primary">Verify Code and Authenticate</button>
     </form>
 </div>
