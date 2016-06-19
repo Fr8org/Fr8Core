@@ -12,7 +12,7 @@
 [Implementing oAuth2 authentication](dotNet/TerminalDeveloping-Authentication.md) and [Connecting your Terminal to a WebService ](dotNet/TerminalDeveloping-AddingAWebService.md)
 
 ##### Chapter 4:
-[ wDeployment](dotNet/TerminalDeveloping-DeployingToAzure.md)
+[Deployment](dotNet/TerminalDeveloping-DeployingToAzure.md)
 
 
 
