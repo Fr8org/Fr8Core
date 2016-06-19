@@ -26,3 +26,5 @@ $runMigrationCmd = "$RootDir\..\$migrationToolPath Data.dll /startupDirectory=`"
 Write-Host $runMigrationCmd
 
 Invoke-Expression $runMigrationCmd
+
+Remove-Item $RootDir\..\_Web.config
