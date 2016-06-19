@@ -16,7 +16,7 @@ namespace Data.Infrastructure
             }
             _container = container;
         }
-        public IUnitOfWork GetNewUnitOfWork()
+        public IUnitOfWork Create()
         {
             return _container.GetInstance<IUnitOfWork>();
         }
