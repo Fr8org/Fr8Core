@@ -2,6 +2,9 @@ param(
 	[Parameter(Mandatory = $true)]
 	[string]$migrationToolPath,
 	
+	[Parameter(Mandatory = $true)]
+	[string]$newConnectionString,
+	
 	[Parameter(Mandatory = $false)]
 	[string]$buildResultDirectory
 )
@@ -9,7 +12,16 @@ param(
 
 $RootDir = Split-Path -parent $PSCommandPath
 
-$runMigrationCmd = "$RootDir\..\$migrationToolPath Data.dll /startupDirectory=`"$RootDir\..\$buildResultDirectory\bin`"  /startupConfigurationFile=`"$RootDir\..\$buildResultDirectory\web.config`"";
+
+$cfg = [xml](gc $RootDir\..\web.config)
+
+$con= $cfg.configuration.connectionStrings.add|?{$_.name -eq "DockyardDB"};
+# Replace the content
+$con.connectionString = $newConnectionString
+
+$cfg.Save("$RootDir\..\_Web.config");
+
+$runMigrationCmd = "$RootDir\..\$migrationToolPath Data.dll /startupDirectory=`"$RootDir\..\$buildResultDirectory\bin`"  /startupConfigurationFile=`"$RootDir\..\$buildResultDirectory\_web.config`"";
 
 Write-Host $runMigrationCmd
 
