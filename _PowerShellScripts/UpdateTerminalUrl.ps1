@@ -17,7 +17,11 @@ IF (EXISTS (SELECT *
                  WHERE TABLE_SCHEMA = 'dbo' 
                  AND  TABLE_NAME = 'TerminalRegistration'))
 BEGIN
-    UPDATE TerminalRegistration SET [Endpoint] = '$newHostname" + ":' + RIGHT([Endpoint], 5)
+	UPDATE TerminalRegistration SET [Endpoint] = 
+			REPLACE([Endpoint], 'localhost' COLLATE SQL_Latin1_General_Cp1_CS_AS, '$newHostname') 
+			where 
+			[Endpoint] like 'localhost:%'
+			or [Endpoint] like '%//localhost:%'
 END";
 
 
