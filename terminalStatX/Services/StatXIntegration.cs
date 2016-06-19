@@ -60,7 +60,7 @@ namespace terminalStatX.Services
                 }
             }
 
-            //return response
+            //return response   
             statXAuthResponse.PhoneNumber = jObject["phoneNumber"]?.ToString();
             statXAuthResponse.ClientName = clientName;
             statXAuthResponse.ClientId = jObject["clientId"]?.ToString();
