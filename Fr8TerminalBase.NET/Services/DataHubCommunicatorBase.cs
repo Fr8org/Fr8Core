@@ -317,7 +317,7 @@ namespace Fr8.TerminalBase.Services
             throw new NotImplementedException();
         }
 
-        public Task ScheduleEvent(string externalAccountId, string minutes)
+        public Task ScheduleEvent(string externalAccountId, string minutes, bool trigger_imeddiately = false)
         {
             throw new NotImplementedException();
         }
