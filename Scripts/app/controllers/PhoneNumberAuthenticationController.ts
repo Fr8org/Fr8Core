@@ -48,6 +48,7 @@
                             $scope.authErrorText = res.data.error;
                         }
                         else {
+                            $scope.authError = false;
                             $scope.authErrorText = null;
                             $scope.formData.clientId = res.data.clientId;
                             $scope.formData.clientName = res.data.clientName;
