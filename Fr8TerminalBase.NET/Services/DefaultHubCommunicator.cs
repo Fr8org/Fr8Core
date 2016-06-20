@@ -17,6 +17,7 @@ using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Fr8.Infrastructure.Utilities.Configuration;
 
 namespace Fr8.TerminalBase.Services
 {
