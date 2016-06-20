@@ -65,8 +65,11 @@ namespace terminalIntegrationTests.Integration
             var plans = JsonConvert.DeserializeObject<IEnumerable<PlanDTO>>(response);
             var plan = plans.FirstOrDefault().Plan.SubPlans.FirstOrDefault();
 
-            var deleteActivityUrl = GetHubApiBaseUrl() + "activities/delete/"+ plan.Activities.Where(a => a.Ordering == 8).FirstOrDefault().Id;
-            await RestfulServiceClient.DeleteAsync(new Uri(deleteActivityUrl), null, await GetHMACHeader(new Uri(deleteActivityUrl), userId));
+            if(plan.Activities.Where(a => a.Ordering == 8).FirstOrDefault() != null)
+            {
+                var deleteActivityUrl = GetHubApiBaseUrl() + "activities/delete/" + plan.Activities.Where(a => a.Ordering == 8).FirstOrDefault().Id;
+                await RestfulServiceClient.DeleteAsync(new Uri(deleteActivityUrl), null, await GetHMACHeader(new Uri(deleteActivityUrl), userId));
+            }
 
             await ConfigureJira(plan.Activities.Where(a => a.Ordering == 5).FirstOrDefault().Id, userId);
             await ConfigureMessage(plan.Activities.Where(a => a.Ordering == 6).FirstOrDefault().Id, userId, guidTestId.ToString());
