@@ -19,11 +19,7 @@ param(
 Write-Host "Update terminal URLs to $newHostname"
 
 $commandText = "UPDATE Terminals SET [Endpoint] = 
-((CASE when CHARINDEX ('//', [Endpoint]) = 0
-			THEN ''
-		 ELSE LEFT ([Endpoint], CHARINDEX ('//',[Endpoint])+1)
-            END) 
-		+ '$newHostname' +
+('$newHostname' +
 		(CASE when CHARINDEX (':', REVERSE ([Endpoint])) = 0
 		    then ''
 		else 
@@ -54,11 +50,7 @@ BEGIN
 	DELETE from TerminalRegistration where UserId is not null;
 	
     UPDATE TerminalRegistration SET [Endpoint] = 
-			((CASE when CHARINDEX ('//', [Endpoint]) = 0
-			THEN ''
-		 ELSE LEFT ([Endpoint], CHARINDEX ('//',[Endpoint])+1)
-            END) 
-		+ '$newHostname' +
+			('$newHostname' +
 		(CASE when CHARINDEX (':', REVERSE ([Endpoint])) = 0
 		    then ''
 		else 

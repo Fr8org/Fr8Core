@@ -18,11 +18,7 @@ IF (EXISTS (SELECT *
                  AND  TABLE_NAME = 'TerminalRegistration'))
 BEGIN
 	 UPDATE TerminalRegistration SET [Endpoint] = 
-			((CASE when CHARINDEX ('//', [Endpoint]) = 0
-			THEN ''
-		 ELSE LEFT ([Endpoint], CHARINDEX ('//',[Endpoint])+1)
-            END) 
-		+ '$newHostname' +
+			( '$newHostname' +
 		(CASE when CHARINDEX (':', REVERSE ([Endpoint])) = 0
 		    then ''
 		else 
