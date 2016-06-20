@@ -112,7 +112,11 @@ namespace Fr8.TerminalBase.BaseClasses
                 x.For<IPushNotificationService>().Use<PushNotificationService>().Singleton();
                 x.For<PlanService>().Use<PlanService>().Singleton();
             });
-            
+            _container.Configure(x =>
+            {
+                x.For<IHubCommunicator>().Use(hubCommunicatorFactoryExpression);
+                x.For<IPushNotificationService>().Use<PushNotificationService>().Singleton();
+            });
             request.RegisterForDispose(childContainer);
 
             return childContainer.GetInstance(controllerType) as IHttpController;
