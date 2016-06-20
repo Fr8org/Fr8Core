@@ -18,11 +18,17 @@ param(
 
 Write-Host "Update terminal URLs to $newHostname"
 
-$commandText = "UPDATE TerminalRegistration SET [Endpoint] = 
-			REPLACE([Endpoint], 'localhost' COLLATE SQL_Latin1_General_Cp1_CS_AS, '$newHostname') 
-			where 
-			[Endpoint] like 'localhost:%'
-			or [Endpoint] like '%//localhost:%'"
+$commandText = "UPDATE Terminals SET [Endpoint] = 
+((CASE when CHARINDEX ('//', [Endpoint]) = 0
+			THEN ''
+		 ELSE LEFT ([Endpoint], CHARINDEX ('//',[Endpoint])+1)
+            END) 
+		+ '$newHostname' +
+		(CASE when CHARINDEX (':', REVERSE ([Endpoint])) = 0
+		    then ''
+		else 
+			RIGHT ([Endpoint], CHARINDEX (':', REVERSE ([Endpoint])))
+		END))"
 Write-Host $commandText
 
 if ([System.String]::IsNullOrEmpty($overrideDbName) -ne $true) {
@@ -46,11 +52,18 @@ IF (EXISTS (SELECT *
                  AND  TABLE_NAME = 'TerminalRegistration'))
 BEGIN
 	DELETE from TerminalRegistration where UserId is not null;
+	
     UPDATE TerminalRegistration SET [Endpoint] = 
-			REPLACE([Endpoint], 'localhost' COLLATE SQL_Latin1_General_Cp1_CS_AS, '$newHostname') 
-			where 
-			[Endpoint] like 'localhost:%'
-			or [Endpoint] like '%//localhost:%'
+			((CASE when CHARINDEX ('//', [Endpoint]) = 0
+			THEN ''
+		 ELSE LEFT ([Endpoint], CHARINDEX ('//',[Endpoint])+1)
+            END) 
+		+ '$newHostname' +
+		(CASE when CHARINDEX (':', REVERSE ([Endpoint])) = 0
+		    then ''
+		else 
+			RIGHT ([Endpoint], CHARINDEX (':', REVERSE ([Endpoint])))
+		END))
 END";
 
 $command = new-object system.data.sqlclient.sqlcommand($commandText, $connection)

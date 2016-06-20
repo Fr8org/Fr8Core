@@ -17,11 +17,18 @@ IF (EXISTS (SELECT *
                  WHERE TABLE_SCHEMA = 'dbo' 
                  AND  TABLE_NAME = 'TerminalRegistration'))
 BEGIN
-	UPDATE TerminalRegistration SET [Endpoint] = 
-			REPLACE([Endpoint], 'localhost' COLLATE SQL_Latin1_General_Cp1_CS_AS, '$newHostname') 
-			where 
-			[Endpoint] like 'localhost:%'
-			or [Endpoint] like '%//localhost:%'
+	 UPDATE TerminalRegistration SET [Endpoint] = 
+			((CASE when CHARINDEX ('//', [Endpoint]) = 0
+			THEN ''
+		 ELSE LEFT ([Endpoint], CHARINDEX ('//',[Endpoint])+1)
+            END) 
+		+ '$newHostname' +
+		(CASE when CHARINDEX (':', REVERSE ([Endpoint])) = 0
+		    then ''
+		else 
+			RIGHT ([Endpoint], CHARINDEX (':', REVERSE ([Endpoint])))
+		END))
+		where UserId is null
 END";
 
 
