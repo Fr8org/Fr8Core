@@ -25,11 +25,11 @@ namespace terminalGoogle.Services
         private ActivityTemplateDTO monitorFormResponsesTmpl, buildMessageTmpl, saveJiraIssueTmpl, publishToSlackTmpl;
         private AuthenticationTokenTerminalDTO googleTokens, atlassianTokens, slackTokens;
 
-        public GoogleMTSFPlan(string userId, params string[] slackChannels)
+        public GoogleMTSFPlan(string userId,IHubCommunicator hubCommunicator, params string[] slackChannels)
         {
             _userId = userId;
-            _hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
-            _hubCommunicator.Configure("terminalGoogle", _userId);
+            _hubCommunicator = hubCommunicator;
+            _hubCommunicator.Authorize( _userId);
             _slackChannels = slackChannels;
 
         }

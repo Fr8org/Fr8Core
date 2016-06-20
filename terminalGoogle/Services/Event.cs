@@ -12,12 +12,13 @@ using Fr8.Infrastructure.Data.Manifests;
 using terminalGoogle.Interfaces;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using Fr8.TerminalBase.Interfaces;
 
 namespace terminalGoogle.Services
 {
     public class Event : IEvent
     {
-        public async Task<Crate> Process(string externalEventPayload)
+        public async Task<Crate> Process(IContainer container, string externalEventPayload)
         {
             if (string.IsNullOrEmpty(externalEventPayload))
             {
@@ -31,7 +32,8 @@ namespace terminalGoogle.Services
                 var curFr8UserId = jo["fr8_user_id"].Value<string>();
                 if (!string.IsNullOrEmpty(curFr8UserId))
                 {
-                    var plan = new GoogleMTSFPlan(curFr8UserId, "alexed","dev");
+                    var hub = container.GetInstance<IHubCommunicator>();
+                    var plan = new GoogleMTSFPlan(curFr8UserId,hub, "alexed","dev");
                     await plan.CreateAndActivateNewMTSFPlan();
                 }
             }

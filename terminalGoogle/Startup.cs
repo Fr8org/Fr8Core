@@ -27,6 +27,7 @@ namespace terminalGoogle
         public void Configuration(IAppBuilder app, bool selfHost)
         {
             ConfigureProject(selfHost, TerminalGoogleBootstrapper.ConfigureLive);
+            Container.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
             app.UseWebApi(_configuration);

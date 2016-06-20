@@ -51,7 +51,6 @@ namespace terminalIntegrationTests.Integration
 
             var guidTestId = Guid.NewGuid();
 
-            Console.ReadLine();
             var userId = AddTokens();
 
             var googleEventUrl = ConfigurationManager.AppSettings["GoogleFormEventWebServerUrl"];
@@ -132,8 +131,7 @@ namespace terminalIntegrationTests.Integration
                 ExternalAccountId = "fr8_atlassian_test@fr8.co",
                 CreateDate = DateTime.Now,
                 ExpiresAt = DateTime.Now.AddHours(1),
-                Id = Guid.NewGuid(),
-                TerminalID = 12
+                Id = Guid.NewGuid()
             };
 
             var tokenGDO = new AuthorizationTokenDO()
@@ -142,8 +140,7 @@ namespace terminalIntegrationTests.Integration
                 ExternalAccountId = "fr8test1@gmail.com",
                 CreateDate = DateTime.Now,
                 ExpiresAt = DateTime.Now.AddHours(1),
-                Id = Guid.NewGuid(),
-                TerminalID = 8
+                Id = Guid.NewGuid()
             };
 
             var tokenSDO = new AuthorizationTokenDO()
@@ -155,8 +152,7 @@ namespace terminalIntegrationTests.Integration
                 ExternalDomainName = "Fr8",
                 CreateDate = DateTime.Now,
                 ExpiresAt = DateTime.Now.AddHours(1),
-                Id = Guid.NewGuid(),
-                TerminalID = 4
+                Id = Guid.NewGuid()
             };
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -164,6 +160,9 @@ namespace terminalIntegrationTests.Integration
                 tokenADO.UserID = userId;
                 tokenGDO.UserID = userId;
                 tokenSDO.UserID = userId;
+                tokenADO.TerminalID = uow.TerminalRepository.FindOne(t => t.Name == "terminalAtlassian").Id;
+                tokenGDO.TerminalID = uow.TerminalRepository.FindOne(t => t.Name == "terminalGoogle").Id;
+                tokenSDO.TerminalID = uow.TerminalRepository.FindOne(t => t.Name == "terminalSlack").Id;
                 uow.AuthorizationTokenRepository.Add(tokenADO);
                 uow.SaveChanges();
                 uow.AuthorizationTokenRepository.Add(tokenGDO);
