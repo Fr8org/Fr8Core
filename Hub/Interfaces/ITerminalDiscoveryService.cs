@@ -6,5 +6,6 @@ namespace Hub.Interfaces
     {
         Task Discover();
         Task<bool> Discover(string terminalUrl);
+        Task RegisterTerminal(string endpoint);
     }
 }

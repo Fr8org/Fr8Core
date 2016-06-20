@@ -29,6 +29,11 @@ namespace Fr8.Infrastructure.Data.Manifests
         // <summary>
         /// When application shows default credentials window and displays Domain textbox
         /// </summary>
-        InternalModeWithDomain = 3
+        InternalModeWithDomain = 3,
+
+        /// <summary>
+        ///When application shows phone number window for sending verification code and code verification window
+        /// </summary>
+        PhoneNumber = 4
     }
 }
