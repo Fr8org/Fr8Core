@@ -384,10 +384,10 @@ namespace terminalAtlassian.Actions
 
             var issueInfo = ExtractIssueInfo();
             await _atlassianService.CreateIssue(issueInfo, AuthorizationToken);
-
+            
             var credentialsDTO = JsonConvert.DeserializeObject<CredentialsDTO>(AuthorizationToken.Token);
             var jiraUrl = $"{credentialsDTO.Domain}/browse/{issueInfo.Key}";
-            await _pushNotificationService.PushUserNotification(MyTemplate, "Success", "Jira issue created", $"Created new jira issue: {jiraUrl}");
+            await _pushNotificationService.PushUserNotification(MyTemplate, "Success", "Jira issue created", $"Created new jira issue: {jiraUrl}",CurrentUserId);
             Payload.Add(Crate<FieldDescriptionsCM>.FromContent(RuntimeCrateLabel, new FieldDescriptionsCM(
                                                                                       new FieldDTO(JiraIdField, issueInfo.Key),
                                                                                       new FieldDTO(JiraUrlField, jiraUrl))));
