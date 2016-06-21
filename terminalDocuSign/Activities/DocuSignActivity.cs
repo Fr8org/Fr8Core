@@ -6,11 +6,11 @@ using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSign.Activities
 {
-    public abstract class EnhancedDocuSignActivity<TActivityUi> : EnhancedTerminalActivity<TActivityUi> where TActivityUi : StandardConfigurationControlsCM
+    public abstract class DocuSignActivity<TActivityUi> : TerminalActivity<TActivityUi> where TActivityUi : StandardConfigurationControlsCM
     {
         protected readonly IDocuSignManager DocuSignManager;
       
-        protected EnhancedDocuSignActivity(ICrateManager crateManager, IDocuSignManager docuSignManager)
+        protected DocuSignActivity(ICrateManager crateManager, IDocuSignManager docuSignManager)
             : base(crateManager)
         {
             if (docuSignManager == null)

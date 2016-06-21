@@ -249,7 +249,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activities\BaseDocuSignActivity.cs" />
-    <Compile Include="Activities\EnhancedDocuSignActivity.cs" />
+    <Compile Include="Activities\DocuSignActivity.cs" />
     <Compile Include="Activities\Extract_Data_From_Envelopes_v1.cs" />
     <Compile Include="Activities\Generate_DocuSign_Report_v1.cs">
       <SubType>Code</SubType>

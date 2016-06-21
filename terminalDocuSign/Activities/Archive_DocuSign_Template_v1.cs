@@ -9,6 +9,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities;
 using Fr8.TerminalBase.Models;
+using Fr8.TerminalBase.Services;
 using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSign.Activities
@@ -73,9 +74,9 @@ namespace terminalDocuSign.Activities
                 return;
             }
 
-            var getDocusignTemplate = await GetActivityTemplate("terminalDocusign", "Get_DocuSign_Template");
-            var convertCratesTemplate = await GetActivityTemplate("terminalFr8Core", "Convert_Crates");
-            var storeFileTemplate = await GetActivityTemplate("terminalFr8Core", "Store_File");
+            var getDocusignTemplate = await HubCommunicator.GetActivityTemplate("terminalDocusign", "Get_DocuSign_Template");
+            var convertCratesTemplate = await HubCommunicator.GetActivityTemplate("terminalFr8Core", "Convert_Crates");
+            var storeFileTemplate = await HubCommunicator.GetActivityTemplate("terminalFr8Core", "Store_File");
 
             var getDocuSignTemplateActivity = await CreateGetDocuSignTemplateActivity(getDocusignTemplate, ActivityPayload);
             var convertCratesActivity = await CreateConvertCratesActivity(convertCratesTemplate, ActivityPayload);
@@ -160,24 +161,23 @@ namespace terminalDocuSign.Activities
         {
             if (curDocumentation.Contains("MainPage"))
             {
-                var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
+                var curSolutionPage = new DocumentationResponseDTO(SolutionName, SolutionVersion, TerminalName, SolutionBody);
                 return Task.FromResult(curSolutionPage);
             }
             if (curDocumentation.Contains("HelpMenu"))
             {
                 if (curDocumentation.Contains("ExplainArchiveTemplate"))
                 {
-                    return Task.FromResult(GenerateDocumentationResponse(@"This solution work with DocuSign templates"));
+                    return Task.FromResult(new DocumentationResponseDTO(@"This solution work with DocuSign templates"));
                 }
                 if (curDocumentation.Contains("ExplainService"))
                 {
-                    return Task.FromResult(GenerateDocumentationResponse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                    return Task.FromResult(new DocumentationResponseDTO(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
                 }
-                return Task.FromResult(GenerateErrorResponse("Unknown contentPath"));
+                return Task.FromResult(new DocumentationResponseDTO("Unknown contentPath"));
             }
             return
-                Task.FromResult(
-                    GenerateErrorResponse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
+                Task.FromResult(new DocumentationResponseDTO("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
 
         

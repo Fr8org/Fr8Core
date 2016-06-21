@@ -17,7 +17,7 @@ using terminalSlack.Services;
 namespace terminalSlack.Activities
 {
 
-    public class Publish_To_Slack_v1 : BaseTerminalActivity
+    public class Publish_To_Slack_v1 : ExplicitTerminalActivity
     {
         private readonly ISlackIntegration _slackIntegration;
 
@@ -57,11 +57,6 @@ namespace terminalSlack.Activities
         public override async Task Run()
         {
             string message;
-
-            if (IsAuthenticationRequired)
-            {
-                RaiseNeedsAuthenticationError();
-            }
 
             var actionChannelId = GetControl<DropDownList>("Selected_Slack_Channel")?.Value;
             if (string.IsNullOrEmpty(actionChannelId))

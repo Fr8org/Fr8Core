@@ -18,9 +18,10 @@ using terminalUtilities.Excel;
 
 namespace terminalExcel.Actions
 {
-    public class Save_To_Excel_v1 : EnhancedTerminalActivity<Save_To_Excel_v1.ActivityUi>
+    public class Save_To_Excel_v1 : TerminalActivity<Save_To_Excel_v1.ActivityUi>
     {
         private readonly ExcelUtils _excelUtils;
+        private readonly IPushNotificationService _pushNotificationService;
 
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -133,10 +134,11 @@ namespace terminalExcel.Actions
         private const string SelectedSpreadsheetCrateLabel = "Selected Spreadsheet";
 
 
-        public Save_To_Excel_v1(ICrateManager crateManager, ExcelUtils excelUtils)
+        public Save_To_Excel_v1(ICrateManager crateManager, ExcelUtils excelUtils, IPushNotificationService pushNotificationService)
             : base(crateManager)
         {
             _excelUtils = excelUtils;
+            _pushNotificationService = pushNotificationService;
         }
 
         public override async Task Initialize()
@@ -329,7 +331,7 @@ namespace terminalExcel.Actions
 
         private async Task PushLaunchURLNotification(string url)
         {
-            await PushUserNotification("Success", "Excel File", $"The Excel file can be downloaded by navigating to this URL: {new Uri(url).AbsoluteUri}");
+            await _pushNotificationService.PushUserNotification(MyTemplate, "Success", "Excel File", $"The Excel file can be downloaded by navigating to this URL: {new Uri(url).AbsoluteUri}");
         }
     }
 }
