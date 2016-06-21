@@ -74,6 +74,25 @@ namespace Fr8.TerminalBase.Services
 
         #endregion
 
+        public async Task<PlanEmptyDTO> LoadPlan(JToken planContents)
+        {
+            // var hmacService = ObjectFactory.GetInstance<IHMACService>();
+            // var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+
+            var uri = new Uri($"{GetHubUrlWithApiVersion()}/plans/load");
+
+            var headers = await _hmacService.GenerateHMACHeader(
+                uri, TerminalId, TerminalSecret, _userId, planContents);
+
+            var plan = await _restfulServiceClient.PostAsync<JToken, PlanEmptyDTO>(
+                uri,
+                planContents,
+                headers: headers
+            );
+
+            return plan;
+        }
+
         public async Task<PayloadDTO> GetPayload(Guid containerId)
         {
             var uri = new Uri($"{GetHubUrlWithApiVersion()}/containers/payload?id={containerId.ToString("D")}", UriKind.Absolute);
