@@ -41,7 +41,7 @@ namespace terminalFr8Core.Activities
                 RaiseError("Could not find FieldListControl.");
                 return Task.FromResult(0);
             }
-            var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
+            var userDefinedPayload = JsonConvert.DeserializeObject<List<KeyValueDTO>>(fieldListControl.Value);
             Payload.Add(Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(userDefinedPayload)));
             Success();
             return Task.FromResult(0);

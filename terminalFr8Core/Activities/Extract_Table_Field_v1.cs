@@ -59,9 +59,9 @@ namespace terminalFr8Core.Activities
             return new FieldDTO(key, chosenCell.selectedKey);
         }
 
-        private FieldDTO ExtractFieldFromTable(StandardTableDataCM table, DropDownList chosenCell, DropDownList position)
+        private KeyValueDTO ExtractFieldFromTable(StandardTableDataCM table, DropDownList chosenCell, DropDownList position)
         {
-            FieldDTO field = position.Value == ImmediatelyBelowValue ?
+            KeyValueDTO field = position.Value == ImmediatelyBelowValue ?
                 GetValueBelowSelectedCell(table, chosenCell.Value) : GetValueRightToSelectedCell(table, chosenCell.Value);
 
             if (field == null)
@@ -81,7 +81,7 @@ namespace terminalFr8Core.Activities
             return field;
         }
 
-        private FieldDTO GetValueBelowSelectedCell(StandardTableDataCM table, string selectedCellValue)
+        private KeyValueDTO GetValueBelowSelectedCell(StandardTableDataCM table, string selectedCellValue)
         {
             var rows = table.Table;
             //we might have out of bounds exceptions here
@@ -106,7 +106,7 @@ namespace terminalFr8Core.Activities
             return null;
         }
 
-        private FieldDTO GetValueRightToSelectedCell(StandardTableDataCM table, string selectedCellValue)
+        private KeyValueDTO GetValueRightToSelectedCell(StandardTableDataCM table, string selectedCellValue)
         {
             var rows = table.Table;
             //we might have out of bounds exceptions here
@@ -226,7 +226,7 @@ namespace terminalFr8Core.Activities
                 return;
             }
 
-            var extractedFieldList = new List<FieldDTO>();
+            var extractedFieldList = new List<KeyValueDTO>();
             var chosenCellList = GetControl< ControlList>("extractor_list");
             foreach (var cGroup in chosenCellList.ControlGroups)
             {
@@ -241,7 +241,7 @@ namespace terminalFr8Core.Activities
 
                 var table = crateToProcess.Get<StandardTableDataCM>();
 
-                FieldDTO field = ExtractFieldFromTable(table, chosenCell, position);
+                KeyValueDTO field = ExtractFieldFromTable(table, chosenCell, position);
                 if (field == null)
                 {
                     //hmm we couldn't find what we were looking for

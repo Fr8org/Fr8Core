@@ -279,15 +279,15 @@ namespace terminalFr8Core.Activities
         }
 
         // create the dropdown design time fields.
-        private List<FieldDTO> GetFr8WarehouseTypes(AuthorizationToken oAuthToken)
+        private List<KeyValueDTO> GetFr8WarehouseTypes(AuthorizationToken oAuthToken)
         {
             using (var unitWork = _container.GetInstance<IUnitOfWork>())
             {
-                var warehouseTypes = new List<FieldDTO>();
+                var warehouseTypes = new List<KeyValueDTO>();
 
                 foreach (var mtTypeReference in unitWork.MultiTenantObjectRepository.ListTypeReferences())
                 {
-                    warehouseTypes.Add(new FieldDTO
+                    warehouseTypes.Add(new KeyValueDTO
                     {
                         Key = mtTypeReference.Alias,
                         Value = mtTypeReference.Id.ToString("N")

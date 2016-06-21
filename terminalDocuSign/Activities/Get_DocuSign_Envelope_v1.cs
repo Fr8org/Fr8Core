@@ -87,7 +87,7 @@ namespace terminalDocuSign.Activities
                 return;
             }
 
-            List<FieldDTO> allFields = new List<FieldDTO>();
+            List<KeyValueDTO> allFields = new List<KeyValueDTO>();
             // This has to be re-thinked. TemplateId is neccessary to retrieve fields but is unknown atm
             // Perhaps it can be received by EnvelopeId
             allFields.AddRange(GetEnvelopeData(envelopeId, null));

@@ -167,7 +167,7 @@ namespace terminalDemo.Activities
                     default:
                         throw new ActivityExecutionException("Unknown operator selected");
                 }
-                var resultField = new FieldDTO(ResultFieldLabel, result.ToString(CultureInfo.InvariantCulture), AvailabilityType.RunTime);
+                var resultField = new KeyValueDTO(ResultFieldLabel, result.ToString(CultureInfo.InvariantCulture));
                 var resultCrate = Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(resultField));
                 Payload.Add(resultCrate);
             }

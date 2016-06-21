@@ -127,15 +127,16 @@ namespace terminalSlack.Actions
         public override Task Run()
         {
             var incomingMessageContents = ExtractIncomingMessageContentFromPayload();
-            var hasIncomingMessage = incomingMessageContents?.Fields.Count > 0;
+            var hasIncomingMessage = incomingMessageContents?.Count > 0;
+
             if (hasIncomingMessage)
             {
                 var channelMatches = ActivityUI.AllChannelsOption.Selected
                     || string.IsNullOrEmpty(ActivityUI.ChannelList.selectedKey)
-                    || ActivityUI.ChannelList.Value == incomingMessageContents["channel_id"];
+                    || ActivityUI.ChannelList.Value == incomingMessageContents.FirstOrDefault(x=>x.Key == "channel_id")?.Value;
                 if (channelMatches)
                 {
-                    Payload.Add(Crate.FromContent(ResultPayloadCrateLabel, new StandardPayloadDataCM(incomingMessageContents.Fields), AvailabilityType.RunTime));
+                    Payload.Add(Crate.FromContent(ResultPayloadCrateLabel, new StandardPayloadDataCM(incomingMessageContents)));
                 }
                 else
                 {
@@ -146,17 +147,15 @@ namespace terminalSlack.Actions
             {
                 TerminateHubExecution("Plan successfully activated. It will wait and respond to specified Slack postings");
             }
+
             return Task.FromResult(0);
         }
 
-        private FieldDescriptionsCM ExtractIncomingMessageContentFromPayload()
+        private List<KeyValueDTO> ExtractIncomingMessageContentFromPayload()
         {
             var eventReport = Payload.CrateContentsOfType<EventReportCM>().FirstOrDefault();
-            if (eventReport == null)
-            {
-                return null;
-            }
-            return new FieldDescriptionsCM(eventReport.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()));
+
+            return eventReport?.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()).ToList();
         }
 
         public override async Task Initialize()

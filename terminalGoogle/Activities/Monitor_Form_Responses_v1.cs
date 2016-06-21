@@ -41,12 +41,13 @@ namespace terminalGoogle.Actions
         private const string ConfigurationCrateLabel = "Selected_Google_Form";
         private const string RunTimeCrateLabel = "Google Form Payload Data";
         private const string EventSubscriptionsCrateLabel = "Standard Event Subscriptions";
-        private FieldDTO SelectedForm
+
+        private KeyValueDTO SelectedForm
         {
             get
             {
-                var storedValues = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == ConfigurationCrateLabel)?.Content;
-                return storedValues?.Fields.First();
+                var storedValues = Storage.FirstCrateOrDefault<KeyValueListCM>(x => x.Label == ConfigurationCrateLabel)?.Content;
+                return storedValues?.Values.First();
             }
             set
             {
@@ -55,8 +56,8 @@ namespace terminalGoogle.Actions
                     Storage.RemoveByLabel(ConfigurationCrateLabel);
                     return;
                 }
-                value.Availability = AvailabilityType.Configuration;
-                var newValues = Crate.FromContent(ConfigurationCrateLabel, new FieldDescriptionsCM(value), AvailabilityType.Configuration);
+      
+                var newValues = Crate.FromContent(ConfigurationCrateLabel, new KeyValueListCM(value), AvailabilityType.Configuration);
                 Storage.ReplaceByLabel(newValues);
             }
         }
@@ -183,9 +184,9 @@ namespace terminalGoogle.Actions
                 );
         }
 
-        private List<FieldDTO> CreatePayloadFormResponseFields(List<FieldDTO> payloadfields)
+        private List<KeyValueDTO> CreatePayloadFormResponseFields(List<KeyValueDTO> payloadfields)
         {
-            var formFieldResponse = new List<FieldDTO>();
+            var formFieldResponse = new List<KeyValueDTO>();
             string[] formresponses = payloadfields.FirstOrDefault(w => w.Key == "response").Value.Split(new char[] { '&' });
 
             if (formresponses.Length > 0)
@@ -195,7 +196,7 @@ namespace terminalGoogle.Actions
                 formFieldResponse.AddRange(from response in formresponses
                                            select response.Split(new char[] {'='}) into itemResponse
                                            where itemResponse.Length >= 2
-                                           select new FieldDTO() {Key = itemResponse[0], Value = itemResponse[1]});
+                                           select new KeyValueDTO() {Key = itemResponse[0], Value = itemResponse[1]});
             }
             else
             {
@@ -205,7 +206,7 @@ namespace terminalGoogle.Actions
             return formFieldResponse;
         }
 
-        private List<FieldDTO> ExtractPayloadFields(ICrateStorage currentPayload)
+        private List<KeyValueDTO> ExtractPayloadFields(ICrateStorage currentPayload)
         {
             var eventReportMS = currentPayload.CrateContentsOfType<EventReportCM>().SingleOrDefault();
 

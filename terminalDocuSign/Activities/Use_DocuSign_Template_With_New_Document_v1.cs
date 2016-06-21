@@ -40,7 +40,7 @@ namespace terminalDocuSign.Activities
 
 
         protected override void SendAnEnvelope(DocuSignApiConfiguration loginInfo,
-            List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId)
+            List<KeyValueDTO> rolesList, List<KeyValueDTO> fieldList, string curTemplateId)
         {
             try
             {

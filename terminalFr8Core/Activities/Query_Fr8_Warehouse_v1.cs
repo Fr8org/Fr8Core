@@ -188,7 +188,7 @@ namespace terminalFr8Core.Activities
 
                 foreach (var accessor in accessors)
                 {
-                    row.PayloadObject.Add(new FieldDTO(accessor.Key, string.Format(CultureInfo.InvariantCulture, "{0}", accessor.Value.GetValue(x))));
+                    row.PayloadObject.Add(new KeyValueDTO(accessor.Key, string.Format(CultureInfo.InvariantCulture, "{0}", accessor.Value.GetValue(x))));
                 }
 
                 return row;

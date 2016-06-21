@@ -53,7 +53,7 @@ namespace terminalDocuSignTests.Fixtures
         {
             var result = new Mock<IDocuSignManager>();
             result.Setup(x => x.GetTemplatesList(It.IsAny<DocuSignApiConfiguration>()))
-                  .Returns(new List<FieldDTO> { new FieldDTO("1", "First") });
+                  .Returns(new List<KeyValueDTO> { new KeyValueDTO("1", "First") });
             return result.Object;
         }
 
@@ -61,7 +61,7 @@ namespace terminalDocuSignTests.Fixtures
         {
             var result = new Mock<IDocuSignManager>();
             result.Setup(x => x.GetTemplatesList(It.IsAny<DocuSignApiConfiguration>()))
-                  .Returns(new List<FieldDTO>());
+                  .Returns(new List<KeyValueDTO>());
             return result.Object;
         }
     }

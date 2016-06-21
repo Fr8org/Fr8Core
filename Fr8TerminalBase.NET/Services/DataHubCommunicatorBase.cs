@@ -149,7 +149,7 @@ namespace Fr8.TerminalBase.Services
             var activityTemplates = crateStorage
                 .Where(x => x.Label == searchLabel)
                 .Select(x => JsonConvert.DeserializeObject<ActivityTemplateDTO>(
-                    x.Get<FieldDescriptionsCM>().Fields[0].Value
+                    x.Get<KeyValueListCM>().Values[0].Value
                     )
                 )
                 .ToList();
@@ -189,11 +189,9 @@ namespace Fr8.TerminalBase.Services
         
         public async Task<IncomingCratesDTO> GetAvailableData(Guid activityId, CrateDirection direction, AvailabilityType availability)
         {
-            var fields = await GetCratesByDirection<FieldDescriptionsCM>(activityId, direction);
             var crates = await GetCratesByDirection<CrateDescriptionCM>(activityId, direction);
             var availableData = new IncomingCratesDTO();
 
-            availableData.AvailableFields.AddRange(fields.SelectMany(x => x.Content.Fields).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
             availableData.AvailableFields.AddRange(crates.SelectMany(x => x.Content.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0).SelectMany(x => x.Fields));
             availableData.AvailableCrates.AddRange(crates.SelectMany(x => x.Content.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
 

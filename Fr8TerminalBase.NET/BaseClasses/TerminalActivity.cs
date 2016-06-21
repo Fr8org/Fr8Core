@@ -29,23 +29,23 @@ namespace Fr8.TerminalBase.BaseClasses
             get
             {
                 CheckCurrentActivityStorageAvailability();
-                var crate = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == ConfigurationValuesCrateLabel);
-                return crate?.Content.Fields.FirstOrDefault(x => x.Key == key)?.Value;
+                var crate = Storage.FirstCrateOrDefault<KeyValueListCM>(x => x.Label == ConfigurationValuesCrateLabel);
+                return crate?.Content.Values.FirstOrDefault(x => x.Key == key)?.Value;
             }
             set
             {
                 CheckCurrentActivityStorageAvailability();
-                var crate = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == ConfigurationValuesCrateLabel);
+                var crate = Storage.FirstCrateOrDefault<KeyValueListCM>(x => x.Label == ConfigurationValuesCrateLabel);
                 if (crate == null)
                 {
-                    crate = Crate<FieldDescriptionsCM>.FromContent(ConfigurationValuesCrateLabel, new FieldDescriptionsCM(), AvailabilityType.Configuration);
+                    crate = Crate<KeyValueListCM>.FromContent(ConfigurationValuesCrateLabel, new KeyValueListCM());
                     Storage.Add(crate);
                 }
-                var field = crate.Content.Fields.FirstOrDefault(x => x.Key == key);
+                var field = crate.Content.Values.FirstOrDefault(x => x.Key == key);
                 if (field == null)
                 {
-                    field = new FieldDTO(key, AvailabilityType.Configuration);
-                    crate.Content.Fields.Add(field);
+                    field = new KeyValueDTO(key, null);
+                    crate.Content.Values.Add(field);
                 }
                 field.Value = value;
                 Storage.ReplaceByLabel(crate);

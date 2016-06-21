@@ -88,27 +88,22 @@ namespace terminalFr8Core.Activities
         {
             var controlContainer = GetControl<MetaControlContainer>("control_container");
             var collectionControls = controlContainer.CreateControls();
-            var fieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(RuntimeFieldCrateLabelPrefix, AvailabilityType.RunTime, new FieldDTO[] { });
-
-            Storage.RemoveByLabel(RuntimeFieldCrateLabelPrefix);
-            Storage.Add(fieldsCrate);
+            var configurator = CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeFieldCrateLabelPrefix, true);
 
             foreach (var controlDefinitionDTO in collectionControls)
             {
-                PublishCollectionControl(controlDefinitionDTO);
+                PublishCollectionControl(controlDefinitionDTO, configurator);
             }
-            
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeFieldCrateLabelPrefix, true);
 
             //TODO this part should be modified with 2975
             //PublishFilePickers(pStorage, collectionControls.Controls.Where(a => a.Type == ControlTypes.FilePicker));
         }
 
-        private void PublishCollectionControl(ControlDefinitionDTO controlDefinitionDTO)
+        private void PublishCollectionControl(ControlDefinitionDTO controlDefinitionDTO, CrateSignaller.FieldConfigurator fieldConfigurator)
         {
             if (controlDefinitionDTO is TextBox)
             {
-                PublishTextBox((TextBox)controlDefinitionDTO);
+                PublishTextBox((TextBox)controlDefinitionDTO, fieldConfigurator);
             }
         }
 
@@ -153,7 +148,7 @@ namespace terminalFr8Core.Activities
         */
         private bool WasActivityRunFromSubmitButton()
         {
-            return Payload.CratesOfType<FieldDescriptionsCM>(c => c.Label == RunFromSubmitButtonLabel).Any();
+            return Payload.CratesOfType<KeyValueListCM>(c => c.Label == RunFromSubmitButtonLabel).Any();
         }
 
         private void RemoveFlagCrate()
@@ -191,16 +186,15 @@ namespace terminalFr8Core.Activities
         private string GetFileDescriptionLabel(ControlDefinitionDTO filepicker, int labeless_filepickers)
         { return filepicker.Label ?? ("File from App Builder #" + ++labeless_filepickers); }
 
-        private void PublishTextBox(TextBox textBox)
+        private void PublishTextBox(TextBox textBox, CrateSignaller.FieldConfigurator fieldConfigurator)
         {
-            var fieldsCrate = Storage.CratesOfType<FieldDescriptionsCM>(c => c.Label == RuntimeFieldCrateLabelPrefix).First();
-            fieldsCrate.Content.Fields.Add(new FieldDTO(textBox.Label, textBox.Label));
+            fieldConfigurator.AddField(textBox.Label);
         }
 
         private void ProcessTextBox(TextBox textBox)
         {
             var fieldsCrate = Payload.CratesOfType<StandardPayloadDataCM>(c => c.Label == RuntimeFieldCrateLabelPrefix).First();
-            fieldsCrate.Content.PayloadObjects[0].PayloadObject.Add(new FieldDTO(textBox.Label, textBox.Value));
+            fieldsCrate.Content.PayloadObjects[0].PayloadObject.Add(new KeyValueDTO(textBox.Label, textBox.Value));
         }
 
         private async Task ProcessFilePickers( IEnumerable<ControlDefinitionDTO> filepickers)
@@ -241,7 +235,7 @@ namespace terminalFr8Core.Activities
 
         private async Task ProcessCollectionControls(StandardConfigurationControlsCM collectionControls)
         {
-            var fieldsPayloadCrate = Crate.FromContent(RuntimeFieldCrateLabelPrefix, new StandardPayloadDataCM(new FieldDTO[] { }), AvailabilityType.RunTime);
+            var fieldsPayloadCrate = Crate.FromContent(RuntimeFieldCrateLabelPrefix, new StandardPayloadDataCM(new KeyValueDTO[] { }));
             Payload.Add(fieldsPayloadCrate);
 
             foreach (var controlDefinitionDTO in collectionControls.Controls)
@@ -358,8 +352,7 @@ namespace terminalFr8Core.Activities
                         throw new Exception($"Activity with id \"{ActivityId}\" has no owner plan");
                     }
 
-                    var flagCrate = CrateManager.CreateDesignTimeFieldsCrate(RunFromSubmitButtonLabel,
-                        AvailabilityType.RunTime);
+                    var flagCrate = CrateManager.CreateDesignTimeFieldsCrate(RunFromSubmitButtonLabel);
                     var payload = new List<CrateDTO>() { CrateManager.ToDto(flagCrate) };
                     //we need to start the process - run current plan - that we belong to
                     HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, payload);

@@ -128,13 +128,13 @@ namespace terminalFr8Core.Activities
             return smsNumber;
         }
 
-        private List<FieldDTO> CreateKeyValuePairList(Message curMessage)
+        private List<KeyValueDTO> CreateKeyValuePairList(Message curMessage)
         {
-            List<FieldDTO> returnList = new List<FieldDTO>();
-            returnList.Add(new FieldDTO("Status", curMessage.Status));
-            returnList.Add(new FieldDTO("ErrorMessage", curMessage.ErrorMessage));
-            returnList.Add(new FieldDTO("Body", curMessage.Body));
-            returnList.Add(new FieldDTO("ToNumber", curMessage.To));
+            List<KeyValueDTO> returnList = new List<KeyValueDTO>();
+            returnList.Add(new KeyValueDTO("Status", curMessage.Status));
+            returnList.Add(new KeyValueDTO("ErrorMessage", curMessage.ErrorMessage));
+            returnList.Add(new KeyValueDTO("Body", curMessage.Body));
+            returnList.Add(new KeyValueDTO("ToNumber", curMessage.To));
             return returnList;
         }
     }

@@ -48,8 +48,8 @@ namespace terminalSalesforce.Services
             var table = ParseQueryResult(result);
             table.FirstRowHeaders = true;
             var headerRow = whatToSelect.Length > 0
-                                ? whatToSelect.Select(x => new FieldDTO(x, x)).Select(x => new TableCellDTO { Cell = x }).ToList()
-                                : (await GetProperties(type, authToken)).Select(x => new TableCellDTO { Cell = x }).ToList();
+                                ? whatToSelect.Select(x => new TableCellDTO { Cell = new KeyValueDTO(x, x)}).ToList()
+                                : (await GetProperties(type, authToken)).Select(x => new TableCellDTO { Cell = new KeyValueDTO(x.Key,x.Value) }).ToList();
             table.Table.Insert(0, new TableRowDTO { Row = headerRow });
             return table;
         }
@@ -275,12 +275,13 @@ namespace terminalSalesforce.Services
             {
                 Table = parsedObjects.Select(x => x.Properties()
                                             .Where(y => y.Value.Type == JTokenType.String && !string.IsNullOrEmpty(y.Value.Value<string>()))
-                                            .Select(y => new FieldDTO
-                                            {
-                                                Key = y.Name,
-                                                Value = y.Value.Value<string>()
-                                            })
-                                            .Select(y => new TableCellDTO { Cell = y }))
+                                            .Select(y => new TableCellDTO
+                                            { Cell = new KeyValueDTO
+                                                {
+                                                    Key = y.Name,
+                                                    Value = y.Value.Value<string>()
+                                                }
+                                            }))
                                      .Select(x => new TableRowDTO { Row = x.ToList() })
                                      .ToList()
             };

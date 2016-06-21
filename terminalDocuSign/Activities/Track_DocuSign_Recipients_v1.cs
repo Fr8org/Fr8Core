@@ -393,8 +393,7 @@ namespace terminalDocuSign.Activities
             var fields = DocuSignManager.GetTemplatesList(conf);
             var crate = CrateManager.CreateDesignTimeFieldsCrate(
                 "AvailableTemplates",
-                AvailabilityType.Configuration,
-                fields.ToArray());
+               fields.ToArray());
             return crate;
         }
 
@@ -404,7 +403,7 @@ namespace terminalDocuSign.Activities
 
             var availableRecipientEventsCrate =
                 CrateManager.CreateDesignTimeFieldsCrate(
-                    "AvailableRecipientEvents", events.Select(x => new FieldDTO(x, x)).ToArray()
+                    "AvailableRecipientEvents", events.Select(x => new KeyValueDTO(x, x)).ToArray()
                 );
 
             return availableRecipientEventsCrate;
@@ -416,7 +415,7 @@ namespace terminalDocuSign.Activities
 
             var availableRecipientEventsCrate =
                 CrateManager.CreateDesignTimeFieldsCrate(
-                    "AvailableRunTimeDataFields", events.Select(x => new FieldDTO(x, x)).ToArray()
+                    "AvailableRunTimeDataFields", events.Select(x => new KeyValueDTO(x, x)).ToArray()
                 );
 
             return availableRecipientEventsCrate;
@@ -430,7 +429,7 @@ namespace terminalDocuSign.Activities
             var availableHandlersCrate =
                 CrateManager.CreateDesignTimeFieldsCrate(
                     "AvailableHandlers",
-                    taggedTemplates.Select(x => new FieldDTO(x.Label, x.Id.ToString())).ToArray()
+                    taggedTemplates.Select(x => new KeyValueDTO(x.Label, x.Id.ToString())).ToArray()
                 );
 
             return availableHandlersCrate;
@@ -456,15 +455,15 @@ namespace terminalDocuSign.Activities
 
             var configControls = descendants.SelectMany(c => c.CrateStorage.FirstCrateOrDefault<StandardConfigurationControlsCM>()?.Content?.Controls).Where(x => x != null).ToArray();
             var delayValue = (Duration)configControls.Single(c => c.Name == "Delay_Duration" && c.Type == ControlTypes.Duration);
-            var runTimePayloadData = new List<FieldDTO>();
+            var runTimePayloadData = new List<KeyValueDTO>();
             var delayTimeString = delayValue.Days + " days, " + delayValue.Hours + " hours and " + delayValue.Minutes + " minutes";
-            runTimePayloadData.Add(new FieldDTO("DelayTime", delayTimeString, AvailabilityType.RunTime));
+            runTimePayloadData.Add(new KeyValueDTO("DelayTime", delayTimeString));
             var filterPane = (FilterPane)configControls.Single(c => c.Name == "Selected_Filter" && c.Type == ControlTypes.FilterPane);
             var conditions = JsonConvert.DeserializeObject<FilterDataDTO>(filterPane.Value);
             var statusField = conditions.Conditions.FirstOrDefault(c => c.Field == "Status");
             if (statusField != null)
             {
-                runTimePayloadData.Add(new FieldDTO("ActionBeingTracked", statusField.Value, AvailabilityType.RunTime));
+                runTimePayloadData.Add(new KeyValueDTO("ActionBeingTracked", statusField.Value));
             }
             Payload.Add(Crate.FromContent("Track DocuSign Recipients Payload Data", new StandardPayloadDataCM(runTimePayloadData)));
             Success();

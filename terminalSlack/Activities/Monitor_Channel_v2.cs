@@ -143,7 +143,7 @@ namespace terminalSlack.Activities
         public override Task Run()
         {
             var incomingMessageContents = ExtractIncomingMessageContentFromPayload();
-            var hasIncomingMessage = incomingMessageContents?.Fields?.Count > 0;
+            var hasIncomingMessage = incomingMessageContents?.Count > 0;
 
             if (!hasIncomingMessage)
             {
@@ -151,8 +151,8 @@ namespace terminalSlack.Activities
                 return Task.FromResult(0);
             }
 
-            var incomingChannelId = incomingMessageContents["channel_id"];
-            var isSentByCurrentUser = incomingMessageContents["user_name"] == AuthorizationToken.ExternalAccountId;
+            var incomingChannelId = incomingMessageContents.FirstOrDefault(x=>x.Key == "channel_id")?.Value;
+            var isSentByCurrentUser = incomingMessageContents.FirstOrDefault(x => x.Key == "user_name")?.Value == AuthorizationToken.ExternalAccountId;
 
             if (string.IsNullOrEmpty(incomingChannelId))
             {
@@ -169,7 +169,7 @@ namespace terminalSlack.Activities
                 var isTrackedByUser = IsMonitoringDirectMessages && (isDirect || isSentToGroup) && !isSentByCurrentUser;
                 if (isTrackedByUser || isTrackedByChannel)
                 {
-                    Payload.Add(Crate.FromContent(ResultPayloadCrateLabel, new StandardPayloadDataCM(incomingMessageContents.Fields), AvailabilityType.RunTime));
+                    Payload.Add(Crate.FromContent(ResultPayloadCrateLabel, new StandardPayloadDataCM(incomingMessageContents)));
                 }
                 else
                 {
@@ -191,14 +191,14 @@ namespace terminalSlack.Activities
             return Task.FromResult(0);
         }
 
-        private FieldDescriptionsCM ExtractIncomingMessageContentFromPayload()
+        private List<KeyValueDTO> ExtractIncomingMessageContentFromPayload()
         {
             var eventReport = Payload.CrateContentsOfType<EventReportCM>().FirstOrDefault();
             if (eventReport == null)
             {
                 return null;
             }
-            return new FieldDescriptionsCM(eventReport.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()));
+            return eventReport.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()).ToList();
         }
 
         #region Control properties wrappers

@@ -96,12 +96,12 @@ namespace terminalGoogle.Activities
         }
         //This property is used to store and retrieve user-selected spreadsheet and worksheet between configuration responses 
         //to avoid extra fetch from Google
-        private FieldDTO SelectedSpreadsheet
+        private KeyValueDTO SelectedSpreadsheet
         {
             get
             {
-                var storedValues = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == ConfigurationCrateLabel)?.Content;
-                return storedValues?.Fields.First();
+                var storedValues = Storage.FirstCrateOrDefault<KeyValueListCM>(x => x.Label == ConfigurationCrateLabel)?.Content;
+                return storedValues?.Values.First();
 
             }
             set
@@ -111,8 +111,8 @@ namespace terminalGoogle.Activities
                     Storage.RemoveByLabel(ConfigurationCrateLabel);
                     return;
                 }
-                value.Availability = AvailabilityType.Configuration;
-                var newValues = Crate.FromContent(ConfigurationCrateLabel, new FieldDescriptionsCM(value), AvailabilityType.Configuration);
+         
+                var newValues = Crate.FromContent(ConfigurationCrateLabel, new KeyValueListCM(value), AvailabilityType.Configuration);
                 Storage.ReplaceByLabel(newValues);
             }
         }
@@ -174,16 +174,16 @@ namespace terminalGoogle.Activities
                     }
                 }
                 //Retrieving worksheet headers to make them avaialble for downstream activities
-                var selectedSpreasheetWorksheet = new FieldDTO(ActivityUI.SpreadsheetList.Value,
+                var selectedSpreasheetWorksheet = new KeyValueDTO(ActivityUI.SpreadsheetList.Value,
                                                                ActivityUI.WorksheetList.IsHidden
                                                                    ? string.Empty
                                                                    : ActivityUI.WorksheetList.Value);
                 var columnHeaders = await _googleApi.GetWorksheetHeaders(selectedSpreasheetWorksheet.Key, selectedSpreasheetWorksheet.Value, googleAuth);
-                var columnHeadersCrate = Crate.FromContent(ColumnHeadersCrateLabel,
-                                                           new FieldDescriptionsCM(columnHeaders.Select(x => new FieldDTO(x.Key, x.Key, AvailabilityType.Always) { SourceCrateLabel = RunTimeCrateLabel})),
-                                                           AvailabilityType.Always);
-                Storage.ReplaceByLabel(columnHeadersCrate);
+                
                 SelectedSpreadsheet = selectedSpreasheetWorksheet;
+
+                CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel, true)
+                    .AddFields(columnHeaders.Select(x => new FieldDTO(x.Key)));
 
                 var table = await GetSelectedSpreadSheet();
                 var hasHeaderRow = TryAddHeaderRow(table);
@@ -203,7 +203,7 @@ namespace terminalGoogle.Activities
                     Storage.RemoveByLabel(TabularUtilities.ExtractedFieldsCrateLabel);
                 }
             }
-            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel, true);
+           
         }
 
         private async Task<List<TableRowDTO>> GetSelectedSpreadSheet()
@@ -230,7 +230,7 @@ namespace terminalGoogle.Activities
                     {
                         Row =
                             table.First()
-                                .Row.Select(x => new TableCellDTO { Cell = new FieldDTO(x.Cell.Key, x.Cell.Key) })
+                                .Row.Select(x => new TableCellDTO { Cell = new KeyValueDTO(x.Cell.Key, x.Cell.Key) })
                                 .ToList()
                     });
 

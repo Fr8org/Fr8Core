@@ -184,16 +184,16 @@ namespace terminalTwilio.Activities
             return smsBody;
         }
 
-        private List<FieldDTO> CreateKeyValuePairList(Message curMessage)
+        private List<KeyValueDTO> CreateKeyValuePairList(Message curMessage)
         {
-            List<FieldDTO> returnList = new List<FieldDTO>();
-            returnList.Add(new FieldDTO("Status", curMessage.Status));
-            returnList.Add(new FieldDTO("ErrorMessage", curMessage.ErrorMessage));
-            returnList.Add(new FieldDTO("Body", curMessage.Body));
-            returnList.Add(new FieldDTO("ToNumber", curMessage.To));
+            List<KeyValueDTO> returnList = new List<KeyValueDTO>();
+            returnList.Add(new KeyValueDTO("Status", curMessage.Status));
+            returnList.Add(new KeyValueDTO("ErrorMessage", curMessage.ErrorMessage));
+            returnList.Add(new KeyValueDTO("Body", curMessage.Body));
+            returnList.Add(new KeyValueDTO("ToNumber", curMessage.To));
             return returnList;
         }
-        private Crate PackCrate_TwilioMessageDetails(List<FieldDTO> curTwilioMessage)
+        private Crate PackCrate_TwilioMessageDetails(List<KeyValueDTO> curTwilioMessage)
         {
             return Crate.FromContent("Message Data", new StandardPayloadDataCM(curTwilioMessage));
         }

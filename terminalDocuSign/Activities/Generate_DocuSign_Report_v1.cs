@@ -273,18 +273,18 @@ namespace terminalDocuSign.Activities
             {
                 if (map.Item2 == null)
                 {
-                    result.PayloadObject.Add(new FieldDTO(map.Item1, ""));
+                    result.PayloadObject.Add(new KeyValueDTO(map.Item1, ""));
                 }
                 else
                 {
                     string temp;
                     if (obj.TryGetValue(map.Item2, false, false, out temp))
                     {
-                        result.PayloadObject.Add(new FieldDTO(map.Item1, temp ?? ""));
+                        result.PayloadObject.Add(new KeyValueDTO(map.Item1, temp ?? ""));
                     }
                     else
                     {
-                        result.PayloadObject.Add(new FieldDTO(map.Item1, ""));
+                        result.PayloadObject.Add(new KeyValueDTO(map.Item1, ""));
                     }
                 }
             }
@@ -452,17 +452,9 @@ namespace terminalDocuSign.Activities
                     var queryFr8WarehouseAction = await HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, queryFr8WarehouseTemplate);
 
                     var crateStorage = queryFr8WarehouseAction.CrateStorage;
-                        crateStorage.RemoveByLabel("Upstream Crate Label List");
-
-                        var fields = new[]
-                        {
-                            new FieldDTO() { Key = QueryCrateLabel, Value = QueryCrateLabel }
-                        };
-                        var upstreamLabelsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
-                        crateStorage.Add(upstreamLabelsCrate);
-
+                       
                         var upstreamManifestTypes = crateStorage
-                            .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Upstream Crate ManifestType List")
+                            .CrateContentsOfType<KeyValueListCM>(x => x.Label == "Upstream Crate ManifestType List")
                             .FirstOrDefault();
 
                         var controls = crateStorage
@@ -484,8 +476,8 @@ namespace terminalDocuSign.Activities
                         {
                             if (upstreamManifestTypes != null)
                             {
-                                upstreamCrateChooser.SelectedCrates[0].ManifestType.selectedKey = upstreamManifestTypes.Fields[0].Key;
-                                upstreamCrateChooser.SelectedCrates[0].ManifestType.Value = upstreamManifestTypes.Fields[0].Value;
+                                upstreamCrateChooser.SelectedCrates[0].ManifestType.selectedKey = upstreamManifestTypes.Values[0].Key;
+                                upstreamCrateChooser.SelectedCrates[0].ManifestType.Value = upstreamManifestTypes.Values[0].Value;
                             }
 
                             upstreamCrateChooser.SelectedCrates[0].Label.selectedKey = QueryCrateLabel;
@@ -627,12 +619,11 @@ namespace terminalDocuSign.Activities
 
             yield return Crate.FromContent(
                 "DocuSign Envelope Report",
-                new FieldDescriptionsCM(
-                    new FieldDTO
+                new KeyValueListCM(
+                    new KeyValueDTO
                     {
                         Key = "DocuSign Envelope Report",
                         Value = "Table",
-                        Availability = AvailabilityType.RunTime
                     }
                 )
             );

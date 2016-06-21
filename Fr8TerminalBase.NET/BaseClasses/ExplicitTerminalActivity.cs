@@ -43,18 +43,10 @@ namespace Fr8.TerminalBase.BaseClasses
             EnsureControlsCrate();
             ConfigurationControls.Controls.Add(control);
         }
-
-        public virtual IEnumerable<FieldDTO> GetRequiredFields(string crateLabel)
+        
+        protected void UpdateDesignTimeCrateValue(string label, params KeyValueDTO[] fields)
         {
-            var requiredFields = Storage
-                .CrateContentsOfType<FieldDescriptionsCM>(c => c.Label.Equals(crateLabel))
-                .SelectMany(f => f.Fields.Where(s => s.IsRequired));
-            return requiredFields;
-        }
-
-        protected void UpdateDesignTimeCrateValue(string label, params FieldDTO[] fields)
-        {
-            var crate = Storage.CratesOfType<FieldDescriptionsCM>().FirstOrDefault(x => x.Label == label);
+            var crate = Storage.CratesOfType<KeyValueListCM>().FirstOrDefault(x => x.Label == label);
 
             if (crate == null)
             {
@@ -63,8 +55,8 @@ namespace Fr8.TerminalBase.BaseClasses
             }
             else
             {
-                crate.Content.Fields.Clear();
-                crate.Content.Fields.AddRange(fields);
+                crate.Content.Values.Clear();
+                crate.Content.Values.AddRange(fields);
             }
         }
 

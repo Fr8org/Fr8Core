@@ -92,7 +92,7 @@ namespace Fr8.Infrastructure.Data.Helpers
         }
 
 
-        private static FieldDTO FindField(OperationalStateCM operationalState, Crate crate, string fieldKey)
+        private static KeyValueDTO FindField(OperationalStateCM operationalState, Crate crate, string fieldKey)
         {
             object searchArea;
             //let's check if we are in a loop

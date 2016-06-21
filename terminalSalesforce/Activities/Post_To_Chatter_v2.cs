@@ -216,7 +216,7 @@ namespace terminalSalesforce.Actions
                     else
                     {
                         var resultPayload = new StandardPayloadDataCM();
-                        resultPayload.PayloadObjects.AddRange(tasks.Select(x => new PayloadObjectDTO(new FieldDTO(FeedIdKeyName, x.Result))));
+                        resultPayload.PayloadObjects.AddRange(tasks.Select(x => new PayloadObjectDTO(new KeyValueDTO(FeedIdKeyName, x.Result))));
                         Payload.Add(Crate<StandardPayloadDataCM>.FromContent(PostedFeedCrateLabel, resultPayload));
                     }
                 }
@@ -240,7 +240,7 @@ namespace terminalSalesforce.Actions
 
                 Logger.Info($"Posting message to chatter succeded with feedId: {feedId}");
 
-                Payload.Add(Crate.FromContent(PostedFeedCrateLabel, new StandardPayloadDataCM(new FieldDTO(FeedIdKeyName, feedId))));
+                Payload.Add(Crate.FromContent(PostedFeedCrateLabel, new StandardPayloadDataCM(new KeyValueDTO(FeedIdKeyName, feedId))));
             }
         }
 

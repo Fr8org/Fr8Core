@@ -114,12 +114,12 @@ namespace terminalDocuSignTests.Integration
                 dataSourceDropdown.Value = childAction;
 
                 var availableTemplatesCM = crateStorage
-                  .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Available Templates")
+                  .CrateContentsOfType<KeyValueListCM>(x => x.Label == "Available Templates")
                   .Single();
-                Assert.IsTrue(availableTemplatesCM.Fields.Count > 0);
+                Assert.IsTrue(availableTemplatesCM.Values.Count > 0);
 
                 var templateDropdown = (DropDownList)controls.Controls[1];
-                templateDropdown.Value = availableTemplatesCM.Fields[0].Value;
+                templateDropdown.Value = availableTemplatesCM.Values[0].Value;
 
                 var continueButton = (Button)controls.Controls[2];
                 continueButton.Clicked = true;
