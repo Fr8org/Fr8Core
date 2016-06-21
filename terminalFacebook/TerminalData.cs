@@ -8,7 +8,7 @@ namespace terminalFacebook
     {
         public static WebServiceDTO WebServiceDTO = new WebServiceDTO
         {
-            Name = "Facebook Activities",
+            Name = "Facebook",
             IconPath = "/Content/icons/web_services/facebook-icon-64x64.png"
         };
 

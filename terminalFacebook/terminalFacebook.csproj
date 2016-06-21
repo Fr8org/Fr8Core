@@ -113,12 +113,18 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\ActivityController.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
+    <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Infrastructure\BindToAliasAttribute.cs" />
+    <Compile Include="Interfaces\IEvent.cs" />
     <Compile Include="Interfaces\IFacebookIntegration.cs" />
+    <Compile Include="Models\VerificationMessage.cs" />
+    <Compile Include="Models\UserEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Event.cs" />
     <Compile Include="Services\FacebookIntegration.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="TerminalData.cs" />

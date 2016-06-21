@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using Fr8.TerminalBase.BaseClasses;
 using Microsoft.Owin;
@@ -7,6 +8,8 @@ using Owin;
 using terminalFacebook;
 using terminalFacebook.Activities;
 using terminalFacebook.Controllers;
+using terminalFacebook.Infrastructure;
+using terminalFacebook.Models;
 
 [assembly: OwinStartup(typeof(Startup))]
 
@@ -34,6 +37,7 @@ namespace terminalFacebook
             {
                 StartHosting();
             }
+            _configuration.BindParameter(typeof(VerificationMessage), new FacebookVerificationModelBinder());
         }
 
         protected override void RegisterActivities()
@@ -46,7 +50,8 @@ namespace terminalFacebook
             return new Type[] {
                     typeof(ActivityController),
                     typeof(TerminalController),
-                    typeof(AuthenticationController)
+                    typeof(AuthenticationController),
+                    typeof(EventController)
                 };
         }
     }

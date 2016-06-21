@@ -11,6 +11,7 @@ namespace terminalFacebook.Interfaces
         Task<string> GetOAuthToken(string code);
         Task<UserInfo> GetUserInfo(string oauthToken);
         Task PostToTimeline(string oauthToken, string message);
+        Task GetPostById(string oauthToken, string postId);
     }
 
     public class UserInfo

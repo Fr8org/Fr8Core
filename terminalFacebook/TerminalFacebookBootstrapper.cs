@@ -16,6 +16,7 @@ namespace terminalFacebook
         public static void ConfigureLive(ConfigurationExpression configurationExpression)
         {
             configurationExpression.For<IFacebookIntegration>().Use<FacebookIntegration>().Singleton();
+            configurationExpression.For<IEvent>().Use<Event>();
         }
     }
 }
