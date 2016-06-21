@@ -66,6 +66,7 @@ namespace HubWeb.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> Polling([FromUri]string terminalId, [FromBody]PollingDataDTO pollingData)
         {
+            pollingData.JobId = terminalId + "|" + pollingData.ExternalAccountId;
             RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalId), "*/" + pollingData.PollingIntervalInMinutes + " * * * *");
             if (pollingData.TriggerImmediately)
                 RecurringJob.Trigger(pollingData.JobId);
@@ -79,13 +80,21 @@ namespace HubWeb.Controllers
         public static void ExecuteSchedulledJob(PollingDataDTO pollingData, string terminalId)
         {
             IRestfulServiceClient _client = new RestfulServiceClient();
-
             var request = RequestPolling(pollingData, terminalId, _client);
             var result = request.Result;
-            if (result == null || !result.Result)
-                RecurringJob.RemoveIfExists(pollingData.JobId);
+            if (result != null)
+            {
+                if (!result.Result)
+                    RecurringJob.RemoveIfExists(pollingData.JobId);
+                else
+                    RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(result, terminalId), "*/" + result.PollingIntervalInMinutes + " * * * *");
+            }
             else
+            {
+                //we didn't get any response from the terminal (it might have not started yet, for example) Let's give it one more chance, and if it will fail - the job will be descheduled cause of Result set to false;
+                pollingData.Result = false;
                 RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(result, terminalId), "*/" + result.PollingIntervalInMinutes + " * * * *");
+            }
         }
 
         private static async Task<PollingDataDTO> RequestPolling(PollingDataDTO pollingData, string terminalId, IRestfulServiceClient _client)
@@ -106,9 +115,12 @@ namespace HubWeb.Controllers
                             client.DefaultRequestHeaders.Add(header.Key, header.Value);
                         }
 
-                        var response = await _client.PostAsync<PollingDataDTO, PollingDataDTO>(new Uri(url), pollingData);
-
-                        return response;
+                        try
+                        {
+                            var response = await _client.PostAsync<PollingDataDTO, PollingDataDTO>(new Uri(url), pollingData);
+                            return response;
+                        }
+                        catch { return null; }
                     }
                 }
             }

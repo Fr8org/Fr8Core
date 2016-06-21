@@ -57,6 +57,12 @@ namespace terminalGoogle.Activities
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeCrateLabel).AddFields(CreateEmailFields(null, RuntimeCrateLabel));
         }
 
+
+        public override async Task Activate()
+        {
+            await _gmailPollingService.SchedulePolling(HubCommunicator, AuthorizationToken.ExternalAccountId, true);
+        }
+
         public override Task Run()
         {
             StandardEmailMessageCM mail = null;
@@ -73,6 +79,8 @@ namespace terminalGoogle.Activities
 
             return Task.FromResult(0);
         }
+
+
 
         private List<FieldDTO> CreateEmailFields(StandardEmailMessageCM email, string crate_label)
         {
