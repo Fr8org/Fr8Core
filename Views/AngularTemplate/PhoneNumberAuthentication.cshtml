@@ -1,0 +1,39 @@
+﻿<div class="modal-header">
+    <h4 class="pull-left">Please provide phone number for terminal authentication:</h4>
+    <button class="btn btn-default pull-right" ng-click="$close()">Close</button>
+</div>
+<div class="modal-body" block-if="isLoading()">
+    <form ng-if="!inVerifyMode" name="form" novalidate ng-submit="sendCodeToPhone()">
+        <p ng-show="authError" class="bg-warning">
+            Remote service could not authenticate you.
+        </p>
+
+        <p ng-show="authErrorText" class="bg-warning">
+            {{authErrorText}}
+        </p>
+
+        <div class="form-group" ng-class="{ 'has-error': !form.phoneNumber.$valid }">
+            <label>Phone-number: </label>
+            <input type="text" class="form-control" ng-model="formData.phoneNumber" name="phoneNumber" required/>
+        </div>
+        <button type="submit" class="btn btn-primary">Send Verification Code</button>
+    </form>
+    <form ng-if="inVerifyMode" name="form" novalidate ng-submit="verifyCodeAndAuthenticate()">
+        <p ng-show="authError" class="bg-warning">
+            Remote service could not authenticate you.
+        </p>
+
+        <p ng-show="authErrorText" class="bg-warning">
+            {{authErrorText}}
+        </p>
+
+        <div class="form-group" ng-class="{ 'has-error': !form.verificationCode.$valid }">
+            <label>Enter verification code send to your mobile phone: </label>
+            <input type="text" class="form-control" ng-model="formData.verificationCode" name="verificationCode" required />
+        </div>
+        <p ng-show="formData.message">
+            {{formData.message}}
+        </p>
+        <button type="submit" class="btn btn-primary">Verify Code and Authenticate</button>
+    </form>
+</div>
