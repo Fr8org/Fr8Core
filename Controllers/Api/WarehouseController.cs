@@ -48,6 +48,8 @@ namespace HubWeb.Controllers
                     query.Criteria
                     );
 
+                uow.SaveChanges();
+
                 return Ok();
             }
         }

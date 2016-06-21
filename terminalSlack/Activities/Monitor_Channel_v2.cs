@@ -14,7 +14,7 @@ using terminalSlack.Interfaces;
 
 namespace terminalSlack.Activities
 {
-    public class Monitor_Channel_v2 : EnhancedTerminalActivity<Monitor_Channel_v2.ActivityUi>
+    public class Monitor_Channel_v2 : TerminalActivity<Monitor_Channel_v2.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {

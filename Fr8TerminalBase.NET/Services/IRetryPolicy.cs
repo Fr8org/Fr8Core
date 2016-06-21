@@ -5,13 +5,12 @@ namespace Fr8.TerminalBase.Services
 {
     public interface IRetryPolicy
     {
-        Task Do(Func<Task> action);
+        Task<TResult> Do<TResult>(Func<Task<TResult>> action);
     }
-
 
     public class SingleRunRetryPolicy : IRetryPolicy
     {
-        public Task Do(Func<Task> action)
+        public Task<TResult> Do<TResult>(Func<Task<TResult>> action)
         {
             return action();
         }
@@ -28,7 +27,7 @@ namespace Fr8.TerminalBase.Services
             _timeout = timeout;
         }
 
-        public async Task Do(Func<Task> action)
+        public async Task<TResult> Do<TResult>(Func<Task<TResult>> action)
         {
             Exception lastException;
 
@@ -36,8 +35,7 @@ namespace Fr8.TerminalBase.Services
             {
                 try
                 {
-                    await action();
-                    return;
+                    return await action();
                 }
                 catch (Exception ex)
                 {

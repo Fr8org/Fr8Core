@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data.Entities;
@@ -10,6 +12,7 @@ using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities;
 using Hub.Interfaces;
 using Hub.Managers;
+using Microsoft.AspNet.Identity;
 
 namespace Hub.Services
 {
@@ -21,7 +24,7 @@ namespace Hub.Services
         private readonly EventReporter _eventReporter;
         private readonly IUnitOfWorkFactory _unitOfWorkFactory;
         private readonly string _serverUrl;
-
+        private readonly HashSet<string> _knownTerminals = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
 
         public TerminalDiscoveryService(IActivityTemplate activityTemplateService, ITerminal terminal, IRestfulServiceClient restfulServiceClient, EventReporter eventReporter, IUnitOfWorkFactory unitOfWorkFactory, IConfigRepository configRepository)
         {
@@ -36,23 +39,100 @@ namespace Hub.Services
             var domainPort = configRepository.Get<int?>("ServerPort", null);
 
             _serverUrl = $"{serverProtocol}{domainName}{(domainPort == null || domainPort.Value == 80 ? String.Empty : (":" + domainPort.Value))}/";
+
+            var terminalUrls = ListTerminalEndpoints();
+
+            foreach (var url in terminalUrls)
+            {
+                string terminalAuthority = url;
+
+                if (url.Contains("http:"))
+                {
+                    try
+                    {
+                        terminalAuthority = new Uri(url).Authority;
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                }
+
+                _knownTerminals.Add(terminalAuthority);
+            }
+        }
+
+        public async Task RegisterTerminal(string endpoint)
+        {
+            if (string.IsNullOrWhiteSpace(endpoint))
+            {
+                throw new ArgumentException("Invalid url", nameof(endpoint));
+            }
+
+            endpoint = endpoint.ToLower().TrimEnd('\\', '/');
+
+            var discoverOp = endpoint.IndexOf("/discover", StringComparison.Ordinal);
+            
+            if (discoverOp > 0)
+            {
+                endpoint = endpoint.Substring(0, discoverOp);
+            }
+
+            using (var uow = _unitOfWorkFactory.Create())
+            {
+                var terminalRegistration = new TerminalRegistrationDO();
+
+                if (uow.TerminalRegistrationRepository.GetByKey(endpoint) != null)
+                {
+                    throw new Exception($"Terminal with endpoint '{endpoint}' was already registered");
+                }
+                 
+                terminalRegistration.UserId = Thread.CurrentPrincipal.Identity.GetUserId();
+                terminalRegistration.Endpoint = endpoint.ToLower();
+
+                var normaizedEndpoint = NormalizeTerminalEndpoint(endpoint);
+
+                if (!await DiscoverInternal(normaizedEndpoint))
+                {
+                    throw new Exception($"Unable to discover terminal at '{normaizedEndpoint}'");
+                }
+                
+                uow.TerminalRegistrationRepository.Add(terminalRegistration);
+                uow.SaveChanges();
+            }
         }
 
         public async Task Discover()
         {
-            var terminalUrls = FileUtils.LoadFileHostList();
+            var terminalUrls = ListTerminalEndpoints();
             var discoverTerminalsTasts = terminalUrls.Select(Discover).ToArray();
 
             await Task.WhenAll(discoverTerminalsTasts);
         }
+        
+        public async Task<bool> Discover(string terminalUrl)
+        {
+            // validate terminal url
+            var uri = new Uri(terminalUrl);
 
-        public async Task Discover(string terminalUrl)
+            lock (_knownTerminals)
+            {
+                if (!_knownTerminals.Contains(uri.Authority))
+                {
+                    return false;
+                }
+            }
+
+            return await DiscoverInternal(terminalUrl);
+        }
+
+        private async Task<bool> DiscoverInternal(string terminalUrl)
         {
             try
             {
                 string secret = null;
 
-                using (var uow = _unitOfWorkFactory.GetNewUnitOfWork())
+                using (var uow = _unitOfWorkFactory.Create())
                 {
                     var exisitingTerminal = uow.TerminalRepository.GetQuery().FirstOrDefault(x => x.Endpoint == terminalUrl);
 
@@ -79,9 +159,9 @@ namespace Hub.Services
                 var terminal = Mapper.Map<TerminalDO>(terminalRegistrationInfo.Definition);
 
                 terminal.Secret = secret;
-                
+
                 terminal = _terminal.RegisterOrUpdate(terminal);
-                
+
                 foreach (var curItem in activityTemplates)
                 {
                     try
@@ -102,7 +182,38 @@ namespace Hub.Services
             catch (Exception ex)
             {
                 _eventReporter.ActivityTemplateTerminalRegistrationError($"Failed terminal service: {terminalUrl}. Error Message: {ex.Message} ", ex.GetType().Name);
+                return false;
             }
+
+            lock (_knownTerminals)
+            {
+                var uri = new Uri(terminalUrl);
+                _knownTerminals.Add(uri.Authority);
+            }
+
+            return true;
+        }
+
+        private string NormalizeTerminalEndpoint(string endpoint)
+        {
+            var uri = endpoint.StartsWith("http") ? endpoint : "http://" + endpoint;
+
+            return uri.TrimEnd('\\', '/').ToLower() + "/discover";
+        }
+
+        private string[] ListTerminalEndpoints()
+        {
+            var terminalUrls = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
+
+            using (var uow = _unitOfWorkFactory.Create())
+            {
+                foreach (var terminalRegistration in uow.TerminalRegistrationRepository.GetAll())
+                {
+                    terminalUrls.Add(NormalizeTerminalEndpoint(terminalRegistration.Endpoint));
+                }
+            }
+
+            return terminalUrls.ToArray();
         }
     }
 }

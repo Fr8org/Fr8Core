@@ -17,7 +17,7 @@ using Fr8.TerminalBase.Errors;
 
 namespace terminalDemo.Activities
 {
-    public class DoMath_v1 : EnhancedTerminalActivity<DoMath_v1.ActivityUi>
+    public class DoMath_v1 : TerminalActivity<DoMath_v1.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {

@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
-using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
-using StructureMap;
 
 namespace Fr8.TerminalBase.Services
 {
@@ -54,6 +52,11 @@ namespace Fr8.TerminalBase.Services
                     crate.Label = crate.Label.Substring((prefix + "_").Length);
                 }
             }
+        }
+
+        public Task<PlanEmptyDTO> LoadPlan(JToken planContents)
+        {
+            throw new NotImplementedException();
         }
 
         public Task<PayloadDTO> GetPayload(Guid containerId)

@@ -13,7 +13,7 @@ using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Activities
 {
-    public class Build_Message_v1 : EnhancedTerminalActivity<Build_Message_v1.ActivityUi>
+    public class Build_Message_v1 : TerminalActivity<Build_Message_v1.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {

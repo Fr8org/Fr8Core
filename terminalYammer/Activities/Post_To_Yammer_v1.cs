@@ -16,7 +16,7 @@ using terminalYammer.Services;
 
 namespace terminalYammer.Actions
 {
-    public class Post_To_Yammer_v1 : BaseTerminalActivity
+    public class Post_To_Yammer_v1 : ExplicitTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {

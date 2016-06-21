@@ -60,7 +60,14 @@ namespace Hub.Services
 
         private static void OnUtilizationStateRenewTick(object state)
         {
-            ((ActivityExecutionRateLimitingService) state).RenewUtilizationState();
+            try
+            {
+                ((ActivityExecutionRateLimitingService) state).RenewUtilizationState();
+            }
+            catch(Exception ex)
+            {
+                Logger.Error("Failed to update utilization state", ex);
+            }
         }
 
         // Load blocked users from the DB into local cache.
