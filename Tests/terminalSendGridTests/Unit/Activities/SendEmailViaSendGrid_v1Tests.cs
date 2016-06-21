@@ -97,7 +97,7 @@ namespace terminalSendGridTests.Unit.Activities
                 control.ValueSource = "specific";
                 control.Value = (control.Name == "EmailAddress") ? "test@mail.com" : "test";
             }
-            var crate = Crate.CreateStandardConfigurationControlsCrate(BaseTerminalActivity.ConfigurationControlsLabel, standardControls.Controls.ToArray());
+            var crate = Crate.CreateStandardConfigurationControlsCrate(ExplicitTerminalActivity.ConfigurationControlsLabel, standardControls.Controls.ToArray());
             activityContext.ActivityPayload.CrateStorage.Add(crate);
             // Act
             await _gridActivity.Run(activityContext, executionContext);

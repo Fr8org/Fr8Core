@@ -15,7 +15,7 @@ using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Actions
 {
-    public class Get_File_From_Fr8_Store_v1 : BaseTerminalActivity
+    public class Get_File_From_Fr8_Store_v1 : ExplicitTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {

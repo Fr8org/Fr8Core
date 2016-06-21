@@ -230,7 +230,35 @@ namespace Data.Repositories.MultiTenant.Sql
 
         public int Delete(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode @where)
         {
-            throw new System.NotImplementedException();
+            if (where == null)
+            {
+                throw new ApplicationException("Where clause must be provided.");
+            }
+
+            using (var connection = OpenConnection(connectionProvider))
+            {
+                using (var command = new SqlCommand())
+                {
+                    command.Connection = connection;
+
+                    var astConverter = new AstToSqlConverter(type, _converter);
+                    astConverter.Convert(where);
+
+                    var sqlCommand = @"delete FROM [dbo].[MtData] WHERE fr8AccountId = @accountId and Type = @type and " + astConverter.SqlCommand;
+
+                    command.Parameters.AddWithValue("@type", type.Id);
+                    command.Parameters.AddWithValue("@accountId", fr8AccountId);
+
+                    command.CommandText = sqlCommand;
+
+                    for (int index = 0; index < astConverter.Constants.Count; index++)
+                    {
+                        command.Parameters.AddWithValue("@param" + index, astConverter.Constants[index]);
+                    }
+
+                    return command.ExecuteNonQuery();
+                }
+            }
         }
 
         public int? GetObjectId(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode where)
