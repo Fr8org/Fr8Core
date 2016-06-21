@@ -216,7 +216,7 @@ namespace Hub.Services
             try
             {
                 var systemUserEmail = _configRepository.Get("SystemUserEmail");
-                using (var uow = _uowFactory.GetNewUnitOfWork())
+                using (var uow = _uowFactory.Create())
                 {
                     return uow.UserRepository.GetQuery().FirstOrDefault(x => x.EmailAddress.Address == systemUserEmail);
                 }
