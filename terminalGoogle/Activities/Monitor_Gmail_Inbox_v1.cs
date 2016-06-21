@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using terminalGoogle.DataTransferObjects;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
 
 namespace terminalGoogle.Activities
 {
@@ -34,7 +35,7 @@ namespace terminalGoogle.Activities
             Category = ActivityCategory.Monitors,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
-            WebService = TerminalData.WebServiceDTO,
+            WebService = TerminalData.GmailWebServiceDTO,
             MinPaneWidth = 300
         };
 
@@ -85,14 +86,22 @@ namespace terminalGoogle.Activities
             };
         }
 
-        public override Task FollowUp()
+        public async override Task FollowUp()
         {
-            throw new NotImplementedException();
         }
 
         public class ActivityUi : StandardConfigurationControlsCM
         {
+            public TextBlock infoBlock;
 
+            public ActivityUi()
+            {
+                infoBlock = new TextBlock()
+                {
+                    Value = "This Activity doesn't require any configuration. Once the plan is activated this activity will launch a plan everytime a new email message appears in the inbox."
+                };
+                Controls.Add(infoBlock);
+            }
         }
     }
 }
