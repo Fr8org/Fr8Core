@@ -38,8 +38,9 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\HubWeb.XML</DocumentationFile>
+    <DocumentationFile>bin\HubWeb.XML</DocumentationFile> 
   </PropertyGroup>
+    
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
@@ -49,6 +50,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\HubWeb.XML</DocumentationFile>
   </PropertyGroup>
+  
   <ItemGroup>
     <Reference Include="Analytics.NET, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Analytics.2.0.0\lib\Analytics.NET.dll</HintPath>
@@ -502,6 +504,7 @@
     <Content Include="Content\css\shared\navbar.css" />
     <Content Include="Content\icons\web_services\Box-logo_64x64.png" />
     <Content Include="Content\icons\web_services\fr8-demo-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\statX-icon-64x64.png" />
     <Content Include="Content\img\background-7.png" />
     <Content Include="Content\img\background-cta-3.jpg" />
     <Content Include="Content\img\background-cta-3.png" />
@@ -663,7 +666,6 @@
     <Content Include="Content\videos\motion_1920.mp4" />
     <Content Include="Documentation\DocuSignRESTAPI.html" />
     <Content Include="Documentation\UpstreamCrates.html" />
-    <Content Include="fr8terminals.txt" />
     <Content Include="Documentation\AccountCustomFields.html" />
     <Content Include="Documentation\AddaNewGroup.html" />
     <Content Include="Documentation\AddaUserSocialAccount.html" />
@@ -946,6 +948,7 @@
     <Content Include="Views\AngularTemplate\ActivityLabelModal.cshtml" />
     <Content Include="Views\AngularTemplate\AdvisoryMessagesPopup.cshtml" />
     <Content Include="Config\Settings.config" />
+    <Content Include="Views\AngularTemplate\PhoneNumberAuthentication.cshtml" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="_PowerShellScripts\HM-job-run.cmd" />
@@ -985,9 +988,11 @@
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\KioskModeOrganizationHeaderController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ManageUserController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\OrganizationController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\PhoneNumberAuthenticationController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\PlanUploadModalController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\PlanUploadController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionDocumentationController.ts" />
@@ -1024,6 +1029,7 @@
     <TypeScriptCompile Include="Scripts\app\model\ActivityResponseDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\AdvisoryMessages.ts" />
     <TypeScriptCompile Include="Scripts\app\model\AlertDTO.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\TerminalRegistrationDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ValidationResults.ts" />
     <TypeScriptCompile Include="Scripts\app\model\HistoryDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\IncomingCratesDTO.ts" />

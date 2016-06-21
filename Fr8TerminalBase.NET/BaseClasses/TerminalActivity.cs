@@ -13,7 +13,7 @@ using Fr8.TerminalBase.Services;
 
 namespace Fr8.TerminalBase.BaseClasses
 {
-    public abstract class EnhancedTerminalActivity<T> : BaseTerminalActivityLegacy
+    public abstract class TerminalActivity<T> : TerminalActivityBase
        where T : StandardConfigurationControlsCM
     {
         /**********************************************************************************/
@@ -60,7 +60,7 @@ namespace Fr8.TerminalBase.BaseClasses
         // Functions
         /**********************************************************************************/
 
-        protected EnhancedTerminalActivity(ICrateManager crateManager) 
+        protected TerminalActivity(ICrateManager crateManager) 
             : base(crateManager)
         {
             UiBuilder = new UiBuilder();

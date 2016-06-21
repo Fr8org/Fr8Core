@@ -12,7 +12,7 @@ using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Activities
 {
-    public class Extract_Table_Field_v1 : BaseTerminalActivity
+    public class Extract_Table_Field_v1 : ExplicitTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {

@@ -15,8 +15,10 @@ using terminalBox.Infrastructure;
 
 namespace terminalBox.Actions
 {
-    public class Save_To_File_v1 : EnhancedTerminalActivity<Save_To_File_v1.ActivityUi>
+    public class Save_To_File_v1 : TerminalActivity<Save_To_File_v1.ActivityUi>
     {
+        private readonly IPushNotificationService _pushNotificationService;
+
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "Save_To_File",
@@ -43,9 +45,10 @@ namespace terminalBox.Actions
             }
         }
 
-        public Save_To_File_v1(ICrateManager crateManager) 
+        public Save_To_File_v1(ICrateManager crateManager, IPushNotificationService pushNotificationService) 
             : base(crateManager)
         {
+            _pushNotificationService = pushNotificationService;
         }
 
         public override async Task Initialize()
@@ -83,7 +86,7 @@ namespace terminalBox.Actions
             }
             var downloadLink = service.GetFileLink(fileId).Result;
 
-            await PushUserNotification("Success", "File download URL", "File was upload to Box. You can download it using this url: " + downloadLink);
+            await _pushNotificationService.PushUserNotification(MyTemplate, "Success", "File download URL", "File was upload to Box. You can download it using this url: " + downloadLink);
         }
 
         /// <summary>

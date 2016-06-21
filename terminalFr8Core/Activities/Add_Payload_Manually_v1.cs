@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace terminalFr8Core.Activities
 {
-    public class Add_Payload_Manually_v1 : BaseTerminalActivity
+    public class Add_Payload_Manually_v1 : ExplicitTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
