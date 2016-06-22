@@ -167,11 +167,22 @@ namespace terminalStatX.Services
                         {
                             foreach (var valueItem in itemsToken)
                             {
-                                stat.StatItems.Add(new StatItemDTO()
+                                if (valueItem is JValue)
                                 {
-                                    Name = valueItem["name"]?.ToString(),
-                                    Value = valueItem["value"]?.ToString()
-                                });
+                                    stat.StatItems.Add(new StatItemDTO()
+                                    {
+                                        Name = valueItem.ToString(),
+                                        Value = valueItem.ToString()
+                                    });
+                                }
+                                else
+                                {
+                                    stat.StatItems.Add(new StatItemDTO()
+                                    {
+                                        Name = valueItem["name"]?.ToString(),
+                                        Value = valueItem["value"]?.ToString()
+                                    });
+                                }
                             }
                         }
 
@@ -209,11 +220,22 @@ namespace terminalStatX.Services
             {
                 foreach (var valueItem in itemsToken)
                 {
-                    stat.StatItems.Add(new StatItemDTO()
+                    if (valueItem is JValue)
                     {
-                        Name = valueItem["name"]?.ToString(),
-                        Value = valueItem["value"]?.ToString()
-                    });
+                        stat.StatItems.Add(new StatItemDTO()
+                        {
+                            Name = valueItem.ToString(),
+                            Value = valueItem.ToString()
+                        });
+                    }
+                    else
+                    {
+                        stat.StatItems.Add(new StatItemDTO()
+                        {
+                            Name = valueItem["name"]?.ToString(),
+                            Value = valueItem["value"]?.ToString()
+                        });
+                    }
                 }
             }
 
