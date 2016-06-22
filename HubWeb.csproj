@@ -870,10 +870,21 @@
     <Content Include="Scripts\PlanBuilder\pb-widget.js" />
     <Content Include="Scripts\templateCache.js" />
     <Content Include="Scripts\tests\e2e\conf.js" />
+    <Content Include="Scripts\tests\e2e\contact\contact.spec.js" />
+    <Content Include="Scripts\tests\e2e\create plan\createPlan.spec.js" />
+    <Content Include="Scripts\tests\e2e\google Account Auth\googleAuthorization.spec.js" />
+    <Content Include="Scripts\tests\e2e\links\links.spec.js" />
     <Content Include="Scripts\tests\e2e\login\login.spec.js" />
-    <Content Include="Scripts\tests\e2e\login\registration.spec.js" />
+    <Content Include="Scripts\tests\e2e\registration\registration.spec.js" />
+    <Content Include="Scripts\tests\e2e\salesForce Account Auth\salesForceAuthorization.spec.js" />
+    <Content Include="Scripts\tests\e2e\pages\contact.page.js" />
+    <Content Include="Scripts\tests\e2e\pages\createPlan.page.js" />
+    <Content Include="Scripts\tests\e2e\pages\googleAuthorization.page.js" />
+    <Content Include="Scripts\tests\e2e\pages\links.page.js" />
     <Content Include="Scripts\tests\e2e\pages\login.page.js" />
     <Content Include="Scripts\tests\e2e\pages\registration.page.js" />
+    <Content Include="Scripts\tests\e2e\pages\salesForceAuthorization.page.js" />
+    <Content Include="Scripts\tests\e2e\shared\manageAuthTokens.js" />
     <Content Include="Views\AngularTemplate\DatePicker.cshtml" />
     <Content Include="ApplicationInsights.config">
       <TransformOnBuild>true</TransformOnBuild>
