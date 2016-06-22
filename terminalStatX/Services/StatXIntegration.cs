@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.Errors;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PhoneNumbers;
@@ -276,13 +277,13 @@ namespace terminalStatX.Services
 
                 var jObject = JObject.Parse(response);
 
-                CheckForExistingErrors(jObject);
+                CheckForExistingErrors(jObject, true);
             }
         }
 
         #region Helper Methods
 
-        private Dictionary<string, string> GetStatxAPIHeaders(StatXAuthDTO statXAuthDTO)
+        private static Dictionary<string, string> GetStatxAPIHeaders(StatXAuthDTO statXAuthDTO)
         {
             var headers = new Dictionary<string, string>
             {
@@ -293,7 +294,7 @@ namespace terminalStatX.Services
             return headers;
         }
 
-        private void CheckForExistingErrors(JObject jObject)
+        private static void CheckForExistingErrors(JObject jObject, bool isInRunMode = false)
         {
             JToken errorsToken;
             if (!jObject.TryGetValue("errors", out errorsToken)) return;
@@ -302,13 +303,17 @@ namespace terminalStatX.Services
 
             var firstError = (JArray)errorsToken.First;
 
-            if (!string.IsNullOrEmpty(firstError["message"]?.ToString()))
+            if (string.IsNullOrEmpty(firstError["message"]?.ToString())) return;
+
+            if (isInRunMode)
             {
-                throw new ApplicationException(firstError["message"].ToString());
+                throw new ActivityExecutionException(firstError["message"].ToString());
             }
+               
+            throw new ApplicationException(firstError["message"].ToString());
         }
 
-        private string GeneralisePhoneNumber(string phoneNumber)
+        private static string GeneralisePhoneNumber(string phoneNumber)
         {
             PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
             phoneNumber = new string(phoneNumber.Where(s => char.IsDigit(s) || s == '+' || (phoneUtil.IsAlphaNumber(phoneNumber) && char.IsLetter(s))).ToArray());
