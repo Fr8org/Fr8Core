@@ -4,6 +4,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Data.States;
+using Newtonsoft.Json;
 
 namespace Fr8.Testing.Unit.Fixtures
 {
@@ -63,7 +64,17 @@ namespace Fr8.Testing.Unit.Fixtures
                 ExternalAccountId = "ExternalAccountId"
             };
         }
-        
+
+
+        public static AuthorizationTokenDTO GetGoogleAuthorizationTokenForGmailMonitor()
+        {
+            // login: 	 icantcomeupwithauniquename@gmail.com
+            // password: grolier34
+            return JsonConvert.DeserializeObject<AuthorizationTokenDTO>("{\"AccessToken\":\"ya29.Ci8JA9MKPyPxzuBuG7u_q4rPUChktxze3CtJuB8tG4DktVBeaTdPo40HhTXOle085g\",\"RefreshToken\":\"1/GVwrt4sgDtxe-NGrpi4o6hga1b0vCzd3xhoRmDJmLLg\",\"Expires\":\"2016-06-22T16:24:45.3692231+03:00\"}");
+        }
+
+
+
         public static AuthorizationTokenDTO GetGoogleAuthorizationToken()
         {
             return new AuthorizationTokenDTO

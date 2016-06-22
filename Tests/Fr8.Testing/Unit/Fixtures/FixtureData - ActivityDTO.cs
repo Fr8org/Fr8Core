@@ -34,6 +34,21 @@ namespace Fr8.Testing.Unit.Fixtures
             return activityDTO;
         }
 
+        public static ActivityDTO Monitor_Gmail_Inbox_v1_InitialConfiguration()
+        {
+            var activityTemplate = Monitor_Gmail_Inbox_ActivityTemplate();
+
+            var activityDTO = new ActivityDTO()
+            {
+                Id = Guid.NewGuid(),
+                Label = "Monitor Gmail Inbox",
+                AuthToken = GetGoogleAuthorizationTokenForGmailMonitor(),
+                ActivityTemplate = activityTemplate
+            };
+
+            return activityDTO;
+        }
+
         public static ActivityDTO Get_Google_Sheet_Data_v1_InitialConfiguration()
         {
             var activityTemplate = GetGoogleSheetDataActivityTemplate();
@@ -68,6 +83,16 @@ namespace Fr8.Testing.Unit.Fixtures
             };
         }
 
+        public static ActivityDTO Save_To_Fr8_Warehouse_InitialConfiguration()
+        {
+            var activityTemplate = SaveToFr8WarehouseActivityTemplate();
+            return new ActivityDTO
+            {
+                Id = Guid.NewGuid(),
+                Label = "Save To Fr8 Warehouse",
+                ActivityTemplate = activityTemplate
+            };
+        }
         public static ActivityDTO Get_File_List_v1_InitialConfiguration()
         {
             var activityTemplate = GetFileListActivityTemplate();
