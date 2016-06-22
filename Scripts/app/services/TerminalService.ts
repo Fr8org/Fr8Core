@@ -10,13 +10,12 @@ module dockyard.services {
             getAll: {
                 method: "GET",
                 isArray: true,
-                url: "/api/terminals/all"
+                url: "/api/terminals/registrations"
             },
             register: {
                 method: "POST",
-                url: "/api/teminals"
+                url: "/api/terminals"
             }
-
         })
     ]);
 }

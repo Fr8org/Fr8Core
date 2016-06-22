@@ -4,6 +4,7 @@ using Fr8.Infrastructure.Interfaces;
 using StructureMap;
 using Hub.Infrastructure;
 using HubWeb.Infrastructure_HubWeb;
+using Data.Infrastructure.StructureMap;
 
 namespace HubWeb.Controllers
 {
@@ -13,6 +14,7 @@ namespace HubWeb.Controllers
         //TODO create an enum for different types of pusher events
         private const string PUSHER_EVENT_TERMINAL_NOTIFICATION = "fr8pusher_terminal_event";
         private IPusherNotifier _notification;
+        private readonly ISecurityServices _security;
 
         public NotificationsController()
         {
@@ -24,19 +26,19 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         public IHttpActionResult Post(TerminalNotificationDTO notificationMessage)
         {
-            string userName;
+            string userId;
 
             if (IsThisTerminalCall())
             {
                 var user = GetUserTerminalOperatesOn();
-                userName = user?.UserName;
+                userId = user?.Id;
             }
             else
             {
-                userName = User.Identity.Name;
+                userId = _security.GetCurrentUser();
             }
 
-            _notification.NotifyUser(notificationMessage, PUSHER_EVENT_TERMINAL_NOTIFICATION, userName);
+            _notification.NotifyUser(notificationMessage, PUSHER_EVENT_TERMINAL_NOTIFICATION, userId);
             return Ok();
         }
     }

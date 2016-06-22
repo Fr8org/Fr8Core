@@ -708,6 +708,10 @@
     <Compile Include="Migrations\201606181115160_MoveFr8TerminalsTxtToDB.Designer.cs">
       <DependentUpon>201606181115160_MoveFr8TerminalsTxtToDB.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201606190931116_Add_terminalStatX_Migration.cs" />
+    <Compile Include="Migrations\201606190931116_Add_terminalStatX_Migration.Designer.cs">
+      <DependentUpon>201606190931116_Add_terminalStatX_Migration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -1307,6 +1311,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606181115160_MoveFr8TerminalsTxtToDB.resx">
       <DependentUpon>201606181115160_MoveFr8TerminalsTxtToDB.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606190931116_Add_terminalStatX_Migration.resx">
+      <DependentUpon>201606190931116_Add_terminalStatX_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
