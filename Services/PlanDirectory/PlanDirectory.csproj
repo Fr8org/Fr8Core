@@ -230,22 +230,37 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\dockyard_logo.png" />
+    <Content Include="Content\css\additionalcss\font-awesome\css\font-awesome.css" />
+    <Content Include="Content\css\additionalcss\font-awesome\css\style.css" />
+    <Content Include="Content\css\additionalcss\font-awesome\fonts\fontawesome-webfont.svg" />
+    <Content Include="Content\css\plan-directory.css" />
+    <Content Include="Content\css\shared\main.css" />
+    <Content Include="Content\img\dockyard_logo.png" />
+    <Content Include="Content\img\dockyard_logo_dark.png" />
+    <Content Include="Content\img\dockyard_logo_white.png" />
+    <Content Include="Content\img\favicon.ico" />
+    <Content Include="Content\img\plan-bg.jpg" />
+    <Content Include="Content\img\white-bg-overlay.png" />
     <Content Include="Content\metronic\components.css" />
     <Content Include="Content\metronic\jquery.blockui.min.js" />
     <Content Include="Content\metronic\loading.gif" />
     <Content Include="Content\metronic\ui.js" />
-    <Content Include="Content\plan-directory.css" />
     <Content Include="Global.asax" />
     <Content Include="gulpfile.js" />
     <Content Include="packages.config" />
     <Content Include="package.json" />
     <Content Include="bower.json" />
     <Content Include="PreBuild.bat" />
+    <Content Include="Scripts\PlanDirectory.js" />
     <Content Include="Scripts\PlanDirectoryApp.js" />
     <Content Include="Scripts\SearchController.js" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\Reauthenticate.cshtml" />
+    <Content Include="Views\Shared\HomeNav.cshtml" />
+    <Content Include="Content\css\additionalcss\font-awesome\fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\css\additionalcss\font-awesome\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Content\css\additionalcss\font-awesome\fonts\fontawesome-webfont.woff" />
+    <Content Include="Content\css\additionalcss\font-awesome\fonts\FontAwesome.otf" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -291,6 +306,8 @@
     <Compile Include="Infrastructure\PlanTemplate.Impl.cs" />
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\HomeVM.cs" />
+    <Compile Include="ViewModels\NavLinksShared.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\AngularTemplate\" />

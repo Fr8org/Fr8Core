@@ -1,0 +1,79 @@
+﻿<nav class="navbar navbar-fixed-top navbar-light">
+    <div class="container">
+        <!-- NAVIGATION BAR LOGO -->
+        <div class="navbar-header">
+            <a href="/" class="navbar-brand">
+                <img src="~/Content/img/dockyard_logo_white.png" alt="FR8"/>
+                <h1 class="hide">FR8 Company</h1>
+            </a>
+        </div>
+        <!-- NAVIGATION BAR CONTENT -->
+        <div class="navbar-collapse collapse" id="main-nav" role="navigation">
+            <!-- SINGUP/LOGIN UPRIGHT OR WELCOMING MESSAGE -->
+            @using Microsoft.AspNet.Identity
+            @if (Request.IsAuthenticated)
+            {
+                <div class="userinfo">
+                    <p class="navbar-text">Hello
+                        @if (User.IsInRole("Guest"))
+                        {
+                            <text>Guest User!</text>
+                        }
+                        else
+                        {
+                            <text>@User.Identity.GetUserName()!</text>
+                        }
+                    </p>
+                    @if (User.IsInRole("Guest"))
+                    {
+                        <p class="navbar-text"><a href="/DockyardAccount/Logoff">Have an Account? Login</a>
+                        </p>
+                    }
+                </div>
+            }
+            <!-- MENU -->
+            <ul class="nav navbar-nav navbar-right">
+                <!--How It Works-->
+                <li><a href="@Model.HowItWorks">How it Works</a></li>
+                <!--Services-->
+                <li data-scroll="scrolling" class="dropdown">
+                    <a data-target="#" href="/" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Services">Services <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="@Model.Services/DocuSign">DocuSign</a></li>
+                        <li><a href="@Model.Services/Salesforce">Salesforce.com</a></li>
+                    </ul>
+                </li>
+                <!--Developers-->
+                <li><a href="https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md">Developers</a></li>
+                <!--Company-->
+                <li data-scroll="scrolling" class="dropdown">
+                    <a href="/" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Company">Company <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li data-scroll="scrolling"><a href="@Model.Company/#vision">Vision</a></li>
+                        <li data-scroll="scrolling"><a href="@Model.Company/#team">Team</a></li>
+                        <li data-scroll="scrolling"><a href="@Model.Company/#press">Press Releases</a></li>
+                        <li data-scroll="scrolling"><a href="@Model.Company/#location">Location</a></li>
+                        <li data-scroll="scrolling"><a href="@Model.Company/#jobs">Jobs</a></li>
+                    </ul>
+                </li>
+                <!--Contact-->
+                <li><a href="@Model.Contact" title="Contact">Contact</a></li>
+                <!--Blog-->
+                <li><a href="@Model.Blog" target="_blank">Blog</a></li>
+                <!--Login Button on Right-->
+                @if (!Request.IsAuthenticated)
+                {
+                    <li>
+                        <p class="navbar-btn"><a href="/DockyardAccount" class="btn btn-danger">Login/Register</a>
+                        </p></li>
+                }
+                else
+                {
+                    <li>
+                        <p class="navbar-btn"><a href="/dashboard/myaccount" class="btn btn-primary">My Account</a>
+                        </p></li>
+                }
+            </ul>
+        </div>
+    </div>
+</nav>
