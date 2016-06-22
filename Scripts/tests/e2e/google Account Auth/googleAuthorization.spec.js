@@ -24,6 +24,11 @@ describe('Google Authorization pathway test', function () {
         expect(browser.getCurrentUrl()).toContain('/myaccount');
     });
 
+    it('should control token', function () {
+        //auth screen git and call function
+        manageAuthTokens.revokeAuthTokens();
+    });
+
     it('should add a new plan', function () {
         browser.sleep(3000);
         googleAuthorizationPage.addPlans();
