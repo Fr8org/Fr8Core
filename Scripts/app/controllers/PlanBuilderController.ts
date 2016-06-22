@@ -635,27 +635,25 @@ module dockyard.controllers {
 
         private deleteAction(action: model.ActivityDTO) {
             var self = this;
-            self.startLoader();
-            self.ActionService.deleteById({ id: action.id }).$promise.then((response) => {
-                self.reloadPlan();
-                self.stopLoader();
-            }, (error) => {
-                //TODO check error status while completing DO-1335
-
-                var alertMessage = new model.AlertDTO();
-                alertMessage.title = "Please confirm";
-                alertMessage.body = "Are you sure you want to delete this Activity? You will have to reconfigure all downstream Actions.";
-
-                this.uiHelperService
-                    .openConfirmationModal(alertMessage)
-                    .then(() => {
-                        self.startLoader();
-                        self.ActionService.deleteById({ id: action.id }).$promise.then(() => {
-                            self.reloadPlan();
-                            self.stopLoader();
+            var alertMessage = new model.AlertDTO();
+            alertMessage.title = "Please confirm";
+            alertMessage.body = "Are you sure you want to delete this Activity? You will have to reconfigure all downstream Actions.";
+            this.uiHelperService
+                .openConfirmationModal(alertMessage)
+                .then(() => {
+                    self.startLoader();
+                    self.ActionService.deleteById({ id: action.id }).$promise.then(() => {
+                        self.stopLoader();
+                        var deletedActionDownstreamActions = self.findAndRemoveAction(action);
+                        //let's re-render plan builder
+                        this.renderPlan(<interfaces.IPlanVM>this.$scope.current.plan);
+                        //let's wait for UI to finish it's rendering
+                        this.$timeout(() => {
+                            //reconfigure those actions
+                            this.reConfigure(deletedActionDownstreamActions);
                         });
                     });
-            });
+                });
         }
 
         private PaneSelectAction_ActivityTypeSelected(eventArgs: psa.ActivityTypeSelectedEventArgs) {
