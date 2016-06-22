@@ -152,6 +152,7 @@ namespace terminalGoogle.Activities
             {
                 ActivityUI.HideWorksheetList();
                 SelectedSpreadsheet = null;
+                CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel, true);
             }
             else
             {
@@ -203,7 +204,6 @@ namespace terminalGoogle.Activities
                     Storage.RemoveByLabel(TabularUtilities.ExtractedFieldsCrateLabel);
                 }
             }
-           
         }
 
         private async Task<List<TableRowDTO>> GetSelectedSpreadSheet()
