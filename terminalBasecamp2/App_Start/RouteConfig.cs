@@ -1,7 +1,7 @@
 ﻿using System.Web.Http;
 using Fr8.TerminalBase.BaseClasses;
 
-namespace terminalBasecamp
+namespace terminalBasecamp2
 {
     public static class RoutesConfig
     {

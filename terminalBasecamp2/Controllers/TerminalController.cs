@@ -1,7 +1,7 @@
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Services;
 
-namespace terminalBasecamp.Controllers
+namespace terminalBasecamp2.Controllers
 {
     public class TerminalController : DefaultTerminalController
     {

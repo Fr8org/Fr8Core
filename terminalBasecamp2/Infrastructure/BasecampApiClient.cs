@@ -9,9 +9,9 @@ using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.Infrastructure.Utilities.Logging;
 using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
-using terminalBasecamp.Data;
+using terminalBasecamp2.Data;
 
-namespace terminalBasecamp.Infrastructure
+namespace terminalBasecamp2.Infrastructure
 {
     public class BasecampApiClient : IBasecampApiClient
     {
@@ -124,7 +124,7 @@ namespace terminalBasecamp.Infrastructure
 
         private async Task ApiPostAsync<TContent>(string apiUrl, TContent content, BasecampAuthorizationToken auth)
         {
-            await _restfulServiceClient.PostAsync<TContent, object>(new Uri(apiUrl), content, headers: GetHeaders(auth)).ConfigureAwait(false);
+            await _restfulServiceClient.PostAsync(new Uri(apiUrl), content, headers: GetHeaders(auth)).ConfigureAwait(false);
         }
 
         private async Task<TResponse> ApiPostAsync<TResponse>(string apiUrl, BasecampAuthorizationToken auth)

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Http;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.TerminalBase.Services;
-using terminalBasecamp.Infrastructure;
+using terminalBasecamp2.Infrastructure;
 
-namespace terminalBasecamp.Controllers
+namespace terminalBasecamp2.Controllers
 {
     [RoutePrefix("authentication")]
     public class AuthenticationController : ApiController

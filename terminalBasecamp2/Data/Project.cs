@@ -1,4 +1,4 @@
-﻿namespace terminalBasecamp.Data
+﻿namespace terminalBasecamp2.Data
 {
     public class Project
     {

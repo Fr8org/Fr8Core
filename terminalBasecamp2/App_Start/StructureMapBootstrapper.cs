@@ -1,7 +1,7 @@
 ﻿using StructureMap;
-using terminalBasecamp.Infrastructure;
+using terminalBasecamp2.Infrastructure;
 
-namespace terminalBasecamp.App_Start
+namespace terminalBasecamp2
 {
     public class StructureMapBootstrapper
     {

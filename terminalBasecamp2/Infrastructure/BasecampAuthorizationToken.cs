@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace terminalBasecamp.Infrastructure
+namespace terminalBasecamp2.Infrastructure
 {
     public class BasecampAuthorizationToken
     {

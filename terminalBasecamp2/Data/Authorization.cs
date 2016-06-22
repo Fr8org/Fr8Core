@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace terminalBasecamp.Data
+namespace terminalBasecamp2.Data
 {
     public class Authorization
     {

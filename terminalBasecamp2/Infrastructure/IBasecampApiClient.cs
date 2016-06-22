@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.TerminalBase.Models;
-using terminalBasecamp.Data;
+using terminalBasecamp2.Data;
 
-namespace terminalBasecamp.Infrastructure
+namespace terminalBasecamp2.Infrastructure
 {
     public interface IBasecampApiClient
     {

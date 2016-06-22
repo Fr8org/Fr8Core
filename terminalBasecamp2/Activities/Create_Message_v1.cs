@@ -10,9 +10,9 @@ using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities.Logging;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Infrastructure;
-using terminalBasecamp.Infrastructure;
+using terminalBasecamp2.Infrastructure;
 
-namespace terminalBasecamp.Activities
+namespace terminalBasecamp2.Activities
 {
     public class Create_Message_v1 : TerminalActivity<Create_Message_v1.ActivityUi>
     {
@@ -86,13 +86,17 @@ namespace terminalBasecamp.Activities
 
         protected override Task Validate()
         {
-            if (string.IsNullOrEmpty(ActivityUI.AccountSelector.selectedKey))
+            if (ActivityUI.AccountSelector.ListItems?.Count == 0)
+            {
+                ValidationManager.SetError("Your account doesn't contain Basecamp2 projects. Please reauthenticate with a different Basecamp account", ActivityUI.AccountSelector);
+            }
+            else if (string.IsNullOrEmpty(ActivityUI.AccountSelector.selectedKey))
             {
                 ValidationManager.SetError("Account is not selected", ActivityUI.AccountSelector);
             }
             if (ActivityUI.ProjectSelector.ListItems?.Count == 0)
             {
-                ValidationManager.SetError("Your account doesn't contain Basecamp2 projects. Please reauthenticate with a different Basecamp account", ActivityUI.ProjectSelector);
+                ValidationManager.SetError("You don't have any Basecamp2 projects associated with your account. Please reauthenticate with a different Basecamp account", ActivityUI.ProjectSelector);
             }
             else if (string.IsNullOrEmpty(ActivityUI.ProjectSelector.selectedKey))
             {

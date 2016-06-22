@@ -4,14 +4,13 @@ using System.Web.Http.Dispatcher;
 using Fr8.TerminalBase.BaseClasses;
 using Microsoft.Owin;
 using Owin;
-using terminalBasecamp;
-using terminalBasecamp.Activities;
-using terminalBasecamp.App_Start;
-using terminalBasecamp.Controllers;
+using terminalBasecamp2;
+using terminalBasecamp2.Activities;
+using terminalBasecamp2.Controllers;
 
 [assembly: OwinStartup(typeof(Startup))]
 
-namespace terminalBasecamp
+namespace terminalBasecamp2
 {
     public class Startup : BaseConfiguration
     {
