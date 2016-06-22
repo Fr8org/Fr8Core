@@ -7,8 +7,7 @@ namespace terminalBasecamp.App_Start
     {
         public static void LiveMode(ConfigurationExpression expression)
         {
-            expression.For<IBasecampAuthorization>().Use<BasecampAuthorization>().Singleton();
-            expression.For<IBasecampApi>().Use<BasecampApi>().Singleton();
+            expression.For<IBasecampApiClient>().Use<BasecampApiClient>().Singleton();
         }
     }
 }

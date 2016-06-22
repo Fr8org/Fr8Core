@@ -1,20 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Control;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
-using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Logging;
 using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Infrastructure;
 using terminalBasecamp.Infrastructure;
 
 namespace terminalBasecamp.Activities
 {
     public class Create_Message_v1 : TerminalActivity<Create_Message_v1.ActivityUi>
     {
-        private readonly IBasecampApi _apiClient;
+        private readonly IBasecampApiClient _basecampApiClient;
 
         public static ActivityTemplateDTO ActivityTemplate = new ActivityTemplateDTO
         {
@@ -34,9 +36,9 @@ namespace terminalBasecamp.Activities
 
             public DropDownList ProjectSelector { get; set; }
 
-            public TextSource MessageHeader { get; set; }
+            public TextSource MessageSubject { get; set; }
 
-            public TextSource MessageBody { get; set; }
+            public TextSource MessageContent { get; set; }
 
             public ActivityUi()
             {
@@ -51,47 +53,147 @@ namespace terminalBasecamp.Activities
                 {
                     Name = nameof(ProjectSelector),
                     Label = "Select Project",
+                    IsHidden = true
                 };
                 Controls.Add(ProjectSelector);
-                MessageHeader = new TextSource
+                MessageSubject = new TextSource
                 {
-                    InitialLabel = "Header",
-                    Name = nameof(MessageHeader)
+                    InitialLabel = "Subject",
+                    Name = nameof(MessageSubject),
+                    IsHidden = true
                 };
-                Controls.Add(MessageHeader);
-                MessageBody = new TextSource
+                Controls.Add(MessageSubject);
+                MessageContent = new TextSource
                 {
                     InitialLabel = "Content",
-                    Name = nameof(MessageBody)
+                    Name = nameof(MessageContent),
+                    IsHidden = true
                 };
-                Controls.Add(MessageBody);
+                Controls.Add(MessageContent);
             }
         }
 
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplate;
 
-        public Create_Message_v1(ICrateManager crateManager, IBasecampApi apiClient) : base(crateManager)
+        public Create_Message_v1(ICrateManager crateManager, IBasecampApiClient basecampApiClient) : base(crateManager)
         {
-            if (apiClient == null)
+            if (basecampApiClient == null)
             {
-                throw new ArgumentNullException(nameof(apiClient));
+                throw new ArgumentNullException(nameof(basecampApiClient));
             }
-            _apiClient = apiClient;
+            _basecampApiClient = basecampApiClient;
         }
 
-        public override Task FollowUp()
+        protected override Task Validate()
         {
-            return Task.FromResult(0);
+            if (string.IsNullOrEmpty(ActivityUI.AccountSelector.selectedKey))
+            {
+                ValidationManager.SetError("Account is not selected", ActivityUI.AccountSelector);
+            }
+            if (ActivityUI.ProjectSelector.ListItems?.Count == 0)
+            {
+                ValidationManager.SetError("Your account doesn't contain Basecamp2 projects. Please reauthenticate with a different Basecamp account", ActivityUI.ProjectSelector);
+            }
+            else if (string.IsNullOrEmpty(ActivityUI.ProjectSelector.selectedKey))
+            {
+                ValidationManager.SetError("Project is not selected", ActivityUI.ProjectSelector);
+            }
+            ValidationManager.ValidateTextSourceNotEmpty(ActivityUI.MessageSubject, "Can't create message with empty subject");
+            ValidationManager.ValidateTextSourceNotEmpty(ActivityUI.MessageContent, "Can't create message with empty content");
+            return base.Validate();
         }
 
-        public override Task Initialize()
+        public override async Task FollowUp()
         {
-            var projects = await _apiClient.GetAccounts(AuthorizationToken);
+            var selectedAccount = ActivityUI.AccountSelector.Value;
+            var previousSelectedAccount = PreviousSelectedAccount;
+            if (string.IsNullOrEmpty(previousSelectedAccount) || selectedAccount != previousSelectedAccount)
+            {
+                await LoadProjectsAndSelectTheOnlyOne().ConfigureAwait(false);
+                PreviousSelectedAccount = selectedAccount;
+            }
         }
 
-        public override Task Run()
+        public override async Task Initialize()
         {
-            return Task.FromResult(0);
+            await LoadAccountAndSelectTheOnlyOne();
+            if (ActivityUI.AccountSelector.ListItems.Count == 1)
+            {
+                await LoadProjectsAndSelectTheOnlyOne().ConfigureAwait(false);
+            }
         }
+
+        public override async Task Run()
+        {
+            try
+            {
+                await _basecampApiClient.CreateMessage(
+                                                       ActivityUI.AccountSelector.Value,
+                                                       ActivityUI.ProjectSelector.Value,
+                                                       ActivityUI.MessageSubject.GetValue(Payload),
+                                                       ActivityUI.MessageContent.GetValue(Payload),
+                                                       AuthorizationToken)
+                                        .ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"Failed to create new message. Basecamp user - {AuthorizationToken.ExternalAccountName}, Fr8 User Id - {CurrentUserId}, Details - {ex}");
+                throw;
+            }
+        }
+
+        #region Implementation details
+
+        private string PreviousSelectedAccount
+        {
+            get { return this["Account"]; }
+            set { this["Account"] = value; }
+        }
+
+        private string PreviousSelectedProject
+        {
+            get { return this["Project"]; }
+            set { this["Project"] = value; }
+        }
+
+        private async Task LoadProjectsAndSelectTheOnlyOne()
+        {
+            var selectedAccount = ActivityUI.AccountSelector.Value;
+            if (string.IsNullOrEmpty(selectedAccount))
+            {
+                ActivityUI.AccountSelector.IsHidden = false;
+                ActivityUI.ProjectSelector.IsHidden = true;
+                ActivityUI.MessageSubject.IsHidden = true;
+                ActivityUI.MessageContent.IsHidden = true;
+            }
+            else
+            {
+                ActivityUI.ProjectSelector.IsHidden = false;
+                ActivityUI.MessageSubject.IsHidden = false;
+                ActivityUI.MessageContent.IsHidden = false;
+                var projects = await _basecampApiClient.GetProjects(selectedAccount, AuthorizationToken).ConfigureAwait(false);
+                ActivityUI.ProjectSelector.ListItems = projects.Select(x => new ListItem { Key = x.Name, Value = x.Id.ToString() }).ToList();
+                if (ActivityUI.ProjectSelector.ListItems.Count == 1)
+                {
+                    ActivityUI.ProjectSelector.SelectByKey(ActivityUI.ProjectSelector.ListItems[0].Key);
+                    ActivityUI.ProjectSelector.IsHidden = true;
+                    PreviousSelectedProject = ActivityUI.ProjectSelector.Value;
+                }
+            }
+        }
+
+        private async Task LoadAccountAndSelectTheOnlyOne()
+        {
+            var accounts = await _basecampApiClient.GetAccounts(AuthorizationToken).ConfigureAwait(false);
+            ActivityUI.AccountSelector.ListItems = accounts.Select(x => new ListItem { Key = x.Name, Value = x.ApiUrl }).ToList();
+            if (ActivityUI.AccountSelector.ListItems.Count == 1)
+            {
+                ActivityUI.AccountSelector.SelectByKey(ActivityUI.AccountSelector.ListItems[0].Key);
+                ActivityUI.AccountSelector.IsHidden = true;
+                PreviousSelectedAccount = ActivityUI.AccountSelector.Value;
+            }
+        }
+
+        #endregion
     }
 }

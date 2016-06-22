@@ -67,6 +67,7 @@ namespace Data.Migrations
                 AddTestAccounts(uow);
                 AddDefaultProfiles(uow);
                 //Addterminals(uow);
+                AddTerminalsRegistrations(uow);
 
                 //AddAuthorizationTokens(uow);
                 uow.SaveChanges();
@@ -485,27 +486,22 @@ namespace Data.Migrations
             uow.SubscriptionRepository.Add(curSub);
         }
 
-
-        private void AddTerminals(IUnitOfWork uow)
+        private void AddTerminalsRegistrations(UnitOfWork uow)
         {
-            // Create test DockYard account for terminal subscription.
-            // var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
-
-            // TODO: remove this, DO-1397
-            // AddTerminals(uow, "terminalDocuSign", "localhost:53234", "1", true);
-            // AddTerminals(uow, "terminalExcel", "localhost:47011", "1", false);
-            // AddTerminals(uow, "terminalSalesforce", "localhost:51234", "1", true);
-            AddTerminals(uow, "terminalDocuSign", "DocuSign", "localhost:53234", "1");
-            AddTerminals(uow, "terminalExcel", "Excel", "localhost:47011", "1");
-            AddTerminals(uow, "terminalSalesforce", "Salesforce", "localhost:51234", "1");
-
-            uow.SaveChanges();
+            //Terminal Basecamp2
+            AddTerminalRegistration(uow, "localhost:61121");
         }
 
-        // TODO: remove this, DO-1397
+        private void AddTerminalRegistration(UnitOfWork uow, string endpoint)
+        {
+            if (uow.TerminalRegistrationRepository.GetQuery().Any(x => x.Endpoint == endpoint))
+            {
+                return;
+            }
+            uow.TerminalRegistrationRepository.Add(new TerminalRegistrationDO { CreateDate = DateTimeOffset.UtcNow, Endpoint = endpoint });
+        }
 
-        // private static void AddTerminals(IUnitOfWork uow, string terminalName, string endPoint,
-        //     string version, bool requiresAuthentication)
+
         private static void AddTerminals(IUnitOfWork uow, string terminalName, string terminalLabel, 
             string endPoint, string version)
         {
@@ -532,31 +528,6 @@ namespace Data.Migrations
                 uow.TerminalRepository.Add(terminalDO);
 
             }
-        }
-
-
-        private void AddActionTemplates(IUnitOfWork uow)
-        {
-            AddActionTemplate(uow, "Filter Using Run-Time Data", "localhost:46281", "1");
-            AddActionTemplate(uow, "Wait For DocuSign Event", "localhost:53234", "1");
-            AddActionTemplate(uow, "Extract From DocuSign Envelope", "localhost:53234", "1");
-            AddActionTemplate(uow, "Extract Table Data", "localhost:47011", "1");
-            uow.SaveChanges();
-        }
-
-        private void AddActionTemplate(IUnitOfWork uow, string name, string endPoint, string version)
-        {
-            var existingActivityTemplateDO = uow.ActivityTemplateRepository
-                .GetQuery().Include("Terminal")
-
-                .SingleOrDefault(x => x.Name == name);
-
-            if (existingActivityTemplateDO != null)
-                return;
-
-            var curActivityTemplateDO = new ActivityTemplateDO(
-                name, version, endPoint, endPoint, endPoint);
-            uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
         }
 
         private void AddWebServices(IUnitOfWork uow)
@@ -587,6 +558,7 @@ namespace Data.Migrations
             AddWebService(uow, "Dropbox", "/Content/icons/web_services/dropbox-icon-64x64.png");
             AddWebService(uow, "Atlassian", "/Content/icons/web_services/jira-icon-64x64.png");
             AddWebService(uow, "UnknownService", "/Content/icons/web_services/unknown-service.png");
+            AddWebService(uow, "Basecamp2", "/Content/icons/web_services/basecamp2-icon-64x64.png");
 
             foreach (var webServiceDo in uow.WebServiceRepository.GetAll())
             {

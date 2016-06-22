@@ -114,16 +114,15 @@
     <Compile Include="Data\Account.cs" />
     <Compile Include="Data\Authorization.cs" />
     <Compile Include="Data\Identity.cs" />
+    <Compile Include="Data\Message.cs" />
     <Compile Include="Data\OAuthResponse.cs" />
     <Compile Include="Data\Project.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Infrastructure\BasecampApi.cs" />
-    <Compile Include="Infrastructure\BasecampAuthorization.cs" />
-    <Compile Include="Infrastructure\BasecampAuthorizationDTO.cs" />
-    <Compile Include="Infrastructure\IBasecampAuthorization.cs" />
-    <Compile Include="Infrastructure\IBasecampApi.cs" />
+    <Compile Include="Infrastructure\BasecampApiClient.cs" />
+    <Compile Include="Infrastructure\BasecampAuthorizationToken.cs" />
+    <Compile Include="Infrastructure\IBasecampApiClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="TerminalData.cs" />

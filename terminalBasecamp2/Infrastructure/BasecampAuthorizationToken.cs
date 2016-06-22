@@ -2,7 +2,7 @@
 
 namespace terminalBasecamp.Infrastructure
 {
-    public class BasecampAuthorizationDTO
+    public class BasecampAuthorizationToken
     {
         public DateTime ExpiresAt { get; set; }
 

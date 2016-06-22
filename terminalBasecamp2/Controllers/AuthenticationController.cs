@@ -11,35 +11,35 @@ namespace terminalBasecamp.Controllers
     [RoutePrefix("authentication")]
     public class AuthenticationController : ApiController
     {
-        private readonly IBasecampAuthorization _basecampAuthorization;
+        private readonly IBasecampApiClient _basecampApiClient;
         private readonly IHubEventReporter _eventReporter;
 
-        public AuthenticationController(IHubEventReporter eventReporter, IBasecampAuthorization basecampAuthorization)
+        public AuthenticationController(IHubEventReporter eventReporter, IBasecampApiClient basecampApiClient)
         {
             if (eventReporter == null)
             {
                 throw new ArgumentNullException(nameof(eventReporter));
             }
-            if (basecampAuthorization == null)
+            if (basecampApiClient == null)
             {
-                throw new ArgumentNullException(nameof(basecampAuthorization));
+                throw new ArgumentNullException(nameof(basecampApiClient));
             }
             _eventReporter = eventReporter;
-            _basecampAuthorization = basecampAuthorization;
+            _basecampApiClient = basecampApiClient;
         }
 
         [HttpPost]
         [Route("request_url")]
         public ExternalAuthUrlDTO GenerateOAuthInitiationURL()
         {
-            return _basecampAuthorization.GetExternalAuthUrl();
+            return _basecampApiClient.GetExternalAuthUrl();
         }
 
         [HttpPost]
         [Route("token")]
         public async Task<AuthorizationTokenDTO> GenerateOAuthToken(ExternalAuthenticationDTO externalAuthDTO)
         {
-            return await _basecampAuthorization.AuthenticateAsync(externalAuthDTO);
+            return await _basecampApiClient.AuthenticateAsync(externalAuthDTO);
         }
     }
 }
