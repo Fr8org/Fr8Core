@@ -183,14 +183,49 @@ namespace terminalStatX.Services
             return resultSet;
         }
 
+        public async Task<StatDTO> GetStat(StatXAuthDTO statXAuthDTO, string groupId, string statId)
+        {
+            var uri = new Uri($"{StatXBaseApiUrl}/groups/{groupId}/stats/{statId}");
+            var response = await _restfulServiceClient.GetAsync(uri, null, GetStatxAPIHeaders(statXAuthDTO));
+
+            var jObject = JObject.Parse(response);
+
+            CheckForExistingErrors(jObject);
+
+            var stat = new StatDTO()
+            {
+                Id = jObject["id"]?.ToString(),
+                Title = jObject["title"]?.ToString(),
+                VisualType = jObject["visualType"]?.ToString(),
+                Value = jObject["value"]?.ToString(),
+                LastUpdatedDateTime = jObject["lastUpdatedDateTime"]?.ToString()
+            };
+          
+            //check for items 
+            JToken itemsToken;
+
+            var items = JObject.Parse(jObject.ToString());
+            if (items.TryGetValue("items", out itemsToken))
+            {
+                foreach (var valueItem in itemsToken)
+                {
+                    stat.StatItems.Add(new StatItemDTO()
+                    {
+                        Name = valueItem["name"]?.ToString(),
+                        Value = valueItem["value"]?.ToString()
+                    });
+                }
+            }
+
+            return stat;
+        }
+
         public async Task UpdateStatValue(StatXAuthDTO statXAuthDTO, string groupId, string statId, Dictionary<string, string> statValues)
         {
             var uri = new Uri($"{StatXBaseApiUrl}/groups/{groupId}/stats/{statId}");
 
             //get the stat and look for value
-            var stats = await GetStatsForGroup(statXAuthDTO, groupId);
-
-            var currentStat = stats.FirstOrDefault(x => x.Id == statId);
+            var currentStat = await GetStat(statXAuthDTO, groupId, statId);
             if (currentStat != null)
             {
                 string response;
@@ -222,7 +257,9 @@ namespace terminalStatX.Services
                 CheckForExistingErrors(jObject);
             }
         }
-        
+
+        #region Helper Methods
+
         private Dictionary<string, string> GetStatxAPIHeaders(StatXAuthDTO statXAuthDTO)
         {
             var headers = new Dictionary<string, string>
@@ -255,7 +292,13 @@ namespace terminalStatX.Services
             phoneNumber = new string(phoneNumber.Where(s => char.IsDigit(s) || s == '+' || (phoneUtil.IsAlphaNumber(phoneNumber) && char.IsLetter(s))).ToArray());
             if (phoneNumber.Length == 10 && !phoneNumber.Contains("+"))
                 phoneNumber = "+1" + phoneNumber; //we assume that default region is USA
+
+            if (phoneNumber.Length == 11 && !phoneNumber.Contains("+"))
+                phoneNumber = "+" + phoneNumber;
+            
             return phoneNumber;
         }
+
+        #endregion
     }
 }
