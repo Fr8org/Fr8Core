@@ -8,7 +8,6 @@ namespace Fr8.TerminalBase.Services
     public class DefaultActivityFactory : IActivityFactory
     {
         private readonly Type _type;
-        private readonly IContainer _container;
 
         public DefaultActivityFactory(Type type)
         {
