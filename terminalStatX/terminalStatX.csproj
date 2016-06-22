@@ -218,6 +218,7 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Activities\Monitor_Stat_Changes_v1.cs" />
     <Compile Include="Activities\Update_Stat_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
     <Compile Include="Controllers\ActivityController.cs" />
