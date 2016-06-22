@@ -76,13 +76,13 @@ namespace Fr8.TerminalBase.Services
                 throw new ArgumentException($"Activity template registration for [Name = '{curDataDTO.ActivityDTO.ActivityTemplate.Name}', Version = '{curDataDTO.ActivityDTO.ActivityTemplate.Version}']  not found");
             }
 
-            var activity = factory.Create();
-
             _container.Configure(x =>
             {
                 x.For<ActivityContext>().Use(activityContext);
                 x.For<UpstreamQueryManager>().Use<UpstreamQueryManager>().Singleton();
             });
+
+            var activity = factory.Create(_container);
 
             _hubCommunicator.Authorize(activityContext.UserId);
 
