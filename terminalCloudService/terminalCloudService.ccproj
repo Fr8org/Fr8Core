@@ -122,6 +122,7 @@
     <SecondarySite Include="..\terminalDropbox\terminalDropbox.csproj" />
     <SecondarySite Include="..\terminalAtlassian\terminalAtlassian.csproj" />
     <SecondarySite Include="..\terminalQuickBooks\terminalQuickBooks.csproj" />
+    <SecondarySite Include="..\terminalStatX\terminalStatX.csproj" />
     <SecondarySite Include="..\terminalYammer\terminalYammer.csproj" />
 	<SecondarySite Include="..\terminalDemo\terminalDemo.csproj" />
     <SecondarySite Include="..\Services\PlanDirectory\PlanDirectory.csproj" />
