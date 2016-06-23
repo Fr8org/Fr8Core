@@ -49,11 +49,12 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         public FieldDTO(string name) 
         {
             Name = name;
+            Label = name;
         }
 
         public FieldDTO(string name, AvailabilityType availability)
+            : this(name)
         {
-            Name = name;
             Availability = availability;
         }
 

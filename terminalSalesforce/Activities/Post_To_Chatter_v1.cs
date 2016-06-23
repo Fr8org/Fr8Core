@@ -92,7 +92,7 @@ namespace terminalSalesforce.Actions
         public override async Task Initialize()
         {
             ActivityUI.UseUserOrGroupOption.Selected = true;
-            ActivityUI.UserOrGroupSelector.ListItems = (await _salesforceManager.GetUsersAndGroups(AuthorizationToken)).Select(x => new ListItem { Key = x.Name, Value = x.Value }).ToList();
+            ActivityUI.UserOrGroupSelector.ListItems = (await _salesforceManager.GetUsersAndGroups(AuthorizationToken)).Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PostedFeedCrateLabel);            
         }
 

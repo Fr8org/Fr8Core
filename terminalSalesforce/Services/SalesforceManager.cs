@@ -235,7 +235,7 @@ namespace terminalSalesforce.Services
                                                     new FieldDTO("Order"),
                                                     new FieldDTO("Product2"),
                                                     new FieldDTO("Solution"),
-                                                    new FieldDTO("User"n)
+                                                    new FieldDTO("User")
                                                 });
         }
 
