@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Newtonsoft.Json;
+using terminalFacebook.Models;
 
 namespace terminalFacebook.Interfaces
 {
@@ -11,7 +12,7 @@ namespace terminalFacebook.Interfaces
         Task<string> GetOAuthToken(string code);
         Task<UserInfo> GetUserInfo(string oauthToken);
         Task PostToTimeline(string oauthToken, string message);
-        Task GetPostById(string oauthToken, string postId);
+        Task<FacebookPost> GetPostByTime(string oauthToken, string time);
     }
 
     public class UserInfo

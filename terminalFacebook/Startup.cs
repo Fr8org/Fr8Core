@@ -43,6 +43,7 @@ namespace terminalFacebook
         protected override void RegisterActivities()
         {
             ActivityStore.RegisterActivity<Post_To_Timeline_v1>(Post_To_Timeline_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Monitor_Feed_Posts_v1>(Monitor_Feed_Posts_v1.ActivityTemplateDTO);
         }
 
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)

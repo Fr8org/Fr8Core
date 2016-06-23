@@ -10,11 +10,9 @@ namespace Fr8.Infrastructure.Data.Manifests
     public class FacebookUserEventCM : Manifest
     {
         public string Time { get; set; }
-
-        [MtPrimaryKey]
         public string Id { get; set; }
         public string[] ChangedFields { get; set; }
-        public string Uid { get; set; }
+        public string UserId { get; set; }
 
         public FacebookUserEventCM(): base(MT.FacebookUserEvent)
         {

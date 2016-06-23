@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
@@ -35,7 +36,6 @@ namespace terminalFacebook.Services
             {
                 throw new Exception("Unknown event source");
             }
-            
             var eventList = new List<Crate>();
             foreach (var entry in notification.Entry)
             {
@@ -44,10 +44,19 @@ namespace terminalFacebook.Services
                     Id = entry.Id,
                     ChangedFields = entry.ChangedFields,
                     Time = entry.Time,
-                    Uid = entry.Uid
+                    UserId = entry.Uid
                 };
-                
-                eventList.Add(Crate.FromContent("Facebook user event", fbEventCM));
+                var eventReportContent = new EventReportCM
+                {
+                    EventNames = string.Join(",", fbEventCM.ChangedFields),
+                    ContainerDoId = "",
+                    EventPayload = new CrateStorage(Crate.FromContent("Facebook user event", fbEventCM)),
+                    Manufacturer = "Facebook",
+                    ExternalAccountId = fbEventCM.UserId
+                };
+                ////prepare the event report
+                var curEventReport = Crate.FromContent("Facebook user event", eventReportContent);
+                eventList.Add(curEventReport);
             }
             return eventList;
         }
