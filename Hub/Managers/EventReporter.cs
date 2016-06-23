@@ -183,7 +183,7 @@ namespace Hub.Managers
                         ContainerId = containerDO.Id.ToString(),
                         PlanId = planId,
                         PlanLastUpdated = planLastUpdated,
-                    }, "fr8pusher_activity_execution_info", activityDo.Fr8Account.UserName);
+                    }, "fr8pusher_activity_execution_info", activityDo.Fr8Account.Id);
             }
             catch (Exception exception)
             {

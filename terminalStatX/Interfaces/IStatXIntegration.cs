@@ -17,6 +17,8 @@ namespace terminalStatX.Interfaces
 
         Task<List<StatDTO>> GetStatsForGroup(StatXAuthDTO statXAuthDTO, string groupId);
 
+        Task<StatDTO> GetStat(StatXAuthDTO statXAuthDTO, string groupId, string statId);
+
         Task UpdateStatValue(StatXAuthDTO statXAuthDTO, string groupId, string statId, Dictionary<string, string> statValues);
     }
 }
