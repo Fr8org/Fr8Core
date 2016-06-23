@@ -61,7 +61,7 @@ namespace terminalGoogle.Services
             monitorFormResponsesTmpl = GetActivityTemplate(activityTemplates, "Monitor_Form_Responses");
             buildMessageTmpl = GetActivityTemplate(activityTemplates, "Build_Message");
             saveJiraIssueTmpl = GetActivityTemplate(activityTemplates, "Save_Jira_Issue");
-            publishToSlackTmpl = GetActivityTemplate(activityTemplates, "Publish_To_Slack");
+            publishToSlackTmpl = GetActivityTemplate(activityTemplates, "Publish_To_Slack", "2");
         }
 
         public async Task CreateAndConfigureGoogle(string name)
@@ -204,7 +204,7 @@ namespace terminalGoogle.Services
         {
             var crates = payload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
             var ddl = (DropDownList)crates.FindByName(name);
-            ddl.SelectByKey(key);
+            ddl.SelectByKey(ddl.ListItems.Where(l => l.Key.Contains(key)).FirstOrDefault()?.Key);
         }
 
         private void SetSprint(ActivityPayload payload)
@@ -227,9 +227,15 @@ namespace terminalGoogle.Services
             bodyTextBox.Value = body;
         }
 
-        private ActivityTemplateDTO GetActivityTemplate(IEnumerable<ActivityTemplateDTO> activityList, string activityTemplateName)
+        private ActivityTemplateDTO GetActivityTemplate(IEnumerable<ActivityTemplateDTO> activityList, string activityTemplateName, string version = null)
         {
-            var template = activityList.FirstOrDefault(x => x.Name == activityTemplateName);
+            var template = activityList.FirstOrDefault(x => {
+                if (!string.IsNullOrEmpty(version))
+                {
+                    return x.Name == activityTemplateName && x.Version == version;
+                }
+                return x.Name == activityTemplateName;
+            });
             if (template == null)
             {
                 throw new Exception(string.Format("ActivityTemplate {0} was not found", activityTemplateName));

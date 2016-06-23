@@ -217,7 +217,7 @@ namespace terminalIntegrationTests.Integration
             var payloadSlack = await GetPayload(activityId);
             var slackCrates = payloadSlack.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
 
-            SetDDL(payloadSlack, slackCrates.Controls[0].Name, "general");
+            SetDDL(payloadSlack, slackCrates.Controls[0].Name, "#general");
             var DTO = Mapper.Map<ActivityDTO>(payloadSlack);
 
             await RestfulServiceClient.PostAsync(new Uri(GetHubApiBaseUrl()+ "activities/save"), DTO, null, await GetHMACHeader(new Uri(GetHubApiBaseUrl() + "activities/save"), userId, DTO));
