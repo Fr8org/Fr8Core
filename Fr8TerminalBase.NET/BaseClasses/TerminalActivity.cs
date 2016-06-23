@@ -17,40 +17,6 @@ namespace Fr8.TerminalBase.BaseClasses
        where T : StandardConfigurationControlsCM
     {
         /**********************************************************************************/
-        
-        private const string ConfigurationValuesCrateLabel = "Configuration Values";
-        /// <summary>
-        /// Get or sets value of configuration field with the given key stored in current activity storage
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        protected string this[string key]
-        {
-            get
-            {
-                CheckCurrentActivityStorageAvailability();
-                var crate = Storage.FirstCrateOrDefault<KeyValueListCM>(x => x.Label == ConfigurationValuesCrateLabel);
-                return crate?.Content.Values.FirstOrDefault(x => x.Key == key)?.Value;
-            }
-            set
-            {
-                CheckCurrentActivityStorageAvailability();
-                var crate = Storage.FirstCrateOrDefault<KeyValueListCM>(x => x.Label == ConfigurationValuesCrateLabel);
-                if (crate == null)
-                {
-                    crate = Crate<KeyValueListCM>.FromContent(ConfigurationValuesCrateLabel, new KeyValueListCM());
-                    Storage.Add(crate);
-                }
-                var field = crate.Content.Values.FirstOrDefault(x => x.Key == key);
-                if (field == null)
-                {
-                    field = new KeyValueDTO(key, null);
-                    crate.Content.Values.Add(field);
-                }
-                field.Value = value;
-                Storage.ReplaceByLabel(crate);
-            }
-        }
 
         public T ActivityUI { get; private set; }
 
@@ -155,16 +121,6 @@ namespace Fr8.TerminalBase.BaseClasses
             return AssignNamesForUnnamedControls((T)defaultConstructor.Invoke(null));
         }
         
-        /**********************************************************************************/
-
-        private void CheckCurrentActivityStorageAvailability()
-        {
-            if (Storage == null)
-            {
-                throw new ApplicationException("Current activity storage is not available");
-            }
-        }
-
         /**********************************************************************************/
         // SyncConfControls and SyncConfControlsBack are pair of methods that serves the following reason:
         // We want to work with StandardConfigurationControlsCM in form of ActivityUi that has handy properties to directly access certain controls
