@@ -12,6 +12,7 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_ReloadAction,
         PaneConfigureAction_SetSolutionMode,
         PaneConfigureAction_ConfigureCallResponse,
+        PaneConfigureAction_ConfigureCallResponseFinished,
         PaneConfigureAction_AuthFailure,
         PaneConfigureAction_ExecutePlan,
         PaneConfigureAction_ConfigureFocusElement,
