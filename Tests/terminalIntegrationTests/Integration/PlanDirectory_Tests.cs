@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
-using Fr8.Infrastructure.Data.DataTransferObjects;
-using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
-using Fr8.TerminalBase.Interfaces;
+using Data.Entities;
+using Data.Interfaces;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Testing.Integration;
 
 namespace terminalIntegrationTests.Integration
@@ -21,7 +22,18 @@ namespace terminalIntegrationTests.Integration
                 Name = "Test PlanTemplate Name 1",
                 Description = "Test PlanTemplate Description 1",
                 ParentPlanId = Guid.NewGuid(),
-                PlanContents = JsonConvert.DeserializeObject<JToken>(JsonConvert.SerializeObject(new { activities = new string[] { } }))
+                PlanContents = JsonConvert.DeserializeObject<JToken>(
+                    JsonConvert.SerializeObject(
+                        new
+                        {
+                            id = "b2d428b3-f016-4a11-999a-5a16c34f1dc3",
+                            name = "Test PlanTemplate Name 1",
+                            startingPlanNodeDescriptionId = (string)null,
+                            planNodeDescriptions = new JToken[0],
+                            description = (string)null
+                        }
+                    )
+                )
             };
         }
 
@@ -31,72 +43,83 @@ namespace terminalIntegrationTests.Integration
             var planTemplateDTO = PlanTemplateDTO_1();
             await HttpPostAsync<PublishPlanTemplateDTO, string>(_baseUrl + "plan_templates/", planTemplateDTO);
 
-            var returnedPlanTemplateDTO = await HttpGetAsync<PublishPlanTemplateDTO>(
-                _baseUrl + "plan_templates/?id=" + planTemplateDTO.ParentPlanId.ToString()
-            );
+            try
+            {
+                var returnedPlanTemplateDTO = await HttpGetAsync<PublishPlanTemplateDTO>(
+                    _baseUrl + "plan_templates/?id=" + planTemplateDTO.ParentPlanId.ToString()
+                );
 
-            Assert.NotNull(returnedPlanTemplateDTO);
-            Assert.AreEqual(planTemplateDTO.Name, returnedPlanTemplateDTO.Name, "Returned PlanTemplateDTO does not match original PlanTemplateDTO (Name)");
-            Assert.AreEqual(planTemplateDTO.Description, returnedPlanTemplateDTO.Description, "Returned PlanTemplateDTO does not match original PlanTemplateDTO (Description)");
-            Assert.AreEqual(planTemplateDTO.ParentPlanId, returnedPlanTemplateDTO.ParentPlanId, "Returned PlanTemplateDTO does not match original PlanTemplateDTO (ParentPlanId)");
-            Assert.AreEqual(JsonConvert.SerializeObject(planTemplateDTO.PlanContents), JsonConvert.SerializeObject(returnedPlanTemplateDTO.PlanContents), "Returned PlanTemplateDTO does not match original PlanTemplateDTO (ParentPlanId)");
+                Assert.NotNull(returnedPlanTemplateDTO);
+                Assert.AreEqual(planTemplateDTO.Name, returnedPlanTemplateDTO.Name, "Returned PlanTemplateDTO does not match original PlanTemplateDTO (Name)");
+                Assert.AreEqual(planTemplateDTO.Description, returnedPlanTemplateDTO.Description, "Returned PlanTemplateDTO does not match original PlanTemplateDTO (Description)");
+                Assert.AreEqual(planTemplateDTO.ParentPlanId, returnedPlanTemplateDTO.ParentPlanId, "Returned PlanTemplateDTO does not match original PlanTemplateDTO (ParentPlanId)");
+                Assert.AreEqual(JsonConvert.SerializeObject(planTemplateDTO.PlanContents), JsonConvert.SerializeObject(returnedPlanTemplateDTO.PlanContents), "Returned PlanTemplateDTO does not match original PlanTemplateDTO (ParentPlanId)");
 
-            planTemplateDTO.Name = "Test PlanTemplate Name 1 (Updated)";
-            planTemplateDTO.Description = "Test PlanTemplate Description 1 (Updated)";
-            planTemplateDTO.PlanContents = JsonConvert.DeserializeObject<JToken>(
-                JsonConvert.SerializeObject(new { subplans = new string[] { } })
-            );
+                planTemplateDTO.Name = "Test PlanTemplate Name 1 (Updated)";
+                planTemplateDTO.Description = "Test PlanTemplate Description 1 (Updated)";
+                planTemplateDTO.PlanContents = JsonConvert.DeserializeObject<JToken>(
+                    JsonConvert.SerializeObject(new { subplans = new string[] { } })
+                );
 
-            await HttpPostAsync<PublishPlanTemplateDTO, string>(_baseUrl + "plan_templates/", planTemplateDTO);
+                await HttpPostAsync<PublishPlanTemplateDTO, string>(_baseUrl + "plan_templates/", planTemplateDTO);
 
-            returnedPlanTemplateDTO = await HttpGetAsync<PublishPlanTemplateDTO>(
-                _baseUrl + "plan_templates/?id=" + planTemplateDTO.ParentPlanId.ToString()
-            );
+                returnedPlanTemplateDTO = await HttpGetAsync<PublishPlanTemplateDTO>(
+                    _baseUrl + "plan_templates/?id=" + planTemplateDTO.ParentPlanId.ToString()
+                );
 
-            Assert.NotNull(returnedPlanTemplateDTO);
-            Assert.AreEqual(planTemplateDTO.Name, returnedPlanTemplateDTO.Name, "Returned PlanTemplateDTO does not match updated PlanTemplateDTO (Name)");
-            Assert.AreEqual(planTemplateDTO.Description, returnedPlanTemplateDTO.Description, "Returned PlanTemplateDTO does not match updated PlanTemplateDTO (Description)");
-            Assert.AreEqual(planTemplateDTO.ParentPlanId, returnedPlanTemplateDTO.ParentPlanId, "Returned PlanTemplateDTO does not match updated PlanTemplateDTO (ParentPlanId)");
-            Assert.AreEqual(JsonConvert.SerializeObject(planTemplateDTO.PlanContents), JsonConvert.SerializeObject(returnedPlanTemplateDTO.PlanContents), "Returned PlanTemplateDTO does not match updated PlanTemplateDTO (ParentPlanId)");
-
-            await HttpDeleteAsync(_baseUrl + "plan_templates/?id=" + planTemplateDTO.ParentPlanId.ToString());
+                Assert.NotNull(returnedPlanTemplateDTO);
+                Assert.AreEqual(planTemplateDTO.Name, returnedPlanTemplateDTO.Name, "Returned PlanTemplateDTO does not match updated PlanTemplateDTO (Name)");
+                Assert.AreEqual(planTemplateDTO.Description, returnedPlanTemplateDTO.Description, "Returned PlanTemplateDTO does not match updated PlanTemplateDTO (Description)");
+                Assert.AreEqual(planTemplateDTO.ParentPlanId, returnedPlanTemplateDTO.ParentPlanId, "Returned PlanTemplateDTO does not match updated PlanTemplateDTO (ParentPlanId)");
+                Assert.AreEqual(JsonConvert.SerializeObject(planTemplateDTO.PlanContents), JsonConvert.SerializeObject(returnedPlanTemplateDTO.PlanContents), "Returned PlanTemplateDTO does not match updated PlanTemplateDTO (ParentPlanId)");
+            }
+            finally
+            {
+                await HttpDeleteAsync(_baseUrl + "plan_templates/?id=" + planTemplateDTO.ParentPlanId.ToString());
+            }
         }
 
         [Test]
         public async Task PlanDirectory_CreatePlan()
         {
-            var createdPlanId = Guid.NewGuid();
-            var hubCommunicatorMock = new Mock<IHubCommunicator>();
-            hubCommunicatorMock.Setup(x => x.LoadPlan(It.IsAny<JToken>()))
-                .Returns(() => Task.FromResult<PlanEmptyDTO>(new PlanEmptyDTO() { Id = createdPlanId }));
-
-            System.Diagnostics.Debug.WriteLine("HubCommunicator Mock created.");
-
-            ObjectFactory.Container.Inject(hubCommunicatorMock.Object);
-
-            System.Diagnostics.Debug.WriteLine("HubCommunicator Mock injected.");
-
             var planTemplateDTO = PlanTemplateDTO_1();
             await HttpPostAsync<PublishPlanTemplateDTO, string>(_baseUrl + "plan_templates/", planTemplateDTO);
 
-            System.Diagnostics.Debug.WriteLine("PlanTemplate created.");
+            try
+            {
+                await AuthenticateWebApi("IntegrationTestUser1", "fr8#s@lt!");
 
-            await AuthenticateWebApi("IntegrationTestUser1", "fr8#s@lt!");
+                var createPlanResult = await HttpPostAsync<JToken>(
+                    _baseUrl + "plan_templates/createplan?id=" + planTemplateDTO.ParentPlanId.ToString(), null);
 
-            System.Diagnostics.Debug.WriteLine("Authenticated with IntegrationTestUser1.");
+                Assert.NotNull(createPlanResult, "Failed to create plan.");
 
-            var createPlanResult = await HttpPostAsync<JToken>(
-                _baseUrl + "plan_templates/createplan?id=" + planTemplateDTO.ParentPlanId.ToString(), null);
+                var redirectUrl = createPlanResult["RedirectUrl"].Value<string>();
+                Assert.IsNotEmpty(redirectUrl, "CreatePlan response does not contain RedirectUrl property.");
 
-            System.Diagnostics.Debug.WriteLine("CreatePlan succeded.");
+                var planId = ExtractPlanIdFromRedirectUrl(redirectUrl);
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var plan = uow.PlanRepository.GetById<PlanDO>(planId);
+                    Assert.NotNull(plan, "Created plan was not found");
+                    Assert.AreEqual(planTemplateDTO.Name, plan.Name, "Created plan was not found");
 
-            hubCommunicatorMock.Verify(x => x.LoadPlan(It.IsAny<JToken>()), Times.Once());
-        
-            Assert.NotNull(createPlanResult);
-        
-            var redirectUrl = createPlanResult["RedirectUrl"].Value<string>();
-            Assert.IsNotEmpty(redirectUrl);
-            Assert.True(redirectUrl.EndsWith("/dashboard/plans/" + createdPlanId.ToString() + "/builder?viewMode=plan"));
+                    var user2 = uow.UserRepository.GetQuery()
+                        .FirstOrDefault(x => x.UserName == "IntegrationTestUser1");
+                    Assert.NotNull(user2, "IntegrationTestUser1 was not found.");
+                    Assert.AreEqual(user2.Id, plan.Fr8AccountId, "Created plan does not belong to IntegrationTestUser1");
+                }
+            }
+            finally
+            {
+                await HttpDeleteAsync(_baseUrl + "plan_templates/?id=" + planTemplateDTO.ParentPlanId.ToString());
+            }
+        }
+
+        private static Guid ExtractPlanIdFromRedirectUrl(string redirectUrl)
+        {
+            var urlTokens = redirectUrl.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            return Guid.Parse(urlTokens[4]);
         }
     }
 }
