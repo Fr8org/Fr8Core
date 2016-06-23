@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
@@ -10,6 +11,7 @@ using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities.Logging;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Infrastructure;
+using terminalBasecamp2.Data;
 using terminalBasecamp2.Infrastructure;
 
 namespace terminalBasecamp2.Activities
@@ -73,6 +75,8 @@ namespace terminalBasecamp2.Activities
             }
         }
 
+        private const string RuntimeCrateLabel = "Created Message";
+
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplate;
 
         public Create_Message_v1(ICrateManager crateManager, IBasecampApiClient basecampApiClient) : base(crateManager)
@@ -125,19 +129,26 @@ namespace terminalBasecamp2.Activities
             {
                 await LoadProjectsAndSelectTheOnlyOne().ConfigureAwait(false);
             }
+            CrateSignaller.MarkAvailableAtRuntime<FieldDescriptionsCM>(RuntimeCrateLabel, true)
+                          .AddField("id")
+                          .AddField("subject")
+                          .AddField("content");
         }
 
         public override async Task Run()
         {
             try
             {
-                await _basecampApiClient.CreateMessage(
-                                                       ActivityUI.AccountSelector.Value,
-                                                       ActivityUI.ProjectSelector.Value,
-                                                       ActivityUI.MessageSubject.GetValue(Payload),
-                                                       ActivityUI.MessageContent.GetValue(Payload),
-                                                       AuthorizationToken)
-                                        .ConfigureAwait(false);
+                var message = await _basecampApiClient.CreateMessage(
+                                                                     ActivityUI.AccountSelector.Value,
+                                                                     ActivityUI.ProjectSelector.Value,
+                                                                     ActivityUI.MessageSubject.GetValue(Payload),
+                                                                     ActivityUI.MessageContent.GetValue(Payload),
+                                                                     AuthorizationToken)
+                                                      .ConfigureAwait(false);
+                Payload.Add(Crate.FromContent(RuntimeCrateLabel, new FieldDescriptionsCM(new FieldDTO { Key = "id", Value = message.Id.ToString() },
+                                                                                         new FieldDTO { Key = "subject", Value = message.Subject },
+                                                                                         new FieldDTO { Key = "content", Value = message.Content })));
             }
             catch (Exception ex)
             {

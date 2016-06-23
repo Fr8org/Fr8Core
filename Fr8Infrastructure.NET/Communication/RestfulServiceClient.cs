@@ -72,8 +72,8 @@ namespace Fr8.Infrastructure.Communication
         protected virtual async Task<HttpResponseMessage> SendInternalAsync(HttpRequestMessage request, string CorrelationId)
         {
             HttpResponseMessage response;
-            string responseContent = "";
-            int statusCode = -1;
+            var responseContent = "";
+            var statusCode = -1;
 
             var stopWatch = Stopwatch.StartNew();
             Exception raisedException = null;
@@ -89,27 +89,18 @@ namespace Fr8.Infrastructure.Communication
             catch (HttpRequestException ex)
             {
                 raisedException = ex;
-                string errorMessage = String.Format("An error has ocurred while sending a {0} request to {1}. Response message: {2}",
-                    request.RequestUri,
-                    request.Method.Method,
-                    ExtractErrorMessage(responseContent));
+                string errorMessage = $"An error has ocurred while sending a {request.RequestUri} request to {request.Method.Method}. Response message: {ExtractErrorMessage(responseContent)}";
                 throw new RestfulServiceException(statusCode, errorMessage, ex);
             }
             catch (TaskCanceledException ex)
             {
                 raisedException = ex;
-                //Timeout
-                throw new TimeoutException(
-                    String.Format("Timeout while making HTTP request.  \r\nURL: {0},   \r\nMethod: {1}",
-                    request.RequestUri,
-                    request.Method.Method));
+                throw new TimeoutException($"Timeout while making HTTP request.  \r\nURL: {request.RequestUri},   \r\nMethod: {request.Method.Method}");
             }
             catch (Exception ex)
             {
                 raisedException = ex;
-                string errorMessage = String.Format("An error has ocurred while sending a {0} request to {1}.",
-                    request.RequestUri,
-                    request.Method.Method);
+                string errorMessage = $"An error has ocurred while sending a {request.RequestUri} request to {request.Method.Method}.";
                 throw new ApplicationException(errorMessage);
             }
             finally
@@ -121,35 +112,9 @@ namespace Fr8.Infrastructure.Communication
                     DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
                     stopWatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture),
                     CorrelationId, statusCode, prettyStatusCode);
-
-                // This code tends to eat a lot of processor time on my macine and blocks.
-                /*if (isSuccess)
-                {
-                    Log.Info(logDetails);
-                }
-                else
-                {
-                    Log.Error(logDetails, raisedException);
-                }*/
             }
             return response;
         }
-
-        //private async Task<HttpResponseMessage> SendInternalAsync(HttpRequestMessage request)
-        //{
-        //    var response = await _innerClient.SendAsync(request);
-        //    var responseContent = await response.Content.ReadAsStringAsync();
-        //    try
-        //    {
-        //        response.EnsureSuccessStatusCode();
-        //    }
-        //    catch (HttpRequestException ex)
-        //    {
-        //        var errorMessage = ExtractErrorMessage(responseContent);
-        //        throw new RestfulServiceException(errorMessage, ex);
-        //    }
-        //    return response;
-        //}
 
         protected virtual string ExtractErrorMessage(string responseContent)
         {

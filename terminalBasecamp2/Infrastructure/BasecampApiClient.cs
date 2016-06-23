@@ -7,13 +7,16 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.Infrastructure.Utilities.Logging;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
 using terminalBasecamp2.Data;
+using Authorization = terminalBasecamp2.Data.Authorization;
 
 namespace terminalBasecamp2.Infrastructure
 {
-    public class BasecampApiClient : IBasecampApiClient
+    public class BasecampApiClient : OAuthApiIntegrationBase, IBasecampApiClient
     {
         private readonly IRestfulServiceClient _restfulServiceClient;
         private readonly string _authorizationUrl;
@@ -26,7 +29,7 @@ namespace terminalBasecamp2.Infrastructure
 
         private const string Basecamp2Product = "bcx";
 
-        public BasecampApiClient(IRestfulServiceClient restfulServiceClient)
+        public BasecampApiClient(IRestfulServiceClient restfulServiceClient, IHubCommunicator hubCommunicator) : base(hubCommunicator)
         {
             if (restfulServiceClient == null)
             {
@@ -61,12 +64,11 @@ namespace terminalBasecamp2.Infrastructure
                 var code = query["code"];
                 var state = query["state"];
                 var url = $"{_tokenUrl}?type=web_server&client_id={_clientId}&redirect_uri={HttpUtility.UrlEncode(_redirectUrl)}&client_secret={_clientSecret}&code={code}";
-                var response = await _restfulServiceClient.PostAsync(new Uri(url)).ConfigureAwait(false);
-                var oAuthResponse = JsonConvert.DeserializeObject<OAuthResponse>(response);
+                var response = await _restfulServiceClient.PostAsync<OAuthResponse>(new Uri(url)).ConfigureAwait(false);
                 var basecampAuthorizationDTO = new BasecampAuthorizationToken
                 {
-                    AccessToken = oAuthResponse.AccessToken,
-                    RefreshToken = oAuthResponse.RefreshToken,
+                    AccessToken = response.AccessToken,
+                    RefreshToken = response.RefreshToken,
                 };
                 //Retrieving info about username and project
                 var userInfo = await GetCurrentUserInfo(basecampAuthorizationDTO).ConfigureAwait(false);
@@ -75,12 +77,13 @@ namespace terminalBasecamp2.Infrastructure
                     Logger.LogError($"Authorized user doesn't have access to Basecamp2. Fr8 User Id - {externalState.Fr8UserId}");
                     return new AuthorizationTokenDTO { Error = "We couldn't authorize you as your account doesn't have access to Basecamp2 product" };
                 }
+                basecampAuthorizationDTO.ExpiresAt = userInfo.ExpiresAt;
                 return new AuthorizationTokenDTO
                 {
-                    ExternalDomainId = string.Empty,
                     ExternalAccountId = userInfo.Identity.Id.ToString(),
                     ExternalAccountName = userInfo.Identity.DisplayName,
                     ExternalStateToken = state,
+                    ExpiresAt = basecampAuthorizationDTO.ExpiresAt,
                     Token = JsonConvert.SerializeObject(basecampAuthorizationDTO)
                 };
             }
@@ -93,7 +96,7 @@ namespace terminalBasecamp2.Infrastructure
 
         public async Task<Authorization> GetCurrentUserInfo(AuthorizationToken auth)
         {
-            return await GetCurrentUserInfo(GetAuthorization(auth)).ConfigureAwait(false);
+            return await ApiCall(x => ApiGetAsync<Authorization>(_authorizationUrl, GetAuthorization(x)), auth);
         }
 
         private async Task<Authorization> GetCurrentUserInfo(BasecampAuthorizationToken auth)
@@ -112,29 +115,49 @@ namespace terminalBasecamp2.Infrastructure
 
         public async Task<List<Project>> GetProjects(string accountUrl, AuthorizationToken auth)
         {
-            var result = await ApiGetAsync<List<Project>>($"{accountUrl}/projects.json", GetAuthorization(auth));
+            var result = await ApiCall(x => ApiGetAsync<List<Project>>($"{accountUrl}/projects.json", GetAuthorization(x)), auth);
             result.Sort((x, y) => string.Compare(x.Name, y.Name, StringComparison.Ordinal));
             return result;
         }
 
-        public async Task CreateMessage(string accountUrl, string projectId, string subject, string content, AuthorizationToken auth)
+        public async Task<Message> CreateMessage(string accountUrl, string projectId, string subject, string content, AuthorizationToken auth)
         {
-            await ApiPostAsync($"{accountUrl}/projects/{projectId}/messages.json", new Message { Subject = subject, Content = content }, GetAuthorization(auth));
+            return await ApiCall(x => ApiPostAsync<Message, Message>($"{accountUrl}/projects/{projectId}/messages.json", new Message { Subject = subject, Content = content }, GetAuthorization(x)), auth);
         }
 
         private async Task ApiPostAsync<TContent>(string apiUrl, TContent content, BasecampAuthorizationToken auth)
         {
             await _restfulServiceClient.PostAsync(new Uri(apiUrl), content, headers: GetHeaders(auth)).ConfigureAwait(false);
         }
-
-        private async Task<TResponse> ApiPostAsync<TResponse>(string apiUrl, BasecampAuthorizationToken auth)
+        private async Task<TResponse> ApiPostAsync<TContent, TResponse>(string apiUrl, TContent content, BasecampAuthorizationToken auth)
         {
-            return await _restfulServiceClient.PostAsync<TResponse>(new Uri(apiUrl), headers: GetHeaders(auth)).ConfigureAwait(false);
+            return await _restfulServiceClient.PostAsync<TContent, TResponse>(new Uri(apiUrl), content, headers: GetHeaders(auth)).ConfigureAwait(false);
         }
 
         private async Task<TResponse> ApiGetAsync<TResponse>(string apiUrl, BasecampAuthorizationToken auth)
         {
             return await _restfulServiceClient.GetAsync<TResponse>(new Uri(apiUrl), headers: GetHeaders(auth)).ConfigureAwait(false);
+        }
+
+        protected override async Task<AuthorizationToken> RefreshToken(AuthorizationToken auth)
+        {
+            var basecampAuth = GetAuthorization(auth);
+            var url = $"{_tokenUrl}?type=refresh&client_id={_clientId}&redirect_uri={HttpUtility.UrlEncode(_redirectUrl)}&client_secret={_clientSecret}&refresh_token={basecampAuth.RefreshToken}";
+            var now = DateTime.UtcNow;
+            var response = await _restfulServiceClient.PostAsync<OAuthResponse>(new Uri(url)).ConfigureAwait(false);
+            basecampAuth.AccessToken = response.AccessToken;
+            basecampAuth.ExpiresAt = now.AddSeconds(response.ExpiresIn);
+            return new AuthorizationToken
+            {
+                ExternalAccountId = auth.ExternalAccountId,
+                ExternalAccountName = auth.ExternalAccountName,
+                ExternalStateToken = auth.ExternalStateToken,
+                ExpiresAt = basecampAuth.ExpiresAt,
+                Id = auth.Id,
+                TerminalID = auth.TerminalID,
+                UserId = auth.UserId,
+                Token = JsonConvert.SerializeObject(basecampAuth)
+            };
         }
 
         private Dictionary<string, string> GetHeaders(BasecampAuthorizationToken auth)

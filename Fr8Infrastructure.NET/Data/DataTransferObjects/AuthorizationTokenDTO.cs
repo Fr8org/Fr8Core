@@ -1,4 +1,6 @@
-﻿namespace Fr8.Infrastructure.Data.DataTransferObjects
+﻿using System;
+
+namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
     public class AuthorizationTokenDTO
     {
@@ -12,6 +14,7 @@
         public string ExternalStateToken { get; set; }
         public string AdditionalAttributes { get; set; }
         public string Error { get; set; }
+        public DateTime ExpiresAt { get; set; }
         public bool AuthCompletedNotificationRequired { get; set; }
         
         //TODO remove this
