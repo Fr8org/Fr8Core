@@ -2,6 +2,7 @@
 using System.Web.Http;
 using Fr8.TerminalBase.Services;
 using terminalInstagram.Models;
+using System.Linq;
 
 namespace terminalInstagram.Controllers
 {
@@ -17,20 +18,18 @@ namespace terminalInstagram.Controllers
 
         [HttpGet]
         [Route("subscribe")]
-        public IHttpActionResult ConfirmSubscription(VerificationMessage msg)
+        public string ConfirmSubscription(VerificationMessage msg)
         {
-            if (msg.VerifyToken == "fr8facebookeventverification")
-            {
-                return Ok(msg.Challenge);
-            }
-            return Ok("Unknown verification call");
+            return msg.Challenge;
         }
 
         [HttpPost]
         [Route("subscribe")]
-        public string GetMedia(string mode, string challenge, string verify_token)
+        public async Task<IHttpActionResult> GetMedia()
         {
-            return challenge;
+            var hash = Request.Headers.GetValues("x-hub-signature").FirstOrDefault();
+            string eventPayLoadContent = await Request.Content.ReadAsStringAsync();
+            return Ok();
         }
     }
 }
