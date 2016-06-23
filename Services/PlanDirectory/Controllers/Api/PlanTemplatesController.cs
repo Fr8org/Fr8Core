@@ -103,39 +103,39 @@ namespace PlanDirectory.Controllers.Api
         [PlanDirectoryHMACAuthenticate]
         public Task<IHttpActionResult> CreatePlan(Guid id)
         {
-            System.Diagnostics.Debug.WriteLine("CreatePlan: entered method.");
+            Console.WriteLine("CreatePlan: entered method.");
 
             return ExceptionWrapper(async () =>
             {
-                System.Diagnostics.Debug.WriteLine("CreatePlan: inside exception wrapper.");
+                Console.WriteLine("CreatePlan: inside exception wrapper.");
 
                 if (User == null)
                 {
-                    System.Diagnostics.Debug.WriteLine("CreatePlan: User == null");
+                    Console.WriteLine("CreatePlan: User == null");
                 }
 
                 if (User.Identity == null)
                 {
-                    System.Diagnostics.Debug.WriteLine("CreatePlan: User.Identity == null");
+                    Console.WriteLine("CreatePlan: User.Identity == null");
                 }
 
                 var fr8AccountId = User.Identity.GetUserId();
-                System.Diagnostics.Debug.WriteLine("CreatePlan: fr8AccountId = " + fr8AccountId);
+                Console.WriteLine("CreatePlan: fr8AccountId = " + fr8AccountId);
 
                 var planTemplateDTO = await _planTemplate.Get(fr8AccountId, id);
 
                 if (planTemplateDTO == null)
                 {
-                    System.Diagnostics.Debug.WriteLine("CreatePlan: planTemplateDTO == null");
+                    Console.WriteLine("CreatePlan: planTemplateDTO == null");
                     throw new ApplicationException("Unable to find PlanTemplate in MT-database.");
                 }
                 else
                 {
-                    System.Diagnostics.Debug.WriteLine("CreatePlan: planTemplateDTO.ParentPlanId = " + planTemplateDTO.ParentPlanId);
+                    Console.WriteLine("CreatePlan: planTemplateDTO.ParentPlanId = " + planTemplateDTO.ParentPlanId);
                 }
 
                 var plan = await _hubCommunicator.LoadPlan(planTemplateDTO.PlanContents);
-                System.Diagnostics.Debug.WriteLine("CreatePlan: HubCommunicator.LoadPlan succeeded.");
+                Console.WriteLine("CreatePlan: HubCommunicator.LoadPlan succeeded.");
 
                 return Ok(
                     new
