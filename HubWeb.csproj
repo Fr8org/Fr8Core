@@ -38,9 +38,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\HubWeb.XML</DocumentationFile> 
+    <DocumentationFile>bin\HubWeb.XML</DocumentationFile>
   </PropertyGroup>
-    
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
@@ -50,7 +49,6 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\HubWeb.XML</DocumentationFile>
   </PropertyGroup>
-  
   <ItemGroup>
     <Reference Include="Analytics.NET, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Analytics.2.0.0\lib\Analytics.NET.dll</HintPath>
@@ -476,8 +474,7 @@
     <Compile Include="ViewModels\ExternalLoginConfirmationVM.cs" />
     <Compile Include="ViewModels\LoginVM.cs" />
     <Compile Include="ViewModels\ManageUserVM.cs" />
-    <Compile Include="ViewModels\NavLinksHome.cs" />
-    <Compile Include="ViewModels\NavLinksShared.cs" />
+    <Compile Include="ViewModels\NavLinks.cs" />
     <Compile Include="ViewModels\RegisterVM.cs" />
     <Compile Include="ViewModels\RequestParameters\PlansGetParams.cs" />
     <Compile Include="ViewModels\RequestParameters\PlansPostParams.cs" />

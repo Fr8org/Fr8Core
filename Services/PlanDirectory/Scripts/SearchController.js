@@ -86,16 +86,8 @@
                             var url = urlPrefix + '/api/plan_templates/createplan/?id=' + planTemplate.ParentPlanId;
                             $http.post(url, null)
                                 .then(function (data) {
-                                    $uibModal.open({
-                                        templateUrl: '/PlanCreatedDialog.html',
-                                        controller: 'PlanCreatedDialogController'
-                                    })
-                                    .result
-                                    .finally(function () {
-                                        window.location.href = data.data.RedirectUrl;
-                                    });
-
                                     Metronic.unblockUI();
+                                    window.location.href = data.data.RedirectUrl;
                                 });
                         }
                     })

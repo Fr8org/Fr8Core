@@ -251,7 +251,7 @@
     <Content Include="package.json" />
     <Content Include="bower.json" />
     <Content Include="PreBuild.bat" />
-    <Content Include="Scripts\PlanDirectory.js" />
+    <Content Include="Scripts\main.js" />
     <Content Include="Scripts\PlanDirectoryApp.js" />
     <Content Include="Scripts\SearchController.js" />
     <Content Include="Views\Home\Index.cshtml" />
@@ -307,7 +307,7 @@
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="ViewModels\HomeVM.cs" />
-    <Compile Include="ViewModels\NavLinksShared.cs" />
+    <Compile Include="ViewModels\NavLinks.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\AngularTemplate\" />

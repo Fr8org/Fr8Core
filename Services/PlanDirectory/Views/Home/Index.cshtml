@@ -38,7 +38,7 @@
     <script src="~/bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js"></script>
     <script src="~/Content/metronic/ui.js"></script>
     <script src="~/Scripts/PlanDirectoryApp.js"></script>
-    <script src="~/Scripts/PlanDirectory.js"></script>
+    <script src="~/Scripts/main.js"></script>
     <script src="~/Scripts/SearchController.js"></script>
 
     <script>
@@ -55,7 +55,7 @@
     <div id="wrap">
         <!-- NAVIGATION BAR-->
         <header id="site-header" class="header container-fluid">
-            @Html.Partial("HomeNav", new PlanDirectory.ViewModels.NavLinksShared())
+            @Html.Partial("HomeNav", new PlanDirectory.ViewModels.NavLinks())
         </header>
 
         <!-- CONTAINER -->
@@ -115,16 +115,6 @@
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-default" ng-click="$dismiss()">Close</button>
-        </div>
-    </script>
-
-    <!-- PLAN CREATED MODAL -->
-    <script type="text/ng-template" id="/PlanCreatedDialog.html">
-        <div class="modal-body">
-            <div>Plan was successfully created.</div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default" ng-click="$dismiss()">Go to created plan</button>
         </div>
     </script>
 
