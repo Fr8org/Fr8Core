@@ -23,21 +23,21 @@ namespace Hub.Services
                 var propertyInfo = ReflectionHelper.GetProperties(clrManifestType);
                 var curFieldDto = ConvertPropertyToFields(propertyInfo);
 
-                crateDto = Crate.FromContent(clrManifestType.Name, new FieldDescriptionsCM(curFieldDto.ToArray()));
+                crateDto = Crate.FromContent(clrManifestType.Name, new KeyValueListCM(curFieldDto.ToArray()));
             }
 
             return crateDto;
         }
 
         // Convert all properties to FieldDTO
-        public List<FieldDTO> ConvertPropertyToFields( PropertyInfo[]  curProperties)
+        public List<KeyValueDTO> ConvertPropertyToFields( PropertyInfo[]  curProperties)
         {
-            var curPropertiesList = new List<FieldDTO>();
+            var curPropertiesList = new List<KeyValueDTO>();
             foreach (var property in curProperties)
             {
                 if (property.PropertyType.IsGenericType)
                 {
-                    curPropertiesList.Add(new FieldDTO()
+                    curPropertiesList.Add(new KeyValueDTO()
                     {
                         Key = property.Name,
                         Value = property.PropertyType.FullName
@@ -45,7 +45,7 @@ namespace Hub.Services
                 }
                 else
                 {
-                    curPropertiesList.Add(new FieldDTO()
+                    curPropertiesList.Add(new KeyValueDTO()
 
                     {
                         Key = property.Name,

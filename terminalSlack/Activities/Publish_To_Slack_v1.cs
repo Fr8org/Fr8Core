@@ -171,7 +171,7 @@ namespace terminalSlack.Activities
         private async Task<List<ListItem>> GetAllChannelList(string oAuthToken)
         {
             var channels = await _slackIntegration.GetAllChannelList(oAuthToken);
-            return channels.Select(x => new ListItem() { Key = x.Key, Value = x.Value }).ToList();
+            return channels.Select(x => new ListItem() { Key = x.Name, Value = x.Value }).ToList();
         }
 
         public override Task FollowUp()

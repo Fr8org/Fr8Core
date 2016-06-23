@@ -77,8 +77,8 @@ namespace terminalFr8Core.Infrastructure
             });
 
             var fieldsList = tableNames
-                .Select(x => new FieldDTO(x, x))
-                .OrderBy(x => x.Key)
+                .Select(x => new FieldDTO(x))
+                .OrderBy(x => x.Name)
                 .ToList();
 
             return fieldsList;

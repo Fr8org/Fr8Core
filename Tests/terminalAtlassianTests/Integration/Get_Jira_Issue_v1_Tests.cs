@@ -116,7 +116,7 @@ namespace terminalAtlassianTests.Integration
             Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
 
             var fieldDescriptions = crateStorage.CrateContentsOfType<CrateDescriptionCM>().FirstOrDefault().CrateDescriptions[0];
-            Assert.True(fieldDescriptions.Fields.Any(x => x.Key == "Key"));
+            Assert.True(fieldDescriptions.Fields.Any(x => x.Name == "Key"));
 
             return activityDTO;
         }

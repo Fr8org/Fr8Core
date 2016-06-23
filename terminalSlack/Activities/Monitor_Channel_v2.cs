@@ -99,8 +99,8 @@ namespace terminalSlack.Activities
         public override async Task Initialize()
         {
             ActivityUI.ChannelList.ListItems = (await _slackIntegration.GetChannelList(AuthorizationToken.Token).ConfigureAwait(false))
-                .OrderBy(x => x.Key)
-                .Select(x => new ListItem { Key = $"#{x.Key}", Value = x.Value })
+                .OrderBy(x => x.Name)
+                .Select(x => new ListItem { Key = $"#{x.Name}", Value = x.Value })
                 .ToList();
             Storage.Add(CreateEventSubscriptionCrate());
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel)
@@ -109,14 +109,14 @@ namespace terminalSlack.Activities
 
         private IEnumerable<FieldDTO> GetChannelProperties()
         {
-            yield return new FieldDTO { Key = "team_id", Value = "team_id", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Key = "team_domain", Value = "team_domain", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Key = "timestamp", Value = "timestamp", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Key = "channel_id", Value = "channel_id", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Key = "channel_name", Value = "channel_name", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Key = "user_id", Value = "user_id", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Key = "user_name", Value = "user_name", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Key = "text", Value = "text", Availability = AvailabilityType.Always };
+            yield return new FieldDTO { Name = "team_id", Value = "team_id", Availability = AvailabilityType.Always };
+            yield return new FieldDTO { Name = "team_domain", Value = "team_domain", Availability = AvailabilityType.Always };
+            yield return new FieldDTO { Name = "timestamp", Value = "timestamp", Availability = AvailabilityType.Always };
+            yield return new FieldDTO { Name = "channel_id", Value = "channel_id", Availability = AvailabilityType.Always };
+            yield return new FieldDTO { Name = "channel_name", Value = "channel_name", Availability = AvailabilityType.Always };
+            yield return new FieldDTO { Name = "user_id", Value = "user_id", Availability = AvailabilityType.Always };
+            yield return new FieldDTO { Name = "user_name", Value = "user_name", Availability = AvailabilityType.Always };
+            yield return new FieldDTO { Name = "text", Value = "text", Availability = AvailabilityType.Always };
         }
 
         private Crate CreateEventSubscriptionCrate()

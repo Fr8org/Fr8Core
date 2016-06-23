@@ -74,7 +74,7 @@ namespace terminalSlack.Services
 
                 result.Add(new FieldDTO()
                 {
-                    Key = channelName,
+                    Name = channelName,
                     Value = channelId
                 });
             }
@@ -99,7 +99,7 @@ namespace terminalSlack.Services
 
                 result.Add(new FieldDTO()
                 {
-                    Key = userName,
+                    Name = userName,
                     Value = userId
                 });
             }

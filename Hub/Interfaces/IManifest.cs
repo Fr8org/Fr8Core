@@ -8,6 +8,6 @@ namespace Hub.Interfaces
     public interface IManifest
     {
         Crate GetById(int id);
-        List<FieldDTO> ConvertPropertyToFields(PropertyInfo[] propertyInfo);
+        List<KeyValueDTO> ConvertPropertyToFields(PropertyInfo[] propertyInfo);
     }
 }

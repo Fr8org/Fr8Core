@@ -560,7 +560,7 @@ namespace terminalDocuSign.Activities
                 .Select(x =>
                     new FieldDTO()
                     {
-                        Key = x.Key,
+                        Name = x.Key,
                         Label = x.Key,
                         FieldType = x.Value.FieldType
                     }

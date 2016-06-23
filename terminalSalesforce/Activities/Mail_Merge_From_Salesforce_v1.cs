@@ -283,7 +283,7 @@ namespace terminalSalesforce.Actions
 
         public override async Task Initialize()
         {
-            ActivityUI.SalesforceObjectSelector.ListItems = _salesforceManager.GetSalesforceObjectTypes().Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
+            ActivityUI.SalesforceObjectSelector.ListItems = _salesforceManager.GetSalesforceObjectTypes().Select(x => new ListItem { Key = x.Name, Value = x.Value }).ToList();
             var activityTemplates = await HubCommunicator.GetActivityTemplates(Tags.EmailDeliverer, true);
             activityTemplates.Sort((x, y) => x.Name.CompareTo(y.Name));
             ActivityUI.MailSenderActivitySelector.ListItems = activityTemplates

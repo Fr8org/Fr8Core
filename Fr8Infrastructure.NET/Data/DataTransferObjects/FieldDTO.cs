@@ -7,18 +7,14 @@ using Newtonsoft.Json.Linq;
 
 namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
-    [System.Diagnostics.DebuggerDisplay("Key = '{Key}', Value = '{Value}'")]
-    public class FieldDTO : System.ICloneable
+    [System.Diagnostics.DebuggerDisplay("Name = '{Name}'")]
+    public class FieldDTO : ICloneable
     {
         public const string Data_AllowableValues = "allowableValues";
-
-
+        
         [JsonProperty("key")]
-        public string Key { get; set; }
-
-        [JsonProperty("value")]
-        public string Value { get; set; }
-
+        public string Name { get; set; }
+        
         [JsonProperty("label")]
         public string Label { get; set; }
 
@@ -48,30 +44,16 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         
         public FieldDTO()
         {
-            //Availability = AvailabilityType.Configuration;
         }
 
-        public FieldDTO(string key) : this()
+        public FieldDTO(string name) 
         {
-            Key = key;
+            Name = name;
         }
 
-        public FieldDTO(string key, AvailabilityType availability) : this()
+        public FieldDTO(string name, AvailabilityType availability)
         {
-            Key = key;
-            Availability = availability;
-        }
-
-        public FieldDTO(string key, string value) : this()
-        {
-            Key = key;
-            Value = value;
-        }
-
-        public FieldDTO(string key, string value, AvailabilityType availability) : this()
-        {
-            Key = key;
-            Value = value;
+            Name = name;
             Availability = availability;
         }
 
@@ -79,8 +61,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         {
             return new FieldDTO
             {
-                Key = Key,
-                Value = Value,
+                Name = Name,
                 Tags = Tags,
                 Label = Label,
                 Data = Data == null ? null : new Dictionary<string, JToken>(Data),
@@ -91,7 +72,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
             };
         }
 
-        object System.ICloneable.Clone()
+        object ICloneable.Clone()
         {
             return Clone();
         }

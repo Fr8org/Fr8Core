@@ -102,16 +102,16 @@ namespace terminalSlack.Actions
         {
             var fields = new[]
             {
-                new FieldDTO() { Key = "token", Value = "token", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel},
-                new FieldDTO() { Key = "team_id", Value = "team_id", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel},
-                new FieldDTO() { Key = "team_domain", Value = "team_domain", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
-                new FieldDTO() { Key = "service_id", Value = "service_id", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
-                new FieldDTO() { Key = "timestamp", Value = "timestamp", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
-                new FieldDTO() { Key = "channel_id", Value = "channel_id", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
-                new FieldDTO() { Key = "channel_name", Value = "channel_name", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
-                new FieldDTO() { Key = "user_id", Value = "user_id", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
-                new FieldDTO() { Key = "user_name", Value = "user_name", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
-                new FieldDTO() { Key = "text", Value = "text", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel }
+                new FieldDTO() { Name = "token", Value = "token", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel},
+                new FieldDTO() { Name = "team_id", Value = "team_id", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel},
+                new FieldDTO() { Name = "team_domain", Value = "team_domain", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
+                new FieldDTO() { Name = "service_id", Value = "service_id", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
+                new FieldDTO() { Name = "timestamp", Value = "timestamp", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
+                new FieldDTO() { Name = "channel_id", Value = "channel_id", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
+                new FieldDTO() { Name = "channel_name", Value = "channel_name", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
+                new FieldDTO() { Name = "user_id", Value = "user_id", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
+                new FieldDTO() { Name = "user_name", Value = "user_name", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
+                new FieldDTO() { Name = "text", Value = "text", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel }
             };
             var crate = Crate.FromContent(SlackMessagePropertiesCrateLabel, new FieldDescriptionsCM(fields), AvailabilityType.Always);
             return crate;
@@ -162,8 +162,8 @@ namespace terminalSlack.Actions
         {
             var oAuthToken = AuthorizationToken.Token;
             ActivityUI.ChannelList.ListItems = (await _slackIntegration.GetChannelList(oAuthToken, false))
-                .OrderBy(x => x.Key)
-                .Select(x => new ListItem { Key = $"#{x.Key}", Value = x.Value })
+                .OrderBy(x => x.Name)
+                .Select(x => new ListItem { Key = $"#{x.Name}", Value = x.Value })
                 .ToList();
             Storage.Add(CreateChannelPropertiesCrate());
             Storage.Add(CreateEventSubscriptionCrate());

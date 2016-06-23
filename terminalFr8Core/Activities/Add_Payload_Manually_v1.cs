@@ -67,12 +67,6 @@ namespace terminalFr8Core.Activities
             {
                 var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
 
-                userDefinedPayload.ForEach(x =>
-                {
-                    x.Value = x.Key;
-                    x.Availability = AvailabilityType.RunTime;
-                });
-
                 CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel, true).AddFields(userDefinedPayload);
             }
 

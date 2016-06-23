@@ -316,7 +316,7 @@ namespace terminalDocuSign.Activities
             var queryableCriteria = new FieldDescriptionsCM(
                 new FieldDTO()
                 {
-                    Key = "Status",
+                    Name = "Status",
                     Label = "Status",
                     FieldType = FieldType.String
                 });

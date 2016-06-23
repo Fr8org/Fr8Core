@@ -56,7 +56,7 @@ namespace terminalFr8Core.Activities
                 key = "Value " + ImmediatelyToRightKey + " of " + chosenCell.selectedKey;
             }
 
-            return new FieldDTO(key, chosenCell.selectedKey);
+            return new FieldDTO(key);
         }
 
         private KeyValueDTO ExtractFieldFromTable(StandardTableDataCM table, DropDownList chosenCell, DropDownList position)
@@ -301,7 +301,6 @@ namespace terminalFr8Core.Activities
             var table = selectedCrate.Content;
             double temp;
             var tableFields = table.Table.SelectMany(c => c.Row).Select(r => r.Cell)
-                .Select(c => new FieldDTO(c.Value, c.Value))
                 .Where(c => !string.IsNullOrEmpty(c.Value) && !double.TryParse(c.Value, out temp));
 
             var tempChosenCellList = GetControl<ControlList>("extractor_list");
@@ -325,14 +324,11 @@ namespace terminalFr8Core.Activities
                 if (AreValuesSelected(chosenCell, position))
                 {
                     var field = GetChosenField(chosenCell, position);
-                    field.Availability = AvailabilityType.RunTime;
                     extractedFields.Add(field);
                 }
             }
-            Storage.RemoveByLabel(ExtractedFieldsCrateLabel);
-            var crate = Crate.FromContent(ExtractedFieldsCrateLabel, new FieldDescriptionsCM() { Fields = extractedFields });
-            crate.Availability = AvailabilityType.RunTime;
-            Storage.Add(crate);
+
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>("Extracted Field From Table").AddFields(extractedFields);
         }
     }
 }

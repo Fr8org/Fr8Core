@@ -62,11 +62,11 @@ namespace terminalSlack.Activities
             await Task.WhenAll(usersTask, channelsTask).ConfigureAwait(false);
             var channelsAndUsersList = new List<ListItem>(usersTask.Result.Count + channelsTask.Result.Count);
             channelsAndUsersList.AddRange(channelsTask.Result
-                                                      .OrderBy(x => x.Key)
-                                                      .Select(x => new ListItem { Key = $"#{x.Key}", Value = x.Value }));
+                                                      .OrderBy(x => x.Name)
+                                                      .Select(x => new ListItem { Key = $"#{x.Name}", Value = x.Value }));
             channelsAndUsersList.AddRange(usersTask.Result
-                                                   .OrderBy(x => x.Key)
-                                                   .Select(x => new ListItem { Key = $"@{x.Key}", Value = x.Value }));
+                                                   .OrderBy(x => x.Name)
+                                                   .Select(x => new ListItem { Key = $"@{x.Name}", Value = x.Value }));
             ActivityUI.ChannelSelector.ListItems = channelsAndUsersList;
         }
 

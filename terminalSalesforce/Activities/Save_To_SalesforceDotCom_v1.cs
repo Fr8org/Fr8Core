@@ -73,7 +73,7 @@ namespace terminalSalesforce.Actions
             //clear any existing TextSources. This is required when user changes the object in DDLB
             ConfigurationControls.Controls.RemoveAll(ctl => ctl is TextSource);
             chosenObjectFieldsList.ToList().ForEach(selectedObjectField =>
-                AddControl(ControlHelper.CreateTextSourceControl(selectedObjectField.Value, selectedObjectField.Key, string.Empty, addRequestConfigEvent: true, requestUpstream: true)));
+                AddControl(ControlHelper.CreateTextSourceControl(selectedObjectField.Value, selectedObjectField.Name, string.Empty, addRequestConfigEvent: true, requestUpstream: true)));
 
             Storage.RemoveByLabelPrefix("Salesforce Object Fields - ");
             Storage.Add("Salesforce Object Fields - " + chosenObject, new FieldDescriptionsCM(chosenObjectFieldsList));
@@ -97,7 +97,7 @@ namespace terminalSalesforce.Actions
             //get TextSources that represent the above required fields
             var requiredFieldControlsList = ConfigurationControls
                                                 .Controls.OfType<TextSource>()
-                                                .Where(c => requiredFieldsList.Any(f => f.Key.Equals(c.Name)));
+                                                .Where(c => requiredFieldsList.Any(f => f.Name.Equals(c.Name)));
 
             //for each required field's control, check its value source
             requiredFieldControlsList.ToList().ForEach(c =>

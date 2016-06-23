@@ -123,7 +123,7 @@ namespace terminalGoogle.Actions
             var formFields = await _googleAppsScript.GetGoogleFormFields(googleAuth, formId);
 
             CrateSignaller.ClearAvailableCrates();
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel).AddFields(formFields.Select(x => new FieldDTO() { Key = x.Title, Value = x.Title }).ToList());
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel).AddFields(formFields.Select(x => new FieldDTO() { Name = x.Title, Label = x.Title }).ToList());
         }
 
         public override async Task Activate()

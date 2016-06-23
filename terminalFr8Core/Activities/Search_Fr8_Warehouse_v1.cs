@@ -266,17 +266,8 @@ namespace terminalFr8Core.Activities
             );
 
             return Crate<StandardQueryCM>.FromContent(QueryCrateLabel, queryCM);
-        }
+       }
 
-        private IEnumerable<Crate> PackDesignTimeData()
-        {
-            yield return Crate.FromContent("Fr8 Search Report", new FieldDescriptionsCM(new FieldDTO
-            {
-                Key = "Fr8 Search Report",
-                Value = "Table",
-                Availability = AvailabilityType.RunTime
-            }));
-        }
 
         // create the dropdown design time fields.
         private List<KeyValueDTO> GetFr8WarehouseTypes(AuthorizationToken oAuthToken)
@@ -319,7 +310,6 @@ namespace terminalFr8Core.Activities
             var designTimefieldLists = GetFr8WarehouseTypes(AuthorizationToken);
             var availableMtObjects = CrateManager.CreateDesignTimeFieldsCrate("Queryable Objects", designTimefieldLists.ToArray());
             Storage.Add(availableMtObjects);
-            Storage.AddRange(PackDesignTimeData());
             return Task.FromResult(0);
         }
 

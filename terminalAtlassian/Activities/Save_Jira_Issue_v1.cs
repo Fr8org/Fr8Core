@@ -197,9 +197,9 @@ namespace terminalAtlassian.Actions
                 }
             }
 
-            public IEnumerable<FieldDTO> GetValues(ICrateStorage crateStorage)
+            public IEnumerable<KeyValueDTO> GetValues(ICrateStorage crateStorage)
             {
-                var result = new List<FieldDTO>();
+                var result = new List<KeyValueDTO>();
 
                 foreach (var control in Controls)
                 {
@@ -212,7 +212,7 @@ namespace terminalAtlassian.Actions
 
                         if (!string.IsNullOrEmpty(value))
                         {
-                            result.Add(new FieldDTO(key, value));
+                            result.Add(new KeyValueDTO(key, value));
                         }
                     }
                 }
@@ -421,7 +421,7 @@ namespace terminalAtlassian.Actions
 
             if (ActivityUI.Sprint.Value != null)
             {
-                result.CustomFields.Add(new FieldDTO() { Key = ActivityUI.SprintFieldName.Label, Value = ActivityUI.Sprint.Value });
+                result.CustomFields.Add(new KeyValueDTO() { Key = ActivityUI.SprintFieldName.Label, Value = ActivityUI.Sprint.Value });
             }
 
             return result;
