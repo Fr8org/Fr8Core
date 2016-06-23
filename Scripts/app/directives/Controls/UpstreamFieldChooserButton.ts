@@ -47,10 +47,6 @@ module dockyard.directives.upstreamDataChooser {
                             $scope.field.selectedKey = null;
                             $scope.field.value = null;
                             $scope.field.selectedItem = null;
-
-                            if ($scope.change != null && angular.isFunction($scope.change)) {
-                                $scope.change()($scope.field);
-                            }
                     
                 }
             };
@@ -68,7 +64,8 @@ module dockyard.directives.upstreamDataChooser {
                         }
                     });
                 }
-            }
+            };
+
             $scope.openModal = () => {
                 getUpstreamFields().then(() => {
                     $scope.createModal();
@@ -79,7 +76,8 @@ module dockyard.directives.upstreamDataChooser {
                     alertMessage.isOkCancelVisible = false;
                     uiHelperService.openConfirmationModal(alertMessage);
                 });
-            }
+            };
+
             $scope.selectItem = (item) => {
                 $scope.field.selectedItem = item;
                 $scope.field.value = item.key;
@@ -88,6 +86,7 @@ module dockyard.directives.upstreamDataChooser {
                     $scope.change()($scope.field);
                 }
             };
+
             $scope.getGroupValue = (item) => {
                 if (item.sourceActivityId == null) {
                     return item.sourceCrateLabel;
