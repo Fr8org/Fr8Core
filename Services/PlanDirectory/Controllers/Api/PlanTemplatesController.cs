@@ -106,14 +106,22 @@ namespace PlanDirectory.Controllers.Api
             return ExceptionWrapper(async () =>
             {
                 var fr8AccountId = User.Identity.GetUserId();
+                System.Diagnostics.Debug.WriteLine("CreatePlan: fr8AccountId = " + fr8AccountId);
+
                 var planTemplateDTO = await _planTemplate.Get(fr8AccountId, id);
 
                 if (planTemplateDTO == null)
                 {
+                    System.Diagnostics.Debug.WriteLine("CreatePlan: planTemplateDTO == null");
                     throw new ApplicationException("Unable to find PlanTemplate in MT-database.");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("CreatePlan: planTemplateDTO.ParentPlanId = " + planTemplateDTO.ParentPlanId);
                 }
 
                 var plan = await _hubCommunicator.LoadPlan(planTemplateDTO.PlanContents);
+                System.Diagnostics.Debug.WriteLine("CreatePlan: HubCommunicator.LoadPlan succeeded.");
 
                 return Ok(
                     new
