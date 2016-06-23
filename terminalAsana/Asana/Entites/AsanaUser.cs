@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace terminalAsana.Infrastructure
+namespace terminalAsana.Asana.Entites
 {
 
-    public class AsanaUserInfo
+    public class AsanaUser
     {
         [JsonProperty("id")]
         public string Id { get; set; }
@@ -22,6 +19,6 @@ namespace terminalAsana.Infrastructure
         public IDictionary<string,string> Photo{ get; set; }
 
         [JsonProperty("workspaces")]
-        public IEnumerable<AsanaUserWorkspace> Workspaces { get; set; }
+        public IEnumerable<AsanaWorkspace> Workspaces { get; set; }
     }
 }

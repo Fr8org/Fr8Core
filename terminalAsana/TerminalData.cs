@@ -16,6 +16,7 @@ namespace terminalAsana
         {
             Endpoint = CloudConfigurationManager.GetSetting("terminalAsana.TerminalEndpoint"),
             TerminalStatus = TerminalStatus.Active,
+            AuthenticationType = AuthenticationType.External,
             Name = "terminalAsana",
             Label = "Asana",
             Version = "1"

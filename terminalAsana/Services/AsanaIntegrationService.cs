@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using Fr8.Infrastructure.Utilities.Configuration;
-using terminalAsana.Infrastructure;
+using terminalAsana.Asana.Entites;
 using terminalAsana.Interfaces;
 
 namespace terminalAsana.Services
@@ -23,7 +23,7 @@ namespace terminalAsana.Services
             throw new NotImplementedException();
         }
 
-        public Task<AsanaUserInfo> GetUserInfo(string token)
+        public Task<AsanaUser> GetUserInfo(string token)
         {
             throw new NotImplementedException();
         }

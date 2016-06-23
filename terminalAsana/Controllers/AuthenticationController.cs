@@ -5,7 +5,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.TerminalBase.Services;
 using terminalAsana.Interfaces;
 
-namespace terminalSlack.Controllers
+namespace terminalAsana.Controllers
 {
     [RoutePrefix("authentication")]
     public class AuthenticationController : ApiController

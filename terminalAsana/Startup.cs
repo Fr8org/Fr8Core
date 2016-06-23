@@ -25,7 +25,7 @@ namespace terminalAsana
 
         public void Configuration(IAppBuilder app, bool selfHost)
         {
-            ConfigureProject(selfHost, null);
+            ConfigureProject(selfHost,TerminalAsanaBootstrapper.ConfigureLive);
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
             app.UseWebApi(_configuration);
@@ -45,6 +45,7 @@ namespace terminalAsana
             return new Type[] {
                     typeof(ActivityController),
                     typeof(TerminalController),
+                    typeof(AuthenticationController)
                 };
         }
     }
