@@ -37,10 +37,11 @@ namespace terminalInstagram.Actions
             return Task.FromResult(0);
         }
 
-        public Monitor_For_New_Media_Posted_v1(ICrateManager crateManager, IInstagramIntegration instagramIntegration)
+        public Monitor_For_New_Media_Posted_v1(ICrateManager crateManager, IInstagramEventManager instagramEventManager, IInstagramIntegration instagramIntegration)
             : base(crateManager)
         {
             _instagramIntegration = instagramIntegration;
+            _instagramEventManager = instagramEventManager;
         }
 
         public override async Task Initialize()
@@ -61,7 +62,7 @@ namespace terminalInstagram.Actions
 
         private Crate CreateEventSubscriptionCrate()
         {
-            return CrateManager.CreateStandardEventSubscriptionsCrate(EventSubscriptionsCrateLabel, "Slack", "Slack Outgoing Message");
+            return CrateManager.CreateStandardEventSubscriptionsCrate(EventSubscriptionsCrateLabel, "Instagram", "Instagram Subscribe Media");
         }
         public override async Task Activate()
         {

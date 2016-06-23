@@ -16,6 +16,7 @@ namespace terminalInstagram
         public static void ConfigureLive(ConfigurationExpression configurationExpression)
         {
             configurationExpression.For<IInstagramIntegration>().Use<InstagramIntegration>();
+            configurationExpression.For<IInstagramEventManager>().Use<InstagramEventManager>();
         }
     }
 }

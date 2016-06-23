@@ -24,27 +24,25 @@ namespace terminalInstagram.Services
         {
             throw new NotImplementedException();
         }
-
-
-        [HttpGet]
-        [Route("subscribe")]
-        public string ConfirmSubscription(string mode, string challenge, string verifyToken)
+        public InstagramEventManager(IRestfulServiceClient client)
         {
-            return challenge;
+            _client = client;
         }
+
+
         public async Task Subscribe(AuthorizationToken token, Guid planId)
         {
             var parameters = new List<KeyValuePair<string, string>>();
             parameters.Add(new KeyValuePair<string, string>("client_id", clientId));
             parameters.Add(new KeyValuePair<string, string>("client_secret", clientSecret));
-            parameters.Add(new KeyValuePair<string, string>("object", "user")); //user
+            parameters.Add(new KeyValuePair<string, string>("object", "user")); 
             parameters.Add(new KeyValuePair<string, string>("aspect", "media"));
-            parameters.Add(new KeyValuePair<string, string>("verifyToken", "")); //myVerifyToken
-            parameters.Add(new KeyValuePair<string, string>("callback_url", ""));
+            parameters.Add(new KeyValuePair<string, string>("verifyToken", "")); 
+            parameters.Add(new KeyValuePair<string, string>("callback_url", "http://3bc6742a.ngrok.io/terminals/terminalinstagram/subscribe"));
             var formContent = new FormUrlEncodedContent(parameters);
 
             var url = new Uri("https://api.instagram.com/v1/subscriptions");
-            var jsonObj = await _client.PostAsync<JObject>(url, formContent);
+            await _client.PostAsync<JObject>(url, formContent);
         }
 
         public void Unsubscribe(Guid planId)

@@ -7,6 +7,9 @@ using Owin;
 using terminalInstagram.Actions;
 using terminalInstagram.Controllers;
 using terminalInstagram;
+using terminalInstagram.Models;
+using System.Web.Http;
+using terminalInstagram.Infrastructure;
 
 [assembly: OwinStartup(typeof(Startup))]
 
@@ -34,6 +37,7 @@ namespace terminalInstagram
             {
                 StartHosting();
             }
+            _configuration.BindParameter(typeof(VerificationMessage), new InstagramVerificationModelBinder());
         }
 
         protected override void RegisterActivities()
@@ -46,7 +50,8 @@ namespace terminalInstagram
             return new Type[] {
                     typeof(ActivityController),
                     typeof(TerminalController),
-                    typeof(AuthenticationController)
+                    typeof(AuthenticationController),
+                    typeof(EventController)
                 };
         }
     }
