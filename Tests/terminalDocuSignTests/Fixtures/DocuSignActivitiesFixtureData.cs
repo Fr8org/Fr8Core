@@ -30,17 +30,17 @@ namespace terminalDocuSignTests.Fixtures
         {
         }
 
-        protected override Task RunDS()
+        public override Task Run()
         {
             return Task.FromResult(0);
         }
 
-        protected override Task InitializeDS()
+        public override Task Initialize()
         {
             return Task.FromResult(0);
         }
 
-        protected override Task FollowUpDS()
+        public override Task FollowUp()
         {
             return Task.FromResult(0);
         }

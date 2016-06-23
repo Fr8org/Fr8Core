@@ -100,12 +100,12 @@ namespace terminalDocuSign.Activities
             return CrateManager.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
         }
 
-        protected override async Task FollowUpDS()
+        public override async Task FollowUp()
         {
             await HandleFollowUpConfiguration();
         }
-        
-        protected override async Task InitializeDS()
+
+        public override async Task Initialize()
         {
             var configurationCrate = Storage.CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 

@@ -133,7 +133,7 @@ namespace terminalDocuSign.Activities
             _container = container;
         }
 
-        protected override async Task InitializeDS()
+        public override async Task Initialize()
         {
             Storage.Clear();
             Storage.Add(PackControls(new ActivityUi()));
@@ -143,7 +143,7 @@ namespace terminalDocuSign.Activities
             Storage.Add(PackAvailableRunTimeDataFields());
         }
 
-        protected override async Task FollowUpDS()
+        public override async Task FollowUp()
         {
             var specificRecipientOption = ((RadioButtonGroup)ConfigurationControls.Controls[0]).Radios[0];
             var specificTemplateOption = ((RadioButtonGroup)ConfigurationControls.Controls[0]).Radios[1];
@@ -447,7 +447,7 @@ namespace terminalDocuSign.Activities
             }
         }
 
-        protected override async Task RunDS()
+        public override async Task Run()
         {
             var descendants = new List<ActivityPayload>();
 

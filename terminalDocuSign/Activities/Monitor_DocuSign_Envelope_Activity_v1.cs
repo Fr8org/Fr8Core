@@ -124,9 +124,9 @@ namespace terminalDocuSign.Actions
         {
             return activityUi.SentToRecipientOption.Selected || activityUi.BasedOnTemplateOption.Selected;
         }
-        
 
-        protected override async Task RunDS()
+
+        public override async Task Run()
         {
             DocuSignEnvelopeCM_v2 envelopeStatus = null;
             var eventCrate = Payload.CratesOfType<EventReportCM>().FirstOrDefault()?.Get<EventReportCM>()?.EventPayload;
@@ -214,7 +214,7 @@ namespace terminalDocuSign.Actions
             Success();
         }
 
-        protected override async Task InitializeDS()
+        public override async Task Initialize()
         {
 
             var controlsCrate = PackControls(CreateActivityUi());
@@ -225,7 +225,7 @@ namespace terminalDocuSign.Actions
             Storage.Add(PackEventSubscriptionsCrate(controlsCrate.Get<StandardConfigurationControlsCM>()));
         }
 
-        protected override Task FollowUpDS()
+        public override Task FollowUp()
         {
             //just update the user selected envelope events in the follow up configuration
             var allFields = CreateDocuSignEventFieldsDefinitions();

@@ -230,6 +230,8 @@ namespace Fr8.TerminalBase.BaseClasses
                 {
                     await AfterConfigure(configurationType, ex);
                 }
+
+                throw;
             }
         }
 
@@ -276,6 +278,8 @@ namespace Fr8.TerminalBase.BaseClasses
                 {
                     await AfterActivate(ex);
                 }
+
+                throw;
             }
         }
 
@@ -312,6 +316,8 @@ namespace Fr8.TerminalBase.BaseClasses
                 {
                     await AfterDeactivate(ex);
                 }
+
+                throw;
             }
         }
 

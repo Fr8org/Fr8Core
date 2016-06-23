@@ -46,7 +46,7 @@ namespace terminalDocuSign.Actions
         {
         }
 
-        protected override async Task RunDS()
+        public override async Task Run()
         {
             var loginInfo = DocuSignManager.SetUp(AuthorizationToken);
             var curTemplateId = ExtractTemplateId();
@@ -192,7 +192,7 @@ namespace terminalDocuSign.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task InitializeDS()
+        public override async Task Initialize()
         {
                 // Only do it if no existing MT.FieldDescription crate is present to avoid loss of existing settings
                 // Two crates are created
@@ -206,7 +206,7 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        protected override async Task FollowUpDS()
+        public override async Task FollowUp()
             {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(AuthorizationToken.Token);
             await HandleFollowUpConfiguration();

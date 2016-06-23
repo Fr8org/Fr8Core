@@ -35,7 +35,7 @@ namespace terminalDocuSign.Activities
         {
         }
 
-        protected override Task InitializeDS()
+        public override Task Initialize()
         {
             var control = ControlHelper.CreateSpecificOrUpstreamValueChooser(
                "EnvelopeId",
@@ -49,7 +49,7 @@ namespace terminalDocuSign.Activities
             return Task.FromResult(0);
         }
 
-        protected override async Task FollowUpDS()
+        public override async Task FollowUp()
         {
             var control = GetControl<TextSource>("EnvelopeIdSelector");
             string envelopeId = GetEnvelopeId(control);
@@ -72,7 +72,7 @@ namespace terminalDocuSign.Activities
             return Task.FromResult(0);
         }
 
-        protected override async Task RunDS()
+        public override async Task Run()
         {
             //Get envlopeId from configuration
             var control = GetControl<TextSource>("EnvelopeIdSelector");
