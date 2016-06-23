@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.Errors;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PhoneNumbers;
@@ -167,11 +168,22 @@ namespace terminalStatX.Services
                         {
                             foreach (var valueItem in itemsToken)
                             {
-                                stat.StatItems.Add(new StatItemDTO()
+                                if (valueItem is JValue)
                                 {
-                                    Name = valueItem["name"]?.ToString(),
-                                    Value = valueItem["value"]?.ToString()
-                                });
+                                    stat.StatItems.Add(new StatItemDTO()
+                                    {
+                                        Name = valueItem.ToString(),
+                                        Value = valueItem.ToString()
+                                    });
+                                }
+                                else
+                                {
+                                    stat.StatItems.Add(new StatItemDTO()
+                                    {
+                                        Name = valueItem["name"]?.ToString(),
+                                        Value = valueItem["value"]?.ToString()
+                                    });
+                                }
                             }
                         }
 
@@ -183,14 +195,60 @@ namespace terminalStatX.Services
             return resultSet;
         }
 
+        public async Task<StatDTO> GetStat(StatXAuthDTO statXAuthDTO, string groupId, string statId)
+        {
+            var uri = new Uri($"{StatXBaseApiUrl}/groups/{groupId}/stats/{statId}");
+            var response = await _restfulServiceClient.GetAsync(uri, null, GetStatxAPIHeaders(statXAuthDTO));
+
+            var jObject = JObject.Parse(response);
+
+            CheckForExistingErrors(jObject);
+
+            var stat = new StatDTO()
+            {
+                Id = jObject["id"]?.ToString(),
+                Title = jObject["title"]?.ToString(),
+                VisualType = jObject["visualType"]?.ToString(),
+                Value = jObject["value"]?.ToString(),
+                LastUpdatedDateTime = jObject["lastUpdatedDateTime"]?.ToString()
+            };
+          
+            //check for items 
+            JToken itemsToken;
+
+            var items = JObject.Parse(jObject.ToString());
+            if (items.TryGetValue("items", out itemsToken))
+            {
+                foreach (var valueItem in itemsToken)
+                {
+                    if (valueItem is JValue)
+                    {
+                        stat.StatItems.Add(new StatItemDTO()
+                        {
+                            Name = valueItem.ToString(),
+                            Value = valueItem.ToString()
+                        });
+                    }
+                    else
+                    {
+                        stat.StatItems.Add(new StatItemDTO()
+                        {
+                            Name = valueItem["name"]?.ToString(),
+                            Value = valueItem["value"]?.ToString()
+                        });
+                    }
+                }
+            }
+
+            return stat;
+        }
+
         public async Task UpdateStatValue(StatXAuthDTO statXAuthDTO, string groupId, string statId, Dictionary<string, string> statValues)
         {
             var uri = new Uri($"{StatXBaseApiUrl}/groups/{groupId}/stats/{statId}");
 
             //get the stat and look for value
-            var stats = await GetStatsForGroup(statXAuthDTO, groupId);
-
-            var currentStat = stats.FirstOrDefault(x => x.Id == statId);
+            var currentStat = await GetStat(statXAuthDTO, groupId, statId);
             if (currentStat != null)
             {
                 string response;
@@ -219,11 +277,13 @@ namespace terminalStatX.Services
 
                 var jObject = JObject.Parse(response);
 
-                CheckForExistingErrors(jObject);
+                CheckForExistingErrors(jObject, true);
             }
         }
-        
-        private Dictionary<string, string> GetStatxAPIHeaders(StatXAuthDTO statXAuthDTO)
+
+        #region Helper Methods
+
+        private static Dictionary<string, string> GetStatxAPIHeaders(StatXAuthDTO statXAuthDTO)
         {
             var headers = new Dictionary<string, string>
             {
@@ -234,7 +294,7 @@ namespace terminalStatX.Services
             return headers;
         }
 
-        private void CheckForExistingErrors(JObject jObject)
+        private static void CheckForExistingErrors(JObject jObject, bool isInRunMode = false)
         {
             JToken errorsToken;
             if (!jObject.TryGetValue("errors", out errorsToken)) return;
@@ -243,19 +303,29 @@ namespace terminalStatX.Services
 
             var firstError = (JArray)errorsToken.First;
 
-            if (!string.IsNullOrEmpty(firstError["message"]?.ToString()))
+            if (string.IsNullOrEmpty(firstError["message"]?.ToString())) return;
+
+            if (isInRunMode)
             {
-                throw new ApplicationException(firstError["message"].ToString());
+                throw new ActivityExecutionException(firstError["message"].ToString());
             }
+               
+            throw new ApplicationException(firstError["message"].ToString());
         }
 
-        private string GeneralisePhoneNumber(string phoneNumber)
+        private static string GeneralisePhoneNumber(string phoneNumber)
         {
             PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
             phoneNumber = new string(phoneNumber.Where(s => char.IsDigit(s) || s == '+' || (phoneUtil.IsAlphaNumber(phoneNumber) && char.IsLetter(s))).ToArray());
             if (phoneNumber.Length == 10 && !phoneNumber.Contains("+"))
                 phoneNumber = "+1" + phoneNumber; //we assume that default region is USA
+
+            if (phoneNumber.Length == 11 && !phoneNumber.Contains("+"))
+                phoneNumber = "+" + phoneNumber;
+            
             return phoneNumber;
         }
+
+        #endregion
     }
 }
