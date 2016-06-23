@@ -44,6 +44,7 @@ namespace terminalFacebookTests.Integration
             Assert.IsTrue(fieldDescriptions.Content.Fields.Exists(x => x.Label == FacebookFeedMessageField), "FacebookFeedMessageField is not signalled");
             Assert.IsTrue(fieldDescriptions.Content.Fields.Exists(x => x.Label == FacebookFeedStoryField), "FacebookFeedStoryField is not signalled");
             Assert.IsTrue(fieldDescriptions.Content.Fields.Exists(x => x.Label == FacebookFeedCreatedTimeField), "FacebookFeedCreatedTimeField is not signalled");
+
         }
 
         private async Task<ActivityDTO> CompleteInitialConfiguration()
