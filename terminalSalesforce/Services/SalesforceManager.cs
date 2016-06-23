@@ -49,7 +49,7 @@ namespace terminalSalesforce.Services
             table.FirstRowHeaders = true;
             var headerRow = whatToSelect.Length > 0
                                 ? whatToSelect.Select(x => new TableCellDTO { Cell = new KeyValueDTO(x, x)}).ToList()
-                                : (await GetProperties(type, authToken)).Select(x => new TableCellDTO { Cell = new KeyValueDTO(x.Name, x.Value) }).ToList();
+                                : (await GetProperties(type, authToken)).Select(x => new TableCellDTO { Cell = new KeyValueDTO(x.Name, x.Label) }).ToList();
             table.Table.Insert(0, new TableRowDTO { Row = headerRow });
             return table;
         }
