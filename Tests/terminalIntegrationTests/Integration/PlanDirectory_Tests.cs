@@ -69,17 +69,27 @@ namespace terminalIntegrationTests.Integration
             var hubCommunicatorMock = new Mock<IHubCommunicator>();
             hubCommunicatorMock.Setup(x => x.LoadPlan(It.IsAny<JToken>()))
                 .Returns(() => Task.FromResult<PlanEmptyDTO>(new PlanEmptyDTO() { Id = createdPlanId }));
-        
+
+            System.Diagnostics.Debug.WriteLine("HubCommunicator Mock created.");
+
             ObjectFactory.Container.Inject(hubCommunicatorMock.Object);
-        
+
+            System.Diagnostics.Debug.WriteLine("HubCommunicator Mock injected.");
+
             var planTemplateDTO = PlanTemplateDTO_1();
             await HttpPostAsync<PublishPlanTemplateDTO, string>(_baseUrl + "plan_templates/", planTemplateDTO);
-        
+
+            System.Diagnostics.Debug.WriteLine("PlanTemplate created.");
+
             await AuthenticateWebApi("IntegrationTestUser1", "fr8#s@lt!");
-        
+
+            System.Diagnostics.Debug.WriteLine("Authenticated with IntegrationTestUser1.");
+
             var createPlanResult = await HttpPostAsync<JToken>(
                 _baseUrl + "plan_templates/createplan?id=" + planTemplateDTO.ParentPlanId.ToString(), null);
-        
+
+            System.Diagnostics.Debug.WriteLine("CreatePlan succeded.");
+
             hubCommunicatorMock.Verify(x => x.LoadPlan(It.IsAny<JToken>()), Times.Once());
         
             Assert.NotNull(createPlanResult);
