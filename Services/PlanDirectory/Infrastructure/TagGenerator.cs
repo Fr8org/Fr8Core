@@ -112,45 +112,5 @@ namespace PlanDirectory.Infrastructure
             }
             return result;
         }
-
-    }
-
-
-
-    public class ActivityTemplateTag : TemplateTag
-    {
-        //id, WebServiceId, name
-        private List<Tuple<Guid, int, string>> _values = new List<Tuple<Guid, int, string>>();
-
-        [JsonIgnore]
-        public override string Values { get { return string.Join(", ", _values.Select(a => a.Item3).ToArray()); } }
-
-        public ActivityTemplateTag(List<ActivityTemplateDTO> values)
-        {
-            values.ForEach(a =>
-            { _values.Add(new Tuple<Guid, int, string>(a.Id, a.WebService.Id, a.Name)); });
-        }
-
-    }
-
-    public class WebServiceTemplateTag : TemplateTag
-    {
-        //id, iconPath, name
-        private List<Tuple<int, string, string>> _values = new List<Tuple<int, string, string>>();
-
-        [JsonIgnore]
-        public override string Values { get { return string.Join(", ", _values.Select(a => a.Item3).ToArray()); } }
-
-        public WebServiceTemplateTag(List<WebServiceDTO> values)
-        {
-            values.ForEach(a =>
-            { _values.Add(new Tuple<int, string, string>(a.Id, a.IconPath, a.Name)); });
-        }
-    }
-
-    public abstract class TemplateTag
-    {
-        [JsonIgnore]
-        public abstract string Values { get; }
     }
 }

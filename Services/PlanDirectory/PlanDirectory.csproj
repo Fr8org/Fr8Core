@@ -258,7 +258,7 @@
     <Content Include="Content\plan-directory.css" />
     <Content Include="CategoryPages\PlanCategoryTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>PlanCategoryTemplate1.cs</LastGenOutput>
+      <LastGenOutput>PlanCategoryTemplate.cs</LastGenOutput>
     </Content>
     <Content Include="Global.asax" />
     <Content Include="gulpfile.js" />
@@ -289,7 +289,7 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="CategoryPages\PlanCategoryTemplate1.cs">
+    <Compile Include="CategoryPages\PlanCategoryTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>PlanCategoryTemplate.tt</DependentUpon>
@@ -301,10 +301,13 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Infrastructure\ActivityTemplateTag.cs" />
     <Compile Include="Infrastructure\AuthTokenManager.cs" />
     <Compile Include="Infrastructure\IPageGenerator.cs" />
     <Compile Include="Infrastructure\ISearchProvider.cs" />
     <Compile Include="Infrastructure\TagGenerator.cs" />
+    <Compile Include="Infrastructure\TemplateTag.cs" />
+    <Compile Include="Infrastructure\WebServiceTemplateTag.cs" />
     <Compile Include="Interfaces\ITagGenerator.cs" />
     <Compile Include="Infrastructure\PlanCategoryPageGenerator.cs" />
     <Compile Include="Infrastructure\PlanDirectoryHMACAuthenticateAttribute.cs" />

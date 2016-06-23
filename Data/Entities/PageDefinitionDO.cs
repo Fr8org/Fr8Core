@@ -34,7 +34,7 @@ namespace Data.Entities
         public Uri Url { get; set; }
 
         [Column("Url")]
-        public string UriString
+        public string UrlString
         {
             get { return Url?.ToString(); }
             set { Url = value == null ? null : new Uri(value); }
