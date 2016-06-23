@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Fr8.Infrastructure.Data.Constants;
+using Newtonsoft.Json.Linq;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
@@ -17,6 +17,7 @@ namespace Fr8.TerminalBase.Interfaces
 
         void Authorize(string userId);
 
+        Task<PlanEmptyDTO> LoadPlan(JToken planContents);
         Task<PayloadDTO> GetPayload(Guid containerId);
         Task<List<AuthenticationTokenTerminalDTO>> GetTokens();
         Task<AuthorizationTokenDTO> GenerateOAuthToken(ExternalAuthenticationDTO authDTO);

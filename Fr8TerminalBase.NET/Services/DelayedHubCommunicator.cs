@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Fr8.Infrastructure.Data.Constants;
+using Newtonsoft.Json.Linq;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
@@ -35,6 +35,12 @@ namespace Fr8.TerminalBase.Services
                 _userId = userId;
                 _underlyingHubCommunicator?.Authorize(userId);
             }
+        }
+
+        public async Task<PlanEmptyDTO> LoadPlan(JToken planContents)
+        {
+            await InitializeUnderlyingCommunicator();
+            return await _underlyingHubCommunicator.LoadPlan(planContents);
         }
 
         public async Task<PayloadDTO> GetPayload(Guid containerId)
