@@ -4,6 +4,7 @@ using Fr8.Infrastructure.Utilities.Configuration;
 
 namespace terminalDemo
 {
+
     public static class TerminalData
     {
         public static WebServiceDTO WebServiceDTO = new WebServiceDTO

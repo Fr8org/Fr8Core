@@ -52,9 +52,9 @@ namespace terminalBaseTests.BaseClasses
             _activityExecutor = ObjectFactory.GetInstance<ActivityExecutor>();
             _activityStore = ObjectFactory.GetInstance<IActivityStore>();
 
-            if (_activityStore.GetFactory(BaseTerminalActivityMock.ActivityTemplate) == null)
+            if (_activityStore.GetFactory(ExplicitTerminalActivityMock.ActivityTemplate) == null)
             {
-                _activityStore.RegisterActivity<BaseTerminalActivityMock>(BaseTerminalActivityMock.ActivityTemplate);
+                _activityStore.RegisterActivity<ExplicitTerminalActivityMock>(ExplicitTerminalActivityMock.ActivityTemplate);
             }
         }
 

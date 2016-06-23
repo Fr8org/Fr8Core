@@ -537,6 +537,16 @@ namespace Data.Infrastructure
         public IPageDefinitionRepository PageDefinitionRepository => 
             _pageDefinitionRepository ?? (_pageDefinitionRepository = new PageDefinitionRepository(this));
 
+        private TerminalRegistrationRepository _terminalRegistrationRepository;
+        public TerminalRegistrationRepository TerminalRegistrationRepository
+        {
+            get
+            {
+                return _terminalRegistrationRepository ?? (_terminalRegistrationRepository = new TerminalRegistrationRepository(this));
+            }
+        }
+
+
         public void Save()
         {
             _context.SaveChanges();

@@ -10,7 +10,7 @@ using terminalFr8Core.Infrastructure;
 namespace terminalFr8Core.Activities
 {
 
-    public class Manage_Plan_v1 : BaseTerminalActivity
+    public class Manage_Plan_v1 : ExplicitTerminalActivity
     {
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO

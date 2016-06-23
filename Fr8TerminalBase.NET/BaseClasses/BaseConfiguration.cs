@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net.Http;
@@ -11,6 +10,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.StructureMap;
 using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Services;
@@ -26,7 +26,7 @@ namespace Fr8.TerminalBase.BaseClasses
         private IContainer _container;
         private IActivityStore _activityStore;
         private readonly TerminalDTO _terminal;
-
+        private IHubDiscoveryService _hubDiscovery;
         public IContainer Container => _container;
         public IActivityStore ActivityStore => _activityStore;
 
@@ -42,9 +42,11 @@ namespace Fr8.TerminalBase.BaseClasses
         {
             _container = new Container(StructureMapBootStrapper.LiveConfiguration);
             _activityStore = new ActivityStore(_terminal, _container);
-
+            
             _container.Configure(x => x.AddRegistry<TerminalBootstrapper.LiveMode>());
             _container.Configure(x => x.For<IActivityStore>().Use(_activityStore));
+
+            _hubDiscovery = _container.GetInstance<IHubDiscoveryService>();
 
             AutoMapperBootstrapper.ConfigureAutoMapper();
 
@@ -92,20 +94,25 @@ namespace Fr8.TerminalBase.BaseClasses
             
             if (request.Headers.Contains("Fr8HubCallBackUrl") && request.Headers.Contains("Fr8HubCallbackSecret"))
             {
-                var apiUrl = request.Headers.GetValues("Fr8HubCallBackUrl").First();
+                var apiUrl = request.Headers.GetValues("Fr8HubCallBackUrl").First().TrimEnd('\\', '/') + $"/api/{CloudConfigurationManager.GetSetting("HubApiVersion")}";
                 var secret = request.Headers.GetValues("Fr8HubCallbackSecret").First();
-                var terminalId = CloudConfigurationManager.GetSetting("TerminalId") ?? ConfigurationManager.AppSettings[_activityStore.Terminal.Name + "TerminalId"];
 
-                hubCommunicatorFactoryExpression = c => new DefaultHubCommunicator(c.GetInstance<IRestfulServiceClient>(), c.GetInstance<IHMACService>(), apiUrl, terminalId, secret);
+                _hubDiscovery.SetHubSecret(apiUrl, secret);
+                hubCommunicatorFactoryExpression = c => new DefaultHubCommunicator(c.GetInstance<IRestfulServiceClient>(), c.GetInstance<IHMACService>(), apiUrl, _activityStore.Terminal.PublicIdentifier, secret);
             }
             else
             {
-                hubCommunicatorFactoryExpression = c => new DealyedhubCommunicator(c.GetInstance<IHubEventReporter>());
+                hubCommunicatorFactoryExpression = c => new DelayedHubCommunicator(c.GetInstance<IHubDiscoveryService>().GetMasterHubCommunicator());
             }
             
-            childContainer.Configure(x => x.For<IHubCommunicator>().Use(hubCommunicatorFactoryExpression));
-            childContainer.Configure(x => x.For<IContainer>().Use(childContainer));
-
+            childContainer.Configure(x =>
+            {
+                x.For<IHubCommunicator>().Use(hubCommunicatorFactoryExpression).Singleton();
+                x.For<IContainer>().Use(childContainer);
+                x.For<IPushNotificationService>().Use<PushNotificationService>().Singleton();
+                x.For<PlanService>().Use<PlanService>().Singleton();
+            });
+            
             request.RegisterForDispose(childContainer);
 
             return childContainer.GetInstance(controllerType) as IHttpController;

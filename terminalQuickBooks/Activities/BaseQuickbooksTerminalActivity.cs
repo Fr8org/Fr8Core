@@ -6,7 +6,7 @@ using terminalQuickBooks.Infrastructure;
 
 namespace terminalQuickBooks.Actions
 {
-    public abstract class BaseQuickbooksTerminalActivity<T> : EnhancedTerminalActivity<T>
+    public abstract class BaseQuickbooksTerminalActivity<T> : TerminalActivity<T>
         where T : StandardConfigurationControlsCM
     {
         protected BaseQuickbooksTerminalActivity(ICrateManager crateManager)

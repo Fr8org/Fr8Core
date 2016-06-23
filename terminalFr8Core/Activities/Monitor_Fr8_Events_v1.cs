@@ -11,7 +11,7 @@ using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Activities
 {
-    public class Monitor_Fr8_Events_v1 : BaseTerminalActivity
+    public class Monitor_Fr8_Events_v1 : ExplicitTerminalActivity
     {
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO

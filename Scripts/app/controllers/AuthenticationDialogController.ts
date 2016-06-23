@@ -45,6 +45,9 @@
                 else if (terminal.authenticationType === 3) {
                     _authenticateExternal(terminal);
                 }
+                else if (terminal.authenticationType === 5) {
+                    _authenticateWithPhoneNumber(terminal);
+                }
             };
 
             $scope.apply = () => {
@@ -106,6 +109,38 @@
                     animation: true,
                     templateUrl: '/AngularTemplate/InternalAuthentication',
                     controller: 'InternalAuthenticationController',
+                    scope: modalScope
+                })
+                    .result
+                    .then((data) => {
+                        $scope.isWaitingForResponse = false;
+
+                        var selectedAuthTokens = [];
+                        if (typeof data != 'undefined') {
+                            if (data.terminalId && data.authTokenId) {
+                                selectedAuthTokens.push({
+                                    terminalName: data.terminalName,
+                                    authTokenId: data.authTokenId
+                                });
+                            }
+                        }
+
+                        _reloadTerminals(selectedAuthTokens);
+                    }, () => { $scope.isWaitingForResponse = false; });
+            };
+
+            var _authenticateWithPhoneNumber = (terminal: model.AuthenticationTokenTerminalDTO) => {
+                var modalScope = <any>$scope.$new(true);
+                modalScope.terminal = terminal;
+                modalScope.mode = terminal.authenticationType;
+                modalScope.terminalName = terminal.name;
+
+                $modal.open({
+                    animation: true,
+                    backdrop: 'static',
+                    keyboard: false,
+                    templateUrl: '/AngularTemplate/PhoneNumberAuthentication',
+                    controller: 'PhoneNumberAuthenticationController',
                     scope: modalScope
                 })
                     .result

@@ -36,7 +36,8 @@ namespace Hub.Interfaces
 
         void RevokeToken(string accountId, Guid authTokenId);
 
-        bool TryAssignAuthToken(IUnitOfWork uow, string userId, int terminalId, ActivityDO activityDO, out AuthorizationTokenDO curAuthToken);
+        bool TryAssignAuthToken(IUnitOfWork uow, string userId, int terminalId, ActivityDO activityDO,
+            out AuthorizationTokenDO curAuthToken);
 
         /// <summary>
         /// Updates token in database
@@ -45,5 +46,25 @@ namespace Hub.Interfaces
         /// <param name="externalAccountId"></param>
         /// <param name="token">Token content</param>
         void RenewToken(Guid authTokenId, string externalAccountId, string token);
+
+        /// <summary>
+        /// Send authentication code to your mobile phone number that is used later for receiving access token
+        /// </summary>
+        /// <param name="account"></param>
+        /// <param name="terminal"></param>
+        /// <param name="phoneNumber"></param>
+        /// <returns></returns>
+        Task<PhoneNumberCredentialsDTO> SendAuthenticationCodeToMobilePhone(Fr8AccountDO account, TerminalDO terminal, string phoneNumber);
+
+        /// <summary>
+        /// Verify Code send to user mobile phone, authenticate and return access token
+        /// </summary>
+        /// <param name="account"></param>
+        /// <param name="terminal"></param>
+        /// <param name="phoneNumber"></param>
+        /// <param name="verificationCode"></param>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
+        Task<AuthenticateResponse> VerifyCodeAndGetAccessToken(Fr8AccountDO account, TerminalDO terminal, string phoneNumber, string verificationCode, string clientId, string clientName);
     }
 }

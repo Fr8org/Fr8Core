@@ -133,7 +133,7 @@
     margin-top: -25px; 
     border-bottom: 3px solid; 
     border-color: rgb(38, 166, 154);
-    z-index: 5;
+    z-index: 1020;
     background-color: #EFF3F8;
     width:79%;
     height:64px;
@@ -440,6 +440,7 @@ div.action-header {
     display: inline-block;
     vertical-align: top;
     min-height: 375px;
+    margin-top: 10px;
 }
 
 .jumptarget-wrapper .action-add {
@@ -1424,4 +1425,38 @@ md-checkbox.md-checked.green .md-icon {
     content: " ";
     border-right-color: #fff;
     border-left-width: 0;
+}
+
+.fr8-collapse-content {
+    min-height: 0 !important;
+    max-height: 1000px;
+    overflow: hidden;
+    opacity: 1;
+    transition: all linear 2s;
+}
+
+.fr8-collapse-collapsed {
+    max-height: 0;
+    height: 0 !important;
+    transition: all linear .2s;
+}
+
+.fr8-collapse-heading {
+    background-color: rgba(158,158,158,0.2);
+}
+
+.fr8-collapse-heading.fr8-collapse-collapsed {
+    background-color: transparent;
+}
+
+.fr8-collapse-heading .fr8-collapse-marker {
+    color: white;
+    height: auto;
+    transform: translate3d(0,-50%,0) rotate(-180deg) !important;
+    transition: all 0.5s;
+}
+
+.fr8-collapse-heading.fr8-collapse-collapsed .fr8-collapse-marker {
+    color: rgba(0,0,0,0.54);
+    transform: translate3d(0,-50%,0) rotate(0deg) !important;
 }
