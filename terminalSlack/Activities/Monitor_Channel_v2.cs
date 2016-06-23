@@ -99,24 +99,21 @@ namespace terminalSlack.Activities
         public override async Task Initialize()
         {
             ActivityUI.ChannelList.ListItems = (await _slackIntegration.GetChannelList(AuthorizationToken.Token).ConfigureAwait(false))
-                .OrderBy(x => x.Name)
-                .Select(x => new ListItem { Key = $"#{x.Name}", Value = x.Value })
+                .OrderBy(x => x.Key)
+                .Select(x => new ListItem { Key = $"#{x.Key}", Value = x.Value })
                 .ToList();
             Storage.Add(CreateEventSubscriptionCrate());
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel)
-                               .AddFields(GetChannelProperties());
-        }
-
-        private IEnumerable<FieldDTO> GetChannelProperties()
-        {
-            yield return new FieldDTO { Name = "team_id", Value = "team_id", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Name = "team_domain", Value = "team_domain", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Name = "timestamp", Value = "timestamp", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Name = "channel_id", Value = "channel_id", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Name = "channel_name", Value = "channel_name", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Name = "user_id", Value = "user_id", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Name = "user_name", Value = "user_name", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Name = "text", Value = "text", Availability = AvailabilityType.Always };
+                .AddField("token")
+                .AddField("team_id")
+                .AddField("team_domain")
+                .AddField("service_id")
+                .AddField("timestamp")
+                .AddField("channel_id")
+                .AddField("channel_name")
+                .AddField("user_id")
+                .AddField("user_name")
+                .AddField("text");
         }
 
         private Crate CreateEventSubscriptionCrate()

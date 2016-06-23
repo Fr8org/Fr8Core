@@ -130,11 +130,8 @@ namespace terminalSalesforce.Actions
         public override async Task Initialize()
         {
             IsPostingToQueryiedChatter = true;
-            AvailableChatters = _salesforceManager.GetSalesforceObjectTypes(filterByProperties: SalesforceObjectProperties.HasChatter).Select(x => new ListItem { Key = x.Name, Value = x.Label }).ToList();
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PostedFeedCrateLabel);
-            Storage.Add(Crate<FieldDescriptionsCM>.FromContent(PostedFeedPropertiesCrateLabel,
-                                                                              new FieldDescriptionsCM(new FieldDTO(FeedIdKeyName, FeedIdKeyName, AvailabilityType.RunTime) { SourceCrateLabel = FeedIdKeyName }),
-                                                                              AvailabilityType.RunTime));
+            AvailableChatters = _salesforceManager.GetSalesforceObjectTypes(filterByProperties: SalesforceObjectProperties.HasChatter).Select(x => new ListItem {Key = x.Name, Value = x.Label}).ToList();
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PostedFeedCrateLabel).AddField(FeedIdKeyName);
         }
 
         public override async Task FollowUp()
