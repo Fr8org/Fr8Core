@@ -4,26 +4,23 @@ using System.Web;
 using System.Web.Http;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Interfaces;
-using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
-using StructureMap;
 using terminalGoogle.Interfaces;
 using terminalGoogle.Services.Authorization;
 
 namespace terminalGoogle.Controllers
 {
     [RoutePrefix("authentication")]
-    public class AuthenticationController : BaseTerminalController
+    public class AuthenticationController : ApiController
     {
-        private const string curTerminal = "terminalGoogle";
-
         private readonly IGoogleIntegration _googleIntegration;
+        private readonly IHubEventReporter _eventReporter;
 
-
-        public AuthenticationController(IRestfulServiceClient restfulServiceClient)
-            : base(restfulServiceClient)
+        public AuthenticationController(IHubEventReporter eventReporter, IRestfulServiceClient restfulServiceClient)
         {
             _googleIntegration = new GoogleIntegration(restfulServiceClient);
+            _eventReporter = eventReporter;
         }
 
         [HttpPost]
@@ -69,7 +66,7 @@ namespace terminalGoogle.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerminal, ex, externalAuthDTO.Fr8UserId);
+                await _eventReporter.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {

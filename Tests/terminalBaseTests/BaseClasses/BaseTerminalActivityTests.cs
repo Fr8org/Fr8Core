@@ -17,11 +17,11 @@ namespace terminalBaseTests.BaseClasses
 {
 
     [TestFixture]
-    [Category("BaseTerminalActivity")]
+    [Category("ExplicitTerminalActivity")]
     public class BaseTerminalActivityTests : BaseTest
     {
         IDisposable _coreServer;
-        BaseTerminalActivity _baseTerminalActivity;
+        ExplicitTerminalActivity _explicitTerminalActivity;
         private ICrateManager _crateManager;
 
         [SetUp]
@@ -30,9 +30,9 @@ namespace terminalBaseTests.BaseClasses
             base.SetUp();
             TerminalBootstrapper.ConfigureTest();
             ObjectFactory.Configure(x => x.For<IRestfulServiceClient>().Use<RestfulServiceClient>().SelectConstructor(() => new RestfulServiceClient()));
-            _baseTerminalActivity = New<BaseTerminalActivityMock>();
+            _explicitTerminalActivity = New<ExplicitTerminalActivityMock>();
 
-            //_baseTerminalActivity.HubCommunicator.Configure("terminal");
+            //_explicitTerminalActivity.HubCommunicator.Configure("terminal");
             _coreServer = terminalBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
 
@@ -60,7 +60,7 @@ namespace terminalBaseTests.BaseClasses
             //object[] parameters = new object[] { curActivityDO, curConfigurationEvaluator, curAuthTokenDO };
 
             //Act
-            var result = await (Task<ActivityDO>) ClassMethod.Invoke(typeof(BaseTerminalActivity), "ProcessConfigurationRequest", new object[] {});
+            var result = await (Task<ActivityDO>) ClassMethod.Invoke(typeof(ExplicitTerminalActivity), "ProcessConfigurationRequest", new object[] {});
 
             
             //Assert
@@ -80,7 +80,7 @@ namespace terminalBaseTests.BaseClasses
             object[] parameters = new object[] { curActivityDO, curConfigurationEvaluator, curAuthTokenDO };
 
             //Act
-            var result = await (Task<ActivityDO>)ClassMethod.Invoke(typeof(BaseTerminalActivityMock), "ProcessConfigurationRequest", parameters);
+            var result = await (Task<ActivityDO>)ClassMethod.Invoke(typeof(ExplicitTerminalActivityMock), "ProcessConfigurationRequest", parameters);
 
             //Assert
             Assert.AreEqual(_crateManager.FromDto(curActionDTO.CrateStorage).Count, _crateManager.GetStorage(result.CrateStorage).Count);
@@ -96,7 +96,7 @@ namespace terminalBaseTests.BaseClasses
             object[] parameters = new object[] { FixtureData.FieldDefinitionDTO1() };
             
             //Act
-            var result = (Crate)ClassMethod.Invoke(typeof(BaseTerminalActivityMock), "PackControlsCrate", parameters);
+            var result = (Crate)ClassMethod.Invoke(typeof(ExplicitTerminalActivityMock), "PackControlsCrate", parameters);
 
             //Assert
             Assert.IsNotNull(result);
@@ -124,8 +124,8 @@ namespace terminalBaseTests.BaseClasses
                     ActivityPayload = curAction
                 };
                 //this initializes the class
-                await _baseTerminalActivity.Configure(activityContext);
-                var result = await _baseTerminalActivity.GetDesignTimeFields(CrateDirection.Upstream);
+                await _explicitTerminalActivity.Configure(activityContext);
+                var result = await _explicitTerminalActivity.GetDesignTimeFields(CrateDirection.Upstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(216, result.Fields.Count);
             }
@@ -151,8 +151,8 @@ namespace terminalBaseTests.BaseClasses
                     ActivityPayload = curAction
                 };
                 //this initializes the class
-                await _baseTerminalActivity.Configure(activityContext);
-                var result = await _baseTerminalActivity.GetDesignTimeFields(CrateDirection.Downstream);
+                await _explicitTerminalActivity.Configure(activityContext);
+                var result = await _explicitTerminalActivity.GetDesignTimeFields(CrateDirection.Downstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(270, result.Fields.Count);
             }
@@ -178,7 +178,7 @@ namespace terminalBaseTests.BaseClasses
                 uow.SaveChanges();
 
                 ActivityDO curAction = FixtureData.TestAction257();
-                var manifestList = await _baseTerminalActivity.BuildUpstreamManifestList(curAction);
+                var manifestList = await _explicitTerminalActivity.BuildUpstreamManifestList(curAction);
 
                 Assert.NotNull(manifestList);
                 Assert.AreEqual(manifestList.Count(), manifestList.Distinct().Count());
@@ -209,7 +209,7 @@ namespace terminalBaseTests.BaseClasses
                 uow.SaveChanges();
 
                 ActivityDO curAction = FixtureData.TestAction257();
-                var crateLabelList = await _baseTerminalActivity.BuildUpstreamCrateLabelList(curAction);
+                var crateLabelList = await _explicitTerminalActivity.BuildUpstreamCrateLabelList(curAction);
 
                 Assert.NotNull(crateLabelList);
                 Assert.AreEqual(crateLabelList.Count(), crateLabelList.Distinct().Count());

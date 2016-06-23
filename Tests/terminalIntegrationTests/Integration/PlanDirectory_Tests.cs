@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using StructureMap;
+using Fr8.TerminalBase.Interfaces;
 using Fr8.Testing.Integration;
 
 namespace terminalIntegrationTests.Integration
@@ -58,5 +61,32 @@ namespace terminalIntegrationTests.Integration
 
             await HttpDeleteAsync(_baseUrl + "plan_templates/?id=" + planTemplateDTO.ParentPlanId.ToString());
         }
+
+        // [Test]
+        // public async Task PlanDirectory_CreatePlan()
+        // {
+        //     var createdPlanId = Guid.NewGuid();
+        //     var hubCommunicatorMock = new Mock<IHubCommunicator>();
+        //     hubCommunicatorMock.Setup(x => x.LoadPlan(It.IsAny<JToken>()))
+        //         .Returns(() => Task.FromResult<PlanEmptyDTO>(new PlanEmptyDTO() { Id = createdPlanId }));
+        // 
+        //     ObjectFactory.Container.Inject(hubCommunicatorMock.Object);
+        // 
+        //     var planTemplateDTO = PlanTemplateDTO_1();
+        //     await HttpPostAsync<PublishPlanTemplateDTO, string>(_baseUrl + "plan_templates/", planTemplateDTO);
+        // 
+        //     await AuthenticateWebApi("IntegrationTestUser1", "fr8#s@lt!");
+        // 
+        //     var createPlanResult = await HttpPostAsync<JToken>(
+        //         _baseUrl + "plan_templates/createplan?id=" + planTemplateDTO.ParentPlanId.ToString(), null);
+        // 
+        //     hubCommunicatorMock.Verify(x => x.LoadPlan(It.IsAny<JToken>()), Times.Once());
+        // 
+        //     Assert.NotNull(createPlanResult);
+        // 
+        //     var redirectUrl = createPlanResult["RedirectUrl"].Value<string>();
+        //     Assert.IsNotEmpty(redirectUrl);
+        //     Assert.True(redirectUrl.EndsWith("/dashboard/plans/" + createdPlanId.ToString() + "/builder?viewMode=plan"));
+        // }
     }
 }

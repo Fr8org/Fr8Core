@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
-using StructureMap;
 using System.Net;
-using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Services;
+using StructureMap;
 
 namespace terminalDocuSign.Controllers
 {
@@ -14,14 +14,14 @@ namespace terminalDocuSign.Controllers
     public class EventController : ApiController
     {
         private readonly IEvent _event;
-        private readonly BaseTerminalEvent _baseTerminalEvent;
+        private readonly IHubEventReporter _reporter;
         private readonly DocuSignPolling _polling;
         private readonly IContainer _container;
-
-        public EventController(IEvent @event, BaseTerminalEvent baseTerminalEvent, DocuSignPolling polling, IContainer container)
+        
+        public EventController(IEvent @event, IHubEventReporter reporter, DocuSignPolling polling, IContainer container)
         {
             _event = @event;
-            _baseTerminalEvent = baseTerminalEvent;
+            _reporter = reporter;
             _polling = polling;
             _container = container;
         }
@@ -32,7 +32,9 @@ namespace terminalDocuSign.Controllers
         {
             string eventPayLoadContent = await Request.Content.ReadAsStringAsync();
             Debug.WriteLine($"Processing event request {eventPayLoadContent}");
-            await _baseTerminalEvent.Process(eventPayLoadContent, _event.Process);
+
+            await _reporter.Broadcast(await _event.Process(_container, eventPayLoadContent));
+
             return Ok("Processed DocuSign event notification successfully.");
         }
 
@@ -41,7 +43,8 @@ namespace terminalDocuSign.Controllers
         public async Task<IHttpActionResult> ProcessPollingRequest(string job_id, string fr8_account_id, string polling_interval)
         {
             var hubCommunicator = _container.GetInstance<IHubCommunicator>();
-            hubCommunicator.Configure("terminalDocuSign", fr8_account_id);
+
+            hubCommunicator.Authorize(fr8_account_id);
 
             var result = await _polling.Poll(hubCommunicator, job_id, polling_interval);
             if (result)

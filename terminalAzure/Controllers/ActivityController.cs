@@ -1,29 +1,16 @@
 ﻿using System;
-using System.Net.Http;
-using System.Threading.Tasks;
 using System.Web.Http;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Services;
-using StructureMap;
 
 namespace terminalAzure.Controllers
-{    
-    [RoutePrefix("activities")]
-    public class ActivityController : ApiController
+{
+    public class ActivityController : DefaultActivityController
     {
-        private const string curTerminal = "terminalAzure";
-        private readonly ActivityExecutor _activityExecutor;
-
-        public ActivityController(ActivityExecutor activityExecutor)
+        public ActivityController(IActivityExecutor activityExecutor)
+            : base(activityExecutor)
         {
-            _activityExecutor = activityExecutor;
-        }
-
-        [HttpPost]
-        public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
-        {
-            var queryParams = Request.GetQueryNameValuePairs();
-            return _activityExecutor.HandleFr8Request(curTerminal, actionType, queryParams, curDataDTO);
         }
 
         //----------------------------------------------------------
@@ -36,7 +23,6 @@ namespace terminalAzure.Controllers
             return
                 Ok("This end point has been deprecated. Please use the V2 mechanisms to POST to this terminal. For more" +
                    "info see https://maginot.atlassian.net/wiki/display/SH/V2+Plugin+Design");
-
         }
 
         [HttpPost]
@@ -48,8 +34,6 @@ namespace terminalAzure.Controllers
             return
                 Ok("This end point has been deprecated. Please use the V2 mechanisms to POST to this terminal. For more" +
                    "info see https://maginot.atlassian.net/wiki/display/SH/V2+Plugin+Design");
-
         }
-
     }
 }

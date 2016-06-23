@@ -9,14 +9,13 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
-using StructureMap;
 using terminalAtlassian.Interfaces;
-using terminalAtlassian.Services;
 
 namespace terminalAtlassian.Actions
 {
-    public class Save_Jira_Issue_v1 : EnhancedTerminalActivity<Save_Jira_Issue_v1.ActivityUi>
+    public class Save_Jira_Issue_v1 : TerminalActivity<Save_Jira_Issue_v1.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -231,12 +230,20 @@ namespace terminalAtlassian.Actions
 
 
         private const string ConfigurationPropertiesLabel = "ConfigurationProperties";
-        private readonly IAtlassianService _atlassianService;
+        private const string RuntimeCrateLabel = "JIRA proprties";
 
-        public Save_Jira_Issue_v1(ICrateManager crateManager, IAtlassianService atlassianService)
+        private const string JiraUrlField = "JIRA link";
+        private const string JiraIdField = "JIRA Id";
+
+        private readonly IAtlassianService _atlassianService;
+        private readonly IPushNotificationService _pushNotificationService;
+
+
+        public Save_Jira_Issue_v1(ICrateManager crateManager, IAtlassianService atlassianService, IPushNotificationService pushNotificationService)
             : base(crateManager)
         {
             _atlassianService = atlassianService;
+            _pushNotificationService = pushNotificationService;
         }
 
         #region Configuration
@@ -247,7 +254,9 @@ namespace terminalAtlassian.Actions
                 .GetProjects(AuthorizationToken)
                 .ToListItems()
                 .ToList();
-
+            CrateSignaller.MarkAvailableAtRuntime<FieldDescriptionsCM>(RuntimeCrateLabel)
+                          .AddField(JiraIdField)
+                          .AddField(JiraUrlField);
             await Task.Yield();
         }
 
@@ -377,9 +386,11 @@ namespace terminalAtlassian.Actions
             await _atlassianService.CreateIssue(issueInfo, AuthorizationToken);
 
             var credentialsDTO = JsonConvert.DeserializeObject<CredentialsDTO>(AuthorizationToken.Token);
-            await
-                PushUserNotification("Success", "Jira issue created",
-                    "Created new jira issue: " + credentialsDTO.Domain + "/browse/" + issueInfo.Key);
+            var jiraUrl = $"{credentialsDTO.Domain}/browse/{issueInfo.Key}";
+            await _pushNotificationService.PushUserNotification(MyTemplate, "Success", "Jira issue created", $"Created new jira issue: {jiraUrl}");
+            Payload.Add(Crate<FieldDescriptionsCM>.FromContent(RuntimeCrateLabel, new FieldDescriptionsCM(
+                                                                                      new FieldDTO(JiraIdField, issueInfo.Key),
+                                                                                      new FieldDTO(JiraUrlField, jiraUrl))));
         }
 
         private IssueInfo ExtractIssueInfo()

@@ -67,7 +67,8 @@ namespace HealthMonitor
                     {
                         if (string.Equals(app.Name, "PlanDirectory", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            app.Endpoint = ConfigurationManager.AppSettings["PlanDirectoryBaseUrl"];
+                            var uri = new Uri(ConfigurationManager.AppSettings["PlanDirectoryBaseApiUrl"]);
+                            app.Endpoint = uri.GetLeftPart(UriPartial.Authority);
                         }
                         else
                         {
@@ -83,16 +84,24 @@ namespace HealthMonitor
                             }
                         }
 
-                        app.Endpoint = Fr8.Testing.Integration.Utilities.NormalizeSchema(app.Endpoint);
-                        MethodInfo curMethodInfo = calledType.GetMethod("CreateServer", BindingFlags.Static | BindingFlags.Public);
-                        _selfHostedTerminals.Add((IDisposable)curMethodInfo.Invoke(null, new string[] { app.Endpoint }));
+                        try
+                        {
+                            app.Endpoint = Fr8.Testing.Integration.Utilities.NormalizeSchema(app.Endpoint);
+                            MethodInfo curMethodInfo = calledType.GetMethod("CreateServer", BindingFlags.Static | BindingFlags.Public);
+                            _selfHostedTerminals.Add((IDisposable) curMethodInfo.Invoke(null, new string[] {app.Endpoint}));
+                        }
+                        catch (Exception ex)
+                        {
+
+                            throw new Exception($"Failed to initialize terminal '{app.Name}' at '{app.Endpoint}'");
+                        }
                     }
                 }
             }
             catch (Exception)
             {
                 Dispose();
-                throw;
+                throw ;
             }
         }
 

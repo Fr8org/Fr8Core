@@ -2,21 +2,20 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using Fr8.Infrastructure.Interfaces;
-using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using terminalDropbox.Infrastructure;
 
 namespace terminalDropbox.Controllers
 {
     [RoutePrefix("authentication")]
-    public class AuthenticationController : BaseTerminalController
+    public class AuthenticationController : ApiController
     {
-        private const string curTerminal = "terminalDropbox";
-        private Authentication _authentication = new Authentication();
+        private readonly Authentication _authentication = new Authentication();
+        private readonly IHubEventReporter _eventReporter;
 
-        public AuthenticationController(IRestfulServiceClient restfulServiceClient) 
-            : base(restfulServiceClient)
+        public AuthenticationController(IHubEventReporter eventReporter)
         {
+            _eventReporter = eventReporter;
         }
 
         [HttpPost]
@@ -36,7 +35,7 @@ namespace terminalDropbox.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerminal, ex,externalAuthDTO.Fr8UserId);
+                await _eventReporter.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
                 return await Task.FromResult(
                     new AuthorizationTokenDTO()
                     {

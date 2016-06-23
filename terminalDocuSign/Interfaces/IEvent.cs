@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Crates;
+using StructureMap;
 
 namespace terminalDocuSign.Interfaces
 {
@@ -8,6 +9,6 @@ namespace terminalDocuSign.Interfaces
         /// <summary>
         /// Processes external event payload from the Terminal
         /// </summary>
-        Task<Crate> Process(string curExternalEventPayload);
+        Task<Crate> Process(IContainer container, string curExternalEventPayload);
     }
 }

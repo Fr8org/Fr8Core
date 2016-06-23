@@ -2,24 +2,21 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using Fr8.Infrastructure.Interfaces;
-using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using terminalSlack.Interfaces;
-using terminalSlack.Services;
 
 namespace terminalSlack.Controllers
 {
     [RoutePrefix("authentication")]
-    public class AuthenticationController : BaseTerminalController
+    public class AuthenticationController : ApiController
     {
-        private const string curTerminal = "terminalSlack";
-
         private readonly ISlackIntegration _slackIntegration;
-        
-        public AuthenticationController(ISlackIntegration slackIntegration, IRestfulServiceClient restfulServiceClient)
-            :base(restfulServiceClient)
+        private readonly IHubEventReporter _eventReporter;
+
+        public AuthenticationController(ISlackIntegration slackIntegration, IHubEventReporter eventReporter)
         {
             _slackIntegration = slackIntegration;
+            _eventReporter = eventReporter;
         }
 
         [HttpPost]
@@ -69,7 +66,7 @@ namespace terminalSlack.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerminal, ex,externalAuthDTO.Fr8UserId);
+                await _eventReporter.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {

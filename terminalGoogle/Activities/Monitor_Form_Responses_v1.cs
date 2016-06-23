@@ -9,6 +9,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Errors;
 using Newtonsoft.Json;
 using terminalGoogle.Services;
 using terminalGoogle.Interfaces;
@@ -34,10 +35,9 @@ namespace terminalGoogle.Actions
                 Controls.Add(FormsList);
             }
         }
-        private readonly GoogleDrive _googleDrive;
-        private readonly GoogleAppScript _googleAppScript;
+        private readonly IGoogleDrive _googleDrive;
+        private readonly IGoogleAppsScript _googleAppsScript;
 
-        private readonly IGoogleIntegration _googleIntegration;
         private const string ConfigurationCrateLabel = "Selected_Google_Form";
         private const string RunTimeCrateLabel = "Google Form Payload Data";
         private const string EventSubscriptionsCrateLabel = "Standard Event Subscriptions";
@@ -74,12 +74,11 @@ namespace terminalGoogle.Actions
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        public Monitor_Form_Responses_v1(ICrateManager crateManager, IGoogleIntegration googleIntegration)
+        public Monitor_Form_Responses_v1(ICrateManager crateManager, IGoogleIntegration googleIntegration, IGoogleAppsScript googleAppsScript, IGoogleDrive googleDrive)
             : base(crateManager, googleIntegration)
         {
-            _googleDrive = new GoogleDrive();
-            _googleAppScript = new GoogleAppScript();
-            _googleIntegration = googleIntegration;
+            _googleDrive = googleDrive;
+            _googleAppsScript = googleAppsScript;
         }
 
         public override async Task Initialize()
@@ -112,12 +111,18 @@ namespace terminalGoogle.Actions
             }
             if (string.IsNullOrEmpty(ActivityUI.FormsList.selectedKey))
                 SelectedForm = null;
+
+            //get form id
+            var googleFormControl = ActivityUI.FormsList;
+            var formId = googleFormControl.Value;
+            if (string.IsNullOrEmpty(formId))
+                throw new ArgumentNullException("Google Form selected is empty. Please select google form to receive.");
+
+            //need to get all form fields and mark them available for runtime
+            var formFields = await _googleAppsScript.GetGoogleFormFields(googleAuth, formId);
+
             CrateSignaller.ClearAvailableCrates();
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel)
-                .AddField("Full Name")
-                .AddField("TR ID")
-                .AddField("Email Address")
-                .AddField("Period of Availability");
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel).AddFields(formFields.Select(x => new FieldDTO() { Key = x.Title, Value = x.Title }).ToList());
         }
 
         public override async Task Activate()
@@ -129,28 +134,13 @@ namespace terminalGoogle.Actions
             if (string.IsNullOrEmpty(formId))
                 throw new ArgumentNullException("Google Form selected is empty. Please select google form to receive.");
 
-            bool triggerEvent = false;
             try
             {
-                triggerEvent = await _googleDrive.CreateFr8TriggerForDocument(googleAuth, formId, AuthorizationToken.ExternalAccountId);
+                await _googleAppsScript.CreateFr8TriggerForDocument(googleAuth, formId, AuthorizationToken.ExternalAccountId);
             }
-            finally
+            catch
             {
-                if (!triggerEvent)
-                {
-                    //in case of fail as a backup plan use old manual script notification
-                    var scriptUrl = await _googleDrive.CreateManualFr8TriggerForDocument(googleAuth, formId);
-                    await HubCommunicator.NotifyUser(new TerminalNotificationDTO
-                    {
-                        Type = "Success",
-                        ActivityName = "Monitor_Form_Responses",
-                        ActivityVersion = "1",
-                        TerminalName = "terminalGoogle",
-                        TerminalVersion = "1",
-                        Message = "You need to create fr8 trigger on current form please go to this url and run Initialize function manually. Ignore this message if you completed this step before. " + scriptUrl,
-                        Subject = "Trigger creation URL"
-                    });
-                }
+                throw new ActivityExecutionException($"Failed to activate {ActivityPayload.Name} because of problem with activating trigger on google form.");
             }
         }
 
@@ -195,22 +185,17 @@ namespace terminalGoogle.Actions
 
         private List<FieldDTO> CreatePayloadFormResponseFields(List<FieldDTO> payloadfields)
         {
-            List<FieldDTO> formFieldResponse = new List<FieldDTO>();
+            var formFieldResponse = new List<FieldDTO>();
             string[] formresponses = payloadfields.FirstOrDefault(w => w.Key == "response").Value.Split(new char[] { '&' });
 
             if (formresponses.Length > 0)
             {
                 formresponses[formresponses.Length - 1] = formresponses[formresponses.Length - 1].TrimEnd(new char[] { '&' });
 
-                foreach (var response in formresponses)
-                {
-                    string[] itemResponse = response.Split(new char[] { '=' });
-
-                    if (itemResponse.Length >= 2)
-                    {
-                        formFieldResponse.Add(new FieldDTO() { Key = itemResponse[0], Value = itemResponse[1] });
-                    }
-                }
+                formFieldResponse.AddRange(from response in formresponses
+                                           select response.Split(new char[] {'='}) into itemResponse
+                                           where itemResponse.Length >= 2
+                                           select new FieldDTO() {Key = itemResponse[0], Value = itemResponse[1]});
             }
             else
             {
@@ -223,24 +208,12 @@ namespace terminalGoogle.Actions
         private List<FieldDTO> ExtractPayloadFields(ICrateStorage currentPayload)
         {
             var eventReportMS = currentPayload.CrateContentsOfType<EventReportCM>().SingleOrDefault();
-            if (eventReportMS == null)
-                return null;
 
-            var eventFieldsCrate = eventReportMS.EventPayload.SingleOrDefault();
+            var eventFieldsCrate = eventReportMS?.EventPayload.SingleOrDefault();
             if (eventFieldsCrate == null)
                 return null;
 
             return eventReportMS.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()).ToList();
         }
-    }
-
-    public class EnumerateFormFieldsResponseItem
-    {
-        [JsonProperty("type")]
-        public string Type { get; set; }
-        [JsonProperty("id")]
-        public object Id { get; set; }
-        [JsonProperty("title")]
-        public string Title { get; set; }
     }
 }

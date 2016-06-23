@@ -111,6 +111,10 @@ module dockyard.directives.designerHeader {
                             }
                         }
                     });
+                    promise.catch(error => {
+                        $scope.deactivatePlan();
+                        $rootScope.$broadcast(<any>designHeaderEvents.PLAN_EXECUTION_FAILED);
+                    });
                     promise.finally(() => {
                         $scope.resetPlanStatus();
 

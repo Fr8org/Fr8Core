@@ -299,7 +299,7 @@ namespace Hub.Services
 
         private ActivityTemplateDO FindMakeADecisionTemplate(List<ActivityTemplateDO> templates)
         {
-            return templates.Where(a => a.Name == "MakeADecision").FirstOrDefault();
+            return templates.Where(a => a.Name == "Make_A_Decision").FirstOrDefault();
         }
 
         private void BuildPlanNodes(string userId, int ordering, PlanNodeDO planNodeDO,

@@ -14,7 +14,7 @@ using Fr8.TerminalBase.Errors;
 
 namespace terminalDropbox.Actions
 {
-    public class Get_File_List_v1 : EnhancedTerminalActivity<Get_File_List_v1.ActivityUi>
+    public class Get_File_List_v1 : TerminalActivity<Get_File_List_v1.ActivityUi>
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {

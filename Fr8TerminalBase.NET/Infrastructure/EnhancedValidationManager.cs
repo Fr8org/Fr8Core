@@ -17,7 +17,7 @@ namespace Fr8.TerminalBase.Infrastructure
         private readonly Dictionary<IControlDefinition, string> _ownerNameByControl;
 
 
-        public EnhancedValidationManager(EnhancedTerminalActivity<TActivityUi> activity,  ICrateStorage payload) 
+        public EnhancedValidationManager(TerminalActivity<TActivityUi> activity,  ICrateStorage payload) 
             : base(payload)
         {
             if (activity == null)
