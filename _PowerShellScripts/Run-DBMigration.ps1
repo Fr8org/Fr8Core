@@ -6,8 +6,7 @@ param(
 	[string]$newConnectionString,
 	
 	[Parameter(Mandatory = $false)]
-	[string]$buildResultDirectory
-	
+	[string]$buildResultDirectory,
 	
 	[Parameter(Mandatory = $false)]
 	[string]$overrideDbName
