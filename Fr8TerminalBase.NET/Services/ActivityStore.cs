@@ -41,7 +41,7 @@ namespace Fr8.TerminalBase.Services
         /// <param name="activityTemplate"></param>
         public void RegisterActivity<T>(ActivityTemplateDTO activityTemplate) where T : IActivity
         {
-            RegisterActivity(activityTemplate, new DefaultActivityFactory(typeof(T), _container));
+            RegisterActivity(activityTemplate, new DefaultActivityFactory(typeof(T)));
         }
 
         public IActivityFactory GetFactory(ActivityTemplateDTO activityTemplate)
