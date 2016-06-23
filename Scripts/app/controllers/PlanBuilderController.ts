@@ -921,8 +921,9 @@ module dockyard.controllers {
 
             //wait UI to finish rendering
             this.$timeout(() => {
+                this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_ConfigureCallResponseFinished], new pca.CallConfigureResponseEventArgs(callConfigureResponseEventArgs.action, callConfigureResponseEventArgs.focusElement));
                 if (callConfigureResponseEventArgs.focusElement != null) {
-                    //broadcast to control to set focus on current element        
+                    //broadcast to control to set focus on current element
                     this.$scope.$broadcast(<any>planEvents.ON_FIELD_FOCUS, callConfigureResponseEventArgs);
                 }
             }, 300);

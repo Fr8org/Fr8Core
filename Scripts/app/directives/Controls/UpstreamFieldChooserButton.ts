@@ -14,6 +14,8 @@ module dockyard.directives.upstreamDataChooser {
         getGroupValue: (item: model.FieldDTO) => string;
     }
 
+    import pca = dockyard.directives.paneConfigureAction;
+
     export class UpstreamFieldChooserButtonController {
 
         static $inject = ['$scope', '$element', '$attrs', 'UpstreamExtractor', '$modal', 'NgTableParams', 'UIHelperService'];
@@ -28,6 +30,31 @@ module dockyard.directives.upstreamDataChooser {
             var modalInstance;
             var noActivitiesWithUpstreamFiels = 'This Activity is looking for incoming data from "upstream" activities but can\'t find any right now. Try adding activities to the left of this activity that load or retrieve data from web services. To learn more,<a href= "/documentation/UpstreamCrates.html" target= "_blank" > click here </a><i class="fa fa-question-circle" > </i> ';
             var activitiesNotConfiguredWithUpstreamFields = 'Activities to the left don\'t have "upstream" fields. To learn more,<a href= "/documentation/UpstreamCrates.html" target= "_blank" > click here </a><i class="fa fa-question-circle" > </i>';
+
+            $scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ConfigureCallResponseFinished],
+                (event: ng.IAngularEvent, callConfigureResponseEventArgs: pca.CallConfigureResponseEventArgs) => getUpstreamFields());
+
+            $scope.$watch('field.listItems', () => {
+                checkAndUpdateUpstreamFields();
+            });
+
+
+            const checkAndUpdateUpstreamFields = () => {
+                var isFieldAvailable = $scope.field.listItems.filter((item) => {
+                    return item.key === $scope.field.value;
+                });
+                if (isFieldAvailable.length === 0) {
+                            $scope.field.selectedKey = null;
+                            $scope.field.value = null;
+                            $scope.field.selectedItem = null;
+
+                            if ($scope.change != null && angular.isFunction($scope.change)) {
+                                $scope.change()($scope.field);
+                            }
+                    
+                }
+            };
+
             $scope.createModal = () => {
                 if ($scope.field.listItems.length !== 0) {
                     modalInstance = $modal.open({
@@ -43,7 +70,7 @@ module dockyard.directives.upstreamDataChooser {
                 }
             }
             $scope.openModal = () => {
-                getUpstreamFields().then(() => { 
+                getUpstreamFields().then(() => {
                     $scope.createModal();
                 }, (error) => {
                     var alertMessage = new model.AlertDTO();
