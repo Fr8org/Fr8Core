@@ -45,19 +45,24 @@ namespace terminalInstagram.Controllers
             try
             {
                 string code;
+                string state;
 
-                ParseCodeAndState(externalAuthDTO.RequestQueryString, out code);
+                ParseCodeAndState(externalAuthDTO.RequestQueryString, out code, out state);
 
-                if (string.IsNullOrEmpty(code))
+                if (string.IsNullOrEmpty(code) || string.IsNullOrEmpty(state))
                 {
                     throw new ApplicationException("Code or State is empty.");
                 }
 
                 var oauthToken = await _instagramIntegration.GetOAuthToken(code);
+                var userInfo = await _instagramIntegration.GetUserInfo(oauthToken);
 
                 return new AuthorizationTokenDTO
                 {
                     Token = oauthToken,
+                    ExternalAccountId = userInfo.User.UserId,
+                    ExternalAccountName = userInfo.User.UserName,
+                    ExternalStateToken = state
                 };
             }
             catch (Exception ex)
@@ -70,7 +75,7 @@ namespace terminalInstagram.Controllers
                 };
             }
         }
-        private void ParseCodeAndState(string queryString, out string code)
+        private void ParseCodeAndState(string queryString, out string code, out string state)
         {
             if (string.IsNullOrEmpty(queryString))
             {
@@ -78,12 +83,13 @@ namespace terminalInstagram.Controllers
             }
 
             code = null;
+            state = null;
 
             var tokens = queryString.Split(new[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var token in tokens)
             {
                 var nameValueTokens = token.Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
-                if (nameValueTokens.Length < 1)
+                if (nameValueTokens.Length < 2)
                 {
                     continue;
                 }
@@ -91,6 +97,10 @@ namespace terminalInstagram.Controllers
                 if (nameValueTokens[0] == "code")
                 {
                     code = nameValueTokens[1];
+                }
+                else if (nameValueTokens[0] == "state")
+                {
+                    state = nameValueTokens[1];
                 }
             }
         }

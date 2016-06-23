@@ -8,13 +8,13 @@ using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Errors;
 using Newtonsoft.Json.Linq;
 using terminalInstagram.Interfaces;
+using System.Collections.Specialized;
 
 namespace terminalInstagram.Services
 {
     public class InstagramIntegration : IInstagramIntegration
     {
         private readonly IRestfulServiceClient _client;
-        private string authCallbackURLDomain = CloudConfigurationManager.GetSetting("InstagramAuthCallbackURLDomain");
         private string clientId = CloudConfigurationManager.GetSetting("InstagramClientId");
         private string clientSecret = CloudConfigurationManager.GetSetting("InstagramClientSecret");
         private string redirectUri = CloudConfigurationManager.GetSetting("InstagramRedirectUri");
@@ -28,29 +28,22 @@ namespace terminalInstagram.Services
         /// </summary>
         public string CreateAuthUrl(string externalStateToken)
         {
-            var link = "https://api.instagram.com/oauth/authorize/?client_id=" + clientId + "&redirect_uri=" + redirectUri + "&response_type=code&state=" + externalStateToken;
+            var link = "https://api.instagram.com/oauth/authorize/?client_id=" + clientId + "&redirect_uri=" + redirectUri.Replace("&", "%26") + "&response_type=code&state=" + externalStateToken;
             return link; 
         }
 
         public async Task<string> GetOAuthToken(string code)
         {
-            var client = new HttpClient { BaseAddress = new Uri("https://api.instagram.com/oauth/access_token") };
-            var request = new HttpRequestMessage(HttpMethod.Post, new Uri(client.BaseAddress, "access_token"));
-            var myParameters = string.Format("client_id={0}&client_secret={1}&grant_type={2}&redirect_uri={3}&code={4}",
-                                              clientId,
-                                              clientSecret, 
-                                              "authorization_code",
-                                              redirectUri, 
-                                              code);
+            var parameters = new List<KeyValuePair<string, string>>();
+            parameters.Add(new KeyValuePair<string, string>("client_id", clientId));
+            parameters.Add(new KeyValuePair<string, string>("client_secret", clientSecret));
+            parameters.Add(new KeyValuePair<string, string>("grant_type", "authorization_code"));
+            parameters.Add(new KeyValuePair<string, string>("redirect_uri",redirectUri));
+            parameters.Add(new KeyValuePair<string, string>("code", code));
+            var formContent = new FormUrlEncodedContent(parameters);
 
-            request.Content = new StringContent(myParameters);
-            return client.ExecuteAsync<OAuthResponse>(request);
             var url = new Uri("https://api.instagram.com/oauth/access_token");
-            var jsonObj = await _client.PostAsync<object, JObject>(url, new {client_id = clientId,
-                                                                             client_secret = clientSecret,
-                                                                             grant_type = "authorization_code",
-                                                                             redirect_url = redirectUri,
-                                                                             code = code});
+            var jsonObj = await _client.PostAsync<JObject>(url, formContent);
             return jsonObj.Value<string>("access_token");
         }
 
@@ -60,6 +53,11 @@ namespace terminalInstagram.Services
             var url = template.Replace("%TOKEN%", oauthToken);
 
             return url;
+        }
+        public async Task<UserData> GetUserInfo(string oauthToken)
+        {
+            var response = await _client.GetAsync<JObject>(new Uri("https://api.instagram.com/v1/users/self/?access_token=" + oauthToken));
+            return response.ToObject<UserData>();
         }
     }
 }

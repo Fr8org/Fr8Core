@@ -7,6 +7,8 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using System;
+using terminalInstagram.Interfaces;
+using Fr8.Infrastructure.Data.Crates;
 
 namespace terminalInstagram.Actions
 {
@@ -25,15 +27,45 @@ namespace terminalInstagram.Actions
         };
 
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+        private readonly IInstagramIntegration _instagramIntegration;
+        private readonly IInstagramEventManager _instagramEventManager;
+        public const string ResultPayloadCrateLabel = "Instagram Media";
+        public const string EventSubscriptionsCrateLabel = "Standard Event Subscriptions";
 
         public override Task FollowUp()
         {
-            throw new NotImplementedException();
+            return Task.FromResult(0);
         }
 
-        public override Task Initialize()
+        public Monitor_For_New_Media_Posted_v1(ICrateManager crateManager, IInstagramIntegration instagramIntegration)
+            : base(crateManager)
         {
-            throw new NotImplementedException();
+            _instagramIntegration = instagramIntegration;
+        }
+
+        public override async Task Initialize()
+        {
+            var oAuthToken = AuthorizationToken.Token;
+            Storage.Add(CreateEventSubscriptionCrate());
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel)
+                               .AddFields(GetMediaProperties());
+        }
+        private IEnumerable<FieldDTO> GetMediaProperties()
+        {
+            yield return new FieldDTO { Key = "id", Value = "id", Availability = AvailabilityType.Always };
+            yield return new FieldDTO { Key = "type", Value = "type", Availability = AvailabilityType.Always };
+            yield return new FieldDTO { Key = "object", Value = "object", Availability = AvailabilityType.Always };
+            yield return new FieldDTO { Key = "aspect", Value = "aspect", Availability = AvailabilityType.Always };
+            yield return new FieldDTO { Key = "callback_url", Value = "callback_url", Availability = AvailabilityType.Always };
+        }
+
+        private Crate CreateEventSubscriptionCrate()
+        {
+            return CrateManager.CreateStandardEventSubscriptionsCrate(EventSubscriptionsCrateLabel, "Slack", "Slack Outgoing Message");
+        }
+        public override async Task Activate()
+        {
+            await _instagramEventManager.Subscribe(AuthorizationToken, ActivityPayload.RootPlanNodeId.Value).ConfigureAwait(false);
         }
 
         public override Task Run()
@@ -43,55 +75,17 @@ namespace terminalInstagram.Actions
 
         public class ActivityUi : StandardConfigurationControlsCM
         {
-            public TextSource LeftArgument { get; set; }
-            public DropDownList Operation { get; set; }
-            public TextSource RightArgument { get; set; }
+            public TextBlock Description { get; set; }
 
             public ActivityUi()
             {
-                LeftArgument = new TextSource
+                Description = new TextBlock()
                 {
-                    InitialLabel = "Left Argument",
-                    Label = "Left Argument",
-                    Name = nameof(LeftArgument),
-                    Source = new FieldSourceDTO
-                    {
-                        ManifestType = CrateManifestTypes.StandardDesignTimeFields,
-                        RequestUpstream = true
-                    }
+                    Value = "This activity will monitor when a new media is shared from your account",
+                    Name = "info_text"
                 };
-                Operation = new DropDownList
-                {
-                    Label = "Operation",
-                    Name = nameof(Operation),
-                    Required = true,
-                    ListItems = new List<ListItem>
-                    {
-                        new ListItem() { Key = "+", Selected = true, Value = "+"},
-                        new ListItem() { Key = "-", Selected = false, Value = "-"},
-                        new ListItem() { Key = "*", Selected = false, Value = "*"},
-                        new ListItem() { Key = "/", Selected = false, Value = "/"}
-                    },
-                    Value = "+",
-                    selectedKey = "+"
-                };
-                RightArgument = new TextSource
-                {
-                    InitialLabel = "Right Argument",
-                    Label = "Right Argument",
-                    Name = nameof(RightArgument),
-                    Source = new FieldSourceDTO
-                    {
-                        ManifestType = CrateManifestTypes.StandardDesignTimeFields,
-                        RequestUpstream = true
-                    }
-                };
-                Controls = new List<ControlDefinitionDTO> { LeftArgument, Operation, RightArgument };
+                Controls = new List<ControlDefinitionDTO> {Description};
             }
-        }
-        public Monitor_For_New_Media_Posted_v1(ICrateManager crateManager)
-        : base(crateManager)
-        {
         }
     }
 }

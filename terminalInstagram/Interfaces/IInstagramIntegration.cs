@@ -9,5 +9,20 @@ namespace terminalInstagram.Interfaces
     {
         string CreateAuthUrl(string externalStateToken);
         Task<string> GetOAuthToken(string code);
+        Task<UserData> GetUserInfo(string oauthToken);
+    }
+
+    public class UserInfo
+    {
+        [JsonProperty("username")]
+        public string UserId { get; set; }
+        [JsonProperty("full_name")]
+        public string UserName { get; set; }
+    }
+
+    public class UserData
+    {
+        [JsonProperty("data")]
+        public UserInfo User { get; set; }
     }
 }

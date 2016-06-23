@@ -144,8 +144,10 @@
     </Compile>
     <Compile Include="Infrastructure\Authentication.cs" />
     <Compile Include="Interfaces\IInstagramIntegration.cs" />
+    <Compile Include="Interfaces\IInstagramEventManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\InstagramIntegration.cs" />
+    <Compile Include="Services\InstagramEventManager.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="TerminalData.cs" />
     <Compile Include="TerminalInstagramBootstrapper.cs" />
