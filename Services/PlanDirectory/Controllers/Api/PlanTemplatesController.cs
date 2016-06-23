@@ -103,8 +103,22 @@ namespace PlanDirectory.Controllers.Api
         [PlanDirectoryHMACAuthenticate]
         public Task<IHttpActionResult> CreatePlan(Guid id)
         {
+            System.Diagnostics.Debug.WriteLine("CreatePlan: entered method.");
+
             return ExceptionWrapper(async () =>
             {
+                System.Diagnostics.Debug.WriteLine("CreatePlan: inside exception wrapper.");
+
+                if (User == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("CreatePlan: User == null");
+                }
+
+                if (User.Identity == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("CreatePlan: User.Identity == null");
+                }
+
                 var fr8AccountId = User.Identity.GetUserId();
                 System.Diagnostics.Debug.WriteLine("CreatePlan: fr8AccountId = " + fr8AccountId);
 
