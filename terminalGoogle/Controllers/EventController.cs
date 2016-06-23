@@ -40,8 +40,12 @@ namespace terminalGoogle.Controllers
         {
             var hubCommunicator = _container.GetInstance<IHubCommunicator>();
             hubCommunicator.Authorize(pollingData.Fr8AccountId);
-            pollingData = await _gmailPolling.Poll(hubCommunicator, pollingData);
-            return pollingData;
+            try
+            {
+                pollingData = await _gmailPolling.Poll(hubCommunicator, pollingData);
+                return pollingData;
+            }
+            catch { return null; }
         }
     }
 }

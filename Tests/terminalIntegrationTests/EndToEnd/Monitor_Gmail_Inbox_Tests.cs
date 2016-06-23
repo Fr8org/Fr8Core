@@ -57,12 +57,27 @@ namespace terminalIntegrationTests.EndToEnd
                 currentUser = uow.UserRepository.GetQuery().Where(a => a.UserName == TestUserEmail).FirstOrDefault();
                 var googleTerminalId = uow.TerminalRepository.FindOne(t => t.Name.Equals("terminalGoogle")).Id;
                 token = uow.AuthorizationTokenRepository.FindTokenByExternalAccount(GoogleEmail, googleTerminalId, currentUser.Id);
+                if (token != null)
+                {
+                    //var plans = uow.PlanRepository.GetPlanQueryUncached().Where(a => a.Name == PlanName && a.Fr8AccountId == currentUser.Id).ToList();
+                    //foreach (var plan in plans)
+                    //{
+                    //    await HttpDeleteAsync(GetHubApiBaseUrl() + $"/plans?id={plan.Id}");
+                        
+                    //}
+                    //token.AuthorizationTokenState = AuthorizationTokenState.Revoked;
+                    ////uow.AuthorizationTokenRepository.Remove();
+                    
+                    //uow.SaveChanges();
+                    //token = null;
+                }
                 if (token == null)
                 {
-                    token = AutoMapper.Mapper.Map<AuthorizationTokenDO>(FixtureData.GetGoogleAuthorizationTokenForGmailMonitor());
+                    token = new AuthorizationTokenDO();
+                    token.Token = FixtureData.GetGoogleAuthorizationTokenForGmailMonitor();
                     token.CreateDate = DateTime.Now;
                     token.LastUpdated = DateTime.Now;
-                    token.ExpiresAt = DateTime.Now.AddHours(1);
+                    token.ExpiresAt = DateTime.Today;
                     token.TerminalID = googleTerminalId;
                     token.UserID = currentUser.Id;
                     token.ExternalAccountId = GoogleEmail;

@@ -66,11 +66,11 @@ namespace Fr8.Testing.Unit.Fixtures
         }
 
 
-        public static AuthorizationTokenDTO GetGoogleAuthorizationTokenForGmailMonitor()
+        public static string GetGoogleAuthorizationTokenForGmailMonitor()
         {
             // login: 	 icantcomeupwithauniquename@gmail.com
             // password: grolier34
-            return JsonConvert.DeserializeObject<AuthorizationTokenDTO>("{\"AccessToken\":\"ya29.Ci8JA9MKPyPxzuBuG7u_q4rPUChktxze3CtJuB8tG4DktVBeaTdPo40HhTXOle085g\",\"RefreshToken\":\"1/GVwrt4sgDtxe-NGrpi4o6hga1b0vCzd3xhoRmDJmLLg\",\"Expires\":\"2016-06-22T16:24:45.3692231+03:00\"}");
+            return ("{\"AccessToken\":\"ya29.Ci8KAzlXWBf72zj3EbwTXszvXUwV3HZEOGfRoXtBTzhflTatfSqCrT1Acs6MOyJfhA\",\"RefreshToken\":\"1/FEwaD090qJMUkzZHTHnxnSZGHYbqA6v00N5QRq8eWTs\",\"Expires\":\"2016-06-23T20:25:04.4440362+03:00\"}");
         }
 
 

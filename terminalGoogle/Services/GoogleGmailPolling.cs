@@ -145,7 +145,7 @@ namespace terminalGoogle.Services
             if (message_details.Payload.Parts != null)
                 htmlText = GetMimeString(message_details.Payload.Parts.Where(a => a.MimeType == "text/html" || a.MimeType == "text/plain").FirstOrDefault());
             else
-                htmlText = Encoding.UTF8.GetString(Convert.FromBase64String(message_details.Payload.Body.Data));
+                htmlText = Encoding.UTF8.GetString(Convert.FromBase64String(message_details.Payload.Body.Data.Replace('-', '+').Replace('_', '/')));
 
             result.HtmlText = htmlText;
             result.PlainText = GetPlainTextFromHtml(result.HtmlText);

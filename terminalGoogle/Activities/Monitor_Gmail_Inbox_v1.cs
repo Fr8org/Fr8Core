@@ -77,6 +77,8 @@ namespace terminalGoogle.Activities
 
             Payload.Add(Crate.FromContent<StandardPayloadDataCM>(RuntimeCrateLabel, new StandardPayloadDataCM(CreateEmailFields(mail, RuntimeCrateLabel))));
 
+            Success();
+
             return Task.FromResult(0);
         }
 

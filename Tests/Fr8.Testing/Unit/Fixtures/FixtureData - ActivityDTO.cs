@@ -42,7 +42,6 @@ namespace Fr8.Testing.Unit.Fixtures
             {
                 Id = Guid.NewGuid(),
                 Label = "Monitor Gmail Inbox",
-                AuthToken = GetGoogleAuthorizationTokenForGmailMonitor(),
                 ActivityTemplate = activityTemplate
             };
 
