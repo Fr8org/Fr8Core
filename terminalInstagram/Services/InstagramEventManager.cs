@@ -37,8 +37,8 @@ namespace terminalInstagram.Services
             parameters.Add(new KeyValuePair<string, string>("client_secret", clientSecret));
             parameters.Add(new KeyValuePair<string, string>("object", "user")); 
             parameters.Add(new KeyValuePair<string, string>("aspect", "media"));
-            parameters.Add(new KeyValuePair<string, string>("verifyToken", "")); 
-            parameters.Add(new KeyValuePair<string, string>("callback_url", "http://3bc6742a.ngrok.io/terminals/terminalinstagram/subscribe"));
+            parameters.Add(new KeyValuePair<string, string>("verifyToken",token.Token)); 
+            parameters.Add(new KeyValuePair<string, string>("callback_url", "http://37e6a4c1.ngrok.io/terminals/terminalinstagram/subscribe"));
             var formContent = new FormUrlEncodedContent(parameters);
 
             var url = new Uri("https://api.instagram.com/v1/subscriptions");
