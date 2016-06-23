@@ -27,8 +27,8 @@ namespace terminalStatX
         public static void ConfigureLive(ConfigurationExpression configurationExpression)
         {
             configurationExpression.For<IStatXIntegration>().Use<StatXIntegration>();
+            configurationExpression.For<IStatXPolling>().Use<StatXPolling>();
             configurationExpression.For<ICrateManager>().Use<CrateManager>();
-
         }
     }
 }
