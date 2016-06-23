@@ -125,7 +125,10 @@ namespace Fr8.Infrastructure.Data.Constants
         AdvisoryMessages = 41,
 
         [Display(Name = "Hub Subscription")]
-        HubSubscription = 42
+        HubSubscription = 42,
+
+        [Display(Name = "StatX Stat Item")]
+        StatXStatItem = 43
     }
 }
 

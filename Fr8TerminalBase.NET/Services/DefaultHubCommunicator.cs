@@ -408,13 +408,13 @@ namespace Fr8.TerminalBase.Services
             }
         }
 
-        public async Task ScheduleEvent(string externalAccountId, string minutes)
+        public async Task ScheduleEvent(string externalAccountId, string minutes, bool triggerImmediately = false, string additionalConfigAttributes = null)
         {
-            var hubAlarmsUrl = GetHubUrlWithApiVersion()
-               + string.Format("/alarms/polling?job_id={0}&fr8_account_id={1}&minutes={2}&terminal_id={3}",
-               externalAccountId, _userId, minutes, TerminalId);
+            var hubAlarmsUrl = GetHubUrlWithApiVersion() + $"/alarms/polling?terminalId={TerminalId}";
             var uri = new Uri(hubAlarmsUrl);
-            await _restfulServiceClient.PostAsync(uri, null, await GetHMACHeader(uri));
+            var data = new PollingDataDTO() { Fr8AccountId = _userId, ExternalAccountId = externalAccountId, PollingIntervalInMinutes = minutes, TriggerImmediately = triggerImmediately, AdditionalConfigAttributes = additionalConfigAttributes};
+
+            await _restfulServiceClient.PostAsync<PollingDataDTO>(uri, data);
         }
 
         public async Task<List<TManifest>> QueryWarehouse<TManifest>(List<FilterConditionDTO> query)

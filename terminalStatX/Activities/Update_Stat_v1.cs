@@ -13,6 +13,7 @@ using Fr8.TerminalBase.Errors;
 using Fr8.TerminalBase.Infrastructure;
 using Newtonsoft.Json;
 using terminalStatX.DataTransferObjects;
+using terminalStatX.Helpers;
 using terminalStatX.Interfaces;
 
 namespace terminalStatX.Activities
@@ -117,13 +118,8 @@ namespace terminalStatX.Activities
 
         public override async Task Initialize()
         {
-            ActivityUI.ExistingGroupsList.ListItems = (await _statXIntegration.GetGroups(GetStatXAuthToken()))
+            ActivityUI.ExistingGroupsList.ListItems = (await _statXIntegration.GetGroups(StatXUtilities.GetStatXAuthToken(AuthorizationToken)))
                 .Select(x => new ListItem { Key = x.Name, Value = x.Id }).ToList();
-        }
-
-        private StatXAuthDTO GetStatXAuthToken()
-        {
-            return JsonConvert.DeserializeObject<StatXAuthDTO>(AuthorizationToken.Token);
         }
 
         public override async Task FollowUp()
@@ -133,7 +129,7 @@ namespace terminalStatX.Activities
                 var previousGroup = SelectedGroup;
                 if (string.IsNullOrEmpty(previousGroup) || !string.Equals(previousGroup, ActivityUI.ExistingGroupsList.Value))
                 {
-                    var stats = await _statXIntegration.GetStatsForGroup(GetStatXAuthToken(), ActivityUI.ExistingGroupsList.Value);
+                    var stats = await _statXIntegration.GetStatsForGroup(StatXUtilities.GetStatXAuthToken(AuthorizationToken), ActivityUI.ExistingGroupsList.Value);
                     
                     ActivityUI.ExistingGroupStats.ListItems = stats
                         .Select(x => new ListItem { Key = x.Title, Value = x.Id }).ToList();
@@ -171,7 +167,7 @@ namespace terminalStatX.Activities
                 var previousStat = SelectedStat;
                 if (string.IsNullOrEmpty(previousStat) || !string.Equals(previousStat, ActivityUI.ExistingGroupStats.Value))
                 {
-                    var stats = await _statXIntegration.GetStatsForGroup(GetStatXAuthToken(), ActivityUI.ExistingGroupsList.Value);
+                    var stats = await _statXIntegration.GetStatsForGroup(StatXUtilities.GetStatXAuthToken(AuthorizationToken), ActivityUI.ExistingGroupsList.Value);
 
                     var currentStat = stats.FirstOrDefault(x => x.Id == ActivityUI.ExistingGroupStats.Value);
                     if (currentStat != null)
@@ -216,7 +212,7 @@ namespace terminalStatX.Activities
                 throw new ActivityExecutionException("Update Stat activity run failed!. Activity doesn't have selected Stat.");
             }
 
-            await _statXIntegration.UpdateStatValue(GetStatXAuthToken(), ActivityUI.ExistingGroupsList.Value,
+            await _statXIntegration.UpdateStatValue(StatXUtilities.GetStatXAuthToken(AuthorizationToken), ActivityUI.ExistingGroupsList.Value,
                 ActivityUI.ExistingGroupStats.Value, statValues);
             
             Success();

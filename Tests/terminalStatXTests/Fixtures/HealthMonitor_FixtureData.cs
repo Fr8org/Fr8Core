@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace terminalStatX.Interfaces
+namespace terminalStatXTests.Fixtures
 {
-    public interface IEvent
+    class HealthMonitor_FixtureData
     {
     }
 }
