@@ -87,6 +87,7 @@ namespace Hub.Services
                         ExternalDomainName = string.IsNullOrEmpty(authToken.ExternalDomainName) ? authToken.ExternalDomainId : authToken.ExternalDomainName,
                         UserId = authToken.UserID,
                         Token = authToken.Token,
+                        ExpiresAt = authToken.ExpiresAt,
                         AdditionalAttributes = authToken.AdditionalAttributes
                     };
                 }
@@ -578,7 +579,7 @@ namespace Hub.Services
             }
         }
 
-        public void RenewToken(Guid authTokenId, string externalAccountId, string token)
+        public void RenewToken(Guid authTokenId, string externalAccountId, string token, DateTime expiresAt)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -589,6 +590,10 @@ namespace Hub.Services
                     return;
                 authToken.ExternalAccountId = externalAccountId;
                 authToken.Token = token;
+                if (expiresAt != default(DateTime))
+                {
+                    authToken.ExpiresAt = expiresAt;
+                }
                 uow.SaveChanges();
             }
         }

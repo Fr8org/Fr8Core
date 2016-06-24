@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Fr8.Infrastructure.Communication;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
@@ -11,6 +12,7 @@ using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using terminalBasecamp2.Data;
 using Authorization = terminalBasecamp2.Data.Authorization;
 
@@ -45,6 +47,9 @@ namespace terminalBasecamp2.Infrastructure
             _contactEmail = CloudConfigurationManager.GetSetting("ContactEmail");
         }
 
+        /// <summary>
+        /// Gets URL that is used by Basecamp to aks user for authorization
+        /// </summary>
         public ExternalAuthUrlDTO GetExternalAuthUrl()
         {
             var externalStateToken = Guid.NewGuid().ToString();
@@ -56,6 +61,9 @@ namespace terminalBasecamp2.Infrastructure
             };
         }
 
+        /// <summary>
+        /// Performs OAuth authentication after receiving verification code from Basecamp. Additionaly performs a check of whether use has access to Basecamp2 projects
+        /// </summary>
         public async Task<AuthorizationTokenDTO> AuthenticateAsync(ExternalAuthenticationDTO externalState)
         {
             try
@@ -94,6 +102,9 @@ namespace terminalBasecamp2.Infrastructure
             }
         }
 
+        /// <summary>
+        /// Gets basic information about authorized user along with accounts available to him
+        /// </summary>
         public async Task<Authorization> GetCurrentUserInfo(AuthorizationToken auth)
         {
             return await ApiCall(x => ApiGetAsync<Authorization>(_authorizationUrl, GetAuthorization(x)), auth);
@@ -104,6 +115,9 @@ namespace terminalBasecamp2.Infrastructure
             return await ApiGetAsync<Authorization>(_authorizationUrl, auth).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Gets accounts available to authorized user
+        /// </summary>
         public async Task<List<Account>> GetAccounts(AuthorizationToken auth)
         {
             return (await GetCurrentUserInfo(auth).ConfigureAwait(false))
@@ -113,6 +127,9 @@ namespace terminalBasecamp2.Infrastructure
                 .ToList();
         }
 
+        /// <summary>
+        /// Get projects belong to specified account and available for authorized user
+        /// </summary>
         public async Task<List<Project>> GetProjects(string accountUrl, AuthorizationToken auth)
         {
             var result = await ApiCall(x => ApiGetAsync<List<Project>>($"{accountUrl}/projects.json", GetAuthorization(x)), auth);
@@ -120,15 +137,27 @@ namespace terminalBasecamp2.Infrastructure
             return result;
         }
 
+        /// <summary>
+        /// Post a new message into specified project of authorized user. Message with the same subject and content can't be posted to Basecamp2 during period of 5 minutes
+        /// </summary>
+        /// <returns>A message that has been posted</returns>
         public async Task<Message> CreateMessage(string accountUrl, string projectId, string subject, string content, AuthorizationToken auth)
         {
-            return await ApiCall(x => ApiPostAsync<Message, Message>($"{accountUrl}/projects/{projectId}/messages.json", new Message { Subject = subject, Content = content }, GetAuthorization(x)), auth);
+            try
+            {
+                return await ApiCall(x => ApiPostAsync<Message, Message>($"{accountUrl}/projects/{projectId}/messages.json", new Message { Subject = subject, Content = content }, GetAuthorization(x)), auth);
+            }
+            catch (RestfulServiceException ex)
+            {
+                if (ex.StatusCode == 422)
+                {
+                    var errorMessage = JToken.Parse(ex.ResponseMessage).Value<string>("error");
+                    throw new ApplicationException(errorMessage, ex);
+                }
+                throw;
+            }
         }
 
-        private async Task ApiPostAsync<TContent>(string apiUrl, TContent content, BasecampAuthorizationToken auth)
-        {
-            await _restfulServiceClient.PostAsync(new Uri(apiUrl), content, headers: GetHeaders(auth)).ConfigureAwait(false);
-        }
         private async Task<TResponse> ApiPostAsync<TContent, TResponse>(string apiUrl, TContent content, BasecampAuthorizationToken auth)
         {
             return await _restfulServiceClient.PostAsync<TContent, TResponse>(new Uri(apiUrl), content, headers: GetHeaders(auth)).ConfigureAwait(false);

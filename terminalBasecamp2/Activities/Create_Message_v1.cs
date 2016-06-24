@@ -11,7 +11,6 @@ using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities.Logging;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Infrastructure;
-using terminalBasecamp2.Data;
 using terminalBasecamp2.Infrastructure;
 
 namespace terminalBasecamp2.Activities
@@ -75,7 +74,7 @@ namespace terminalBasecamp2.Activities
             }
         }
 
-        private const string RuntimeCrateLabel = "Created Message";
+        public const string RuntimeCrateLabel = "Created Message";
 
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplate;
 
@@ -86,6 +85,7 @@ namespace terminalBasecamp2.Activities
                 throw new ArgumentNullException(nameof(basecampApiClient));
             }
             _basecampApiClient = basecampApiClient;
+            DisableValidationOnFollowup = true;
         }
 
         protected override Task Validate()
@@ -187,6 +187,10 @@ namespace terminalBasecamp2.Activities
                 ActivityUI.MessageSubject.IsHidden = false;
                 ActivityUI.MessageContent.IsHidden = false;
                 var projects = await _basecampApiClient.GetProjects(selectedAccount, AuthorizationToken).ConfigureAwait(false);
+                if (projects == null)
+                {
+                    return;
+                }
                 ActivityUI.ProjectSelector.ListItems = projects.Select(x => new ListItem { Key = x.Name, Value = x.Id.ToString() }).ToList();
                 if (ActivityUI.ProjectSelector.ListItems.Count == 1)
                 {
@@ -200,6 +204,10 @@ namespace terminalBasecamp2.Activities
         private async Task LoadAccountAndSelectTheOnlyOne()
         {
             var accounts = await _basecampApiClient.GetAccounts(AuthorizationToken).ConfigureAwait(false);
+            if (accounts == null)
+            {
+                return;
+            }
             ActivityUI.AccountSelector.ListItems = accounts.Select(x => new ListItem { Key = x.Name, Value = x.ApiUrl }).ToList();
             if (ActivityUI.AccountSelector.ListItems.Count == 1)
             {

@@ -23,9 +23,12 @@ namespace Fr8.TerminalBase.BaseClasses
             _hubCommunicator = hubCommunicator;
         }
 
+        /// <summary>
+        /// Perform specified call that will be provided with specified authorization token. If the auth token provided is expired, tries to refresh it and repeat the call
+        /// </summary>
         public async Task<TResponse> ApiCall<TResponse>(Func<AuthorizationToken, Task<TResponse>> apiCall, AuthorizationToken auth)
         {
-            if (auth.ExpiresAt > DateTime.UtcNow)
+            if (auth.ExpiresAt != default(DateTime) && auth.ExpiresAt < DateTime.UtcNow)
             {
                 auth = await RefreshTokenImpl(auth);
             }
@@ -58,9 +61,13 @@ namespace Fr8.TerminalBase.BaseClasses
             await _hubCommunicator.RenewToken(Mapper.Map<AuthorizationTokenDTO>(result));
             return result;
         }
-
+        /// <summary>
+        /// Performs refresh of access token stored in specified auth token and returns new access token
+        /// </summary>
         protected abstract Task<AuthorizationToken> RefreshToken(AuthorizationToken auth);
-
+        /// <summary>
+        /// Checks whether specified exception signals about issues connected with expired access token
+        /// </summary>
         protected virtual bool IsExpiredAccessTokenException(Exception ex)
         {
             var restfulServiceException = ex as RestfulServiceException;

@@ -89,8 +89,9 @@ namespace Fr8.Infrastructure.Communication
             catch (HttpRequestException ex)
             {
                 raisedException = ex;
-                string errorMessage = $"An error has ocurred while sending a {request.RequestUri} request to {request.Method.Method}. Response message: {ExtractErrorMessage(responseContent)}";
-                throw new RestfulServiceException(statusCode, errorMessage, ex);
+                var responseMessage = ExtractErrorMessage(responseContent);
+                string errorMessage = $"An error has ocurred while sending a {request.RequestUri} request to {request.Method.Method}. Response message: {responseMessage}";
+                throw new RestfulServiceException(statusCode, errorMessage, responseMessage, ex);
             }
             catch (TaskCanceledException ex)
             {

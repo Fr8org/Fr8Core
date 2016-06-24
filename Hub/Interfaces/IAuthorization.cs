@@ -45,7 +45,8 @@ namespace Hub.Interfaces
         /// <param name="authTokenId">Token Id</param>
         /// <param name="externalAccountId"></param>
         /// <param name="token">Token content</param>
-        void RenewToken(Guid authTokenId, string externalAccountId, string token);
+        /// <param name="expiresAt"></param>
+        void RenewToken(Guid authTokenId, string externalAccountId, string token, DateTime expiresAt = default(DateTime));
 
         /// <summary>
         /// Send authentication code to your mobile phone number that is used later for receiving access token

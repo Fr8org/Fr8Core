@@ -161,13 +161,16 @@ namespace Data.Infrastructure.AutoMapper
                     x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentClientActivityName))
                 );
             Mapper.CreateMap<AuthorizationTokenDTO, AuthorizationTokenDO>()
-                .ForMember(x => x.UserID,    x => x.ResolveUsing(y => y.UserId))
-                .ForMember(x => x.Id, x => x.ResolveUsing(y => y.Id != null ? new Guid(y.Id) : (Guid?)null))
-                .ForMember(x => x.ExternalDomainId, x => x.ResolveUsing(y => y.ExternalDomainId));
+                  .ForMember(x => x.UserID, x => x.ResolveUsing(y => y.UserId))
+                  .ForMember(x => x.Id, x => x.ResolveUsing(y => y.Id != null ? new Guid(y.Id) : (Guid?)null))
+                  .ForMember(x => x.ExternalDomainId, x => x.ResolveUsing(y => y.ExternalDomainId))
+                  .ForMember(x => x.ExpiresAt, x => x.ResolveUsing(y => y.ExpiresAt));
+            
             Mapper.CreateMap<AuthorizationTokenDO, AuthorizationTokenDTO>()
                 .ForMember(x => x.UserId, x => x.ResolveUsing(y => y.UserID))
                 .ForMember(x => x.Id, x => x.ResolveUsing(y => y.Id.ToString()))
-                .ForMember(x => x.ExternalDomainId, x => x.ResolveUsing(y => y.ExternalDomainId));
+                .ForMember(x => x.ExternalDomainId, x => x.ResolveUsing(y => y.ExternalDomainId))
+                .ForMember(x => x.ExpiresAt, x => x.ResolveUsing(y => y.ExpiresAt));
 
             Mapper.CreateMap<ManifestDescriptionCM, ManifestDescriptionDTO>();
             Mapper.CreateMap<ManifestDescriptionDTO, ManifestDescriptionCM>();

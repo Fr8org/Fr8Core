@@ -1,6 +1,4 @@
-﻿using Fr8.TerminalBase.Interfaces;
-using Fr8.TerminalBase.Services;
-using StructureMap;
+﻿using StructureMap;
 using terminalBasecamp2.Infrastructure;
 
 namespace terminalBasecamp2
