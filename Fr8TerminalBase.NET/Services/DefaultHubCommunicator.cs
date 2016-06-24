@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using AutoMapper;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Crates;
@@ -13,6 +14,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
@@ -376,7 +378,7 @@ namespace Fr8.TerminalBase.Services
 
         public async Task<AuthorizationToken> GetAuthToken(string externalAccountId)
         {
-            var url = $"{GetHubUrlWithApiVersion()}/authentication/GetAuthToken?curFr8UserId={_userId}&externalAccountId={externalAccountId}&terminalId={TerminalId}";
+            var url = $"{GetHubUrlWithApiVersion()}/authentication/GetAuthToken?curFr8UserId={_userId}&externalAccountId={HttpUtility.UrlEncode(externalAccountId)}&terminalId={TerminalId}";
             var uri = new Uri(url);
             var authTokenDTO = await _restfulServiceClient.GetAsync<AuthorizationTokenDTO>(uri, null, await GetHMACHeader(uri));
             return Mapper.Map<AuthorizationToken>(authTokenDTO);

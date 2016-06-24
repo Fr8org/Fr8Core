@@ -39,44 +39,16 @@ namespace terminalStatX.Activities
 
         private readonly string RunTimeCrateLabel = "Stat Value Items";
 
-        private const string SelectedGroupCrateLabel = "Selected Group";
-
-        private const string SelectedStatCrateLabel = "Selected Stat";
-
         private string SelectedGroup
         {
-            get
-            {
-                var storedValue = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == SelectedGroupCrateLabel);
-                return storedValue?.Content.Fields.First().Key;
-            }
-            set
-            {
-                Storage.RemoveByLabel(SelectedGroupCrateLabel);
-                if (string.IsNullOrEmpty(value))
-                {
-                    return;
-                }
-                Storage.Add(Crate<FieldDescriptionsCM>.FromContent(SelectedGroupCrateLabel, new FieldDescriptionsCM(new FieldDTO(value)), AvailabilityType.Configuration));
-            }
+            get { return this[nameof(SelectedGroup)]; }
+            set { this[nameof(SelectedGroup)] = value; }
         }
 
         private string SelectedStat
         {
-            get
-            {
-                var storedValue = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == SelectedStatCrateLabel);
-                return storedValue?.Content.Fields.First().Key;
-            }
-            set
-            {
-                Storage.RemoveByLabel(SelectedGroupCrateLabel);
-                if (string.IsNullOrEmpty(value))
-                {
-                    return;
-                }
-                Storage.Add(Crate<FieldDescriptionsCM>.FromContent(SelectedGroupCrateLabel, new FieldDescriptionsCM(new FieldDTO(value)), AvailabilityType.Configuration));
-            }
+            get { return this[nameof(SelectedStat)]; }
+            set { this[nameof(SelectedStat)] = value; }
         }
 
         public class ActivityUi : StandardConfigurationControlsCM
@@ -96,8 +68,9 @@ namespace terminalStatX.Activities
 
                 ExistingGroupStats = new DropDownList()
                 {
-                    Label = "Choose a Stat from Selected Group",
+                    Label = "Monitor which Stat?",
                     Name = nameof(ExistingGroupStats),
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
 
                 Controls = new List<ControlDefinitionDTO>() { ExistingGroupsList, ExistingGroupStats };

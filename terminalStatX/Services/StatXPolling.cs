@@ -10,6 +10,7 @@ using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using terminalStatX.DataTransferObjects;
 using terminalStatX.Helpers;
 using terminalStatX.Interfaces;
@@ -43,11 +44,24 @@ namespace terminalStatX.Services
 
         public async Task<PollingDataDTO> Poll(IHubCommunicator hubCommunicator, PollingDataDTO pollingData)
         {
-            var token = await hubCommunicator.GetAuthToken(pollingData.ExternalAccountId);
+            if (string.IsNullOrEmpty(pollingData.AdditionalConfigAttributes))
+            {
+                pollingData.Result = false;
+                return pollingData;
+            }
 
-            //find a way to get statId and groupId as a way for main monitor of stat changes
-            var groupId = "";
-            var statId = "";
+            var attributesObject = JObject.Parse(pollingData.AdditionalConfigAttributes);
+
+            var groupId = attributesObject["GroupId"]?.ToString();
+            var statId = attributesObject["StatId"]?.ToString();
+
+            if (string.IsNullOrEmpty(groupId) || string.IsNullOrEmpty(statId))
+            {
+                pollingData.Result = false;
+                return pollingData;
+            }
+
+            var token = await hubCommunicator.GetAuthToken(pollingData.ExternalAccountId);
 
             if (token == null)
             {
@@ -66,10 +80,9 @@ namespace terminalStatX.Services
                 var statXCM = JsonConvert.DeserializeObject<StatXItemCM>(pollingData.Payload);
                 var latestStatWithValues = await GetLatestStatItem(token, groupId, statId);
 
-                if (DateTime.Parse(statXCM.LastUpdatedDateTime) < DateTime.Parse(latestStatWithValues.LastUpdatedDateTime))
+                //check value by value to see if a difference exist. 
+                if (StatXUtilities.CompareStatsForValueChanges(statXCM, latestStatWithValues))
                 {
-                    //check value by value to see difference. 
-
                     var eventReportContent = new EventReportCM
                     {
                         EventNames = "StatXValueChange",
@@ -95,5 +108,7 @@ namespace terminalStatX.Services
 
             return StatXUtilities.MapToStatItemCrateManifest(latestStat);
         }
+
+        
     }
 }
