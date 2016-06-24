@@ -253,7 +253,6 @@
     <Content Include="PreBuild.bat" />
     <Content Include="Scripts\main.js" />
     <Content Include="Scripts\PlanDirectoryApp.js" />
-    <Content Include="Scripts\SearchController.js" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\Reauthenticate.cshtml" />
     <Content Include="Views\Shared\HomeNav.cshtml" />
