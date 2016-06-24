@@ -26,7 +26,7 @@ if ($command.ExecuteNonQuery() -ne -1)
 }
 Write-Host "Successfully deleted old target database."
 
-if ([System.String]::IsNullOrEmpty($serviceObjective) -eq $false) 
+if ([System.String]::IsNullOrEmpty($serviceObjective) -eq $true) 
 {
 	$serviceObjective = "S1";
 }
