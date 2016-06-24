@@ -1,4 +1,6 @@
 ﻿@using Microsoft.AspNet.Identity
+@using HubWeb.ViewModels
+
 @if (Request.IsAuthenticated)
 {
     using (Html.BeginForm("Index", "Home", FormMethod.Post, new { id = "logoutForm", @class = " " }))
@@ -6,33 +8,33 @@
         <!-- MENU -->
         <ul class="nav navbar-nav">
             <!--How It Works-->
-            <li><a href="@Model.BaseUrl/#about" title="How It Works">How It Works</a></li>
+            <li><a href="@NavLinks.BaseUrl/#about" title="How It Works">How It Works</a></li>
             <!--Services-->
             <li data-scroll="scrolling" class="dropdown">
-                <a href="@Model.BaseUrl/#services" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Services">Services <span class="caret"></span></a>
+                <a href="@NavLinks.BaseUrl/#services" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Services">Services <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                    <li><a href="@Model.BaseUrl/Services/DocuSign">DocuSign</a></li>
-                    <li><a href="@Model.BaseUrl/Services/Salesforce">Salesforce.com</a></li>
-                    <li><a href="@Model.PlanDiscovery">Plan Discovery</a></li>
+                    <li><a href="@NavLinks.BaseUrl/Services/DocuSign">DocuSign</a></li>
+                    <li><a href="@NavLinks.BaseUrl/Services/Salesforce">Salesforce.com</a></li>
+                    <li><a href="@NavLinks.PlanDiscovery">Plan Discovery</a></li>
                 </ul>
             </li>
             <!--Developers-->
-            <li><a href="@Model.Developers" class="develop" title="Developers">Developers</a></li>
+            <li><a href="@NavLinks.Developers" class="develop" title="Developers">Developers</a></li>
             <!--Company-->
             <li data-scroll="scrolling" class="dropdown">
-                <a href="@Model.BaseUrl/#aboutus" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Company">Company <span class="caret"></span></a>
+                <a href="@NavLinks.BaseUrl/#aboutus" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Company">Company <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                    <li data-scroll="scrolling"><a href="@Model.BaseUrl/Company/#vision">Vision</a></li>
-                    <li data-scroll="scrolling"><a href="@Model.BaseUrl/Company/#team">Team</a></li>
-                    <li data-scroll="scrolling"><a href="@Model.BaseUrl/Company/#location">Location</a></li>
-                    <li data-scroll="scrolling"><a href="@Model.BaseUrl/Company/#company">Jobs</a></li>
-                    <li data-scroll="scrolling"><a href="@Model.BaseUrl/#aboutus">About Us</a></li>
+                    <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/Company/#vision">Vision</a></li>
+                    <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/Company/#team">Team</a></li>
+                    <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/Company/#location">Location</a></li>
+                    <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/Company/#company">Jobs</a></li>
+                    <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/#aboutus">About Us</a></li>
                 </ul>
             </li>
             <!--Contact-->
-            <li><a href="@Model.BaseUrl/Support" title="Contact">Contact</a></li>
+            <li><a href="@NavLinks.BaseUrl/Support" title="Contact">Contact</a></li>
             <!--Login Button on Right-->
-            <li><a href="@Model.BaseUrl/dashboard/#myaccount">My Account</a> </li>
+            <li><a href="@NavLinks.BaseUrl/dashboard/#myaccount">My Account</a> </li>
             @if (User.IsInRole("Guest"))
             {
                 <li class="visible-xs">@Html.ActionLink("Have An Account? Login", "LogOff", "DockyardAccount", routeValues: null, htmlAttributes: new {id = "logoffLink"})</li>
@@ -48,34 +50,34 @@
     <!-- MENU -->
     <ul class="nav navbar-nav @(ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "home-nav" : "")">
         <!--How It Works-->
-        <li><a href="@Model.BaseUrl/Services/HowItWorks" title="How It Works">How It Works</a></li>
+        <li><a href="@NavLinks.BaseUrl/Services/HowItWorks" title="How It Works">How It Works</a></li>
         <!--Services-->
         <li data-scroll="scrolling" class="dropdown">
-            <a href="@Model.BaseUrl/#services" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Services">Solutions <span class="caret"></span></a>
+            <a href="@NavLinks.BaseUrl/#services" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Services">Solutions <span class="caret"></span></a>
             <ul class="dropdown-menu">
-                <li><a href="@Model.BaseUrl/Services/DocuSign">DocuSign</a></li>
-                <li><a href="@Model.BaseUrl/Services/Salesforce">Salesforce.com</a></li>
-                <li><a href="@Model.PlanDiscovery">Plan Discovery</a></li>
+                <li><a href="@NavLinks.BaseUrl/Services/DocuSign">DocuSign</a></li>
+                <li><a href="@NavLinks.BaseUrl/Services/Salesforce">Salesforce.com</a></li>
+                <li><a href="@NavLinks.PlanDiscovery">Plan Discovery</a></li>
             </ul>
         </li>
         <!--Developers-->
-        <li><a href="@Model.Developers" class="develop" title="Developers">Developers</a></li>
+        <li><a href="@NavLinks.Developers" class="develop" title="Developers">Developers</a></li>
         <!--Company-->
         <li data-scroll="scrolling" class="dropdown">
-            <a href="@Model.BaseUrl/#aboutus" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Company">Company <span class="caret"></span></a>
+            <a href="@NavLinks.BaseUrl/#aboutus" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Company">Company <span class="caret"></span></a>
             <ul class="dropdown-menu">
-                <li data-scroll="scrolling"><a href="@Model.BaseUrl/Company/#vision">Vision</a></li>
-                <li data-scroll="scrolling"><a href="@Model.BaseUrl/Company/#team">Team</a></li>
-                <li data-scroll="scrolling"><a href="@Model.BaseUrl/Company/#location">Location</a></li>
-                <li data-scroll="scrolling"><a href="@Model.BaseUrl/Company/#company">Jobs</a></li>
-                <li data-scroll="scrolling"><a href="@Model.BaseUrl/#aboutus">About Us</a></li>
-                <li data-scroll="scrolling"><a href="@Model.BaseUrl/Support">Support</a></li>
+                <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/Company/#vision">Vision</a></li>
+                <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/Company/#team">Team</a></li>
+                <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/Company/#location">Location</a></li>
+                <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/Company/#company">Jobs</a></li>
+                <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/#aboutus">About Us</a></li>
+                <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/Support">Support</a></li>
             </ul>
         </li>
         <!--Contact-->
-        <li><a href="@Model.BaseUrl/Support" title="Contact">Contact</a></li>
+        <li><a href="@NavLinks.BaseUrl/Support" title="Contact">Contact</a></li>
         <!--Blog-->
-        <li><a href="@Model.Blog" target="_blank">Blog</a></li>
+        <li><a href="@NavLinks.Blog" target="_blank">Blog</a></li>
     </ul>
     if (String.IsNullOrWhiteSpace((String)ViewBag.GuestUserEmail)) {
         <ul class="nav navbar-nav navbar-right">
