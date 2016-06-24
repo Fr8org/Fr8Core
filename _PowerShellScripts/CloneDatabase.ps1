@@ -4,8 +4,7 @@
 	[string]$targetDbName,
 	[string]$serverName,
 	[Parameter(Mandatory = $false)]
-	[string]$serviceObjective,
-]
+	[string]$serviceObjective
 )
 
 Write-Host "Deletes old target database if exists and creates a new one from the specified database."
