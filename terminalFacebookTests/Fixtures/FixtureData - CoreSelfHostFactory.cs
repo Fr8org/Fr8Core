@@ -25,7 +25,8 @@ namespace terminalFacebookTests.Fixtures
             {
                 Id = Guid.NewGuid(),
                 Label = "Post To Timeline",
-                ActivityTemplate = activityTemplate
+                ActivityTemplate = activityTemplate,
+                AuthToken = Facebook_AuthToken()
             };
 
             return new Fr8DataDTO { ActivityDTO = activityDTO };
@@ -49,10 +50,20 @@ namespace terminalFacebookTests.Fixtures
             {
                 Id = Guid.NewGuid(),
                 Label = "Monitor Feed Posts",
-                ActivityTemplate = activityTemplate
+                ActivityTemplate = activityTemplate,
+                AuthToken = Facebook_AuthToken()
             };
 
             return new Fr8DataDTO { ActivityDTO = activityDTO };
+        }
+
+
+        public static AuthorizationTokenDTO Facebook_AuthToken()
+        {
+            return new AuthorizationTokenDTO
+            {
+                Token = @"test"
+            };
         }
 
     }

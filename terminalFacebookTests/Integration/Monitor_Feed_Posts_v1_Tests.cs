@@ -35,15 +35,19 @@ namespace terminalFacebookTests.Integration
             Assert.AreEqual(3, crateStorage.Count, "Crate storage count is not equal to 3");
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(), "StandardConfigurationControlsCM count is not 1");
             Assert.AreEqual(1, crateStorage.CratesOfType<EventSubscriptionCM>().Count(), "EventSubscriptionCM count is not 1");
-            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(), "FieldDescriptionsCM count is not 1");
+            Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count(), "FieldDescriptionsCM count is not 1");
             AssertConfigureControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
-            var fieldDescriptions = crateStorage.CratesOfType<FieldDescriptionsCM>().Single();
-            Assert.AreEqual("Monitor Facebook Runtime Fields", fieldDescriptions.Label, "Monitor Facebook Runtime Fields labeled FieldDescriptionsCM was not found");
-            Assert.AreEqual(4, fieldDescriptions.Content.Fields, "Published runtime field count is not 4");
-            Assert.IsTrue(fieldDescriptions.Content.Fields.Exists(x => x.Label == FacebookFeedIdField), "FacebookFeedIdField is not signalled");
-            Assert.IsTrue(fieldDescriptions.Content.Fields.Exists(x => x.Label == FacebookFeedMessageField), "FacebookFeedMessageField is not signalled");
-            Assert.IsTrue(fieldDescriptions.Content.Fields.Exists(x => x.Label == FacebookFeedStoryField), "FacebookFeedStoryField is not signalled");
-            Assert.IsTrue(fieldDescriptions.Content.Fields.Exists(x => x.Label == FacebookFeedCreatedTimeField), "FacebookFeedCreatedTimeField is not signalled");
+            var fieldDescriptions = crateStorage.CratesOfType<CrateDescriptionCM>().Single();
+            Assert.AreEqual("Runtime Available Crates", fieldDescriptions.Label, "Monitor Facebook Runtime Fields labeled FieldDescriptionsCM was not found");
+            Assert.AreEqual(1, fieldDescriptions.Content.CrateDescriptions.Count(), "CrateDescriptions count is not 1");
+            var fields = fieldDescriptions.Content.CrateDescriptions.Single().Fields;
+            
+            Assert.AreEqual("Monitor Facebook Runtime Fields", fieldDescriptions.Content.CrateDescriptions.Single().Label, "Monitor Facebook Runtime Fields labeled CrateDescription was not found");
+            Assert.AreEqual(4, fieldDescriptions.Content.CrateDescriptions.Single().Fields.Count, "Published runtime field count is not 4");
+            Assert.IsTrue(fields.Exists(x => x.Key == FacebookFeedIdField), "FacebookFeedIdField is not signalled");
+            Assert.IsTrue(fields.Exists(x => x.Key == FacebookFeedMessageField), "FacebookFeedMessageField is not signalled");
+            Assert.IsTrue(fields.Exists(x => x.Key == FacebookFeedStoryField), "FacebookFeedStoryField is not signalled");
+            Assert.IsTrue(fields.Exists(x => x.Key == FacebookFeedCreatedTimeField), "FacebookFeedCreatedTimeField is not signalled");
 
         }
 
@@ -81,6 +85,7 @@ namespace terminalFacebookTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
             var responseDTO = await CompleteInitialConfiguration();
+            responseDTO.AuthToken = FixtureData.Facebook_AuthToken();
             var dataDTO = new Fr8DataDTO
             {
                 ActivityDTO = responseDTO

@@ -64,6 +64,7 @@ namespace terminalFacebookTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
             var responseDTO = await CompleteInitialConfiguration();
+            responseDTO.AuthToken = FixtureData.Facebook_AuthToken();
             var dataDTO = new Fr8DataDTO
             {
                 ActivityDTO = responseDTO
