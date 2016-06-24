@@ -35,7 +35,7 @@ if (($update.ToLowerInvariant() -eq 'db') -or ($update.ToLowerInvariant() -eq 'b
 }
 
 if (($update.ToLowerInvariant() -eq 'txt') -or ($update.ToLowerInvariant() -eq 'both')) {
-	$commandLine = "$rootDir\UpdateTerminalUrl.ps1 -connectionString '$connectionString'  -new$hostName $hostName";
+	$commandLine = "$rootDir\UpdateTerminalUrl.ps1 -connectionString '$connectionString'  -newHostName $hostName";
 	
 	if ([String]::IsNullOrEmpty($overrideDbName) -eq $false) {
 		$commandLine +=  " -overrideDbName $overrideDbName"
