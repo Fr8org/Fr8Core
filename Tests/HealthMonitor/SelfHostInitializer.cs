@@ -79,8 +79,12 @@ namespace HealthMonitor
                             }
                             else
                             {
-                                throw new ApplicationException(
-                                    String.Format("Cannot find terminal {0}, version {1} in the Terminals table.", app.Name, CURRENT_TERMINAL_VERSION));
+                                //hmm this is probably a new terminal - let's check it's endpoint on config file as a last resort
+                                app.Endpoint = ConfigurationManager.AppSettings[app.Name+ ".TerminalEndpoint"];
+                                if (app.Endpoint == null)
+                                {
+                                    throw new ApplicationException($"Cannot find terminal {app.Name}, version {CURRENT_TERMINAL_VERSION} in the Terminals table.");
+                                }
                             }
                         }
 
