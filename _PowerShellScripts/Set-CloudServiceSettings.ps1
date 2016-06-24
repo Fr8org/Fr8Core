@@ -47,7 +47,7 @@ $ErrorActionPreference = 'Stop'
 $RootDir = Split-Path -parent (Split-Path -parent $MyInvocation.MyCommand.Path)
 $ConfigPath = $RootDir+"\terminalCloudService"
 $ConfigFile = $ConfigPath+"\ServiceConfiguration.Release.cscfg"
-$epConfigFile = $ConfigPath+"\ServiceConfiguration.cscfg"
+$epConfigFile = $ConfigPath+"\ServiceDefinition.csdef"
 
 
 $deployment = Get-AzureDeployment -ServiceName $serviceName -Slot Staging
@@ -59,7 +59,7 @@ $terminalList = @{}
 
 if ($inheritEndpoints -ne $true) {
 		
-	$xml = [xml](Get-Content $defFile)
+	$xml = [xml](Get-Content $epConfigFile)
 	$roleNode = $xml.ServiceDefinition.WebRole | where {$_.name -eq 'terminalWebRole'}
 	$terminalEndpointSettings = $roleNode.Endpoints.InputEndpoint | where {($_.name -like 'terminal*') -and ($_.protocol -like 'http')}
     $terminalEndpointSettings | ForEach-Object {
