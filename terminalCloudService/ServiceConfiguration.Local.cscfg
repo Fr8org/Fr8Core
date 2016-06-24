@@ -26,7 +26,7 @@
       <Setting name="terminalTwilio.TerminalEndpoint" value="" />
       <Setting name="terminalYammer.TerminalEndpoint" value="" />
       <Setting name="terminalDemo.TerminalEndpoint" value="" />
-	  <Setting name="terminalStatX.TerminalEndpoint" value="" />
+	    <Setting name="terminalStatX.TerminalEndpoint" value="" />
       <Setting name="terminalFacebook.TerminalEndpoint" value="" />
    	  <Setting name="OutboundUserName" value="" />
       <Setting name="OutboundUserPassword" value="" />
