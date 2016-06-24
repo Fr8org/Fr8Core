@@ -20,6 +20,7 @@ using Fr8.Infrastructure.Data.Crates;
 using Fr8.TerminalBase.Services;
 using System.Text;
 using System.Text.RegularExpressions;
+using log4net;
 
 namespace terminalGoogle.Services
 {
@@ -27,11 +28,13 @@ namespace terminalGoogle.Services
     {
         private IGoogleIntegration _googleIntegration;
         private IHubEventReporter _reporter;
+        private static readonly ILog Logger = LogManager.GetLogger("terminalGoogle");
 
         public GoogleGmailPolling(IGoogleIntegration _googleIntegration, IHubEventReporter reporter)
         {
             this._googleIntegration = _googleIntegration;
             this._reporter = reporter;
+
         }
 
         public async Task SchedulePolling(IHubCommunicator hubCommunicator, string externalAccountId, bool trigger_immediately)
@@ -42,6 +45,8 @@ namespace terminalGoogle.Services
 
         public async Task<PollingDataDTO> Poll(IHubCommunicator hubCommunicator, PollingDataDTO pollingData)
         {
+            Logger.Info("Polling for Gmail was launched");
+
             var token = await hubCommunicator.GetAuthToken(pollingData.ExternalAccountId);
             if (token == null)
             {
@@ -53,7 +58,6 @@ namespace terminalGoogle.Services
             var googleAuthToken = JsonConvert.DeserializeObject<GoogleAuthDTO>(token.Token);
             var service = await serv.CreateGmailService(googleAuthToken);
 
-
             if (string.IsNullOrEmpty(pollingData.Payload))
             {
                 //Polling is called for the first time
@@ -64,13 +68,14 @@ namespace terminalGoogle.Services
 
                 //then we have to get its details and historyId (to use with history listing API method)
                 pollingData.Payload = GetHistoryId(service, list.Messages.FirstOrDefault().Id, token.ExternalAccountId);
+                Logger.Info("Polling for Gmail: remembered the last email in the inbox");
             }
             else
             {
                 var request = service.Users.History.List(token.ExternalAccountId);
                 request.StartHistoryId = ulong.Parse(pollingData.Payload);
                 var result = request.Execute();
-
+                Logger.Info("Polling for Gmail: received a history of changes");
                 if (result.History != null)
 
                     foreach (var historyRecord in result.History)
@@ -91,6 +96,7 @@ namespace terminalGoogle.Services
                                 };
 
                                 pollingData.Payload = email.MessageID;
+                                Logger.Info("Polling for Gmail: got a new email, broadcasting an event to the Hub");
                                 await _reporter.Broadcast(Crate.FromContent("Standard Event Report", eventReportContent));
                             }
                         }
@@ -133,8 +139,12 @@ namespace terminalGoogle.Services
             string from = message_details.Payload.Headers.Where(a => a.Name == "From").FirstOrDefault().Value;
             string subject = message_details.Payload.Headers.Where(a => a.Name == "Subject").FirstOrDefault().Value;
 
-            var email = Regex.Match(from, "<.*>").Value;
-            var name = from.Replace(email, "").Trim();
+            var email = Regex.Match(from, "<.*>").Value.Trim();
+            string name;
+            if (email != "")
+                name = from.Replace(email, "").Trim();
+            else
+                name = email;
             email = email.Trim(new char[] { '<', '>' }).Trim();
             result.DateReceived = message_details.Payload.Headers.Where(a => a.Name.Contains("Date")).FirstOrDefault().Value;
             result.EmailFrom = email;
