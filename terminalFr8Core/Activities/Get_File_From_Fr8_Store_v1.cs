@@ -114,6 +114,7 @@ namespace terminalFr8Core.Actions
             //build a controls crate to render the pane
             var configurationCrate = CreateControlsCrate();
             await FillFileSelectorSource(configurationCrate, "FileSelector");
+            configurationCrate.Availability = AvailabilityType.Always;
             Storage.Add(configurationCrate);
         }
 
