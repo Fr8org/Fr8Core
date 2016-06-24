@@ -9,7 +9,7 @@ using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalBaseTests.Actions
 {
-    public class terminalActivityMock_v1 : BaseTerminalActivity
+    public class terminalActivityMock_v1 : ExplicitTerminalActivity
     {
         public override Task Initialize()
         {

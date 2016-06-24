@@ -17,7 +17,7 @@ using terminalUtilities.Twilio;
 
 namespace terminalTwilio.Activities
 {
-    public class Send_Via_Twilio_v1 : BaseTerminalActivity
+    public class Send_Via_Twilio_v1 : ExplicitTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {

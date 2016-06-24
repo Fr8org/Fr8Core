@@ -19,7 +19,7 @@ using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSign.Actions
 {
-    public class Send_DocuSign_Envelope_v2 : EnhancedDocuSignActivity<Send_DocuSign_Envelope_v2.ActivityUi>
+    public class Send_DocuSign_Envelope_v2 : DocuSignActivity<Send_DocuSign_Envelope_v2.ActivityUi>
     {
         private readonly IConfigRepository _configRepository;
 
@@ -81,8 +81,8 @@ namespace terminalDocuSign.Actions
         }
 
         private const string UserFieldsAndRolesCrateLabel = "Fields and Roles";
-        private const string advisoryName = "DocuSign Template Warning";
-        private const string advisoryContent = "In your selected template you have fields with default values. Those can be changes inside advanced DocuSign UI to frendlier label.";
+        private const string AdvisoryName = "DocuSign Template Warning";
+        private const string AdvisoryContent = "In your selected template you have fields with default values. Those can be changes inside advanced DocuSign UI to frendlier label.";
 
         public Send_DocuSign_Envelope_v2(ICrateManager crateManager, IDocuSignManager docuSignManager, IConfigRepository configRepository) 
             : base(crateManager, docuSignManager)
@@ -129,15 +129,15 @@ namespace terminalDocuSign.Actions
                 var advisoryCrate = Storage.CratesOfType<AdvisoryMessagesCM>().FirstOrDefault();
                 var currentAdvisoryResults = advisoryCrate == null ? new AdvisoryMessagesCM() : advisoryCrate.Content;
 
-                var advisory = currentAdvisoryResults.Advisories.FirstOrDefault(x => x.Name == advisoryName);
+                var advisory = currentAdvisoryResults.Advisories.FirstOrDefault(x => x.Name == AdvisoryName);
 
                 if (advisory == null)
                 {
-                    currentAdvisoryResults.Advisories.Add(new AdvisoryMessageDTO { Name = advisoryName, Content = advisoryContent });
+                    currentAdvisoryResults.Advisories.Add(new AdvisoryMessageDTO { Name = AdvisoryName, Content = AdvisoryContent });
                 }
                 else
                 {
-                    advisory.Content = advisoryContent;
+                    advisory.Content = AdvisoryContent;
                 }
 
                 Storage.Add(Crate.FromContent("Advisories", currentAdvisoryResults));

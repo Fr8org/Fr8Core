@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Net.Http;
-using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Dispatcher;
-using System.Web.Http.Routing;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.StructureMap;
+using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -23,7 +26,7 @@ namespace Fr8.TerminalBase.BaseClasses
         private IContainer _container;
         private IActivityStore _activityStore;
         private readonly TerminalDTO _terminal;
-
+        private IHubDiscoveryService _hubDiscovery;
         public IContainer Container => _container;
         public IActivityStore ActivityStore => _activityStore;
 
@@ -39,9 +42,11 @@ namespace Fr8.TerminalBase.BaseClasses
         {
             _container = new Container(StructureMapBootStrapper.LiveConfiguration);
             _activityStore = new ActivityStore(_terminal, _container);
-
+            
             _container.Configure(x => x.AddRegistry<TerminalBootstrapper.LiveMode>());
             _container.Configure(x => x.For<IActivityStore>().Use(_activityStore));
+
+            _hubDiscovery = _container.GetInstance<IHubDiscoveryService>();
 
             AutoMapperBootstrapper.ConfigureAutoMapper();
 
@@ -76,11 +81,7 @@ namespace Fr8.TerminalBase.BaseClasses
 
         protected virtual void StartHosting()
         {
-            Task.Run(() =>
-            {
-                BaseTerminalController curController = new BaseTerminalController(Container.GetInstance<IRestfulServiceClient>());
-                curController.AfterStartup(_activityStore.Terminal.Name ?? "terminal_" + Guid.NewGuid());
-            });
+
         }
 
         public abstract ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver);
@@ -88,7 +89,33 @@ namespace Fr8.TerminalBase.BaseClasses
 
         public IHttpController Create(HttpRequestMessage request, HttpControllerDescriptor controllerDescriptor, Type controllerType)
         {
-            return _container.GetInstance(controllerType) as IHttpController;
+            var childContainer = _container.CreateChildContainer();
+            Expression<Func<IContext, IHubCommunicator>> hubCommunicatorFactoryExpression;
+            
+            if (request.Headers.Contains("Fr8HubCallBackUrl") && request.Headers.Contains("Fr8HubCallbackSecret"))
+            {
+                var apiUrl = request.Headers.GetValues("Fr8HubCallBackUrl").First().TrimEnd('\\', '/') + $"/api/{CloudConfigurationManager.GetSetting("HubApiVersion")}";
+                var secret = request.Headers.GetValues("Fr8HubCallbackSecret").First();
+
+                _hubDiscovery.SetHubSecret(apiUrl, secret);
+                hubCommunicatorFactoryExpression = c => new DefaultHubCommunicator(c.GetInstance<IRestfulServiceClient>(), c.GetInstance<IHMACService>(), apiUrl, _activityStore.Terminal.PublicIdentifier, secret);
+            }
+            else
+            {
+                hubCommunicatorFactoryExpression = c => new DelayedHubCommunicator(c.GetInstance<IHubDiscoveryService>().GetMasterHubCommunicator());
+            }
+            
+            childContainer.Configure(x =>
+            {
+                x.For<IHubCommunicator>().Use(hubCommunicatorFactoryExpression).Singleton();
+                x.For<IContainer>().Use(childContainer);
+                x.For<IPushNotificationService>().Use<PushNotificationService>().Singleton();
+                x.For<PlanService>().Use<PlanService>().Singleton();
+            });
+            
+            request.RegisterForDispose(childContainer);
+
+            return childContainer.GetInstance(controllerType) as IHttpController;
         }
     }
 }

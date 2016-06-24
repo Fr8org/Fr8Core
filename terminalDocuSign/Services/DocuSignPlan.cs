@@ -17,6 +17,7 @@ using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
+using Fr8.TerminalBase.Services;
 using log4net;
 using StructureMap;
 using terminalDocuSign.Interfaces;
@@ -34,7 +35,7 @@ namespace terminalDocuSign.Services
         private readonly ICrateManager _crateManager;
         private readonly IDocuSignManager _docuSignManager;
         private readonly IDocuSignConnect _docuSignConnect;
-        private readonly IRestfulServiceClient _restfulServiceClient;
+        private readonly IHubEventReporter _eventReporter;
 
         private readonly string DevConnectName = "(dev) Fr8 Company DocuSign integration";
         private readonly string DemoConnectName = "(demo) Fr8 Company DocuSign integration";
@@ -42,12 +43,12 @@ namespace terminalDocuSign.Services
         private readonly string TemporaryConnectName = "int-tests-Fr8";
 
 
-        public DocuSignPlan(ICrateManager crateManager, IDocuSignManager docuSignManager, IDocuSignConnect docuSignConnect, IRestfulServiceClient restfulServiceClient)
+        public DocuSignPlan(ICrateManager crateManager, IDocuSignManager docuSignManager, IDocuSignConnect docuSignConnect, IHubEventReporter eventReporter)
         {
             _crateManager = crateManager;
             _docuSignManager = docuSignManager;
             _docuSignConnect = docuSignConnect;
-            _restfulServiceClient = restfulServiceClient;
+            _eventReporter = eventReporter;
         }
 
         /// <summary>
@@ -76,12 +77,12 @@ namespace terminalDocuSign.Services
             string prodUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultProductionUrl");
             string devUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultDevUrl");
             string demoUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultDemoUrl");
-
+            bool isSelfHosting = CloudConfigurationManager.GetSetting("terminalDocusign.NotSelfHosting") == null;
             string connectName = "";
             string connectId = "";
 
             Logger.Info($"CreateConnect terminalUrl {terminalUrl}");
-            if (!string.IsNullOrEmpty(terminalUrl))
+            if (!isSelfHosting)
             {
                 if (terminalUrl.Contains(devUrl, StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -136,9 +137,9 @@ namespace terminalDocuSign.Services
             }
         }
 
-        public async void CreateOrUpdatePolling(IHubCommunicator hubCommunicator, AuthorizationToken authToken)
+        public void CreateOrUpdatePolling(IHubCommunicator hubCommunicator, AuthorizationToken authToken)
         {
-            DocuSignPolling polling = new DocuSignPolling(_docuSignManager, _restfulServiceClient, _crateManager);
+            DocuSignPolling polling = new DocuSignPolling(_docuSignManager, _eventReporter);
             polling.SchedulePolling(hubCommunicator, authToken.ExternalAccountId);
         }
 
@@ -234,7 +235,7 @@ namespace terminalDocuSign.Services
             var monitorDocusignPlan = await hubCommunicator.CreatePlan(emptyMonitorPlan);
             var activityTemplates = await hubCommunicator.GetActivityTemplates(null);
             var recordDocusignEventsTemplate = GetActivityTemplate(activityTemplates, "Prepare_DocuSign_Events_For_Storage");
-            var storeMTDataTemplate = GetActivityTemplate(activityTemplates, "SaveToFr8Warehouse");
+            var storeMTDataTemplate = GetActivityTemplate(activityTemplates, "Save_To_Fr8_Warehouse");
             Debug.WriteLine($"Calling create and configure with params {recordDocusignEventsTemplate} {hubCommunicator.UserId} {monitorDocusignPlan}");
             await hubCommunicator.CreateAndConfigureActivity(recordDocusignEventsTemplate.Id, "Record DocuSign Events", 1, monitorDocusignPlan.Plan.StartingSubPlanId, false, new Guid(authToken.Id));
             var storeMTDataActivity = await hubCommunicator.CreateAndConfigureActivity(storeMTDataTemplate.Id, "Save To Fr8 Warehouse", 2, monitorDocusignPlan.Plan.StartingSubPlanId);

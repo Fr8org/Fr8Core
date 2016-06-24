@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+﻿using System.Linq;
+using System.Web.Http;
 using System.Web.Http.Description;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.TerminalBase.Services;
@@ -8,10 +9,12 @@ namespace Fr8.TerminalBase.BaseClasses
     public abstract class DefaultTerminalController : ApiController
     {
         private readonly IActivityStore _activityStore;
+        private readonly IHubDiscoveryService _hubDiscovery;
 
-        protected DefaultTerminalController(IActivityStore activityStore)
+        protected DefaultTerminalController(IActivityStore activityStore, IHubDiscoveryService hubDiscovery)
         {
             _activityStore = activityStore;
+            _hubDiscovery = hubDiscovery;
         }
 
         [HttpGet]
@@ -22,8 +25,16 @@ namespace Fr8.TerminalBase.BaseClasses
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM
             {
                 Definition = _activityStore.Terminal,
-                Activities = _activityStore.GetAllActivities()
+                Activities = _activityStore.GetAllTemplates()
             };
+
+            if (Request.Headers.Contains("Fr8HubCallBackUrl") && Request.Headers.Contains("Fr8HubCallbackSecret"))
+            {
+                var hubUrl = Request.Headers.GetValues("Fr8HubCallBackUrl").First();
+                var secret = Request.Headers.GetValues("Fr8HubCallbackSecret").First();
+
+                _hubDiscovery.SetHubSecret(hubUrl, secret);
+            }
 
             return Json(curStandardFr8TerminalCM);
         }

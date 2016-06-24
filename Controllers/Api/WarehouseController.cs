@@ -32,10 +32,31 @@ namespace HubWeb.Controllers
                 return Ok(foundObjects);
             }
         }
-        
+
+
         [Fr8HubWebHMACAuthenticate]
         [HttpPost]
-        public IHttpActionResult Add(CrateStorageDTO crateStorageDto)
+        public IHttpActionResult Delete(QueryDTO query)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var mtTypeRef = uow.MultiTenantObjectRepository.FindTypeReference(query.Name);
+                var queryBuilder = MTSearchHelper.CreateQueryProvider(mtTypeRef.ClrType);
+                queryBuilder.Delete(
+                    uow,
+                    User.Identity.GetUserId(),
+                    query.Criteria
+                    );
+
+                uow.SaveChanges();
+
+                return Ok();
+            }
+        }
+
+        [Fr8HubWebHMACAuthenticate]
+        [HttpPost]
+        public IHttpActionResult Post(CrateStorageDTO crateStorageDto)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

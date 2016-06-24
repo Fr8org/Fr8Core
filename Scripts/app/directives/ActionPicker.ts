@@ -45,7 +45,7 @@ module dockyard.directives {
                             var leftPositionOfContainer = parseInt(scrollToElement.closest('.action-group').css('left'), 10);
                             var windowSize = $(window).width(); // substracted from total width since we want activity to be shown center of the screen
 
-                            $element.closest('.route-builder-container').animate({
+                            $element.closest('.sub-plan-container').animate({
                                 scrollLeft: leftPositionOfElement + leftPositionOfContainer - (windowSize / 2)
                             }, 100);
                         }, 500);

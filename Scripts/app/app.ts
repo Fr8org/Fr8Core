@@ -26,7 +26,6 @@ var app = angular.module("app", [
     "angularResizable",
     "mdColorPicker",
     "md.data.table",
-    "fr8.collapse",
     "popoverToggle"
 ]);
 

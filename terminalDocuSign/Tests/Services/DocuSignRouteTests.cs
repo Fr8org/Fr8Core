@@ -36,7 +36,7 @@ namespace terminalDocuSign.Tests.Services
         {
             var hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
 
-            hubCommunicator.Configure("terminalDocuSign", userId);
+            hubCommunicator.Authorize(userId);
 
             return hubCommunicator;
         }

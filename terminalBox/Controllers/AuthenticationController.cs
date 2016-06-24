@@ -7,23 +7,21 @@ using System.Net;
 using System.Text;
 using System.Web;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
-using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
 using terminalBox.Infrastructure;
 
 namespace terminalBox.Controllers
 {
     [RoutePrefix("authentication")]
-    public class AuthenticationController : BaseTerminalController
+    public class AuthenticationController : ApiController
     {
-        private const string CurTerminal = "terminalBox";
+        private readonly IHubEventReporter _eventReporter;
 
-
-        public AuthenticationController(IRestfulServiceClient restfulServiceClient) 
-            : base(restfulServiceClient)
+        public AuthenticationController(IHubEventReporter eventReporter)
         {
+            _eventReporter = eventReporter;
         }
 
         //https://account.box.com/api/oauth2/authorize?response_type=code&client_id=MY_CLIENT_ID&state=security_token%3DKnhMJatFipTAnM0nHlZA
@@ -96,7 +94,8 @@ namespace terminalBox.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(CurTerminal, ex);
+                await _eventReporter.ReportTerminalError(ex);
+
                 return await Task.FromResult(
                     new AuthorizationTokenDTO()
                     {

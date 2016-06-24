@@ -9,6 +9,7 @@ module dockyard.Fr8Events {
     }
     export enum DesignerHeader {
         PLAN_EXECUTION_STARTED = <any>"planExecutionStarted",
+        PLAN_EXECUTION_FAILED = <any>"planExecutionFailed",
         PLAN_EXECUTION_STOPPED = <any>"planExecutionStopped",
         PLAN_EXECUTION_COMPLETED_REARRANGE_PLANS = <any>"planExecutionCompleted-rearrangePlans"
     }    

@@ -2,24 +2,22 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using Fr8.Infrastructure.Interfaces;
-using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using terminalYammer.Interfaces;
 using terminalYammer.Services;
 
 namespace terminalYammer.Controllers
 {
     [RoutePrefix("authentication")]
-    public class AuthenticationController : BaseTerminalController
+    public class AuthenticationController : ApiController
     {
-        private const string curTerminal = "terminalYammer";
-
         private readonly IYammer _yammerIntegration;
+        private readonly IHubEventReporter _eventReporter;
 
-        public AuthenticationController(Yammer yammer, IRestfulServiceClient restfulServiceClient) 
-            : base(restfulServiceClient)
+        public AuthenticationController(Yammer yammer, IHubEventReporter eventReporter)
         {
             _yammerIntegration = yammer;
+            _eventReporter = eventReporter;
         }
 
         [HttpPost]
@@ -67,7 +65,7 @@ namespace terminalYammer.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerminal, ex,externalAuthDTO.Fr8UserId);
+                await _eventReporter.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {

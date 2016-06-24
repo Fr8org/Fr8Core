@@ -1,4 +1,9 @@
-﻿using StructureMap;
+﻿using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Services;
+using PlanDirectory.Interfaces;
+using StructureMap;
 using StructureMap.Configuration.DSL;
 
 namespace PlanDirectory.Infrastructure
@@ -12,6 +17,16 @@ namespace PlanDirectory.Infrastructure
                 For<IAuthTokenManager>().Use<AuthTokenManager>();
                 For<IPlanTemplate>().Use<PlanTemplate>();
                 For<ISearchProvider>().Use<SearchProvider>();
+                For<ITagGenerator>().Use<TagGenerator>();
+                For<IHubCommunicator>().Use(
+                    x => new DefaultHubCommunicator(
+                        ObjectFactory.GetInstance<IRestfulServiceClient>(),
+                        ObjectFactory.GetInstance<IHMACService>(),
+                        CloudConfigurationManager.GetSetting("HubApiBaseUrl"),
+                        "PlanDirectory",
+                        CloudConfigurationManager.GetSetting("PlanDirectorySecret")
+                    )
+                );
             }
         }
 

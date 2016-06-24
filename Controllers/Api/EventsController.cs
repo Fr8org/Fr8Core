@@ -7,6 +7,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities.Logging;
 using StructureMap;
 using Hub.Interfaces;
+using HubWeb.Infrastructure_HubWeb;
 
 namespace HubWeb.Controllers
 {
@@ -35,6 +36,7 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
+        [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> Post(CrateDTO raw)
         {
             //check if its not null

@@ -74,6 +74,11 @@ namespace Data.Infrastructure.StructureMap
 
         public void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType)
         {
+            SetDefaultObjectSecurity(dataObjectId.ToString(), dataObjectType);
+        }
+
+        public void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType)
+        {
             var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
             securityStorageProvider.SetDefaultObjectSecurity(GetCurrentUser(), dataObjectId.ToString(), dataObjectType, Guid.Empty, null);
         }

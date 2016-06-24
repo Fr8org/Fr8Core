@@ -2,10 +2,9 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.Interfaces;
 using Microsoft.AspNet.Identity;
-using Newtonsoft.Json.Linq;
 using StructureMap;
 using Hub.Infrastructure;
 using PlanDirectory.Infrastructure;
@@ -16,14 +15,19 @@ namespace PlanDirectory.Controllers.Api
     [RoutePrefix("plan_templates")]
     public class PlanTemplatesController : ApiController
     {
+        private readonly IHubCommunicator _hubCommunicator;
         private readonly IPlanTemplate _planTemplate;
         private readonly ISearchProvider _searchProvider;
-
+        private readonly ITagGenerator _tagGenerator;
 
         public PlanTemplatesController()
         {
+            _hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
+            _hubCommunicator.Authorize(User.Identity.GetUserId());
+
             _planTemplate = ObjectFactory.GetInstance<IPlanTemplate>();
             _searchProvider = ObjectFactory.GetInstance<ISearchProvider>();
+            _tagGenerator = ObjectFactory.GetInstance<ITagGenerator>();
         }
 
         [HttpPost]
@@ -36,7 +40,12 @@ namespace PlanDirectory.Controllers.Api
                 var fr8AccountId = User.Identity.GetUserId();
 
                 var planTemplateCM = await _planTemplate.CreateOrUpdate(fr8AccountId, dto);
+
+                var tags = await _tagGenerator.GetTags(planTemplateCM, fr8AccountId);
+
                 await _searchProvider.CreateOrUpdate(planTemplateCM);
+
+                //TODO: update page definitions
 
                 return Ok();
             });
@@ -83,7 +92,7 @@ namespace PlanDirectory.Controllers.Api
                 PageStart = pageStart.GetValueOrDefault(),
                 PageSize = pageSize.GetValueOrDefault()
             };
-            
+
             var searchResult = await _searchProvider.Search(searchRequest);
 
             return Ok(searchResult);
@@ -97,25 +106,22 @@ namespace PlanDirectory.Controllers.Api
             return ExceptionWrapper(async () =>
             {
                 var fr8AccountId = User.Identity.GetUserId();
-
-                var hmacService = ObjectFactory.GetInstance<IHMACService>();
-                var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
-
                 var planTemplateDTO = await _planTemplate.Get(fr8AccountId, id);
 
-                var uri = new Uri(CloudConfigurationManager.GetSetting("HubUrl") + "/api/v1/plans/load");
-                var headers = await hmacService.GenerateHMACHeader(
-                    uri,
-                    "PlanDirectory",
-                    CloudConfigurationManager.GetSetting("PlanDirectorySecret"),
-                    User.Identity.GetUserId(),
-                    planTemplateDTO.PlanContents
+                if (planTemplateDTO == null)
+                {
+                    throw new ApplicationException("Unable to find PlanTemplate in MT-database.");
+                }
+
+                var plan = await _hubCommunicator.LoadPlan(planTemplateDTO.PlanContents);
+
+                return Ok(
+                    new
+                    {
+                        RedirectUrl = CloudConfigurationManager.GetSetting("HubApiBaseUrl").Replace("/api/v1/", "")
+                            + "/dashboard/plans/" + plan.Id.ToString() + "/builder?viewMode=plan"
+                    }
                 );
-
-                var plan = await client.PostAsync<JToken, PlanEmptyDTO>(
-                    uri, planTemplateDTO.PlanContents, headers: headers);
-
-                return Ok(new { RedirectUrl = CloudConfigurationManager.GetSetting("HubUrl") + "/dashboard/plans/" + plan.Id.ToString() + "/builder?viewMode=plan" });
             });
         }
 

@@ -516,6 +516,8 @@ namespace Hub.Services
         {
             var activationResults = await Activate(planId, false);
             string userName = Thread.CurrentPrincipal?.Identity?.Name;
+            var currentUserId = _security.GetCurrentUser();
+
 
             if (activationResults.ValidationErrors.Count > 0)
             {
@@ -547,7 +549,7 @@ namespace Hub.Services
 
                     _pusher.NotifyUser($"Validation failed for activities: {activitiesList} from plan \"{plan.Name}\". See activity configuration pane for details.",
                         NotificationChannel.GenericFailure,
-                        userName);
+                        currentUserId);
                 }
 
                 return new ContainerDTO
@@ -589,9 +591,11 @@ namespace Hub.Services
                             // Just return empty container
                             if (currentPlanType == PlanType.Monitoring)
                             {
-                                _pusher.NotifyUser($"Plan \"{plan.Name}\" activated. It will wait and respond to specified external events.",
+                                _pusher.NotifyUser(new { Message = $"Plan \"{plan.Name}\" activated. It will wait and respond to specified external events." ,
+                                                         Collapsed = false
+                                                        },
                                     NotificationChannel.GenericSuccess,
-                                    userName);
+                                    currentUserId);
 
                                 return new ContainerDTO
                                 {
@@ -604,9 +608,11 @@ namespace Hub.Services
                         }
                         else
                         {
-                            _pusher.NotifyUser($"Continue execution of the supsended Plan \"{plan.Name}\"",
-                                NotificationChannel.GenericSuccess,
-                                userName);
+                            _pusher.NotifyUser(new  {   Message = $"Continue execution of the supsended Plan \"{plan.Name}\"",
+                                                        Collapsed = false
+                                                    },
+                                                NotificationChannel.GenericSuccess,
+                                                currentUserId);
 
                             await _containerService.Continue(uow, container);
                         }
@@ -616,11 +622,13 @@ namespace Hub.Services
 
                         if (container.State != State.Failed)
                         {
-                            _pusher.NotifyUser($"Complete processing for Plan \"{plan.Name}\".{responseMsg}", NotificationChannel.GenericSuccess, userName);
+                        _pusher.NotifyUser(new {    Message = $"Complete processing for Plan \"{plan.Name}\".{responseMsg}",
+                                                    Collapsed = false
+                                                }, NotificationChannel.GenericSuccess, currentUserId);
                         }
                         else
                         {
-                            _pusher.NotifyUser($"Failed executing plan \"{plan.Name}\"", NotificationChannel.GenericFailure, userName);
+                            _pusher.NotifyUser($"Failed executing plan \"{plan.Name}\"", NotificationChannel.GenericFailure, currentUserId);
                         }
 
                         var containerDTO = Mapper.Map<ContainerDTO>(container);
@@ -649,14 +657,14 @@ namespace Hub.Services
                         exception.ContainerDTO.CurrentPlanType = currentPlanType;
                     }
 
-                    NotifyWithErrorMessage(exception, plan, userName, exception.ErrorMessage);
+                    NotifyWithErrorMessage(exception, plan, currentUserId, exception.ErrorMessage);
 
                     throw;
                 }
                 catch (Exception e)
                 {
                     var errorMessage = "An internal error has occured. Please, contact the administrator.";
-                    NotifyWithErrorMessage(e, plan, userName, errorMessage);
+                    NotifyWithErrorMessage(e, plan, currentUserId, errorMessage);
                     throw;
                 }
                 finally
@@ -692,7 +700,7 @@ namespace Hub.Services
             return responseMsg;
         }
 
-        private void NotifyWithErrorMessage(Exception exception, PlanDO planDO, string username, string errorMessage = "")
+        private void NotifyWithErrorMessage(Exception exception, PlanDO planDO, string userId, string errorMessage = "")
         {
             var messageToNotify = string.Empty;
             if (!string.IsNullOrEmpty(errorMessage))
@@ -701,14 +709,14 @@ namespace Hub.Services
             }
 
             var message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, messageToNotify);
-            _pusher.NotifyUser(message, NotificationChannel.GenericFailure, username);
+            _pusher.NotifyUser(message, NotificationChannel.GenericFailure, userId);
 
         }
 
 
         // We don't have place in activity configuration pane to display activity-wide configuration errors that are not binded to specific controls.
         // Report them via Action Stream.
-        private void ReportGenericValidationErrors(string userName, string activityLabel, string planName, ValidationErrorsDTO validationErrors)
+        private void ReportGenericValidationErrors(string userId, string activityLabel, string planName, ValidationErrorsDTO validationErrors)
         {
             var genericErrors = new List<string>();
 
@@ -734,7 +742,7 @@ namespace Hub.Services
 
                 _pusher.NotifyUser($"Validation of activity '{activityLabel}' from plan \"{planName}\" failed: {errors}",
                        NotificationChannel.GenericFailure,
-                       userName);
+                       userId);
             }
         }
 
@@ -821,7 +829,7 @@ namespace Hub.Services
                 errorMessage += ex.Message;
             }
 
-            _pusher.NotifyUser(errorMessage, NotificationChannel.GenericFailure, user.UserName);
+            _pusher.NotifyUser(errorMessage, NotificationChannel.GenericFailure, user.Id);
         }
     }
 }
