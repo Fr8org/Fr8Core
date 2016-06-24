@@ -116,14 +116,15 @@ namespace terminalGoogle.Actions
             //get form id
             var googleFormControl = ActivityUI.FormsList;
             var formId = googleFormControl.Value;
-            if (string.IsNullOrEmpty(formId))
-                throw new ArgumentNullException("Google Form selected is empty. Please select google form to receive.");
-
-            //need to get all form fields and mark them available for runtime
-            var formFields = await _googleAppsScript.GetGoogleFormFields(googleAuth, formId);
 
             CrateSignaller.ClearAvailableCrates();
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel).AddFields(formFields.Select(x => new FieldDTO() { Name = x.Title, Label = x.Title }).ToList());
+
+            if (!string.IsNullOrEmpty(formId))
+            {
+                //need to get all form fields and mark them available for runtime
+                var formFields = await _googleAppsScript.GetGoogleFormFields(googleAuth, formId);
+                CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel).AddFields(formFields.Select(x => new FieldDTO() {Name = x.Title, Label = x.Title}).ToList());
+            }
         }
 
         public override async Task Activate()
