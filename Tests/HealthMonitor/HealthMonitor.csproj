@@ -357,6 +357,14 @@
       <Project>{2b78433b-ba79-470b-bef6-dba5c1904865}</Project>
       <Name>PlanDirectory</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\terminalFacebookTests\terminalFacebookTests.csproj">
+      <Project>{380c028e-2623-4207-b8af-f21b92183ed8}</Project>
+      <Name>terminalFacebookTests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalFacebook\terminalFacebook.csproj">
+      <Project>{c982a6fe-6fd4-47fa-a69d-91ffa80fedaa}</Project>
+      <Name>terminalFacebook</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Fr8.Testing\Fr8.Testing.csproj">
       <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
       <Name>Fr8.Testing</Name>

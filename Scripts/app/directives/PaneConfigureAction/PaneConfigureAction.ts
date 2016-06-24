@@ -12,6 +12,7 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_ReloadAction,
         PaneConfigureAction_SetSolutionMode,
         PaneConfigureAction_ConfigureCallResponse,
+        PaneConfigureAction_ConfigureCallResponseFinished,
         PaneConfigureAction_AuthFailure,
         PaneConfigureAction_ExecutePlan,
         PaneConfigureAction_ConfigureFocusElement,
@@ -399,6 +400,10 @@ module dockyard.directives.paneConfigureAction {
 
                 // Find the onClick event object
                 if (this.getControlEventHandler(eventArgs.field, 'onClick')) {
+                    if (eventArgs.field.name === 'AuthUnsuccessfulButton') {
+                        this.AuthService.enableAuthentication((<IPaneConfigureActionScope>event.currentScope).currentAction.id);
+                    }
+
                     if (this.crateHelper.hasControlListCrate(scope.currentAction.crateStorage)) {
                         this.crateHelper.mergeControlListCrate(
                             scope.currentAction.configurationControls,
@@ -590,7 +595,9 @@ module dockyard.directives.paneConfigureAction {
 
                     this.$scope.currentAction.configurationControls = new model.ControlsList();
                     // startAuthentication($scope.currentAction.id);
-                    if (!(<any>authCrate.contents).Revocation) {
+                    if (!(<any>authCrate.contents).Revocation
+                        && !this.AuthService.isAuthenticationCanceled(this.$scope.currentAction.id)) {
+
                         this.AuthService.enqueue(this.$scope.currentAction);
 
                         var errorText = 'Please provide credentials to access your desired account.';
@@ -600,20 +607,27 @@ module dockyard.directives.paneConfigureAction {
                         this.$scope.currentAction.configurationControls.fields = [control];
                     }
                     else {
-                        var errorText = 'Authentication has expired, please try again.';
-                        var label = new model.TextBlock(errorText, '');
-                        label.name = 'AuthUnsuccessfulLabel';
-                        label.class = 'TextBlockClass';
+                        this.$scope.currentAction.configurationControls.fields = [];
+                        var authCancelled = this.AuthService.isAuthenticationCanceled(this.$scope.currentAction.id);
+
+                        if (!authCancelled) {
+                            var errorText = 'Authentication has expired, please try again.';
+                            var label = new model.TextBlock(errorText, '');
+                            label.name = 'AuthUnsuccessfulLabel';
+                            label.class = 'TextBlockClass';
+
+                            this.$scope.currentAction.configurationControls.fields.push(label);
+                        }
 
                         var onClickEvent = new model.ControlEvent();
                         onClickEvent.name = 'onClick';
                         onClickEvent.handler = 'requestConfig';
 
-                        var button = new model.Button('Try authenticate again');
+                        var button = new model.Button(!authCancelled ? 'Try authenticate again' : 'Authentication unsuccessful, try again');
                         button.name = 'AuthUnsuccessfulButton';
-                    button.events = [onClickEvent];
+                        button.events = [onClickEvent];
 
-                        this.$scope.currentAction.configurationControls.fields = [label, button];
+                        this.$scope.currentAction.configurationControls.fields.push(button);
                         this.ignoreConfigurationChange = true;
                     }
                 }
