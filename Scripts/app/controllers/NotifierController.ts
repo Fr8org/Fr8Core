@@ -53,7 +53,7 @@ module dockyard.controllers.NotifierController {
             UserService.getCurrentUser().$promise.then(data => {
                 $scope.eventList = [];
 
-                var channel: string = data.emailAddress;
+                var channel: string = data.id;
 
                 PusherNotifierService.bindEventToChannel(channel, dockyard.services.pusherNotifierSuccessEvent, (data: any) => {
                     var event = new Fr8InternalEvent();

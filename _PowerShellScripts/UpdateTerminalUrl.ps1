@@ -17,7 +17,14 @@ IF (EXISTS (SELECT *
                  WHERE TABLE_SCHEMA = 'dbo' 
                  AND  TABLE_NAME = 'TerminalRegistration'))
 BEGIN
-    UPDATE TerminalRegistration SET [Endpoint] = '$newHostname" + ":' + RIGHT([Endpoint], 5)
+	 UPDATE TerminalRegistration SET [Endpoint] = 
+			( '$newHostname' +
+		(CASE when CHARINDEX (':', REVERSE ([Endpoint])) = 0
+		    then ''
+		else 
+			RIGHT ([Endpoint], CHARINDEX (':', REVERSE ([Endpoint])))
+		END))
+		where UserId is null
 END";
 
 
