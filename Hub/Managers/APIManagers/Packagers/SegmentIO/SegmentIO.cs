@@ -20,8 +20,13 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
 //Anonymous user plays the video
 //Anonymous user signs in as 'rjrudman@gmail.com'.
 //When viewing the profile for 'rjrudman@gmail.com' - the first two actions are properly retrieved.
-//Also - when submitting the 'Try it out' form, we link them to the user which is generated for that email. Although it's not perfect (they can enter any email) - it helps give us an idea of who's who. From then on, all actions they've done in the past and future will be aggregated to the submitted email (as well as any other accounts they register, assuming cookies aren't cleared, which we can't do anything about. Aggregation only works for the most recently used account, however).
-//Still working through updating our templated emails. I've taken advantage of the token authorization, which automatically logs them in when clicking on it - so the tracking works better. This also works regardless of them having cookies or not
+//Also - when submitting the 'Try it out' form, we link them to the user which is generated for that email. 
+//Although it's not perfect (they can enter any email) - it helps give us an idea of who's who. 
+//From then on, all actions they've done in the past and future will be aggregated to the submitted email 
+//(as well as any other accounts they register, assuming cookies aren't cleared, which we can't do anything about. 
+//Aggregation only works for the most recently used account, however).
+//Still working through updating our templated emails. I've taken advantage of the token authorization, which automatically logs them in when clicking on it - so the tracking works better. 
+//This also works regardless of them having cookies or not
 //The basic work is now done - to add more tracking, we just need to add more analytics.track('someEvent') - the rest of the identify and aliasing should be done automatically.
 //Server side, we have the following methods:
 //void Identify(String userID);
@@ -46,7 +51,7 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
             _fr8Account = fr8Account;
         }
 
-        public void Identify(String userID)
+        public void Identify(string userID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -54,7 +59,7 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
             }
         }
 
-        private Dictionary<String, object> GetProperties(Fr8AccountDO fr8AccountDO)
+        private Dictionary<string, object> GetProperties(Fr8AccountDO fr8AccountDO)
         {
             return new Dictionary<string, object>
             {
@@ -78,7 +83,7 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
             Track(fr8AccountDO, "User Logged In", props);
         }
 
-        public void Track(Fr8AccountDO fr8AccountDO, String eventName, String action, Dictionary<String, object> properties = null)
+        public void Track(Fr8AccountDO fr8AccountDO, string eventName, string action, Dictionary<string, object> properties = null)
         {
             if (properties == null)
                 properties = new Dictionary<string, object>();
@@ -87,7 +92,7 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
             Track(fr8AccountDO, eventName, properties);
         }
 
-        public void Track(Fr8AccountDO fr8AccountDO, String eventName, Dictionary<String, object> properties = null)
+        public void Track(Fr8AccountDO fr8AccountDO, string eventName, Dictionary<string, object> properties = null)
         {
             if (Analytics.Client == null)
                 return;

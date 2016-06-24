@@ -1,11 +1,59 @@
-﻿@model HubWeb.ViewModels.RegistrationVM
+﻿@using Fr8.Infrastructure.Utilities
+@model HubWeb.ViewModels.RegistrationVM
 @{
     ViewBag.Title = "Register an Account";
 }
+<!-- start Mixpanel -->
+<script type="text/javascript">
+        window.analytics = window.analytics || [], window.analytics.methods = ["identify", "group", "track", "page", "pageview", "alias", "ready", "on", "once", "off", "trackLink", "trackForm", "trackClick", "trackSubmit"], window.analytics.factory = function (t) { return function () { var a = Array.prototype.slice.call(arguments); return a.unshift(t), window.analytics.push(a), window.analytics } }; for (var i = 0; i < window.analytics.methods.length; i++) { var key = window.analytics.methods[i]; window.analytics[key] = window.analytics.factory(key) } window.analytics.load = function (t) { if (!document.getElementById("analytics-js")) { var a = document.createElement("script"); a.type = "text/javascript", a.id = "analytics-js", a.async = !0, a.src = ("https:" === document.location.protocol ? "https://" : "http://") + "cdn.segment.io/analytics.js/v1/" + t + "/analytics.min.js"; var n = document.getElementsByTagName("script")[0]; n.parentNode.insertBefore(a, n) } }, window.analytics.SNIPPET_VERSION = "2.0.9",
+        window.analytics.load("@(new ConfigRepository().Get("SegmentWriteKey"))");
+    // mixpanel stub and initialization
+    (function (e, b) {
+        if (!b.__SV) {
+            var a, f, i, g; window.mixpanel = b; b._i = []; b.init = function (a, e, d) {
+                function f(b, h) { var a = h.split("."); 2 == a.length && (b = b[a[0]], h = a[1]); b[h] = function () { b.push([h].concat(Array.prototype.slice.call(arguments, 0))) } } var c = b; "undefined" !== typeof d ? c = b[d] = [] : d = "mixpanel"; c.people = c.people || []; c.toString = function (b) { var a = "mixpanel"; "mixpanel" !== d && (a += "." + d); b || (a += " (stub)"); return a }; c.people.toString = function () { return c.toString(1) + ".people (stub)" }; i = "disable track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config people.set people.set_once people.increment people.append people.track_charge people.clear_charges people.delete_user".split(" ");
+                for (g = 0; g < i.length; g++) f(c, i[g]); b._i.push([a, e, d])
+            }; b.__SV = 1.2; a = e.createElement("script"); a.type = "text/javascript"; a.async = !0; a.src = ("https:" === e.location.protocol ? "https:" : "http:") + '//cdn.mxpnl.com/libs/mixpanel-2.2.min.js'; f = e.getElementsByTagName("script")[0]; f.parentNode.insertBefore(a, f)
+        }
+    })(document, window.mixpanel || []);
 
+    var callbacks = [];
+    var mixpanelIsLoaded = false;
+    var withMixpanel = function (callback) {
+        callbacks.push(callback);
+        flushQueue();
+    }
+
+    var flushQueue = function () {
+        if (mixpanelIsLoaded) {
+            for (var i = 0; i < callbacks.length; i++) {
+                callbacks[i]();
+            }
+        }
+    }
+
+    var mixpanelLoadedCallback = function () {
+        mixpanelIsLoaded = true;
+        flushQueue();
+    }
+
+    // now you can guarantee that mixpanel has been fully initialized
+    withMixpanel(function () {
+        alert(mixpanel.get_distinct_id());
+    })
+
+    withMixpanel(function () {
+        mixpanel.track('boom');
+    })
+
+    mixpanel.init('f991d4ab992d65e87e7f05bb44244f77');
+    
+
+</script>
+<!-- end Mixpanel -->
 <link href="/Content/templates/metronic/assets/global/css/components.css" id="style_components" rel="stylesheet" type="text/css" />
 <link href="/Content/templates/metronic/assets/admin/layout3/css/layout.css" rel="stylesheet" type="text/css" />
-<link rel="shortcut icon" type="image/x-icon" href="/Content/img/favicon.ico"/>
+<link rel="shortcut icon" type="image/x-icon" href="/Content/img/favicon.ico" />
 @Html.Partial("~/Views/DockyardAccount/_HeaderPartial.cshtml")
 <div class="container-fluid">
     <div class="row-fluid">
@@ -48,6 +96,8 @@
                             @Html.LabelFor(m => m.OrganizationName, new { @class = "col-md-3 control-label" })
                             <div class="col-md-4" style="padding-top:12px">
                                 @Html.TextBoxFor(m => m.OrganizationName, new { @class = "form-control" })
+                                @* This is the required field to pass AnonimousId to the backend *@
+                                @Html.HiddenFor(m => m.AnonimousId)
                             </div>
                         </div>
                         <div class="form-group">
@@ -58,10 +108,18 @@
                     </div>
                 }
             </div>
-        </div>        
+        </div>
     </div>
 </div>
 
 @section Scripts {
     @Scripts.Render("~/bundles/js/jqueryvalidate")
 }
+
+<script type="text/javascript">
+    //this makes call required for Mixpanel that we used inside Segment
+    window.analytics.ready(function () {
+        var anonId = mixpanel.get_distinct_id();
+        document.getElementById("AnonimousId").value = anonId;
+    });
+</script>

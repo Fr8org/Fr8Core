@@ -74,7 +74,7 @@ namespace HubWeb
             {
                 Fr8.Infrastructure.Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
                 var segmentWriteKey =
-                    Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey");
+                    new ConfigRepository().Get("SegmentWriteKey");
                 if (!segmentWriteKey.IsNullOrEmpty())
                     Analytics.Initialize(segmentWriteKey);
             }
