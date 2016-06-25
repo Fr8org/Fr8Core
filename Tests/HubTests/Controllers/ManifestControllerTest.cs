@@ -183,12 +183,10 @@ namespace HubTests.Controllers
             ////Assert
             Assert.NotNull(fieldsList);
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("MessageID")), "MessageID Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("References")), "References Not Found");
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Subject")), "Subject Not Found");
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("HtmlText")), "HtmlText Not Found");
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("PlainText")), "PlainText Not Found");
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("DateReceived")), "DateReceived Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("EmailStatus")), "EmailStatus Not Found");
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("EmailFromName")), "EmailFromName Not Found");
         }
 

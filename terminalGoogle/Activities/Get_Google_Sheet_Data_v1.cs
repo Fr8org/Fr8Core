@@ -25,7 +25,7 @@ namespace terminalGoogle.Activities
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             MinPaneWidth = 300,
-            WebService = TerminalData.WebServiceDTO,
+            WebService = TerminalData.GooogleWebServiceDTO,
             Tags = "Table Data Generator"
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

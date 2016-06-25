@@ -12,6 +12,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Services;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace terminalDocuSign.Services
 {
@@ -20,7 +21,7 @@ namespace terminalDocuSign.Services
         private readonly IDocuSignManager _docuSignManager;
         private readonly IHubEventReporter _reporter;
 
-        public DocuSignPolling(IDocuSignManager docuSignManager,  IHubEventReporter reporter)
+        public DocuSignPolling(IDocuSignManager docuSignManager, IHubEventReporter reporter)
         {
             _docuSignManager = docuSignManager;
             _reporter = reporter;
@@ -32,10 +33,15 @@ namespace terminalDocuSign.Services
             hubCommunicator.ScheduleEvent(externalAccountId, pollingInterval);
         }
 
-        public async Task<bool> Poll(IHubCommunicator hubCommunicator, string externalAccountId, string pollingInterval)
+        public async Task<PollingDataDTO> Poll(IHubCommunicator hubCommunicator, PollingDataDTO pollingData)
         {
-            var authtoken = await hubCommunicator.GetAuthToken(externalAccountId);
-            if (authtoken == null) return false;
+            var authtoken = await hubCommunicator.GetAuthToken(pollingData.ExternalAccountId);
+            if (authtoken == null)
+            {
+                pollingData.Result = false;
+                return pollingData;
+            }
+
             var config = _docuSignManager.SetUp(authtoken);
             EnvelopesApi api = new EnvelopesApi((Configuration)config.Configuration);
             List<DocuSignEnvelopeCM_v2> changed_envelopes = new List<DocuSignEnvelopeCM_v2>();
@@ -43,7 +49,7 @@ namespace terminalDocuSign.Services
             // 1. Poll changes
 
             var changed_envelopes_info = api.ListStatusChanges(config.AccountId, new EnvelopesApi.ListStatusChangesOptions()
-            { fromDate = DateTime.UtcNow.AddMinutes(-Convert.ToInt32(pollingInterval)).ToString("o") });
+            { fromDate = DateTime.UtcNow.AddMinutes(-Convert.ToInt32(pollingData.PollingIntervalInMinutes)).ToString("o") });
             foreach (var envelope in changed_envelopes_info.Envelopes)
             {
                 var envelopeCM = new DocuSignEnvelopeCM_v2()
@@ -69,9 +75,10 @@ namespace terminalDocuSign.Services
             // 5. Push envelopes to event controller
             await PushEnvelopesToTerminalEndpoint(envelopesToNotify);
 
-            return true;
+            pollingData.Result = true;
+            return pollingData;
         }
-        
+
         private async Task PushEnvelopesToTerminalEndpoint(IEnumerable<DocuSignEnvelopeCM_v2> envelopesToNotify)
         {
             foreach (var envelope in envelopesToNotify)
@@ -84,7 +91,7 @@ namespace terminalDocuSign.Services
                     Manufacturer = "DocuSign",
                     ExternalAccountId = envelope.ExternalAccountId
                 };
-                
+
                 await _reporter.Broadcast(Crate.FromContent("Standard Event Report", eventReportContent));
             }
         }
