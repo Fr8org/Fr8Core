@@ -49,6 +49,7 @@ namespace terminalStatX
         protected override void RegisterActivities()
         {
             ActivityStore.RegisterActivity<Update_Stat_v1>(Update_Stat_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Monitor_Stat_Changes_v1>(Monitor_Stat_Changes_v1.ActivityTemplateDTO);
         }
     }
 }

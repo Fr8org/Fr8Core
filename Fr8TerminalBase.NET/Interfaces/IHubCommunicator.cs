@@ -29,7 +29,7 @@ namespace Fr8.TerminalBase.Interfaces
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, bool getLatestsVersionsOnly = false);
         //Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields);
         Task<AuthorizationToken> GetAuthToken(string authTokenId);
-        Task ScheduleEvent(string externalAccountId, string minutes, bool trigger_immediately = false);
+        Task ScheduleEvent(string externalAccountId, string minutes, bool triggerImmediately = false, string additionalConfigAttributes = null);
         Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload);
         Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload);
         Task<ActivityPayload> CreateAndConfigureActivity(Guid templateId, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null);

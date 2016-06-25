@@ -8,11 +8,11 @@ using terminalDocuSign.Services.New_Api;
 using terminalDocuSign.Infrastructure;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Services;
-using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace terminalDocuSign.Services
 {
@@ -21,7 +21,7 @@ namespace terminalDocuSign.Services
         private readonly IDocuSignManager _docuSignManager;
         private readonly IHubEventReporter _reporter;
 
-        public DocuSignPolling(IDocuSignManager docuSignManager, IHubEventReporter reporter)
+        public DocuSignPolling(IDocuSignManager docuSignManager,  IHubEventReporter reporter)
         {
             _docuSignManager = docuSignManager;
             _reporter = reporter;
@@ -41,7 +41,6 @@ namespace terminalDocuSign.Services
                 pollingData.Result = false;
                 return pollingData;
             }
-
             var config = _docuSignManager.SetUp(authtoken);
             EnvelopesApi api = new EnvelopesApi((Configuration)config.Configuration);
             List<DocuSignEnvelopeCM_v2> changed_envelopes = new List<DocuSignEnvelopeCM_v2>();
@@ -78,7 +77,7 @@ namespace terminalDocuSign.Services
             pollingData.Result = true;
             return pollingData;
         }
-
+        
         private async Task PushEnvelopesToTerminalEndpoint(IEnumerable<DocuSignEnvelopeCM_v2> envelopesToNotify)
         {
             foreach (var envelope in envelopesToNotify)
@@ -91,7 +90,7 @@ namespace terminalDocuSign.Services
                     Manufacturer = "DocuSign",
                     ExternalAccountId = envelope.ExternalAccountId
                 };
-
+                
                 await _reporter.Broadcast(Crate.FromContent("Standard Event Report", eventReportContent));
             }
         }
