@@ -13,7 +13,6 @@ using System.Web.Routing;
 using Data.Interfaces;
 using Fr8.Infrastructure.Utilities;
 using FluentValidation.WebApi;
-using Google.Apis.Util;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using Hub.Managers;
@@ -28,6 +27,7 @@ using Segment;
 using StructureMap;
 using Microsoft.ApplicationInsights.Extensibility;
 using Logger = Fr8.Infrastructure.Utilities.Logging.Logger;
+using System.Globalization;
 
 namespace HubWeb
 {
@@ -38,6 +38,10 @@ namespace HubWeb
 
         protected void Application_Start()
         {
+            if (CultureInfo.CurrentCulture.Parent.LCID != 9)
+            {
+                Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo(1033);
+            }
             Init(false);
         }
 

@@ -201,6 +201,7 @@
     <Compile Include="Data\DataTransferObjects\PlanTemplates\NodeTransitionDTO.cs" />
     <Compile Include="Data\DataTransferObjects\PlanTemplates\PlanNodeDescriptionDTO.cs" />
     <Compile Include="Data\DataTransferObjects\PlanTemplates\PlanTemplateDTO.cs" />
+    <Compile Include="Data\DataTransferObjects\PollingDataDTO.cs" />
     <Compile Include="Data\DataTransferObjects\ProfileDTO.cs" />
     <Compile Include="Data\DataTransferObjects\PublishPlanTemplateDTO.cs" />
     <Compile Include="Data\DataTransferObjects\QueryDTO.cs" />
