@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Configuration;
-using System.Data.SqlClient;
 using System.Linq;
 using NUnit.Core;
 using System.Text;
 using System.Diagnostics;
 using System.Collections.Generic;
-using System.IO;
 
 namespace HealthMonitor
 {
@@ -32,9 +30,6 @@ namespace HealthMonitor
             var doCleanUp = false;
             var smtpUsername = string.Empty;
             var smtpPassword = string.Empty;
-
-
-            args = new string[] {"--self-hosting", "--skip-local", "--connectionString", "\"Data Source=.;Initial Catalog=DockyardDB2;Integrated Security=SSPI;Transaction Binding=Explicit Unbind;\"" };
 
             if (args != null)
             {
