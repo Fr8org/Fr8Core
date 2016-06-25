@@ -116,7 +116,7 @@ namespace terminalStatX.Activities
 
                     CrateSignaller.ClearAvailableCrates();
                     CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel)
-                        .AddFields(CreateStatValueItemFields(StatXUtilities.MapToStatItemCrateManifest(firstStat)));
+                        .AddFields(CreateStatValueFields(StatXUtilities.MapToStatItemCrateManifest(firstStat)));
                 }
                 SelectedGroup = ActivityUI.ExistingGroupsList.Value;
             }
@@ -139,7 +139,7 @@ namespace terminalStatX.Activities
                     if (currentStat != null)
                     {
                         CrateSignaller.ClearAvailableCrates();
-                        CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel).AddFields(CreateStatValueItemFields(StatXUtilities.MapToStatItemCrateManifest(currentStat)));
+                        CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel).AddFields(CreateStatValueFields(StatXUtilities.MapToStatItemCrateManifest(currentStat)));
                     }
                 }
                 SelectedGroup = ActivityUI.ExistingGroupsList.Value;
@@ -172,22 +172,38 @@ namespace terminalStatX.Activities
                 TerminateHubExecution("Stat was not found in the payload.");
             }
 
-            Payload.Add(Crate.FromContent<StandardPayloadDataCM>(RunTimeCrateLabel, new StandardPayloadDataCM(CreateStatValueItemFields(stat))));
+            Payload.Add(Crate.FromContent<StandardPayloadDataCM>(RunTimeCrateLabel, new StandardPayloadDataCM(CreateStatKeyValueItems(stat))));
             
             return Task.FromResult(0);
         }
 
-        private List<FieldDTO> CreateStatValueItemFields(StatXItemCM stat)
+        private List<FieldDTO> CreateStatValueFields(StatXItemCM stat)
         {
             var fields = new List<FieldDTO>();
 
             if (stat.StatValueItems.Any())
             {
-                fields.AddRange(stat.StatValueItems.Select(item => new FieldDTO(item.Name, item.Value, AvailabilityType.RunTime) {SourceCrateLabel = RunTimeCrateLabel}));
+                fields.AddRange(stat.StatValueItems.Select(item => new FieldDTO(item.Name, AvailabilityType.RunTime)));
             }
             else
             {
-                fields.Add(new FieldDTO(stat.Id, stat.Value, AvailabilityType.RunTime) { SourceCrateLabel = RunTimeCrateLabel });
+                fields.Add(new FieldDTO(stat.Id, AvailabilityType.RunTime));
+            }
+
+            return fields;
+        }
+
+        private List<KeyValueDTO> CreateStatKeyValueItems(StatXItemCM stat)
+        {
+            var fields = new List<KeyValueDTO>();
+
+            if (stat.StatValueItems.Any())
+            {
+                fields.AddRange(stat.StatValueItems.Select(item => new KeyValueDTO(item.Name, item.Value)));
+            }
+            else
+            {
+                fields.Add(new KeyValueDTO(stat.Id, stat.Value));
             }
 
             return fields;

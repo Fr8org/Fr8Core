@@ -64,7 +64,7 @@ namespace terminalStatX.Activities
 
                 ExistingGroupStats = new DropDownList
                 {
-                    Label = "Choose a Stat from Selected Group",
+                    Label = "Update which Stat?",
                     Name = nameof(ExistingGroupStats),
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
@@ -114,12 +114,12 @@ namespace terminalStatX.Activities
                         {
                             foreach (var item in firstStat.StatItems)
                             {
-                                ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(item.Name, item.Name, requestUpstream: true));
+                                ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(item.Name, item.Name, requestUpstream: true, groupLabelText: "Available Stat Value Items"));
                             }
                         }
                         else
                         {
-                            ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(firstStat.Title, firstStat.Title, requestUpstream: true));
+                            ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(firstStat.Title, firstStat.Title, requestUpstream: true, groupLabelText: "Available Stat Value Items"));
                         }
                     }
                 }
@@ -148,12 +148,12 @@ namespace terminalStatX.Activities
                         {
                             foreach (var item in currentStat.StatItems)
                             {
-                                ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(item.Name, item.Name, requestUpstream: true));
+                                ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(item.Name, item.Name, requestUpstream: true, groupLabelText: "Available Stat Value Items"));
                             }
                         }
                         else
                         {
-                            ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(currentStat.Title, currentStat.Title, requestUpstream: true));
+                            ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(currentStat.Title, currentStat.Title, requestUpstream: true, groupLabelText: "Available Stat Value Items"));
                         }
                     }
                 }
