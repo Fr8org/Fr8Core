@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Control;
-using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
@@ -33,43 +31,16 @@ namespace terminalStatX.Activities
 
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        private const string SelectedGroupCrateLabel = "Selected Group";
-        private const string SelectedStatCrateLabel = "Selected Stat";
-
         private string SelectedGroup
         {
-            get
-            {
-                var storedValue = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == SelectedGroupCrateLabel);
-                return storedValue?.Content.Fields.First().Key;
-            }
-            set
-            {
-                Storage.RemoveByLabel(SelectedGroupCrateLabel);
-                if (string.IsNullOrEmpty(value))
-                {
-                    return;
-                }
-                Storage.Add(Crate<FieldDescriptionsCM>.FromContent(SelectedGroupCrateLabel, new FieldDescriptionsCM(new FieldDTO(value)), AvailabilityType.Configuration));
-            }
+            get { return this["SelectedGroup"]; }
+            set { this["SelectedGroup"] = value; }
         }
 
         private string SelectedStat
         {
-            get
-            {
-                var storedValue = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == SelectedStatCrateLabel);
-                return storedValue?.Content.Fields.First().Key;
-            }
-            set
-            {
-                Storage.RemoveByLabel(SelectedGroupCrateLabel);
-                if (string.IsNullOrEmpty(value))
-                {
-                    return;
-                }
-                Storage.Add(Crate<FieldDescriptionsCM>.FromContent(SelectedGroupCrateLabel, new FieldDescriptionsCM(new FieldDTO(value)), AvailabilityType.Configuration));
-            }
+            get { return this["SelectedStat"]; }
+            set { this["SelectedStat"] = value; }
         }
 
         public class ActivityUi : StandardConfigurationControlsCM
@@ -83,14 +54,14 @@ namespace terminalStatX.Activities
 
             public ActivityUi()
             {
-                ExistingGroupsList = new DropDownList()
+                ExistingGroupsList = new DropDownList
                 {
                     Label = "Choose a StatX Group",
                     Name = nameof(ExistingGroupsList),
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
 
-                ExistingGroupStats = new DropDownList()
+                ExistingGroupStats = new DropDownList
                 {
                     Label = "Choose a Stat from Selected Group",
                     Name = nameof(ExistingGroupStats),

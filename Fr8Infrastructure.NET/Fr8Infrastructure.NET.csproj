@@ -184,6 +184,7 @@
     <Compile Include="Data\DataTransferObjects\Helpers\ActivityResponseHelper.cs" />
     <Compile Include="Data\DataTransferObjects\HistoryItemDTO.cs" />
     <Compile Include="Data\DataTransferObjects\IncomingCratesDTO.cs" />
+    <Compile Include="Data\DataTransferObjects\KeyValueDTO.cs" />
     <Compile Include="Data\DataTransferObjects\LoggingDataCM.cs" />
     <Compile Include="Data\DataTransferObjects\LogItemDTO.cs" />
     <Compile Include="Data\DataTransferObjects\ManifestDescriptionDTO.cs" />
@@ -250,6 +251,7 @@
     <Compile Include="Data\Manifests\FieldDescriptionsCM.cs" />
     <Compile Include="Data\Manifests\Helpers\StandardTableDataCMTools.cs" />
     <Compile Include="Data\Manifests\HubSubscriptionCM.cs" />
+    <Compile Include="Data\Manifests\KeyValueListCM.cs" />
     <Compile Include="Data\Manifests\Manifest.cs" />
     <Compile Include="Data\Manifests\ManifestDescriptionCM.cs" />
     <Compile Include="Data\Manifests\ManifestFieldAttribute.cs" />

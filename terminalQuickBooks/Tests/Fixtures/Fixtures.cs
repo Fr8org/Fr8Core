@@ -95,33 +95,33 @@ namespace terminalQuickBooks.Tests.Fixtures
         {
             var curAccountTrans = new PayloadObjectDTO()
             {
-                PayloadObject = new List<FieldDTO>()
+                PayloadObject = new List<KeyValueDTO>()
                 {
-                    new FieldDTO("Name","DocuNum1"),
-                    new FieldDTO("TransactionDate","11-11-2015"),
-                    new FieldDTO("Memo","Testing Journal Entry")
+                    new KeyValueDTO("Name","DocuNum1"),
+                    new KeyValueDTO("TransactionDate","11-11-2015"),
+                    new KeyValueDTO("Memo","Testing Journal Entry")
                 }
             };
             var curFirstFinLine = new PayloadObjectDTO()
             {
-                PayloadObject = new List<FieldDTO>()
+                PayloadObject = new List<KeyValueDTO>()
                 {
-                    new FieldDTO("AccountName","Savings"),
-                    new FieldDTO("AccountId","1"),
-                    new FieldDTO("Amount","100"),
-                    new FieldDTO("DebitOrCredit","Debit"),
-                    new FieldDTO("Description","Move money from Savings")
+                    new KeyValueDTO("AccountName","Savings"),
+                    new KeyValueDTO("AccountId","1"),
+                    new KeyValueDTO("Amount","100"),
+                    new KeyValueDTO("DebitOrCredit","Debit"),
+                    new KeyValueDTO("Description","Move money from Savings")
                 }
             };
             var curSecondFinLine = new PayloadObjectDTO()
             {
-                PayloadObject = new List<FieldDTO>()
+                PayloadObject = new List<KeyValueDTO>()
                 {
-                    new FieldDTO("AccountName","Savings"),
-                    new FieldDTO("AccountId","1"),
-                    new FieldDTO("Amount","100"),
-                    new FieldDTO("DebitOrCredit","Credit"),
-                    new FieldDTO("Description","Move money to Savings")
+                    new KeyValueDTO("AccountName","Savings"),
+                    new KeyValueDTO("AccountId","1"),
+                    new KeyValueDTO("Amount","100"),
+                    new KeyValueDTO("DebitOrCredit","Credit"),
+                    new KeyValueDTO("Description","Move money to Savings")
                 }
             };
             var curPayloadObjectList = new List<PayloadObjectDTO>();

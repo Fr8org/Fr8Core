@@ -135,7 +135,7 @@ namespace terminalSalesforce.Actions
             {
                 throw new ActivityExecutionException("Failed to post to chatter due to Salesforce API error");
             }
-            Payload.Add(Crate.FromContent(PostedFeedCrateLabel, new StandardPayloadDataCM(new FieldDTO("FeedID", result))));
+            Payload.Add(Crate.FromContent(PostedFeedCrateLabel, new StandardPayloadDataCM(new KeyValueDTO("FeedID", result))));
         }
 
         public static string StripHTML(string input)

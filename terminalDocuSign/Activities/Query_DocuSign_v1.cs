@@ -85,7 +85,7 @@ namespace terminalDocuSign.Activities
         {
         }
 
-        protected override async Task RunDS()
+        public override async Task Run()
         {
             var configuration = DocuSignManager.SetUp(AuthorizationToken);
             var settings = GetDocusignQuery();
@@ -97,7 +97,7 @@ namespace terminalDocuSign.Activities
             Success();
         }
 
-        protected override Task InitializeDS()
+        public override Task Initialize()
         {
             var configurationCrate = PackControls(new ActivityUi());
             FillFolderSource(configurationCrate, "Folder");
@@ -108,7 +108,7 @@ namespace terminalDocuSign.Activities
             return Task.FromResult(0);
         }
 
-        protected override async Task FollowUpDS()
+        public override async Task FollowUp()
         {
             Storage.RemoveByLabel("Queryable Criteria");
         }

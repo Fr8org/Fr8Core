@@ -124,24 +124,12 @@ namespace Hub.Services
                 //     }
                 // }
 
-                List<FieldDescriptionsCM> fields = new List<FieldDescriptionsCM>();
                 var result = activities
-                    .SelectMany(x =>
-                    {
-                        fields.AddRange(
-                            _crate.GetStorage(x)
-                                .CratesOfType<FieldDescriptionsCM>()
-                                .Where(f => f.Label != ValidationErrorsLabel && f.Availability != AvailabilityType.Configuration)
-                                .Select(y=>y.Content)
-                                .ToList()
-                        );
-                        return _crate.GetStorage(x).CratesOfType<CrateDescriptionCM>().Where(cratePredicate);
-                    })
+                    .SelectMany(x => _crate.GetStorage(x).CratesOfType<CrateDescriptionCM>().Where(cratePredicate))
                     .Select(x =>
                     {
                         if (x.Content.CrateDescriptions.Count > 0)
                         {
-                            x.Content.CrateDescriptions[0].Fields.AddRange(fields.SelectMany(f => f.Fields).Where(f => availability == AvailabilityType.NotSet || (f.Availability & availability) != 0));
                             foreach (var field in x.Content.CrateDescriptions[0].Fields)
                             {
                                 if (field.SourceCrateLabel == null)

@@ -109,18 +109,18 @@ namespace terminalIntegrationTests.EndToEnd
                     {
                         Row = new List<TableCellDTO>
                         {
-                            new TableCellDTO { Cell = new FieldDTO("email", "email") },
-                            new TableCellDTO { Cell = new FieldDTO("subject", "subject") },
-                            new TableCellDTO { Cell = new FieldDTO("body", "body") }
+                            new TableCellDTO { Cell = new KeyValueDTO("email", "email") },
+                            new TableCellDTO { Cell = new KeyValueDTO("subject", "subject") },
+                            new TableCellDTO { Cell = new KeyValueDTO("body", "body") }
                         }
                     },
                     new TableRowDTO
                     {
                         Row = new List<TableCellDTO>
                         {
-                            new TableCellDTO { Cell = new FieldDTO("email", "fake@fake.com") },
-                            new TableCellDTO { Cell = new FieldDTO("subject", "Fake Subject") },
-                            new TableCellDTO { Cell = new FieldDTO("body", "Fake Body") }
+                            new TableCellDTO { Cell = new KeyValueDTO("email", "fake@fake.com") },
+                            new TableCellDTO { Cell = new KeyValueDTO("subject", "Fake Subject") },
+                            new TableCellDTO { Cell = new KeyValueDTO("body", "Fake Body") }
                         }
                     }
 

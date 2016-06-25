@@ -80,7 +80,7 @@ namespace terminalSalesforce.Actions
         {
             ActivityUI.SalesforceObjectSelector.ListItems = _salesforceManager
                 .GetSalesforceObjectTypes()
-                .Select(x => new ListItem() { Key = x.Key, Value = x.Key })
+                .Select(x => new ListItem() { Key = x.Name, Value = x.Name })
                 .ToList();
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel, true);
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PayloadDataCrateLabel, true);
@@ -132,7 +132,7 @@ namespace terminalSalesforce.Actions
                 .FirstCrate<FieldDescriptionsCM>(x => x.Label == QueryFilterCrateLabel)
                 .Content
                 .Fields
-                .Select(x => x.Key);
+                .Select(x => x.Name);
 
             var filterValue = ActivityUI.SalesforceObjectFilter.Value;
             var filterDataDTO = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(filterValue);

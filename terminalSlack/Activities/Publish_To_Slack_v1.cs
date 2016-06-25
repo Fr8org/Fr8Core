@@ -107,21 +107,6 @@ namespace terminalSlack.Activities
             return Regex.Replace(input, "<.*?>", String.Empty);
         }
 
-        private List<FieldDTO> ExtractPayloadFields(PayloadDTO payloadCrates)
-        {
-            var payloadDataCrates = CrateManager.FromDto(payloadCrates.CrateStorage).CratesOfType<StandardPayloadDataCM>();
-
-            var result = new List<FieldDTO>();
-            foreach (var payloadDataCrate in payloadDataCrates)
-            {
-                result.AddRange(payloadDataCrate.Content.AllValues());
-            }
-
-            return result;
-        }
-
-
-
         private Crate PackCrate_ConfigurationControls()
         {
             var fieldSelectChannel = new DropDownList()
