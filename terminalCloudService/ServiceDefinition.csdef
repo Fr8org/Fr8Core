@@ -183,7 +183,7 @@
       </Site>
       <Site name="terminalFacebook" physicalDirectory="..\..\..\terminalFacebook\azure.publish">
         <Bindings>
-          <Binding name="Endpoint1" endpointName="terminalDemo" />
+          <Binding name="Endpoint1" endpointName="terminalFacebook" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalFacebook.fr8.co" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="dev-terminalFacebook.fr8.co" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="demo-terminalFacebook.fr8.co" />
