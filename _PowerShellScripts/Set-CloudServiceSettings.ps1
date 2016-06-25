@@ -67,7 +67,7 @@ if ($inheritEndpoints -ne $true) {
 		$terminalName = $_.name
 				
 		try {
-			$terminalList.Add($terminalName, "http://" + $hostName + ":" + $terminalPort)
+			$terminalList.Add($terminalName, $hostName + ":" + $terminalPort)
 		}
 		catch {
 			#Ignore duplicates 
@@ -106,7 +106,7 @@ if(Test-Path $ConfigFile)
 			Write-Host "$terminalName - inherit from web.config" 
 		}
 		else {
-			$_.value = $terminalList[$terminalName]
+			$_.value = "http://" + $terminalList[$terminalName]
 			Write-Host "$terminalName  - "$_.value
 		}
     }
