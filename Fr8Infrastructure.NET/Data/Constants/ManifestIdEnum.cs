@@ -127,8 +127,11 @@ namespace Fr8.Infrastructure.Data.Constants
         [Display(Name = "Hub Subscription")]
         HubSubscription = 42,
 
+        [Display(Name = "Facebook User Event")]
+        FacebookUserEvent = 43,
+       
         [Display(Name = "Key-Value pairs list")]
-        KeyValueList = 43
+        KeyValueList = 44
     }
 }
 
