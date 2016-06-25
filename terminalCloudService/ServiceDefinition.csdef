@@ -202,7 +202,19 @@
           <Binding name="Endpoint3" endpointName="server443" hostHeader="dev-directory.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-directory.fr8.co" />
         </Bindings>
-      </Site>    
+      </Site>
+      <Site name="terminalBox" physicalDirectory="..\..\..\Services\terminalBox\azure.publish">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="terminalBox" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalBox.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="dev-terminalBox.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="demo-terminalBox.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="terminalBox.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="dev-terminalBox.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-terminalBox.fr8.co" />
+        </Bindings>
+      </Site>
+
     </Sites>
     <ConfigurationSettings>
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
@@ -223,6 +235,7 @@
       <Setting name="terminalTwilio.TerminalEndpoint"/>
       <Setting name="terminalYammer.TerminalEndpoint"/>
       <Setting name="terminalDemo.TerminalEndpoint"/>
+      <Setting name="terminalBox.TerminalEndpoint"/>
 	    <Setting name="terminalStatX.TerminalEndpoint"/>
       <Setting name="terminalFacebook.TerminalEndpoint"/>
       <Setting name="OutboundUserName"/>
@@ -251,6 +264,7 @@
       <InputEndpoint name="terminalDemo" protocol="http" port="22555" />
 	    <InputEndpoint name="terminalStatX" protocol="http" port="48675" />
       <InputEndpoint name="terminalFacebook" protocol="http" port="22666" />
+      <InputEndpoint name="terminalBox" protocol="http" port="54642" />
       <InputEndpoint name="PlanDirectory" protocol="http" port="64879" />
     </Endpoints>
     <Imports>
