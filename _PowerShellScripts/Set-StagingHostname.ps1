@@ -27,7 +27,7 @@ $hostName = $deployment.Url.Host
 Write-Host $hostName
 
 if (($update.ToLowerInvariant() -eq 'db') -or ($update.ToLowerInvariant() -eq 'both')) {
-	$commandLine = "$rootDir\Update-TerminalHostnameInDb.ps1 -connectionString '$connectionString' -slot sta -stagingHostname http://$hostName"
+	$commandLine = "$rootDir\Update-TerminalHostnameInDb.ps1 -connectionString '$connectionString' -slot sta -stagingHostname http://$hostName -overrideDbName $overrideDbName"
 	if ([String]::IsNullOrEmpty($overrideDbName) -eq $false) {
 		$commandLine +=  " -overrideDbName $overrideDbName"
 	}
