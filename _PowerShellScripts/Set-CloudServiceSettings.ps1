@@ -43,6 +43,11 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+if ([System.String]::IsNullOrEmpty($overrideDbName) -ne $true) {
+	$builder = new-object system.data.SqlClient.SqlConnectionStringBuilder($connectionString)
+	$builder["Initial Catalog"] = $overrideDbName
+	$connectionString = $builder.ToString()
+}
 
 $RootDir = Split-Path -parent (Split-Path -parent $MyInvocation.MyCommand.Path)
 $ConfigPath = $RootDir+"\terminalCloudService"
