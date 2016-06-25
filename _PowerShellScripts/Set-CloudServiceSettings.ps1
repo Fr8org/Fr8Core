@@ -67,7 +67,7 @@ if ($inheritEndpoints -ne $true) {
 		$terminalName = $_.name
 				
 		try {
-			$terminalList.Add($terminalName, $hostName + ":" + $terminalPort)
+			$terminalList.Add($terminalName, "http://" + $hostName + ":" + $terminalPort)
 		}
 		catch {
 			#Ignore duplicates 
