@@ -78,6 +78,7 @@ namespace Fr8.Testing.Integration
                         throw new Exception($"Terminal with name {TerminalName} and version {currentTerminalVersion} not found");
                     }
                 }
+
                 else
                 {
                     endPoint = terminal.Endpoint;
