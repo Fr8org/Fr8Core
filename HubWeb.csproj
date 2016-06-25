@@ -38,9 +38,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\HubWeb.XML</DocumentationFile> 
+    <DocumentationFile>bin\HubWeb.XML</DocumentationFile>
   </PropertyGroup>
-    
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
@@ -50,7 +49,6 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\HubWeb.XML</DocumentationFile>
   </PropertyGroup>
-  
   <ItemGroup>
     <Reference Include="Analytics.NET, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Analytics.2.0.0\lib\Analytics.NET.dll</HintPath>
@@ -441,7 +439,6 @@
     <Compile Include="DependencyResolution\StructureMapDependencyScope.cs" />
     <Compile Include="ExceptionHandling\ExeceptionHandler.cs" />
     <Compile Include="ExceptionHandling\Fr8ExceptionHandler.ErrorResult.cs" />
-    <Compile Include="Fr8ApiAuthorizeAttribute.cs" />
     <Compile Include="ExceptionHandling\Fr8ExceptionHandler.cs" />
     <Compile Include="App_Start\AutoMapperBootstrapper.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
