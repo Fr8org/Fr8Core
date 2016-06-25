@@ -11,16 +11,21 @@ namespace terminalAsana.Asana
 {
     public class Users : IAsanaUsers
     {
-        public Users(IRestfulServiceClient client)
-        {
-            
-        }
+        private readonly IRestfulServiceClient _restfulClient;
+        private readonly IAsanaOAuth _oAuthService;
 
-        public string Token { get; set; }
+        public Users(IRestfulServiceClient client, IAsanaOAuth oAuth)
+        {
+            _restfulClient = client;
+            _oAuthService = oAuth;
+        }
+        
+
+
 
         public async Task<AsanaUser> Me()
         {
-            return new AsanaUser();
+            return new AsanaUser() {Name = "Test"};
         }
 
         public async Task<AsanaUser> GetUser(int id)

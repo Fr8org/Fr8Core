@@ -27,7 +27,7 @@ namespace terminalAsana
         public static void ConfigureLive(ConfigurationExpression configurationExpression)
         {
             //configurationExpression.For<IAsanaCommunication>().Use<AsanaCommunication>().Singleton();
-            configurationExpression.For<IAsanaOAuth>().Use<AsanaOAuthService>();
+            configurationExpression.For<IAsanaOAuth>().Use<AsanaOAuthService>().Singleton();
             configurationExpression.For<IAsanaUsers>().Use<Users>();
         }
     }

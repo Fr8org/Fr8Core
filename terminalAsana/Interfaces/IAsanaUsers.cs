@@ -9,8 +9,6 @@ namespace terminalAsana.Interfaces
 {
     public interface IAsanaUsers
     {
-        string Token { get; set; }
-
         /// <summary>
         /// Returns the full user record for the currently authenticated user.
         /// </summary>

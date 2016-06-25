@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.TerminalBase.Services;
+using Newtonsoft.Json.Linq;
 using terminalAsana.Interfaces;
 
 namespace terminalAsana.Controllers
@@ -54,17 +55,19 @@ namespace terminalAsana.Controllers
                     throw new ApplicationException("Code or State is empty.");
                 }
 
-                var oauthToken = await _asanaOAuth.GetOAuthToken(code);
-                _asanaUsers.Token = oauthToken;
+                var oauthTokenData = await _asanaOAuth.GetOAuthTokenData(code);
+                var userInfo = oauthTokenData.Value<JObject>("data");
 
-                var userInfo = await _asanaUsers.Me();
+                //_asanaUsers.Token = oauthToken;
+                //var userInfo = await _asanaUsers.Me();
 
                 return new AuthorizationTokenDTO
                 {
-                    Token = oauthToken,
-                    ExternalAccountId = userInfo.Id,
-                    ExternalAccountName = userInfo.Name,
+                    Token = oauthTokenData.ToString(),
+                    ExternalAccountId = userInfo.Value<string>("id"),
+                    ExternalAccountName = userInfo.Value<string>("name"),
                     ExternalStateToken = state,
+                    
                 };
             }
             catch (Exception ex)
