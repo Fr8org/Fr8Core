@@ -10,13 +10,16 @@ namespace terminalAsana.Controllers
     [RoutePrefix("authentication")]
     public class AuthenticationController : ApiController
     {
-        private readonly IAsanaIntegration _asanaIntegration;
+        private readonly IAsanaOAuth _asanaOAuth;
+        private readonly IAsanaUsers _asanaUsers;
         private readonly IHubEventReporter _eventReporter;
 
-        public AuthenticationController(IAsanaIntegration asanaIntegration, IHubEventReporter eventReporter)
+        public AuthenticationController(IAsanaOAuth asanaOAuth, IAsanaUsers asanaUsers, IHubEventReporter eventReporter)
         {
-            _asanaIntegration = asanaIntegration;
+            _asanaOAuth = asanaOAuth;
+            _asanaUsers = asanaUsers;
             _eventReporter = eventReporter;
+
         }
 
         [HttpPost]
@@ -24,7 +27,7 @@ namespace terminalAsana.Controllers
         public ExternalAuthUrlDTO GenerateOAuthInitiationURL()
         {
             var externalStateToken = Guid.NewGuid().ToString();
-            var url = _asanaIntegration.CreateAuthUrl(externalStateToken);
+            var url = _asanaOAuth.CreateAuthUrl(externalStateToken);
 
             var externalAuthUrlDTO = new ExternalAuthUrlDTO()
             {
@@ -51,8 +54,10 @@ namespace terminalAsana.Controllers
                     throw new ApplicationException("Code or State is empty.");
                 }
 
-                var oauthToken = await _asanaIntegration.GetOAuthToken(code);
-                var userInfo = await _asanaIntegration.GetUserInfo(oauthToken);
+                var oauthToken = await _asanaOAuth.GetOAuthToken(code);
+                _asanaUsers.Token = oauthToken;
+
+                var userInfo = await _asanaUsers.Me();
 
                 return new AuthorizationTokenDTO
                 {

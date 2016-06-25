@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace terminalAsana.Asana.Entites
+namespace terminalAsana.Asana.Entities
 {
     public class AsanaWorkspace
     {

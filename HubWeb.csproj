@@ -38,9 +38,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\HubWeb.XML</DocumentationFile> 
+    <DocumentationFile>bin\HubWeb.XML</DocumentationFile>
   </PropertyGroup>
-    
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
@@ -50,7 +49,6 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\HubWeb.XML</DocumentationFile>
   </PropertyGroup>
-  
   <ItemGroup>
     <Reference Include="Analytics.NET, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Analytics.2.0.0\lib\Analytics.NET.dll</HintPath>
@@ -1143,7 +1141,6 @@
     <Content Include="Views\Support\Index.cshtml" />
     <Content Include="Views\AngularTemplate\ChangePassword.cshtml" />
     <Content Include="Views\Company\Index.cshtml" />
-    <Content Include="Views\Shared\CDN\_AngularAppScripts.cshtml" />
     <Content Include="Views\Shared\_AngularAppStyles.cshtml" />
     <Content Include="Views\Shared\CDN\_AngularAppStyles.cshtml" />
     <Content Include="Views\AngularTemplate\SourceableCriteria.cshtml" />

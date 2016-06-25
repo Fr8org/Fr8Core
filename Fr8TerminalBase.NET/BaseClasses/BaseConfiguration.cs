@@ -107,7 +107,7 @@ namespace Fr8.TerminalBase.BaseClasses
             
             childContainer.Configure(x =>
             {
-                x.For<IHubCommunicator>().Use(hubCommunicatorFactoryExpression);
+                x.For<IHubCommunicator>().Use(hubCommunicatorFactoryExpression).Singleton();
                 x.For<IContainer>().Use(childContainer);
                 x.For<IPushNotificationService>().Use<PushNotificationService>().Singleton();
                 x.For<PlanService>().Use<PlanService>().Singleton();

@@ -1,6 +1,6 @@
 ﻿using StructureMap;
 using terminalAsana.Interfaces;
-using terminalAsana.Services;
+using terminalAsana.Asana;
 
 namespace terminalAsana
 {
@@ -26,8 +26,9 @@ namespace terminalAsana
 
         public static void ConfigureLive(ConfigurationExpression configurationExpression)
         {
-            //configurationExpression.For<IAsanaIntegration>().Use<AsanaIntegrationService>().Singleton();
-            configurationExpression.For<IAsanaIntegration>().Use<AsanaIntegrationService>();
+            //configurationExpression.For<IAsanaCommunication>().Use<AsanaCommunication>().Singleton();
+            configurationExpression.For<IAsanaOAuth>().Use<AsanaOAuthService>();
+            configurationExpression.For<IAsanaUsers>().Use<Users>();
         }
     }
 }
