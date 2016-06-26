@@ -37,13 +37,14 @@ namespace terminalTelegram
 
         protected override void RegisterActivities()
         {
-            ActivityStore.RegisterActivity<PostToTelegram_v1>(PostToTelegram_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<PostToTelegramV1>(PostToTelegramV1.ActivityTemplateDTO);
         }
 
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
         {
             return new Type[] {
                 typeof(ActivityController),
+                typeof(AuthenticationController),
                 typeof(TerminalController)
             };
         }

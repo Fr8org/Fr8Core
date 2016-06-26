@@ -9,7 +9,7 @@ namespace terminalTelegram
         public static WebServiceDTO WebServiceDTO = new WebServiceDTO
         {
             Name = "Telegram Activities",
-            IconPath = "https://dl.dropboxusercontent.com/u/43500230/telegram-icon-64x64.png"
+            IconPath = "/Content/icons/web_services/telegram-icon-64x64.png"
         };
 
         public static TerminalDTO TerminalDTO = new TerminalDTO
@@ -18,7 +18,8 @@ namespace terminalTelegram
             TerminalStatus = TerminalStatus.Active,
             Name = "terminalTelegram",
             Label = "Fr8Telegram",
-            Version = "1"
+            Version = "1",
+            AuthenticationType = AuthenticationType.PhoneNumberWithCode
         };
     }
 }
