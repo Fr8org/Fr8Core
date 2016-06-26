@@ -133,8 +133,8 @@ namespace Fr8.Infrastructure.Data.Constants
         [Display(Name = "Key-Value pairs list")]
         KeyValueList = 44,
 
-        [Display(Name = "StatX Stat Item")]
-        StatXStatItem = 45
+        [Display(Name = "StatX Item")]
+        StatXItem = 45
     }
 }
 
