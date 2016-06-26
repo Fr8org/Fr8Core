@@ -169,21 +169,6 @@ namespace terminalStatX.Activities
             }
         }
 
-        //protected override Task Validate()
-        //{
-        //    if (string.IsNullOrEmpty(ActivityUI.ExistingGroupStats.selectedKey))
-        //    {
-        //        ValidationManager.SetError("Stat is not selected", ActivityUI.ExistingGroupStats);
-        //    }
-
-        //    if (string.IsNullOrEmpty(ActivityUI.ExistingGroupsList.selectedKey))
-        //    {
-        //        ValidationManager.SetError("Stat Group is not selected");
-        //    }
-
-        //    return base.Validate();
-        //}
-
         public override async Task Run()
         {
             var statValues = ActivityUI.StatValues.Select(x => new { x.Name, Value = x.GetValue(Payload) }).ToDictionary(x => x.Name, x => x.Value);
