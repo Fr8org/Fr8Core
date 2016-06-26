@@ -203,7 +203,7 @@
           <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-directory.fr8.co" />
         </Bindings>
       </Site>
-      <Site name="terminalBox" physicalDirectory="..\..\..\Services\terminalBox\azure.publish">
+      <Site name="terminalBox" physicalDirectory="..\..\..\terminalBox\azure.publish">
         <Bindings>
           <Binding name="Endpoint1" endpointName="terminalBox" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalBox.fr8.co" />
