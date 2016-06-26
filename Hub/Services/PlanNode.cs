@@ -134,14 +134,8 @@ namespace Hub.Services
                             {
                                 if (field.SourceCrateLabel == null)
                                 {
-                                    if (x.Content.CrateDescriptions[0].Label == null)
-                                    {
-                                        field.SourceCrateLabel = x.Content.CrateDescriptions[0].ProducedBy;
-                                    }
-                                    else
-                                    {
-                                        field.SourceCrateLabel = x.Content.CrateDescriptions[0].Label;
-                                    }
+                                    field.SourceCrateLabel = x.Content.CrateDescriptions[0].Label ?? x.Content.CrateDescriptions[0].ProducedBy;
+                                    field.SourceActivityId = x.SourceActivityId;
                                 }
                             }
                         }
@@ -364,14 +358,13 @@ namespace Hub.Services
                 .OrderBy(c => c.Key)
                 .Select(c => new ActivityTemplateCategoryDTO
                 {
-                    Activities = c.Select(Mapper.Map<ActivityTemplateDTO>).ToList(),
+                    Activities = c.GroupBy(x => x.Name)
+                                  .Select(x => x.OrderByDescending(y => int.Parse(y.Version)).First())
+                                  .Select(Mapper.Map<ActivityTemplateDTO>).ToList(),
                     Name = c.Key.ToString()
                 })
                 .ToList();
-
-
             return curActivityTemplates;
         }
-
     }
 }
