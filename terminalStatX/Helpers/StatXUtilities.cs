@@ -14,6 +14,7 @@ namespace terminalStatX.Helpers
             var result = new StatXItemCM()
             {
                 Id = stat.Id,
+                Title = stat.Title,
                 Value = stat.Value,
                 LastUpdatedDateTime = stat.LastUpdatedDateTime,
                 StatValueItems = stat.StatItems.Select(x => new StatValueItemDTO()

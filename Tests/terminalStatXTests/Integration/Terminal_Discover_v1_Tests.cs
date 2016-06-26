@@ -21,10 +21,7 @@ namespace terminalStatXTests.Integration
         private const string Monitor_Stat_Changes_Activity_Name = "Monitor_Stat_Changes";
         private const string Update_Stat_Activity_Name = "Update_Stat";
 
-        public override string TerminalName
-        {
-            get { return "terminalStatX"; }
-        }
+        public override string TerminalName => "terminalStatX";
 
         /// <summary>
         /// Validate correct crate-storage structure in initial configuration response.

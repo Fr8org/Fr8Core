@@ -106,7 +106,7 @@ namespace terminalStatX.Activities
                     var stats = await _statXIntegration.GetStatsForGroup(StatXUtilities.GetStatXAuthToken(AuthorizationToken),ActivityUI.ExistingGroupsList.Value);
 
                     ActivityUI.ExistingGroupStats.ListItems = stats
-                        .Select(x => new ListItem { Key = x.Title, Value = x.Id }).ToList();
+                        .Select(x => new ListItem { Key =  string.IsNullOrEmpty(x.Title) ? x.Id : x.Title, Value = x.Id }).ToList();
 
                     var firstStat = stats.FirstOrDefault();
                     if (firstStat != null)
@@ -187,7 +187,7 @@ namespace terminalStatX.Activities
             }
             else
             {
-                fields.Add(new FieldDTO(stat.Id, AvailabilityType.RunTime));
+                fields.Add(new FieldDTO(string.IsNullOrEmpty(stat.Title) ? stat.Id : stat.Title, AvailabilityType.RunTime));
             }
 
             return fields;
@@ -203,7 +203,7 @@ namespace terminalStatX.Activities
             }
             else
             {
-                fields.Add(new KeyValueDTO(stat.Id, stat.Value));
+                fields.Add(new KeyValueDTO(string.IsNullOrEmpty(stat.Title)? stat.Id : stat.Title, stat.Value));
             }
 
             return fields;

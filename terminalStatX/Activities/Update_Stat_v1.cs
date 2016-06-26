@@ -103,7 +103,7 @@ namespace terminalStatX.Activities
                     var stats = await _statXIntegration.GetStatsForGroup(StatXUtilities.GetStatXAuthToken(AuthorizationToken), ActivityUI.ExistingGroupsList.Value);
                     
                     ActivityUI.ExistingGroupStats.ListItems = stats
-                        .Select(x => new ListItem { Key = x.Title, Value = x.Id }).ToList();
+                        .Select(x => new ListItem { Key = string.IsNullOrEmpty(x.Title) ? x.Id : x.Title, Value = x.Id }).ToList();
 
                     var firstStat = stats.FirstOrDefault();
                     if (firstStat != null)
@@ -119,7 +119,7 @@ namespace terminalStatX.Activities
                         }
                         else
                         {
-                            ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(firstStat.Title, firstStat.Title, requestUpstream: true, groupLabelText: "Available Stat Value Items"));
+                            ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(string.IsNullOrEmpty(firstStat.Title) ? firstStat.Id : firstStat.Title, string.IsNullOrEmpty(firstStat.Title) ? firstStat.Id : firstStat.Title, requestUpstream: true, groupLabelText: "Available Stat Value Items"));
                         }
                     }
                 }
@@ -153,7 +153,7 @@ namespace terminalStatX.Activities
                         }
                         else
                         {
-                            ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(currentStat.Title, currentStat.Title, requestUpstream: true, groupLabelText: "Available Stat Value Items"));
+                            ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(string.IsNullOrEmpty(currentStat.Title) ? currentStat.Id : currentStat.Title, string.IsNullOrEmpty(currentStat.Title) ? currentStat.Id : currentStat.Title, requestUpstream: true, groupLabelText: "Available Stat Value Items"));
                         }
                     }
                 }
@@ -168,6 +168,21 @@ namespace terminalStatX.Activities
                 SelectedStat = string.Empty;
             }
         }
+
+        //protected override Task Validate()
+        //{
+        //    if (string.IsNullOrEmpty(ActivityUI.ExistingGroupStats.selectedKey))
+        //    {
+        //        ValidationManager.SetError("Stat is not selected", ActivityUI.ExistingGroupStats);
+        //    }
+
+        //    if (string.IsNullOrEmpty(ActivityUI.ExistingGroupsList.selectedKey))
+        //    {
+        //        ValidationManager.SetError("Stat Group is not selected");
+        //    }
+
+        //    return base.Validate();
+        //}
 
         public override async Task Run()
         {

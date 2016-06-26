@@ -70,6 +70,8 @@ namespace terminalSalesforce.Actions
 
         public const string CountObjectsCrateLabel = "Count of Objects from Salesforce Get Data";
 
+        public const string CountObjectsFieldLabel = "Count of Objects";
+
         private readonly ISalesforceManager _salesforceManager;
 
         public Get_Data_v1(ICrateManager crateManager, ISalesforceManager salesforceManager)
@@ -121,6 +123,8 @@ namespace terminalSalesforce.Actions
                           .AddFields(selectedObjectProperties);
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PayloadDataCrateLabel, true)
                           .AddFields(selectedObjectProperties);
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(CountObjectsCrateLabel, true)
+                          .AddField(CountObjectsFieldLabel);
         }
 
         public override async Task Run()
@@ -178,7 +182,7 @@ namespace terminalSalesforce.Actions
                 Crate<StandardPayloadDataCM>
                     .FromContent(
                         CountObjectsCrateLabel,
-                        new StandardPayloadDataCM(new KeyValueDTO("Count of Objects", resultObjects.DataRows.Count().ToString())),
+                        new StandardPayloadDataCM(new KeyValueDTO(CountObjectsFieldLabel, resultObjects.DataRows.Count().ToString())),
                         AvailabilityType.RunTime
                     )
             );

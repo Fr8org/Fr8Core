@@ -13,6 +13,8 @@ namespace Fr8.Infrastructure.Data.Manifests
 
         [JsonProperty("id")]
         public string Id { get; set; }
+        [JsonProperty("title")]
+        public string Title { get; set; }
         [JsonProperty("visualType")]
         public string VisualType { get; set; }
         [JsonProperty("value")]
