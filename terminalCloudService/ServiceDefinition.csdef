@@ -220,6 +220,7 @@
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
       <Setting name="Fr8.ConnectionString"/>
       <Setting name="CoreWebServerUrl"/>
+      <Setting name="HubApiBaseUrl"/>
       <Setting name="terminalAtlassian.TerminalEndpoint"/>
       <Setting name="terminalAzure.TerminalEndpoint"/>
       <Setting name="terminalDocuSign.TerminalEndpoint"/>

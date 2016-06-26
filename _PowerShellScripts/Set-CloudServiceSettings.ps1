@@ -37,8 +37,10 @@ param(
 	[string]$smtpUsername,
 
     [Parameter(Mandatory = $true)]
-	[string]$smtpPassword
+	[string]$smtpPassword,
 
+    [Parameter(Mandatory = $true)]
+	[string]$hubApiBaseUrl
 )
 
 $ErrorActionPreference = 'Stop'
@@ -93,6 +95,10 @@ if(Test-Path $ConfigFile)
 	# Update CoreWebServerUrl
 	$urlNode = $roleNode.ConfigurationSettings.Setting | where {$_.name -eq 'CoreWebServerUrl'}
 	$urlNode.value=$coreWebServerUrl
+
+	# Update HubApiBaseUrl
+	$hubApiBaseUrlNode = $roleNode.ConfigurationSettings.Setting | where {$_.name -eq 'HubApiBaseUrl'}
+	$hubApiBaseUrlNode.value=$hubApiBaseUrl
 
 	#Update SMTP Credentials
 	Write-Host "Setting SMTP Credentials"
