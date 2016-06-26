@@ -44,10 +44,10 @@ namespace terminalFacebookTests.Integration
             
             Assert.AreEqual("Monitor Facebook Runtime Fields", fieldDescriptions.Content.CrateDescriptions.Single().Label, "Monitor Facebook Runtime Fields labeled CrateDescription was not found");
             Assert.AreEqual(4, fieldDescriptions.Content.CrateDescriptions.Single().Fields.Count, "Published runtime field count is not 4");
-            Assert.IsTrue(fields.Exists(x => x.Key == FacebookFeedIdField), "FacebookFeedIdField is not signalled");
-            Assert.IsTrue(fields.Exists(x => x.Key == FacebookFeedMessageField), "FacebookFeedMessageField is not signalled");
-            Assert.IsTrue(fields.Exists(x => x.Key == FacebookFeedStoryField), "FacebookFeedStoryField is not signalled");
-            Assert.IsTrue(fields.Exists(x => x.Key == FacebookFeedCreatedTimeField), "FacebookFeedCreatedTimeField is not signalled");
+            Assert.IsTrue(fields.Exists(x => x.Name == FacebookFeedIdField), "FacebookFeedIdField is not signalled");
+            Assert.IsTrue(fields.Exists(x => x.Name == FacebookFeedMessageField), "FacebookFeedMessageField is not signalled");
+            Assert.IsTrue(fields.Exists(x => x.Name == FacebookFeedStoryField), "FacebookFeedStoryField is not signalled");
+            Assert.IsTrue(fields.Exists(x => x.Name == FacebookFeedCreatedTimeField), "FacebookFeedCreatedTimeField is not signalled");
 
         }
 

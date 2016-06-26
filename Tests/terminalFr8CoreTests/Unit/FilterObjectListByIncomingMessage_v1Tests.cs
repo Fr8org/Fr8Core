@@ -138,7 +138,7 @@ namespace terminalTests.Integration
         {
             //Setup
             var containerExecutionContext = HealthMonitor_FixtureData.ExecutionContextWithOnlyOperationalState();
-            containerExecutionContext.PayloadStorage.Add(Crate<FieldDescriptionsCM>.FromContent("Message is here", new FieldDescriptionsCM(new FieldDTO("Message", "This message should be checked for keywords"))));
+            containerExecutionContext.PayloadStorage.Add(Crate<KeyValueListCM>.FromContent("Message is here", new KeyValueListCM(new KeyValueDTO("Message", "This message should be checked for keywords"))));
             var authToken = new AuthorizationToken { Token = "1" };
             var activity = New<Filter_Object_List_By_Incoming_Message_v1>();
             var activityContext = new ActivityContext
@@ -160,21 +160,21 @@ namespace terminalTests.Integration
             });
             await activity.Configure(activityContext);
             var crateStorage = activityContext.ActivityPayload.CrateStorage;
-            var configurationValues = crateStorage.FirstCrate<FieldDescriptionsCM>(x => x.Label == "Configuration Values");
-                configurationValues.Content.Fields.First(x => x.Key == "Cache Created At").Value = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
+            var configurationValues = crateStorage.FirstCrate<KeyValueListCM>(x => x.Label == "Configuration Values");
+                configurationValues.Content.Values.First(x => x.Key == "Cache Created At").Value = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
             crateStorage.Add(Crate<StandardTableDataCM>.FromContent("Cached table",
                     new StandardTableDataCM
                     {
                         FirstRowHeaders = true,
                         Table = new List<TableRowDTO>
                         {
-                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new FieldDTO("Header", "Header") } } },
+                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new KeyValueDTO("Header", "Header") } } },
                             //Will pass filter
-                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new FieldDTO("Header", "message") } } },
-                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO {  Cell = new FieldDTO("Header", "checked") } } },
+                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new KeyValueDTO("Header", "message") } } },
+                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO {  Cell = new KeyValueDTO("Header", "checked") } } },
                             //Won't pass filter
-                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new FieldDTO("Header", "nothing") } } },
-                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new FieldDTO("Header", "anything") } } }
+                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new KeyValueDTO("Header", "nothing") } } },
+                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new KeyValueDTO("Header", "anything") } } }
                         }
                     }));
             await activity.Configure(activityContext);

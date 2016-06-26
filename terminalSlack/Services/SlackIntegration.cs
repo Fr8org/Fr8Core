@@ -58,7 +58,7 @@ namespace terminalSlack.Services
             return url;
         }
 
-        public async Task<List<FieldDTO>> GetChannelList(string oauthToken, bool includeArchived = false)
+        public async Task<List<KeyValueDTO>> GetChannelList(string oauthToken, bool includeArchived = false)
         {
             var url = $"{PrepareTokenUrl("SlackChannelsListUrl", oauthToken)}&exclude_archived={(includeArchived ? 0 : 1)}";
 
@@ -66,13 +66,13 @@ namespace terminalSlack.Services
 
             var channelsArray = jsonObj.Value<JArray>("channels");
 
-            var result = new List<FieldDTO>();
+            var result = new List<KeyValueDTO>();
             foreach (var channelObj in channelsArray)
             {
                 var channelId = channelObj.Value<string>("id");
                 var channelName = channelObj.Value<string>("name");
 
-                result.Add(new FieldDTO()
+                result.Add(new KeyValueDTO()
                 {
                     Key = channelName,
                     Value = channelId
@@ -83,13 +83,13 @@ namespace terminalSlack.Services
 
         }
 
-        public async Task<List<FieldDTO>> GetUserList(string oauthToken)
+        public async Task<List<KeyValueDTO>> GetUserList(string oauthToken)
         {
             var url = PrepareTokenUrl("SlackUserListUrl", oauthToken);
             var jsonObj = await _client.GetAsync<JObject>(new Uri(url));
 
             var usersArray = jsonObj.Value<JArray>("members");
-            var result = new List<FieldDTO>();
+            var result = new List<KeyValueDTO>();
             foreach (var userObj in usersArray)
             {
                 if (userObj.Value<bool>("deleted"))
@@ -97,7 +97,7 @@ namespace terminalSlack.Services
                 var userId = userObj.Value<string>("id");
                 var userName = userObj.Value<string>("name");
 
-                result.Add(new FieldDTO()
+                result.Add(new KeyValueDTO()
                 {
                     Key = userName,
                     Value = userId
@@ -107,12 +107,12 @@ namespace terminalSlack.Services
             return result;
         }
 
-        public async Task<List<FieldDTO>> GetAllChannelList(string oauthToken)
+        public async Task<List<KeyValueDTO>> GetAllChannelList(string oauthToken)
         {
             var channels = await GetChannelList(oauthToken);
             var users = await GetUserList(oauthToken);
 
-            var result = new List<FieldDTO>();
+            var result = new List<KeyValueDTO>();
             result.AddRange(channels);
             result.AddRange(users);
             return result;

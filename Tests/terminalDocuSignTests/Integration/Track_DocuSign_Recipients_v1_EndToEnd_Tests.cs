@@ -35,17 +35,17 @@ namespace terminalDocuSignTests.Integration
         private void ShouldHaveCorrectCrateStructure(ICrateStorage crateStorage)
         {
             Assert.True(crateStorage.CratesOfType<StandardConfigurationControlsCM>().Any(), "Crate StandardConfigurationControlsCM is missing in API response.");
-            Assert.True(crateStorage.CratesOfType<FieldDescriptionsCM>().Any(c => c.Label == "AvailableTemplates"), "FieldDescriptionsCM with label \"AvailableTemplates\" is missing in API response.");
-            Assert.True(crateStorage.CratesOfType<FieldDescriptionsCM>().Any(c => c.Label == "AvailableHandlers"), "FieldDescriptionsCM with label \"AvailableHandlers\" is missing in API response.");
-            Assert.True(crateStorage.CratesOfType<FieldDescriptionsCM>().Any(c => c.Label == "AvailableRecipientEvents"), "FieldDescriptionsCM with label \"AvailableRecipientEvents\" is missing in API response.");
+            Assert.True(crateStorage.CratesOfType<KeyValueListCM>().Any(c => c.Label == "AvailableTemplates"), "FieldDescriptionsCM with label \"AvailableTemplates\" is missing in API response.");
+            Assert.True(crateStorage.CratesOfType<KeyValueListCM>().Any(c => c.Label == "AvailableHandlers"), "FieldDescriptionsCM with label \"AvailableHandlers\" is missing in API response.");
+            Assert.True(crateStorage.CratesOfType<KeyValueListCM>().Any(c => c.Label == "AvailableRecipientEvents"), "FieldDescriptionsCM with label \"AvailableRecipientEvents\" is missing in API response.");
 
-            var templatesCrate = crateStorage.CratesOfType<FieldDescriptionsCM>().Single(c => c.Label == "AvailableTemplates");
-            var handlersCrate = crateStorage.CratesOfType<FieldDescriptionsCM>().Single(c => c.Label == "AvailableHandlers");
-            var recipientEventsCrate = crateStorage.CratesOfType<FieldDescriptionsCM>().Single(c => c.Label == "AvailableRecipientEvents");
+            var templatesCrate = crateStorage.CratesOfType<KeyValueListCM>().Single(c => c.Label == "AvailableTemplates");
+            var handlersCrate = crateStorage.CratesOfType<KeyValueListCM>().Single(c => c.Label == "AvailableHandlers");
+            var recipientEventsCrate = crateStorage.CratesOfType<KeyValueListCM>().Single(c => c.Label == "AvailableRecipientEvents");
 
-            Assert.True(templatesCrate.Content.Fields.Any(), "There are no fields in AvailableTemplates Crate");
-            Assert.True(handlersCrate.Content.Fields.Any(), "There are no fields in AvailableHandlers Crate");
-            Assert.True(recipientEventsCrate.Content.Fields.Any(), "There are no fields in AvailableRecipientEvents Crate");
+            Assert.True(templatesCrate.Content.Values.Any(), "There are no fields in AvailableTemplates Crate");
+            Assert.True(handlersCrate.Content.Values.Any(), "There are no fields in AvailableHandlers Crate");
+            Assert.True(recipientEventsCrate.Content.Values.Any(), "There are no fields in AvailableRecipientEvents Crate");
         }
 
         private async Task PostFakeEvent()
@@ -189,13 +189,13 @@ namespace terminalDocuSignTests.Integration
             timePeriod.Days = 0;
             timePeriod.Hours = 0;
             timePeriod.Minutes = 0;
-            var handlersCrate = _crateStorage.CratesOfType<FieldDescriptionsCM>().Single(c => c.Label == "AvailableHandlers");
-            var emailHandler = handlersCrate.Content.Fields.Single(c => c.Key.Contains("Send Email"));
+            var handlersCrate = _crateStorage.CratesOfType<KeyValueListCM>().Single(c => c.Label == "AvailableHandlers");
+            var emailHandler = handlersCrate.Content.Values.Single(c => c.Key.Contains("Send Email"));
             notificationHandler.Value = emailHandler.Value;
             notificationHandler.selectedKey = emailHandler.Key;
-            var recipientEventsCrate = _crateStorage.CratesOfType<FieldDescriptionsCM>().Single(c => c.Label == "AvailableRecipientEvents");
-            recipientEvent.Value = recipientEventsCrate.Content.Fields[1].Value;
-            recipientEvent.selectedKey = recipientEventsCrate.Content.Fields[1].Key;
+            var recipientEventsCrate = _crateStorage.CratesOfType<KeyValueListCM>().Single(c => c.Label == "AvailableRecipientEvents");
+            recipientEvent.Value = recipientEventsCrate.Content.Values[1].Value;
+            recipientEvent.selectedKey = recipientEventsCrate.Content.Values[1].Key;
 
             using (var updatableStorage = Crate.GetUpdatableStorage(_solution))
             {
@@ -233,7 +233,7 @@ namespace terminalDocuSignTests.Integration
 
             var upstreamFieldDescription = await HttpGetAsync<IncomingCratesDTO>(baseUrl + "plan_nodes/signals?id=" + emailActivity.Id);
 
-            Assert.True(upstreamFieldDescription.AvailableCrates.SelectMany(x=>x.Fields).Any(y => y.Key == "NotificationMessage"));
+            Assert.True(upstreamFieldDescription.AvailableCrates.SelectMany(x=>x.Fields).Any(y => y.Name == "NotificationMessage"));
             Assert.AreEqual("NotificationMessage", emailBody.Value);
 
             emailAddress.ValueSource = "specific";

@@ -61,15 +61,15 @@ namespace terminalYammer.Services
             return jsonObj.Value<string>("email");
         }
 
-        public async Task<List<FieldDTO>> GetGroupsList(string oauthToken)
+        public async Task<List<KeyValueDTO>> GetGroupsList(string oauthToken)
         {
             var url = PrepareTokenUrl("YammerGroupListUrl", oauthToken);
 
             var groupsDTO = await _client.GetAsync<List<YammerGroup>>(new Uri(url), null, GetAuthenticationHeader(oauthToken));
-            var result = new List<FieldDTO>();
+            var result = new List<KeyValueDTO>();
             foreach (var group in groupsDTO)
             {
-                result.Add(new FieldDTO()
+                result.Add(new KeyValueDTO()
                 {
                     Key = group.Name,
                     Value = group.GroupID

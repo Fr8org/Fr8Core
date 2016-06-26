@@ -79,15 +79,15 @@ namespace terminalSalesforce.Services
             return stroage;
         }
 
-        private List<FieldDTO> CreateKeyValuePairList(Notification curNotification)
+        private List<KeyValueDTO> CreateKeyValuePairList(Notification curNotification)
         {
-            var returnList = new List<FieldDTO>();
+            var returnList = new List<KeyValueDTO>();
 
-            returnList.Add(new FieldDTO("ObjectType", curNotification.SObject.Type.Substring(curNotification.SObject.Type.LastIndexOf(':') + 1)));
-            returnList.Add(new FieldDTO("ObjectId", curNotification.SObject.Id));
-            returnList.Add(new FieldDTO("CreatedDate", curNotification.SObject.CreatedDate.ToString()));
-            returnList.Add(new FieldDTO("LastModifiedDate", curNotification.SObject.LastModifiedDate.ToString()));
-            returnList.Add(new FieldDTO("OccuredEvent", ExtractOccuredEvent(curNotification)));
+            returnList.Add(new KeyValueDTO("ObjectType", curNotification.SObject.Type.Substring(curNotification.SObject.Type.LastIndexOf(':') + 1)));
+            returnList.Add(new KeyValueDTO("ObjectId", curNotification.SObject.Id));
+            returnList.Add(new KeyValueDTO("CreatedDate", curNotification.SObject.CreatedDate.ToString()));
+            returnList.Add(new KeyValueDTO("LastModifiedDate", curNotification.SObject.LastModifiedDate.ToString()));
+            returnList.Add(new KeyValueDTO("OccuredEvent", ExtractOccuredEvent(curNotification)));
 
 
             return returnList;
