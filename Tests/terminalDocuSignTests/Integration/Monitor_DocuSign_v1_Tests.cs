@@ -380,8 +380,8 @@ namespace terminalDocuSignTests.Integration
                         Fr8.Infrastructure.Data.Crates.Crate.FromContent(
                             "EventReport",
                             new StandardPayloadDataCM(
-                                new FieldDTO("TemplateName", activityDTO.Item2),
-                                new FieldDTO("EnvelopeId", envelopeId)
+                                new KeyValueDTO("TemplateName", activityDTO.Item2),
+                                new KeyValueDTO("EnvelopeId", envelopeId)
                             )
                         )
                     }

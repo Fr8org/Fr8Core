@@ -129,9 +129,9 @@ namespace terminalFr8Core.Activities
             };
         }
 
-        private bool CheckConditions(List<FilterConditionDTO> conditions, IQueryable<FieldDTO> fields)
+        private bool CheckConditions(List<FilterConditionDTO> conditions, IQueryable<KeyValueDTO> fields)
         {
-            foreach (FieldDTO field in fields)
+            foreach (var field in fields)
             {
                 double result = 0D;
                 if (Double.TryParse(field.Value,

@@ -62,7 +62,9 @@ namespace terminalDropbox.Actions
             var fileNames = await _dropboxService.GetFileList(AuthorizationToken);
             ActivityUI.FileList.ListItems = fileNames
                 .Select(filePath => new ListItem { Key = Path.GetFileName(filePath), Value = Path.GetFileName(filePath) }).ToList();
+
             CrateSignaller.MarkAvailableAtRuntime<StandardFileListCM>(RuntimeCrateLabel);
+
             Storage.ReplaceByLabel(PackDropboxFileListCrate(fileNames));
         }
 

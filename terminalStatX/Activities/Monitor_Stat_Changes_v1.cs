@@ -32,24 +32,11 @@ namespace terminalStatX.Activities
 
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
         private readonly IStatXIntegration _statXIntegration;
-        private const string SelectedGroupCrateLabel = "Selected Group";
 
         private string SelectedGroup
         {
-            get
-            {
-                var storedValue = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == SelectedGroupCrateLabel);
-                return storedValue?.Content.Fields.First().Key;
-            }
-            set
-            {
-                Storage.RemoveByLabel(SelectedGroupCrateLabel);
-                if (string.IsNullOrEmpty(value))
-                {
-                    return;
-                }
-                Storage.Add(Crate<FieldDescriptionsCM>.FromContent(SelectedGroupCrateLabel, new FieldDescriptionsCM(new FieldDTO(value)), AvailabilityType.Configuration));
-            }
+            get { return this["SelectedGroup"]; }
+            set { this["SelectedGroup"] = value; }
         }
 
         public class ActivityUi : StandardConfigurationControlsCM
