@@ -344,10 +344,10 @@ namespace terminalDocuSign.Actions
                 activityIndex = 2;
             }
 
-            var sendDocusignEnvelopeAT = await HubCommunicator.GetActivityTemplate("terminalDocuSign", "Send_DocuSign_Envelope");
+            var sendDocusignEnvelopeAT = await HubCommunicator.GetActivityTemplate("terminalDocuSign", "Send_DocuSign_Envelope", activityTemplateVersion: "2");
             var sendDocuSignActivity = await HubCommunicator.AddAndConfigureChildActivity(parentActivity, sendDocusignEnvelopeAT, order: activityIndex);
             // Set docusign template
-            ControlHelper.SetControlValue(sendDocuSignActivity,"target_docusign_template",
+            ControlHelper.SetControlValue(sendDocuSignActivity, "TemplateSelector",
                 _docuSignTemplate.ListItems.FirstOrDefault(a => a.Key == _docuSignTemplate.selectedKey)
             );
 
