@@ -56,14 +56,6 @@
       <HintPath>..\packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Fr8Infrastructure.NET, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fr8TerminalBase.NET.1.0.0.1\lib\net40\Fr8Infrastructure.NET.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Fr8TerminalBase.NET, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fr8TerminalBase.NET.1.0.0.1\lib\net40\Fr8TerminalBase.NET.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
@@ -176,6 +168,7 @@
     <Compile Include="Activities\Get_Workspaces_v1.cs" />
     <Compile Include="Activities\Post_Comment_v1.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Asana\OAuthToken.cs" />
     <Compile Include="Asana\Users.cs" />
     <Compile Include="Asana\Workspaces.cs" />
     <Compile Include="Asana\WorkspaceSearchQuery.cs" />
@@ -202,7 +195,9 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="index.html" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -215,6 +210,16 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj">
+      <Project>{bba91af2-7636-41b6-87c4-c1575ae8b04b}</Project>
+      <Name>Fr8Infrastructure.NET</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Fr8TerminalBase.NET\Fr8TerminalBase.NET.csproj">
+      <Project>{bf96675e-6baf-4ac9-b247-1551d62e8c44}</Project>
+      <Name>Fr8TerminalBase.NET</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

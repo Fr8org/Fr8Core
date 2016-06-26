@@ -10,11 +10,14 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
+using terminalAsana.Interfaces;
 
 namespace terminalAsana.Activities
 {
     public class Get_Workspaces_v1 : TerminalActivity<Get_Workspaces_v1.ActivityUi>
     {
+        private IAsanaOAuth _asanaOAuth;
+
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "Get_Workspaces",
@@ -55,20 +58,27 @@ namespace terminalAsana.Activities
                         new ListItem() { Key = "2", Value = "2"}
                     }
                 };
+
+                Controls = new List<ControlDefinitionDTO>(){ Annotation, WorkspacesList};
             }
         }
 
-        public Get_Workspaces_v1(ICrateManager crateManager) : base(crateManager)
+        public Get_Workspaces_v1(ICrateManager crateManager, IAsanaOAuth oAuth) : base(crateManager)
         {
+            _asanaOAuth = oAuth;
         }
 
         public override Task Initialize()
         {
+            _asanaOAuth = _asanaOAuth.Initialize(this.AuthorizationToken);
+
             return Task.FromResult(0);
         }
 
         public override Task FollowUp()
         {
+            _asanaOAuth = _asanaOAuth.Initialize(this.AuthorizationToken);
+
             return Task.FromResult(0);
         }
 

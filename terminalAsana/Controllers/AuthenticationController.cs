@@ -12,13 +12,11 @@ namespace terminalAsana.Controllers
     public class AuthenticationController : ApiController
     {
         private readonly IAsanaOAuth _asanaOAuth;
-        private readonly IAsanaUsers _asanaUsers;
         private readonly IHubEventReporter _eventReporter;
 
-        public AuthenticationController(IAsanaOAuth asanaOAuth, IAsanaUsers asanaUsers, IHubEventReporter eventReporter)
+        public AuthenticationController(IAsanaOAuth asanaOAuth, IHubEventReporter eventReporter)
         {
-            _asanaOAuth = asanaOAuth;
-            _asanaUsers = asanaUsers;
+            _asanaOAuth = asanaOAuth;        
             _eventReporter = eventReporter;
 
         }
@@ -57,9 +55,8 @@ namespace terminalAsana.Controllers
 
                 var oauthTokenData = await _asanaOAuth.GetOAuthTokenData(code);
                 var userInfo = oauthTokenData.Value<JObject>("data");
-
-                //_asanaUsers.Token = oauthToken;
-                //var userInfo = await _asanaUsers.Me();
+                var secondsToExpiration = oauthTokenData.Value<int>("expires_in");
+                var expirationDate = _asanaOAuth.CalculateExpirationTime(secondsToExpiration);
 
                 return new AuthorizationTokenDTO
                 {
@@ -67,7 +64,7 @@ namespace terminalAsana.Controllers
                     ExternalAccountId = userInfo.Value<string>("id"),
                     ExternalAccountName = userInfo.Value<string>("name"),
                     ExternalStateToken = state,
-                    
+                    AdditionalAttributes = expirationDate.ToString("O")
                 };
             }
             catch (Exception ex)
