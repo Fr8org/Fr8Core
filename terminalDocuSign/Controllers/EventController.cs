@@ -4,6 +4,7 @@ using System.Web.Http;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
 using System.Net;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Services;
 using StructureMap;
@@ -44,7 +45,9 @@ namespace terminalDocuSign.Controllers
         public async Task<PollingDataDTO> ProcessPollingRequest(PollingDataDTO pollingData)
         {
             var hubCommunicator = _container.GetInstance<IHubCommunicator>();
+
             hubCommunicator.Authorize(pollingData.Fr8AccountId);
+
             pollingData = await _polling.Poll(hubCommunicator, pollingData);
             return pollingData;
         }

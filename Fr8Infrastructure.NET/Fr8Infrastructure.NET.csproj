@@ -280,6 +280,7 @@
     <Compile Include="Data\Manifests\StandardRoutingDirectiveCM.cs" />
     <Compile Include="Data\Manifests\StandardSecurityCM.cs" />
     <Compile Include="Data\Manifests\StandardTableDataCM.cs" />
+    <Compile Include="Data\Manifests\StatXItemCM.cs" />
     <Compile Include="Data\Manifests\ValidationResultsCM.cs" />
     <Compile Include="Data\States\ActivityCategory.cs" />
     <Compile Include="Data\States\ActivityType.cs" />

@@ -131,7 +131,10 @@ namespace Fr8.Infrastructure.Data.Constants
         FacebookUserEvent = 43,
        
         [Display(Name = "Key-Value pairs list")]
-        KeyValueList = 44
+        KeyValueList = 44,
+
+        [Display(Name = "StatX Item")]
+        StatXItem = 45
     }
 }
 
