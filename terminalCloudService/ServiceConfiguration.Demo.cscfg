@@ -6,6 +6,7 @@
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=fr8companysa;AccountKey=PHyyd4POhHfwk0AQKF6QtO0hJaSU/cPaey+abslpwwCu0JahK0uTtTLf1KGk+QZgFrcspdiD1ejrgxAdZrDntA==" />
       <Setting name="Fr8.ConnectionString" value="" />
       <Setting name="CoreWebServerUrl" value="" />
+      <Setting name="HubApiBaseUrl" value="" />
       <Setting name="terminalAtlassian.TerminalEndpoint" value="" />
       <Setting name="terminalAzure.TerminalEndpoint" value="" />
       <Setting name="terminalDocuSign.TerminalEndpoint" value="" />

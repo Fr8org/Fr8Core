@@ -11,6 +11,7 @@
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteForwarder.Enabled" value="true" />
       <Setting name="Fr8.ConnectionString" value="" />
       <Setting name="CoreWebServerUrl" value="" />
+      <Setting name="HubApiBaseUrl" value="" />
       <Setting name="terminalAtlassian.TerminalEndpoint" value="" />
       <Setting name="terminalAzure.TerminalEndpoint" value="" />
       <Setting name="terminalDocuSign.TerminalEndpoint" value="" />
