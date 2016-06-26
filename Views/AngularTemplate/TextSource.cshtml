@@ -1,4 +1,4 @@
-﻿<label class="fr8-config-pane-padding" ng-if="field.groupLabel">Available Fields</label>
+﻿<label class="fr8-config-pane-padding" ng-if="field.groupLabel">{{field.groupLabelText ? field.groupLabelText : "Available Fields" }}</label>
 <!--TextBlock control main container-->
 <div class="fr8-config-pane-padding" style="margin-bottom: 6px; ">  
     <md-button class="md-raised fr8-text-source-button fr8-full-width" ng-click="field.isCollapsed=!field.isCollapsed;"  ng-class="[{'': !field.isCollapsed},{'fr8-text-source-button-pressed':field.isCollapsed}]">{{field.initialLabel}}</md-button>

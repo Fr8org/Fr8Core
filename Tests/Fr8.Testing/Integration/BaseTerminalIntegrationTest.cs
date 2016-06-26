@@ -35,7 +35,7 @@ namespace Fr8.Testing.Integration
 
         public void AddActivityTemplate(Fr8DataDTO dataDTO, ActivityTemplateDTO activityTemplate)
         {
-            AddHubCrate(dataDTO, new FieldDescriptionsCM(new FieldDTO("ActivityTemplate", JsonConvert.SerializeObject(activityTemplate))),
+            AddHubCrate(dataDTO, new KeyValueListCM(new KeyValueDTO("ActivityTemplate", JsonConvert.SerializeObject(activityTemplate))), 
                 "HealthMonitor_ActivityTemplate",
                 ""
             );
