@@ -21,9 +21,9 @@ namespace Fr8.Testing.Unit.Fixtures
 
         public static PayloadDTO PayloadDTO1()
         {
-            List<FieldDTO> curFields = new List<FieldDTO>()
+            var  curFields = new List<KeyValueDTO>
             {
-                new FieldDTO() { Key = "EnvelopeId", Value = "EnvelopeIdValue" }
+                new KeyValueDTO { Key = "EnvelopeId", Value = "EnvelopeIdValue" }
             };
 
             EventReportCM curEventReportMS = new EventReportCM();
@@ -45,9 +45,9 @@ namespace Fr8.Testing.Unit.Fixtures
         public static ICrateStorage PayloadDTO2()
         {
             var standardPayload = new StandardPayloadDataCM(
-                new List<FieldDTO>()
+                new List<KeyValueDTO>()
                 {
-                    new FieldDTO() { Key = "EnvelopeId", Value = "EnvelopeIdValue" }
+                    new KeyValueDTO() { Key = "EnvelopeId", Value = "EnvelopeIdValue" }
                 }
             );
 

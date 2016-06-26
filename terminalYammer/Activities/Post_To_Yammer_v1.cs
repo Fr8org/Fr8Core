@@ -117,7 +117,7 @@ namespace terminalYammer.Actions
             }
         }
 
-        private Crate CreateAvailableGroupsCrate(IEnumerable<FieldDTO> groups)
+        private Crate CreateAvailableGroupsCrate(IEnumerable<KeyValueDTO> groups)
         {
             var crate =
                 CrateManager.CreateDesignTimeFieldsCrate(
