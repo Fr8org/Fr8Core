@@ -89,12 +89,12 @@ namespace terminalDocuSign.Activities
         {
         }
 
-        protected override async Task RunDS()
+        public override async Task Run()
         {
             Success();
         }
-        
-        protected override async Task InitializeDS()
+
+        public override async Task Initialize()
         {
             var actionUi = new ActivityUi();
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(AuthorizationToken.Token);           
@@ -106,7 +106,7 @@ namespace terminalDocuSign.Activities
             await ConfigureNestedActivities(actionUi);
         }
 
-        protected override async Task FollowUpDS()
+        public override async Task FollowUp()
         {
             if (ConfigurationControls == null)
             {

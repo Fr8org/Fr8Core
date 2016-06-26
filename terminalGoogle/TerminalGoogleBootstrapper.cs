@@ -8,7 +8,7 @@ using terminalGoogle.Services.Authorization;
 namespace terminalGoogle
 {
     public static class TerminalGoogleBootstrapper
-	{
+    {
         public static void ConfigureGoogleDependencies(this StructureMap.IContainer container, StructureMapBootStrapper.DependencyType type)
         {
             switch (type)
@@ -27,6 +27,7 @@ namespace terminalGoogle
 
         public static void ConfigureLive(ConfigurationExpression configurationExpression)
         {
+            configurationExpression.For<IGoogleGmailPolling>().Use<GoogleGmailPolling>();
             configurationExpression.For<IGoogleIntegration>().Use<GoogleIntegration>();
             configurationExpression.For<IGoogleDrive>().Use<GoogleDrive>();
             configurationExpression.For<IGoogleSheet>().Use<GoogleSheet>();
@@ -34,5 +35,5 @@ namespace terminalGoogle
             configurationExpression.For<ICrateManager>().Use<CrateManager>();
         }
 
-	}
+    }
 }

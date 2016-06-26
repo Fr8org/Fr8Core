@@ -43,7 +43,7 @@ namespace terminalFr8CoreTests.Integration
 			Assert.AreEqual(2, crateStorage.Count);
 
 			Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(x => x.Label == "Configuration_Controls"));
-			Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Select Fr8 Object"));
+			Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count(x => x.Label == "Select Fr8 Object"));
 
 			var configCrate = crateStorage
 				.CrateContentsOfType<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls")
@@ -52,7 +52,7 @@ namespace terminalFr8CoreTests.Integration
 			ValidateConfigurationCrateStructure(configCrate);
 
 			var designTimeCrate = crateStorage
-				.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Select Fr8 Object")
+				.CrateContentsOfType<KeyValueListCM>(x => x.Label == "Select Fr8 Object")
 				.SingleOrDefault();
 
 			ValidateFr8ObjectCrateStructure(designTimeCrate);
@@ -81,8 +81,8 @@ namespace terminalFr8CoreTests.Integration
 			Assert.AreEqual(3, crateStorage.Count);
 
 			Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(x => x.Label == "Configuration_Controls"));
-			Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Select Fr8 Object"));
-			Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "StandardFr8PlansCM"));
+			Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count(x => x.Label == "Select Fr8 Object"));
+			Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count(x => x.Label == "StandardFr8PlansCM"));
 
 			var configCrate = crateStorage
 				.CrateContentsOfType<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls")
@@ -96,18 +96,18 @@ namespace terminalFr8CoreTests.Integration
 			Assert.AreEqual("Plans", configurationControl.selectedKey);
 
 			var selectFr8ObjectDesignTimeCrate = crateStorage
-				.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Select Fr8 Object")
+				.CrateContentsOfType<KeyValueListCM>(x => x.Label == "Select Fr8 Object")
 				.SingleOrDefault();
 
 			ValidateFr8ObjectCrateStructure(selectFr8ObjectDesignTimeCrate);
 
 			var fr8PlansDesignTimeCrate = crateStorage
-				.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "StandardFr8PlansCM")
+				.CrateContentsOfType<KeyValueListCM>(x => x.Label == "StandardFr8PlansCM")
 				.SingleOrDefault();
 
-			Assert.AreEqual(8, fr8PlansDesignTimeCrate.Fields.Count);
+			Assert.AreEqual(8, fr8PlansDesignTimeCrate.Values.Count);
 
-			var fr8PlansCrateFields = fr8PlansDesignTimeCrate.Fields;
+			var fr8PlansCrateFields = fr8PlansDesignTimeCrate.Values;
 
 			Assert.AreEqual("CreateDate", fr8PlansCrateFields[0].Key);
 			Assert.AreEqual("DateTime", fr8PlansCrateFields[0].Value);
@@ -155,8 +155,8 @@ namespace terminalFr8CoreTests.Integration
 			Assert.AreEqual(3, crateStorage.Count);
 
 			Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(x => x.Label == "Configuration_Controls"));
-			Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Select Fr8 Object"));
-			Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "StandardFr8ContainersCM"));
+			Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count(x => x.Label == "Select Fr8 Object"));
+			Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count(x => x.Label == "StandardFr8ContainersCM"));
 
 			var configCrate = crateStorage
 				.CrateContentsOfType<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls")
@@ -170,18 +170,18 @@ namespace terminalFr8CoreTests.Integration
 			Assert.AreEqual("Containers", configurationControl.selectedKey);
 
 			var selectFr8ObjectDesignTimeCrate = crateStorage
-				.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Select Fr8 Object")
+				.CrateContentsOfType<KeyValueListCM>(x => x.Label == "Select Fr8 Object")
 				.SingleOrDefault();
 
 			ValidateFr8ObjectCrateStructure(selectFr8ObjectDesignTimeCrate);
 
 			var fr8ContainersDesignTimeCrate = crateStorage
-				.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "StandardFr8ContainersCM")
+				.CrateContentsOfType<KeyValueListCM>(x => x.Label == "StandardFr8ContainersCM")
 				.SingleOrDefault();
 
-			Assert.AreEqual(5, fr8ContainersDesignTimeCrate.Fields.Count);
+			Assert.AreEqual(5, fr8ContainersDesignTimeCrate.Values.Count);
 
-			var fr8ContainersCrateFields = fr8ContainersDesignTimeCrate.Fields;
+			var fr8ContainersCrateFields = fr8ContainersDesignTimeCrate.Values;
 
 			Assert.AreEqual("Name", fr8ContainersCrateFields[0].Key);
 			Assert.AreEqual("String", fr8ContainersCrateFields[0].Value);
@@ -349,9 +349,9 @@ namespace terminalFr8CoreTests.Integration
 			Assert.AreEqual("Field Description", configurationControlSourceField.ManifestType);
 		}
 
-		private static void ValidateFr8ObjectCrateStructure(FieldDescriptionsCM designTimeCrate)
+		private static void ValidateFr8ObjectCrateStructure(KeyValueListCM designTimeCrate)
 		{
-			var designTimeFields = designTimeCrate.Fields;
+			var designTimeFields = designTimeCrate.Values;
 
 			Assert.AreEqual(2, designTimeFields.Count);
 

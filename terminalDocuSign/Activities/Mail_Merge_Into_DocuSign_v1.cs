@@ -61,7 +61,7 @@ namespace terminalDocuSign.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        protected override Task RunDS()
+        public override Task Run()
         {
             Success();
             return Task.FromResult(0);
@@ -105,7 +105,7 @@ namespace terminalDocuSign.Actions
         /// <summary>
         /// Looks for upstream and downstream Creates.
         /// </summary>
-        protected override async Task InitializeDS()
+        public override async Task Initialize()
         {
                         //build a controls crate to render the pane
             var configurationCrate = await CreateConfigurationControlsCrate();
@@ -181,7 +181,7 @@ namespace terminalDocuSign.Actions
             return activityTemplate.Tags != null && activityTemplate.Tags.Split(',').Any(t => t.ToLowerInvariant().Contains("table"));
         }
 
-        protected override async Task FollowUpDS()
+        public override async Task FollowUp()
         {
             var reconfigList = new List<ConfigurationRequest>()
             {

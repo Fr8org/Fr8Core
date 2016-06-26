@@ -691,6 +691,7 @@ module dockyard.directives.paneConfigureAction {
                 currentAction: '=',
                 mode: '=',
                 plan: '=',
+                subPlan: '=',
                 view: '@',
                 processing: '='
             }

@@ -45,20 +45,7 @@ namespace Fr8.Testing.Unit.Fixtures
 
             return curActionDTO;
         }
-
-        public static ActivityDTO CreateStandardDesignTimeFields()
-        {
-            ActivityDTO curActionDTO = new ActivityDTO();
-            var curCratesDTO = FixtureData.TestCrateDTO2();
-            
-            using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(curActionDTO))
-            {
-                crateStorage.AddRange(curCratesDTO);
-            }
-
-            return curActionDTO;
-        }
-
+        
         public static ActivityDTO TestActivityDTOForSalesforce()
         {
             return new ActivityDTO()

@@ -124,7 +124,7 @@ namespace HubTests.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
+            var filtred = (IQueryable<KeyValueDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
 
 
             //Assert
@@ -142,7 +142,7 @@ namespace HubTests.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
+            var filtred = (IQueryable<KeyValueDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "Physician" && x.Value == "Test1");
@@ -158,7 +158,7 @@ namespace HubTests.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
+            var filtred = (IQueryable<KeyValueDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && x.Value == "10");
@@ -174,7 +174,7 @@ namespace HubTests.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
+            var filtred = (IQueryable<KeyValueDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && x.Value == "30");
@@ -191,7 +191,7 @@ namespace HubTests.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
+            var filtred = (IQueryable<KeyValueDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) > 3000);
@@ -208,7 +208,7 @@ namespace HubTests.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
+            var filtred = (IQueryable<KeyValueDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) > 30);
@@ -224,7 +224,7 @@ namespace HubTests.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
+            var filtred = (IQueryable<KeyValueDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) > 30);
@@ -241,7 +241,7 @@ namespace HubTests.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
+            var filtred = (IQueryable<KeyValueDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) > 0);
@@ -259,7 +259,7 @@ namespace HubTests.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
+            var filtred = (IQueryable<KeyValueDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) >= 3000);
@@ -276,7 +276,7 @@ namespace HubTests.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
+            var filtred = (IQueryable<KeyValueDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) >= 50);
@@ -292,7 +292,7 @@ namespace HubTests.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
+            var filtred = (IQueryable<KeyValueDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) >= 40);
@@ -308,7 +308,7 @@ namespace HubTests.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
+            var filtred = (IQueryable<KeyValueDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) >= 0);
@@ -326,7 +326,7 @@ namespace HubTests.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
+            var filtred = (IQueryable<KeyValueDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) < 10);
@@ -342,7 +342,7 @@ namespace HubTests.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
+            var filtred = (IQueryable<KeyValueDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) < 20);
@@ -358,7 +358,7 @@ namespace HubTests.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
+            var filtred = (IQueryable<KeyValueDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) < 30);
@@ -374,7 +374,7 @@ namespace HubTests.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
+            var filtred = (IQueryable<KeyValueDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) < 3000);
@@ -392,7 +392,7 @@ namespace HubTests.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
+            var filtred = (IQueryable<KeyValueDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) <= 0);
@@ -408,7 +408,7 @@ namespace HubTests.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
+            var filtred = (IQueryable<KeyValueDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) <= 10);
@@ -424,7 +424,7 @@ namespace HubTests.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
+            var filtred = (IQueryable<KeyValueDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) <= 20);
@@ -440,7 +440,7 @@ namespace HubTests.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
+            var filtred = (IQueryable<KeyValueDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) <= 3000);
@@ -462,7 +462,7 @@ namespace HubTests.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
+            var filtred = (IQueryable<KeyValueDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) == 2000 && Convert.ToInt32(x.Value) == 2500);
@@ -486,7 +486,7 @@ namespace HubTests.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
+            var filtred = (IQueryable<KeyValueDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
 
             var expected = envelopData.ToList().Where(x => Convert.ToInt32(x.Value) > 10 && Convert.ToInt32(x.Value) <= 40 && Convert.ToInt32(x.Value) == 400);
 
@@ -510,7 +510,7 @@ namespace HubTests.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
+            var filtred = (IQueryable<KeyValueDTO>)Invoke<Test_Incoming_Data_v1>("Filter", parameters);
 
             var expected = envelopData.ToList().Where(x => Convert.ToInt32(x.Value) > 10 && Convert.ToInt32(x.Value) <= 40 && Convert.ToInt32(x.Value) == 30);
 
