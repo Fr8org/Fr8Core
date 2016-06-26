@@ -365,6 +365,10 @@
       <Project>{c982a6fe-6fd4-47fa-a69d-91ffa80fedaa}</Project>
       <Name>terminalFacebook</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\terminalStatX\terminalStatX.csproj">
+      <Project>{5fb0adc8-24c7-4b32-a4d2-afa31b0baaa7}</Project>
+      <Name>terminalStatX</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Fr8.Testing\Fr8.Testing.csproj">
       <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
       <Name>Fr8.Testing</Name>
@@ -452,6 +456,10 @@
     <ProjectReference Include="..\..\terminalSlack\terminalSlack.csproj">
       <Project>{990db8cb-aad6-42fe-940d-3a731df56abe}</Project>
       <Name>terminalSlack</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\terminalStatXTests\terminalStatXTests.csproj">
+      <Project>{e0e04964-f77e-435f-8b90-f4338c30ddad}</Project>
+      <Name>terminalStatXTests</Name>
     </ProjectReference>
     <ProjectReference Include="..\terminalTwilioTests\terminalTwilioTests.csproj">
       <Project>{6b807ab1-f549-49cb-9f52-52bc33d23443}</Project>
