@@ -252,7 +252,7 @@ namespace terminalDocuSign.Activities
                     messageField.ValueSource = "upstream";
                     messageField.Value = NotificationMessageLabel;
                     messageField.selectedKey = NotificationMessageLabel;
-                    messageField.SelectedItem = new FieldDTO { Key = NotificationMessageLabel, Value = NotificationMessageLabel };
+                    messageField.SelectedItem = new FieldDTO { Name = NotificationMessageLabel };
                     activity = await HubCommunicator.ConfigureActivity(activity);
                 }
             }
@@ -289,7 +289,7 @@ namespace terminalDocuSign.Activities
             var queryableCriteria = new FieldDescriptionsCM(
                 new FieldDTO
                 {
-                    Key = "Status",
+                    Name = "Status",
                     Label = "Status",
                     FieldType = FieldType.String
                 });
@@ -371,12 +371,12 @@ namespace terminalDocuSign.Activities
 
         public override Task Run()
         {
-            var resultFields = new List<FieldDTO>();
+            var resultFields = new List<KeyValueDTO>();
             var delayActivity = ActivityPayload.ChildrenActivities.FirstOrDefault(x => x.ActivityTemplate.Name == "Set_Delay" && x.ActivityTemplate.Version == "1");
             if (delayActivity != null)
             {
                 var delayControl = delayActivity.CrateStorage.FirstCrate<StandardConfigurationControlsCM>().Content.Controls.OfType<Duration>().First();
-                resultFields.Add(new FieldDTO(DelayTimeProperty, GetDelayDescription(delayControl), AvailabilityType.RunTime));
+                resultFields.Add(new KeyValueDTO { Key = DelayTimeProperty, Value = GetDelayDescription(delayControl) });
             }
             var filterActivity = ActivityPayload.ChildrenActivities.FirstOrDefault(x => x.ActivityTemplate.Name == "Test_Incoming_Data" && x.ActivityTemplate.Version == "1");
             if (filterActivity != null)
@@ -386,7 +386,7 @@ namespace terminalDocuSign.Activities
                 var statusField = conditions.Conditions.FirstOrDefault(c => c.Field == "Status");
                 if (statusField != null)
                 {
-                    resultFields.Add(new FieldDTO(ActionBeingTrackedProperty, statusField.Value, AvailabilityType.RunTime));
+                    resultFields.Add(new KeyValueDTO { Key = ActionBeingTrackedProperty, Value = statusField.Value });
                 }
             }
             Payload.Add(Crate<StandardPayloadDataCM>.FromContent(RuntimeCrateLabel, new StandardPayloadDataCM(resultFields)));
