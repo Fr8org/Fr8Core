@@ -10,9 +10,9 @@ namespace terminalSlack.Interfaces
         string CreateAuthUrl(string externalStateToken);
         Task<string> GetOAuthToken(string code);
         Task<UserInfo> GetUserInfo(string oauthToken);
-        Task<List<FieldDTO>> GetChannelList(string oauthToken, bool includeArchived = false);
-        Task<List<FieldDTO>> GetUserList(string oauthToken);
-        Task<List<FieldDTO>> GetAllChannelList(string oauthToken);
+        Task<List<KeyValueDTO>> GetChannelList(string oauthToken, bool includeArchived = false);
+        Task<List<KeyValueDTO>> GetUserList(string oauthToken);
+        Task<List<KeyValueDTO>> GetAllChannelList(string oauthToken);
         Task<bool> PostMessageToChat(string oauthToken, string channelId, string message);
     }
 

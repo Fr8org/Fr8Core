@@ -130,11 +130,8 @@ namespace terminalSalesforce.Actions
         public override async Task Initialize()
         {
             IsPostingToQueryiedChatter = true;
-            AvailableChatters = _salesforceManager.GetSalesforceObjectTypes(filterByProperties: SalesforceObjectProperties.HasChatter).Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PostedFeedCrateLabel);
-            Storage.Add(Crate<FieldDescriptionsCM>.FromContent(PostedFeedPropertiesCrateLabel,
-                                                                              new FieldDescriptionsCM(new FieldDTO(FeedIdKeyName, FeedIdKeyName, AvailabilityType.RunTime) { SourceCrateLabel = FeedIdKeyName }),
-                                                                              AvailabilityType.RunTime));
+            AvailableChatters = _salesforceManager.GetSalesforceObjectTypes(filterByProperties: SalesforceObjectProperties.HasChatter).Select(x => new ListItem {Key = x.Name, Value = x.Label}).ToList();
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PostedFeedCrateLabel).AddField(FeedIdKeyName);
         }
 
         public override async Task FollowUp()
@@ -216,7 +213,7 @@ namespace terminalSalesforce.Actions
                     else
                     {
                         var resultPayload = new StandardPayloadDataCM();
-                        resultPayload.PayloadObjects.AddRange(tasks.Select(x => new PayloadObjectDTO(new FieldDTO(FeedIdKeyName, x.Result))));
+                        resultPayload.PayloadObjects.AddRange(tasks.Select(x => new PayloadObjectDTO(new KeyValueDTO(FeedIdKeyName, x.Result))));
                         Payload.Add(Crate<StandardPayloadDataCM>.FromContent(PostedFeedCrateLabel, resultPayload));
                     }
                 }
@@ -240,7 +237,7 @@ namespace terminalSalesforce.Actions
 
                 Logger.Info($"Posting message to chatter succeded with feedId: {feedId}");
 
-                Payload.Add(Crate.FromContent(PostedFeedCrateLabel, new StandardPayloadDataCM(new FieldDTO(FeedIdKeyName, feedId))));
+                Payload.Add(Crate.FromContent(PostedFeedCrateLabel, new StandardPayloadDataCM(new KeyValueDTO(FeedIdKeyName, feedId))));
             }
         }
 
