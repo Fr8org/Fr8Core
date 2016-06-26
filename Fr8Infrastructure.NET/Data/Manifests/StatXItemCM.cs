@@ -6,7 +6,7 @@ namespace Fr8.Infrastructure.Data.Manifests
 {
     public class StatXItemCM : Manifest 
     {
-        public StatXItemCM() : base(MT.StatXStatItem)
+        public StatXItemCM() : base(MT.StatXItem)
         {
             StatValueItems = new List<StatValueItemDTO>();
         }
