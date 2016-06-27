@@ -83,6 +83,47 @@ namespace Fr8.TerminalBase.BaseClasses
 
         public CrateSignaller CrateSignaller { get; private set; }
 
+        private const string ConfigurationValuesCrateLabel = "Configuration Values";
+      
+        /// <summary>
+        /// Get or sets value of configuration field with the given key stored in current activity storage
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        protected string this[string key]
+        {
+            get
+            {
+                var crate = Storage.FirstCrateOrDefault<KeyValueListCM>(x => x.Label == ConfigurationValuesCrateLabel);
+
+                return crate?.Content.Values.FirstOrDefault(x => x.Key == key)?.Value;
+            }
+            set
+            {
+                var crate = Storage.FirstCrateOrDefault<KeyValueListCM>(x => x.Label == ConfigurationValuesCrateLabel);
+
+                if (crate == null)
+                {
+                    crate = Crate<KeyValueListCM>.FromContent(ConfigurationValuesCrateLabel, new KeyValueListCM(new KeyValueDTO(key, value)));
+                    Storage.Add(crate);
+                }
+                else
+                {
+                    var field = crate.Content.Values.FirstOrDefault(x => x.Key == key);
+
+                    if (field == null)
+                    {
+                        field = new KeyValueDTO(key, value);
+                        crate.Content.Values.Add(field);
+                    }
+                    else
+                    {
+                        field.Value = value;
+                    }
+                }
+            }
+        }
+
         /**********************************************************************************/
         // Functions
         /**********************************************************************************/
@@ -184,11 +225,14 @@ namespace Fr8.TerminalBase.BaseClasses
                 if (IsInvalidTokenException(ex))
                 {
                     AddAuthenticationCrate(true);
+                    return;
                 }
                 else if (!afterConfigureFails)
                 {
                     await AfterConfigure(configurationType, ex);
                 }
+
+                throw;
             }
         }
 
@@ -235,6 +279,8 @@ namespace Fr8.TerminalBase.BaseClasses
                 {
                     await AfterActivate(ex);
                 }
+
+                throw;
             }
         }
 
@@ -271,6 +317,8 @@ namespace Fr8.TerminalBase.BaseClasses
                 {
                     await AfterDeactivate(ex);
                 }
+
+                throw;
             }
         }
 

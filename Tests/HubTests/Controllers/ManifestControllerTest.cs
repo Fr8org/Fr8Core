@@ -69,13 +69,13 @@ namespace HubTests.Controllers
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("CreateDate")), "CreateDate Not found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Description")), "Description Not found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("LastUpdated")), "LastUpdated Not found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Name")), "Name Not found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Ordering")), "Ordering Not found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("PlanState")), "PlanState Not found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("SubPlans")), "SubPlans Not found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("CreateDate")), "CreateDate Not found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("Description")), "Description Not found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("LastUpdated")), "LastUpdated Not found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("Name")), "Name Not found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("Ordering")), "Ordering Not found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("PlanState")), "PlanState Not found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("SubPlans")), "SubPlans Not found");
         }
 
         [Test]
@@ -91,10 +91,10 @@ namespace HubTests.Controllers
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("CreatedDate")) ,"CreatedDate Not found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Description")), "Description Not found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("LastUpdated")), "LastUpdated Not found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Name")), "Name Not found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("CreatedDate")) ,"CreatedDate Not found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("Description")), "Description Not found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("LastUpdated")), "LastUpdated Not found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("Name")), "Name Not found");
         }
 
         [Test]
@@ -110,10 +110,10 @@ namespace HubTests.Controllers
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("CreatedDate")), "CreatedDate Not found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Description")), "Description Not found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("LastUpdated")), "LastUpdated Not found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Name")), "Name Not found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("CreatedDate")), "CreatedDate Not found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("Description")), "Description Not found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("LastUpdated")), "LastUpdated Not found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("Name")), "Name Not found");
         }
        
         [Test]
@@ -128,12 +128,12 @@ namespace HubTests.Controllers
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("StartDate")), "StartDate Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Service")), "Service Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("EndDate")), "EndDate Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Name")), "Name Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("ExternalAccountId")), "ExternalAccountId Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("InternalAccountId")), "InternalAccountid Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("StartDate")), "StartDate Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("Service")), "Service Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("EndDate")), "EndDate Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("Name")), "Name Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("ExternalAccountId")), "ExternalAccountId Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("InternalAccountId")), "InternalAccountid Not Found");
         }
 
         
@@ -149,8 +149,8 @@ namespace HubTests.Controllers
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Definition")), "Definition Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Activities")), "Actions Not Found");          
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("Definition")), "Definition Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("Activities")), "Actions Not Found");          
         }
         
         //QueryDTO	List
@@ -166,7 +166,7 @@ namespace HubTests.Controllers
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Queries")), "Queries Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("Queries")), "Queries Not Found");
         }
 
 
@@ -182,14 +182,12 @@ namespace HubTests.Controllers
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("MessageID")), "MessageID Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("References")), "References Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Subject")), "Subject Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("HtmlText")), "HtmlText Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("PlainText")), "PlainText Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("DateReceived")), "DateReceived Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("EmailStatus")), "EmailStatus Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("EmailFromName")), "EmailFromName Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("MessageID")), "MessageID Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("Subject")), "Subject Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("HtmlText")), "HtmlText Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("PlainText")), "PlainText Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("DateReceived")), "DateReceived Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("EmailFromName")), "EmailFromName Not Found");
         }
 
         
@@ -205,7 +203,7 @@ namespace HubTests.Controllers
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Item")), "Item Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("Item")), "Item Not Found");
         }      
 
         [Test]
@@ -219,7 +217,7 @@ namespace HubTests.Controllers
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("AuthenticateAs")), "AuthenticateAs Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("AuthenticateAs")), "AuthenticateAs Not Found");
         }
 
         [Test]
@@ -234,13 +232,13 @@ namespace HubTests.Controllers
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Status")), "Status Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("CreateDate")), "CreateDate Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("SentDate")), "SentDate Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("DeliveredDate")), "DeliveredDate Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("CompletedDate")), "CompletedDate Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("EnvelopeId")), "EnvelopeId Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("ExternalAccountId")), "ExternalAccountId Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("Status")), "Status Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("CreateDate")), "CreateDate Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("SentDate")), "SentDate Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("DeliveredDate")), "DeliveredDate Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("CompletedDate")), "CompletedDate Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("EnvelopeId")), "EnvelopeId Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("ExternalAccountId")), "ExternalAccountId Not Found");
         }
 
         [Test]
@@ -255,11 +253,11 @@ namespace HubTests.Controllers
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Status")), "Status Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Object")), "Object Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("EventId")), "EventId Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("RecepientId")), "RecepientId Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("EnvelopeId")), "EnvelopeId Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("Status")), "Status Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("Object")), "Object Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("EventId")), "EventId Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("RecepientId")), "RecepientId Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("EnvelopeId")), "EnvelopeId Not Found");
         }
 
         [Test]
@@ -274,9 +272,9 @@ namespace HubTests.Controllers
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("EventNames")), "EventNames Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("ContainerDoId")), "ContainerDoId Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("EventPayload")), "EventPayload Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("EventNames")), "EventNames Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("ContainerDoId")), "ContainerDoId Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("EventPayload")), "EventPayload Not Found");
         }
 
         [Test]
@@ -290,7 +288,7 @@ namespace HubTests.Controllers
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Subscriptions")), "Subscriptions Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("Subscriptions")), "Subscriptions Not Found");
         }
 
         [Test]
@@ -320,9 +318,9 @@ namespace HubTests.Controllers
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("DirectUrl")), "DirectUrl Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Filename")), "Filename Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Filetype")), "Filetype Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("DirectUrl")), "DirectUrl Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("Filename")), "Filename Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("Filetype")), "Filetype Not Found");
         }
 
         [Test]
@@ -337,8 +335,8 @@ namespace HubTests.Controllers
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("PayloadObjects")), "PayloadObjects Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("ObjectType")), "ObjectType Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("PayloadObjects")), "PayloadObjects Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("ObjectType")), "ObjectType Not Found");
         }
 
         [Test]
@@ -353,10 +351,10 @@ namespace HubTests.Controllers
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Directive")), "Directive Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("TargetProcessNodeName")), "TargetProcessNodeName Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("TargetActivityName")), "TargetActivityName Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Explanation")), "Explanation Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("Directive")), "Directive Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("TargetProcessNodeName")), "TargetProcessNodeName Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("TargetActivityName")), "TargetActivityName Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("Explanation")), "Explanation Not Found");
         }
 
         [Test]
@@ -371,8 +369,8 @@ namespace HubTests.Controllers
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Table")), "Table Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("FirstRowHeaders")), "FirstRowHeaders Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("Table")), "Table Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("FirstRowHeaders")), "FirstRowHeaders Not Found");
         }
 
         private static FieldDescriptionsCM Deserialize(OkNegotiatedContentResult<CrateDTO> actionResult)
