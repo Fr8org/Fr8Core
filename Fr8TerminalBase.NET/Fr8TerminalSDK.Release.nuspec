@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>Fr8.TerminalBase</id>
+    <id>Fr8.TerminalBase.NET</id>
     <version>1.0.0.1</version>
     <title>Fr8 Terminal Developer SDK</title>
     <authors>The Fr8 Company</authors>
