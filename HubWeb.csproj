@@ -471,7 +471,7 @@
     <Content Include="Content\css\homecss\main.css" />
     <Content Include="Content\css\shared\main.css" />
     <Content Include="Content\css\shared\navbar.css" />
-    <Content Include="Content\icons\web_services\basecamp-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\basecamp2-icon-64x64.png" />
     <Content Include="Content\icons\web_services\Box-logo_64x64.png" />
     <Content Include="Content\icons\web_services\facebook-icon-64x64.png" />
     <Content Include="Content\icons\web_services\fr8-demo-icon-64x64.png" />
