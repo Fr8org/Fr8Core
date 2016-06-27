@@ -127,7 +127,7 @@ namespace terminalSalesforceTests.Actions
             await _getData_v1.Run(activityContext, executionContext);
             //Assert
             var stroage = executionContext.PayloadStorage;
-            Assert.AreEqual(3, stroage.Count, "Number of Payload crates not populated correctly");
+            Assert.AreEqual(4, stroage.Count, "Number of Payload crates not populated correctly");
 
             Assert.IsNotNull(stroage.CratesOfType<StandardTableDataCM>().Single(), "Not able to get the required salesforce object");
         }

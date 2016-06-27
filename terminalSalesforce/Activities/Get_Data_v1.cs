@@ -68,6 +68,10 @@ namespace terminalSalesforce.Actions
 
         public const string PayloadDataCrateLabel = "Payload from Salesforce Get Data";
 
+        public const string CountObjectsCrateLabel = "Count of Objects from Salesforce Get Data";
+
+        public const string CountObjectsFieldLabel = "Count of Objects";
+
         private readonly ISalesforceManager _salesforceManager;
 
         public Get_Data_v1(ICrateManager crateManager, ISalesforceManager salesforceManager)
@@ -84,6 +88,8 @@ namespace terminalSalesforce.Actions
                 .ToList();
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel, true);
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PayloadDataCrateLabel, true);
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(CountObjectsCrateLabel, true);
+
             return Task.FromResult(true);
         }
 
@@ -117,6 +123,8 @@ namespace terminalSalesforce.Actions
                           .AddFields(selectedObjectProperties);
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PayloadDataCrateLabel, true)
                           .AddFields(selectedObjectProperties);
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(CountObjectsCrateLabel, true)
+                          .AddField(CountObjectsFieldLabel);
         }
 
         public override async Task Run()
@@ -169,6 +177,15 @@ namespace terminalSalesforce.Actions
                         AvailabilityType.RunTime
                     )
                 );
+
+            Payload.Add(
+                Crate<StandardPayloadDataCM>
+                    .FromContent(
+                        CountObjectsCrateLabel,
+                        new StandardPayloadDataCM(new KeyValueDTO(CountObjectsFieldLabel, resultObjects.DataRows.Count().ToString())),
+                        AvailabilityType.RunTime
+                    )
+            );
         }
     }
 }

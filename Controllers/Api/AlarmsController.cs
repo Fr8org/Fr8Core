@@ -10,20 +10,15 @@ using log4net;
 using Data.Interfaces;
 using System.Linq;
 using System.Net.Http;
+using Fr8.Infrastructure.Communication;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Interfaces;
-using Fr8.Infrastructure.Communication;
 
 namespace HubWeb.Controllers
 {
     public class AlarmsController : ApiController
     {
         private static readonly ILog Logger = Fr8.Infrastructure.Utilities.Logging.Logger.GetCurrentClassLogger();
-
-
-        public AlarmsController()
-        {
-        }
 
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
@@ -64,12 +59,13 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> Polling([FromUri]string terminalId, [FromBody]PollingDataDTO pollingData)
+        public async Task<IHttpActionResult> Polling([FromUri] string terminalId, [FromBody]PollingDataDTO pollingData)
         {
             pollingData.JobId = terminalId + "|" + pollingData.ExternalAccountId;
             RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalId), "*/" + pollingData.PollingIntervalInMinutes + " * * * *");
             if (pollingData.TriggerImmediately)
                 RecurringJob.Trigger(pollingData.JobId);
+
             return Ok();
         }
     }
@@ -82,6 +78,7 @@ namespace HubWeb.Controllers
             IRestfulServiceClient _client = new RestfulServiceClient();
             var request = RequestPolling(pollingData, terminalId, _client);
             var result = request.Result;
+
             if (result != null)
             {
                 if (!result.Result)
@@ -93,7 +90,7 @@ namespace HubWeb.Controllers
             {
                 //we didn't get any response from the terminal (it might have not started yet, for example) Let's give it one more chance, and if it will fail - the job will be descheduled cause of Result set to false;
                 pollingData.Result = false;
-                RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalId), "*/" + pollingData.PollingIntervalInMinutes + " * * * *");
+                RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(result, terminalId), "*/" + result.PollingIntervalInMinutes + " * * * *");
             }
         }
 
@@ -105,7 +102,7 @@ namespace HubWeb.Controllers
 
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    var terminal = uow.TerminalRepository.GetQuery().Where(a => a.PublicIdentifier == terminalId).FirstOrDefault();
+                    var terminal = uow.TerminalRepository.GetQuery().FirstOrDefault(a => a.PublicIdentifier == terminalId);
                     string url = terminal.Endpoint + "/terminals/" + terminal.Name + "/polling_notifications";
 
                     using (var client = new HttpClient())
@@ -118,9 +115,13 @@ namespace HubWeb.Controllers
                         try
                         {
                             var response = await _client.PostAsync<PollingDataDTO, PollingDataDTO>(new Uri(url), pollingData);
+
                             return response;
                         }
-                        catch { return null; }
+                        catch
+                        {
+                            return null;
+                        }
                     }
                 }
             }

@@ -43,11 +43,12 @@ namespace Fr8.TerminalBase.Services
                                                                string controlName,
                                                                string upstreamSourceLabel = "",
                                                                string filterByTag = "",
+                                                               string groupLabelText = "",
                                                                bool addRequestConfigEvent = false,
                                                                bool requestUpstream = false,
                                                                AvailabilityType availability = AvailabilityType.NotSet)
         {
-            var control = new TextSource(label, upstreamSourceLabel, controlName)
+            var control = new TextSource(label, upstreamSourceLabel, controlName, groupLabelText)
             {
                 Source = new FieldSourceDTO
                 {
