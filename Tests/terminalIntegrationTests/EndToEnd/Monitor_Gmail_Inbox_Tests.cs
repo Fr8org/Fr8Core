@@ -85,7 +85,7 @@ namespace terminalIntegrationTests.EndToEnd
                 {
                     await Task.Delay(SingleAwaitPeriod);
                     mtDataCountAfter = uow.MultiTenantObjectRepository
-                        .AsQueryable<StandardPayloadDataCM>(currentUser.Id.ToString()).Count();
+                        .AsQueryable<StandardEmailMessageCM>(currentUser.Id.ToString()).Count();
 
                     if (mtDataCountBefore < mtDataCountAfter)
                     {
@@ -182,8 +182,8 @@ namespace terminalIntegrationTests.EndToEnd
             var existingLabelDdlb = upstreamCrateChooser.SelectedCrates[0].Label;
             var standardPayloadManifest = new DropDownList
             {
-                selectedKey = Fr8.Infrastructure.Data.Constants.MT.StandardPayloadData.ToString(),
-                Value = ((int)Fr8.Infrastructure.Data.Constants.MT.StandardPayloadData).ToString(),
+                selectedKey = Fr8.Infrastructure.Data.Constants.MT.StandardEmailMessage.ToString(),
+                Value = ((int)Fr8.Infrastructure.Data.Constants.MT.StandardEmailMessage).ToString(),
                 Name = "UpstreamCrateChooser_mnfst_dropdown_0",
                 Source = existingDdlbSource
             };
