@@ -47,7 +47,7 @@ namespace Fr8.Testing.Unit.Fixtures
                     UserID = user.Id,
                     TerminalID = 1,
                     AuthorizationTokenState = AuthorizationTokenState.Active,
-                    ExpiresAt = DateTime.UtcNow.AddYears(100),
+                    ExpiresAt = null,
                     Token = @"{""Email"":""64684b41-bdfd-4121-8f81-c825a6a03582"",""ApiPassword"":""HyCXOBeGl/Ted9zcMqd7YEKoN0Q=""}",
                     ExternalAccountId = externalAccountId
                 };
