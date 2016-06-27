@@ -97,6 +97,12 @@
     border-bottom: 1px solid #eee;
 }
 
+.nav.navbar-nav .dropdown-menu:before, 
+.nav.navbar-nav .dropdown-menu:after {
+    border: none !important;
+    content: none !important;
+}
+
 .navbar.navbar-light .navbar-nav > li > a,
 .navbar.navbar-light .navbar-text > a {
     color: #444C58;
