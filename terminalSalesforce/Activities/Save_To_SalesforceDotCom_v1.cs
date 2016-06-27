@@ -73,12 +73,18 @@ namespace terminalSalesforce.Actions
             //clear any existing TextSources. This is required when user changes the object in DDLB
             ConfigurationControls.Controls.RemoveAll(ctl => ctl is TextSource);
             chosenObjectFieldsList.ToList().ForEach(selectedObjectField =>
-                AddControl(ControlHelper.CreateTextSourceControl(selectedObjectField.Value, selectedObjectField.Key, string.Empty, addRequestConfigEvent: true, requestUpstream: true)));
+                AddControl(ControlHelper.CreateTextSourceControl(selectedObjectField.Label, selectedObjectField.Name, string.Empty, addRequestConfigEvent: true, requestUpstream: true)));
 
-            //create design time fields for the downstream activities.
             Storage.RemoveByLabelPrefix("Salesforce Object Fields - ");
-            Storage.Add(CrateManager.CreateDesignTimeFieldsCrate("Salesforce Object Fields - " + chosenObject,
-                                                                                chosenObjectFieldsList.ToList(), AvailabilityType.Configuration));
+            Storage.Add("Salesforce Object Fields - " + chosenObject, new FieldDescriptionsCM(chosenObjectFieldsList));
+        }
+
+        public virtual IEnumerable<FieldDTO> GetRequiredFields(string crateLabel)
+        {
+            var requiredFields = Storage
+                .CrateContentsOfType<FieldDescriptionsCM>(c => c.Label.Equals(crateLabel))
+                .SelectMany(f => f.Fields.Where(s => s.IsRequired));
+            return requiredFields;
         }
 
         protected override Task Validate()
@@ -91,7 +97,7 @@ namespace terminalSalesforce.Actions
             //get TextSources that represent the above required fields
             var requiredFieldControlsList = ConfigurationControls
                                                 .Controls.OfType<TextSource>()
-                                                .Where(c => requiredFieldsList.Any(f => f.Key.Equals(c.Name)));
+                                                .Where(c => requiredFieldsList.Any(f => f.Name.Equals(c.Name)));
 
             //for each required field's control, check its value source
             requiredFieldControlsList.ToList().ForEach(c =>
@@ -145,7 +151,7 @@ namespace terminalSalesforce.Actions
 
             if (!string.IsNullOrEmpty(result))
             {
-                var contactIdFields = new List<FieldDTO> {new FieldDTO(chosenObject + "ID", result)};
+                var contactIdFields = new List<KeyValueDTO> {new KeyValueDTO(chosenObject + "ID", result)};
                 Payload.Add(Crate.FromContent(chosenObject + " is saved in Salesforce.com", new StandardPayloadDataCM(contactIdFields)));
                 Success();
                 return;

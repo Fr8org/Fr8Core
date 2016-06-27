@@ -30,7 +30,7 @@ namespace terminalFr8Core.Activities
 
         private const string FirstIntegerRegexPattern = "\\d+";
 
-        private IEnumerable<FieldDTO> ExtractFieldsContainingPrefix(IEnumerable<FieldDTO> fields, String prefix)
+        private IEnumerable<KeyValueDTO> ExtractFieldsContainingPrefix(IEnumerable<KeyValueDTO> fields, String prefix)
         {
             //this regex searchs for strings that start with user typed prefix value
             //and continues with a number example: "Line52_Expense", "Line4" are valid
@@ -101,7 +101,7 @@ namespace terminalFr8Core.Activities
             if (upstreamDataChooser.SelectedFieldType != null)
             {
                 //not quite sure what to do with this
-                fieldList = fieldList.Where(s => s.Tags == upstreamDataChooser.SelectedFieldType);
+                //fieldList = fieldList.Where(s => s.Tags == upstreamDataChooser.SelectedFieldType);
             }
 
 
@@ -124,7 +124,7 @@ namespace terminalFr8Core.Activities
                 .Select(f => new
                 {
                     lineNumber = Int32.Parse(Regex.Match(f.Key, FirstIntegerRegexPattern).Value),
-                    field = new FieldDTO(f.Key.Substring(f.Key.IndexOf(Regex.Match(f.Key, FirstIntegerRegexPattern).Value, StringComparison.Ordinal) + 1), f.Value)
+                    field = new KeyValueDTO(f.Key.Substring(f.Key.IndexOf(Regex.Match(f.Key, FirstIntegerRegexPattern).Value, StringComparison.Ordinal) + 1), f.Value)
                 })
                 //group by linenumber to prepare a table
                 .GroupBy(r => r.lineNumber)

@@ -48,12 +48,13 @@ namespace terminalDocuSign.Activities
             //create a Standard Event Subscription crate
             var curEventSubscriptionsCrate = CrateManager.CreateStandardEventSubscriptionsCrate("Standard Event Subscription", "DocuSign", DocuSignEventNames.GetAllEventNames());
 
-            var envelopeCrate = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", MT.DocuSignEnvelope_v2.ToString(), ((int)MT.DocuSignEnvelope_v2).ToString(CultureInfo.InvariantCulture), AvailabilityType.RunTime);
-
             var authToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(AuthorizationToken.Token);
-            var docuSignUserCrate = Crate.FromContent("DocuSignUserCrate", new StandardPayloadDataCM(new FieldDTO("DocuSignUserEmail", authToken.Email)));
+            var docuSignUserCrate = Crate.FromContent("DocuSignUserCrate", new StandardPayloadDataCM(new KeyValueDTO("DocuSignUserEmail", authToken.Email)));
             Storage.Clear();
-            Storage.Add(curControlsCrate, curEventSubscriptionsCrate, envelopeCrate, docuSignUserCrate);
+            Storage.Add(curControlsCrate, curEventSubscriptionsCrate, docuSignUserCrate);
+
+            CrateSignaller.MarkAvailableAtRuntime<DocuSignEnvelopeCM_v2>("DocuSign Envelope");
+
             return Task.FromResult(0);
         }
 

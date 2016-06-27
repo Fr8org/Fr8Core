@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E0E04964-F77E-435F-8B90-F4338C30DDAD}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>terminalStatXTests</RootNamespace>
+    <AssemblyName>terminalStatXTests</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Moq, Version=4.2.1507.118, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="StructureMap, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\structuremap.3.1.6.186\lib\net40\StructureMap.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="StructureMap.Net4, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\structuremap.3.1.6.186\lib\net40\StructureMap.Net4.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Activities\Monitor_Stat_Changes_v1_Tests.cs" />
+    <Compile Include="Activities\Update_Stat_v1_Tests.cs" />
+    <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
+    <Compile Include="Integration\Monitor_Stat_Changes_v1_Tests.cs" />
+    <Compile Include="Integration\Terminal_Discover_v1_Tests.cs" />
+    <Compile Include="Integration\Update_Stat_v1_Tests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj">
+      <Project>{BBA91AF2-7636-41B6-87C4-C1575AE8B04B}</Project>
+      <Name>Fr8Infrastructure.NET</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Fr8TerminalBase.NET\Fr8TerminalBase.NET.csproj">
+      <Project>{BF96675E-6BAF-4AC9-B247-1551D62E8C44}</Project>
+      <Name>Fr8TerminalBase.NET</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalStatX\terminalStatX.csproj">
+      <Project>{5FB0ADC8-24C7-4B32-A4D2-AFA31B0BAAA7}</Project>
+      <Name>terminalStatX</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Fr8.Testing\Fr8.Testing.csproj">
+      <Project>{459FE39A-A5CC-41D8-B06E-8FAE3A1A623B}</Project>
+      <Name>Fr8.Testing</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
