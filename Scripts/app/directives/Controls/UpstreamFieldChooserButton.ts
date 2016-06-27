@@ -18,14 +18,15 @@ module dockyard.directives.upstreamDataChooser {
 
     export class UpstreamFieldChooserButtonController {
 
-        static $inject = ['$scope', '$element', '$attrs', 'UpstreamExtractor', '$modal', 'NgTableParams', 'UIHelperService'];
+        static $inject = ['$scope', '$element', '$attrs', 'UpstreamExtractor', '$modal', 'NgTableParams', 'UIHelperService', '$q'];
         constructor($scope: IUpstreamFieldChooserButtonScope,
             $element: ng.IAugmentedJQuery,
             $attrs: ng.IAttributes,
             UpstreamExtractor: services.UpstreamExtractor,
             $modal: any,
             NgTableParams,
-            uiHelperService: services.IUIHelperService) {
+            uiHelperService: services.IUIHelperService,
+            $q: ng.IQService) {
 
             var modalInstance;
             var noActivitiesWithUpstreamFiels = 'This Activity is looking for incoming data from "upstream" activities but can\'t find any right now. Try adding activities to the left of this activity that load or retrieve data from web services. To learn more,<a href= "/documentation/UpstreamCrates.html" target= "_blank" > click here </a><i class="fa fa-question-circle" > </i> ';
@@ -72,7 +73,7 @@ module dockyard.directives.upstreamDataChooser {
                 }, (error) => {
                     var alertMessage = new model.AlertDTO();
                     alertMessage.title = "Notification";
-                    alertMessage.body = error.message;
+                    alertMessage.body = error;
                     alertMessage.isOkCancelVisible = false;
                     uiHelperService.openConfirmationModal(alertMessage);
                 });
@@ -122,7 +123,7 @@ module dockyard.directives.upstreamDataChooser {
                             else {
                                 error = activitiesNotConfiguredWithUpstreamFields
                             }
-                            throw Error(error);
+                            return $q.reject(error);
                         }
                         else {
                             $scope.field.listItems = listItems;
