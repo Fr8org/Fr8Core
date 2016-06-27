@@ -25,6 +25,7 @@ module dockyard.directives.paneConfigureAction {
         currentAction: interfaces.IActionVM;
         field: model.ControlDefinitionDTO;
         plan: any;
+        subPlan: any;
         //change made for MetaControlContainer with delayed control
         change: any;
         onChange: (radio: model.ControlDefinitionDTO) => void;
@@ -40,6 +41,7 @@ module dockyard.directives.paneConfigureAction {
             currentAction: '=',
             field: '=',
             plan: '=',
+            subPlan: '=',
             change:'='
         };
         public templateUrl = '/AngularTemplate/ConfigurationControl';

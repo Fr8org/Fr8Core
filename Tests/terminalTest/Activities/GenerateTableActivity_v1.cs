@@ -67,7 +67,7 @@ namespace terminalTest.Actions
                 {
                     row.Row.Add(new TableCellDTO
                     {
-                        Cell = new FieldDTO("Column " + j, $"Cell [{i}, {j}]")
+                        Cell = new KeyValueDTO("Column " + j, $"Cell [{i}, {j}]")
                     });
                 }
             }

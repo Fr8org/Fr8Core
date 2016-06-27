@@ -81,8 +81,8 @@ namespace terminalDocuSign.Actions
         }
 
         private const string UserFieldsAndRolesCrateLabel = "Fields and Roles";
-        private const string advisoryName = "DocuSign Template Warning";
-        private const string advisoryContent = "In your selected template you have fields with default values. Those can be changes inside advanced DocuSign UI to frendlier label.";
+        private const string AdvisoryName = "DocuSign Template Warning";
+        private const string AdvisoryContent = "In your selected template you have fields with default values. Those can be changes inside advanced DocuSign UI to frendlier label.";
 
         public Send_DocuSign_Envelope_v2(ICrateManager crateManager, IDocuSignManager docuSignManager, IConfigRepository configRepository) 
             : base(crateManager, docuSignManager)
@@ -129,15 +129,15 @@ namespace terminalDocuSign.Actions
                 var advisoryCrate = Storage.CratesOfType<AdvisoryMessagesCM>().FirstOrDefault();
                 var currentAdvisoryResults = advisoryCrate == null ? new AdvisoryMessagesCM() : advisoryCrate.Content;
 
-                var advisory = currentAdvisoryResults.Advisories.FirstOrDefault(x => x.Name == advisoryName);
+                var advisory = currentAdvisoryResults.Advisories.FirstOrDefault(x => x.Name == AdvisoryName);
 
                 if (advisory == null)
                 {
-                    currentAdvisoryResults.Advisories.Add(new AdvisoryMessageDTO { Name = advisoryName, Content = advisoryContent });
+                    currentAdvisoryResults.Advisories.Add(new AdvisoryMessageDTO { Name = AdvisoryName, Content = AdvisoryContent });
                 }
                 else
                 {
-                    advisory.Content = advisoryContent;
+                    advisory.Content = AdvisoryContent;
                 }
 
                 Storage.Add(Crate.FromContent("Advisories", currentAdvisoryResults));
@@ -182,7 +182,7 @@ namespace terminalDocuSign.Actions
                         .ToList()
                     }));
 
-            Storage.ReplaceByLabel(Crate.FromContent(UserFieldsAndRolesCrateLabel, new FieldDescriptionsCM(userDefinedFields.Concat(roles)), AvailabilityType.Configuration));
+            Storage.ReplaceByLabel(Crate.FromContent(UserFieldsAndRolesCrateLabel, new KeyValueListCM(userDefinedFields.Concat(roles))));
         }
 
         protected override Task Validate()
@@ -202,12 +202,12 @@ namespace terminalDocuSign.Actions
 
         public override async Task Run()
         {
-            var userDefinedFields = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == UserFieldsAndRolesCrateLabel);
+            var userDefinedFields = Storage.FirstCrateOrDefault<KeyValueListCM>(x => x.Label == UserFieldsAndRolesCrateLabel);
             if (userDefinedFields == null)
             {
                 throw new ActivityExecutionException("Activity storage doesn't contain info about DocuSign envelope properties. This may indicate that activity was not properly configured. Try to reconfigure this activity");
             }
-            var allFields = userDefinedFields.Content.Fields;
+            var allFields = userDefinedFields.Content.Values;
             var roleValues = ActivityUI.RolesFields.Select(x => new { x.Name, Value = x.GetValue(Payload) }).ToDictionary(x => x.Name, x => x.Value);
             var fieldValues = ActivityUI.CheckBoxFields.Select(x => new { x.Name, Value = x.Selected.ToString().ToLower() })
                                                    .Concat(ActivityUI.DropDownListFields.Select(x => new { x.Name, Value = x.selectedKey }))

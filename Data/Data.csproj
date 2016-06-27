@@ -74,10 +74,6 @@
       <HintPath>..\packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Google.Apis.Core, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.Core.1.11.1\lib\net45\Google.Apis.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Hyak.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Hyak.Common.1.0.2\lib\net45\Hyak.Common.dll</HintPath>
       <Private>True</Private>
@@ -267,6 +263,7 @@
     <Compile Include="Entities\PermissionSetDO.cs" />
     <Compile Include="Entities\PlanNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
+    <Compile Include="Entities\TerminalRegistrationDO.cs" />
     <Compile Include="Entities\TerminalSubscriptionDO.cs" />
     <Compile Include="Entities\WebServiceDO.cs" />
     <Compile Include="Expressions\ConversionMethods.cs" />
@@ -699,6 +696,22 @@
     <Compile Include="Migrations\201606131429309_RemovedDocuSignAccountId.Designer.cs">
       <DependentUpon>201606131429309_RemovedDocuSignAccountId.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201606180953421_AddedTerminalRegistrationDO.cs" />
+    <Compile Include="Migrations\201606180953421_AddedTerminalRegistrationDO.Designer.cs">
+      <DependentUpon>201606180953421_AddedTerminalRegistrationDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606181115160_MoveFr8TerminalsTxtToDB.cs" />
+    <Compile Include="Migrations\201606181115160_MoveFr8TerminalsTxtToDB.Designer.cs">
+      <DependentUpon>201606181115160_MoveFr8TerminalsTxtToDB.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606190931116_Add_terminalStatX_Migration.cs" />
+    <Compile Include="Migrations\201606190931116_Add_terminalStatX_Migration.Designer.cs">
+      <DependentUpon>201606190931116_Add_terminalStatX_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606241050298_AddedTerminalFacebook.cs" />
+    <Compile Include="Migrations\201606241050298_AddedTerminalFacebook.Designer.cs">
+      <DependentUpon>201606241050298_AddedTerminalFacebook.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -804,6 +817,7 @@
     <Compile Include="Repositories\SqlBased\SqlConnectionProvider.cs" />
     <Compile Include="Repositories\Security\StorageImpl\SqlBased\SqlSecurityObjectsStorageProvider.cs" />
     <Compile Include="Repositories\TagRepository.cs" />
+    <Compile Include="Repositories\TerminalRegistrationRepository.cs" />
     <Compile Include="Repositories\TerminalRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="Repositories\TerminalSubscriptionRepository.cs" />
@@ -1291,6 +1305,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606131429309_RemovedDocuSignAccountId.resx">
       <DependentUpon>201606131429309_RemovedDocuSignAccountId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606180953421_AddedTerminalRegistrationDO.resx">
+      <DependentUpon>201606180953421_AddedTerminalRegistrationDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606181115160_MoveFr8TerminalsTxtToDB.resx">
+      <DependentUpon>201606181115160_MoveFr8TerminalsTxtToDB.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606190931116_Add_terminalStatX_Migration.resx">
+      <DependentUpon>201606190931116_Add_terminalStatX_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606241050298_AddedTerminalFacebook.resx">
+      <DependentUpon>201606241050298_AddedTerminalFacebook.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

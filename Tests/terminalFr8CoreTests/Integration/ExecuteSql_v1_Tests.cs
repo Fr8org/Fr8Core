@@ -77,20 +77,20 @@ namespace terminalFr8CoreTests.Integration
                "Sql Query"
             );
 
-            var lstFields = new List<FieldDTO>();
-            lstFields.Add(new FieldDTO() { Key = "Customer.Physician", Value = "String" });
-            lstFields.Add(new FieldDTO() { Key = "Customer.CurrentMedicalCondition", Value = "String" });
+            var lstFields = new List<KeyValueDTO>();
+            lstFields.Add(new KeyValueDTO() { Key = "Customer.Physician", Value = "String" });
+            lstFields.Add(new KeyValueDTO() { Key = "Customer.CurrentMedicalCondition", Value = "String" });
             AddUpstreamCrate(
                 dataDTO,
-                new FieldDescriptionsCM(lstFields),
+                new KeyValueListCM(lstFields),
                 "Sql Column Types"
             );
 
             lstFields.Clear();
-            lstFields.Add(new FieldDTO() { Key = Fr8.Testing.Unit.Fixtures.FixtureData.TestConnectionString2().Value, Value = "value" });
+            lstFields.Add(new KeyValueDTO() { Key = Fr8.Testing.Unit.Fixtures.FixtureData.TestConnectionString2().Value, Value = "value" });
             AddUpstreamCrate(
                 dataDTO,
-                new FieldDescriptionsCM(lstFields),
+                new KeyValueListCM(lstFields),
                 "Sql Connection String"
             );
 

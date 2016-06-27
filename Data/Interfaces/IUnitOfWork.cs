@@ -74,7 +74,9 @@ namespace Data.Interfaces
         
         IOrganizationRepository OrganizationRepository { get; }
 
-	    /// <summary>
+        TerminalRegistrationRepository TerminalRegistrationRepository { get; }
+
+        /// <summary>
         /// Call this to commit the unit of work
         /// </summary>
         void Commit();

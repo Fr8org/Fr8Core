@@ -58,9 +58,8 @@ namespace terminalDocuSignTests
             Assert.AreEqual(1, crateStorage.Count);
 
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(x => x.Label == "Configuration_Controls"));
-            //Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Available Templates"));
-            //Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Upstream Terminal-Provided Fields"));
-
+            Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count(x => x.Label == "Available Templates"));
+            
         }
 
         private void AssertFollowUpCrateTypes(ICrateStorage crateStorage)
@@ -68,10 +67,11 @@ namespace terminalDocuSignTests
             Assert.AreEqual(2, crateStorage.Count);
 
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(x => x.Label == "Configuration_Controls"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<ValidationResultsCM>().Count());
-
+            Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count(x => x.Label == "Available Templates"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count(x => x.Label == "DocuSignTemplateUserDefinedFields"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count(x => x.Label == "DocuSignTemplateStandardFields"));
         }
-
+        
         private void AssertControls(StandardConfigurationControlsCM controls)
         {
             Assert.AreEqual(1, controls.Controls.Count);
@@ -168,12 +168,12 @@ namespace terminalDocuSignTests
             dataDTO.ActivityDTO.AuthToken = null;
 
             var response = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
-
+            
             Assert.NotNull(response);
             Assert.NotNull(response.CrateStorage);
             Assert.NotNull(response.CrateStorage.Crates);
             Assert.True(response.CrateStorage.Crates.Any(x => x.ManifestType == "Standard Authentication"));
-        }  
+        }
         /// <summary>
         /// Wait for HTTP-500 exception when Auth-Token is not passed to run.
         /// </summary>
@@ -206,6 +206,10 @@ namespace terminalDocuSignTests
         private void SendDocuSignEnvelope_SelectFirstTemplate(ICrateStorage curCrateStorage)
         {
             // Fetch Available Template crate and parse StandardDesignTimeFieldsMS.
+            var availableTemplatesCrateDTO = curCrateStorage.CratesOfType<KeyValueListCM>().Single(x => x.Label == "Available Templates");
+
+            var fieldsMS = availableTemplatesCrateDTO.Content;
+
             // Fetch Configuration Controls crate and parse StandardConfigurationControlsMS
 
             var configurationControlsCrateDTO = curCrateStorage.CratesOfType<StandardConfigurationControlsCM>().Single(x => x.Label == "Configuration_Controls");
@@ -214,8 +218,8 @@ namespace terminalDocuSignTests
 
             // Modify value of Selected_DocuSign_Template field and push it back to crate,
             // exact same way we do on front-end.
-            var docuSignTemplateControlDTO = (DropDownList)controlsMS.Controls.Single(x => x.Name == "target_docusign_template");
-            docuSignTemplateControlDTO.Value = docuSignTemplateControlDTO.ListItems.First().Value;
+            var docuSignTemplateControlDTO = controlsMS.Controls.Single(x => x.Name == "target_docusign_template");
+            docuSignTemplateControlDTO.Value = fieldsMS.Values.First().Value;
         }
 
         private void SendDocuSignEnvelope_SetSpecificRecipient(ICrateStorage curCrateStorage)

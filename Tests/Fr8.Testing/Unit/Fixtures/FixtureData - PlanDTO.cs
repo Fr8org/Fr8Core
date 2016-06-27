@@ -5,11 +5,11 @@ namespace Fr8.Testing.Unit.Fixtures
 {
     partial class FixtureData
     {
-        public static PlanEmptyDTO CreateTestPlanDTO()
+        public static PlanEmptyDTO CreateTestPlanDTO(string planName = "")
         {
             return new PlanEmptyDTO()
             {
-                Name = "plan1",
+                Name = string.IsNullOrEmpty(planName) ? "plan1" : planName,
                 Description = "Description for test plan",
                 PlanState = 1,
                 Visibility = PlanVisibility.Standard
