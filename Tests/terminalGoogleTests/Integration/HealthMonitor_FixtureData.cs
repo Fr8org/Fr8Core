@@ -44,7 +44,7 @@ namespace terminalGoogleTests.Integration
 
         private Crate PackCrate_GoogleForms()
         {
-            var curFields = new List<FieldDTO>() { new FieldDTO() { Key = "Survey Form", Value = "1z7mIQdHeFIpxBm92sIFB52B7SwyEO3IT5LiUcmojzn8" } }.ToArray();
+            var curFields = new List<KeyValueDTO>() { new KeyValueDTO() { Key = "Survey Form", Value = "1z7mIQdHeFIpxBm92sIFB52B7SwyEO3IT5LiUcmojzn8" } }.ToArray();
             Crate crate = CrateManager.CreateDesignTimeFieldsCrate("Available Forms", curFields);
 
             return crate;
@@ -174,16 +174,16 @@ namespace terminalGoogleTests.Integration
             ActivateCrateStorage(activity, PackCrate_ConfigurationControlsWithNoListItems());
             return new Fr8DataDTO { ActivityDTO = activity };
         }
-        private ICrateStorage WrapPayloadDataCrate(List<FieldDTO> payloadFields)
+        private ICrateStorage WrapPayloadDataCrate(List<KeyValueDTO> payloadFields)
         {
             return new CrateStorage(Crate.FromContent("Payload Data", new StandardPayloadDataCM(payloadFields)));
         }
 
         private Crate PayloadRaw()
         {
-            List<FieldDTO> payloadFields = new List<FieldDTO>();
-            payloadFields.Add(new FieldDTO() { Key = "user_id", Value = "g_admin@dockyard.company" });
-            payloadFields.Add(new FieldDTO() { Key = "response", Value = "What is your pets name=cat&What is your favorite book?=book&Who is your favorite superhero?=hero&" });
+            List<KeyValueDTO> payloadFields = new List<KeyValueDTO>();
+            payloadFields.Add(new KeyValueDTO() { Key = "user_id", Value = "g_admin@dockyard.company" });
+            payloadFields.Add(new KeyValueDTO() { Key = "response", Value = "What is your pets name=cat&What is your favorite book?=book&Who is your favorite superhero?=hero&" });
             var eventReportContent = new EventReportCM
             {
                 EventNames = "Google Form Response",
@@ -200,7 +200,7 @@ namespace terminalGoogleTests.Integration
 
         private Crate PayloadEmptyRaw()
         {
-            List<FieldDTO> payloadFields = new List<FieldDTO>();
+            List<KeyValueDTO> payloadFields = new List<KeyValueDTO>();
             var eventReportContent = new EventReportCM
             {
                 EventNames = "Google Form Response",
@@ -301,29 +301,29 @@ namespace terminalGoogleTests.Integration
         {
             Crate crate;
 
-            var curFields = new List<FieldDTO>()
+            var curFields = new List<KeyValueDTO>()
             {
-                new FieldDTO
+                new KeyValueDTO
                 {
                     Key = "Column_Only",
                     Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/1o0cle_rnfVtmeLqDDeF40dRWKL6FSCuQz5E84pcCpTs"
                 },
-                new FieldDTO
+                new KeyValueDTO
                 {
                     Key = "Row_Only",
                     Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/1pzbssu5vuCqv5LMTdIQ7SCqVFaQR0_d7MnB7oGonzf0"
                 },
-                new FieldDTO
+                new KeyValueDTO
                 {
                     Key = "Row_And_Column",
                     Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/1zG93EWaycPyCdM9OJf03C2knK9Neu09OutAl2p7NZbw"
                 },
-                new FieldDTO
+                new KeyValueDTO
                 {
                     Key="Empty_First_Row",
                     Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/1Nzf_s2OyZTxG8ppxzvypH6s1ePvUT_ALPffZchuM14o"
                 },
-                new FieldDTO
+                new KeyValueDTO
                 {
                     Key="OneRow_WithHeader",
                     Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/1XES9LEK6WmSp5adZ8F-_cfoE7EeLMgPr6NhRPyGaSfM"

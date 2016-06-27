@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Configuration;
-using System.Data.SqlClient;
 using System.Linq;
 using NUnit.Core;
 using System.Text;
 using System.Diagnostics;
 using System.Collections.Generic;
-using System.IO;
 
 namespace HealthMonitor
 {

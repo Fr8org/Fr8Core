@@ -42,24 +42,7 @@ namespace Fr8.Infrastructure.Data.Managers
         {
             return new CrateManager.UpdatableCrateStorageStorage(storageAccessExpression);
         }
-        //public void AddLogMessage(string label, List<LogItemDTO> logItemList, ICrateStorage payload)
-	       // {
-	       // if (String.IsNullOrEmpty(label))
-	       //     throw new ArgumentException("Parameter Label is empty");
-
-	       // if (logItemList == null)
-	       //     throw new ArgumentNullException("Parameter LogItemDTO list is null.");
-
-	       // if (payload == null)
-	       //     throw new ArgumentNullException("Parameter ICrateStorage is null.");
-
-        //    var curManifestSchema = new StandardLoggingCM()
-	       // {
-	       //     Item = logItemList
-	       // };
-	       // payload.Add(Crate.FromContent(label, curManifestSchema));
-        //}
-
+       
         /// <summary>
         /// Use this method to edit CrateStorage represented by string property of some class instance. This method will return IDisposable updater.
         /// On Dispose it will write changes to the property specified by the Expression. 
@@ -104,31 +87,22 @@ namespace Fr8.Infrastructure.Data.Managers
                 Revocation = revocation
             });
         }
-        public Crate<FieldDescriptionsCM> CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields)
+
+        public Crate<KeyValueListCM> CreateDesignTimeFieldsCrate(string label, params KeyValueDTO[] fields)
         {
-            return Crate<FieldDescriptionsCM>.FromContent(label, new FieldDescriptionsCM() { Fields = fields.ToList() });
+            return Crate<KeyValueListCM>.FromContent(label, new KeyValueListCM() { Values = fields.ToList() });
         }
 
-        public Crate<ManifestDescriptionCM> CreateManifestDescriptionCrate(string label, string name, string id, AvailabilityType availability)
+        public Crate<ManifestDescriptionCM> CreateManifestDescriptionCrate(string label, string name, string id)
         {
-            return Crate<ManifestDescriptionCM>.FromContent(label, new ManifestDescriptionCM() { Name = name, Id = id }, availability);
+            return Crate<ManifestDescriptionCM>.FromContent(label, new ManifestDescriptionCM() { Name = name, Id = id });
         }
-
-        public Crate<FieldDescriptionsCM> CreateDesignTimeFieldsCrate(string label, AvailabilityType availability, params FieldDTO[] fields)
+        
+        public Crate<KeyValueListCM> CreateDesignTimeFieldsCrate(string label, List<KeyValueDTO> fields)
         {
-            return Crate<FieldDescriptionsCM>.FromContent(label, new FieldDescriptionsCM() { Fields = fields.ToList() }, availability);
+            return Crate<KeyValueListCM>.FromContent(label, new KeyValueListCM() { Values = fields });
         }
-
-        public Crate<FieldDescriptionsCM> CreateDesignTimeFieldsCrate(string label, List<FieldDTO> fields, AvailabilityType availability)
-        {
-            return Crate<FieldDescriptionsCM>.FromContent(label, new FieldDescriptionsCM() { Fields = fields }, availability);
-        }
-
-        public Crate<FieldDescriptionsCM> CreateDesignTimeFieldsCrate(string label, List<FieldDTO> fields)
-        {
-            return Crate<FieldDescriptionsCM>.FromContent(label, new FieldDescriptionsCM() { Fields = fields }, AvailabilityType.NotSet);
-        }
-
+        
         public Crate<StandardConfigurationControlsCM> CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls)
         {
             return Crate<StandardConfigurationControlsCM>.FromContent(label,  new StandardConfigurationControlsCM() { Controls = controls.ToList() }, AvailabilityType.Configuration);
@@ -186,12 +160,12 @@ namespace Fr8.Infrastructure.Data.Managers
                 try
                 {
                     var tableRowDTO = tableDataMS.Table[i];
-                    var fields = new List<FieldDTO>();
+                    var fields = new List<KeyValueDTO>();
                     int colNumber = (tableDataMS.FirstRowHeaders) ? columnHeadersRowDTO.Row.Count : tableRowDTO.Row.Count;
                     for (int j = 0; j < colNumber; ++j)
                     {
                         var tableCellDTO = tableRowDTO.Row[j];
-                        var listFieldDTO = new FieldDTO()
+                        var listFieldDTO = new KeyValueDTO()
                         {
                             Key = (tableDataMS.FirstRowHeaders) ? columnHeadersRowDTO.Row[j].Cell.Value : tableCellDTO.Cell.Key,
                             Value = tableCellDTO.Cell.Value
@@ -243,9 +217,9 @@ namespace Fr8.Infrastructure.Data.Managers
             var curCrate = curCrateStorage.CratesOfType<T>().Single().Content;
             return curCrate;
         }
-        public IEnumerable<FieldDTO> GetFields(IEnumerable<Crate> crates)
+        public IEnumerable<KeyValueDTO> GetFields(IEnumerable<Crate> crates)
         {
-            var fields = new List<FieldDTO>();
+            var fields = new List<KeyValueDTO>();
 
             foreach (var crate in crates)
             {
@@ -259,27 +233,6 @@ namespace Fr8.Infrastructure.Data.Managers
             }
 
             return fields;
-        }
-
-        public FieldDescriptionsCM MergeContentFields(List<Crate<FieldDescriptionsCM>> curCrates)
-        {
-            FieldDescriptionsCM tempMS = new FieldDescriptionsCM();
-            foreach (var curCrate in curCrates)
-            {
-                //extract the fields
-                FieldDescriptionsCM curFieldDescriptionsCrate = curCrate.Content;
-
-                foreach (var field in curFieldDescriptionsCrate.Fields)
-                {
-                    field.SourceCrateLabel = curCrate.Label;
-                    field.SourceCrateManifest = curCrate.ManifestType;
-                }
-
-                //add them to the pile
-                tempMS.Fields.AddRange(curFieldDescriptionsCrate.Fields);
-            }
-
-            return tempMS;
         }
 
         public IEnumerable<string> GetLabelsByManifestType(IEnumerable<Crate> crates, string manifestType)

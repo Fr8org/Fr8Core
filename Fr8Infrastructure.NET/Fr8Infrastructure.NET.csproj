@@ -184,6 +184,7 @@
     <Compile Include="Data\DataTransferObjects\Helpers\ActivityResponseHelper.cs" />
     <Compile Include="Data\DataTransferObjects\HistoryItemDTO.cs" />
     <Compile Include="Data\DataTransferObjects\IncomingCratesDTO.cs" />
+    <Compile Include="Data\DataTransferObjects\KeyValueDTO.cs" />
     <Compile Include="Data\DataTransferObjects\LoggingDataCM.cs" />
     <Compile Include="Data\DataTransferObjects\LogItemDTO.cs" />
     <Compile Include="Data\DataTransferObjects\ManifestDescriptionDTO.cs" />
@@ -200,6 +201,7 @@
     <Compile Include="Data\DataTransferObjects\PlanTemplates\NodeTransitionDTO.cs" />
     <Compile Include="Data\DataTransferObjects\PlanTemplates\PlanNodeDescriptionDTO.cs" />
     <Compile Include="Data\DataTransferObjects\PlanTemplates\PlanTemplateDTO.cs" />
+    <Compile Include="Data\DataTransferObjects\PollingDataDTO.cs" />
     <Compile Include="Data\DataTransferObjects\ProfileDTO.cs" />
     <Compile Include="Data\DataTransferObjects\PublishPlanTemplateDTO.cs" />
     <Compile Include="Data\DataTransferObjects\QueryDTO.cs" />
@@ -239,6 +241,7 @@
     <Compile Include="Data\Manifests\DocuSignEnvelopeCM.cs" />
     <Compile Include="Data\Manifests\DocuSignEnvelopeCM_v2.cs" />
     <Compile Include="Data\Manifests\DocuSignEnvelopeCM_v3.cs" />
+    <Compile Include="Data\Manifests\FacebookUserEventCM.cs" />
     <Compile Include="Data\Manifests\DocuSignEventCM.cs" />
     <Compile Include="Data\Manifests\DocuSignRecipientCM.cs" />
     <Compile Include="Data\Manifests\DocuSignTemplateCM.cs" />
@@ -248,6 +251,7 @@
     <Compile Include="Data\Manifests\FieldDescriptionsCM.cs" />
     <Compile Include="Data\Manifests\Helpers\StandardTableDataCMTools.cs" />
     <Compile Include="Data\Manifests\HubSubscriptionCM.cs" />
+    <Compile Include="Data\Manifests\KeyValueListCM.cs" />
     <Compile Include="Data\Manifests\Manifest.cs" />
     <Compile Include="Data\Manifests\ManifestDescriptionCM.cs" />
     <Compile Include="Data\Manifests\ManifestFieldAttribute.cs" />
@@ -276,6 +280,7 @@
     <Compile Include="Data\Manifests\StandardRoutingDirectiveCM.cs" />
     <Compile Include="Data\Manifests\StandardSecurityCM.cs" />
     <Compile Include="Data\Manifests\StandardTableDataCM.cs" />
+    <Compile Include="Data\Manifests\StatXItemCM.cs" />
     <Compile Include="Data\Manifests\ValidationResultsCM.cs" />
     <Compile Include="Data\States\ActivityCategory.cs" />
     <Compile Include="Data\States\ActivityType.cs" />
