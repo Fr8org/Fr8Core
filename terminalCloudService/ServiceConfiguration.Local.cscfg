@@ -13,6 +13,7 @@
       <Setting name="CoreWebServerUrl" value="" />
       <Setting name="terminalAtlassian.TerminalEndpoint" value="" />
       <Setting name="terminalAzure.TerminalEndpoint" value="" />
+      <Setting name="terminalBasecamp2.TerminalEndpoint" value="" />
       <Setting name="terminalDocuSign.TerminalEndpoint" value="" />
       <Setting name="terminalDropbox.TerminalEndpoint" value="" />
       <Setting name="terminalExcel.TerminalEndpoint" value="" />

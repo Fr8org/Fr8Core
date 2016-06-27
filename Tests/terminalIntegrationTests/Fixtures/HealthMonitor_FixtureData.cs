@@ -90,7 +90,6 @@ namespace terminalIntegrationTests.Fixtures
                     TerminalID = terminalId,
                     UserID = userDO.Id,
                     AdditionalAttributes = tokenDTO.AdditionalAttributes,
-                    ExpiresAt = DateTime.Today.AddMonths(1)
                 };
 
                 uow.AuthorizationTokenRepository.Add(tokenDO);
