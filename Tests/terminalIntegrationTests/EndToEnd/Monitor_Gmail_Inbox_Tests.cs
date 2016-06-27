@@ -53,58 +53,58 @@ namespace terminalIntegrationTests.EndToEnd
         [Test, Category("Integration.terminalGoogle")]
         public async Task Monitor_Gmail_Inbox_Test()
         {
-            //Fr8AccountDO currentUser = null;
-            //AuthorizationTokenDO token = null;
-            ////we use a separate google account for this test. 
-            //GetDifferentGoogleAuthToken(out currentUser, out token);
+            Fr8AccountDO currentUser = null;
+            AuthorizationTokenDO token = null;
+            //we use a separate google account for this test. 
+            GetDifferentGoogleAuthToken(out currentUser, out token);
 
-            //var testPlan = await _plansHelper.CreateNewPlan(PlanName);
+            var testPlan = await _plansHelper.CreateNewPlan(PlanName);
 
-            //await AddAndAuthorizeMonitorGmailInboxActivity(token, testPlan);
-            ////add saveToFr8Warehouse activity
-            //var saveToFr8WarehouseActivity = await _fr8ActivityConfigurator.AddAndConfigureSaveToFr8Warehouse(testPlan, 2);
-            //SetCratesForSaving(saveToFr8WarehouseActivity);
-            //saveToFr8WarehouseActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(GetHubApiBaseUrl() + "activities/configure", saveToFr8WarehouseActivity);
+            await AddAndAuthorizeMonitorGmailInboxActivity(token, testPlan);
+            //add saveToFr8Warehouse activity
+            var saveToFr8WarehouseActivity = await _fr8ActivityConfigurator.AddAndConfigureSaveToFr8Warehouse(testPlan, 2);
+            SetCratesForSaving(saveToFr8WarehouseActivity);
+            saveToFr8WarehouseActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(GetHubApiBaseUrl() + "activities/configure", saveToFr8WarehouseActivity);
 
-            ////run the plan
-            //await _plansHelper.RunPlan(testPlan.Plan.Id);
-            //await Task.Delay(10000);
+            //run the plan
+            await _plansHelper.RunPlan(testPlan.Plan.Id);
+            await Task.Delay(10000);
 
-            ////sending an email
-            //SendAnEmailToMonitoredAccountViaGoogle();
+            //sending an email
+            SendAnEmailToMonitoredAccountViaGoogle();
 
-            ////testing
-            //var stopwatch = Stopwatch.StartNew();
-            //using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            //{
-            //    var mtDataCountBefore = uow.MultiTenantObjectRepository
-            //   .AsQueryable<StandardPayloadDataCM>(currentUser.Id.ToString())
-            //   .Count();
-            //    int mtDataCountAfter = mtDataCountBefore;
-            //    while (stopwatch.ElapsedMilliseconds <= MaxAwaitPeriod)
-            //    {
-            //        await Task.Delay(SingleAwaitPeriod);
-            //        mtDataCountAfter = uow.MultiTenantObjectRepository
-            //            .AsQueryable<StandardPayloadDataCM>(currentUser.Id.ToString()).Count();
+            //testing
+            var stopwatch = Stopwatch.StartNew();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var mtDataCountBefore = uow.MultiTenantObjectRepository
+               .AsQueryable<StandardPayloadDataCM>(currentUser.Id.ToString())
+               .Count();
+                int mtDataCountAfter = mtDataCountBefore;
+                while (stopwatch.ElapsedMilliseconds <= MaxAwaitPeriod)
+                {
+                    await Task.Delay(SingleAwaitPeriod);
+                    mtDataCountAfter = uow.MultiTenantObjectRepository
+                        .AsQueryable<StandardEmailMessageCM>(currentUser.Id.ToString()).Count();
 
-            //        if (mtDataCountBefore < mtDataCountAfter)
-            //        {
-            //            break;
-            //        }
-            //    }
-            //    Assert.IsTrue(mtDataCountBefore < mtDataCountAfter,
-            //      $"The number of MtData: ({mtDataCountAfter}) records for user {currentUser.UserName} remained unchanged within {MaxAwaitPeriod} miliseconds.");
-            //}
+                    if (mtDataCountBefore < mtDataCountAfter)
+                    {
+                        break;
+                    }
+                }
+                Assert.IsTrue(mtDataCountBefore < mtDataCountAfter,
+                  $"The number of MtData: ({mtDataCountAfter}) records for user {currentUser.UserName} remained unchanged within {MaxAwaitPeriod} miliseconds.");
+            }
 
-            ////left here in case the test is ran locally, so the plans don't stack
-            //using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            //{
-            //    var plans = uow.PlanRepository.GetPlanQueryUncached().Where(a => a.Name == PlanName && a.Fr8AccountId == currentUser.Id).ToList();
-            //    foreach (var plan in plans)
-            //    {
-            //        await HttpDeleteAsync(GetHubApiBaseUrl() + $"/plans?id={plan.Id}");
-            //    }
-            //}
+            //left here in case the test is ran locally, so the plans don't stack
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var plans = uow.PlanRepository.GetPlanQueryUncached().Where(a => a.Name == PlanName && a.Fr8AccountId == currentUser.Id).ToList();
+                foreach (var plan in plans)
+                {
+                    await HttpDeleteAsync(GetHubApiBaseUrl() + $"/plans?id={plan.Id}");
+                }
+            }
         }
 
         private static void SendAnEmailToMonitoredAccountViaGoogle()
@@ -182,8 +182,8 @@ namespace terminalIntegrationTests.EndToEnd
             var existingLabelDdlb = upstreamCrateChooser.SelectedCrates[0].Label;
             var standardPayloadManifest = new DropDownList
             {
-                selectedKey = Fr8.Infrastructure.Data.Constants.MT.StandardPayloadData.ToString(),
-                Value = ((int)Fr8.Infrastructure.Data.Constants.MT.StandardPayloadData).ToString(),
+                selectedKey = Fr8.Infrastructure.Data.Constants.MT.StandardEmailMessage.ToString(),
+                Value = ((int)Fr8.Infrastructure.Data.Constants.MT.StandardEmailMessage).ToString(),
                 Name = "UpstreamCrateChooser_mnfst_dropdown_0",
                 Source = existingDdlbSource
             };
