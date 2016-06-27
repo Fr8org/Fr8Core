@@ -18,7 +18,13 @@ param(
 
 Write-Host "Update terminal URLs to $newHostname"
 
-$commandText = "UPDATE Terminals SET [Endpoint] = '$newHostname" + ":' + RIGHT([Endpoint], 5)"
+$commandText = "UPDATE Terminals SET [Endpoint] = 
+('$newHostname' +
+		(CASE when CHARINDEX (':', REVERSE ([Endpoint])) = 0
+		    then ''
+		else 
+			RIGHT ([Endpoint], CHARINDEX (':', REVERSE ([Endpoint])))
+		END))"
 Write-Host $commandText
 
 if ([System.String]::IsNullOrEmpty($overrideDbName) -ne $true) {
@@ -42,7 +48,14 @@ IF (EXISTS (SELECT *
                  AND  TABLE_NAME = 'TerminalRegistration'))
 BEGIN
 	DELETE from TerminalRegistration where UserId is not null;
-    UPDATE TerminalRegistration SET [Endpoint] = '$newHostname" + ":' + RIGHT([Endpoint], 5);
+	
+    UPDATE TerminalRegistration SET [Endpoint] = 
+			('$newHostname' +
+		(CASE when CHARINDEX (':', REVERSE ([Endpoint])) = 0
+		    then ''
+		else 
+			RIGHT ([Endpoint], CHARINDEX (':', REVERSE ([Endpoint])))
+		END))
 END";
 
 $command = new-object system.data.sqlclient.sqlcommand($commandText, $connection)

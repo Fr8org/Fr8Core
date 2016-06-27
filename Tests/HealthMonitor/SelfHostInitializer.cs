@@ -79,21 +79,33 @@ namespace HealthMonitor
                             }
                             else
                             {
-                                throw new ApplicationException(
-                                    String.Format("Cannot find terminal {0}, version {1} in the Terminals table.", app.Name, CURRENT_TERMINAL_VERSION));
+                                //hmm this is probably a new terminal - let's check it's endpoint on config file as a last resort
+                                app.Endpoint = ConfigurationManager.AppSettings[app.Name+ ".TerminalEndpoint"];
+                                if (app.Endpoint == null)
+                                {
+                                    throw new ApplicationException($"Cannot find terminal {app.Name}, version {CURRENT_TERMINAL_VERSION} in the Terminals table.");
+                                }
                             }
                         }
 
-                        app.Endpoint = Fr8.Testing.Integration.Utilities.NormalizeSchema(app.Endpoint);
-                        MethodInfo curMethodInfo = calledType.GetMethod("CreateServer", BindingFlags.Static | BindingFlags.Public);
-                        _selfHostedTerminals.Add((IDisposable)curMethodInfo.Invoke(null, new string[] { app.Endpoint }));
+                        try
+                        {
+                            app.Endpoint = Fr8.Testing.Integration.Utilities.NormalizeSchema(app.Endpoint);
+                            MethodInfo curMethodInfo = calledType.GetMethod("CreateServer", BindingFlags.Static | BindingFlags.Public);
+                            _selfHostedTerminals.Add((IDisposable) curMethodInfo.Invoke(null, new string[] {app.Endpoint}));
+                        }
+                        catch (Exception ex)
+                        {
+
+                            throw new Exception($"Failed to initialize terminal '{app.Name}' at '{app.Endpoint}'");
+                        }
                     }
                 }
             }
             catch (Exception)
             {
                 Dispose();
-                throw;
+                throw ;
             }
         }
 

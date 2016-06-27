@@ -29,10 +29,15 @@ namespace terminalDropboxTests.Activities
             var restfulServiceClient = new Mock<IRestfulServiceClient>();
             restfulServiceClient.Setup(r => r.GetAsync<PayloadDTO>(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
                 .Returns(Task.FromResult(FixtureData.FakePayloadDTO));
+
+            var dropboxServiceMock = new Mock<IDropboxService>();
+
+            dropboxServiceMock.Setup(x => x.GetFileList(It.IsAny<AuthorizationToken>())).Returns((AuthorizationToken x) => Task.FromResult(new List<string>()));
+
             ObjectFactory.Configure(cfg =>
             {
                 cfg.For<IRestfulServiceClient>().Use(restfulServiceClient.Object);
-                cfg.For<IDropboxService>().Use(Mock.Of<IDropboxService>());
+                cfg.For<IDropboxService>().Use(dropboxServiceMock.Object);
             });
             
 

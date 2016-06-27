@@ -98,11 +98,11 @@ namespace terminalGoogleTests.Integration
 
             //Assert
             var crateStorage = Crate.FromDto(responseActivityDTO.CrateStorage);
-            var FieldDescriptionsCM = crateStorage.CratesOfType<FieldDescriptionsCM>().Where(x => x.Label == "Available Forms").ToArray();
+            var FieldDescriptionsCM = crateStorage.CratesOfType<KeyValueDTO>().Where(x => x.Label == "Available Forms").ToArray();
 
             Assert.IsNotNull(FieldDescriptionsCM);
             Assert.Greater(FieldDescriptionsCM.Count(), 0);
-            Assert.Greater(FieldDescriptionsCM.First().Content.Fields.Count(), 0);
+            Assert.Greater(FieldDescriptionsCM.First().Content.Value.Count(), 0);
         }
         /// <summary>
         /// This test covers the test that the Drop Down List Box gets updated on followup configuration
@@ -243,7 +243,7 @@ namespace terminalGoogleTests.Integration
                         Fr8.Infrastructure.Data.Crates.Crate.FromContent(
                             "Response",
                             new StandardPayloadDataCM(
-                                new FieldDTO("response", "key1=value1&key2=value2")
+                                new KeyValueDTO("response", "key1=value1&key2=value2")
                             )
                         )
                    }

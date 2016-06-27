@@ -116,9 +116,10 @@ namespace Fr8.TerminalBase.Helpers
             string upstreamSourceLabel = "",
             string filterByTag = "",
             bool addRequestConfigEvent = false,
-            bool requestUpstream = false)
+            bool requestUpstream = false,
+            string groupLabelText = "")
         {
-            var control = new TextSource(label, upstreamSourceLabel, controlName)
+            var control = new TextSource(label, upstreamSourceLabel, controlName, groupLabelText)
             {
                 Source = new FieldSourceDTO
                 {

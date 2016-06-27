@@ -65,14 +65,14 @@ namespace terminalDocuSignTests.Integration
                 var dropDownList = (DropDownList)controls.Controls[1];
 
                  var availableActions = crateStorage
-                    .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "AvailableActions")
+                    .CrateContentsOfType<KeyValueListCM>(x => x.Label == "AvailableActions")
                     .Single();
 
                 dropDownList.Selected = true;
-                dropDownList.selectedKey = availableActions.Fields[1].Key;
-                dropDownList.Value = availableActions.Fields[1].Value;
+                dropDownList.selectedKey = availableActions.Values[1].Key;
+                dropDownList.Value = availableActions.Values[1].Value;
 
-                selectedAction = availableActions.Fields[1].Key;
+                selectedAction = availableActions.Values[1].Key;
             }
             responseActionDTO.AuthToken = requestDataDTO.ActivityDTO.AuthToken;
             return new Tuple<ActivityDTO, string>(responseActionDTO, selectedAction);
