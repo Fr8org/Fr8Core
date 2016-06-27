@@ -558,7 +558,6 @@ namespace Data.Migrations
             AddWebService(uow, "Dropbox", "/Content/icons/web_services/dropbox-icon-64x64.png");
             AddWebService(uow, "Atlassian", "/Content/icons/web_services/jira-icon-64x64.png");
             AddWebService(uow, "UnknownService", "/Content/icons/web_services/unknown-service.png");
-            AddWebService(uow, "Basecamp2", "/Content/icons/web_services/basecamp2-icon-64x64.png");
 
             foreach (var webServiceDo in uow.WebServiceRepository.GetAll())
             {

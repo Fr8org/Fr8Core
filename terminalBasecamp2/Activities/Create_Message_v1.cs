@@ -129,7 +129,7 @@ namespace terminalBasecamp2.Activities
             {
                 await LoadProjectsAndSelectTheOnlyOne().ConfigureAwait(false);
             }
-            CrateSignaller.MarkAvailableAtRuntime<FieldDescriptionsCM>(RuntimeCrateLabel, true)
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeCrateLabel, true)
                           .AddField("id")
                           .AddField("subject")
                           .AddField("content");
@@ -146,9 +146,9 @@ namespace terminalBasecamp2.Activities
                                                                      ActivityUI.MessageContent.GetValue(Payload),
                                                                      AuthorizationToken)
                                                       .ConfigureAwait(false);
-                Payload.Add(Crate.FromContent(RuntimeCrateLabel, new FieldDescriptionsCM(new FieldDTO { Key = "id", Value = message.Id.ToString() },
-                                                                                         new FieldDTO { Key = "subject", Value = message.Subject },
-                                                                                         new FieldDTO { Key = "content", Value = message.Content })));
+                Payload.Add(Crate.FromContent(RuntimeCrateLabel, new StandardPayloadDataCM(new KeyValueDTO { Key = "id", Value = message.Id.ToString() },
+                                                                                           new KeyValueDTO { Key = "subject", Value = message.Subject },
+                                                                                           new KeyValueDTO { Key = "content", Value = message.Content })));
             }
             catch (Exception ex)
             {

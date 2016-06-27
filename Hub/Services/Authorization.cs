@@ -186,7 +186,7 @@ namespace Hub.Services
                         TerminalID = curTerminal.Id,
                         UserID = curAccount.Id,
                         AdditionalAttributes = terminalResponseAuthTokenDTO.AdditionalAttributes,
-                        ExpiresAt = terminalResponseAuthTokenDTO.ExpiresAt != default(DateTime) ? terminalResponseAuthTokenDTO.ExpiresAt : DateTime.Today.AddMonths(1)
+                        ExpiresAt = terminalResponseAuthTokenDTO.ExpiresAt
                     };
 
                     uow.AuthorizationTokenRepository.Add(authToken);
@@ -251,7 +251,6 @@ namespace Hub.Services
                     Error = authTokenDTO.Error
                 };
             }
-            var expirationDateTime = authTokenDTO.ExpiresAt != default(DateTime) ? authTokenDTO.ExpiresAt : DateTime.Today.AddMonths(1);
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -278,7 +277,7 @@ namespace Hub.Services
                     authTokenByExternalState.ExternalDomainName = string.IsNullOrEmpty(authTokenDTO.ExternalDomainName) ? authTokenDTO.ExternalDomainId : authTokenDTO.ExternalDomainName;
                     authTokenByExternalAccountId.ExternalStateToken = null;
                     authTokenByExternalState.AdditionalAttributes = authTokenDTO.AdditionalAttributes;
-                    authTokenByExternalState.ExpiresAt = expirationDateTime;
+                    authTokenByExternalState.ExpiresAt = authTokenDTO.ExpiresAt;
 
                     uow.AuthorizationTokenRepository.Remove(authTokenByExternalState);
 
@@ -293,7 +292,7 @@ namespace Hub.Services
                     authTokenByExternalState.ExternalDomainName = string.IsNullOrEmpty(authTokenDTO.ExternalDomainName) ? authTokenDTO.ExternalDomainId : authTokenDTO.ExternalDomainName;
                     authTokenByExternalState.ExternalStateToken = null;
                     authTokenByExternalState.AdditionalAttributes = authTokenDTO.AdditionalAttributes;
-                    authTokenByExternalState.ExpiresAt = expirationDateTime;
+                    authTokenByExternalState.ExpiresAt = authTokenDTO.ExpiresAt;
 
                     EventManager.AuthTokenCreated(authTokenByExternalState);
                 }
@@ -346,7 +345,6 @@ namespace Hub.Services
                     {
                         UserID = curAccount.Id,
                         TerminalID = curTerminal.Id,
-                        ExpiresAt = DateTime.Today.AddMonths(1),
                         ExternalStateToken = externalAuthUrlDTO.ExternalStateToken
                     };
 
@@ -579,7 +577,7 @@ namespace Hub.Services
             }
         }
 
-        public void RenewToken(Guid authTokenId, string externalAccountId, string token, DateTime expiresAt)
+        public void RenewToken(Guid authTokenId, string externalAccountId, string token, DateTime? expiresAt)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -590,10 +588,7 @@ namespace Hub.Services
                     return;
                 authToken.ExternalAccountId = externalAccountId;
                 authToken.Token = token;
-                if (expiresAt != default(DateTime))
-                {
-                    authToken.ExpiresAt = expiresAt;
-                }
+                authToken.ExpiresAt = expiresAt;
                 uow.SaveChanges();
             }
         }
@@ -705,11 +700,8 @@ namespace Hub.Services
                             && x.UserID == curAccount.Id
                             && x.ExternalDomainId == terminalResponseAuthTokenDTO.ExternalDomainId
                             && x.ExternalAccountId == terminalResponseAuthTokenDTO.ExternalAccountId
-                            && x.AdditionalAttributes == terminalResponseAuthTokenDTO.AdditionalAttributes
-                        );
+                            && x.AdditionalAttributes == terminalResponseAuthTokenDTO.AdditionalAttributes);
                 }
-
-
                 var created = false;
                 if (authToken == null)
                 {
@@ -723,7 +715,6 @@ namespace Hub.Services
                         TerminalID = curTerminal.Id,
                         UserID = curAccount.Id,
                         AdditionalAttributes = terminalResponseAuthTokenDTO.AdditionalAttributes,
-                        ExpiresAt = DateTime.Today.AddMonths(1)
                     };
 
                     uow.AuthorizationTokenRepository.Add(authToken);

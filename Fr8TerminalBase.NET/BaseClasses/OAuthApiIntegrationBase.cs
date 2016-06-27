@@ -28,7 +28,7 @@ namespace Fr8.TerminalBase.BaseClasses
         /// </summary>
         public async Task<TResponse> ApiCall<TResponse>(Func<AuthorizationToken, Task<TResponse>> apiCall, AuthorizationToken auth)
         {
-            if (auth.ExpiresAt != default(DateTime) && auth.ExpiresAt < DateTime.UtcNow)
+            if (auth.ExpiresAt != null && auth.ExpiresAt < DateTime.UtcNow)
             {
                 auth = await RefreshTokenImpl(auth);
             }
@@ -70,14 +70,16 @@ namespace Fr8.TerminalBase.BaseClasses
         /// </summary>
         protected virtual bool IsExpiredAccessTokenException(Exception ex)
         {
+            if (ex.Message.Contains("invalid_grant") || ex.Message.Contains("expired access/refresh token"))
+            {
+                return true;
+            }
             var restfulServiceException = ex as RestfulServiceException;
             if (restfulServiceException == null)
             {
                 return false;
             }
-            return restfulServiceException.StatusCode == (int)HttpStatusCode.Unauthorized
-                   || restfulServiceException.Message.Contains("invalid_grant")
-                   || restfulServiceException.Message.Contains("expired access/refresh token");
+            return restfulServiceException.StatusCode == (int)HttpStatusCode.Unauthorized;
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         public string ExternalStateToken { get; set; }
         public string AdditionalAttributes { get; set; }
         public string Error { get; set; }
-        public DateTime ExpiresAt { get; set; }
+        public DateTime? ExpiresAt { get; set; }
         public bool AuthCompletedNotificationRequired { get; set; }
         
         //TODO remove this

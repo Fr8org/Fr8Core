@@ -159,7 +159,6 @@ namespace terminalIntegrationTests.EndToEnd
                     token.Token = FixtureData.GetGoogleAuthorizationTokenForGmailMonitor();
                     token.CreateDate = DateTime.Now;
                     token.LastUpdated = DateTime.Now;
-                    token.ExpiresAt = DateTime.Today;
                     token.TerminalID = googleTerminalId;
                     token.UserID = currentUser.Id;
                     token.ExternalAccountId = GoogleEmail;

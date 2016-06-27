@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Control;
@@ -85,7 +84,7 @@ namespace terminalBasecamp2Tests.Activities
             await activity.Configure(activityContext);
             var signalledCrate = activityContext.ActivityPayload.CrateStorage.FirstCrateOrDefault<CrateDescriptionCM>()?.Content;
             Assert.IsNotNull(signalledCrate, "Crate was not signalled");
-            var signalledFields = signalledCrate.CrateDescriptions?.FirstOrDefault(x => x.ManifestId == (int)MT.FieldDescription);
+            var signalledFields = signalledCrate.CrateDescriptions?.FirstOrDefault(x => x.ManifestId == (int)MT.StandardPayloadData);
             Assert.IsNotNull(signalledFields, "Fields were not signalled");
         }
 
@@ -151,7 +150,7 @@ namespace terminalBasecamp2Tests.Activities
             ObjectFactory.GetInstance<Mock<IBasecampApiClient>>().Verify(x => x.CreateMessage(It.IsAny<string>(), It.IsAny<string>(), "Subject", "Content", It.IsAny<AuthorizationToken>()),
                                                                          Times.Once(),
                                                                          "Message was not created");
-            var messageCrate = containerContext.PayloadStorage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == Create_Message_v1.RuntimeCrateLabel);
+            var messageCrate = containerContext.PayloadStorage.FirstCrateOrDefault<StandardPayloadDataCM>(x => x.Label == Create_Message_v1.RuntimeCrateLabel);
             Assert.IsNotNull(messageCrate, "Message create was not created");
         }
 
