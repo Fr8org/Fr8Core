@@ -63,12 +63,12 @@ namespace terminalFr8Core.Activities
 
         private Crate PackFr8ObjectCrate()
         {
-            var fields = new List<FieldDTO> {
-                    new FieldDTO(){
+            var fields = new List<KeyValueDTO> {
+                    new KeyValueDTO(){
                        Key = "Plans",
                        Value = "19"
                    },
-                   new FieldDTO(){
+                   new KeyValueDTO(){
                        Key = "Containers",
                        Value = "21"
                    }

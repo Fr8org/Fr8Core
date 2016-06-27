@@ -24,6 +24,6 @@ namespace terminalSalesforce.Infrastructure
         Task<bool> Delete(SalesforceObjectType objectType, string objectId, AuthorizationToken authToken);
 
         [Obsolete("Use Task<StandardTableDataCM> Query(SalesforceObjectType, IEnumerable<string>, string, AuthorizationTokenDO) instead")]
-        Task<IList<FieldDTO>> GetUsersAndGroups(AuthorizationToken authToken);
+        Task<IList<KeyValueDTO>> GetUsersAndGroups(AuthorizationToken authToken);
     }
 }

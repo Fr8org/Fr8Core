@@ -76,7 +76,7 @@ namespace terminalFacebook.Activities
         public override Task Initialize()
         {
             Storage.Add(PackEventSubscriptionsCrate());
-            CrateSignaller.MarkAvailableAtRuntime<FieldDescriptionsCM>(RuntimeCrateLabel)
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeCrateLabel)
                           .AddField(FacebookFeedIdField)
                           .AddField(FacebookFeedMessageField)
                           .AddField(FacebookFeedStoryField)
@@ -128,11 +128,11 @@ namespace terminalFacebook.Activities
                 return;
             }
 
-            Payload.Add(Crate<FieldDescriptionsCM>.FromContent(RuntimeCrateLabel, new FieldDescriptionsCM(
-                                                                          new FieldDTO(FacebookFeedIdField, fbPost.id),
-                                                                          new FieldDTO(FacebookFeedMessageField, fbPost.message),
-                                                                          new FieldDTO(FacebookFeedStoryField, fbPost.story),
-                                                                          new FieldDTO(FacebookFeedCreatedTimeField, fbPost.created_time))));
+            Payload.Add(Crate<StandardPayloadDataCM>.FromContent(RuntimeCrateLabel, new StandardPayloadDataCM(
+                                                                          new KeyValueDTO(FacebookFeedIdField, fbPost.id),
+                                                                          new KeyValueDTO(FacebookFeedMessageField, fbPost.message),
+                                                                          new KeyValueDTO(FacebookFeedStoryField, fbPost.story),
+                                                                          new KeyValueDTO(FacebookFeedCreatedTimeField, fbPost.created_time))));
         }
     }
 }

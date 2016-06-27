@@ -35,7 +35,7 @@ namespace terminalSalesforceTests.Activities
                                                           {
                                                               Table = new List<TableRowDTO>
                                                                       {
-                                                                          new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new FieldDTO("Id", "1") } } }
+                                                                          new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new KeyValueDTO("Id", "1") } } }
                                                                       }
                                                           }));
             salesforceManagerMock.Setup(x => x.PostToChatter(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<AuthorizationToken>()))

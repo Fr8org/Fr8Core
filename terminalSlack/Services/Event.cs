@@ -59,12 +59,12 @@ namespace terminalSlack.Services
             }
         }
 
-        private List<FieldDTO> ParseSlackPayloadData(string message)
+        private List<KeyValueDTO> ParseSlackPayloadData(string message)
         {
             var tokens = message.Split(
                 new[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
 
-            var payloadFields = new List<FieldDTO>();
+            var payloadFields = new List<KeyValueDTO>();
             foreach (var token in tokens)
             {
                 var nameValue = token.Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
@@ -76,7 +76,7 @@ namespace terminalSlack.Services
                 var name = HttpUtility.UrlDecode(nameValue[0]).Trim('\"');
                 var value = HttpUtility.UrlDecode(nameValue[1]).Trim('\"');
 
-                payloadFields.Add(new FieldDTO()
+                payloadFields.Add(new KeyValueDTO()
                 {
                     Key = name,
                     Value = value
@@ -86,7 +86,7 @@ namespace terminalSlack.Services
             return payloadFields;
         }
 
-        private ICrateStorage WrapPayloadDataCrate(List<FieldDTO> payloadFields)
+        private ICrateStorage WrapPayloadDataCrate(List<KeyValueDTO> payloadFields)
         {
             return new CrateStorage(Crate.FromContent("Payload Data", new StandardPayloadDataCM(payloadFields)));
         }

@@ -11,11 +11,11 @@ namespace terminalDocuSign.Services
 {
     public static class DocuSignFolders
     {
-        public static IEnumerable<FieldDTO> GetFolders(DocuSignApiConfiguration conf)
+        public static IEnumerable<KeyValueDTO> GetFolders(DocuSignApiConfiguration conf)
         {
             var api = new FoldersApi(conf.Configuration);
             var folders = api.List(conf.AccountId);
-            return folders.Folders?.Select(a => new FieldDTO(a.Name, a.FolderId)) ?? new List<FieldDTO>();
+            return folders.Folders?.Where(a => a.Filter == null).Select(a => new KeyValueDTO(a.Name, a.FolderId)) ?? new List<KeyValueDTO>();
         }
 
         public static IEnumerable<FolderItem> GetFolderItems(DocuSignApiConfiguration config, DocuSignQuery docuSignQuery)
@@ -27,10 +27,10 @@ namespace terminalDocuSign.Services
             if (string.IsNullOrEmpty(docuSignQuery.Folder))
             {
                 //return all envelopes from all folders
-                var folders = api.List(config.AccountId);
-                if (folders.Folders != null)
+                var folders = api.List(config.AccountId).Folders.Where(a => a.Filter == null);
+                if (folders != null)
                 {
-                    foreach (var item in folders.Folders)
+                    foreach (var item in folders)
                     {
                         var envelopesResponse = api.ListItems(config.AccountId, item.FolderId,
                             new FoldersApi.SearchOptions()

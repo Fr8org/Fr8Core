@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Control;
-using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
@@ -13,6 +11,7 @@ using Fr8.TerminalBase.Errors;
 using Fr8.TerminalBase.Infrastructure;
 using Newtonsoft.Json;
 using terminalStatX.DataTransferObjects;
+using terminalStatX.Helpers;
 using terminalStatX.Interfaces;
 
 namespace terminalStatX.Activities
@@ -33,43 +32,16 @@ namespace terminalStatX.Activities
 
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        private const string SelectedGroupCrateLabel = "Selected Group";
-        private const string SelectedStatCrateLabel = "Selected Stat";
-
         private string SelectedGroup
         {
-            get
-            {
-                var storedValue = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == SelectedGroupCrateLabel);
-                return storedValue?.Content.Fields.First().Key;
-            }
-            set
-            {
-                Storage.RemoveByLabel(SelectedGroupCrateLabel);
-                if (string.IsNullOrEmpty(value))
-                {
-                    return;
-                }
-                Storage.Add(Crate<FieldDescriptionsCM>.FromContent(SelectedGroupCrateLabel, new FieldDescriptionsCM(new FieldDTO(value)), AvailabilityType.Configuration));
-            }
+            get { return this["SelectedGroup"]; }
+            set { this["SelectedGroup"] = value; }
         }
 
         private string SelectedStat
         {
-            get
-            {
-                var storedValue = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == SelectedStatCrateLabel);
-                return storedValue?.Content.Fields.First().Key;
-            }
-            set
-            {
-                Storage.RemoveByLabel(SelectedGroupCrateLabel);
-                if (string.IsNullOrEmpty(value))
-                {
-                    return;
-                }
-                Storage.Add(Crate<FieldDescriptionsCM>.FromContent(SelectedGroupCrateLabel, new FieldDescriptionsCM(new FieldDTO(value)), AvailabilityType.Configuration));
-            }
+            get { return this["SelectedStat"]; }
+            set { this["SelectedStat"] = value; }
         }
 
         public class ActivityUi : StandardConfigurationControlsCM
@@ -83,16 +55,16 @@ namespace terminalStatX.Activities
 
             public ActivityUi()
             {
-                ExistingGroupsList = new DropDownList()
+                ExistingGroupsList = new DropDownList
                 {
                     Label = "Choose a StatX Group",
                     Name = nameof(ExistingGroupsList),
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
 
-                ExistingGroupStats = new DropDownList()
+                ExistingGroupStats = new DropDownList
                 {
-                    Label = "Choose a Stat from Selected Group",
+                    Label = "Update which Stat?",
                     Name = nameof(ExistingGroupStats),
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
@@ -117,13 +89,8 @@ namespace terminalStatX.Activities
 
         public override async Task Initialize()
         {
-            ActivityUI.ExistingGroupsList.ListItems = (await _statXIntegration.GetGroups(GetStatXAuthToken()))
+            ActivityUI.ExistingGroupsList.ListItems = (await _statXIntegration.GetGroups(StatXUtilities.GetStatXAuthToken(AuthorizationToken)))
                 .Select(x => new ListItem { Key = x.Name, Value = x.Id }).ToList();
-        }
-
-        private StatXAuthDTO GetStatXAuthToken()
-        {
-            return JsonConvert.DeserializeObject<StatXAuthDTO>(AuthorizationToken.Token);
         }
 
         public override async Task FollowUp()
@@ -133,10 +100,10 @@ namespace terminalStatX.Activities
                 var previousGroup = SelectedGroup;
                 if (string.IsNullOrEmpty(previousGroup) || !string.Equals(previousGroup, ActivityUI.ExistingGroupsList.Value))
                 {
-                    var stats = await _statXIntegration.GetStatsForGroup(GetStatXAuthToken(), ActivityUI.ExistingGroupsList.Value);
+                    var stats = await _statXIntegration.GetStatsForGroup(StatXUtilities.GetStatXAuthToken(AuthorizationToken), ActivityUI.ExistingGroupsList.Value);
                     
                     ActivityUI.ExistingGroupStats.ListItems = stats
-                        .Select(x => new ListItem { Key = x.Title, Value = x.Id }).ToList();
+                        .Select(x => new ListItem { Key = string.IsNullOrEmpty(x.Title) ? x.Id : x.Title, Value = x.Id }).ToList();
 
                     var firstStat = stats.FirstOrDefault();
                     if (firstStat != null)
@@ -147,12 +114,12 @@ namespace terminalStatX.Activities
                         {
                             foreach (var item in firstStat.StatItems)
                             {
-                                ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(item.Name, item.Name, requestUpstream: true));
+                                ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(item.Name, item.Name, requestUpstream: true, groupLabelText: "Available Stat Value Items"));
                             }
                         }
                         else
                         {
-                            ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(firstStat.Title, firstStat.Title, requestUpstream: true));
+                            ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(string.IsNullOrEmpty(firstStat.Title) ? firstStat.Id : firstStat.Title, string.IsNullOrEmpty(firstStat.Title) ? firstStat.Id : firstStat.Title, requestUpstream: true, groupLabelText: "Available Stat Value Items"));
                         }
                     }
                 }
@@ -171,7 +138,7 @@ namespace terminalStatX.Activities
                 var previousStat = SelectedStat;
                 if (string.IsNullOrEmpty(previousStat) || !string.Equals(previousStat, ActivityUI.ExistingGroupStats.Value))
                 {
-                    var stats = await _statXIntegration.GetStatsForGroup(GetStatXAuthToken(), ActivityUI.ExistingGroupsList.Value);
+                    var stats = await _statXIntegration.GetStatsForGroup(StatXUtilities.GetStatXAuthToken(AuthorizationToken), ActivityUI.ExistingGroupsList.Value);
 
                     var currentStat = stats.FirstOrDefault(x => x.Id == ActivityUI.ExistingGroupStats.Value);
                     if (currentStat != null)
@@ -181,12 +148,12 @@ namespace terminalStatX.Activities
                         {
                             foreach (var item in currentStat.StatItems)
                             {
-                                ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(item.Name, item.Name, requestUpstream: true));
+                                ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(item.Name, item.Name, requestUpstream: true, groupLabelText: "Available Stat Value Items"));
                             }
                         }
                         else
                         {
-                            ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(currentStat.Title, currentStat.Title, requestUpstream: true));
+                            ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(string.IsNullOrEmpty(currentStat.Title) ? currentStat.Id : currentStat.Title, string.IsNullOrEmpty(currentStat.Title) ? currentStat.Id : currentStat.Title, requestUpstream: true, groupLabelText: "Available Stat Value Items"));
                         }
                     }
                 }
@@ -216,7 +183,7 @@ namespace terminalStatX.Activities
                 throw new ActivityExecutionException("Update Stat activity run failed!. Activity doesn't have selected Stat.");
             }
 
-            await _statXIntegration.UpdateStatValue(GetStatXAuthToken(), ActivityUI.ExistingGroupsList.Value,
+            await _statXIntegration.UpdateStatValue(StatXUtilities.GetStatXAuthToken(AuthorizationToken), ActivityUI.ExistingGroupsList.Value,
                 ActivityUI.ExistingGroupStats.Value, statValues);
             
             Success();

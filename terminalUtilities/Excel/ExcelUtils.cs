@@ -291,16 +291,15 @@ namespace terminalUtilities.Excel
             var listOfRows = new List<TableRowDTO>();
             if (includeHeadersAsFirstRow)
             {
-                listOfRows.Add(new TableRowDTO { Row = headersArray.Select(x => new TableCellDTO { Cell = new FieldDTO(x, x) }).ToList() });
+                listOfRows.Add(new TableRowDTO { Row = headersArray.Select(x => new TableCellDTO { Cell = new KeyValueDTO(x, x) }).ToList() });
             }
             // Process each item in the dictionary and add it as an item in List<TableRowDTO>
             foreach (var row in rowsDictionary)
             {
                 var listOfCells = row.Value.Select(x => new TableCellDTO
                 {
-                    Cell = new FieldDTO
+                    Cell = new KeyValueDTO
                     {
-
                         Key = headersArray != null ? headersArray[int.Parse(x.Item1) - 1] : x.Item1, // Column header
                         Value = x.Item2 // Column/cell value
                     }
@@ -309,13 +308,7 @@ namespace terminalUtilities.Excel
             }
             return listOfRows;
         }
-
-        public async Task<FieldDescriptionsCM> GetColumnHeadersData(string uploadFilePath, string label = null)
-        {
-            var columnHeaders = await GetColumnHeaders(uploadFilePath);
-            return new FieldDescriptionsCM(columnHeaders.Select(col => new FieldDTO { Key = col, Value = col, Availability = AvailabilityType.RunTime, SourceCrateLabel = label }));
-        }
-
+        
         private static DataTable ToDataTable(StandardTableDataCM tableCM)
         {
             if (tableCM == null || tableCM.Table == null || tableCM.Table.Count == 0)

@@ -51,7 +51,7 @@ namespace terminalDocuSign.Activities
         {
         }
 
-        protected override Task InitializeDS()
+        public override Task Initialize()
         {
             var configurationCrate = PackControls(new ActivityUi());
             FillDocuSignTemplateSource(configurationCrate, "Available_Templates");
@@ -60,7 +60,7 @@ namespace terminalDocuSign.Activities
             return Task.FromResult(0);
         }
 
-        protected override async Task FollowUpDS()
+        public override async Task FollowUp()
         {
             var selectedTemplateField = GetControl<DropDownList>("Available_Templates");
             if (string.IsNullOrEmpty(selectedTemplateField.Value))
@@ -143,7 +143,7 @@ namespace terminalDocuSign.Activities
 
         protected override string ActivityUserFriendlyName => SolutionName;
 
-        protected override async Task RunDS()
+        public override async Task Run()
         {
             Success();
             await Task.Yield();
