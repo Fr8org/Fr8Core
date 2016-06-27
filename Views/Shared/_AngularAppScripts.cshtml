@@ -1,4 +1,5 @@
-﻿<!-- END CORE JQUERY PLUGINS -->
+﻿@using Fr8.Infrastructure.Utilities
+<!-- END CORE JQUERY PLUGINS -->
 <!-- BEGIN CORE ANGULARJS PLUGINS -->
 
 
@@ -52,5 +53,5 @@
 @Scripts.Render("~/bundles/js/fr8")
 
 <script>
-    var appKey = "@new ConfigRepository().Get("pusherAppKey")";
+    var appKey = "@( new ConfigRepository().Get("pusherAppKey"))";
 </script>

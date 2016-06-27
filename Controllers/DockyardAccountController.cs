@@ -110,7 +110,7 @@ namespace HubWeb.Controllers
                         }
                         else
                         {
-                            curRegStatus = _account.ProcessRegistrationRequest(uow, submittedRegData.Email.Trim(), submittedRegData.Password.Trim(), organizationDO, isNewOrganization);
+                            curRegStatus = _account.ProcessRegistrationRequest(uow, submittedRegData.Email.Trim(), submittedRegData.Password.Trim(), organizationDO, isNewOrganization, submittedRegData.AnonimousId);
                         }
 
                         uow.SaveChanges();

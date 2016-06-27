@@ -7,6 +7,7 @@ using Data.Interfaces;
 using Data.States;
 using Hub.Interfaces;
 using Hub.Services;
+using Newtonsoft.Json.Schema;
 using Segment.Model;
 
 namespace Hub.Managers.APIManagers.Packagers.SegmentIO
@@ -59,9 +60,9 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
             }
         }
 
-        private Dictionary<string, object> GetProperties(Fr8AccountDO fr8AccountDO)
+        private Traits GetProperties(Fr8AccountDO fr8AccountDO)
         {
-            return new Dictionary<string, object>
+            return new Traits
             {
                 {"First Name", fr8AccountDO.FirstName},
                 {"Last Name", fr8AccountDO.LastName},
@@ -72,6 +73,15 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
             };
         }
 
+        public void Alias(string anonimousId, Fr8AccountDO fr8AccountDO)
+        {
+            Analytics.Client.Alias(anonimousId, fr8AccountDO.Id);
+            Analytics.Client.Flush();
+
+            var userProperties = GetProperties(fr8AccountDO);
+            Analytics.Client.Identify(fr8AccountDO.Id, userProperties);
+            Analytics.Client.Track(fr8AccountDO.Id,"User Registered");
+        }
         public void Identify(Fr8AccountDO fr8AccountDO)
         {
             if (Analytics.Client == null)

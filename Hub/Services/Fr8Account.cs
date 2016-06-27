@@ -16,6 +16,7 @@ using System.Web;
 using System.Net.Http;
 using System.Security.Claims;
 using Fr8.Infrastructure.Utilities;
+using Hub.Interfaces;
 
 namespace Hub.Services
 {
@@ -243,12 +244,14 @@ namespace Hub.Services
         /// <summary>
         /// Register account
         /// </summary>
+        /// <param name="uow"></param>
         /// <param name="email"></param>
         /// <param name="password"></param>
         /// <param name="organizationDO">organization where the user belongs</param>
         /// <param name="isNewOrganization">In case of new created organization, make user admin of that organization</param>
+        /// <param name="anonimousId"></param>
         /// <returns></returns>
-        public RegistrationStatus ProcessRegistrationRequest(IUnitOfWork uow, string email, string password, OrganizationDO organizationDO, bool isNewOrganization)
+        public RegistrationStatus ProcessRegistrationRequest(IUnitOfWork uow, string email, string password, OrganizationDO organizationDO, bool isNewOrganization, string anonimousId)
         {
             RegistrationStatus curRegStatus;
             Fr8AccountDO newFr8Account = null;
@@ -305,6 +308,7 @@ namespace Hub.Services
             if (newFr8Account != null)
             {
                 EventManager.UserRegistration(newFr8Account);
+                ObjectFactory.GetInstance<ITracker>().Alias(anonimousId, newFr8Account);
             }
 
             return curRegStatus;
