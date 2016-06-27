@@ -109,10 +109,10 @@ namespace Fr8.TerminalBase.Services
             return await _underlyingHubCommunicator.GetAuthToken(authTokenId);
         }
 
-        public async Task ScheduleEvent(string externalAccountId, string minutes, bool trigger_imeddiately = false)
+        public async Task ScheduleEvent(string externalAccountId, string minutes, bool triggerImmediately = false, string additionalConfigAttributes = null)
         {
             await InitializeUnderlyingCommunicator();
-            await _underlyingHubCommunicator.ScheduleEvent(externalAccountId, minutes, trigger_imeddiately);
+            await _underlyingHubCommunicator.ScheduleEvent(externalAccountId, minutes, triggerImmediately, additionalConfigAttributes);
         }
 
         public async Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload)

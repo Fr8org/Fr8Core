@@ -54,7 +54,7 @@ namespace terminalGoogle.Activities
                 "Google",
                 "GmailInbox"));
 
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeCrateLabel).AddFields(CreateEmailFields(null, RuntimeCrateLabel));
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeCrateLabel).AddFields("EmailFrom", "DateReceived", "EmailFromName", "HtmlText", "PlainText", "Subject");
         }
 
 
@@ -75,24 +75,22 @@ namespace terminalGoogle.Activities
                 TerminateHubExecution("Letter was not found in the payload.");
             }
 
-            Payload.Add(Crate.FromContent<StandardPayloadDataCM>(RuntimeCrateLabel, new StandardPayloadDataCM(CreateEmailFields(mail, RuntimeCrateLabel))));
+            Payload.Add(Crate.FromContent(RuntimeCrateLabel, new StandardPayloadDataCM(CreateEmailFields(mail))));
 
             Success();
 
             return Task.FromResult(0);
         }
 
-
-
-        private List<FieldDTO> CreateEmailFields(StandardEmailMessageCM email, string crate_label)
+        private List<KeyValueDTO> CreateEmailFields(StandardEmailMessageCM email)
         {
-            return new List<FieldDTO>{
-                new FieldDTO("EmailFrom", email?.EmailFrom, AvailabilityType.RunTime) { Tags = "EmailAddress",SourceCrateLabel = crate_label },
-                new FieldDTO("DateReceived", email?.DateReceived, AvailabilityType.RunTime) {  SourceCrateLabel = crate_label },
-                new FieldDTO("EmailFromName", email?.EmailFromName,  AvailabilityType.RunTime) { SourceCrateLabel = crate_label},
-                new FieldDTO("HtmlText",  email?.HtmlText) { SourceCrateLabel = crate_label },
-                new FieldDTO("PlainText", email?.PlainText, AvailabilityType.RunTime) { SourceCrateLabel = crate_label },
-                new FieldDTO("Subject", email?.Subject, AvailabilityType.RunTime) { SourceCrateLabel = crate_label},
+            return new List<KeyValueDTO>{
+                new KeyValueDTO("EmailFrom", email?.EmailFrom),
+                new KeyValueDTO("DateReceived", email?.DateReceived),
+                new KeyValueDTO("EmailFromName", email?.EmailFromName),
+                new KeyValueDTO("HtmlText",  email?.HtmlText),
+                new KeyValueDTO("PlainText", email?.PlainText),
+                new KeyValueDTO("Subject", email?.Subject),
             };
         }
 

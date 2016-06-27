@@ -83,7 +83,7 @@ namespace terminalDocuSign.Activities
         {
             var properties = typeof(DocuSignEnvelopeDTO).GetProperties(BindingFlags.Public | BindingFlags.Instance)
                                                         .Where(x => x.CanRead && x.CanWrite);
-            return properties.Select(x => new FieldDTO(x.Name, x.Name, AvailabilityType.Always)).ToArray();
+            return properties.Select(x => new FieldDTO(x.Name)).ToArray();
         }
 
         private const string RunTimeCrateLabel = "DocuSign Envelope Data";

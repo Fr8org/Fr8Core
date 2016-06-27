@@ -301,6 +301,7 @@
     <Compile Include="Exceptions\InvalidTokenException.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
+    <Compile Include="Infrastructure\ActivityTemplateInfo.cs" />
     <Compile Include="Infrastructure\CustomSelector.cs" />
     <Compile Include="Infrastructure\FilterConditionPredicateBuilder.cs" />
     <Compile Include="Infrastructure\Fr8Identity.cs" />
@@ -322,7 +323,6 @@
     <Compile Include="Security\HangFireAuthorizationFilter.cs" />
     <Compile Include="Interfaces\IAuthorization.cs" />
     <Compile Include="Interfaces\IManifest.cs" />
-    <Compile Include="Interfaces\IField.cs" />
     <Compile Include="Interfaces\IPlanNode.cs" />
     <Compile Include="Interfaces\IActivityTemplate.cs" />
     <Compile Include="Interfaces\IActivity.cs" />
@@ -380,7 +380,6 @@
     <Compile Include="Security\SecurityServices.cs" />
     <Compile Include="Services\ContainerService.ExecutionSession.cs" />
     <Compile Include="Services\Fact.cs" />
-    <Compile Include="Services\Field.cs" />
     <Compile Include="Interfaces\ITerminalDiscoveryService.cs" />
     <Compile Include="Services\ManifestService.cs" />
     <Compile Include="Services\MT\MTSearchHelper.cs" />

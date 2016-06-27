@@ -122,11 +122,11 @@ namespace Fr8.Testing.Integration.Tools.Activities
             return new Tuple<ActivityDTO, PlanDTO, Guid>(solution, plan, tokenGuid);
         }
 
-        public async Task<ActivityDTO> AddAndConfigure_QueryDocuSign(PlanDTO plan, int ordering)
+        public async Task<ActivityDTO> AddAndConfigure_QueryDocuSign(PlanDTO plan, int ordering, int version = 1)
         {
             var queryDocuSignActivity = FixtureData.Query_DocuSign_v1_InitialConfiguration();
             var activityTemplates = await _baseHubITest.HttpGetAsync<ActivityTemplateCategoryDTO[]>(_baseHubITest.GetHubApiBaseUrl() + "/activity_templates");
-            var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).FirstOrDefault(a => a.Name == "Query_DocuSign" && a.Version == "1");
+            var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).FirstOrDefault(a => a.Name == "Query_DocuSign" && a.Version == version.ToString());
 
             if (apmActivityTemplate == null)
             {
@@ -176,13 +176,13 @@ namespace Fr8.Testing.Integration.Tools.Activities
             var controlsCrate = initialcrateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
             //set the value of folder to drafts and 
             var controls = controlsCrate.Content.Controls;
-            var folderControl = controls.OfType<DropDownList>().FirstOrDefault(c => c.Name == "Folder");
+            var folderControl = controls.OfType<DropDownList>().FirstOrDefault(c => c.Name == "FolderFilter");
             Assert.IsNotNull(folderControl, "Query_DocuSign: DropDownList control for Folder value selection was not found");
             folderControl.Value = "Draft";
             folderControl.selectedKey = "Draft";
 
             //set the value of status to any
-            var statusControl = controls.OfType<DropDownList>().FirstOrDefault(c => c.Name == "Status");
+            var statusControl = controls.OfType<DropDownList>().FirstOrDefault(c => c.Name == "StatusFilter");
             Assert.IsNotNull(folderControl, "Query_DocuSign: DropDownList control for Status value selection was not found");
             statusControl.Value = null;
             statusControl.selectedKey = null;

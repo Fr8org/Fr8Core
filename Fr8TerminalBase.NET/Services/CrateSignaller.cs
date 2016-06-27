@@ -38,6 +38,16 @@ namespace Fr8.TerminalBase.Services
                 return this;
             }
 
+            public FieldConfigurator AddFields(params string[] fields)
+            {
+                foreach (var field in fields)
+                {
+                    AddField(field);
+                }
+
+                return this;
+            }
+
             public FieldConfigurator AddField(FieldDTO field)
             {
                 field = field.Clone();

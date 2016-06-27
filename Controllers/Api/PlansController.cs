@@ -105,7 +105,24 @@ namespace HubWeb.Controllers
             var userId = User.Identity.GetUserId();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityTemplate = _activityTemplate.GetQuery().FirstOrDefault(at => at.Name == solutionName);
+                ActivityTemplateDO activityTemplate;
+
+                var activityTemplateInfo = _activityTemplate.GetActivityTemplateInfo(solutionName);
+
+                if (!string.IsNullOrEmpty(activityTemplateInfo.Version))
+                {
+                    activityTemplate = _activityTemplate.GetQuery()
+                        .Where(x => x.Name == activityTemplateInfo.Name && x.Version == activityTemplateInfo.Version)
+                        .FirstOrDefault();
+                }
+                else
+                {
+                    activityTemplate = _activityTemplate.GetQuery()
+                        .Where(x => x.Name == solutionName)
+                        .AsEnumerable()
+                        .OrderByDescending(x => int.Parse(x.Version))
+                        .FirstOrDefault();
+                }
                 if (activityTemplate == null)
                 {
                     throw new ArgumentException($"actionTemplate (solution) name {solutionName} is not found in the database.");

@@ -19,24 +19,24 @@ namespace Fr8.Testing.Unit.Fixtures
                     {
                         Row = new List<TableCellDTO>()
                         {
-                            new TableCellDTO() { Cell = new FieldDTO("name", "name")  },
-                            new TableCellDTO() { Cell = new FieldDTO("emailaddress", "emailaddress")  },
-                            new TableCellDTO() { Cell = new FieldDTO("companyname", "companyname")  },
-                            new TableCellDTO() { Cell = new FieldDTO("title", "title")  },
-                            new TableCellDTO() { Cell = new FieldDTO("leadsource", "leadsource")  },
-                            new TableCellDTO() { Cell = new FieldDTO("phone", "phone")  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("name", "name")  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("emailaddress", "emailaddress")  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("companyname", "companyname")  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("title", "title")  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("leadsource", "leadsource")  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("phone", "phone")  },
                         }
                     },
                     new TableRowDTO
                     {
                         Row = new List<TableCellDTO>()
                         {
-                            new TableCellDTO() { Cell = new FieldDTO("name", name)  },
-                            new TableCellDTO() { Cell = new FieldDTO("emailaddress", emailAddress)  },
-                            new TableCellDTO() { Cell = new FieldDTO("companyname", "Clorox")  },
-                            new TableCellDTO() { Cell = new FieldDTO("title", "Mrs")  },
-                            new TableCellDTO() { Cell = new FieldDTO("leadsource", "Kiosk - Moscone")  },
-                            new TableCellDTO() { Cell = new FieldDTO("phone", "(415) 444-3234")  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("name", name)  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("emailaddress", emailAddress)  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("companyname", "Clorox")  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("title", "Mrs")  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("leadsource", "Kiosk - Moscone")  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("phone", "(415) 444-3234")  },
                         }
                     }
                 }
@@ -73,36 +73,36 @@ namespace Fr8.Testing.Unit.Fixtures
                     {
                         Row = new List<TableCellDTO>()
                         {
-                            new TableCellDTO() { Cell = new FieldDTO("name", "name")  },
-                            new TableCellDTO() { Cell = new FieldDTO("emailaddress", "emailaddress")  },
-                            new TableCellDTO() { Cell = new FieldDTO("companyname", "companyname")  },
-                            new TableCellDTO() { Cell = new FieldDTO("title", "title")  },
-                            new TableCellDTO() { Cell = new FieldDTO("leadsource", "leadsource")  },
-                            new TableCellDTO() { Cell = new FieldDTO("phone", "phone")  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("name", "name")  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("emailaddress", "emailaddress")  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("companyname", "companyname")  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("title", "title")  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("leadsource", "leadsource")  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("phone", "phone")  },
                         }
                     },
                     new TableRowDTO
                     {
                         Row = new List<TableCellDTO>()
                         {
-                            new TableCellDTO() { Cell = new FieldDTO("name", name)  },
-                            new TableCellDTO() { Cell = new FieldDTO("emailaddress", emailAddress)  },
-                            new TableCellDTO() { Cell = new FieldDTO("companyname", "Clorox")  },
-                            new TableCellDTO() { Cell = new FieldDTO("title", "Mrs")  },
-                            new TableCellDTO() { Cell = new FieldDTO("leadsource", "Kiosk - Moscone")  },
-                            new TableCellDTO() { Cell = new FieldDTO("phone", "(415) 444-3234")  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("name", name)  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("emailaddress", emailAddress)  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("companyname", "Clorox")  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("title", "Mrs")  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("leadsource", "Kiosk - Moscone")  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("phone", "(415) 444-3234")  },
                         }
                     },
                     new TableRowDTO
                     {
                         Row = new List<TableCellDTO>()
                         {
-                            new TableCellDTO() { Cell = new FieldDTO("name", name)  },
-                            new TableCellDTO() { Cell = new FieldDTO("emailaddress", emailAddress)  },
-                            new TableCellDTO() { Cell = new FieldDTO("companyname", "Clorox")  },
-                            new TableCellDTO() { Cell = new FieldDTO("title", "Mrs")  },
-                            new TableCellDTO() { Cell = new FieldDTO("leadsource", "Kiosk - Moscone")  },
-                            new TableCellDTO() { Cell = new FieldDTO("phone", "(415) 444-3234")  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("name", name)  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("emailaddress", emailAddress)  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("companyname", "Clorox")  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("title", "Mrs")  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("leadsource", "Kiosk - Moscone")  },
+                            new TableCellDTO() { Cell = new KeyValueDTO("phone", "(415) 444-3234")  },
                         }
                     }
                 }
