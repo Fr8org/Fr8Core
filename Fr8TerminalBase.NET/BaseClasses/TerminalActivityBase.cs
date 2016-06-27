@@ -225,6 +225,7 @@ namespace Fr8.TerminalBase.BaseClasses
                 if (IsInvalidTokenException(ex))
                 {
                     AddAuthenticationCrate(true);
+                    return;
                 }
                 else if (!afterConfigureFails)
                 {

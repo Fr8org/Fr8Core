@@ -1,12 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
-using System;
+using Hub.Infrastructure;
 
 namespace Hub.Interfaces
 {
     public interface IActivityTemplate
     {
+        ActivityTemplateInfo GetActivityTemplateInfo(string fullActivityTemplateName);
+
         IEnumerable<ActivityTemplateDO> GetQuery();
         ActivityTemplateDO[] GetAll();
         ActivityTemplateDO GetByKey(Guid curActivityTemplateDOId);
