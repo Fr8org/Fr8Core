@@ -52,17 +52,17 @@ namespace Fr8.Infrastructure.Data.Manifests.Helpers
             {
                 return crate.Get<StandardTableDataCM>();
             }
-            if (crate.ManifestType.Id == (int)MT.FieldDescription)
+            if (crate.ManifestType.Id == (int)MT.KeyValueList)
             {
-                var fields = crate.Get<FieldDescriptionsCM>();
+                var fields = crate.Get<KeyValueListCM>();
                 return new StandardTableDataCM
                 {
                     FirstRowHeaders = true,
                     Table = new List<TableRowDTO>
                                    {
                                        //Keys of fields will become column headers
-                                       new TableRowDTO { Row = fields.Fields.Select(x => new TableCellDTO { Cell = new FieldDTO(x.Key, x.Key) }).ToList() },
-                                       new TableRowDTO { Row = fields.Fields.Select(x => new TableCellDTO { Cell = x }).ToList() }
+                                       new TableRowDTO { Row = fields.Values.Select(x => new TableCellDTO { Cell = new KeyValueDTO(x.Key, x.Key) }).ToList() },
+                                       new TableRowDTO { Row = fields.Values.Select(x => new TableCellDTO { Cell = new KeyValueDTO(x.Key, x.Value) }).ToList() }
                                    }
                 };
             }
@@ -106,12 +106,12 @@ namespace Fr8.Infrastructure.Data.Manifests.Helpers
                                     {
                                         headerRow.Row.Add(new TableCellDTO
                                         {
-                                            Cell = new FieldDTO(fieldObj["key"].ToString(), fieldObj["key"].ToString())
+                                            Cell = new KeyValueDTO(fieldObj["key"].ToString(), fieldObj["key"].ToString())
                                         });
                                         dataRow.Row.Add(new TableCellDTO
                                         {
                                             Cell =
-                                                new FieldDTO(fieldObj["key"].ToString(), fieldObj["value"].ToString())
+                                                new KeyValueDTO(fieldObj["key"].ToString(), fieldObj["value"].ToString())
                                         });
                                     }
                                 }
@@ -138,12 +138,12 @@ namespace Fr8.Infrastructure.Data.Manifests.Helpers
                                 {
                                     headerRow.Row.Add(new TableCellDTO
                                     {
-                                        Cell = new FieldDTO(property.Name, property.Name)
+                                        Cell = new KeyValueDTO(property.Name, property.Name)
                                     });
                                     dataRow.Row.Add(new TableCellDTO
                                     {
                                         Cell =
-                                            new FieldDTO(property.Name, property.Value.ToString())
+                                            new KeyValueDTO(property.Name, property.Value.ToString())
                                     });
                                 }
                             }
@@ -169,14 +169,14 @@ namespace Fr8.Infrastructure.Data.Manifests.Helpers
                             var fieldObj = (JObject)property.Value;
                             if (fieldObj.Property("key") != null && fieldObj.Property("value") != null)
                             {
-                                headerRow.Row.Add(new TableCellDTO { Cell = new FieldDTO(fieldObj["key"].ToString(), fieldObj["key"].ToString()) });
-                                dataRow.Row.Add(new TableCellDTO { Cell = new FieldDTO(fieldObj["key"].ToString(), fieldObj["value"].ToString()) });
+                                headerRow.Row.Add(new TableCellDTO { Cell = new KeyValueDTO(fieldObj["key"].ToString(), fieldObj["key"].ToString()) });
+                                dataRow.Row.Add(new TableCellDTO { Cell = new KeyValueDTO(fieldObj["key"].ToString(), fieldObj["value"].ToString()) });
                             }
                         }
                         else
                         {
-                            headerRow.Row.Add(new TableCellDTO { Cell = new FieldDTO(property.Name, property.Name) });
-                            dataRow.Row.Add(new TableCellDTO { Cell = new FieldDTO(property.Name, property.Value.ToString()) });
+                            headerRow.Row.Add(new TableCellDTO { Cell = new KeyValueDTO(property.Name, property.Name) });
+                            dataRow.Row.Add(new TableCellDTO { Cell = new KeyValueDTO(property.Name, property.Value.ToString()) });
                         }
                     }
                     if (!headerIsAdded)

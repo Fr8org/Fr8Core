@@ -187,15 +187,15 @@ namespace terminalDocuSignTests.Integration
 
         private  void SendDocuSignTestEnvelope(DocuSignManager docuSignManager, DocuSignApiConfiguration loginInfo, AuthorizationTokenDO authTokenDO)
         {
-            var rolesList = new List<FieldDTO>()
+            var rolesList = new List<KeyValueDTO>()
             {
-                new FieldDTO()
+                new KeyValueDTO()
                 {
                     Tags = "recipientId:1",
                     Key = "role name",
                     Value = ToEmail
                 },
-                new FieldDTO()
+                new KeyValueDTO()
                 {
                     Tags = "recipientId:1",
                     Key = "role email",
@@ -203,33 +203,33 @@ namespace terminalDocuSignTests.Integration
                 }
             };
 
-            var fieldsList = new List<FieldDTO>()
+            var fieldsList = new List<KeyValueDTO>()
             {
-                new FieldDTO()
+                new KeyValueDTO()
                 {
                     Tags = "recipientId:1",
                     Key="companyTabs",
                     Value="test"
                 },
-                new FieldDTO()
+                new KeyValueDTO()
                 {
                     Tags = "recipientId:1",
                     Key="textTabs",
                     Value="test"
                 },
-                new FieldDTO()
+                new KeyValueDTO()
                 {
                     Tags = "recipientId:1",
                     Key="noteTabs",
                     Value="test"
                 },
-                new FieldDTO()
+                new KeyValueDTO()
                 {
                     Tags = "recipientId:1",
                     Key="checkboxTabs",
                     Value="Radio 1"
                 },
-                new FieldDTO()
+                new KeyValueDTO()
                 {
                     Tags = "recipientId:1",
                     Key="listTabs",

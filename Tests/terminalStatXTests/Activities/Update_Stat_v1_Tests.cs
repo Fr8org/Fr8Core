@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace terminalStatX.Interfaces
+namespace terminalStatXTests.Activities
 {
-    public interface IEvent
+    class Update_Stat_v1_Tests
     {
     }
 }

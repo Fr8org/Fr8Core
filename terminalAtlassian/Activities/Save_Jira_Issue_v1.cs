@@ -145,7 +145,7 @@ namespace terminalAtlassian.Actions
                 Controls.Add(SprintFieldName);
             }
 
-            public void AppendCustomFields(IEnumerable<FieldDTO> customFields)
+            public void AppendCustomFields(IEnumerable<KeyValueDTO> customFields)
             {
                 var toBeRemoved = new List<ControlDefinitionDTO>();
                 foreach (var control in Controls)
@@ -197,9 +197,9 @@ namespace terminalAtlassian.Actions
                 }
             }
 
-            public IEnumerable<FieldDTO> GetValues(ICrateStorage crateStorage)
+            public IEnumerable<KeyValueDTO> GetValues(ICrateStorage crateStorage)
             {
-                var result = new List<FieldDTO>();
+                var result = new List<KeyValueDTO>();
 
                 foreach (var control in Controls)
                 {
@@ -212,7 +212,7 @@ namespace terminalAtlassian.Actions
 
                         if (!string.IsNullOrEmpty(value))
                         {
-                            result.Add(new FieldDTO(key, value));
+                            result.Add(new KeyValueDTO(key, value));
                         }
                     }
                 }
@@ -254,7 +254,7 @@ namespace terminalAtlassian.Actions
                 .GetProjects(AuthorizationToken)
                 .ToListItems()
                 .ToList();
-            CrateSignaller.MarkAvailableAtRuntime<FieldDescriptionsCM>(RuntimeCrateLabel)
+            CrateSignaller.MarkAvailableAtRuntime<KeyValueListCM>(RuntimeCrateLabel)
                           .AddField(JiraIdField)
                           .AddField(JiraUrlField);
             await Task.Yield();
@@ -313,14 +313,14 @@ namespace terminalAtlassian.Actions
         private ConfigurationProperties GetConfigurationProperties()
         {
             var fd = Storage
-                .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == ConfigurationPropertiesLabel)
+                .CrateContentsOfType<KeyValueListCM>(x => x.Label == ConfigurationPropertiesLabel)
                 .FirstOrDefault();
 
             var result = new ConfigurationProperties();
             if (fd != null)
             {
-                result.SelectedProjectKey = fd.Fields.FirstOrDefault(x => x.Key == "SelectedProjectKey")?.Value;
-                result.SelectedIssueType = fd.Fields.FirstOrDefault(x => x.Key == "SelectedIssueType")?.Value;
+                result.SelectedProjectKey = fd.Values.FirstOrDefault(x => x.Key == "SelectedProjectKey")?.Value;
+                result.SelectedIssueType = fd.Values.FirstOrDefault(x => x.Key == "SelectedIssueType")?.Value;
             }
 
             return result;
@@ -328,12 +328,12 @@ namespace terminalAtlassian.Actions
 
         private void SetConfigurationProperties(ConfigurationProperties configProps)
         {
-            var fd = new FieldDescriptionsCM(
-                new FieldDTO("SelectedProjectKey", configProps.SelectedProjectKey, AvailabilityType.Configuration),
-                new FieldDTO("SelectedIssueType", configProps.SelectedIssueType, AvailabilityType.Configuration)
+            var fd = new KeyValueListCM(
+                new KeyValueDTO("SelectedProjectKey", configProps.SelectedProjectKey),
+                new KeyValueDTO("SelectedIssueType", configProps.SelectedIssueType)
             );
 
-            Storage.ReplaceByLabel(Crate.FromContent(ConfigurationPropertiesLabel, fd, AvailabilityType.Configuration));
+            Storage.ReplaceByLabel(Crate.FromContent(ConfigurationPropertiesLabel, fd));
         }
 
         private void ToggleProjectSelectedVisibility(bool projectSelected)
@@ -388,9 +388,9 @@ namespace terminalAtlassian.Actions
             var credentialsDTO = JsonConvert.DeserializeObject<CredentialsDTO>(AuthorizationToken.Token);
             var jiraUrl = $"{credentialsDTO.Domain}/browse/{issueInfo.Key}";
             await _pushNotificationService.PushUserNotification(MyTemplate, "Success", "Jira issue created", $"Created new jira issue: {jiraUrl}");
-            Payload.Add(Crate<FieldDescriptionsCM>.FromContent(RuntimeCrateLabel, new FieldDescriptionsCM(
-                                                                                      new FieldDTO(JiraIdField, issueInfo.Key),
-                                                                                      new FieldDTO(JiraUrlField, jiraUrl))));
+            Payload.Add(Crate<KeyValueListCM>.FromContent(RuntimeCrateLabel, new KeyValueListCM(
+                                                                                      new KeyValueDTO(JiraIdField, issueInfo.Key),
+                                                                                      new KeyValueDTO(JiraUrlField, jiraUrl))));
         }
 
         private IssueInfo ExtractIssueInfo()
@@ -421,7 +421,7 @@ namespace terminalAtlassian.Actions
 
             if (ActivityUI.Sprint.Value != null)
             {
-                result.CustomFields.Add(new FieldDTO() { Key = ActivityUI.SprintFieldName.Label, Value = ActivityUI.Sprint.Value });
+                result.CustomFields.Add(new KeyValueDTO() { Key = ActivityUI.SprintFieldName.Label, Value = ActivityUI.Sprint.Value });
             }
 
             return result;

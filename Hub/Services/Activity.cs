@@ -659,7 +659,7 @@ namespace Hub.Services
                 //find the activity by the provided name
 
                 // To prevent mismatch between db and terminal solution lists, Single or Default used
-                var curActivityTerminalDTO = allActivityTemplates.SingleOrDefault(a => a.Name == activityDTO.ActivityTemplate.Name);
+                var curActivityTerminalDTO = allActivityTemplates.OrderByDescending(x => Int32.Parse(x.Version)).FirstOrDefault(a => a.Name == activityDTO.ActivityTemplate.Name);
                 //prepare an Activity object to be sent to Activity in a Terminal
                 //IMPORTANT: this object will not be hold in the database
                 //It is used to transfer data
@@ -713,9 +713,12 @@ namespace Hub.Services
             var solutionNameList = new List<string>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curActivities = uow.ActivityTemplateRepository.GetAll()
-                    .Where(a => a.Terminal.Name == terminalName
-                                && a.Category == ActivityCategory.Solution)
+                var curActivities = uow.ActivityTemplateRepository
+                    .GetQuery()
+                    .Where(x => x.Terminal.Name == terminalName && x.Category == ActivityCategory.Solution)
+                    .GroupBy(x => x.Name)
+                    .AsEnumerable()
+                    .Select(x => x.OrderByDescending(y => int.Parse(y.Version)).First())
                     .ToList();
                 solutionNameList.AddRange(curActivities.Select(activity => activity.Name));
             }

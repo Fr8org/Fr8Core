@@ -53,7 +53,7 @@ namespace terminalSalesforceTests.Actions
 
             Mock<ISalesforceManager> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceManager>());
             salesforceIntegrationMock.Setup(si => si.GetUsersAndGroups(It.IsAny<AuthorizationToken>())).Returns(
-                () => Task.FromResult<IList<FieldDTO>>(new List<FieldDTO> { new FieldDTO("One", "1")}));
+                () => Task.FromResult<IList<KeyValueDTO>>(new List<KeyValueDTO> { new KeyValueDTO("One", "1")}));
             salesforceIntegrationMock.Setup(si => si.PostToChatter(It.IsAny<string>(), It.IsAny<string>(), 
                 It.IsAny<AuthorizationToken>())).Returns(() => Task.FromResult("SomeValue"));
 
