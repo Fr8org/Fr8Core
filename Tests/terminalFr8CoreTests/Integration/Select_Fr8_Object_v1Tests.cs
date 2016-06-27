@@ -104,7 +104,7 @@ namespace terminalFr8CoreTests.Integration
 				.CrateContentsOfType<KeyValueListCM>(x => x.Label == "StandardFr8PlansCM")
 				.SingleOrDefault();
 
-            Assert.AreEqual(8, fr8PlansDesignTimeCrate.Fields.Count);
+            Assert.AreEqual(8, fr8PlansDesignTimeCrate.Values.Count);
             Assert.AreEqual("Select Fr8 Object Properties", configurationControl.Label);
 
 			var fr8PlansCrateFields = fr8PlansDesignTimeCrate.Values;
@@ -180,7 +180,7 @@ namespace terminalFr8CoreTests.Integration
 				.SingleOrDefault();
 
             Assert.AreEqual("Select Fr8 Object Properties", configurationControl.Label);
-            Assert.AreEqual(5, fr8ContainersDesignTimeCrate.Fields.Count);
+            Assert.AreEqual(5, fr8ContainersDesignTimeCrate.Values.Count);
 
 			var fr8ContainersCrateFields = fr8ContainersDesignTimeCrate.Values;
 

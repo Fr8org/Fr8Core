@@ -267,11 +267,6 @@
   <ItemGroup>
     <Compile Include="EndToEnd\GoogleIntoGoogleTests.cs" />
     <Compile Include="EndToEnd\MailMergeFromSalesforceTests.cs" />
-<<<<<<< HEAD
-=======
-    <Compile Include="EndToEnd\Monitor_Gmail_Inbox_Tests.cs" />
-    <Compile Include="EndToEnd\PlanTemplates_Tests.cs" />
->>>>>>> dev
     <Compile Include="EndToEnd\Query_DocuSign_Into_Google_Sheet_Tests.cs" />
     <Compile Include="EndToEnd\WarehouseSearch_Tests.cs" />
     <Compile Include="Fixtures\FixtureData - CoreSelfHostFactory.cs" />
