@@ -983,6 +983,7 @@
     <Content Include="_PowerShellScripts\Set-PlanDirectoryURL.ps1" />
     <Content Include="Views\Redirect\ClonePlan.cshtml" />
     <Content Include="Views\AngularTemplate\UpstreamFieldChooser.cshtml" />
+    <Content Include="_PowerShellScripts\Set-WebsiteAppSettings.ps1" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\KioskModeOrganizationHeaderController.ts" />
