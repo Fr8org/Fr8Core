@@ -5,6 +5,8 @@ using System.Linq;
 using NUnit.Core;
 using HealthMonitor.Configuration;
 using Fr8.Testing.Integration;
+using System.Reflection;
+using System.IO;
 
 namespace HealthMonitor
 {
@@ -27,7 +29,7 @@ namespace HealthMonitor
 
             public bool Match(ITest test)
             {
-                return test.RunState != RunState.NotRunnable;
+                return test.RunState != RunState.NotRunnable && test.RunState != RunState.Ignored;
             }
 
             public bool Pass(ITest test)
@@ -60,9 +62,90 @@ namespace HealthMonitor
             return testSuites.ToArray();
         }
 
+        private Type[] GetTestSuiteTypesUsingReflection(bool skipLocal)
+        {
+            var integrationTests = new List<Type>();
+            var assemblies = GetTestsAssemblies();
+
+            foreach (Assembly assembly in assemblies)
+            {
+                var types = assembly.GetTypes().AsEnumerable<Type>();
+                
+                var assemblyTestSuits = types.Where(t => t.IsSubclassOf(typeof(BaseIntegrationTest)) 
+                    && !t.IsAbstract);
+                integrationTests.AddRange(assemblyTestSuits);
+            }
+
+            var testSuites = PrepareForRunning(integrationTests);
+
+            if (skipLocal)
+            {
+                testSuites = testSuites
+                    .Where(x => !x.GetCustomAttributes(typeof(SkipLocalAttribute), false).Any());
+            }
+
+            return testSuites.ToArray();
+        }
+
+        private IEnumerable<Assembly> GetTestsAssemblies()
+        {
+            var assemblies = new List<Assembly>();            
+            var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            
+            var assembliesDirectoryInfo = new DirectoryInfo(path);
+            var assemblyFiles = assembliesDirectoryInfo.GetFiles("terminal*.dll",
+                SearchOption.TopDirectoryOnly).Select(f => f.FullName).ToList();
+            assemblyFiles.Add(Path.Combine(path, "HubTests.dll"));
+
+            foreach (var assemblyFile in assemblyFiles)
+            {
+                var assemblyName = AssemblyName.GetAssemblyName(assemblyFile);
+
+                if (!AppDomain.CurrentDomain.GetAssemblies().Any(a =>
+                            AssemblyName.ReferenceMatchesDefinition(assemblyName, a.GetName())))
+                {
+                    var assembly = Assembly.Load(assemblyName);
+                    assemblies.Add(assembly);
+                }
+                else
+                {
+                    var assembly = AppDomain.CurrentDomain.GetAssemblies().Where(a =>
+                            AssemblyName.ReferenceMatchesDefinition(assemblyName, a.GetName())).First();
+                    assemblies.Add(assembly);
+                }
+
+                //Add HM assembly since here are defined the tasks which are run like tests (e.g. MetricMonitor)
+                assemblies.Add(Assembly.GetExecutingAssembly());                
+            }
+            
+            return assemblies;
+        }
+
+        private IEnumerable<Type> PrepareForRunning(List<Type> integrationTests)
+        {
+            // remove duplicates
+            HashSet<string> elements = new HashSet<string>();
+            integrationTests.RemoveAll(test => !elements.Add(test.FullName));
+
+            // apply proper order
+            Predicate<Type> terminalDocusignTests = t => t.FullName.Substring(0, t.FullName.IndexOf('.')).Equals("terminalDocuSignTests");
+
+            var docusignTests = integrationTests.FindAll(terminalDocusignTests);
+            Predicate<Type> madseTestsPredicate = t => t.Name.Equals("MonitorAllDocuSignEvents_Tests") || t.Name.Equals("MonitorAllDocuSignEventsLocal_Tests");
+            var madseTests = docusignTests.FindAll(madseTestsPredicate);
+            docusignTests.RemoveAll(madseTestsPredicate);
+            docusignTests.InsertRange(0, madseTests);
+
+            integrationTests.RemoveAll(terminalDocusignTests);
+            integrationTests.InsertRange(0, docusignTests);
+
+            var testSuites = integrationTests.AsEnumerable<Type>();
+            return testSuites;
+        }
+
         public TestReport Run(string specificTestName = null, bool skipLocal = false)
         {
-            var testSuiteTypes = GetTestSuiteTypes(skipLocal);
+            var testSuiteTypes = GetTestSuiteTypesUsingReflection(skipLocal);
             if (testSuiteTypes == null || testSuiteTypes.Length == 0)
             {
                 return new TestReport()
