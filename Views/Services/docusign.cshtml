@@ -17,5 +17,7 @@
 <h2 class="container" style="margin-bottom:30px">Fr8 Solutions for DocuSign</h2>
 @Html.Partial("SolutionListTemplate", Model)
 <script type="text/javascript">
-    window.analytics.page('Visited Page - DocuSign Solutions');
+    if (window.analytics != null) {
+        window.analytics.page('Visited Page - DocuSign Solutions');
+    }
 </script>

@@ -38,11 +38,11 @@ namespace terminalDocuSignTests.Integration
             Assert.True(crateStorage.CratesOfType<KeyValueListCM>().Any(c => c.Label == "AvailableTemplates"), "FieldDescriptionsCM with label \"AvailableTemplates\" is missing in API response.");
             Assert.True(crateStorage.CratesOfType<KeyValueListCM>().Any(c => c.Label == "AvailableHandlers"), "FieldDescriptionsCM with label \"AvailableHandlers\" is missing in API response.");
             Assert.True(crateStorage.CratesOfType<KeyValueListCM>().Any(c => c.Label == "AvailableRecipientEvents"), "FieldDescriptionsCM with label \"AvailableRecipientEvents\" is missing in API response.");
-
+            
             var templatesCrate = crateStorage.CratesOfType<KeyValueListCM>().Single(c => c.Label == "AvailableTemplates");
             var handlersCrate = crateStorage.CratesOfType<KeyValueListCM>().Single(c => c.Label == "AvailableHandlers");
             var recipientEventsCrate = crateStorage.CratesOfType<KeyValueListCM>().Single(c => c.Label == "AvailableRecipientEvents");
-
+            
             Assert.True(templatesCrate.Content.Values.Any(), "There are no fields in AvailableTemplates Crate");
             Assert.True(handlersCrate.Content.Values.Any(), "There are no fields in AvailableHandlers Crate");
             Assert.True(recipientEventsCrate.Content.Values.Any(), "There are no fields in AvailableRecipientEvents Crate");
@@ -75,7 +75,7 @@ namespace terminalDocuSignTests.Integration
 
             string baseUrl = GetHubApiBaseUrl();
 
-            var solutionCreateUrl = baseUrl + "plans?solution_name=Track_DocuSign_Recipients";
+            var solutionCreateUrl = baseUrl + "plans?solution_name=Track_DocuSign_Recipients_v1";
 
 
             //

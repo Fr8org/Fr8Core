@@ -7,6 +7,7 @@ using Data.Interfaces;
 using Data.States;
 using Data.Utility;
 using Fr8.Infrastructure.Utilities.Configuration;
+using Hub.Infrastructure;
 using Hub.Interfaces;
 using StructureMap;
 
@@ -64,6 +65,43 @@ namespace Hub.Services
                     _activityTemplates[activityTemplate.Id] = Clone(activityTemplate);
                 }
             }
+        }
+
+        public ActivityTemplateInfo GetActivityTemplateInfo(string fullActivityTemplateName)
+        {
+            if (string.IsNullOrEmpty(fullActivityTemplateName))
+            {
+                throw new ApplicationException("Full ActivityTemplate name is not specified.");
+            }
+
+            string name;
+            string version = null;
+
+            var tokens = fullActivityTemplateName.Split('_');
+            var lastToken = tokens[tokens.Length - 1];
+            if (lastToken.StartsWith("v"))
+            {
+                int versionValue;
+                if (Int32.TryParse(lastToken.Substring(1), out versionValue))
+                {
+                    version = versionValue.ToString();
+                }
+            }
+
+            if (version != null)
+            {
+                name = fullActivityTemplateName.Substring(0, fullActivityTemplateName.Length - lastToken.Length - 1);
+            }
+            else
+            {
+                name = fullActivityTemplateName;
+            }
+
+            return new ActivityTemplateInfo()
+            {
+                Name = name,
+                Version = version
+            };
         }
 
         public ActivityTemplateDO[] GetAll()

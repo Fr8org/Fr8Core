@@ -54,7 +54,7 @@ namespace terminalGoogle.Activities
                 "Google",
                 "GmailInbox"));
 
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeCrateLabel).AddFields("EmailFrom", "DateReceived", "EmailFromName", "HtmlText", "PlainText", "Subject");
+            CrateSignaller.MarkAvailableAtRuntime<StandardEmailMessageCM>(RuntimeCrateLabel);
         }
 
 
@@ -75,24 +75,13 @@ namespace terminalGoogle.Activities
                 TerminateHubExecution("Letter was not found in the payload.");
             }
 
-            Payload.Add(Crate.FromContent(RuntimeCrateLabel, new StandardPayloadDataCM(CreateEmailFields(mail))));
+            Payload.Add(Crate.FromContent(RuntimeCrateLabel, mail));
 
             Success();
 
             return Task.FromResult(0);
         }
 
-        private List<KeyValueDTO> CreateEmailFields(StandardEmailMessageCM email)
-        {
-            return new List<KeyValueDTO>{
-                new KeyValueDTO("EmailFrom", email?.EmailFrom),
-                new KeyValueDTO("DateReceived", email?.DateReceived),
-                new KeyValueDTO("EmailFromName", email?.EmailFromName),
-                new KeyValueDTO("HtmlText",  email?.HtmlText),
-                new KeyValueDTO("PlainText", email?.PlainText),
-                new KeyValueDTO("Subject", email?.Subject),
-            };
-        }
 
         public async override Task FollowUp()
         {

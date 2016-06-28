@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Policy;
 using System.Text;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -18,6 +19,7 @@ using Data.Interfaces;
 using Data.States;
 using Hub.Interfaces;
 using System.Threading.Tasks;
+using System.Web;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates;
@@ -105,11 +107,24 @@ namespace HubWeb.Controllers
             var userId = User.Identity.GetUserId();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityTemplate = _activityTemplate.GetQuery()
-                    .Where(x => x.Name == solutionName)
-                    .AsEnumerable()
-                    .OrderByDescending(x => int.Parse(x.Version))
-                    .FirstOrDefault();
+                ActivityTemplateDO activityTemplate;
+
+                var activityTemplateInfo = _activityTemplate.GetActivityTemplateInfo(solutionName);
+
+                if (!string.IsNullOrEmpty(activityTemplateInfo.Version))
+                {
+                    activityTemplate = _activityTemplate.GetQuery()
+                        .Where(x => x.Name == activityTemplateInfo.Name && x.Version == activityTemplateInfo.Version)
+                        .FirstOrDefault();
+                }
+                else
+                {
+                    activityTemplate = _activityTemplate.GetQuery()
+                        .Where(x => x.Name == solutionName)
+                        .AsEnumerable()
+                        .OrderByDescending(x => int.Parse(x.Version))
+                        .FirstOrDefault();
+                }
                 if (activityTemplate == null)
                 {
                     throw new ArgumentException($"actionTemplate (solution) name {solutionName} is not found in the database.");
@@ -450,6 +465,11 @@ namespace HubWeb.Controllers
 
             await client.PostAsync<PublishPlanTemplateDTO>(uri, dto, headers: headers);
 
+            // Notify user with directing him to PlanDirectory with related search query
+            var url = CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/#?planSearch=" + HttpUtility.UrlEncode(dto.Name);
+            _pusherNotifier.NotifyUser(new { Message = $"Plan Shared. To view, click on " + url, Collapsed = false}, 
+                NotificationChannel.GenericSuccess, User.Identity.GetUserId());
+            
             return Ok();
         }
 

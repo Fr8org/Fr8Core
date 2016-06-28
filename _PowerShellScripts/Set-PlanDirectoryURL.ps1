@@ -23,4 +23,4 @@ $deployment = Get-AzureDeployment -ServiceName $serviceName -Slot Staging
 $stagingHostname = $deployment.Url.Host
 $planDirectoryURL = "http://{0}:{1}" -f $stagingHostname, $planDirectoryPort 
 Echo "Plan Directory URL: $planDirectoryURL"
-& "$rootDir\Set-Config.ps1" -as:PlanDirectoryBaseUrl "$planDirectoryURL" -as:PlanDirectoryBaseApiUrl "$planDirectoryURL/api" -filePath "$filePath"
+& "$rootDir\Set-Config.ps1" -as:PlanDirectoryBaseUrl "$planDirectoryURL" -as:PlanDirectoryBaseApiUrl "$planDirectoryURL/api/" -filePath "$filePath"
