@@ -66,8 +66,6 @@ namespace Data.Migrations
                 AddDockyardAccounts(uow);
                 AddTestAccounts(uow);
                 AddDefaultProfiles(uow);
-                //Addterminals(uow);
-                AddTerminalsRegistrations(uow);
 
                 //AddAuthorizationTokens(uow);
                 uow.SaveChanges();
@@ -485,22 +483,6 @@ namespace Data.Migrations
 
             uow.SubscriptionRepository.Add(curSub);
         }
-
-        private void AddTerminalsRegistrations(UnitOfWork uow)
-        {
-            //Terminal Basecamp2
-            AddTerminalRegistration(uow, "localhost:61121");
-        }
-
-        private void AddTerminalRegistration(UnitOfWork uow, string endpoint)
-        {
-            if (uow.TerminalRegistrationRepository.GetQuery().Any(x => x.Endpoint == endpoint))
-            {
-                return;
-            }
-            uow.TerminalRegistrationRepository.Add(new TerminalRegistrationDO { CreateDate = DateTimeOffset.UtcNow, Endpoint = endpoint });
-        }
-
 
         private static void AddTerminals(IUnitOfWork uow, string terminalName, string terminalLabel, 
             string endPoint, string version)
