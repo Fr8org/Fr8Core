@@ -73,7 +73,7 @@ body {
     color: #444C58;
     background-color: #fff !important;
     line-height: 1.6;
-    overflow-y: scroll;
+    overflow-y: auto;
     -webkit-overflow-scrolling: touch;
 }
 
@@ -101,9 +101,9 @@ body {
     }
 
 /*General Styles*/
-
 .clear {
     clear: both;
+    background-color: white;
 }
 
 #wrap {

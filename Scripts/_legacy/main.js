@@ -7,10 +7,10 @@ function EasyPeasyParallax() {
 function resizePageComponents() {
     var	windowHeight = $(window).height(),
         headerHeight = $('header#site-header .navbar').innerHeight(),
-        footerHeight = $('#site-footer').height(),
+        footerHeight = $('#site-footer').height() ? $('#site-footer').height() : $('#footer').outerHeight(),
         contentInnerHeight = $(".inner-wrap.centered").height();
 
-    // Set available height according to footer height
+    // Give each section much space as window height 
     $("section.full-height-block").css({
         "min-height": windowHeight
     });
@@ -65,13 +65,14 @@ function resizePageComponents() {
             $(this).css("top", (windowHeight - contentInnerHeight) / 2);
         } else {
             $(this).css("top", headerHeight + 20);
-            parentSection.find(".inner-bg.full-size-bg").css("min-height", ($(this).height() + parseInt($(this).css('top'))));
+            parentSection.find(".inner-bg.full-size-bg").css("min-height", windowHeight - footerHeight);
             parentSection.css("min-height", ($(this).height() + parseInt($(this).css('top'))));
             parentSection.css("margin-bottom", "60px");
         }
     });
 
     // Miscellaneous settings
+    $("section#support .inner-bg.full-size-bg").css("max-height", windowHeight - footerHeight);
     $(".clear.clear-footer-spacer").height(footerHeight);
     $("#wrap").css("margin-bottom", (0 - footerHeight));
     $("#contacts .container").css("margin-bottom", (0 - footerHeight));
