@@ -445,8 +445,7 @@
     <Compile Include="ViewModels\ExternalLoginConfirmationVM.cs" />
     <Compile Include="ViewModels\LoginVM.cs" />
     <Compile Include="ViewModels\ManageUserVM.cs" />
-    <Compile Include="ViewModels\NavLinksHome.cs" />
-    <Compile Include="ViewModels\NavLinksShared.cs" />
+    <Compile Include="ViewModels\NavLinks.cs" />
     <Compile Include="ViewModels\RegisterVM.cs" />
     <Compile Include="ViewModels\RequestParameters\PlansGetParams.cs" />
     <Compile Include="ViewModels\RequestParameters\PlansPostParams.cs" />
