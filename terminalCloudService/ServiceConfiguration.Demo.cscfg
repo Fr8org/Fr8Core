@@ -6,8 +6,10 @@
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=fr8companysa;AccountKey=PHyyd4POhHfwk0AQKF6QtO0hJaSU/cPaey+abslpwwCu0JahK0uTtTLf1KGk+QZgFrcspdiD1ejrgxAdZrDntA==" />
       <Setting name="Fr8.ConnectionString" value="" />
       <Setting name="CoreWebServerUrl" value="" />
+      <Setting name="HubApiBaseUrl" value="" />
       <Setting name="terminalAtlassian.TerminalEndpoint" value="" />
       <Setting name="terminalAzure.TerminalEndpoint" value="" />
+      <Setting name="terminalBasecamp2.TerminalEndpoint" value="" />
       <Setting name="terminalDocuSign.TerminalEndpoint" value="" />
       <Setting name="terminalDropbox.TerminalEndpoint" value="" />
       <Setting name="terminalExcel.TerminalEndpoint" value="" />
@@ -23,6 +25,7 @@
       <Setting name="terminalDemo.TerminalEndpoint" value="" />
       <Setting name="terminalStatX.TerminalEndpoint" value="" />
       <Setting name="terminalFacebook.TerminalEndpoint" value="" />
+      <Setting name="terminalBox.TerminalEndpoint" value="" />
    	  <Setting name="terminalMailChimp.TerminalEndpoint" value="" />
    	  <Setting name="OutboundUserName" value="" />
       <Setting name="OutboundUserPassword" value="" />

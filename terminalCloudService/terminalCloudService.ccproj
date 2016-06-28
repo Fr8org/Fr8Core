@@ -110,6 +110,7 @@
   <!-- These SecondarySite items represent the collection of sites (other than the web application associated with the role) that need special packaging. -->
   <ItemGroup>
     <SecondarySite Include="..\terminalAzure\terminalAzure.csproj" />
+    <SecondarySite Include="..\terminalBasecamp2\terminalBasecamp2.csproj" />
     <SecondarySite Include="..\terminalFr8Core\terminalFr8Core.csproj" />
     <SecondarySite Include="..\terminalExcel\terminalExcel.csproj" />
     <SecondarySite Include="..\terminalSalesforce\terminalSalesforce.csproj" />
@@ -124,10 +125,11 @@
     <SecondarySite Include="..\terminalQuickBooks\terminalQuickBooks.csproj" />
     <SecondarySite Include="..\terminalStatX\terminalStatX.csproj" />
     <SecondarySite Include="..\terminalYammer\terminalYammer.csproj" />
-	<SecondarySite Include="..\terminalDemo\terminalDemo.csproj" />
-	<SecondarySite Include="..\terminalFacebook\terminalFacebook.csproj" />
+	  <SecondarySite Include="..\terminalDemo\terminalDemo.csproj" />
+	  <SecondarySite Include="..\terminalFacebook\terminalFacebook.csproj" />
 	<SecondarySite Include="..\terminalMailChimp\terminalMailChimp.csproj" />
     <SecondarySite Include="..\Services\PlanDirectory\PlanDirectory.csproj" />
+    <SecondarySite Include="..\terminalBox\terminalBox.csproj" />
   </ItemGroup>
   <Target Name="CleanSecondarySites">
     <RemoveDir Directories="%(SecondarySite.RootDir)%(Directory)$(SecondarySitePublishDir)" />
