@@ -7,14 +7,14 @@
 
 param(
     [Parameter(Mandatory = $false)]
-	[string]$version = "1.0.0",
+	[string]$version = "1.0.2",
 
     [Parameter(Mandatory = $false)]
 	[string]$suffix
 )
 $ErrorActionPreference = 'Stop'
 
-$packageVersion = $version + "$env:BUILD_BUILDID"
+$packageVersion = "$version.$env:BUILD_BUILDID"
 
 if (-not [System.String]::IsNullOrEmpty($suffix)) {
 	$packageVersion = $packageVersion + "-" + $suffix
