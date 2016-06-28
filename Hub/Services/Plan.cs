@@ -629,7 +629,7 @@ namespace Hub.Services
                         }
                         else
                         {
-                            _pusher.NotifyUser(new  {   Message = $"Continue execution of the supsended Plan \"{plan.Name}\"",
+                            _pusher.NotifyUser(new  {   Message = $"Continue execution of the suspended Plan \"{plan.Name}\"",
                                                         Collapsed = false
                                                     },
                                                 NotificationChannel.GenericSuccess,
