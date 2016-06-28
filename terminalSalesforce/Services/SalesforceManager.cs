@@ -17,17 +17,24 @@ using Salesforce.Common;
 using Salesforce.Chatter;
 using Newtonsoft.Json.Linq;
 using Salesforce.Chatter.Models;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.Infrastructure.Utilities;
+using Newtonsoft.Json;
+using AutoMapper;
 
 namespace terminalSalesforce.Services
 {
     public class SalesforceManager : ISalesforceManager
     {
-        private readonly Authentication _authentication = new Authentication();
+        private readonly Authentication _authentication;
         private readonly ICrateManager _crateManager;
+        private readonly IHubCommunicator _hubCommunicator;
 
-        public SalesforceManager(ICrateManager crateManager)
+        public SalesforceManager(ICrateManager crateManager, Authentication authentication, IHubCommunicator hubCommunicator)
         {
             _crateManager = crateManager;
+            _authentication = authentication;
+            _hubCommunicator = hubCommunicator;
         }
         
         public async Task<string> Create(SalesforceObjectType type, IDictionary<string, object> @object, AuthorizationToken authToken)
@@ -302,7 +309,7 @@ namespace terminalSalesforce.Services
             }
             catch (ForceException ex)
             {
-                if (ex.Message.Equals("Session expired or invalid") && !retried)
+                if (ex.Message.Contains("Session expired or invalid", StringComparison.InvariantCulture) && !retried)
                 {
                     retried = true;
                     client = await clientProvider(authToken, true);
@@ -317,14 +324,20 @@ namespace terminalSalesforce.Services
 
         private async Task<ForceClient> CreateForceClient(AuthorizationToken authToken, bool isRefreshTokenRequired = false)
         {
-            authToken = isRefreshTokenRequired ? await _authentication.RefreshAccessToken(authToken) : authToken;
+            if (isRefreshTokenRequired)
+            {
+                authToken = await RefreshToken(authToken);                
+            }
             var salesforceToken = ToSalesforceToken(authToken);
             return new ForceClient(salesforceToken.InstanceUrl, salesforceToken.Token, salesforceToken.ApiVersion);
         }
 
         private async Task<ChatterClient> CreateChatterClient(AuthorizationToken authToken, bool isRefreshTokenRequired = false)
         {
-            authToken = isRefreshTokenRequired ? await _authentication.RefreshAccessToken(authToken) : authToken;
+            if (isRefreshTokenRequired)
+            {
+                authToken = await RefreshToken(authToken);
+            }
             var salesforceToken = ToSalesforceToken(authToken);
 
             // When debugging, decimal point gets messed up and Salesforce client rejects to work properly.
@@ -338,6 +351,13 @@ namespace terminalSalesforce.Services
             return new ChatterClient(salesforceToken.InstanceUrl, salesforceToken.Token, salesforceToken.ApiVersion);
         }
 
+        private async Task<AuthorizationToken> RefreshToken(AuthorizationToken token)
+        {
+            token = await _authentication.RefreshAccessToken(token);
+            await _hubCommunicator.RenewToken(Mapper.Map<AuthorizationTokenDTO>(token));
+            return token;
+        }
+
         private IEnumerable<FieldDTO> objectDescriptions;
 
         private SalesforceAuthToken ToSalesforceToken(AuthorizationToken ourToken)
@@ -348,7 +368,7 @@ namespace terminalSalesforce.Services
             var apiVersion = ourToken.AdditionalAttributes.Substring(startIndexOfApiVersion, ourToken.AdditionalAttributes.Length - startIndexOfApiVersion);
             instanceUrl = instanceUrl.Replace("instance_url=", "");
             apiVersion = apiVersion.Replace("api_version=", "");
-            return new SalesforceAuthToken { ApiVersion = apiVersion, InstanceUrl = instanceUrl, Token = ourToken.Token };
+            return new SalesforceAuthToken { ApiVersion = apiVersion, InstanceUrl = instanceUrl, Token = JsonConvert.DeserializeObject<dynamic>(ourToken.Token).AccessToken };
         }
 
         private struct SalesforceAuthToken
