@@ -80,17 +80,23 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
 
             var userProperties = GetProperties(fr8AccountDO);
             Analytics.Client.Identify(fr8AccountDO.Id, userProperties);
-            Analytics.Client.Track(fr8AccountDO.Id,"User Registered");
+            Analytics.Client.Track(fr8AccountDO.Id, "User Registered");
         }
         public void Identify(Fr8AccountDO fr8AccountDO)
         {
             if (Analytics.Client == null)
                 return;
-            var props = new Traits();
+            var props = new Segment.Model.Properties();
             foreach (var prop in GetProperties(fr8AccountDO))
                 props.Add(prop.Key, prop.Value);
-            Analytics.Client.Identify(fr8AccountDO.Id, props);
-            Track(fr8AccountDO, "User Logged In", props);
+            Analytics.Client.Identify(fr8AccountDO.Id, GetProperties(fr8AccountDO));
+            Options mpCallOptions = new Options()
+                .SetIntegration("all", false)
+                .SetIntegration("Mixpanel", true)
+                .SetContext(new Context() {
+                    { "AnonymousId", fr8AccountDO.Id }
+                });
+            Analytics.Client.Track(fr8AccountDO.Id, "User Logged In", props, mpCallOptions);
         }
 
         public void Track(Fr8AccountDO fr8AccountDO, string eventName, string action, Dictionary<string, object> properties = null)
