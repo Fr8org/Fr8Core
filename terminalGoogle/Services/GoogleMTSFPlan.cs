@@ -195,7 +195,7 @@ namespace terminalGoogle.Services
         {
             var crate = payload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
             var nameTextBox = (TextSource)crate.FindByName(crateLabel);
-            var field = data.AvailableCrates.Where(c => c.Fields.Where(f => f.Key == fieldKey).FirstOrDefault() != null).FirstOrDefault().Fields.Where(f => f.Key == fieldKey).FirstOrDefault();
+            var field = data.AvailableCrates.Where(c => c.Fields.Where(f => f.Name == fieldKey).FirstOrDefault() != null).FirstOrDefault().Fields.Where(f => f.Name == fieldKey).FirstOrDefault();
             nameTextBox.ValueSource = "upstream";
             nameTextBox.SelectedItem = field;
         }
