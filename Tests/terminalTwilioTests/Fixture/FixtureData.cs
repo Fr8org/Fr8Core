@@ -66,16 +66,5 @@ namespace terminalTwilio.Tests.Fixtures
 
             };
         }
-
-        public static FieldDescriptionsCM TestFields()
-        {
-            return new FieldDescriptionsCM
-            {
-                Fields = new List<FieldDTO>
-                {
-                    new FieldDTO("key", "value")
-                }
-            };
-        }
     }
 }

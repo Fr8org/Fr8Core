@@ -5,6 +5,7 @@ using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.States;
 
 namespace Fr8.Testing.Unit.Fixtures
 {
@@ -12,32 +13,49 @@ namespace Fr8.Testing.Unit.Fixtures
     {
 
 
-        public static List<Crate<FieldDescriptionsCM>> TestCrateDTO1()
+        public static List<Crate<KeyValueListCM>> TestCrateDTO1()
         {
-            List<FieldDTO> fields = new List<FieldDTO>();
-            fields.Add(new FieldDTO() { Key = "Medical_Form_v1", Value = Guid.NewGuid().ToString() });
-            fields.Add(new FieldDTO() { Key = "Medical_Form_v2", Value = Guid.NewGuid().ToString() });
+            List<KeyValueDTO> fields = new List<KeyValueDTO>();
+            fields.Add(new KeyValueDTO{ Key = "Medical_Form_v1", Value = Guid.NewGuid().ToString() });
+            fields.Add(new KeyValueDTO() { Key = "Medical_Form_v2", Value = Guid.NewGuid().ToString() });
 
-            return new List<Crate<FieldDescriptionsCM>>() { Crate<FieldDescriptionsCM>.FromContent("Available Templates", new FieldDescriptionsCM() { Fields = fields }) };
+            return new List<Crate<KeyValueListCM>>() { Crate<KeyValueListCM>.FromContent("Available Templates", new KeyValueListCM(fields) )};
         }
 
         public static List<Crate> TestCrateDTO2()
         {
-            List<FieldDTO> fields = new List<FieldDTO>();
+            List<KeyValueDTO> fields = new List<KeyValueDTO>();
             
-            fields.Add(new FieldDTO() { Key = "Text 5", Value = Guid.NewGuid().ToString() });
-            fields.Add(new FieldDTO() { Key = "Text 8", Value = Guid.NewGuid().ToString() });
-            fields.Add(new FieldDTO() { Key = "Doctor", Value = Guid.NewGuid().ToString() });
-            fields.Add(new FieldDTO() { Key = "Condition", Value = Guid.NewGuid().ToString() });
+            fields.Add(new KeyValueDTO() { Key = "Text 5", Value = Guid.NewGuid().ToString() });
+            fields.Add(new KeyValueDTO() { Key = "Text 8", Value = Guid.NewGuid().ToString() });
+            fields.Add(new KeyValueDTO() { Key = "Doctor", Value = Guid.NewGuid().ToString() });
+            fields.Add(new KeyValueDTO() { Key = "Condition", Value = Guid.NewGuid().ToString() });
 
-            return new List<Crate>() { Crate.FromContent("DocuSignTemplateUserDefinedFields", new FieldDescriptionsCM() { Fields = fields }), Crate.FromContent("Crate label", new CrateDescriptionCM() { CrateDescriptions = new List<CrateDescriptionDTO>() { new CrateDescriptionDTO()  } }) };
+            return new List<Crate>() { Crate.FromContent("DocuSignTemplateUserDefinedFields", new KeyValueListCM() { Values = fields })};
 
         }
 
         public static List<Crate> TestCrateDTO3()
         {
-            return new List<Crate>() {
-                Crate.FromContent("CrateId1", new FieldDescriptionsCM()),
+            return new List<Crate>()
+            {
+                Crate.FromContent("Crate1", new CrateDescriptionCM
+                {
+                    CrateDescriptions =
+                    {
+                        new CrateDescriptionDTO
+                        {
+                            Label = "Crate2",
+                            Availability = AvailabilityType.Always,
+                            Fields =
+                            {
+                                new FieldDTO("Text 5"),
+                                new FieldDTO("Doctor"),
+                                new FieldDTO("Condition"),
+                            }
+                        }
+                    }
+                }),
                 Crate.FromContent("CrateId2", new StandardConfigurationControlsCM()),
                 Crate.FromContent("CrateId3", new DocuSignRecipientCM()),
                 Crate.FromContent("CrateId4", new EventSubscriptionCM()),

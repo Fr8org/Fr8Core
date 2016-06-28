@@ -178,7 +178,7 @@ namespace HubTests.Controllers
 
             var controller = new PlansController();
 
-            var crate = Crate.FromContent("Payload", new StandardPayloadDataCM(new FieldDTO("I'm", "payload")));
+            var crate = Crate.FromContent("Payload", new StandardPayloadDataCM(new KeyValueDTO("I'm", "payload")));
 
             var result = controller.Run(Guid.NewGuid(), new[] {CrateStorageSerializer.Default.ConvertToDto(crate)});
             // Assert

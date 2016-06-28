@@ -72,7 +72,7 @@ namespace terminalDocuSign.Activities
         {
         }
 
-        protected override async Task InitializeDS()
+        public override async Task Initialize()
         {
             var configurationCrate = PackControls(new ActivityUi());
             await FillFinalActionsListSource(configurationCrate, "FinalActionsList");
@@ -93,7 +93,7 @@ namespace terminalDocuSign.Activities
             return foundActivity;
         }
 
-        protected override async Task FollowUpDS()
+        public override async Task FollowUp()
         {
             var actionUi = new ActivityUi();
             actionUi.ClonePropertiesFrom(ConfigurationControls);
@@ -126,7 +126,7 @@ namespace terminalDocuSign.Activities
 
         protected override string ActivityUserFriendlyName => SolutionName;
 
-        protected override async Task RunDS()
+        public override async Task Run()
         {
             Success();
             await Task.Yield();

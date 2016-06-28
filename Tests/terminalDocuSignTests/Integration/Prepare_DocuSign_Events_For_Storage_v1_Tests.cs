@@ -28,7 +28,7 @@ namespace terminalDocuSignTests.Integration
 
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<EventSubscriptionCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<ManifestDescriptionCM>().Count(x => x.Label == "Available Run-Time Objects"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
             Assert.IsNotNullOrEmpty(crateStorage.CratesOfType<StandardPayloadDataCM>()
                 .FirstOrDefault(a => a.Label == "DocuSignUserCrate").Content.GetValueOrDefault("DocuSignUserEmail"));
         }

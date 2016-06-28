@@ -66,7 +66,6 @@ namespace Data.Migrations
                 AddDockyardAccounts(uow);
                 AddTestAccounts(uow);
                 AddDefaultProfiles(uow);
-                //Addterminals(uow);
 
                 //AddAuthorizationTokens(uow);
                 uow.SaveChanges();
@@ -130,19 +129,19 @@ namespace Data.Migrations
             };
 
             docusignEventPayload.EventPayload.Add(Crate.FromContent("Payload Data",
-                new StandardPayloadDataCM(new List<FieldDTO>
+                new StandardPayloadDataCM(new List<KeyValueDTO>
             {
-                new FieldDTO
+                new KeyValueDTO
                 {
                     Key="EnvelopeId",
                     Value="38b8de65-d4c0-435d-ac1b-87d1b2dc5251"
                 },
-                new FieldDTO
+                new KeyValueDTO
                 {
                     Key="ExternalEventType",
                     Value="38b8de65-d4c0-435d-ac1b-87d1b2dc5251"
                 },
-                new FieldDTO
+                new KeyValueDTO
                 {
                     Key="RecipientId",
                     Value="279a1173-04cc-4902-8039-68b1992639e9"
@@ -157,7 +156,7 @@ namespace Data.Migrations
             new PlanBuilder("TestTemplate{0B6944E1-3CC5-45BA-AF78-728FFBE57358}", fr8AccountDO).AddCrate(GenerateInitialEventCrate()).Store(uow);
             new PlanBuilder("TestTemplate{77D78B4E-111F-4F62-8AC6-6B77459042CB}", fr8AccountDO)
                 .AddCrate(GenerateInitialEventCrate())
-                .AddCrate(Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(new FieldDTO("EnvelopeId", "38b8de65-d4c0-435d-ac1b-87d1b2dc5251")))).Store(uow);
+                .AddCrate(Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(new KeyValueDTO("EnvelopeId", "38b8de65-d4c0-435d-ac1b-87d1b2dc5251")))).Store(uow);
 
             uow.SaveChanges();
         }
@@ -485,27 +484,6 @@ namespace Data.Migrations
             uow.SubscriptionRepository.Add(curSub);
         }
 
-
-        private void AddTerminals(IUnitOfWork uow)
-        {
-            // Create test DockYard account for terminal subscription.
-            // var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
-
-            // TODO: remove this, DO-1397
-            // AddTerminals(uow, "terminalDocuSign", "localhost:53234", "1", true);
-            // AddTerminals(uow, "terminalExcel", "localhost:47011", "1", false);
-            // AddTerminals(uow, "terminalSalesforce", "localhost:51234", "1", true);
-            AddTerminals(uow, "terminalDocuSign", "DocuSign", "localhost:53234", "1");
-            AddTerminals(uow, "terminalExcel", "Excel", "localhost:47011", "1");
-            AddTerminals(uow, "terminalSalesforce", "Salesforce", "localhost:51234", "1");
-
-            uow.SaveChanges();
-        }
-
-        // TODO: remove this, DO-1397
-
-        // private static void AddTerminals(IUnitOfWork uow, string terminalName, string endPoint,
-        //     string version, bool requiresAuthentication)
         private static void AddTerminals(IUnitOfWork uow, string terminalName, string terminalLabel, 
             string endPoint, string version)
         {
@@ -532,31 +510,6 @@ namespace Data.Migrations
                 uow.TerminalRepository.Add(terminalDO);
 
             }
-        }
-
-
-        private void AddActionTemplates(IUnitOfWork uow)
-        {
-            AddActionTemplate(uow, "Filter Using Run-Time Data", "localhost:46281", "1");
-            AddActionTemplate(uow, "Wait For DocuSign Event", "localhost:53234", "1");
-            AddActionTemplate(uow, "Extract From DocuSign Envelope", "localhost:53234", "1");
-            AddActionTemplate(uow, "Extract Table Data", "localhost:47011", "1");
-            uow.SaveChanges();
-        }
-
-        private void AddActionTemplate(IUnitOfWork uow, string name, string endPoint, string version)
-        {
-            var existingActivityTemplateDO = uow.ActivityTemplateRepository
-                .GetQuery().Include("Terminal")
-
-                .SingleOrDefault(x => x.Name == name);
-
-            if (existingActivityTemplateDO != null)
-                return;
-
-            var curActivityTemplateDO = new ActivityTemplateDO(
-                name, version, endPoint, endPoint, endPoint);
-            uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
         }
 
         private void AddWebServices(IUnitOfWork uow)

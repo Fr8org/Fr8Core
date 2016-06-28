@@ -55,27 +55,27 @@ namespace terminalDocuSign.Services.NewApi
             return envelopeData;
         }
 
-        public static IEnumerable<FieldDTO> GetEnvelopeTabsPerSigner(JObject tabs, string roleName)
+        public static IEnumerable<KeyValueDTO> GetEnvelopeTabsPerSigner(JObject tabs, string roleName)
         {
             return MapTabsToFieldDTO(ExtractTabs(tabs, roleName));
         }
 
-        public static IEnumerable<FieldDTO> MapTabsToFieldDTO(IEnumerable<DocuSignTabDTO> tabs)
+        public static IEnumerable<KeyValueDTO> MapTabsToFieldDTO(IEnumerable<DocuSignTabDTO> tabs)
         {
-            var result = new List<FieldDTO>();
+            var result = new List<KeyValueDTO>();
 
             foreach (var tab in tabs)
             {
                 if (tab is DocuSignTabDTO)
                 {
-                    result.Add(new FieldDTO(tab.Name, tab.Value) { Tags = string.Format("DocuSignTab:{0}, recipientId:{1}", tab.TabName, tab.RecipientId) });
+                    result.Add(new KeyValueDTO(tab.Name, tab.Value) { Tags = string.Format("DocuSignTab:{0}, recipientId:{1}", tab.TabName, tab.RecipientId) });
                 }
                 else
                     if (tab is DocuSignMultipleOptionsTabDTO)
                 {
                     var value = (tab as DocuSignMultipleOptionsTabDTO).Items.Where(a => a.Selected).FirstOrDefault();
                     result.Add(
-                        new FieldDTO()
+                        new KeyValueDTO()
                         {
                             Key = tab.Name,
                             Value = value?.Value,
@@ -86,20 +86,21 @@ namespace terminalDocuSign.Services.NewApi
             return result;
         }
 
-        public static JObject ApplyValuesToTabs(List<FieldDTO> fieldList, Signer corresponding_template_recipient, Tabs tabs)
+        public static JObject ApplyValuesToTabs(List<KeyValueDTO> fieldList, Signer corresponding_template_recipient, Tabs tabs)
         {
             JObject jobj = JObject.Parse(tabs.ToJson());
             foreach (var item in jobj.Properties())
             {
                 string tab_type = item.Name;
-                var fields = fieldList.Where(a => a.Tags.Contains(tab_type) && a.Tags.Contains("recipientId:" + corresponding_template_recipient.RecipientId));
+                var fields = fieldList.Where(a => a.Tags.Contains(tab_type) && a.Tags.Contains("recipientId:" + corresponding_template_recipient.RecipientId)).ToArray();
+
                 foreach (JObject tab in item.Value) 
                 {
-                    FieldDTO corresponding_field = null;
+                    KeyValueDTO corresponding_field = null;
                     switch (tab_type)
                     {
                         case "radioGroupTabs":
-                            corresponding_field = fields.Where(a => a.Key.Contains(tab.Property("groupName").Value.ToString())).FirstOrDefault();
+                            corresponding_field = fields.FirstOrDefault(a => a.Key.Contains(tab.Property("groupName").Value.ToString()));
                             if (corresponding_field == null)
                                 break;
                             foreach (var radioItem in tab["radios"])
@@ -109,7 +110,7 @@ namespace terminalDocuSign.Services.NewApi
                             break;
 
                         case "listTabs":
-                            corresponding_field = fields.Where(a => a.Key.Contains(tab.Property("tabLabel").Value.ToString())).FirstOrDefault();
+                            corresponding_field = fields.FirstOrDefault(a => a.Key.Contains(tab.Property("tabLabel").Value.ToString()));
                             if (corresponding_field == null)
                                 break;
                             var trimmedValue = corresponding_field.Value?.Trim();
@@ -120,13 +121,13 @@ namespace terminalDocuSign.Services.NewApi
                             tab["value"] = corresponding_field.Value;
                             break;
                         case "checkboxTabs":
-                            corresponding_field = fields.Where(a => a.Key.Contains(tab.Property("tabLabel").Value.ToString())).FirstOrDefault();
+                            corresponding_field = fields.FirstOrDefault(a => a.Key.Contains(tab.Property("tabLabel").Value.ToString()));
                             if (corresponding_field == null)
                                 break;
                             tab["selected"] = corresponding_field.Value;
                             break;
                         default:
-                            corresponding_field = fields.Where(a => a.Key.Contains(tab.Property("tabLabel").Value.ToString())).FirstOrDefault();
+                            corresponding_field = fields.FirstOrDefault(a => a.Key.Contains(tab.Property("tabLabel").Value.ToString()));
                             if (corresponding_field == null)
                                 break;
                             tab["value"] = corresponding_field.Value;

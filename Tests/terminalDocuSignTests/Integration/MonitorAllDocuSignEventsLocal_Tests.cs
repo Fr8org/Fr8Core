@@ -132,6 +132,8 @@ namespace terminalDocuSignTests.Integration
                 {
                     await Task.Delay(SingleAwaitPeriod);
 
+                    Debug.WriteLine($"Querying MT objects...");
+
                     mtDataCountAfter = unitOfWork.MultiTenantObjectRepository
                         .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id.ToString()).Count();
 
@@ -139,6 +141,8 @@ namespace terminalDocuSignTests.Integration
                     {
                         break;
                     }
+
+                    Debug.WriteLine($"Number of objects stays unchanged: {mtDataCountBefore}");
                 }
 
                 Assert.IsTrue(mtDataCountBefore < mtDataCountAfter,
