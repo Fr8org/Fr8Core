@@ -10,7 +10,9 @@ using log4net;
 using Data.Interfaces;
 using System.Linq;
 using System.Net.Http;
+using Fr8.Infrastructure.Communication;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
 
 namespace HubWeb.Controllers
 {
@@ -57,25 +59,42 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        public async Task Polling(string job_id, string fr8_account_id, string minutes, string terminal_id)
+        public async Task<IHttpActionResult> Polling([FromUri] string terminalId, [FromBody]PollingDataDTO pollingData)
         {
-            string jobId = job_id.GetHashCode().ToString();
-            RecurringJob.AddOrUpdate(jobId, () => SchedullerHelper.ExecuteSchedulledJob(job_id, fr8_account_id, minutes, terminal_id), "*/" + minutes + " * * * *");
+            pollingData.JobId = terminalId + "|" + pollingData.ExternalAccountId;
+            RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalId), "*/" + pollingData.PollingIntervalInMinutes + " * * * *");
+            if (pollingData.TriggerImmediately)
+                RecurringJob.Trigger(pollingData.JobId);
+
+            return Ok();
         }
     }
 
 
     public static class SchedullerHelper
     {
-        public static void ExecuteSchedulledJob(string job_id, string fr8AccountId, string minutes, string terminal_id)
+        public static void ExecuteSchedulledJob(PollingDataDTO pollingData, string terminalId)
         {
-            var request = RequestPolling(job_id, fr8AccountId, minutes, terminal_id);
+            IRestfulServiceClient _client = new RestfulServiceClient();
+            var request = RequestPolling(pollingData, terminalId, _client);
             var result = request.Result;
-            if (!result)
-                RecurringJob.RemoveIfExists(job_id.GetHashCode().ToString());
+
+            if (result != null)
+            {
+                if (!result.Result)
+                    RecurringJob.RemoveIfExists(pollingData.JobId);
+                else
+                    RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(result, terminalId), "*/" + result.PollingIntervalInMinutes + " * * * *");
+            }
+            else
+            {
+                //we didn't get any response from the terminal (it might have not started yet, for example) Let's give it one more chance, and if it will fail - the job will be descheduled cause of Result set to false;
+                pollingData.Result = false;
+                RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(result, terminalId), "*/" + result.PollingIntervalInMinutes + " * * * *");
+            }
         }
 
-        private static async Task<bool> RequestPolling(string job_id, string fr8_account_id, string minutes, string terminal_id)
+        private static async Task<PollingDataDTO> RequestPolling(PollingDataDTO pollingData, string terminalId, IRestfulServiceClient _client)
         {
             try
             {
@@ -83,9 +102,8 @@ namespace HubWeb.Controllers
 
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    var terminal = uow.TerminalRepository.GetQuery().Where(a => a.PublicIdentifier == terminal_id).FirstOrDefault();
-                    string url = terminal.Endpoint + "/terminals/" + terminal.Name + "/polling_notifications?"
-                        + string.Format("job_id={0}&fr8_account_id={1}&polling_interval={2}", job_id, fr8_account_id, minutes);
+                    var terminal = uow.TerminalRepository.GetQuery().FirstOrDefault(a => a.PublicIdentifier == terminalId);
+                    string url = terminal.Endpoint + "/terminals/" + terminal.Name + "/polling_notifications";
 
                     using (var client = new HttpClient())
                     {
@@ -94,15 +112,22 @@ namespace HubWeb.Controllers
                             client.DefaultRequestHeaders.Add(header.Key, header.Value);
                         }
 
-                        var response = await client.PostAsync(url, null);
+                        try
+                        {
+                            var response = await _client.PostAsync<PollingDataDTO, PollingDataDTO>(new Uri(url), pollingData);
 
-                        return response.StatusCode == System.Net.HttpStatusCode.OK;
+                            return response;
+                        }
+                        catch
+                        {
+                            return null;
+                        }
                     }
                 }
             }
             catch
             {
-                return false;
+                return null;
             }
         }
     }

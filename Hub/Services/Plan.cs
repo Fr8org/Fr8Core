@@ -462,10 +462,10 @@ namespace Hub.Services
 
             // we "eat" this exception to make Hangfire thinks that everthying is good and job is completed
             // this exception should be already logged somewhere
+            var planService = ObjectFactory.GetInstance<Plan>();
+
             try
             {
-                var planService = ObjectFactory.GetInstance<Plan>();
-
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     var plan = uow.PlanRepository.GetById<PlanDO>(planId);
@@ -477,6 +477,27 @@ namespace Hub.Services
                     }
                     
                     await planService.Run(uow, plan, curPayload.Select(x => CrateStorageSerializer.Default.ConvertFromDto(x)).ToArray());
+                }
+            }
+            catch (InvalidTokenRuntimeException ex)
+            {
+                PlanDO monitoringPlan = null;
+
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var plan = uow.PlanRepository.GetById<PlanDO>(planId);
+
+                    if (plan != null && planService.IsMonitoringPlan(uow, plan))
+                    {
+                        monitoringPlan = plan;
+                    }
+                }
+
+                if (monitoringPlan != null)
+                {
+                    await planService.Deactivate(planId);
+                    Logger.LogError($"Plan {planId} was deactivated due to authentication problems.");
+                    planService.ReportAuthDeactivation(monitoringPlan, ex);
                 }
             }
             catch
@@ -608,7 +629,7 @@ namespace Hub.Services
                         }
                         else
                         {
-                            _pusher.NotifyUser(new  {   Message = $"Continue execution of the supsended Plan \"{plan.Name}\"",
+                            _pusher.NotifyUser(new  {   Message = $"Continue execution of the suspended Plan \"{plan.Name}\"",
                                                         Collapsed = false
                                                     },
                                                 NotificationChannel.GenericSuccess,
@@ -646,6 +667,14 @@ namespace Hub.Services
                     {
                         exception.ContainerDTO.CurrentPlanType = currentPlanType;
                     }
+
+                    if (currentPlanType == PlanType.Monitoring)
+                    {
+                        await Deactivate(planId);
+                        Logger.LogError($"Plan {planId} was deactivated due to authentication problems.");
+                        ReportAuthDeactivation(plan, exception);
+                    }
+
                     // Do not notify -- it happens in Plan.cs
                     throw;
                 }
@@ -830,6 +859,16 @@ namespace Hub.Services
             }
 
             _pusher.NotifyUser(errorMessage, NotificationChannel.GenericFailure, user.Id);
+        }
+
+        private void ReportAuthDeactivation(PlanDO plan, InvalidTokenRuntimeException ex)
+        {
+            string errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with " +
+                    $"{ex?.FailedActivityDTO.ActivityTemplate.WebService.Name}. ";
+
+            errorMessage += $"Plan \"{plan.Name}\" which contains failed activity was deactivated.";
+
+            _pusher.NotifyUser(errorMessage, NotificationChannel.GenericFailure, plan.Fr8AccountId);
         }
     }
 }

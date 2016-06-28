@@ -35,7 +35,7 @@ namespace terminalDocuSign.Activities
         {
         }
 
-        protected override Task InitializeDS()
+        public override Task Initialize()
         {
             var control = ControlHelper.CreateSpecificOrUpstreamValueChooser(
                "EnvelopeId",
@@ -49,7 +49,7 @@ namespace terminalDocuSign.Activities
             return Task.FromResult(0);
         }
 
-        protected override async Task FollowUpDS()
+        public override async Task FollowUp()
         {
             var control = GetControl<TextSource>("EnvelopeIdSelector");
             string envelopeId = GetEnvelopeId(control);
@@ -72,7 +72,7 @@ namespace terminalDocuSign.Activities
             return Task.FromResult(0);
         }
 
-        protected override async Task RunDS()
+        public override async Task Run()
         {
             //Get envlopeId from configuration
             var control = GetControl<TextSource>("EnvelopeIdSelector");
@@ -87,7 +87,7 @@ namespace terminalDocuSign.Activities
                 return;
             }
 
-            List<FieldDTO> allFields = new List<FieldDTO>();
+            List<KeyValueDTO> allFields = new List<KeyValueDTO>();
             // This has to be re-thinked. TemplateId is neccessary to retrieve fields but is unknown atm
             // Perhaps it can be received by EnvelopeId
             allFields.AddRange(GetEnvelopeData(envelopeId, null));

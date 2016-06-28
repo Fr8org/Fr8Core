@@ -1,0 +1,203 @@
+﻿/* NAVIGATION BAR */
+.navbar-brand {
+    padding: 20px 30px;
+}
+
+.navbar-brand img {
+    width: 74px;
+    height: auto;
+}
+
+.navbar {
+    font-family: 'Didact Gothic', sans-serif;
+    color: #f7f7f7;
+    -moz-transition-property: all;
+    -o-transition-property: all;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -moz-transition-duration: 0.2s;
+    -o-transition-duration: 0.2s;
+    -webkit-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+    -moz-transition-timing-function: linear;
+    -o-transition-timing-function: linear;
+    -webkit-transition-timing-function: linear;
+    transition-timing-function: linear;
+    -webkit-transform: translateZ(0);
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+}
+
+.navbar a {
+    color: #f7f7f7;
+}
+
+.nav > li > a:focus {
+    background-color: transparent;
+    outline: none;
+}
+
+.navbar-nav {
+    padding: 30px 0;
+}
+
+.navbar-nav > li {
+    margin: 0 10px;
+}
+
+.navbar-nav > li > a {
+    -moz-transition-property: all;
+    -o-transition-property: all;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -moz-transition-duration: 0.1s;
+    -o-transition-duration: 0.1s;
+    -webkit-transition-duration: 0.1s;
+    transition-duration: 0.1s;
+    -moz-transition-timing-function: ease-out;
+    -o-transition-timing-function: ease-out;
+    -webkit-transition-timing-function: ease-out;
+    transition-timing-function: ease-out;
+    padding-left: 3px;
+    padding-right: 3px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid transparent;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.navbar-nav > li > a:hover,
+.navbar-text > a:hover {
+    border-bottom: 2px solid #f7f7f7;
+    padding-bottom: 0;
+    background-color: transparent;
+}
+
+.navbar-nav > li.active > a {
+    border-bottom: 2px solid #f7f7f7;
+    padding-bottom: 0;
+    background-color: transparent;
+    outline: none;
+}
+
+.navbar-nav > li a.btn {
+    text-transform: uppercase;
+}
+
+.navbar-btn {
+    margin-top: -1px;
+    margin-bottom: -1px;
+}
+
+.navbar.navbar-light {
+    color: #444C58;
+    background-color: #f7f7f7;
+    border-bottom: 1px solid #eee;
+}
+
+.nav.navbar-nav .dropdown-menu:before, 
+.nav.navbar-nav .dropdown-menu:after {
+    border: none !important;
+    content: none !important;
+}
+
+.navbar.navbar-light .navbar-nav > li > a,
+.navbar.navbar-light .navbar-text > a {
+    color: #444C58;
+}
+
+.navbar.navbar-light .navbar-nav > li > a:hover,
+.navbar.navbar-light .navbar-text > a:hover {
+    border-bottom-color: #444C58;
+}
+
+.navbar.navbar-light .navbar-nav > li.active > a {
+    border-bottom-color: #444C58;
+}
+
+@media screen and (max-width: 767px) {
+    .navbar.navbar-light .navbar-nav > li > a {
+        color: #e6e6e6;
+        border-bottom: none;
+        padding-top: 15px;
+        padding-bottom: 15px;
+    }
+  
+    .navbar.navbar-light .navbar-nav > li > a:hover {
+        color: #fff;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        text-decoration: underline;
+    }
+  
+    .navbar-collapse {
+        background-color: #444C58;
+    }
+}
+
+.navbar-toggle {
+    background-color: #444C58;
+}
+
+.navbar-toggle .icon-bar {
+    background-color: #f7f7f7;
+}
+
+.mdl-button--login {
+    color: #fff;
+    background-color: #EA3C53;
+}
+
+.mdl-button--raised {
+    color: #fff;
+    background-color: #26A599;
+}
+
+.nav .open > a,
+.nav .open > a:hover,
+.nav .open > a:focus {
+    background-color: initial;
+    border-color: initial;
+}
+
+.navbar .userinfo {
+    position: absolute;
+    right: 0;
+}
+
+.navbar .userinfo p {
+    margin-top: 0;
+}
+
+.navbar .container {
+    position: relative;
+}
+
+.navbar-header h1.site-logo {
+    float: left;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-header h1.site-logo > a.navbar-brand {
+    margin: 0;
+    padding: 10px;
+    display: block;
+}
+
+/* FOOTER */
+#site-footer {
+    padding: 10px 0;
+    position: relative;
+    z-index: 3;
+    bottom: 0;
+    width: 100%;
+}
+
+.copyright {
+    font-size: 0.8em;
+    line-height: 36px;
+    text-align: center;
+}

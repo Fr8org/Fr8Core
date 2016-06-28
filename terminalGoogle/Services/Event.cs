@@ -59,12 +59,12 @@ namespace terminalGoogle.Services
             return curEventReport;
         }
 
-        private List<FieldDTO> ParseGoogleFormPayloadData(string message)
+        private List<KeyValueDTO> ParseGoogleFormPayloadData(string message)
         {
             var tokens = message.Split(
                 new[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
 
-            var payloadFields = new List<FieldDTO>();
+            var payloadFields = new List<KeyValueDTO>();
             foreach (var token in tokens)
             {
                 var nameValue = token.Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
@@ -76,7 +76,7 @@ namespace terminalGoogle.Services
                 var name = HttpUtility.UrlDecode(nameValue[0]);
                 var value = HttpUtility.UrlDecode(nameValue[1]);
 
-                payloadFields.Add(new FieldDTO()
+                payloadFields.Add(new KeyValueDTO()
                 {
                     Key = name,
                     Value = value
@@ -86,7 +86,7 @@ namespace terminalGoogle.Services
             return payloadFields;
         }
 
-        private ICrateStorage WrapPayloadDataCrate(List<FieldDTO> payloadFields)
+        private ICrateStorage WrapPayloadDataCrate(List<KeyValueDTO> payloadFields)
         {
 
             return new CrateStorage(Crate.FromContent("Payload Data", new StandardPayloadDataCM(payloadFields)));

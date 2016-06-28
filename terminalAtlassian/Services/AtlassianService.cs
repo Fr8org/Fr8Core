@@ -44,7 +44,7 @@ namespace terminalAtlassian.Services
             }           
         }
 
-        public List<FieldDTO> GetJiraIssue(string jiraKey, AuthorizationToken authToken)
+        public List<KeyValueDTO> GetJiraIssue(string jiraKey, AuthorizationToken authToken)
         {
             return InterceptJiraExceptions(() =>
             {
@@ -53,6 +53,7 @@ namespace terminalAtlassian.Services
                 return CreateKeyValuePairList(issue);
             });
         }
+
 
         public IEnumerable<Issue> GetIssueFromJql(string jql, AuthorizationToken authToken)
         {
@@ -67,7 +68,7 @@ namespace terminalAtlassian.Services
             jira.DeleteIssue(issue);
         }
 
-        public List<FieldDTO> GetProjects(AuthorizationToken authToken)
+        public List<KeyValueDTO> GetProjects(AuthorizationToken authToken)
         {
             return InterceptJiraExceptions(() =>
             {
@@ -75,7 +76,7 @@ namespace terminalAtlassian.Services
 
                 var projects = jira.GetProjects();
                 var result = projects
-                    .Select(x => new FieldDTO()
+                    .Select(x => new KeyValueDTO()
                     {
                         Key = x.Name,
                         Value = x.Key
@@ -87,7 +88,7 @@ namespace terminalAtlassian.Services
             });
         }
 
-        public List<FieldDTO> GetIssueTypes(string projectKey, AuthorizationToken authToken)
+        public List<KeyValueDTO> GetIssueTypes(string projectKey, AuthorizationToken authToken)
         {
             return InterceptJiraExceptions(() =>
             {
@@ -95,7 +96,7 @@ namespace terminalAtlassian.Services
 
                 var issueTypes = jira.GetIssueTypes(projectKey);
                 var result = issueTypes
-                    .Select(x => new FieldDTO()
+                    .Select(x => new KeyValueDTO()
                         {
                             Key = x.Name,
                             Value = x.Id
@@ -107,7 +108,7 @@ namespace terminalAtlassian.Services
             });
         }
 
-        public List<FieldDTO> GetPriorities(AuthorizationToken authToken)
+        public List<KeyValueDTO> GetPriorities(AuthorizationToken authToken)
         {
             return InterceptJiraExceptions(() =>
             {
@@ -115,7 +116,7 @@ namespace terminalAtlassian.Services
 
                 var priorities = jira.GetIssuePriorities();
                 var result = priorities
-                    .Select(x => new FieldDTO()
+                    .Select(x => new KeyValueDTO()
                         {
                             Key = x.Name,
                             Value = x.Id
@@ -127,7 +128,7 @@ namespace terminalAtlassian.Services
             });
         }
 
-        public List<FieldDTO> GetCustomFields(AuthorizationToken authToken)
+        public List<KeyValueDTO> GetCustomFields(AuthorizationToken authToken)
         {
             return InterceptJiraExceptions(() =>
             {
@@ -135,7 +136,7 @@ namespace terminalAtlassian.Services
                 var customFields = jira.GetCustomFields();
 
                 var result = customFields
-                    .Select(x => new FieldDTO()
+                    .Select(x => new KeyValueDTO()
                     {
                         Key = x.Name,
                         Value = x.Id
@@ -282,12 +283,12 @@ namespace terminalAtlassian.Services
             return await GetAsync(apiRequest, JsonConvert.DeserializeObject<CredentialsDTO>(token.Token)).ConfigureAwait(false);
         }
         
-        private List<FieldDTO> CreateKeyValuePairList(Issue curIssue)
+        private List<KeyValueDTO> CreateKeyValuePairList(Issue curIssue)
         {
-            List<FieldDTO> returnList = new List<FieldDTO>();
-            returnList.Add(new FieldDTO("Key", curIssue.Key.Value));
-            returnList.Add(new FieldDTO("Summary", curIssue.Summary));
-            returnList.Add(new FieldDTO("Reporter", curIssue.Reporter));
+            List<KeyValueDTO> returnList = new List<KeyValueDTO>();
+            returnList.Add(new KeyValueDTO("Key", curIssue.Key.Value));
+            returnList.Add(new KeyValueDTO("Summary", curIssue.Summary));
+            returnList.Add(new KeyValueDTO("Reporter", curIssue.Reporter));
             return returnList;
         }
 
