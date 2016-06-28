@@ -24,6 +24,7 @@
       </Folder>
       <Folder Name="Controllers" TargetFolderName="Controllers">
         <ProjectItem ReplaceParameters="true" TargetFileName="ActivityController.cs">ActivityController.cs</ProjectItem>
+        <ProjectItem ReplaceParameters="true" TargetFileName="AuthenticationController.cs">AuthenticationController.cs</ProjectItem>
         <ProjectItem ReplaceParameters="true" TargetFileName="TerminalController.cs">TerminalController.cs</ProjectItem>
       </Folder>
       <ProjectItem ReplaceParameters="false" TargetFileName="favicon.ico">favicon.ico</ProjectItem>
