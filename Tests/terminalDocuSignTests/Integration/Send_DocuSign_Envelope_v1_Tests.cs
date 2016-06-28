@@ -58,18 +58,13 @@ namespace terminalDocuSignTests
             Assert.AreEqual(1, crateStorage.Count);
 
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(x => x.Label == "Configuration_Controls"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count(x => x.Label == "Available Templates"));
-            
         }
 
         private void AssertFollowUpCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(2, crateStorage.Count);
-
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(x => x.Label == "Configuration_Controls"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count(x => x.Label == "Available Templates"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count(x => x.Label == "DocuSignTemplateUserDefinedFields"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count(x => x.Label == "DocuSignTemplateStandardFields"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<ValidationResultsCM>().Count());
         }
         
         private void AssertControls(StandardConfigurationControlsCM controls)
@@ -206,10 +201,6 @@ namespace terminalDocuSignTests
         private void SendDocuSignEnvelope_SelectFirstTemplate(ICrateStorage curCrateStorage)
         {
             // Fetch Available Template crate and parse StandardDesignTimeFieldsMS.
-            var availableTemplatesCrateDTO = curCrateStorage.CratesOfType<KeyValueListCM>().Single(x => x.Label == "Available Templates");
-
-            var fieldsMS = availableTemplatesCrateDTO.Content;
-
             // Fetch Configuration Controls crate and parse StandardConfigurationControlsMS
 
             var configurationControlsCrateDTO = curCrateStorage.CratesOfType<StandardConfigurationControlsCM>().Single(x => x.Label == "Configuration_Controls");
@@ -218,8 +209,8 @@ namespace terminalDocuSignTests
 
             // Modify value of Selected_DocuSign_Template field and push it back to crate,
             // exact same way we do on front-end.
-            var docuSignTemplateControlDTO = controlsMS.Controls.Single(x => x.Name == "target_docusign_template");
-            docuSignTemplateControlDTO.Value = fieldsMS.Values.First().Value;
+            var docuSignTemplateControlDTO = (DropDownList)controlsMS.Controls.Single(x => x.Name == "target_docusign_template");
+            docuSignTemplateControlDTO.Value = docuSignTemplateControlDTO.ListItems.First().Value;
         }
 
         private void SendDocuSignEnvelope_SetSpecificRecipient(ICrateStorage curCrateStorage)
