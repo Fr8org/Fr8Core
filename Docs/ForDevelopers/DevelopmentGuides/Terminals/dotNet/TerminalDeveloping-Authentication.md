@@ -1,6 +1,6 @@
-# How to implement oAuth2 authentication for a new Terminal
+# Implementing oAuth2 authentication for a new Terminal
 
-[Back to Terminal Development on .Net](../DevGuide_DotNet.md)
+
 
 First of all, if you don't know what oAuth2 is, then read this short article https://aaronparecki.com/articles/2012/07/29/1/oauth2-simplified
 Keep in mind, that different services follow this specification in their own way
@@ -96,4 +96,4 @@ If you've done everything right - you will get the oAuth token
 ###WebService
 After you are done with Authentication you have to configure the [WebService](TerminalDeveloping-AddingAWebService.md) 
 
-[Back to Terminal Development on .Net](../DevGuide_DotNet.md)
+
