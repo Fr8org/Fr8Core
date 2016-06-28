@@ -18,7 +18,8 @@ namespace terminalInstagram.Infrastructure
             bindingContext.Model = new VerificationMessage
             {
                 Challenge = queryParams.First(k => k.Key == "hub.challenge").Value,
-                Mode = queryParams.First(k => k.Key == "hub.mode").Value
+                Mode = queryParams.First(k => k.Key == "hub.mode").Value,
+                VerifyToken = queryParams.First(k => k.Key == "hub.verify_token").Value
             };
             return true;
         }
