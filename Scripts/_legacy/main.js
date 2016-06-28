@@ -4,80 +4,74 @@ function EasyPeasyParallax() {
     }
 }
 
-function someResize(){
+function resizePageComponents() {
     var	windowHeight = $(window).height(),
         headerHeight = $('header#site-header .navbar').innerHeight(),
         footerHeight = $('#site-footer').height(),
         contentInnerHeight = $(".inner-wrap.centered").height();
 
+    // Set available height according to footer height
     $("section.full-height-block").css({
         "min-height": windowHeight
     });
 
-    if ($("section.full-height-block:last-child")) {
-        $("section.full-height-block:last-child .container.full-height-block").css({
+    // Sets sections according to footer
+    var sectionElement = $("section.full-height-block:last-child .container.full-height-block");
+    if (sectionElement) {
+        sectionElement.css({
+            "padding-bottom": footerHeight,
+            "margin-bottom": 0 - footerHeight
+        });
+    }
+    sectionElement = $("section.full-height-block .container.full-height-block");
+    if (sectionElement) {
+        sectionElement.css({
             "padding-bottom": footerHeight,
             "margin-bottom": 0 - footerHeight
         });
     }
 
-    if (($("section.full-height-block").length == 1)) {
-        $("section.full-height-block .container.full-height-block").css({
-            "padding-bottom": footerHeight,
-            "margin-bottom": 0 - footerHeight
-        });
-    }
-
-    $(".inner-wrap.centered").each(function() {
+    // Sets mostly section containers height
+    $(".inner-wrap.centered").each(function () {
         contentInnerHeight = $(this).height();
-        if ($(this).parents("section#contacts").length > 0) {
-	        if (contentInnerHeight < (windowHeight - headerHeight - footerHeight)) {
-                var contentTop = headerHeight + ((windowHeight - (headerHeight + footerHeight))/2);
-                var marginTop = 0 - ((contentInnerHeight/2) + (headerHeight/2));
 
-                $(this).css({
-                    'top': (windowHeight / 2) + "px",
-                    'margin-top': marginTop + "px"
-                });
-            } else {
-                $(this).css({
-                    "top": (headerHeight + 20) + "px",
-                    'margin-top': "0px"
-                });
-                $(this).parents("section#contacts").find(".inner-bg.full-size-bg").css("min-height", ($(this).height() + parseInt($(this).css('top'))));
-                $(this).parents("section#contacts").css("padding-bottom", (parseInt($(this).css('top'))));
-            }
-        } else if (($("section.full-height-block").length == 1)) {
-            if (contentInnerHeight < (windowHeight - headerHeight - footerHeight)) {
-                var contentTop = headerHeight + ((windowHeight - (headerHeight + footerHeight)) / 2);
-                var marginTop = 0 - ((contentInnerHeight / 2) + (headerHeight / 2));
-
-                $(this).css({
-                    'top': (windowHeight / 2) + "px",
-                    'margin-top': marginTop + "px"
-                });
-            } else {
-                $(this).css({
-                    "top": (headerHeight + 20) + "px",
-                    'margin-top': "0px"
-                });
-                $(this).parents("section").find(".inner-bg.full-size-bg").css("min-height", ($(this).height() + parseInt($(this).css('top'))));
-                $(this).parents("section").css("min-height", ($(this).height()));
-                $(this).parents("section").css("padding-bottom", (parseInt($(this).css('top'))));
-            }
+        /* This code is legacy and must be fixed. Refactoring only done for reducing complexity. */
+        var parentSection;
+        var isFullHeightSection = true;
+        if ( $(this).parents("section#contacts").length > 0 ) {
+            parentSection = $(this).parents("section#contacts");
+        } else if ( $(this).parents("section.full-height-block").length == 1 ) {
+            parentSection = $(this).parents("section.full-height-block");
         } else {
-            if (contentInnerHeight < (windowHeight - headerHeight)) {
-                var contentTop = (windowHeight - contentInnerHeight) / 2;
-                $(this).css("top", contentTop);
+            parentSection = $(this).parents("section");
+            isFullHeightSection = false;
+        }
+
+        if (isFullHeightSection) {
+            // Checks whether content is fitting with including footer
+            if (contentInnerHeight < (windowHeight - headerHeight - footerHeight) ) {
+                $(this).css({
+                    'top': (windowHeight / 2) + "px",
+                    'margin-top': 0 - ((contentInnerHeight / 2) + (headerHeight / 2)) + "px"
+                });
             } else {
                 $(this).css("top", headerHeight + 20);
-                $(this).parents("section").find(".inner-bg.full-size-bg").css("min-height", ($(this).height() + parseInt($(this).css('top'))));
-                $(this).parents("section").css("min-height", ($(this).height() + parseInt($(this).css('top'))));
-                $(this).parents("section").css("margin-bottom", "60px");
+                parentSection.find(".inner-bg.full-size-bg").css("min-height", ($(this).height() + parseInt($(this).css('top'))));
+                parentSection.css("padding-bottom", (parseInt($(this).css('top'))));
+                parentSection.css("min-height", ($(this).height()));
             }
+            // Checks whether content is fitting without footer and not full height section
+        } else if (contentInnerHeight < (windowHeight - headerHeight)) {
+            $(this).css("top", (windowHeight - contentInnerHeight) / 2);
+        } else {
+            $(this).css("top", headerHeight + 20);
+            parentSection.find(".inner-bg.full-size-bg").css("min-height", ($(this).height() + parseInt($(this).css('top'))));
+            parentSection.css("min-height", ($(this).height() + parseInt($(this).css('top'))));
+            parentSection.css("margin-bottom", "60px");
         }
     });
 
+    // Miscellaneous settings
     $(".clear.clear-footer-spacer").height(footerHeight);
     $("#wrap").css("margin-bottom", (0 - footerHeight));
     $("#contacts .container").css("margin-bottom", (0 - footerHeight));
@@ -98,10 +92,10 @@ $(document).ready(function () {
 
     if ($('.video-frame').length) {
         var iframe = $('.video-frame')[0];
-        var player = $f(iframe);
+        $f(iframe);
     }
 
-    someResize();
+    resizePageComponents();
 
     $('a[rel="popover"]').popover();
     $('a[rel="tooltip"]').tooltip();
@@ -109,11 +103,11 @@ $(document).ready(function () {
         interval: false
     });
 
-    /*menu*/
-    $("li.dropdown").hover(function(){
+    /* Menu Dropdown */
+    $("li.dropdown").hover(function() {
         $(this).find("a.dropdown-toggle").attr('aria-expanded', "true");
         $(this).addClass("open");
-    },function() {
+    }, function() {
         $(this).find("a.dropdown-toggle").attr('aria-expanded', "false");
         $(this).removeClass("open");
     });
@@ -129,6 +123,7 @@ $(document).ready(function () {
     }
 
     section.waypoint({
+        offset: headerHeight,
         handler: function (direction) {
             var datasection = $(this).attr('data-section');
             if (direction === 'down') {
@@ -136,8 +131,7 @@ $(document).ready(function () {
             } else {
                 $('.home-nav.navbar-nav > li > a[href *= "' + datasection + '"]').parents("li").addClass('active').siblings().removeClass('active');
             }
-        }, 
-        offset: headerHeight
+        }
     });
 
     $("section#welcome").click(function(){
@@ -148,14 +142,6 @@ $(document).ready(function () {
         htmlbody.animate({
             scrollTop: $('.text-block[data-section="' + datasection + '"]').offset().top
         }, 1000);
-    }
-    var	windowWidth = $(window).width();
-    if(windowWidth < 980){
-        function goToByScroll(datasection) {
-            htmlbody.animate({
-                scrollTop: $('.text-block[data-section="' + datasection + '"]').offset().top
-            }, 1000);
-        }
     }
 
     links.click(function (e) {
@@ -178,5 +164,5 @@ $(document).ready(function () {
 });
 
 $(window).resize(function(){
-    someResize();
+    resizePageComponents();
 })

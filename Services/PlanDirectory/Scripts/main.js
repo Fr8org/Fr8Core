@@ -40,8 +40,7 @@
                 $(this).parents("section").css("padding-bottom", (parseInt($(this).css('top'))));
             } else {
                 if (contentInnerHeight < (windowHeight - headerHeight)) {
-                    var contentTop = (windowHeight - contentInnerHeight) / 2;
-                    $(this).css("top", contentTop);
+                    $(this).css("top", (windowHeight - contentInnerHeight) / 2);
                 } else {
                     $(this).css("top", headerHeight + 20);
                     $(this).parents("section").find(".inner-bg.full-size-bg").css("min-height", ($(this).height() + parseInt($(this).css('top'))));
