@@ -27,10 +27,10 @@ namespace terminalDocuSignTests.Integration
         {
             Assert.AreEqual(5, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "AvailableTemplates"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "AvailableHandlers"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "AvailableRecipientEvents"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "AvailableRunTimeDataFields"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count(x => x.Label == "AvailableTemplates"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count(x => x.Label == "AvailableHandlers"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count(x => x.Label == "AvailableRecipientEvents"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count(x => x.Label == "AvailableRunTimeDataFields"));
             
 
 
@@ -185,18 +185,18 @@ namespace terminalDocuSignTests.Integration
                 radioGroup.Radios[0].Selected = true;
 
                 var availableEventCM = crateStorage
-                    .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "AvailableEvents")
+                    .CrateContentsOfType<KeyValueListCM>(x => x.Label == "AvailableEvents")
                     .Single();
 
                 var availableHandlers = crateStorage
-                    .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "AvailableHandlers")
+                    .CrateContentsOfType<KeyValueListCM>(x => x.Label == "AvailableHandlers")
                     .Single();
 
-                Assert.IsTrue(availableEventCM.Fields.Count > 0);
+                Assert.IsTrue(availableEventCM.Values.Count > 0);
 
                 //templateDdl.Value = availableEventCM.Fields[0].Value;
                 var howToBeNotifiedDdl = (DropDownList)controls.FindByName("NotificationHandler");
-                howToBeNotifiedDdl.Value = availableHandlers.Fields[0].Value;
+                howToBeNotifiedDdl.Value = availableHandlers.Values[0].Value;
 
                 var whenToBeNotifiedRadioGrp = (RadioButtonGroup)controls.FindByName("WhenToBeNotified");
                 whenToBeNotifiedRadioGrp.Radios[0].Selected = false;
@@ -235,18 +235,18 @@ namespace terminalDocuSignTests.Integration
                 radioGroup.Radios[0].Selected = true;
 
                 var availableEventCM = crateStorage
-                    .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "AvailableEvents")
+                    .CrateContentsOfType<KeyValueListCM>(x => x.Label == "AvailableEvents")
                     .Single();
 
                 var availableHandlers = crateStorage
-                    .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "AvailableHandlers")
+                    .CrateContentsOfType<KeyValueListCM>(x => x.Label == "AvailableHandlers")
                     .Single();
 
-                Assert.IsTrue(availableEventCM.Fields.Count > 0);
+                Assert.IsTrue(availableEventCM.Values.Count > 0);
 
                 //templateDdl.Value = availableEventCM.Fields[0].Value;
                 var howToBeNotifiedDdl = (DropDownList)controls.FindByName("NotificationHandler");
-                howToBeNotifiedDdl.Value = availableHandlers.Fields[0].Value;
+                howToBeNotifiedDdl.Value = availableHandlers.Values[0].Value;
 
             }
 

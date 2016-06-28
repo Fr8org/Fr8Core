@@ -12,6 +12,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.Infrastructure.Behaviors;
 using Fr8.TerminalBase.Models;
+using Fr8.TerminalBase.Services;
 using ServiceStack;
 
 namespace terminalSalesforce.Actions
@@ -181,7 +182,7 @@ namespace terminalSalesforce.Actions
 
         private async Task<ActivityPayload> CreateProcessingActivity(ReconfigurationContext context)
         {
-            var loopActivity = await AddAndConfigureChildActivity(context.SolutionActivity, await GetActivityTemplate("terminalFr8Core", "Loop"), "Loop", "Loop", 2);
+            var loopActivity = await HubCommunicator.AddAndConfigureChildActivity(context.SolutionActivity, await HubCommunicator.GetActivityTemplate("terminalFr8Core", "Loop"), "Loop", "Loop", 2);
             var crateStorage = loopActivity.CrateStorage;
             var loopConfigControls = ControlHelper.GetConfigurationControls(crateStorage);
             var crateChooser = loopConfigControls.Controls.OfType<CrateChooser>().Single();
@@ -197,8 +198,8 @@ namespace terminalSalesforce.Actions
             }
 
             var solutionActivityUi = new ActivityUi().ClonePropertiesFrom(context.SolutionActivity.CrateStorage.FirstCrate<StandardConfigurationControlsCM>().Content) as ActivityUi;
-            var mailSenderActivityTemplate = await GetActivityTemplate(Guid.Parse(solutionActivityUi.MailSenderActivitySelector.Value));
-            var sendEmailActivity = await AddAndConfigureChildActivity(loopActivity, mailSenderActivityTemplate, order: 1);
+            var mailSenderActivityTemplate = await HubCommunicator.GetActivityTemplate(Guid.Parse(solutionActivityUi.MailSenderActivitySelector.Value));
+            var sendEmailActivity = await HubCommunicator.AddAndConfigureChildActivity(loopActivity, mailSenderActivityTemplate, order: 1);
             return loopActivity;
         }
 
@@ -225,16 +226,16 @@ namespace terminalSalesforce.Actions
         {
             var getSalesforceDataActivityTemplate = (await HubCommunicator.GetActivityTemplates(null))
                 .First(x => x.Name == "Get_Data" && x.Terminal.Name == TerminalName && x.Version == "1");
-            var dataSourceActivity = await AddAndConfigureChildActivity(
+            var dataSourceActivity = await HubCommunicator.AddAndConfigureChildActivity(
                 context.SolutionActivity,
                 getSalesforceDataActivityTemplate,
                 order: 1);
             //This config call will make SF Get_Data activity to load properties of the selected object (and removes filter)
             CopySolutionUiValuesToSalesforceActivity(context.SolutionActivity, dataSourceActivity);
-            dataSourceActivity = await ConfigureChildActivity(context.SolutionActivity, dataSourceActivity);
+            dataSourceActivity = await HubCommunicator.ConfigureChildActivity(context.SolutionActivity, dataSourceActivity);
             //This config call will set the proper filter value for the selected object 
             CopySolutionUiValuesToSalesforceActivity(context.SolutionActivity, dataSourceActivity);
-            return await ConfigureChildActivity(context.SolutionActivity, dataSourceActivity);
+            return await HubCommunicator.ConfigureChildActivity(context.SolutionActivity, dataSourceActivity);
         }
 
         private async Task<ActivityPayload> ConfigureSalesforceDataActivity(ReconfigurationContext context)
@@ -282,7 +283,7 @@ namespace terminalSalesforce.Actions
 
         public override async Task Initialize()
         {
-            ActivityUI.SalesforceObjectSelector.ListItems = _salesforceManager.GetSalesforceObjectTypes().Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
+            ActivityUI.SalesforceObjectSelector.ListItems = _salesforceManager.GetSalesforceObjectTypes().Select(x => new ListItem { Key = x.Name, Value = x.Label }).ToList();
             var activityTemplates = await HubCommunicator.GetActivityTemplates(Tags.EmailDeliverer, true);
             activityTemplates.Sort((x, y) => x.Name.CompareTo(y.Name));
             ActivityUI.MailSenderActivitySelector.ListItems = activityTemplates
@@ -307,7 +308,7 @@ namespace terminalSalesforce.Actions
         {
             if (documentationType.Contains("MainPage"))
             {
-                var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
+                var curSolutionPage = new DocumentationResponseDTO(SolutionName, SolutionVersion, TerminalName, SolutionBody);
                 return Task.FromResult(curSolutionPage);
 
             }
@@ -315,17 +316,17 @@ namespace terminalSalesforce.Actions
             {
                 if (documentationType.Contains("ExplainMailMerge"))
                 {
-                    return Task.FromResult(GenerateDocumentationResponse(@"This solution helps you to work with email and move data from them to DocuSign service"));
+                    return Task.FromResult(new DocumentationResponseDTO(@"This solution helps you to work with email and move data from them to DocuSign service"));
                 }
                 if (documentationType.Contains("ExplainService"))
                 {
-                    return Task.FromResult(GenerateDocumentationResponse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                    return Task.FromResult(new DocumentationResponseDTO(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
                 }
-                return Task.FromResult(GenerateErrorResponse("Unknown contentPath"));
+                return Task.FromResult(new DocumentationResponseDTO("Unknown contentPath"));
             }
             return
                 Task.FromResult(
-                    GenerateErrorResponse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
+                    new DocumentationResponseDTO("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }

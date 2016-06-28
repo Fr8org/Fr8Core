@@ -36,7 +36,7 @@ namespace terminalSlackTests.Activities
             HealthMonitor_FixtureData.ConfigureHubToReturnEmptyPayload();
             var slackIntegrationMock = new Mock<ISlackIntegration>();
             slackIntegrationMock.Setup(x => x.GetChannelList(It.IsAny<string>(), It.IsAny<bool>()))
-                                .Returns(Task.FromResult(new List<FieldDTO> { new FieldDTO("#channel", "1") }));
+                                .Returns(Task.FromResult(new List<KeyValueDTO> { new KeyValueDTO("#channel", "1") }));
             ObjectFactory.Container.Inject(slackIntegrationMock);
             ObjectFactory.Container.Inject(slackIntegrationMock.Object);
             var slackEventManagerMock = new Mock<ISlackEventManager>();

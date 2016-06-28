@@ -11,7 +11,7 @@ using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Activities
 {
-    public class Monitor_Fr8_Events_v1 : BaseTerminalActivity
+    public class Monitor_Fr8_Events_v1 : ExplicitTerminalActivity
     {
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
@@ -69,18 +69,19 @@ namespace terminalFr8Core.Activities
             var textBlock = ControlHelper.GenerateTextBlock("Monitor Fr8 Events",
                 "This Activity doesn't require any configuration.", "well well-lg");
             var curControlsCrate = PackControlsCrate(textBlock);
-            var planActivatedCrate = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "RouteActivated", "13", AvailabilityType.RunTime);
-            var planDeactivatedCrate = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "RouteDeactivated", "13", AvailabilityType.RunTime);
-            var containerLaunched = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "ContainerLaunched", "13", AvailabilityType.RunTime);
-            var containerExecutionComplete = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "ContainerExecutionComplete", "13", AvailabilityType.RunTime);
-            var actionExecuted = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "ActionExecuted", "13", AvailabilityType.RunTime);
+
+           // var planActivatedCrate = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "RouteActivated", "13", AvailabilityType.RunTime);
+           // var planDeactivatedCrate = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "RouteDeactivated", "13", AvailabilityType.RunTime);
+          //  var containerLaunched = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "ContainerLaunched", "13", AvailabilityType.RunTime);
+           // var containerExecutionComplete = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "ContainerExecutionComplete", "13", AvailabilityType.RunTime);
+          //  var actionExecuted = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "ActionExecuted", "13", AvailabilityType.RunTime);
 
             Storage.Add(curControlsCrate);
-            Storage.Add(planActivatedCrate);
-            Storage.Add(planDeactivatedCrate);
-            Storage.Add(containerLaunched);
-            Storage.Add(containerExecutionComplete);
-            Storage.Add(actionExecuted);
+          //  Storage.Add(planActivatedCrate);
+           // Storage.Add(planDeactivatedCrate);
+//Storage.Add(containerLaunched);
+           // Storage.Add(containerExecutionComplete);
+           // Storage.Add(actionExecuted);
             Storage.Add(eventSubscription);
 
             return Task.FromResult(0);

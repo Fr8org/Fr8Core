@@ -22,7 +22,7 @@ using Hub.Services.MT;
 namespace terminalFr8Core.Actions
 {
     public class Get_Data_From_Fr8_Warehouse_v1
-        : EnhancedTerminalActivity<Get_Data_From_Fr8_Warehouse_v1.ActivityUi>
+        : TerminalActivity<Get_Data_From_Fr8_Warehouse_v1.ActivityUi>
     {
         private readonly IContainer _container;
 
@@ -164,7 +164,7 @@ namespace terminalFr8Core.Actions
                         headerRow.Row.Add(
                             new TableCellDTO()
                             {
-                                Cell = new FieldDTO(mtTypeProp.Name, mtTypeProp.Name)
+                                Cell = new KeyValueDTO(mtTypeProp.Name, mtTypeProp.Name)
                             });
                     }
 
@@ -220,7 +220,7 @@ namespace terminalFr8Core.Actions
                     row.Row.Add(
                         new TableCellDTO()
                         {
-                            Cell = new FieldDTO(accessor.Key, string.Format(CultureInfo.InvariantCulture, "{0}", accessor.Value.GetValue(x)))
+                            Cell = new KeyValueDTO(accessor.Key, string.Format(CultureInfo.InvariantCulture, "{0}", accessor.Value.GetValue(x)))
                         }
                     );
                 }

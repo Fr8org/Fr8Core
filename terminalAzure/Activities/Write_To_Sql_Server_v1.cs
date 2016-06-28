@@ -18,7 +18,7 @@ using TerminalSqlUtilities;
 
 namespace terminalAzure.Activities
 {
-    public class Write_To_Sql_Server_v1 : BaseTerminalActivity
+    public class Write_To_Sql_Server_v1 : ExplicitTerminalActivity
     {
         private readonly IDbProvider _dbProvider;
 
@@ -60,7 +60,7 @@ namespace terminalAzure.Activities
                 var contentsList = GetFieldMappings();
                 Storage.RemoveByLabel("Sql Table Columns");
                 //this needs to be updated to hold Crates instead of FieldDefinitionDTO
-                Storage.Add(CrateManager.CreateDesignTimeFieldsCrate("Sql Table Columns", contentsList.Select(col => new FieldDTO() { Key = col, Value = col }).ToArray()));
+                Storage.Add(CrateManager.CreateDesignTimeFieldsCrate("Sql Table Columns", contentsList.Select(col => new KeyValueDTO() { Key = col, Value = col }).ToArray()));
             }
             catch
             {
@@ -186,7 +186,7 @@ namespace terminalAzure.Activities
             return CreateTables(mappedFieldsCrate.Content.AllValues().ToList(), valuesCrate.Content.AllValues().ToList());
         }
 
-        private IEnumerable<Table> CreateTables(List<FieldDTO> fields, List<FieldDTO> values)
+        private IEnumerable<Table> CreateTables(List<KeyValueDTO> fields, List<KeyValueDTO> values)
         {
             // Map tableName -> field -> value.
             var tableMap = new Dictionary<string, Dictionary<string, string>>();

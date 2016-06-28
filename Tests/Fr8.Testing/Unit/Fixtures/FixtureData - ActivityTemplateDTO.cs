@@ -76,6 +76,16 @@ namespace Fr8.Testing.Unit.Fixtures
             };
         }
 
+        public static ActivityTemplateDTO Monitor_Gmail_Inbox_ActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Monitor_Gmail_Inbox",
+                Version = "1"
+            };
+        }
+
         public static ActivityTemplateDTO GetGoogleSheetDataActivityTemplate()
         {
             return new ActivityTemplateDTO()
@@ -100,6 +110,15 @@ namespace Fr8.Testing.Unit.Fixtures
             {
                 Id = Guid.NewGuid(),
                 Name = "Build_Message",
+                Version = "1"
+            };
+        }
+        public static ActivityTemplateDTO SaveToFr8WarehouseActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Save_To_Fr8_Warehouse",
                 Version = "1"
             };
         }

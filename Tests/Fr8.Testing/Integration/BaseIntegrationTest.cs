@@ -67,14 +67,23 @@ namespace Fr8.Testing.Integration
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var endPoint = "";
                 var terminal = uow.TerminalRepository.GetQuery()
                     .FirstOrDefault(t => t.Version == currentTerminalVersion.ToString() && t.Name == TerminalName);
                 if (null == terminal)
                 {
-                    throw new Exception(
-                        String.Format("Terminal with name {0} and version {1} not found", TerminalName, currentTerminalVersion));
+                    endPoint = ConfigurationManager.AppSettings[TerminalName + ".TerminalEndpoint"];
+                    if (string.IsNullOrEmpty(endPoint))
+                    { 
+                        throw new Exception($"Terminal with name {TerminalName} and version {currentTerminalVersion} not found");
+                    }
                 }
-                return Utilities.NormalizeSchema(terminal.Endpoint);
+
+                else
+                {
+                    endPoint = terminal.Endpoint;
+                }
+                return Utilities.NormalizeSchema(endPoint);
             }
         }
 

@@ -23,7 +23,7 @@ using StructureMap;
 
 namespace terminalFr8Core.Activities
 {
-    public class Query_Fr8_Warehouse_v1 : BaseTerminalActivity
+    public class Query_Fr8_Warehouse_v1 : ExplicitTerminalActivity
     {
         private readonly IContainer _container;
 
@@ -188,7 +188,7 @@ namespace terminalFr8Core.Activities
 
                 foreach (var accessor in accessors)
                 {
-                    row.PayloadObject.Add(new FieldDTO(accessor.Key, string.Format(CultureInfo.InvariantCulture, "{0}", accessor.Value.GetValue(x))));
+                    row.PayloadObject.Add(new KeyValueDTO(accessor.Key, string.Format(CultureInfo.InvariantCulture, "{0}", accessor.Value.GetValue(x))));
                 }
 
                 return row;
@@ -231,14 +231,15 @@ namespace terminalFr8Core.Activities
 
         private List<ListItem> GetUpstreamCrateManifestList()
         {
-            var fields = new List<FieldDTO>()
+            return new List<ListItem>
             {
-                new FieldDTO(
-                    MT.StandardQueryCrate.ToString(),
-                    ((int)MT.StandardQueryCrate).ToString(CultureInfo.InvariantCulture)
-                )
+                new ListItem
+                {
+                    Key = MT.StandardQueryCrate.ToString(),
+                    Value = ((int)MT.StandardQueryCrate).ToString(CultureInfo.InvariantCulture)
+                }
+                
             };
-            return fields.Select(x => new ListItem() { Key = x.Key, Value = x.Value }).ToList();
         }
 
         /*private async Task FillUpstreamCrateLabelDDLSource(Crate configurationCrate)
@@ -365,17 +366,9 @@ namespace terminalFr8Core.Activities
             FillUpstreamCrateManifestTypeDDLSource(configurationCrate);
            // await FillUpstreamCrateLabelDDLSource(configurationCrate);
 
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>("Found MT Objects");
+
             Storage.Add(configurationCrate);
-            Storage.Add(Crate.FromContent("Found MT Objects", new FieldDescriptionsCM(
-                        new FieldDTO
-                        {
-                            Key = "Found MT Objects",
-                            Value = "Table",
-                            Availability = AvailabilityType.RunTime
-                        }
-                    )
-                )
-            );
         }
 
         public override Task FollowUp()

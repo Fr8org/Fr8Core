@@ -12,7 +12,7 @@ using terminalGoogle.Services;
 
 namespace terminalGoogle.Actions
 {
-    public abstract class BaseGoogleTerminalActivity<T> : EnhancedTerminalActivity<T>
+    public abstract class BaseGoogleTerminalActivity<T> : TerminalActivity<T>
         where T : StandardConfigurationControlsCM
     {
         private readonly IGoogleIntegration _googleIntegration;
@@ -39,41 +39,46 @@ namespace terminalGoogle.Actions
         /// </summary>
         /// <param name="authTokenDO"></param>
         /// <returns></returns>
-        public override bool NeedsAuthentication()
+        protected override async Task<bool> CheckAuthentication()
         {
-            if (base.NeedsAuthentication())
+            if (!await base.CheckAuthentication())
             {
-                return true;
+                return false;
             }
+
             var token = GetGoogleAuthToken();
             // Post token to google api to check its validity
             // Variable needs for more readability.
             var result = Task.Run(async () => await _googleIntegration.IsTokenInfoValid(token)).Result;
+
             if (result == false)
             {
                 // Tries to refresh token. If refresh is successful, updates current token silently
                 try
                 {
                     var newToken = _googleIntegration.RefreshToken(token);
-                    var tokenDTO = new AuthorizationTokenDTO()
+                    var tokenDTO = new AuthorizationTokenDTO
                     {
                         Id = AuthorizationToken.Id,
                         ExternalAccountId = AuthorizationToken.ExternalAccountId,
                         Token = JsonConvert.SerializeObject(newToken)
                     };
+
                     AuthorizationToken.Token = tokenDTO.Token;
-                    HubCommunicator.RenewToken(tokenDTO);
-                    return false;
+                    
+                    await HubCommunicator.RenewToken(tokenDTO);
+
+                    return true;
                 }
                 catch (Exception exception)
                 {
                     var message = "Token is invalid and refresh failed with exception: " + exception.Message;
-                    //EventManager.TokenValidationFailed(authTokenDO.Token, message);
                     Logger.LogError(message);
-                    return true;
+                    return false;
                 }
             }
-            return false;
+
+            return true;
         }
     }
 }

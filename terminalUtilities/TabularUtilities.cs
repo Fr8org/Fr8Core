@@ -24,7 +24,6 @@ namespace terminalUtilities
         /// with the extracted fields if the table contains exactly one row.</returns>
         /// <param name="isFirstRowAsColumnNames">Whether the first row in rows contains headers.</param>
         /// <param name="isRunTime">If true, StandardPayloadDataCM rather than FieldDescriptionsCM (if false).</param>
-        /// <param name="crates">The list containing crates for output.</param>
         /// <param name="headersArray">An array with table headers.</param>
         /// <param name="rows">Table rows as a list of TableRowDTO.</param>
         public static Crate PrepareFieldsForOneRowTable(bool isFirstRowAsColumnNames, bool isRunTime, List<TableRowDTO> rows, IList<string> headersArray = null)
@@ -40,14 +39,14 @@ namespace terminalUtilities
                 string headerName;
                 TableCellDTO cell;
                 var row = rows[(isFirstRowAsColumnNames ? 1 : 0)];
-                List<FieldDTO> fields = new List<FieldDTO>();
+                List<KeyValueDTO> fields = new List<KeyValueDTO>();
                 for (var i = 0; i < row.Row.Count; i++)
                 {
                     cell = row.Row[i];
                     headerName = isFirstRowAsColumnNames ? rows[0].Row[i].Cell.Value : headersArray[i];
                     if (!string.IsNullOrEmpty(cell.Cell.Value))
                     {
-                        fields.Add(new FieldDTO("Value immediately below of " + headerName, cell.Cell.Value, AvailabilityType.Always));
+                        fields.Add(new KeyValueDTO("Value immediately below of " + headerName, cell.Cell.Value));
                     }
                 }
                 if (isRunTime)
@@ -58,13 +57,10 @@ namespace terminalUtilities
                                 {
                                     new PayloadObjectDTO(fields)
                                 }
-                    }, AvailabilityType.Always);
-                }
-                else // Configuration time
-                {
-                    return Crate.FromContent(ExtractedFieldsCrateLabel, new FieldDescriptionsCM() { Fields = fields }, AvailabilityType.Always);
+                    });
                 }
             }
+
             return null;
         }
     }

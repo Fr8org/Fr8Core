@@ -15,7 +15,7 @@ using terminalFr8Core.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
-   public class Build_Query_v1 : BaseTerminalActivity
+   public class Build_Query_v1 : ExplicitTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -34,18 +34,18 @@ namespace terminalFr8Core.Activities
         /// <summary>
         /// Returns list of FieldDTO from upper crate from ConnectToSql action.
         /// </summary>
-        private async Task<List<FieldDTO>> ExtractColumnDefinitions()
+        private async Task<List<KeyValueDTO>> ExtractColumnDefinitions()
         {
-            var upstreamCrates = await  HubCommunicator.GetCratesByDirection<FieldDescriptionsCM>(ActivityId, CrateDirection.Upstream);
+            var upstreamCrates = await  HubCommunicator.GetCratesByDirection<KeyValueListCM>(ActivityId, CrateDirection.Upstream);
             var tablesDefinitionCrate = upstreamCrates?.FirstOrDefault(x => x.Label == "Sql Table Definitions");
             var tablesDefinition = tablesDefinitionCrate?.Content;
-            return tablesDefinition?.Fields;
+            return tablesDefinition?.Values;
         }
 
         /// <summary>
         /// Returns distinct list of table names from Table Definitions list.
         /// </summary>
-        private List<FieldDTO> ExtractTableNames(List<FieldDTO> tableDefinitions)
+        private List<KeyValueDTO> ExtractTableNames(List<KeyValueDTO> tableDefinitions)
         {
             var tables = new HashSet<string>();
 
@@ -72,7 +72,7 @@ namespace terminalFr8Core.Activities
             }
 
             var result = tables
-                .Select(x => new FieldDTO() { Key = x, Value = x })
+                .Select(x => new KeyValueDTO() { Key = x, Value = x })
                 .OrderBy(x => x.Key)
                 .ToList();
 
@@ -114,15 +114,15 @@ namespace terminalFr8Core.Activities
         /// </summary>
         private string ExtractSelectedObjectFromCrate()
         {
-            var fields = Storage.CratesOfType<FieldDescriptionsCM>()
+            var fields = Storage.CratesOfType<KeyValueListCM>()
                 .FirstOrDefault(x => x.Label == "Selected Object");
 
-            if (fields == null || fields.Content.Fields.Count == 0)
+            if (fields == null || fields.Content.Values.Count == 0)
             {
                 return null;
             }
 
-            return fields.Content.Fields[0].Key;
+            return fields.Content.Values[0].Key;
         }
 
         /// <summary>
@@ -132,7 +132,7 @@ namespace terminalFr8Core.Activities
         {
             UpdateDesignTimeCrateValue(
                 "Selected Object",
-                new FieldDTO() { Key = selectedObject, Value = selectedObject }
+                new KeyValueDTO { Key = selectedObject, Value = selectedObject }
             );
         }
 
@@ -205,7 +205,7 @@ namespace terminalFr8Core.Activities
             };
         }
 
-        private async Task<List<FieldDTO>> MatchColumnsForSelectedObject(string selectedObject)
+        private async Task<List<KeyValueDTO>> MatchColumnsForSelectedObject(string selectedObject)
         {
             var findObjectHelper = new FindObjectHelper();
 
@@ -272,7 +272,7 @@ namespace terminalFr8Core.Activities
         public override async Task Initialize()
         {
             var columnDefinitions = await ExtractColumnDefinitions();
-            List<FieldDTO> tablesList = null;
+            List<KeyValueDTO> tablesList = null;
             if (columnDefinitions != null)
             {
                 tablesList = ExtractTableNames(columnDefinitions);

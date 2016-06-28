@@ -13,7 +13,7 @@ using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalSlack.Actions
 {
-    public class Monitor_Channel_v1 : EnhancedTerminalActivity<Monitor_Channel_v1.ActivityUi>
+    public class Monitor_Channel_v1 : TerminalActivity<Monitor_Channel_v1.ActivityUi>
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -96,27 +96,7 @@ namespace terminalSlack.Actions
         {
             _slackIntegration = slackIntegration;
         }
-
         
-        private Crate CreateChannelPropertiesCrate()
-        {
-            var fields = new[]
-            {
-                new FieldDTO() { Key = "token", Value = "token", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel},
-                new FieldDTO() { Key = "team_id", Value = "team_id", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel},
-                new FieldDTO() { Key = "team_domain", Value = "team_domain", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
-                new FieldDTO() { Key = "service_id", Value = "service_id", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
-                new FieldDTO() { Key = "timestamp", Value = "timestamp", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
-                new FieldDTO() { Key = "channel_id", Value = "channel_id", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
-                new FieldDTO() { Key = "channel_name", Value = "channel_name", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
-                new FieldDTO() { Key = "user_id", Value = "user_id", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
-                new FieldDTO() { Key = "user_name", Value = "user_name", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
-                new FieldDTO() { Key = "text", Value = "text", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel }
-            };
-            var crate = Crate.FromContent(SlackMessagePropertiesCrateLabel, new FieldDescriptionsCM(fields), AvailabilityType.Always);
-            return crate;
-        }
-
         private Crate CreateEventSubscriptionCrate()
         {
             return CrateManager.CreateStandardEventSubscriptionsCrate(EventSubscriptionsCrateLabel, 
@@ -127,15 +107,16 @@ namespace terminalSlack.Actions
         public override Task Run()
         {
             var incomingMessageContents = ExtractIncomingMessageContentFromPayload();
-            var hasIncomingMessage = incomingMessageContents?.Fields.Count > 0;
+            var hasIncomingMessage = incomingMessageContents?.Count > 0;
+
             if (hasIncomingMessage)
             {
                 var channelMatches = ActivityUI.AllChannelsOption.Selected
                     || string.IsNullOrEmpty(ActivityUI.ChannelList.selectedKey)
-                    || ActivityUI.ChannelList.Value == incomingMessageContents["channel_id"];
+                    || ActivityUI.ChannelList.Value == incomingMessageContents.FirstOrDefault(x=>x.Key == "channel_id")?.Value;
                 if (channelMatches)
                 {
-                    Payload.Add(Crate.FromContent(ResultPayloadCrateLabel, new StandardPayloadDataCM(incomingMessageContents.Fields), AvailabilityType.RunTime));
+                    Payload.Add(Crate.FromContent(ResultPayloadCrateLabel, new StandardPayloadDataCM(incomingMessageContents)));
                 }
                 else
                 {
@@ -146,17 +127,15 @@ namespace terminalSlack.Actions
             {
                 TerminateHubExecution("Plan successfully activated. It will wait and respond to specified Slack postings");
             }
+
             return Task.FromResult(0);
         }
 
-        private FieldDescriptionsCM ExtractIncomingMessageContentFromPayload()
+        private List<KeyValueDTO> ExtractIncomingMessageContentFromPayload()
         {
             var eventReport = Payload.CrateContentsOfType<EventReportCM>().FirstOrDefault();
-            if (eventReport == null)
-            {
-                return null;
-            }
-            return new FieldDescriptionsCM(eventReport.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()));
+
+            return eventReport?.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()).ToList();
         }
 
         public override async Task Initialize()
@@ -166,9 +145,18 @@ namespace terminalSlack.Actions
                 .OrderBy(x => x.Key)
                 .Select(x => new ListItem { Key = $"#{x.Key}", Value = x.Value })
                 .ToList();
-            Storage.Add(CreateChannelPropertiesCrate());
             Storage.Add(CreateEventSubscriptionCrate());
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel);
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel)
+                 .AddField("token")
+                .AddField("team_id")
+                .AddField("team_domain")
+                .AddField("service_id")
+                .AddField("timestamp")
+                .AddField("channel_id")
+                .AddField("channel_name")
+                .AddField("user_id")
+                .AddField("user_name")
+                .AddField("text");
         }
 
         public override Task FollowUp()

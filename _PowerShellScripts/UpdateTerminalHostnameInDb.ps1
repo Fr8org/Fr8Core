@@ -18,7 +18,13 @@ param(
 
 Write-Host "Update terminal URLs to $newHostname"
 
-$commandText = "UPDATE Terminals SET [Endpoint] = '$newHostname" + ":' + RIGHT([Endpoint], 5)"
+$commandText = "UPDATE Terminals SET [Endpoint] = 
+('$newHostname' +
+		(CASE when CHARINDEX (':', REVERSE ([Endpoint])) = 0
+		    then ''
+		else 
+			RIGHT ([Endpoint], CHARINDEX (':', REVERSE ([Endpoint])))
+		END))"
 Write-Host $commandText
 
 if ([System.String]::IsNullOrEmpty($overrideDbName) -ne $true) {
@@ -32,8 +38,42 @@ $connection = new-object system.data.SqlClient.SQLConnection($connectionString)
 $command = new-object system.data.sqlclient.sqlcommand($commandText, $connection)
 $connection.Open()
 $command.CommandTimeout = 20 #20 seconds
-
 $command.ExecuteNonQuery()
+
+
+$commandText = "
+IF (EXISTS (SELECT * 
+                 FROM INFORMATION_SCHEMA.TABLES 
+                 WHERE TABLE_SCHEMA = 'dbo' 
+                 AND  TABLE_NAME = 'TerminalRegistration'))
+BEGIN
+	DELETE from TerminalRegistration where UserId is not null;
+	
+	WITH cte
+    AS (SELECT ROW_NUMBER() OVER (PARTITION BY 
+     ('$newHostname' +
+        (CASE when CHARINDEX (':', REVERSE ([Endpoint])) = 0
+            then ''
+        else 
+            RIGHT ([Endpoint], CHARINDEX (':', REVERSE ([Endpoint])))end ))
+     ORDER BY ( SELECT 0)) RN
+        FROM   TerminalRegistration)
+	delete FROM cte
+	WHERE  RN > 1
+
+    UPDATE TerminalRegistration SET [Endpoint] = 
+			('$newHostname' +
+		(CASE when CHARINDEX (':', REVERSE ([Endpoint])) = 0
+		    then ''
+		else 
+			RIGHT ([Endpoint], CHARINDEX (':', REVERSE ([Endpoint])))
+		END))
+END";
+
+$command = new-object system.data.sqlclient.sqlcommand($commandText, $connection)
+$command.CommandTimeout = 20 #20 seconds
+$command.ExecuteNonQuery()
+
 Write-Host "Successfully updated terminal hostname."
 
 $connection.Close()

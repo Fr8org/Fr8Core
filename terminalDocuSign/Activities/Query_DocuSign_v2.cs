@@ -17,7 +17,7 @@ using FolderItem = DocuSign.eSign.Model.FolderItem;
 
 namespace terminalDocuSign.Activities
 {
-    public class Query_DocuSign_v2 : EnhancedDocuSignActivity<Query_DocuSign_v2.ActivityUi>
+    public class Query_DocuSign_v2 : DocuSignActivity<Query_DocuSign_v2.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -83,7 +83,7 @@ namespace terminalDocuSign.Activities
         {
             var properties = typeof(DocuSignEnvelopeDTO).GetProperties(BindingFlags.Public | BindingFlags.Instance)
                                                         .Where(x => x.CanRead && x.CanWrite);
-            return properties.Select(x => new FieldDTO(x.Name, x.Name, AvailabilityType.Always)).ToArray();
+            return properties.Select(x => new FieldDTO(x.Name)).ToArray();
         }
 
         private const string RunTimeCrateLabel = "DocuSign Envelope Data";

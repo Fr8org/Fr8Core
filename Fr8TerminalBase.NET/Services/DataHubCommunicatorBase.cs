@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
-using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
-using StructureMap;
 
 namespace Fr8.TerminalBase.Services
 {
@@ -54,6 +52,11 @@ namespace Fr8.TerminalBase.Services
                     crate.Label = crate.Label.Substring((prefix + "_").Length);
                 }
             }
+        }
+
+        public Task<PlanEmptyDTO> LoadPlan(JToken planContents)
+        {
+            throw new NotImplementedException();
         }
 
         public Task<PayloadDTO> GetPayload(Guid containerId)
@@ -146,7 +149,7 @@ namespace Fr8.TerminalBase.Services
             var activityTemplates = crateStorage
                 .Where(x => x.Label == searchLabel)
                 .Select(x => JsonConvert.DeserializeObject<ActivityTemplateDTO>(
-                    x.Get<FieldDescriptionsCM>().Fields[0].Value
+                    x.Get<KeyValueListCM>().Values[0].Value
                     )
                 )
                 .ToList();
@@ -186,11 +189,9 @@ namespace Fr8.TerminalBase.Services
         
         public async Task<IncomingCratesDTO> GetAvailableData(Guid activityId, CrateDirection direction, AvailabilityType availability)
         {
-            var fields = await GetCratesByDirection<FieldDescriptionsCM>(activityId, direction);
             var crates = await GetCratesByDirection<CrateDescriptionCM>(activityId, direction);
             var availableData = new IncomingCratesDTO();
 
-            availableData.AvailableFields.AddRange(fields.SelectMany(x => x.Content.Fields).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
             availableData.AvailableFields.AddRange(crates.SelectMany(x => x.Content.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0).SelectMany(x => x.Fields));
             availableData.AvailableCrates.AddRange(crates.SelectMany(x => x.Content.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
 
@@ -317,7 +318,7 @@ namespace Fr8.TerminalBase.Services
             throw new NotImplementedException();
         }
 
-        public Task ScheduleEvent(string externalAccountId, string minutes)
+        public Task ScheduleEvent(string externalAccountId, string minutes, bool triggerImmediately = false, string additionalConfigAttributes = null)
         {
             throw new NotImplementedException();
         }

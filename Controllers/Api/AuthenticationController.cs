@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
@@ -179,7 +180,7 @@ namespace HubWeb.Controllers
         [Fr8HubWebHMACAuthenticate]
         public IHttpActionResult RenewToken([FromBody]AuthorizationTokenDTO token)
         {
-            _authorization.RenewToken(Guid.Parse(token.Id), token.ExternalAccountId, token.Token);
+            _authorization.RenewToken(Guid.Parse(token.Id), token.ExternalAccountId, token.Token, token.ExpiresAt);
             return Ok();
         }
 
@@ -264,6 +265,72 @@ namespace HubWeb.Controllers
             }
 
             return Ok();
+        }
+
+        /// <summary>
+        /// Enter phone number for authentication, that send a verification code to your phone device
+        /// </summary>
+        /// <param name="phoneNumberCredentials"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Fr8ApiAuthorize]
+        public async Task<IHttpActionResult> AuthenticatePhoneNumber(PhoneNumberCredentialsDTO phoneNumberCredentials)
+        {
+            Fr8AccountDO account;
+            TerminalDO terminalDO;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                terminalDO = _terminal.GetByNameAndVersion(phoneNumberCredentials.Terminal.Name, phoneNumberCredentials.Terminal.Version);
+                account = _security.GetCurrentAccount(uow);
+            }
+
+            var response = await _authorization.SendAuthenticationCodeToMobilePhone(
+                account,
+                terminalDO,
+                phoneNumberCredentials.PhoneNumber
+            );
+
+            return Ok(new
+            {
+                TerminalId = terminalDO.Id,
+                TerminalName = terminalDO.Name,
+                ClientId = response.ClientId,
+                ClientName = response.PhoneNumber,//client name is used as external account id, which is nice to be the phone number
+                PhoneNumber = response.PhoneNumber,
+                Error = response.Error, 
+                Message = response.Message
+            });
+        }
+
+        [HttpPost]
+        [Fr8ApiAuthorize]
+        public async Task<IHttpActionResult> VerifyPhoneNumberCode(PhoneNumberCredentialsDTO credentials)
+        {
+            Fr8AccountDO account;
+            TerminalDO terminalDO;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                terminalDO = _terminal.GetByNameAndVersion(credentials.Terminal.Name, credentials.Terminal.Version);
+                account = _security.GetCurrentAccount(uow);
+            }
+
+            var response = await _authorization.VerifyCodeAndGetAccessToken(
+                account,
+                terminalDO,
+                credentials.PhoneNumber,
+                credentials.VerificationCode,
+                credentials.ClientId,
+                credentials.ClientName);
+
+            return Ok(new
+            {
+                TerminalId = response.AuthorizationToken?.TerminalID,
+                TerminalName = terminalDO.Name,
+                AuthTokenId = response.AuthorizationToken?.Id.ToString(),
+                Error = response.Error
+            });
         }
     }
 }
