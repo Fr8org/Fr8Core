@@ -126,6 +126,7 @@
     <SecondarySite Include="..\terminalYammer\terminalYammer.csproj" />
 	<SecondarySite Include="..\terminalDemo\terminalDemo.csproj" />
 	<SecondarySite Include="..\terminalFacebook\terminalFacebook.csproj" />
+	<SecondarySite Include="..\terminalMailChimp\terminalMailChimp.csproj" />
     <SecondarySite Include="..\Services\PlanDirectory\PlanDirectory.csproj" />
   </ItemGroup>
   <Target Name="CleanSecondarySites">

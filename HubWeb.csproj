@@ -475,6 +475,7 @@
     <Content Include="Content\icons\web_services\facebook-icon-64x64.png" />
     <Content Include="Content\icons\web_services\fr8-demo-icon-64x64.png" />
     <Content Include="Content\icons\web_services\gmail-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\mailchimp-icon-64x64.png" />
     <Content Include="Content\icons\web_services\statX-icon-64x64.png" />
     <Content Include="Content\img\background-7.png" />
     <Content Include="Content\img\background-cta-3.jpg" />

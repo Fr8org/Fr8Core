@@ -23,6 +23,7 @@
       <Setting name="terminalDemo.TerminalEndpoint" value="" />
       <Setting name="terminalStatX.TerminalEndpoint" value="" />
       <Setting name="terminalFacebook.TerminalEndpoint" value="" />
+   	  <Setting name="terminalMailChimp.TerminalEndpoint" value="" />
    	  <Setting name="OutboundUserName" value="" />
       <Setting name="OutboundUserPassword" value="" />
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.Enabled" value="true" />

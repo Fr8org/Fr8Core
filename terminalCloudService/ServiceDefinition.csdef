@@ -192,6 +192,17 @@
           <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-terminalFacebook.fr8.co" />
         </Bindings>
       </Site>
+	  <Site name="terminalMailChimp" physicalDirectory="..\..\..\terminalMailChimp\azure.publish">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="terminalMailChimp" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalMailChimp.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="dev-terminalMailChimp.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="demo-terminalMailChimp.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="terminalMailChimp.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="dev-terminalMailChimp.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-terminalMailChimp.fr8.co" />
+        </Bindings>
+      </Site>
       <Site name="PlanDirectory" physicalDirectory="..\..\..\Services\PlanDirectory\azure.publish">
         <Bindings>
           <Binding name="Endpoint1" endpointName="PlanDirectory" />
@@ -223,8 +234,9 @@
       <Setting name="terminalTwilio.TerminalEndpoint"/>
       <Setting name="terminalYammer.TerminalEndpoint"/>
       <Setting name="terminalDemo.TerminalEndpoint"/>
-	    <Setting name="terminalStatX.TerminalEndpoint"/>
+	  <Setting name="terminalStatX.TerminalEndpoint"/>
       <Setting name="terminalFacebook.TerminalEndpoint"/>
+	  <Setting name="terminalMailChimp.TerminalEndpoint"/>
       <Setting name="OutboundUserName"/>
       <Setting name="OutboundUserPassword"/>
     </ConfigurationSettings>
@@ -249,8 +261,9 @@
       <InputEndpoint name="terminalYammer" protocol="http" port="39555" />
       <InputEndpoint name="terminalQuickBooks" protocol="http" port="48317" />
       <InputEndpoint name="terminalDemo" protocol="http" port="22555" />
-	    <InputEndpoint name="terminalStatX" protocol="http" port="48675" />
+	  <InputEndpoint name="terminalStatX" protocol="http" port="48675" />
       <InputEndpoint name="terminalFacebook" protocol="http" port="22666" />
+	  <InputEndpoint name="terminalMailChimp" protocol="http" port="12421" />
       <InputEndpoint name="PlanDirectory" protocol="http" port="64879" />
     </Endpoints>
     <Imports>
