@@ -63,7 +63,6 @@ namespace terminalFr8CoreTests.Integration
         [Test]
         public async Task ExecuteSql_Run()
         {
-
             var runUrl = GetTerminalRunUrl();
 
             var dataDTO = FixtureData.ExecuteSql_InitialConfiguration_Fr8DataDTO();
