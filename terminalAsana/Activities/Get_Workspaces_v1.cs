@@ -66,25 +66,31 @@ namespace terminalAsana.Activities
         public Get_Workspaces_v1(ICrateManager crateManager, IAsanaOAuth oAuth) : base(crateManager)
         {
             _asanaOAuth = oAuth;
+            
         }
 
-        public override Task Initialize()
+        protected override void InitializeInternalState()
         {
-            _asanaOAuth = _asanaOAuth.Initialize(this.AuthorizationToken);
-
-            return Task.FromResult(0);
+            base.InitializeInternalState();
+            _asanaOAuth = Task.Run(() => _asanaOAuth.InitializeAsync(this.AuthorizationToken, this.HubCommunicator)).Result;
         }
 
-        public override Task FollowUp()
+        public override async Task Initialize()
         {
-            _asanaOAuth = _asanaOAuth.Initialize(this.AuthorizationToken);
-
-            return Task.FromResult(0);
+            //_asanaOAuth = await _asanaOAuth.InitializeAsync(this.AuthorizationToken, this.HubCommunicator);
+            var t = "";
         }
 
-        public override Task Run()
+        public override async Task FollowUp()
         {
-            return Task.FromResult(0);
+            //_asanaOAuth = await _asanaOAuth.InitializeAsync(this.AuthorizationToken, this.HubCommunicator);
+            var t = "";
+        }
+
+        public override async Task Run()
+        {
+            //_asanaOAuth = await _asanaOAuth.InitializeAsync(this.AuthorizationToken, this.HubCommunicator);
+            //return Task.FromResult(0);
         }
         
     }

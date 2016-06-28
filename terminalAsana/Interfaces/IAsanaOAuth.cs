@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using Newtonsoft.Json.Linq;
 using terminalAsana.Asana;
@@ -16,16 +17,16 @@ namespace terminalAsana.Interfaces
 
         bool                IsTokenExpired();
         bool                IsTokenExpired(OAuthToken token);
-        OAuthToken          RefreshOAuthToken();
-        OAuthToken          RefreshOAuthToken(OAuthToken token);
-        OAuthToken          RefreshTokenIfExpired();
-        OAuthToken          RefreshTokenIfExpired(OAuthToken token);
+        Task<OAuthToken>    RefreshOAuthTokenAsync();
+        Task<OAuthToken>    RefreshOAuthTokenAsync(OAuthToken token);
+        Task<OAuthToken>    RefreshTokenIfExpiredAsync();
+        Task<OAuthToken>    RefreshTokenIfExpiredAsync(OAuthToken token);
 
         DateTime            CalculateExpirationTime(int secondsToExpiration);
         string              CreateAuthUrl(string state);
-        Task<JObject>       GetOAuthTokenData(string code);
+        Task<JObject>       GetOAuthTokenDataAsync(string code);
 
         bool                IsIntialized { get; }
-        IAsanaOAuth         Initialize(AuthorizationToken authorizationToken);
+        Task<IAsanaOAuth>   InitializeAsync(AuthorizationToken authorizationToken, IHubCommunicator hubCommunicator);
     }
 }

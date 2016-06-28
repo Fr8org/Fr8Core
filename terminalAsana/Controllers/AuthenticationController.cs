@@ -53,7 +53,7 @@ namespace terminalAsana.Controllers
                     throw new ApplicationException("Code or State is empty.");
                 }
 
-                var oauthTokenData = await _asanaOAuth.GetOAuthTokenData(code);
+                var oauthTokenData = await _asanaOAuth.GetOAuthTokenDataAsync(code);
                 var userInfo = oauthTokenData.Value<JObject>("data");
                 var secondsToExpiration = oauthTokenData.Value<int>("expires_in");
                 var expirationDate = _asanaOAuth.CalculateExpirationTime(secondsToExpiration);

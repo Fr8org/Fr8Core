@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Interfaces;
+using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using Fr8.Testing.Unit;
 using Moq;
@@ -18,22 +19,27 @@ namespace terminalAsanaTests.Unit
 {
     class AsanaOAuthServiceTests
     {
+        private IHubCommunicator _hubCommunicator;
         private IRestfulServiceClient _restClient;
         private Mock<IRestfulServiceClient> _restClientMock;
+        private Mock<IHubCommunicator> _hubCommunicatorMock;
 
         [SetUp]
         public void Startup()
         {
             _restClientMock = new Mock<IRestfulServiceClient>();
             _restClient = _restClientMock.Object;
+
+            _hubCommunicatorMock = new Mock<IHubCommunicator>();
+            _hubCommunicator = _hubCommunicatorMock.Object;
         }
 
         [Test]
-        public void Should_Initialize_Itself()
+        public async Task Should_Initialize_Itself()
         {
             var tokenData = FixtureData.SampleAuthorizationToken();
 
-            var asanaOAuth = new AsanaOAuthService(_restClient).Initialize(tokenData);
+            var asanaOAuth = await new AsanaOAuthService(_restClient).InitializeAsync(tokenData,_hubCommunicator);
 
             Assert.IsTrue(asanaOAuth.OAuthToken.ExpirationDate > DateTime.UtcNow && asanaOAuth.OAuthToken.ExpirationDate < DateTime.UtcNow.AddSeconds(3601));
             Assert.IsNotEmpty(asanaOAuth.OAuthToken.Token);
@@ -41,7 +47,7 @@ namespace terminalAsanaTests.Unit
         }
 
         [Test]
-        public void Should_Refresh_Token_If_It_Expired()
+        public async Task Should_Refresh_Token_If_It_Expired()
         {
             _restClientMock.Setup(
                 x => x.PostAsync<JObject>(  It.IsAny<Uri>(), 
@@ -54,7 +60,7 @@ namespace terminalAsanaTests.Unit
             var tokenData = FixtureData.SampleAuthorizationToken();
             tokenData.AdditionalAttributes = DateTime.Parse(tokenData.AdditionalAttributes).AddHours(-12).ToString("O");
 
-            var asanaOAuth = new AsanaOAuthService(_restClient).Initialize(tokenData);
+            var asanaOAuth = await new AsanaOAuthService(_restClient).InitializeAsync(tokenData, _hubCommunicator);
 
             _restClientMock.Verify(x => x.PostAsync(It.IsAny<Uri>(), It.IsAny<object>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()));
 

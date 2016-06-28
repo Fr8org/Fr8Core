@@ -26,7 +26,10 @@ namespace terminalAsana
         public void Configuration(IAppBuilder app, bool selfHost)
         {
             ConfigureProject(selfHost,TerminalAsanaBootstrapper.ConfigureLive);
+
             RoutesConfig.Register(_configuration);
+            
+
             ConfigureFormatters();
             app.UseWebApi(_configuration);
             if (!selfHost)

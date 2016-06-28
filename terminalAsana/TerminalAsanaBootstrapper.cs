@@ -1,4 +1,7 @@
-﻿using StructureMap;
+﻿using AutoMapper;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.TerminalBase.Models;
+using StructureMap;
 using terminalAsana.Interfaces;
 using terminalAsana.Asana;
 
@@ -29,6 +32,13 @@ namespace terminalAsana
             //configurationExpression.For<IAsanaCommunication>().Use<AsanaCommunication>().Singleton();
             configurationExpression.For<IAsanaOAuth>().Use<AsanaOAuthService>().Singleton();
             configurationExpression.For<IAsanaUsers>().Use<Users>();
+
+            TerminalAsanaBootstrapper.ConfigureAutoMappert();
+        }
+
+        public static void ConfigureAutoMappert()
+        {
+            Mapper.CreateMap<AuthorizationToken, AuthorizationTokenDTO>();
         }
     }
 }

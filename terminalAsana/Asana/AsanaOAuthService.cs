@@ -6,10 +6,12 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using AutoMapper;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.Infrastructure.Utilities.Logging;
+using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -19,7 +21,10 @@ namespace terminalAsana.Asana
 {
     public class AsanaOAuthService: IAsanaOAuth
     {
+        
         private readonly IRestfulServiceClient _restfulClient;
+        private IHubCommunicator _hubCommunicator;
+
         public OAuthToken OAuthToken { get; set; }
         public AuthorizationToken AuthorizationToken { get; private set; }
 
@@ -60,33 +65,31 @@ namespace terminalAsana.Asana
                    DateTime.UtcNow.AddMinutes(int.Parse(CloudConfigurationManager.GetSetting("MinutesBeforeTokenRenewal")));
         }
 
-        public OAuthToken RefreshTokenIfExpired()
+        public async Task<OAuthToken> RefreshTokenIfExpiredAsync()
         {
             if (!this.IsTokenExpired())
                 return this.OAuthToken;
             else
-                return RefreshOAuthToken();
+                return await RefreshOAuthTokenAsync().ConfigureAwait(false);
         }
 
-        public OAuthToken RefreshTokenIfExpired(OAuthToken token)
+        public async Task<OAuthToken> RefreshTokenIfExpiredAsync(OAuthToken token)
         {
             if (!this.IsTokenExpired(token))
                 return token;
             else
-                return RefreshOAuthToken(token);
-
+                return await RefreshOAuthTokenAsync(token).ConfigureAwait(false);       
         }
 
         /// <summary>
         /// Refreshes internal token object
         /// </summary>
-        public OAuthToken RefreshOAuthToken()
+        public async Task<OAuthToken> RefreshOAuthTokenAsync()
         {
-            var refreshedToken =  RefreshOAuthToken(this.OAuthToken);
+            var refreshedToken = await RefreshOAuthTokenAsync(this.OAuthToken).ConfigureAwait(false);
             this.OAuthToken = refreshedToken;
 
             // replace access_token field on server
-            var hubTokenRefreshUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") + CloudConfigurationManager.GetSetting("HubTokenRefreshRelativeUrl");
 
             var originalTokenData = JObject.Parse(this.AuthorizationToken.Token);
             originalTokenData["access_token"] = refreshedToken.Token;
@@ -95,18 +98,18 @@ namespace terminalAsana.Asana
             this.AuthorizationToken.Token = originalTokenData.ToString();
             try
             {
-                var hubResult = _restfulClient.PostAsync(new Uri(hubTokenRefreshUrl), this.AuthorizationToken).Result;
-                var gg = hubResult;
+                var authDTO = Mapper.Map<AuthorizationTokenDTO>(this.AuthorizationToken);
+                await _hubCommunicator.RenewToken(authDTO).ConfigureAwait(false);
             }
             catch (Exception exp)
             {
-                
-            }
-
+                var t = exp;
+            }          
+            
             return this.OAuthToken;
         }
 
-        public  OAuthToken RefreshOAuthToken(OAuthToken token)
+        public async  Task<OAuthToken> RefreshOAuthTokenAsync(OAuthToken token)
         {         
             var url = CloudConfigurationManager.GetSetting("AsanaOAuthTokenUrl");
             
@@ -121,25 +124,29 @@ namespace terminalAsana.Asana
             var content = new FormUrlEncodedContent(contentDic);
 
             //sadly it should be done synchronously or we got deadlock. In the end it didn`t work at all so i commentend it ad replace with HttpClient`s call
-            //var jsonObj = _restfulClient.PostAsync<JObject>(new Uri(url), content).Result;
+            var jsonObj = await _restfulClient.PostAsync<JObject>(new Uri(url), content).ConfigureAwait(false);
 
-            var httpClient = new HttpClient(new HttpClientHandler
-            {
-                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
-            })
-            { BaseAddress = new Uri(url) };
-            httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-            httpClient.DefaultRequestHeaders.Add("User-Agent", "oauth2-draft-v10");
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, url);
-            request.Content = content;
+            //var httpClient = new HttpClient(new HttpClientHandler
+            //{
+            //    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+            //})
+            //{ BaseAddress = new Uri(url) };
+            //httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+            //httpClient.DefaultRequestHeaders.Add("User-Agent", "oauth2-draft-v10");
+            //HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, url);
+            //request.Content = content;
 
-            var result =  httpClient.SendAsync(request).Result;
-            var response =  result.Content.ReadAsStringAsync().Result;
+            //var result =  httpClient.SendAsync(request).Result;
+            //var response =  result.Content.ReadAsStringAsync().Result;
+            //if (!result.IsSuccessStatusCode)
+            //{
+            //    throw new Exception($"Refresh token request to {url} return {result.StatusCode} with data {response}" );
+            //}
 
-            var jsonObj = JsonConvert.DeserializeObject<JObject>(response);
+            //var jsonObj = JsonConvert.DeserializeObject<JObject>(response);
 
             var refreshedToken = JsonConvert.DeserializeObject<OAuthToken>(jsonObj.ToString());
-            
+
             // calculate when it ends
             refreshedToken.ExpirationDate = this.CalculateExpirationTime(refreshedToken.ExpiresIn);
 
@@ -157,7 +164,7 @@ namespace terminalAsana.Asana
             return resultUrl;
         }
 
-        public async Task<JObject> GetOAuthTokenData(string code)
+        public async Task<JObject> GetOAuthTokenDataAsync(string code)
         {
             var url = CloudConfigurationManager.GetSetting("AsanaOAuthTokenUrl");
             var contentDic = new Dictionary<string, string>()
@@ -171,22 +178,21 @@ namespace terminalAsana.Asana
             
             var content = new FormUrlEncodedContent(contentDic);
 
-            var jsonObj = await _restfulClient.PostAsync<JObject>(new Uri(url), content);
+            var jsonObj = await _restfulClient.PostAsync<JObject>(new Uri(url), content).ConfigureAwait(false);
             return jsonObj;
-        }
-
-        
+        }        
 
         /// <summary>
         /// Returns itself initialized with values from AuthorizationToken
         /// </summary>
         /// <param name="authorizationToken"></param>
         /// <returns></returns>
-        public IAsanaOAuth Initialize(AuthorizationToken authorizationToken)
+        public async Task<IAsanaOAuth> InitializeAsync(AuthorizationToken authorizationToken, IHubCommunicator hubCommunicator)
         {
             try
             {
                 this.AuthorizationToken = authorizationToken;
+                this._hubCommunicator = hubCommunicator; 
 
                 var tokenData = JObject.Parse(authorizationToken.Token);
                 this.OAuthToken.Token = tokenData.Value<string>("access_token");
@@ -194,7 +200,7 @@ namespace terminalAsana.Asana
 
                 this.OAuthToken.ExpirationDate = DateTime.Parse(authorizationToken.AdditionalAttributes).ToUniversalTime();
 
-                this.OAuthToken = this.RefreshTokenIfExpired();
+                this.OAuthToken = await this.RefreshTokenIfExpiredAsync().ConfigureAwait(false);
 
                 this.IsIntialized = true;
             }
