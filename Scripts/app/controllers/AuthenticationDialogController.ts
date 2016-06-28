@@ -54,7 +54,9 @@
                 if (!$scope.isAllSelected()) {
                     return;
                 } else {
-                    $window['analytics'].track('Auth Dialog Ok');
+                    if ($window['analytics'] != null) {
+                        $window['analytics'].track('Auth Dialog Ok');
+                    }
                 }
 
                 var data = [];

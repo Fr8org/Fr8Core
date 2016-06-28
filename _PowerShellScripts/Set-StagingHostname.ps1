@@ -41,4 +41,4 @@ if (($update.ToLowerInvariant() -eq 'txt') -or ($update.ToLowerInvariant() -eq '
 		$commandLine +=  " -overrideDbName $overrideDbName"
 	}
 	Invoke-Expression $commandLine
-}
+} 
