@@ -42,5 +42,7 @@
 </div>
 <!-- END MAIN CONTENT -->
 <script>
-    analytics.page('Plan Dashboard');
+    if (window.analytics != null) {
+        window.analytics.page('Plan Dashboard');
+    }
 </script>
