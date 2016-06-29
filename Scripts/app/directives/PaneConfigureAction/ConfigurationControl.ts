@@ -76,7 +76,9 @@ module dockyard.directives.paneConfigureAction {
                         // If called by custom field, it is assumed that field is supplied as the argument
                         field = event;
                     }
-                    
+                    // Resettin validation errors on client side. If there is one, it will come back from follow-up configuration
+                    field.errorMessage = null;
+
                     $scope.$emit("onChange", new ChangeEventArgs(field));
                 };
 
@@ -84,12 +86,11 @@ module dockyard.directives.paneConfigureAction {
                     var field: model.ControlDefinitionDTO;
 
                     if (!!event.target === true) {
-                        // If called by DOM event (for standard fields), get field
-                        // Get field that received the event
+                        // If called by DOM event (for standard fields), get field that received the event
                         field = $scope.field;
                     }
                     else {
-                        // If called by custom field, it is assumed that field name is suppied as the argument
+                        // If called by custom field, it is assumed that field name is supplied as the argument
                         field = event;
                     }
 
