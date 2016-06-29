@@ -32,6 +32,7 @@
         * [Crate Development Guide](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/CrateDevelopmentGuide.md)    
         * [Terminal Development Guide](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/TerminalDevelopmentGuide.md)  
         * [Configuration Controls](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/ConfigurationControls.md)    
+        * [Terminal Submission Form](https://docs.google.com/forms/d/1hDWlcdoQO0nBLsBcyiywxpMldFDpXHAqXHWc3fT8C4Y/viewform)
     - [Roadmap](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Roadmap)
     - Platform SDKs
         * [.NET] (https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Terminals/DevGuide_DotNet.md)
