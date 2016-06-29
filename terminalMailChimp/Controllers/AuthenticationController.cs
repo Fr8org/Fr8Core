@@ -43,14 +43,7 @@ namespace terminalMailChimp.Controllers
                     throw new ApplicationException("Code or State is empty.");
                 }
 
-                var oauthToken = _mailChimpIntegration.GetToken(code);
-                var email = await _mailChimpIntegration.GetExternalUserId(oauthToken);
-
-                return new AuthorizationTokenDTO()
-                {
-                    Token = JsonConvert.SerializeObject(oauthToken),
-                    ExternalStateToken = state
-                };
+                return await _mailChimpIntegration.GetAuthToken(code, state);
             }
             catch (Exception ex)
             {
