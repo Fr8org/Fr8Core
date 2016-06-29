@@ -45,7 +45,7 @@ namespace terminalDocuSign.Actions
         private const double SolutionVersion = 1.0;
         private const string TerminalName = "DocuSign";
 
-        private const string SolutionBody = @"<p>This solution is designed to take data from any table-like source(initially supported: Microsoft Excel and Google Sheets) and create and send DocuSign Envelopes.A DocuSign Template is used to generate the envelopes, and Fr8 makes it easy to map data from the sources to the DocuSign Template for automatic insertion.</p>
+        private const string SolutionBody = @"<p>This solution is designed to take data from any table-like source (initially supported: Microsoft Excel and Google Sheets) and create and send DocuSign Envelopes. A DocuSign Template is used to generate the envelopes, and Fr8 makes it easy to map data from the sources to the DocuSign Template for automatic insertion.</p>
                                               <p>This Activity also highlights the use of the Loop activity, which can process any amount of table data, one row at a time.</p>
                                               <iframe src='https://player.vimeo.com/video/162762690' width='500' height='343' frameborder='0' webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>";
 
