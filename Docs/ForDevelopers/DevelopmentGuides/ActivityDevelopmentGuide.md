@@ -4,51 +4,62 @@
 
 Here's what you need to know in order to build a new Activity for an existing Terminal, or modify an existing Terminal.
 
-## General Information
-As a starting point, please read about [Activities](/Docs/ForDevelopers/Objects/Activities.md)
+## Before You Start
+Before proceeding, you really want to understand how Activities work:
+*  [Fr8 Activities](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Activities.md)
 
+You should also be familiar with the following core topics:
+
+*  [Fr8 Architecture](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/ArchitecturalModel.md)
+*  [Fr8 Events](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Events.md)
+*  [Fr8 Crates](/Docs/ForDevelopers/Objects/Crate.md)
+*  [Fr8 Containers](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Containers.md)
+
+These topics are more critical to Terminal developers, but are still nice to know about:
+*  [Fr8 Plans](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Plans.md)
+*  [Fr8 Authorization](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Services/Authorization.md)
 
 A well designed Fr8 Activity encapsulates a useful piece of computational functionality and wraps it in a friendly point-and-click interface. It looks “upstream” to dynamically discover what Crates and Fields are being signalled by upstream Activities, so that it can offer up ways for the User to tie the data together.
 
-To understand activity execution logic, please read terminal development documentations. Those documentations will help you learn about our main data structures; which are Fr8DataDTO, ActivityDTO and ActivityTemplateDTO. [Terminal Development](/Docs/TerminalDevelopment.md), [Data Structures](/Docs/DataStructures.md)
+## High Level Activity Design
+An Activity needs to respond effectively to two core requests: Configure and Run, and important auxiliary requests of Activate, Deactivate, Documentation.
+
+### Designing your Configure functionality.
+Learn the basics of [how Configuration works](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/ActivityConfiguration.md)
+
+The Configure phase happens at design-time, when a user is tinkering with the Plan Builder and crafting a Plan. During this phase, an Activity generally wants to accomplish three things:
+
+1. [Specify the configuration UI](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/ConfigurationControls.md) that the user should be presented with, so the user can provide configuration input
 
 
-### Before You Begin
+2. In certain circumstances, update that UI by using the initial user input to retrieve additional data from the backend web service. Example: a Query Salesforce Object activity initially can only request that the user specify which object they're interested in. Once the user does that, though, say by choosing "Lead", the activity can provide Lead-specific object fields as additional configuration UI
 
-The heart of an activity is its [CrateStorage](/Docs/CrateStorage.md) and its contents. Activities carry their data with their crateStorage. We’re increasingly defining and managing those contents by creating DTO-like objects called Manifest Schemas. Please read about [Manifest Schemas](https://maginot.atlassian.net/wiki/display/SH/Defined+Crate+Manifests) to better understand activity development. When packing a Crate, you should be able to instantiate a ManifestSchema, fill it with data, push that crate to storage and then just serialize it with one command.
+3. Generate and add data to the Activity JSON that will serve to signal to downstream activities what data structures will be available at runtime. (See [Signalling](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/CrateSignalling.md)) 
 
-## Activity Functions (Interface)
+Keep in mind that you should package all of the data you generate during the configuration process into [JSON crates](/Docs/ForDevelopers/Objects/Crate.md) and add those crates to the Activity JSON element. For most activities, though, there's only likely to be one crate you need to think about: your crate of UI Controls. 
 
-An activity must have 5 functions. Hub might call any of these functions during design time, run time or for documentation of an activity.
-These functions are "Configure, Run, Activate, Deactivate, Documentation"
 
-### 1. Configure
+Best Practices
 
-When user creates an activity on PlanBuilder (PB), hub calls configure function of the activity. (Please see [Hub-Terminal Communication](/Docs/HubTerminalCommunication.md)) An activity must respond this call with an ActivityDTO.
-Respond of the activity gets sent to PB. All activities are expected to have a [StandardConfigurationControlsCM](/Docs/Manifests/StandardConfigurationControlsCM.md) with a label of "Collection_Controls". This is the UI part of an activity. PB inspects this crate and renders each ControlDefinitionDTO sequentially (Read about [Activity Controls](/Docs/ActivityControls.md)). And voila our activity has a face which can be configured by the user.
+1) Make use of Followup Configuration. This has two parts. First, insert [Control Configuration Events](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/ConfigurationControlEvents.md) into your UI specifications with "requestConfig" actions, so that the client will know when to kick off a new conifgure call to you. Secondly, build followup configuration logic that leverages initial user inputs to provide them with progressively richer, more specific UI.
 
-#### 1.1. Initial and FollowUp Configuration
+2) Take advantage of the growing set of [Configuration Controls](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/ConfigurationControls.md)
+It's pretty obvious how to get benefit by calling for a checkbox or text field. But also be aware of some of the richer compound UI elements that can be invoked with a single line of JSON, such as TextSource, which enables the user to provide a specific input or map an upstream data property.
 
-Configure calls allow user to design and configure activity for run and activation time.
+3) Take advantage of SDK utility functions
+The amount of SDK support will always vary from platform to platform, but in many cases, there are helper methods for generating the appropriate JSON for a particular piece of UI, that simplify your code. For example, the .NET Fr8 tools provide POCO objects for invoking UI, and no JSON manipulation is required: http://screencast.com/t/dOjZ7ykXXV
 
-When user first creates an activity, hub calls activity configure function with an empty storage. When a configure call contains an empty storage, activity might assume that this is the initial call. Activities are expected to create the StandardConfigurationControlsCM and insert it into their storage on their initial call. An activity might need to do some additional operations too, like connecting to a remote service and loading data. (PostToSlack activity loads channel list from slack and inserts this data into a dropdown control. allowing user to select a channel)
-When a configure call contains non empty storage, activity might assume this is the followup call. this call might be triggered by a ControlDefinitionDTO change or manually by user. An activity might need to do operations on each configure call. Like checking if the user filled a required data to connect to an external service.
+4) Copy, Copy, Copy
+Look for existing Activities that carry out similar UI configuration or config data processing, and copy their code. No need to reinvent the wheel. (of course, this is much more practical if you stick to activities coded in your dev language of choice)
 
-Each configure call to activity re-renders activity UI completely. An activity might add new controls or modify existing ones on these calls.
 
-#### 1.2. Crate and Field Signalling
 
-The magic of Fr8 comes from glueing non related activities together. This magic happens with crate signalling. With crate signalling we let downstream activities know about which data we will make available during run time. Please read about [CrateSignalling](/Docs/Activity/CrateSignalling.md)
+### Designing your Run functionality.
 
-### 2. Run
+First, make sure you're familiar with the general mechanisms of [Plan Running and Activation](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/PlansActivationAndRunning.md).
 
-A run call might be triggered manually by a user or by an external service. Please see [Monitor Activities](/Docs/MonitorActivities.md) to understand external events.
+It's important to make sure that the data structures you create at run-time match the signals you published at design time. In other words, if you promise downstream activities that you're going to generate at run-time a field called Query Count, make sure you actually do so. 
 
-When a plan is run, hub calls run function in each activity in order. Children activities are run before sibling activities. An activity must get current payload by making a request to hub and they are expected to return this [PayloadDTO](/Docs/DataStructures/PayloadDTO.md) as response to a run call. After getting current container payload an activity is ready to run.
-
-During execution, activities usually read UI crate and do operations according to user configurations. For example PostToSlack activity gets user selected channel and posts information to that channel on run time.
-
-Activity configurations might require data from upstream activities. We assume all upstream activities inserted their data to payload - we can search payload for data we are looking for during runtime. Since upstream activities might have promised us for some data during runtime. If we promised some data during our configuration using signalling we must insert that data to payload. So that downstream activities that depend on that data can use it during run-time.
 
 #### 2.1. ExecuteChildrenActivity
 
