@@ -33,6 +33,7 @@ namespace terminalAsana
             //configurationExpression.For<IAsanaCommunication>().Use<AsanaCommunication>().Singleton();
             configurationExpression.For<IAsanaParameters>().Use<AsanaParametersService>().Singleton();
             configurationExpression.For<IAsanaOAuth>().Use<AsanaOAuthService>();
+            configurationExpression.For<IAsanaWorkspaces>().Use<Workspaces>();
             configurationExpression.For<IAsanaUsers>().Use<Users>();
             
 
