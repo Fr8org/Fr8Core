@@ -107,7 +107,7 @@ module dockyard.services {
                     'getbystatus': {
                         method: 'GET',
                         isArray: true,
-                        url: '/api/plans/status?status=:status&category=:category',
+                        url: '/api/plans/query?status=:status&category=:category',
                         params: {
                             status: '@status',
                             category: '@category'

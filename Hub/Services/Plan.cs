@@ -61,6 +61,10 @@ namespace Hub.Services
             planQueryDTO.PlanPerPage = planQueryDTO.PlanPerPage ?? DefaultPlanPageSize;
             planQueryDTO.PlanPerPage = planQueryDTO.PlanPerPage < MinPlanPageSize ? MinPlanPageSize : planQueryDTO.PlanPerPage;
             planQueryDTO.IsDescending = planQueryDTO.IsDescending ?? true;
+            if (planQueryDTO.OrderBy?.StartsWith("-") == true)
+            {
+                planQueryDTO.OrderBy = planQueryDTO.OrderBy.Substring(1);
+            }
 
             var planQuery = unitOfWork.PlanRepository.GetPlanQueryUncached()
                 .Where(x => x.Visibility == PlanVisibility.Standard);

@@ -180,15 +180,10 @@ namespace HubWeb.Controllers
             //i want to leave md-data-tables related logic inside controller
             //that is why this operation is done here - our backend service shouldn't know anything
             //about frontend libraries
-            if (planQuery != null && planQuery.OrderBy.StartsWith("-"))
+            if (planQuery != null)
             {
-                planQuery.IsDescending = true;
+                planQuery.IsDescending = planQuery.OrderBy?.StartsWith("-");
             }
-            else if (planQuery != null && !planQuery.OrderBy.StartsWith("-"))
-            {
-                planQuery.IsDescending = false;
-            }
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var planResult = _plan.GetForUser(
