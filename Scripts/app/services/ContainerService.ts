@@ -13,17 +13,17 @@ module dockyard.services {
     // Container Read service
 
     app.factory('ContainerService', ['$resource', ($resource: ng.resource.IResourceService): IContainerService =>
-        <IContainerService>$resource('/api/containers?id=:id', { id: '@id' },
+        <IContainerService>$resource('/api/containers/get/:id', { id: '@id' },
             {
                 'getAll': {
                     method: 'GET',
                     isArray: true,
-                    url: '/api/containers'
+                    url: '/api/containers/get'
                 },
                 'getSingle': {
                     method: 'GET',
                     isArray: false,
-                    url: '/api/containers?id=:id'
+                    url: '/api/containers/get/:id'
                 },
                 'getPayload': {
                     method: 'GET',
