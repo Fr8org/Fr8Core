@@ -106,6 +106,7 @@ namespace HubWeb
 
             ConfigureValidationEngine();
             StartupMigration.CreateSystemUser();
+            StartupMigration.MoveSalesforceRefreshTokensIntoKeyVault();
 
             RegisterTerminalActions();
         }
