@@ -68,7 +68,7 @@ Activation is a phase that takes place before a Plan is run. It is primarily use
 
 When a Deactivation call is received, an activity should  deregister from an external event system. Please see [Monitor Activities](/Docs/MonitorActivities.md). This call must return an ActivityDTO as a response.
 
-### 6. Documentation
+### Documentation
 Activities receive calls at the [/documentation endpoint](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/ActivityDevelopmentBuildingDocumentation.md) when the client is requesting on behalf of the user some chunk of help text or or other documentation.  
 
 It's a Best Practice to provide rich support for documentation requests.
