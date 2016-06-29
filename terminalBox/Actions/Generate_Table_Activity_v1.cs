@@ -9,7 +9,7 @@ using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalBox.Actions
 {
-    public class Generate_Table_Activity_v1 : EnhancedTerminalActivity<Generate_Table_Activity_v1.ActivityUi>
+    public class Generate_Table_Activity_v1 : TerminalActivity<Generate_Table_Activity_v1.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -65,7 +65,7 @@ namespace terminalBox.Actions
                 {
                     row.Row.Add(new TableCellDTO
                     {
-                        Cell = new FieldDTO("Column " + j, $"Cell [{i}, {j}]")
+                        Cell = new KeyValueDTO("Column " + j, $"Cell [{i}, {j}]")
                     });
                 }
             }

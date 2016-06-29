@@ -14,13 +14,14 @@ using Fr8.Infrastructure.Utilities.Logging;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Models;
+using Fr8.TerminalBase.Services;
 using Hub.Services.MT;
 using Newtonsoft.Json;
 using StructureMap;
 
 namespace terminalFr8Core.Activities
 {
-    public class Search_Fr8_Warehouse_v1 : BaseTerminalActivity
+    public class Search_Fr8_Warehouse_v1 : ExplicitTerminalActivity
     {
         private readonly IContainer _container;
 
@@ -129,20 +130,18 @@ namespace terminalFr8Core.Activities
         {
             if (curDocumentation.Contains("MainPage"))
             {
-                var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
+                var curSolutionPage = new DocumentationResponseDTO(SolutionName, SolutionVersion, TerminalName, SolutionBody);
                 return Task.FromResult(curSolutionPage);
             }
             return
                 Task.FromResult(
-                    GenerateErrorResponse("Unknown displayMechanism: we currently support MainPage cases"));
+                    new DocumentationResponseDTO("Unknown displayMechanism: we currently support MainPage cases"));
         }
 
         protected async Task GenerateSolutionActivities(string fr8ObjectID)
         {
-            var queryFr8WarehouseAT = await GetActivityTemplate("terminalFr8Core", "Query_Fr8_Warehouse");
-            var queryFr8WarehouseAction = await AddAndConfigureChildActivity(
-                ActivityId, queryFr8WarehouseAT
-            );
+            var queryFr8WarehouseAT = await HubCommunicator.GetActivityTemplate("terminalFr8Core", "Query_Fr8_Warehouse");
+            var queryFr8WarehouseAction = await HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, queryFr8WarehouseAT);
 
             var crateStorage = queryFr8WarehouseAction.CrateStorage;
             // We insteady of using getConfiguration control used the same GetConfiguration control required actionDO
@@ -174,7 +173,7 @@ namespace terminalFr8Core.Activities
                 upstreamCrateChooser1.Selected = true;
             }
 
-            queryFr8WarehouseAction = await ConfigureChildActivity(
+            queryFr8WarehouseAction = await HubCommunicator.ConfigureChildActivity(
                 ActivityContext.ActivityPayload,
                 queryFr8WarehouseAction
             );
@@ -267,28 +266,19 @@ namespace terminalFr8Core.Activities
             );
 
             return Crate<StandardQueryCM>.FromContent(QueryCrateLabel, queryCM);
-        }
+       }
 
-        private IEnumerable<Crate> PackDesignTimeData()
-        {
-            yield return Crate.FromContent("Fr8 Search Report", new FieldDescriptionsCM(new FieldDTO
-            {
-                Key = "Fr8 Search Report",
-                Value = "Table",
-                Availability = AvailabilityType.RunTime
-            }));
-        }
 
         // create the dropdown design time fields.
-        private List<FieldDTO> GetFr8WarehouseTypes(AuthorizationToken oAuthToken)
+        private List<KeyValueDTO> GetFr8WarehouseTypes(AuthorizationToken oAuthToken)
         {
             using (var unitWork = _container.GetInstance<IUnitOfWork>())
             {
-                var warehouseTypes = new List<FieldDTO>();
+                var warehouseTypes = new List<KeyValueDTO>();
 
                 foreach (var mtTypeReference in unitWork.MultiTenantObjectRepository.ListTypeReferences())
                 {
-                    warehouseTypes.Add(new FieldDTO
+                    warehouseTypes.Add(new KeyValueDTO
                     {
                         Key = mtTypeReference.Alias,
                         Value = mtTypeReference.Id.ToString("N")
@@ -320,7 +310,6 @@ namespace terminalFr8Core.Activities
             var designTimefieldLists = GetFr8WarehouseTypes(AuthorizationToken);
             var availableMtObjects = CrateManager.CreateDesignTimeFieldsCrate("Queryable Objects", designTimefieldLists.ToArray());
             Storage.Add(availableMtObjects);
-            Storage.AddRange(PackDesignTimeData());
             return Task.FromResult(0);
         }
 

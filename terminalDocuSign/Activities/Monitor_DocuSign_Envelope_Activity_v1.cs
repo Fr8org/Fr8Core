@@ -124,8 +124,9 @@ namespace terminalDocuSign.Actions
         {
             return activityUi.SentToRecipientOption.Selected || activityUi.BasedOnTemplateOption.Selected;
         }
-        
-        protected override async Task RunDS()
+
+
+        public override async Task Run()
         {
             DocuSignEnvelopeCM_v2 envelopeStatus = null;
             var eventCrate = Payload.CratesOfType<EventReportCM>().FirstOrDefault()?.Get<EventReportCM>()?.EventPayload;
@@ -139,7 +140,7 @@ namespace terminalDocuSign.Actions
             }
 
             //Create run-time fields
-            var eventFields = CreateDocuSignEventFields(envelopeStatus);
+            var eventFields = CreateDocuSignEventValues(envelopeStatus);
 
             //get currently selected option and its value
             string curSelectedOption, curSelectedValue, curSelectedTemplate;
@@ -201,7 +202,7 @@ namespace terminalDocuSign.Actions
                 }
             }
             
-            var allFields = new List<FieldDTO>(eventFields);
+            var allFields = new List<KeyValueDTO>(eventFields);
 
             if (curSelectedOption == "template")
             {
@@ -213,7 +214,7 @@ namespace terminalDocuSign.Actions
             Success();
         }
 
-        protected override async Task InitializeDS()
+        public override async Task Initialize()
         {
 
             var controlsCrate = PackControls(CreateActivityUi());
@@ -224,13 +225,15 @@ namespace terminalDocuSign.Actions
             Storage.Add(PackEventSubscriptionsCrate(controlsCrate.Get<StandardConfigurationControlsCM>()));
         }
 
-        protected override Task FollowUpDS()
+        public override Task FollowUp()
         {
             //just update the user selected envelope events in the follow up configuration
-            var allFields = CreateDocuSignEventFields(null, AllFieldsCrateName);
+            var allFields = CreateDocuSignEventFieldsDefinitions();
+
             UpdateSelectedEvents(Storage);
             string selectedOption, selectedValue, selectedTemplate;
             GetTemplateRecipientPickerValue(out selectedOption, out selectedValue, out selectedTemplate);
+
             if (selectedOption == "template")
             {
                 allFields.AddRange(GetTemplateUserDefinedFields(selectedValue, null));

@@ -1,0 +1,177 @@
+﻿.panel-body {
+    line-height: 1.2em;
+}
+
+html, button, input, select, textarea {
+    color: #222;
+}
+
+::-moz-selection {
+    background: #b3d4fc;
+    text-shadow: none;
+}
+
+::selection {
+    background: #F2E9DF;
+    text-shadow: none;
+}
+
+hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #ccc;
+    margin: 1em 0;
+    padding: 0;
+}
+
+audio, canvas, img, video {
+    vertical-align: middle;
+}
+
+fieldset {
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+
+textarea {
+    resize: vertical;
+}
+
+ul {
+    list-style: square;
+}
+
+ul ul {
+    list-style: circle;
+}
+
+ul li, ol li {
+    margin: 3px 0;
+}
+
+.browsehappy {
+    margin: 0.2em 0;
+    background: #ccc;
+    color: #000;
+    padding: 0.2em 0;
+}
+
+#planDirectory .container {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+.full-height-block .inner-wrap.centered {
+    position: relative;
+}
+
+/* Header Styles */
+header#site-header {
+    width: 100%;
+    position: fixed;
+    z-index: 3;
+    top: 0;
+}
+
+header#site-header:after {
+    content: "";
+    clear: both;
+}
+
+/* Background */
+.full-size-bg {
+    background-position: bottom center;
+    background-size: cover;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    z-index: 1;
+}
+
+.inner-bg {
+    background-image: url('/Content/img/plan-bg.jpg');
+    opacity: 0.65;
+}
+
+.plan-directory-background {
+    background-color: rgb(30,70,140);
+}
+
+.base-block-white {
+    background: url('/Content/img/white-bg-overlay.png');
+}
+
+/*Search Bar Container*/
+.search-bar-container {
+    text-align: center;
+    display: inline-block;
+    padding: 0 1em;
+}
+
+.search-bar-container h2 {
+    text-align: left;
+    font-weight: bold;
+    font-size: 32px;
+    color: #697882;
+    float: left;
+    width: 60%;
+    padding-left: 20px;
+}
+
+.search-bar-container form {
+    margin-top: 25px;
+    margin-bottom: 10px;
+    padding-right: 4em;
+}
+
+.search-bar-container .base-block-white {
+    padding: 2em 2em 1em 2em;
+}
+
+/*Result Container*/
+.result-container {
+    text-align: center;
+    padding: 0 1em;
+    display: inline-block;
+}
+
+.result-container .base-block-white {
+    padding: 0 2em 2em 2em;
+}
+
+.result-container .item {
+    position: relative;
+    display: inline-block;
+    width: 80%;
+    text-align: left;
+    padding: 5px;
+    border: 1px solid #eaeaea;
+    margin: 5px 0 5px 0;
+}
+
+.result-container .item .info-row {
+    margin-top: 5px;
+    margin-right: 150px;
+}
+
+.result-container .item .info-row.first {
+    margin-top: 0;
+}
+
+.result-container .item .label {
+    color: black;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+}
+
+.result-container .item .create-plan-btn {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}

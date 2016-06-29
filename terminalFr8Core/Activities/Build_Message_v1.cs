@@ -13,7 +13,7 @@ using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Activities
 {
-    public class Build_Message_v1 : EnhancedTerminalActivity<Build_Message_v1.ActivityUi>
+    public class Build_Message_v1 : TerminalActivity<Build_Message_v1.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -69,7 +69,7 @@ namespace terminalFr8Core.Activities
         private Crate PackMessageCrate(string body = null)
         {
             return Crate.FromContent(RuntimeCrateLabel,
-                                     new StandardPayloadDataCM(new FieldDTO(ActivityUI.Name.Value, body)));
+                                     new StandardPayloadDataCM(new KeyValueDTO(ActivityUI.Name.Value, body)));
         }
 
         private static readonly Regex FieldPlaceholdersRegex = new Regex(@"\[.*?\]");
@@ -114,9 +114,9 @@ namespace terminalFr8Core.Activities
             Payload.Add(PackMessageCrate(message));
         }
 
-        private List<FieldDTO> ExtractAvaialbleFieldsFromPayload()
+        private List<KeyValueDTO> ExtractAvaialbleFieldsFromPayload()
         {
-            var result = new List<FieldDTO>();
+            var result = new List<KeyValueDTO>();
 
             result.AddRange(Payload.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.AllValues()));
 

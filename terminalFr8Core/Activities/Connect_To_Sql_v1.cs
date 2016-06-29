@@ -11,7 +11,7 @@ using terminalFr8Core.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
-    public class Connect_To_Sql_v1 : BaseTerminalActivity
+    public class Connect_To_Sql_v1 : ExplicitTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -92,9 +92,9 @@ namespace terminalFr8Core.Activities
                             columnTypes.ToArray()
                         );
 
-                    var connectionStringFieldList = new List<FieldDTO>()
+                    var connectionStringFieldList = new List<KeyValueDTO>()
                     {
-                        new FieldDTO() { Key = connectionString, Value = connectionString }
+                        new KeyValueDTO() { Key = connectionString, Value = connectionString }
                     };
                     var connectionStringCrate =
                         CrateManager.CreateDesignTimeFieldsCrate(

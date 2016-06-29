@@ -277,7 +277,7 @@ namespace Fr8Data.Manifests
         private static void ClonePrimitiveProperties(object target, object source)
         {
             var members = GetMembers(target.GetType()).Where(x => CanSyncMember(x) && x.CanWrite);
-            var sourceTypeProp = GetMembers(target.GetType()).Where(x=>CanSyncMember(x) && x.CanRead).ToDictionary(x => x.Name, x => x);
+            var sourceTypeProp = GetMembers(target.GetType()).Where(x=>CanSyncMember(x) && x.CanRead && x.CanWrite).ToDictionary(x => x.Name, x => x);
 
             foreach (var member in members)
             {
