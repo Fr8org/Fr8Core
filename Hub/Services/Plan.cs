@@ -60,7 +60,7 @@ namespace Hub.Services
             planQueryDTO.Page = planQueryDTO.Page < 1 ? 1 : planQueryDTO.Page;
             planQueryDTO.PlanPerPage = planQueryDTO.PlanPerPage ?? DefaultPlanPageSize;
             planQueryDTO.PlanPerPage = planQueryDTO.PlanPerPage < MinPlanPageSize ? MinPlanPageSize : planQueryDTO.PlanPerPage;
-            planQueryDTO.IsDescending = planQueryDTO.IsDescending ?? true;
+            planQueryDTO.IsDescending = planQueryDTO.IsDescending ?? planQueryDTO.OrderBy?.StartsWith("-") ?? true;
             if (planQueryDTO.OrderBy?.StartsWith("-") == true)
             {
                 planQueryDTO.OrderBy = planQueryDTO.OrderBy.Substring(1);
