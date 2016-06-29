@@ -50,15 +50,20 @@ namespace Hub.Services
 
         public async Task<ActivityDTO> SaveOrUpdateActivity(ActivityDO submittedActivityData)
         {
+            //lets skip locking for save operations
+            return await SaveOrUpdateActivityCore(submittedActivityData);
+
+            /*
             if (submittedActivityData.Id == Guid.Empty)
             {
                 return await SaveOrUpdateActivityCore(submittedActivityData);
             }
 
+            
             using (await _configureLock.Lock(submittedActivityData.Id))
             {
                 return await SaveOrUpdateActivityCore(submittedActivityData);
-            }
+            }*/
         }
 
         [AuthorizeActivity(Permission = PermissionType.ReadObject, ParamType = typeof(Guid), TargetType = typeof(PlanNodeDO))]

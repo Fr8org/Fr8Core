@@ -5,8 +5,8 @@
 }
 <!-- start Mixpanel -->
 <script type="text/javascript">
-        window.analytics = window.analytics || [], window.analytics.methods = ["identify", "group", "track", "page", "pageview", "alias", "ready", "on", "once", "off", "trackLink", "trackForm", "trackClick", "trackSubmit"], window.analytics.factory = function (t) { return function () { var a = Array.prototype.slice.call(arguments); return a.unshift(t), window.analytics.push(a), window.analytics } }; for (var i = 0; i < window.analytics.methods.length; i++) { var key = window.analytics.methods[i]; window.analytics[key] = window.analytics.factory(key) } window.analytics.load = function (t) { if (!document.getElementById("analytics-js")) { var a = document.createElement("script"); a.type = "text/javascript", a.id = "analytics-js", a.async = !0, a.src = ("https:" === document.location.protocol ? "https://" : "http://") + "cdn.segment.io/analytics.js/v1/" + t + "/analytics.min.js"; var n = document.getElementsByTagName("script")[0]; n.parentNode.insertBefore(a, n) } }, window.analytics.SNIPPET_VERSION = "2.0.9",
-        window.analytics.load("@(new Fr8.Infrastructure.Utilities.ConfigRepository().Get("SegmentWriteKey"))");
+    window.analytics = window.analytics || [], window.analytics.methods = ["identify", "group", "track", "page", "pageview", "alias", "ready", "on", "once", "off", "trackLink", "trackForm", "trackClick", "trackSubmit"], window.analytics.factory = function (t) { return function () { var a = Array.prototype.slice.call(arguments); return a.unshift(t), window.analytics.push(a), window.analytics } }; for (var i = 0; i < window.analytics.methods.length; i++) { var key = window.analytics.methods[i]; window.analytics[key] = window.analytics.factory(key) } window.analytics.load = function (t) { if (!document.getElementById("analytics-js")) { var a = document.createElement("script"); a.type = "text/javascript", a.id = "analytics-js", a.async = !0, a.src = ("https:" === document.location.protocol ? "https://" : "http://") + "cdn.segment.io/analytics.js/v1/" + t + "/analytics.min.js"; var n = document.getElementsByTagName("script")[0]; n.parentNode.insertBefore(a, n) } }, window.analytics.SNIPPET_VERSION = "2.0.9",
+    window.analytics.load("@(Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey"))");
     // mixpanel stub and initialization
     (function (e, b) {
         if (!b.__SV) {
@@ -46,7 +46,7 @@
         mixpanel.track('boom');
     })
 
-    mixpanel.init('f991d4ab992d65e87e7f05bb44244f77');
+    mixpanel.init("@(Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("MixpanelToken"))");
 </script>
 <!-- end Mixpanel -->
 <link href="/Content/templates/metronic/assets/global/css/components.css" id="style_components" rel="stylesheet" type="text/css" />
@@ -116,8 +116,10 @@
 
 <script type="text/javascript">
     //this makes call required for Mixpanel that we used inside Segment
-    window.analytics.ready(function () {
-        var anonId = mixpanel.get_distinct_id();
-        document.getElementById("AnonimousId").value = anonId;
-    });
+    if (window.analytics !== null && mixpanel !== null) {
+        window.analytics.ready(function () {
+            var anonId = mixpanel.get_distinct_id();
+            document.getElementById("AnonimousId").value = anonId;
+        });
+    }
 </script>

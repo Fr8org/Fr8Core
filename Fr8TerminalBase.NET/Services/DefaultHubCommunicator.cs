@@ -19,6 +19,7 @@ using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Fr8.Infrastructure.Utilities.Configuration;
 
 namespace Fr8.TerminalBase.Services
 {
@@ -50,7 +51,7 @@ namespace Fr8.TerminalBase.Services
 
         #region HMAC
 
-        private async Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri)
+        public async Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri)
         {
             /*if (!IsConfigured)
                 throw new InvalidOperationException("Please call Configure() before using the class.");*/
@@ -107,6 +108,23 @@ namespace Fr8.TerminalBase.Services
             var uri = new Uri($"{GetHubUrlWithApiVersion()}/users/userdata?id={_userId}", UriKind.Absolute);
             var curUser = await _restfulServiceClient.GetAsync<UserDTO>(uri, null, await GetHMACHeader(uri));
             return curUser;
+        }
+
+        public async Task<List<AuthenticationTokenTerminalDTO>> GetTokens()
+        {
+            var uri = new Uri($"{GetHubUrlWithApiVersion()}/authentication/tokens", UriKind.Absolute);
+            var tokens = await _restfulServiceClient.GetAsync<List<AuthenticationTokenTerminalDTO>>(uri, null, await GetHMACHeader(uri));
+            return tokens;
+        }
+
+
+        public async Task<AuthorizationTokenDTO> GenerateOAuthToken(ExternalAuthenticationDTO authDTO)
+        {
+            var uri = new Uri($"{CloudConfigurationManager.GetSetting("terminalGoogle.TerminalEndpoint")}/authentication/token", UriKind.Absolute);
+            var tokens = await _restfulServiceClient.PostAsync<ExternalAuthenticationDTO>(uri, authDTO);
+
+            var terminalResponseAuthTokenDTO = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(tokens);
+            return terminalResponseAuthTokenDTO;
         }
 
         public async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(Guid activityId, CrateDirection direction)
@@ -215,7 +233,7 @@ namespace Fr8.TerminalBase.Services
 
             var token = new[] { applyToken };
 
-            var url = $"{GetHubUrlWithApiVersion()}/ManageAuthToken/apply";
+            var url = $"{GetHubUrlWithApiVersion()}/authentication/granttokens";
             var uri = new Uri(url);
             await _restfulServiceClient.PostAsync(uri, token, null, await GetHMACHeader(uri, token));
         }
