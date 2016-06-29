@@ -75,6 +75,8 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
 
         public void Alias(string anonimousId, Fr8AccountDO fr8AccountDO)
         {
+            if (Analytics.Client == null)
+                return;
             Analytics.Client.Alias(anonimousId, fr8AccountDO.Id);
             Analytics.Client.Flush();
 
@@ -101,6 +103,8 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
 
         public void Track(Fr8AccountDO fr8AccountDO, string eventName, string action, Dictionary<string, object> properties = null)
         {
+            if (Analytics.Client == null)
+                return;
             if (properties == null)
                 properties = new Dictionary<string, object>();
             properties["Activity Name"] = action;
@@ -121,7 +125,7 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
                 foreach (var prop in properties)
                     props[prop.Key] = prop.Value;
             }
-
+            Analytics.Client.Identify(fr8AccountDO.Id,GetProperties(fr8AccountDO));
             Analytics.Client.Track(fr8AccountDO.Id, eventName, props);
         }
         public void Track(IUnitOfWork uow, string userId, string eventName, Segment.Model.Properties properties)
@@ -130,7 +134,6 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
                 return;
             Fr8AccountDO fr8AccountDO;
             using (uow) { fr8AccountDO = uow.UserRepository.GetByKey(userId); }
-
             var props = new Segment.Model.Properties();
             foreach (var prop in GetProperties(fr8AccountDO))
                 props.Add(prop.Key, prop.Value);
@@ -143,11 +146,17 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
                 return;
             Analytics.Client.Track(null, eventName, properties);
         }
-        public void Track(string userId, string eventName, Segment.Model.Properties properties)
+        public void Track(string userId, string eventName, Dict properties)
         {
             if (Analytics.Client == null)
                 return;
-            Analytics.Client.Track(userId, eventName, properties);
+            var newProps = new Segment.Model.Properties();
+            foreach (var prop in properties)
+            {
+                newProps.Add(prop.Key, prop.Value);
+            }
+            Analytics.Client.Track(userId, eventName, newProps);
+            Analytics.Client.Flush();
         }
     }
 }

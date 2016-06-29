@@ -1,5 +1,5 @@
 ﻿<!-- BEGIN MAIN CONTENT -->
-<div ng-controller="PlanBuilderController" style="margin-top:1px; margin-left: -15px;" block-if="isBusy()" event-planbuilder>
+<div ng-controller="PlanBuilderController" style="margin-top:1px; margin-left: -15px;" block-if="isBusy()">
     <div ng-if="editingMode=='advanced'" class="col-md-12" style="border-bottom: 1px solid; margin-bottom: 10px;"></div>
     <div class="plan-loading-message" block-if="current.plan"></div>
     <div ng-repeat="pSubPlan in processedSubPlans | filter: hasAnyActivity">

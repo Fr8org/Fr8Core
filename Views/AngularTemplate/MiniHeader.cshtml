@@ -199,3 +199,13 @@
     </div>
     <!-- END HEADER MENU -->
 </div>
+<script type="text/javascript">
+    function resetMixpanel() {
+        if (window.analytics != null) {
+            window.analytics.user().logout();
+        }
+        if (window.mixpanel != null){
+            window.mixpanel.cookie.clear();
+        }
+    }
+</script>

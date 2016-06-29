@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
+using Segment.Model;
 
 namespace Hub.Interfaces
 {
@@ -14,6 +15,6 @@ namespace Hub.Interfaces
         void Track(Fr8AccountDO fr8AccountDO, String eventName, Dictionary<String, object> properties = null);
         void Track(IUnitOfWork uow, string userId, string eventName, Segment.Model.Properties properties);
         void Track(string eventName, Segment.Model.Properties properties);
-        void Track(string userId, string eventName, Segment.Model.Properties properties);
+        void Track(string userId, string eventName, Dict properties);
     }
 }

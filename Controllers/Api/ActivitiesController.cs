@@ -5,6 +5,7 @@ using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.States;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;

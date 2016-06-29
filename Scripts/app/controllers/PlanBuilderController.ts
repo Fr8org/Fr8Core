@@ -82,8 +82,7 @@ module dockyard.controllers {
             'AuthService',
             'ConfigureTrackerService',
             'SubPlanService',
-            '$stateParams',
-            '$window'
+            '$stateParams'
         ];
 
         private _longRunningActionsCounter: number;
