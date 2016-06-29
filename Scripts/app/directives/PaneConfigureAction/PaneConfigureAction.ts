@@ -552,7 +552,7 @@ module dockyard.directives.paneConfigureAction {
                 return;
             }
 
-            if (this.ignoreConfigurationChange) {
+            if (this.ignoreConfigurationChange || this.AuthService.isAuthenticationCanceled(this.$scope.currentAction.id) ) {
                 this.ignoreConfigurationChange = false;
                 return;
             }
