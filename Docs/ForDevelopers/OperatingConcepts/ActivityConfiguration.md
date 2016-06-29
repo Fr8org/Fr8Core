@@ -36,12 +36,14 @@ When the client receives a response to a Configuration call, it triggers configu
 
 Learn more about the [UI Control Definitions.](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/ConfigurationControls.md)
 
-### 1. Configure
+
+=======================
+this content has some overlap with the above content and should be merged into it.
+
+###  
 
 When user creates an activity on PlanBuilder (PB), hub calls configure function of the activity. (Please see [Hub-Terminal Communication](/Docs/HubTerminalCommunication.md)) An activity must respond this call with an ActivityDTO.
 Respond of the activity gets sent to PB. All activities are expected to have a [StandardConfigurationControlsCM](/Docs/Manifests/StandardConfigurationControlsCM.md) with a label of "Collection_Controls". This is the UI part of an activity. PB inspects this crate and renders each ControlDefinitionDTO sequentially (Read about [Activity Controls](/Docs/ActivityControls.md)). And voila our activity has a face which can be configured by the user.
-
-#### 1.1. Initial and FollowUp Configuration
 
 Configure calls allow user to design and configure activity for run and activation time.
 
