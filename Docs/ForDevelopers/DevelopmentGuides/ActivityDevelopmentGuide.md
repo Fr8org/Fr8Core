@@ -1,8 +1,10 @@
 # ACTIVITY DEVELOPMENT GUIDE
 [Go to Contents](/Docs/Home.md)
 
-## General Information
 
+Here's what you need to know in order to build a new Activity for an existing Terminal, or modify an existing Terminal.
+
+## General Information
 As a starting point, please read about [Activities](/Docs/ForDevelopers/Objects/Activities.md)
 
 
