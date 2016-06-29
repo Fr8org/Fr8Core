@@ -93,7 +93,7 @@
     </script>
 <script type="text/javascript">
     var segmentKey = "@(new Fr8.Infrastructure.Utilities.ConfigRepository().Get("SegmentWriteKey"))";
-    if (segmentKey != "") {
+    if (segmentKey !== "") {
         window.analytics = window.analytics || [], window.analytics.methods = ["identify", "group", "track", "page", "pageview", "alias", "ready", "on", "once", "off", "trackLink", "trackForm", "trackClick", "trackSubmit"], window.analytics.factory = function(t) {
             return function() {
                 var a = Array.prototype.slice.call(arguments);
