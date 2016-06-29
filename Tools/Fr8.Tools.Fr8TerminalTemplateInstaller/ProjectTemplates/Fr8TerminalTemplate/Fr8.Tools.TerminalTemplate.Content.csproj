@@ -53,11 +53,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Fr8Infrastructure.NET, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fr8TerminalBase.NET.1.2016.180.2-dev\lib\net40\Fr8Infrastructure.NET.dll</HintPath>
+      <HintPath>..\packages\Fr8.TerminalBase.1.0.2.11553-dev\lib\net40\Fr8Infrastructure.NET.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Fr8TerminalBase.NET, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fr8TerminalBase.NET.1.2016.180.2-dev\lib\net40\Fr8TerminalBase.NET.dll</HintPath>
+      <HintPath>..\packages\Fr8.TerminalBase.1.0.2.11553-dev\lib\net40\Fr8TerminalBase.NET.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="log4net">
