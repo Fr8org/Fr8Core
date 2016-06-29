@@ -44,6 +44,19 @@ namespace terminalAtlassian.Services
             }           
         }
 
+        public async Task<bool> CheckDomain(string domain)
+        {
+            Uri uri = new Uri(domain);
+            if(uri.AbsolutePath == "/")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public List<KeyValueDTO> GetJiraIssue(string jiraKey, AuthorizationToken authToken)
         {
             return InterceptJiraExceptions(() =>
