@@ -14,7 +14,6 @@ namespace Hub.Interfaces
         void Track(Fr8AccountDO fr8AccountDO, String eventName, String action, Dictionary<String, object> properties = null);
         void Track(Fr8AccountDO fr8AccountDO, String eventName, Dictionary<String, object> properties = null);
         void Track(IUnitOfWork uow, string userId, string eventName, Segment.Model.Properties properties);
-        void Track(string eventName, Segment.Model.Properties properties);
         void Track(string userId, string eventName, Dict properties);
     }
 }
