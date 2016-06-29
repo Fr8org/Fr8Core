@@ -200,7 +200,7 @@ namespace Data.Repositories.MultiTenant.Sql
                     }
 
                     command.CommandText = cmd;
-
+                    command.CommandTimeout = 600;
                     var result = new List<MtObject>();
 
                     using (var reader = command.ExecuteReader())
