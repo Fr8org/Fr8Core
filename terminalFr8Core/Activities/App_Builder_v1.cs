@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web.Hosting;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Control;
 using Fr8.Infrastructure.Data.Crates;
@@ -88,6 +89,8 @@ namespace terminalFr8Core.Activities
         {
             var controlContainer = GetControl<MetaControlContainer>("control_container");
             var collectionControls = controlContainer.CreateControls();
+            //we need our own crate signaller to publish fields without source activity id
+            //because when we are cloning the plan for appBuilder ids change
             var configurator = CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeFieldCrateLabelPrefix, true);
 
             foreach (var controlDefinitionDTO in collectionControls)
@@ -107,45 +110,6 @@ namespace terminalFr8Core.Activities
             }
         }
 
-        /*
-        public override async Task FollowUp()
-        {
-            if(ConfigurationControls.Controls[0].Value != null)
-            {
-                ActivityPayload.Label = ConfigurationControls.Controls[0].Value;
-            }
-
-            var controlContainer = ConfigurationControls.FindByName<MetaControlContainer>("control_container");
-            if (!controlContainer.MetaDescriptions.Any())
-            {
-                //TODO add error label
-                return;
-            }
-
-            //user might have pressed submit button on Collection UI
-            var collectionControls = GetMetaControls();
-            if (collectionControls != null)
-            {
-                var submitButton = collectionControls.FindByName<Button>("submit_button");
-                if (submitButton.Clicked)
-                {
-                    if (ActivityPayload.RootPlanNodeId == null)
-                    {
-                        throw new Exception($"Activity with id \"{ActivityId}\" has no owner plan");
-                    }
-                    
-                    var flagCrate = CrateManager.CreateDesignTimeFieldsCrate(RunFromSubmitButtonLabel,
-                        AvailabilityType.RunTime);
-                    var payload = new List<CrateDTO>() {CrateManager.ToDto(flagCrate)};
-                    //we need to start the process - run current plan - that we belong to
-                    await HubCommunicator.RunPlan(ActivityPayload.RootPlanNodeId.Value, payload, CurrentUserId);
-                    //after running the plan - let's reset button state
-                    //so next configure calls will be made with a fresh state
-                    UnClickSubmitButton();
-                }
-            }
-        }
-        */
         private bool WasActivityRunFromSubmitButton()
         {
             return Payload.CratesOfType<KeyValueListCM>(c => c.Label == RunFromSubmitButtonLabel).Any();
@@ -154,7 +118,7 @@ namespace terminalFr8Core.Activities
         private void RemoveFlagCrate()
         {
             Payload.RemoveByLabel(RunFromSubmitButtonLabel);
-            }
+        }
 
         private static string GetUriFileExtension(string uri)
         {
@@ -236,8 +200,9 @@ namespace terminalFr8Core.Activities
         private async Task ProcessCollectionControls(StandardConfigurationControlsCM collectionControls)
         {
             var fieldsPayloadCrate = Crate.FromContent(RuntimeFieldCrateLabelPrefix, new StandardPayloadDataCM(new KeyValueDTO[] { }));
-            Payload.Add(fieldsPayloadCrate);
+            fieldsPayloadCrate.SourceActivityId = ActivityId.ToString();
 
+            Payload.Add(fieldsPayloadCrate);
             foreach (var controlDefinitionDTO in collectionControls.Controls)
             {
                 ProcessCollectionControl(controlDefinitionDTO);
@@ -354,8 +319,19 @@ namespace terminalFr8Core.Activities
 
                     var flagCrate = CrateManager.CreateDesignTimeFieldsCrate(RunFromSubmitButtonLabel);
                     var payload = new List<CrateDTO>() { CrateManager.ToDto(flagCrate) };
-                    //we need to start the process - run current plan - that we belong to
+
+                    
+                    await HubCommunicator.SaveActivity(ActivityContext.ActivityPayload);
                     HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, payload);
+
+                    /*
+                    //we must save ourselves before running activity
+                    HubCommunicator.SaveActivity(ActivityContext.ActivityPayload).ConfigureAwait(false);
+                    HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, payload);
+                    */
+
+
+                    //we need to start the process - run current plan - that we belong to
                     //after running the plan - let's reset button state
                     //so next configure calls will be made with a fresh state
                     UnClickSubmitButton();
