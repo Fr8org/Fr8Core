@@ -10,8 +10,6 @@ namespace terminalAsana.Interfaces
 {
     public interface IAsanaWorkspaces
     {
-        IEnumerable<AsanaWorkspace> GetAvaliableWorkspaces();
-
         /// <summary>
         /// Currently the only field that can be modified for a workspace is its name
         /// </summary>

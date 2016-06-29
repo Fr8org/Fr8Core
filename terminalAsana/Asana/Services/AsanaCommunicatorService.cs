@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using Fr8.Infrastructure.Interfaces;
+using Newtonsoft.Json.Linq;
 using terminalAsana.Interfaces;
 
 namespace terminalAsana.Asana.Services
@@ -23,9 +24,14 @@ namespace terminalAsana.Asana.Services
             _restfulClient = client;
         }
 
-        private Task BeforeEach()
+        private async Task<Dictionary<string,string>> PrepareHeader()
         {
-            return OAuthService.RefreshTokenIfExpiredAsync();
+            var token = await OAuthService.RefreshTokenIfExpiredAsync();
+            var headers = new Dictionary<string, string>()
+            {
+                {"Authorization", $"Bearer {token.AccessToken}"},
+            };
+            return headers;
         }
         
         public Task<Stream> DownloadAsync(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)
@@ -33,9 +39,15 @@ namespace terminalAsana.Asana.Services
             throw new NotImplementedException();
         }
 
-        public Task<TResponse> GetAsync<TResponse>(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)
+        public async Task<TResponse> GetAsync<TResponse>(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)
         {
-            throw new NotImplementedException();
+            var header = await PrepareHeader();
+            var combinedHeaders = headers == null ? header : headers.Concat(header); 
+
+            var response = await _restfulClient.GetAsync<TResponse>(requestUri, CorrelationId, combinedHeaders.ToDictionary( k=>k.Key, v=>v.Value));
+
+            return response;
+            //throw new NotImplementedException();
         }
 
         public Task<string> GetAsync(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)

@@ -76,8 +76,6 @@ namespace terminalAsana.Asana.Services
                    DateTime.UtcNow.AddMinutes(int.Parse(CloudConfigurationManager.GetSetting("MinutesBeforeTokenRenewal")));
         }
 
-        
-
         public async Task<OAuthToken> RefreshTokenIfExpiredAsync()
         {
             if (this.IsTokenValid())
@@ -105,7 +103,7 @@ namespace terminalAsana.Asana.Services
             // replace access_token field on server
 
             var originalTokenData = JObject.Parse(this.AuthorizationToken.Token);
-            originalTokenData["access_token"] = refreshedToken.Token;
+            originalTokenData["access_token"] = refreshedToken.AccessToken;
 
             this.AuthorizationToken.AdditionalAttributes = refreshedToken.ExpirationDate.ToString("O");
             this.AuthorizationToken.Token = originalTokenData.ToString();
@@ -145,8 +143,6 @@ namespace terminalAsana.Asana.Services
 
             return refreshedToken;
         }
-
-       
 
         public string CreateAuthUrl(string state)
         {
@@ -188,7 +184,7 @@ namespace terminalAsana.Asana.Services
                 this.AuthorizationToken = authorizationToken;
 
                 var tokenData = JObject.Parse(authorizationToken.Token);
-                this.OAuthToken.Token = tokenData.Value<string>("access_token");
+                this.OAuthToken.AccessToken = tokenData.Value<string>("access_token");
                 this.OAuthToken.RefreshToken = tokenData.Value<string>("refresh_token");
 
                 //this.OAuthToken.ExpirationDate = authorizationToken.ExpiresAt ?? DateTime.MinValue;

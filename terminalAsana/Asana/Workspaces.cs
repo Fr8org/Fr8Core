@@ -25,7 +25,7 @@ namespace terminalAsana.Asana
             _asanaParams = asanaParams;
         }
 
-        public IEnumerable<AsanaWorkspace> GetAvaliableWorkspaces()
+        public IEnumerable<AsanaWorkspace> GetAll()
         {
             IEnumerable<AsanaWorkspace> result;
             var uri = new Uri(_asanaParams.WorkspacesUrl);
@@ -49,10 +49,6 @@ namespace terminalAsana.Asana
             throw new NotImplementedException();
         }
 
-        public IEnumerable<AsanaWorkspace> GetAll()
-        {
-            throw new NotImplementedException();
-        }
 
         public AsanaWorkspace Update(AsanaWorkspace workspace)
         {
