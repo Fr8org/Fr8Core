@@ -60,30 +60,26 @@ First, make sure you're familiar with the general mechanisms of [Plan Running an
 
 It's important to make sure that the data structures you create at run-time match the signals you published at design time. In other words, if you promise downstream activities that you're going to generate at run-time a field called Query Count, make sure you actually do so. 
 
+When you return control to the Hub, you not only pass back the modified Payload Container, but also generate an [ActivityResponse](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Activities/ActivityResponses.md). This is a very powerful mechanism, allowing an Activity to request significant changes to the Plan's overall control flow. One example: An Activity can basically instruct the Hub to suspend processing of the Plan until such a time as the Activity's Terminal generates a Resume event and posts it to the Hub. This is useful if the Activity needs to wait for something that might take a long time, like waiting for a person to respond to some sort of message. ActivityReponse is also the mechanism used to convey error information to the user, and providing good, useful error information is critical to making Plan design and operation straightforward.
 
-#### 2.1. ExecuteChildrenActivity
+### Designing your Activation and Deactivation functionality
 
-Hub might call run function with 2 different [Scopes](/Docs/RunScopes.md). Those are Run and ExecuteChildrenActivity. When hub decides to run an activity it calls run function with run scope. After executing our activity, if that activity has children hub moves to children activities. and after completing processing children, hub calls our activity's run function with ExecuteChildrenActivity scope. Which means "hey i just completed running your children. it is time if you want to do something about it"
+Activation is a phase that takes place before a Plan is run. It is primarily used for [Validation](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/ActivitiesValidation.md) and for registering for notifications with an external web service. See [Plan Activation](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/PlansActivationAndRunning.md) for more information.
 
-### 4. Activate
-
-On this call hub expects an activity to register to an external event system. Please [Monitor Activities](/Docs/MonitorActivities.md). This call must return an ActivityDTO as a response.
-
-### 5. Deactivate
-
-On this call hub expects an activity to deregister from an external event system. Please see [Monitor Activities](/Docs/MonitorActivities.md). This call must return an ActivityDTO as a response.
+When a Deactivation call is received, an activity should  deregister from an external event system. Please see [Monitor Activities](/Docs/MonitorActivities.md). This call must return an ActivityDTO as a response.
 
 ### 6. Documentation
+Activities receive calls at the [/documentation endpoint](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/ActivityDevelopmentBuildingDocumentation.md) when the client is requesting on behalf of the user some chunk of help text or or other documentation.  
 
-This call is made to activity to show documentation. Activity must return [DocumentationResponseDTO](/Docs/DataStructures/DocumentationResponseDTO.md) as a result.
+It's a Best Practice to provide rich support for documentation requests.
 
 
 [Tutorials: A Basic Twilio Terminal That Can Send an SMS Message](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Tutorials/TwilioTutorial.md)
 
 
-### Additional Topics
+## Advanced Topics
 
 
-[Solutions](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Solutions)
+[Solutions](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Solutions) are Activities that generally generate 1 or more child and sibling activities programmatically. They're designed to simplify the process of building Plans.
 
-[Building Documentation](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/ActivityDevelopmentBuildingDocumentation.md)
+
