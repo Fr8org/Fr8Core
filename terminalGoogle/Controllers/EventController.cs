@@ -31,7 +31,7 @@ namespace terminalGoogle.Controllers
         {
             string eventPayLoadContent = await Request.Content.ReadAsStringAsync();
 
-            await _eventReporter.Broadcast(await _event.Process(eventPayLoadContent));
+            await _eventReporter.Broadcast(await _event.Process(_container, eventPayLoadContent));
         }
 
         [HttpPost]
