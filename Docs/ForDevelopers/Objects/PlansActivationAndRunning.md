@@ -26,6 +26,8 @@ When the user clicks Run on a Monitor plan, the behavior is the same with the fo
 
 ##Plan Activation and Deactivation
 
+Activation is called before Run, and the separation of these two into discrete phases doesn't really make sense for plans that simply run one time and then stop. This becomes clearer for Monitor-type plans that monitor for external triggers. 
+
 In general, Activity should do all global initialization that are not dependent on particular container (such as registering with Slack to receive messages notification) during /activate and do all unitialization during /deactivate. Like plans, activities can be in several states: 'Activated' and 'Deactivated'. For each activity Hub tracks its internal activation state. Initially all activities are 'Deactivated'. During plan activation Hub examines activity state. If it is 'Deactivated' /activate is called for this activity. If /activate call is sucessfull and returns no validation errors activity chanages state to 'Activated'. When user changes Activity configuration and Activity state is 'Activated' Hub calls /deactivate first to give Activity a chance to correctly uninitialize, Activity state changes to 'Deactivated' and only then /configure is called. At the same time, Plan also becomes 'Inactive'. Use has to click 'Run' on edited plan again to make it working after edits.
 
 Hub will call /activate and /deactivate for each activity at least once. This means, that /activate and /deactivate can be called several times for a particular configuration. So activity should take care of duplicate initialization and uninitialization.
