@@ -76,7 +76,7 @@ module dockyard.directives.paneConfigureAction {
                         // If called by custom field, it is assumed that field is supplied as the argument
                         field = event;
                     }
-                    // Resettin validation errors on client side. If there is one, it will come back from follow-up configuration
+                    // Resetting validation errors on client side. If there is error, it will arise with follow-up configuration
                     field.errorMessage = null;
 
                     $scope.$emit("onChange", new ChangeEventArgs(field));
