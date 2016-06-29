@@ -98,6 +98,12 @@ namespace terminalIntegrationTests.Integration
             Assert.IsTrue(issues.Count() > 0,"Couldn't find jira issue");
             
             Assert.IsTrue(total != 0,"Couldn't find slack message");
+
+            //Deleting test issues
+            foreach (var issue in issues)
+            {
+                jira.DeleteIssue(issue);
+            }
         }
 
         private async Task SubmitForm(string url, string guid)
