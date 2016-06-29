@@ -14,6 +14,9 @@ The complexity of the configuration process depends entirely on the Activity. So
 
 Key Design Concepts  
 
+## Configuration involves the manipulation of a JSON structure called an Activity Container that contains all information about the Activity. 
+When the Activity is created, this Activity Container JSON is generated between the client and hub. When a configure call is made to a Terminal, the Activity Container is passed to the code responsible for activity configuration. Most Terminals will make modifications to the Activity Container, generally by adding or modifying JSON data elements called Crates.  The most common modification a Terminal typically makes to an Activity Container is the creation or updating of a Crate of UI Controls which will be used by the client to show the user configuration UI. Once the terminal is completed with a round of configuration, it returns the modified Activity Container back to the Hub, which saves changes before passing it on to the client.
+
 ##  Activities define their UI via a JSON mechanism  
 
 Configuration begins when a Client adds or loads an Activity into a Plan. the Client POSTs to the Hub’s /activities/configure endpoint. The Hub checks to see if the Activity [requires authorization](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Services/Authorization.md), which basically means that its Terminal is going to need to log into a web service. If authorization is required, the Hub checks to see if it is storing a relevant AuthorizationToken. If so, the token is POSTed to the appropriate Terminal’s /actions/configure endpoint along with the Action json. (If a token is not available, the Hub responds to the Client, instructing it to initiate a (usually OAuth) authorization process).  
