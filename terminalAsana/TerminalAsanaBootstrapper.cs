@@ -4,6 +4,7 @@ using Fr8.TerminalBase.Models;
 using StructureMap;
 using terminalAsana.Interfaces;
 using terminalAsana.Asana;
+using terminalAsana.Asana.Services;
 
 namespace terminalAsana
 {
@@ -30,8 +31,11 @@ namespace terminalAsana
         public static void ConfigureLive(ConfigurationExpression configurationExpression)
         {
             //configurationExpression.For<IAsanaCommunication>().Use<AsanaCommunication>().Singleton();
-            configurationExpression.For<IAsanaOAuth>().Use<AsanaOAuthService>().Singleton();
+            configurationExpression.For<IAsanaParameters>().Use<AsanaParametersService>().Singleton();
+            configurationExpression.For<IAsanaOAuth>().Use<AsanaOAuthService>();
             configurationExpression.For<IAsanaUsers>().Use<Users>();
+            
+
 
             TerminalAsanaBootstrapper.ConfigureAutoMappert();
         }

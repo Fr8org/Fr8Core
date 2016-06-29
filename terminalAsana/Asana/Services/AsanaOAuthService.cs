@@ -17,7 +17,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using terminalAsana.Interfaces;
 
-namespace terminalAsana.Asana
+namespace terminalAsana.Asana.Services
 {
     public class AsanaOAuthService: IAsanaOAuth
     {
@@ -33,9 +33,10 @@ namespace terminalAsana.Asana
         /// </summary>
         public bool IsIntialized { get; private set; } 
 
-        public AsanaOAuthService(IRestfulServiceClient client)
+        public AsanaOAuthService(IRestfulServiceClient client, IHubCommunicator hubCommunicator)
         {
             _restfulClient = client;
+            _hubCommunicator = hubCommunicator;
             OAuthToken = new OAuthToken();
             IsIntialized = false;
         }
@@ -48,6 +49,16 @@ namespace terminalAsana.Asana
         public DateTime CalculateExpirationTime(int secondsToExpiration)
         {
             return DateTime.UtcNow.AddSeconds(secondsToExpiration);
+        }
+
+        public bool IsTokenValid()
+        {
+            return !IsTokenExpired(this.OAuthToken);
+        }
+
+        public bool IsTokenValid(OAuthToken token)
+        {
+            return !IsTokenExpired(token);
         }
 
         /// <summary>
@@ -65,9 +76,11 @@ namespace terminalAsana.Asana
                    DateTime.UtcNow.AddMinutes(int.Parse(CloudConfigurationManager.GetSetting("MinutesBeforeTokenRenewal")));
         }
 
+        
+
         public async Task<OAuthToken> RefreshTokenIfExpiredAsync()
         {
-            if (!this.IsTokenExpired())
+            if (this.IsTokenValid())
                 return this.OAuthToken;
             else
                 return await RefreshOAuthTokenAsync().ConfigureAwait(false);
@@ -75,7 +88,7 @@ namespace terminalAsana.Asana
 
         public async Task<OAuthToken> RefreshTokenIfExpiredAsync(OAuthToken token)
         {
-            if (!this.IsTokenExpired(token))
+            if (this.IsTokenValid(token))
                 return token;
             else
                 return await RefreshOAuthTokenAsync(token).ConfigureAwait(false);       
@@ -123,27 +136,7 @@ namespace terminalAsana.Asana
 
             var content = new FormUrlEncodedContent(contentDic);
 
-            //sadly it should be done synchronously or we got deadlock. In the end it didn`t work at all so i commentend it ad replace with HttpClient`s call
             var jsonObj = await _restfulClient.PostAsync<JObject>(new Uri(url), content).ConfigureAwait(false);
-
-            //var httpClient = new HttpClient(new HttpClientHandler
-            //{
-            //    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
-            //})
-            //{ BaseAddress = new Uri(url) };
-            //httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-            //httpClient.DefaultRequestHeaders.Add("User-Agent", "oauth2-draft-v10");
-            //HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, url);
-            //request.Content = content;
-
-            //var result =  httpClient.SendAsync(request).Result;
-            //var response =  result.Content.ReadAsStringAsync().Result;
-            //if (!result.IsSuccessStatusCode)
-            //{
-            //    throw new Exception($"Refresh token request to {url} return {result.StatusCode} with data {response}" );
-            //}
-
-            //var jsonObj = JsonConvert.DeserializeObject<JObject>(response);
 
             var refreshedToken = JsonConvert.DeserializeObject<OAuthToken>(jsonObj.ToString());
 
@@ -157,6 +150,7 @@ namespace terminalAsana.Asana
 
         public string CreateAuthUrl(string state)
         {
+
             var redirectUri = CloudConfigurationManager.GetSetting("AsanaOriginalRedirectUrl");
             var resultUrl = CloudConfigurationManager.GetSetting("AsanaOAuthCodeUrl");
             resultUrl = resultUrl.  Replace("%STATE%", state).
@@ -187,17 +181,17 @@ namespace terminalAsana.Asana
         /// </summary>
         /// <param name="authorizationToken"></param>
         /// <returns></returns>
-        public async Task<IAsanaOAuth> InitializeAsync(AuthorizationToken authorizationToken, IHubCommunicator hubCommunicator)
+        public async Task<IAsanaOAuth> InitializeAsync(AuthorizationToken authorizationToken)
         {
             try
             {
                 this.AuthorizationToken = authorizationToken;
-                this._hubCommunicator = hubCommunicator; 
 
                 var tokenData = JObject.Parse(authorizationToken.Token);
                 this.OAuthToken.Token = tokenData.Value<string>("access_token");
                 this.OAuthToken.RefreshToken = tokenData.Value<string>("refresh_token");
 
+                //this.OAuthToken.ExpirationDate = authorizationToken.ExpiresAt ?? DateTime.MinValue;
                 this.OAuthToken.ExpirationDate = DateTime.Parse(authorizationToken.AdditionalAttributes).ToUniversalTime();
 
                 this.OAuthToken = await this.RefreshTokenIfExpiredAsync().ConfigureAwait(false);

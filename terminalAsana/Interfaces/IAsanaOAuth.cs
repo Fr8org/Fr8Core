@@ -17,6 +17,9 @@ namespace terminalAsana.Interfaces
 
         bool                IsTokenExpired();
         bool                IsTokenExpired(OAuthToken token);
+        bool                IsTokenValid();
+        bool                IsTokenValid(OAuthToken token);
+
         Task<OAuthToken>    RefreshOAuthTokenAsync();
         Task<OAuthToken>    RefreshOAuthTokenAsync(OAuthToken token);
         Task<OAuthToken>    RefreshTokenIfExpiredAsync();
@@ -27,6 +30,6 @@ namespace terminalAsana.Interfaces
         Task<JObject>       GetOAuthTokenDataAsync(string code);
 
         bool                IsIntialized { get; }
-        Task<IAsanaOAuth>   InitializeAsync(AuthorizationToken authorizationToken, IHubCommunicator hubCommunicator);
+        Task<IAsanaOAuth>   InitializeAsync(AuthorizationToken authorizationToken);
     }
 }

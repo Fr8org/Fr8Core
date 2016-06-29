@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.TerminalBase.Interfaces;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using terminalAsana.Asana.Entities;
 using terminalAsana.Interfaces;
 
@@ -9,9 +14,26 @@ namespace terminalAsana.Asana
 {
     public class Workspaces : IAsanaWorkspaces
     {
+        private IAsanaOAuthCommunicator _restClient;
+        private IAsanaParameters _asanaParams;
+        private IOAuthApiIntegration _intergration;
+
+
+        public Workspaces(IAsanaOAuthCommunicator client, IAsanaParameters asanaParams)
+        {
+            _restClient = client;
+            _asanaParams = asanaParams;
+        }
+
         public IEnumerable<AsanaWorkspace> GetAvaliableWorkspaces()
         {
-            var result = new List<AsanaWorkspace>();
+            IEnumerable<AsanaWorkspace> result;
+            var uri = new Uri(_asanaParams.WorkspacesUrl);
+
+            //_intergration.ApiCall()
+
+            var response = Task.Run(()=> _restClient.GetAsync<JObject>(uri)).Result;
+            result = JsonConvert.DeserializeObject<IEnumerable<AsanaWorkspace>>(response.ToString());
 
 
             return result;

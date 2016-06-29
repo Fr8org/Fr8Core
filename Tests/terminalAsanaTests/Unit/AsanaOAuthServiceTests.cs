@@ -13,6 +13,7 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using terminalAsana;
 using terminalAsana.Asana;
+using terminalAsana.Asana.Services;
 using terminalAsanaTests.Fixtures;
 
 namespace terminalAsanaTests.Unit
@@ -39,7 +40,7 @@ namespace terminalAsanaTests.Unit
         {
             var tokenData = FixtureData.SampleAuthorizationToken();
 
-            var asanaOAuth = await new AsanaOAuthService(_restClient).InitializeAsync(tokenData,_hubCommunicator);
+            var asanaOAuth = await new AsanaOAuthService(_restClient, _hubCommunicator).InitializeAsync(tokenData);
 
             Assert.IsTrue(asanaOAuth.OAuthToken.ExpirationDate > DateTime.UtcNow && asanaOAuth.OAuthToken.ExpirationDate < DateTime.UtcNow.AddSeconds(3601));
             Assert.IsNotEmpty(asanaOAuth.OAuthToken.Token);
@@ -60,7 +61,7 @@ namespace terminalAsanaTests.Unit
             var tokenData = FixtureData.SampleAuthorizationToken();
             tokenData.AdditionalAttributes = DateTime.Parse(tokenData.AdditionalAttributes).AddHours(-12).ToString("O");
 
-            var asanaOAuth = await new AsanaOAuthService(_restClient).InitializeAsync(tokenData, _hubCommunicator);
+            var asanaOAuth = await new AsanaOAuthService(_restClient, _hubCommunicator).InitializeAsync(tokenData);
 
             _restClientMock.Verify(x => x.PostAsync(It.IsAny<Uri>(), It.IsAny<object>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()));
 
