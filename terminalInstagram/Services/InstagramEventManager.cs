@@ -16,6 +16,7 @@ using StructureMap;
 using Newtonsoft.Json;
 using InstaSharp.Models;
 using terminalInstagram.Models;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace terminalInstagram.Services
 {
@@ -43,12 +44,12 @@ namespace terminalInstagram.Services
             parameters.Add(new KeyValuePair<string, string>("object", "user")); 
             parameters.Add(new KeyValuePair<string, string>("aspect", "media"));
             parameters.Add(new KeyValuePair<string, string>("verify_token","123")); 
-            parameters.Add(new KeyValuePair<string, string>("callback_url", "https://394991e6.ngrok.io/terminals/terminalinstagram/subscribe"));
+            parameters.Add(new KeyValuePair<string, string>("callback_url", "https://c8f6590d.ngrok.io/terminals/terminalinstagram/subscribe"));
             var formContent = new FormUrlEncodedContent(parameters);
 
             var url = new Uri("https://api.instagram.com/v1/subscriptions");
-            var x = await _client.PostAsync<JObject>(url, formContent);
-            var y = 1;
+            var subscription = await _client.PostAsync<JObject>(url, formContent);
+            var x = 0;
         }
 
         public void Unsubscribe(Guid planId)
@@ -61,33 +62,32 @@ namespace terminalInstagram.Services
         }
         public async Task<List<Crate>> ProcessUserEvents(IContainer container, string curExternalEventPayload)
         {
-            var media = JsonConvert.DeserializeObject<InstagramMedia>(curExternalEventPayload);
+            var media = JsonConvert.DeserializeObject<InstagramMedia>(curExternalEventPayload.Substring(1, curExternalEventPayload.Length - 2));
             if (media.Object != "user")
             {
                 throw new Exception("Unknown event source");
             }
             var eventList = new List<Crate>();
-            foreach (var entry in media.MediaData)
+
+            var instagramEventCM = new InstagramUserEventCM
             {
-                var fbEventCM = new FacebookUserEventCM
-                {
-                    Id = entry.Id,
-                    ChangedFields = entry.ChangedFields,
-                    Time = entry.Time,
-                    UserId = entry.Uid
-                };
-                var eventReportContent = new EventReportCM
-                {
-                    EventNames = string.Join(",", fbEventCM.ChangedFields),
-                    ContainerDoId = "",
-                    EventPayload = new CrateStorage(Crate.FromContent("Facebook user event", fbEventCM)),
-                    Manufacturer = "Facebook",
-                    ExternalAccountId = fbEventCM.UserId
-                };
-                ////prepare the event report
-                var curEventReport = Crate.FromContent("Facebook user event", eventReportContent);
-                eventList.Add(curEventReport);
-            }
+                MediaId = media.MediaData.MediaId,
+                UserId = media.ObjectId,
+                Time = media.Time,
+                SubscriptionId = media.SubscriptionId,
+                ChangedAspect = media.ChangedAspect
+            };
+            var eventReportContent = new EventReportCM
+            {
+                EventNames = string.Join(",", instagramEventCM.ChangedAspect),
+                ContainerDoId = "",
+                ExternalAccountId = instagramEventCM.UserId,
+                EventPayload = new CrateStorage(Crate.FromContent("Instagram user event", instagramEventCM)),
+                Manufacturer = "Instagram"
+            };
+            ////prepare the event report
+            var curEventReport = Crate.FromContent("Instagram user event", eventReportContent);
+            eventList.Add(curEventReport);
             return eventList;
         }
     }

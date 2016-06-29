@@ -9,6 +9,7 @@ using Fr8.TerminalBase.BaseClasses;
 using System;
 using terminalInstagram.Interfaces;
 using Fr8.Infrastructure.Data.Crates;
+using System.Linq;
 
 namespace terminalInstagram.Actions
 {
@@ -30,7 +31,14 @@ namespace terminalInstagram.Actions
         private readonly IInstagramIntegration _instagramIntegration;
         private readonly IInstagramEventManager _instagramEventManager;
         public const string ResultPayloadCrateLabel = "Instagram Media";
-        public const string EventSubscriptionsCrateLabel = "Standard Event Subscriptions";
+        private const string RuntimeCrateLabel = "Monitor Instagram Runtime Fields";
+        public const string EventSubscriptionsCrateLabel = "Instagram user event";
+        private const string InstagramMediaId = "Media Id";
+        private const string InstagramCaptionId = "Caption Id";
+        private const string InstagramCaptionText = "Caption Text";
+        private const string InstagramCaptionCreatedTimeField = "Caption Time";
+        private const string InstagramImageUrl = "Image Url";
+        private const string InstagramImageUrlStandardResolution = "Image Url Standard Resolution";
 
         public override Task FollowUp()
         {
@@ -48,30 +56,59 @@ namespace terminalInstagram.Actions
         {
             var oAuthToken = AuthorizationToken.Token;
             Storage.Add(CreateEventSubscriptionCrate());
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel)
-                               .AddFields(GetMediaProperties());
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeCrateLabel)
+                                            .AddField(InstagramMediaId)
+                                            .AddField(InstagramCaptionId)
+                                            .AddField(InstagramCaptionText)
+                                            .AddField(InstagramCaptionCreatedTimeField)
+                                            .AddField(InstagramImageUrl)
+                                            .AddField(InstagramImageUrlStandardResolution);
         }
-        private IEnumerable<FieldDTO> GetMediaProperties()
-        {
-            yield return new FieldDTO { Key = "id", Value = "id", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Key = "type", Value = "type", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Key = "object", Value = "object", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Key = "aspect", Value = "aspect", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Key = "callback_url", Value = "callback_url", Availability = AvailabilityType.Always };
-        }
+        
 
         private Crate CreateEventSubscriptionCrate()
         {
-            return CrateManager.CreateStandardEventSubscriptionsCrate(EventSubscriptionsCrateLabel, "Instagram", "Instagram Subscribe Media");
+            return CrateManager.CreateStandardEventSubscriptionsCrate(EventSubscriptionsCrateLabel, "Instagram", "media");
         }
         public override async Task Activate()
         {
             await _instagramEventManager.Subscribe(AuthorizationToken, ActivityPayload.RootPlanNodeId.Value).ConfigureAwait(false);
         }
 
-        public override Task Run()
+        public override async Task Run()
         {
-            throw new NotImplementedException();
+            var eventCrate = Payload.CrateContentsOfType<EventReportCM>(x => x.Label == "Instagram user event").FirstOrDefault();
+            if (eventCrate == null)
+            {
+                TerminateHubExecution("Instagram event payload was not found");
+                return;
+            }
+
+            var instagramEventPayload = eventCrate.EventPayload.CrateContentsOfType<InstagramUserEventCM>()
+                    .FirstOrDefault();
+
+            if (instagramEventPayload == null)
+            {
+                TerminateHubExecution("Instagram event payload was not found");
+                return;
+            }
+            var instagramPost = await _instagramIntegration.GetPostById(instagramEventPayload.MediaId, AuthorizationToken.Token);
+            if (instagramPost == null)
+            {
+                //this probably was a deletion operation
+                //let's stop for now
+                TerminateHubExecution("Deletions are not handled by monitor feed posts");
+                return;
+            }
+
+            Payload.Add(Crate<StandardPayloadDataCM>.FromContent(RuntimeCrateLabel, new StandardPayloadDataCM(
+                                                                          new KeyValueDTO(InstagramMediaId, instagramPost.data.id),
+                                                                          new KeyValueDTO(InstagramCaptionId, instagramPost.data.caption.id),
+                                                                          new KeyValueDTO(InstagramCaptionText, instagramPost.data.caption.text),
+                                                                          new KeyValueDTO(InstagramCaptionCreatedTimeField, instagramPost.data.caption.createdTime),
+                                                                          new KeyValueDTO(InstagramImageUrl, instagramPost.data.link),
+                                                                          new KeyValueDTO(InstagramImageUrlStandardResolution, instagramPost.data.instagramImage.standardResolution.url)
+                                                                          )));
         }
 
         public class ActivityUi : StandardConfigurationControlsCM

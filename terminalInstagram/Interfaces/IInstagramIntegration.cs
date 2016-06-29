@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Newtonsoft.Json;
+using terminalInstagram.Models;
 
 namespace terminalInstagram.Interfaces
 {
@@ -10,14 +11,17 @@ namespace terminalInstagram.Interfaces
         string CreateAuthUrl(string externalStateToken);
         Task<string> GetOAuthToken(string code);
         Task<UserData> GetUserInfo(string oauthToken);
+        Task<InstagramPost> GetPostById(string oauthToken, string mediaId);
     }
 
     public class UserInfo
     {
         [JsonProperty("username")]
-        public string UserId { get; set; }
-        [JsonProperty("full_name")]
         public string UserName { get; set; }
+        [JsonProperty("full_name")]
+        public string UserFullName { get; set; }
+        [JsonProperty("id")]
+        public string UserId { get; set; }
     }
 
     public class UserData

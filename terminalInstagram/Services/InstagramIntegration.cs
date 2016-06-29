@@ -9,6 +9,7 @@ using Fr8.TerminalBase.Errors;
 using Newtonsoft.Json.Linq;
 using terminalInstagram.Interfaces;
 using System.Collections.Specialized;
+using terminalInstagram.Models;
 
 namespace terminalInstagram.Services
 {
@@ -58,6 +59,20 @@ namespace terminalInstagram.Services
         {
             var response = await _client.GetAsync<JObject>(new Uri("https://api.instagram.com/v1/users/self/?access_token=" + oauthToken));
             return response.ToObject<UserData>();
+        }
+
+        public async Task<InstagramPost> GetPostById(string mediaId, string oauthToken)
+        {
+            try
+            {
+                var response = await _client.GetAsync<JObject>(new Uri("https://api.instagram.com/v1/media/" + mediaId + "?access_token=" + oauthToken));
+                return response.ToObject<InstagramPost>();
+            }
+            catch(Exception e)
+            {
+                var x = 0;
+            }
+            return null;
         }
     }
 }

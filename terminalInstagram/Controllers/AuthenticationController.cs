@@ -61,7 +61,7 @@ namespace terminalInstagram.Controllers
                 {
                     Token = oauthToken,
                     ExternalAccountId = userInfo.User.UserId,
-                    ExternalAccountName = userInfo.User.UserName,
+                    ExternalAccountName = userInfo.User.UserFullName,
                     ExternalStateToken = state
                 };
             }

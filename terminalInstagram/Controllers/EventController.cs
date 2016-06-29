@@ -9,6 +9,7 @@ using System.Net;
 using StructureMap;
 using terminalInstagram.Services;
 using terminalInstagram.Interfaces;
+using System;
 
 namespace terminalInstagram.Controllers
 {
@@ -19,9 +20,11 @@ namespace terminalInstagram.Controllers
         private readonly IInstagramEventManager _event;
         private readonly IContainer _container;
 
-        public EventController(IHubEventReporter eventReporter)
+        public EventController(IHubEventReporter eventReporter, IContainer container, IInstagramEventManager instagramEvent)
         {
             _eventReporter = eventReporter;
+            _event = instagramEvent;
+            _container = container;
         }
 
         [HttpGet]
@@ -41,6 +44,16 @@ namespace terminalInstagram.Controllers
             var hash = Request.Headers.GetValues("x-hub-signature").FirstOrDefault();
             string eventPayLoadContent = await Request.Content.ReadAsStringAsync();
             var eventList = await _event.ProcessUserEvents(_container, eventPayLoadContent);
+            foreach (var instagramEvent in eventList)
+            {
+                try
+                {
+                    await _eventReporter.Broadcast(instagramEvent);
+                } catch(Exception ex)
+                {
+                    var x = 1;
+                }
+            }
             return Ok();
         }
     }
