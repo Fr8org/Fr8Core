@@ -16,6 +16,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using StructureMap;
+using Newtonsoft.Json;
 
 namespace Data.Migrations
 {
