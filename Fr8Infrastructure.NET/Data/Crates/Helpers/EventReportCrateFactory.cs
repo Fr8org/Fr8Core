@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.Manifests;
 
 namespace Fr8.Infrastructure.Data.Crates.Helpers
 {
-    public class EventReportCrateFactory
+    public static class EventReportCrateFactory
     {
-        public Crate Create(String eventName, String palletId, params Crate[] crates)
+        public static Crate Create(String eventName, String palletId, params Crate[] crates)
         {
             return Create(eventName, palletId, (IEnumerable<Crate>) crates);
         }
 
-        public Crate Create(String eventName, String palletId, IEnumerable<Crate> crates)
+        public static Crate Create(String eventName, String palletId, IEnumerable<Crate> crates)
         {
             var eventDTO = new EventReportCM
             {
@@ -25,7 +24,7 @@ namespace Fr8.Infrastructure.Data.Crates.Helpers
             return Crate.FromContent("Fr8 Terminal Fact or Incident Report", eventDTO);
         }
 
-        public Crate Create(EventReportCM eventCm)
+        public static Crate Create(EventReportCM eventCm)
         {
             return Crate.FromContent("Fr8 Terminal Fact or Incident Report", eventCm);
         }

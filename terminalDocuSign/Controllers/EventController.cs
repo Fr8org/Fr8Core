@@ -3,25 +3,29 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
-using StructureMap;
 using System.Net;
-using Fr8.TerminalBase.Infrastructure;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Services;
+using StructureMap;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace terminalDocuSign.Controllers
 {
     [RoutePrefix("terminals/terminalDocuSign")]
     public class EventController : ApiController
     {
-        private IEvent _event;
-        private BaseTerminalEvent _baseTerminalEvent;
-        private DocuSignPolling _polling;
+        private readonly IEvent _event;
+        private readonly IHubEventReporter _reporter;
+        private readonly DocuSignPolling _polling;
+        private readonly IContainer _container;
 
-        public EventController()
+        public EventController(IEvent @event, IHubEventReporter reporter, DocuSignPolling polling, IContainer container)
         {
-            _event = new Event();
-            _baseTerminalEvent = new BaseTerminalEvent();
-            _polling = ObjectFactory.GetInstance<DocuSignPolling>();
+            _event = @event;
+            _reporter = reporter;
+            _polling = polling;
+            _container = container;
         }
 
         [HttpPost]
@@ -30,23 +34,22 @@ namespace terminalDocuSign.Controllers
         {
             string eventPayLoadContent = await Request.Content.ReadAsStringAsync();
             Debug.WriteLine($"Processing event request {eventPayLoadContent}");
-            await _baseTerminalEvent.Process(eventPayLoadContent, _event.Process);
+
+            await _reporter.Broadcast(await _event.Process(_container, eventPayLoadContent));
+
             return Ok("Processed DocuSign event notification successfully.");
         }
 
         [HttpPost]
         [Route("polling_notifications")]
-        public async Task<IHttpActionResult> ProcessPollingRequest(string job_id, string fr8_account_id, string polling_interval)
+        public async Task<PollingDataDTO> ProcessPollingRequest(PollingDataDTO pollingData)
         {
-            var hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
+            var hubCommunicator = _container.GetInstance<IHubCommunicator>();
 
-            hubCommunicator.Configure("terminalDocuSign", fr8_account_id);
+            hubCommunicator.Authorize(pollingData.Fr8AccountId);
 
-            var result = await _polling.Poll(hubCommunicator, job_id, polling_interval);
-            if (result)
-                return Ok();
-            else
-                return Content(HttpStatusCode.Gone, "Polling failed, deschedule it");
+            pollingData = await _polling.Poll(hubCommunicator, pollingData);
+            return pollingData;
         }
     }
 }

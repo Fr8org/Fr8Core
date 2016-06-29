@@ -6,17 +6,20 @@ using System.Linq;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
-using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 
 namespace terminalSalesforce.Services
 {
     public class Event : IEvent
     {
-       
-        private readonly BaseTerminalController _baseTerminalController = new BaseTerminalController();
-      
+        private readonly IHubEventReporter _eventReporter;
 
-        public Task<Crate> ProcessEvent(string curExternalEventPayload)
+        public Event(IHubEventReporter eventReporter)
+        {
+            _eventReporter = eventReporter;
+        }
+
+        public async Task<Crate> ProcessEvent(string curExternalEventPayload)
         {
             try
             {
@@ -39,11 +42,11 @@ namespace terminalSalesforce.Services
                     Manufacturer = "Salesforce",
                 };
 
-                return Task.FromResult((Crate)Crate.FromContent("Standard Event Report", eventReportContent));
+                return Crate.FromContent("Standard Event Report", eventReportContent);
             }
             catch (Exception e)
             {
-                _baseTerminalController.ReportTerminalError("terminalSalesforce", e);
+                await _eventReporter.ReportTerminalError(e);
                 throw new Exception($"Error while processing. \r\n{curExternalEventPayload}");
             }
         }
@@ -76,15 +79,15 @@ namespace terminalSalesforce.Services
             return stroage;
         }
 
-        private List<FieldDTO> CreateKeyValuePairList(Notification curNotification)
+        private List<KeyValueDTO> CreateKeyValuePairList(Notification curNotification)
         {
-            var returnList = new List<FieldDTO>();
+            var returnList = new List<KeyValueDTO>();
 
-            returnList.Add(new FieldDTO("ObjectType", curNotification.SObject.Type.Substring(curNotification.SObject.Type.LastIndexOf(':') + 1)));
-            returnList.Add(new FieldDTO("ObjectId", curNotification.SObject.Id));
-            returnList.Add(new FieldDTO("CreatedDate", curNotification.SObject.CreatedDate.ToString()));
-            returnList.Add(new FieldDTO("LastModifiedDate", curNotification.SObject.LastModifiedDate.ToString()));
-            returnList.Add(new FieldDTO("OccuredEvent", ExtractOccuredEvent(curNotification)));
+            returnList.Add(new KeyValueDTO("ObjectType", curNotification.SObject.Type.Substring(curNotification.SObject.Type.LastIndexOf(':') + 1)));
+            returnList.Add(new KeyValueDTO("ObjectId", curNotification.SObject.Id));
+            returnList.Add(new KeyValueDTO("CreatedDate", curNotification.SObject.CreatedDate.ToString()));
+            returnList.Add(new KeyValueDTO("LastModifiedDate", curNotification.SObject.LastModifiedDate.ToString()));
+            returnList.Add(new KeyValueDTO("OccuredEvent", ExtractOccuredEvent(curNotification)));
 
 
             return returnList;

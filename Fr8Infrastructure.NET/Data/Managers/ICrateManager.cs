@@ -28,11 +28,8 @@ namespace Fr8.Infrastructure.Data.Managers
         string CrateStorageAsStr(ICrateStorage storage);
         string CrateStorageAsStr(CrateStorageDTO storageDTO);
         Crate CreateAuthenticationCrate(string label, AuthenticationMode mode, bool revocation);
-        Crate<ManifestDescriptionCM> CreateManifestDescriptionCrate(string label, string name, string id, AvailabilityType availability);
-        Crate<FieldDescriptionsCM> CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields);
-        Crate<FieldDescriptionsCM> CreateDesignTimeFieldsCrate(string label, List<FieldDTO> fields);
-        Crate<FieldDescriptionsCM> CreateDesignTimeFieldsCrate(string label, List<FieldDTO> fields, AvailabilityType availability);
-        Crate<FieldDescriptionsCM> CreateDesignTimeFieldsCrate(string label, AvailabilityType availability, params FieldDTO[] fields);
+        Crate<KeyValueListCM> CreateDesignTimeFieldsCrate(string label, params KeyValueDTO[] fields);
+        Crate<KeyValueListCM> CreateDesignTimeFieldsCrate(string label, List<KeyValueDTO> fields);
         Crate<StandardConfigurationControlsCM> CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls);
         Crate CreateStandardEventReportCrate(string label, EventReportCM eventReport);
         Crate CreateStandardEventSubscriptionsCrate(string label, string manufacturer, params string[] subscriptions);
@@ -41,11 +38,9 @@ namespace Fr8.Infrastructure.Data.Managers
         Crate CreateOperationalStatusCrate(string label, OperationalStateCM eventReport);
         StandardPayloadDataCM TransformStandardTableDataToStandardPayloadData(string curObjectType, StandardTableDataCM tableDataMS);
         string GetFieldByKey<T>(CrateStorageDTO curCrateStorage, string findKey) where T : Manifest;
-        //void AddLogMessage(string label, List<LogItemDTO> logItemList, ICrateStorage payload);
         T GetByManifest<T>(PayloadDTO payloadDTO) where T : Manifest;
-        IEnumerable<FieldDTO> GetFields(IEnumerable<Crate> crates);
+        IEnumerable<KeyValueDTO> GetFields(IEnumerable<Crate> crates);
         IEnumerable<string> GetLabelsByManifestType(IEnumerable<Crate> crates, string manifestType);
-        FieldDescriptionsCM MergeContentFields(List<Crate<FieldDescriptionsCM>> curCrates);
         T GetContentType<T>(string crate) where T : class;
     }
 }

@@ -29,7 +29,6 @@ namespace terminalTwilio.Tests.Fixtures
             };
             var activityContext = new ActivityContext
             {
-                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = activityPayload,
                 AuthorizationToken = AuthTokenDOTest1()
             };
@@ -65,17 +64,6 @@ namespace terminalTwilio.Tests.Fixtures
                 ExternalAccountId = "docusign_developer@dockyard.company",
                 UserId = "0addea2e-9f27-4902-a308-b9f57d811c0a"
 
-            };
-        }
-
-        public static FieldDescriptionsCM TestFields()
-        {
-            return new FieldDescriptionsCM
-            {
-                Fields = new List<FieldDTO>
-                {
-                    new FieldDTO("key", "value")
-                }
             };
         }
     }

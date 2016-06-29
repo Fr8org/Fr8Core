@@ -50,7 +50,7 @@ jQuery(function ($) {
     // change this one to have it demo main nav bar above the fold - logo-f8.svg is the turq one
     function setNavbarTransparent() {
         $('.navbar').removeClass('navbar-light');
-        if (window.location.pathname === "/Services/DocuSign") {
+        if (window.location.pathname === "/Services/DocuSign" || window.location.pathname === "/Services/Salesforce") {
             $('.navbar-brand img').attr('src', '/Content/img/dockyard_logo_dark.png');
         }
         else {

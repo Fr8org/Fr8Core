@@ -26,7 +26,6 @@ var app = angular.module("app", [
     "angularResizable",
     "mdColorPicker",
     "md.data.table",
-    "fr8.collapse",
     "popoverToggle"
 ]);
 
@@ -106,9 +105,11 @@ app.controller('HeaderController', ['$scope', '$http', '$window', ($scope, $http
             .then(function (res) {
                 var token = res.data.token;
                 var url = planDirectoryUrl + '/AuthenticateByToken?token=' + token;
-                $window.location.href = url;
+                $window.open(url, '_blank');
             });
     };
+
+    $scope.runManifestRegistryMonitoring = () => { $http.post('/api/manifest_registries/runMonitoring', {}); };
 }]);
 
 /* Setup Layout Part - Footer */

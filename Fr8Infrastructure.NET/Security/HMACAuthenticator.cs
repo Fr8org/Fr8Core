@@ -12,9 +12,10 @@ namespace Fr8.Infrastructure.Security
         private const int MaxAllowedLatency = 60;
         private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         private readonly IHMACService _hmacService;
-        public HMACAuthenticator()
+
+        public HMACAuthenticator(IHMACService hmacService)
         {
-            _hmacService = ObjectFactory.GetInstance<IHMACService>();
+            _hmacService = hmacService;
         }
 
         public void ExtractTokenParts(HttpRequestMessage request, out string terminalId, out string userId)

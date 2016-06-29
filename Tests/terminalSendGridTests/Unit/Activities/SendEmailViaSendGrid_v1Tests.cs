@@ -24,7 +24,7 @@ namespace terminalSendGridTests.Unit.Activities
     [Category("terminalSendGrid")]
     public class SendEmailViaSendGrid_v1Tests : BaseTest
     {
-        private SendEmailViaSendGrid_v1 _gridActivity;
+        private Send_Email_Via_SendGrid_v1 _gridActivity;
         private ICrateManager _crate;
         private ActivityPayload activityPayload;
 
@@ -33,7 +33,7 @@ namespace terminalSendGridTests.Unit.Activities
             base.SetUp();
             ObjectFactory.Configure(x => x.AddRegistry<TerminalSendGridStructureMapBootstrapper.LiveMode>());
             ObjectFactory.Configure(cfg => cfg.For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>())));
-            ObjectFactory.Configure(cfg => cfg.For<IEmailPackager>().Use(new SendGridPackager()));
+            ObjectFactory.Configure(cfg => cfg.For<IEmailPackager>().Use(c => new SendGridPackager(c.GetInstance<IConfigRepository>())));
             TerminalBootstrapper.ConfigureTest();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             activityPayload = GetActivityResult().Result;
@@ -76,7 +76,7 @@ namespace terminalSendGridTests.Unit.Activities
 
         private async Task<ActivityPayload> GetActivityResult()
         {
-            _gridActivity = New<SendEmailViaSendGrid_v1>();
+            _gridActivity = New<Send_Email_Via_SendGrid_v1>();
             var activityContext = FixtureData.TestActivityContext1();
             await _gridActivity.Configure(activityContext);
             return activityContext.ActivityPayload;
@@ -87,7 +87,7 @@ namespace terminalSendGridTests.Unit.Activities
         {
             // Arrange
             ICrateManager Crate = ObjectFactory.GetInstance<ICrateManager>();
-            _gridActivity = New<SendEmailViaSendGrid_v1>();
+            _gridActivity = New<Send_Email_Via_SendGrid_v1>();
             var activityContext = FixtureData.TestActivityContext1();
             var executionContext = FixtureData.CrateExecutionContextForSendEmailViaSendGridConfiguration;
             //updating controls
@@ -97,7 +97,7 @@ namespace terminalSendGridTests.Unit.Activities
                 control.ValueSource = "specific";
                 control.Value = (control.Name == "EmailAddress") ? "test@mail.com" : "test";
             }
-            var crate = Crate.CreateStandardConfigurationControlsCrate(BaseTerminalActivity.ConfigurationControlsLabel, standardControls.Controls.ToArray());
+            var crate = Crate.CreateStandardConfigurationControlsCrate(ExplicitTerminalActivity.ConfigurationControlsLabel, standardControls.Controls.ToArray());
             activityContext.ActivityPayload.CrateStorage.Add(crate);
             // Act
             await _gridActivity.Run(activityContext, executionContext);

@@ -13,10 +13,12 @@ namespace terminalAtlassian.Interfaces
 
         public string PriorityKey { get; set; }
 
+        public string Assignee { get; set; }
+
         public string Summary { get; set; }
 
         public string Description { get; set; }
 
-        public List<FieldDTO> CustomFields { get; set; }
+        public List<KeyValueDTO> CustomFields { get; set; }
     }
 }

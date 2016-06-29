@@ -12,6 +12,11 @@ namespace terminalSendGrid
 {
     public class Startup : BaseConfiguration
     {
+        public Startup()
+            : base(TerminalData.TerminalDTO)
+        {
+        }
+
         public void Configuration(IAppBuilder app)
         {
             Configuration(app, false);
@@ -27,7 +32,7 @@ namespace terminalSendGrid
 
             if (!selfHost)
             {
-                StartHosting("terminalSendGrid");
+                StartHosting();
             }
         }
 
@@ -40,7 +45,7 @@ namespace terminalSendGrid
         }
         protected override void RegisterActivities()
         {
-            ActivityStore.RegisterActivity<SendEmailViaSendGrid_v1>(SendEmailViaSendGrid_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Send_Email_Via_SendGrid_v1>(Send_Email_Via_SendGrid_v1.ActivityTemplateDTO);
         }
     }
 }

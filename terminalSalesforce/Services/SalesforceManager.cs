@@ -17,19 +17,24 @@ using Salesforce.Common;
 using Salesforce.Chatter;
 using Newtonsoft.Json.Linq;
 using Salesforce.Chatter.Models;
-using StructureMap;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.Infrastructure.Utilities;
+using Newtonsoft.Json;
+using AutoMapper;
 
 namespace terminalSalesforce.Services
 {
     public class SalesforceManager : ISalesforceManager
     {
-        private Authentication _authentication = new Authentication();
+        private readonly Authentication _authentication;
+        private readonly ICrateManager _crateManager;
+        private readonly IHubCommunicator _hubCommunicator;
 
-        private ICrateManager _crateManager;
-
-        public SalesforceManager()
+        public SalesforceManager(ICrateManager crateManager, Authentication authentication, IHubCommunicator hubCommunicator)
         {
-            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
+            _crateManager = crateManager;
+            _authentication = authentication;
+            _hubCommunicator = hubCommunicator;
         }
         
         public async Task<string> Create(SalesforceObjectType type, IDictionary<string, object> @object, AuthorizationToken authToken)
@@ -50,8 +55,8 @@ namespace terminalSalesforce.Services
             var table = ParseQueryResult(result);
             table.FirstRowHeaders = true;
             var headerRow = whatToSelect.Length > 0
-                                ? whatToSelect.Select(x => new FieldDTO(x, x)).Select(x => new TableCellDTO { Cell = x }).ToList()
-                                : (await GetProperties(type, authToken)).Select(x => new TableCellDTO { Cell = x }).ToList();
+                                ? whatToSelect.Select(x => new TableCellDTO { Cell = new KeyValueDTO(x, x)}).ToList()
+                                : (await GetProperties(type, authToken)).Select(x => new TableCellDTO { Cell = new KeyValueDTO(x.Name, x.Label) }).ToList();
             table.Table.Insert(0, new TableRowDTO { Row = headerRow });
             return table;
         }
@@ -84,7 +89,7 @@ namespace terminalSalesforce.Services
                             updateable          = true,  Meaning, The filed's value must be updatable by the user. 
                                                                 User must be able to set or modify the value of this field.
                         */
-                        new FieldDTO(fieldDescription.Value<string>("name"), fieldDescription.Value<string>("label"), AvailabilityType.RunTime)
+                        new FieldDTO(fieldDescription.Value<string>("name"))
                         {
                             FieldType = ExtractFieldType(fieldDescription.Value<string>("type")),
 
@@ -92,11 +97,12 @@ namespace terminalSalesforce.Services
                                             fieldDescription.Value<bool>("defaultedOnCreate") == false &&
                                             fieldDescription.Value<bool>("updateable") == true,
                             Availability = AvailabilityType.RunTime,
+                            Label = fieldDescription.Value<string>("label"),
                             Data = ExtractFieldData(fieldDescription.ToObject<JObject>()),
                             SourceCrateLabel = label
                         }
                     )
-                    .OrderBy(field => field.Key);
+                    .OrderBy(field => field.Name);
 
                 objectFields.AddRange(fields);
             }
@@ -216,7 +222,7 @@ namespace terminalSalesforce.Services
                 var sourceValues = salesforceType.GetType().GetField(salesforceType.ToString()).GetCustomAttributes<SalesforceObjectDescriptionAttribute>().FirstOrDefault();
                 if (sourceValues.AvailableProperties.HasFlag(filterByProperties) && sourceValues.AvailableOperations.HasFlag(filterByOperations))
                 {
-                    yield return new FieldDTO(salesforceType.ToString(), salesforceType.ToString());
+                    yield return new FieldDTO(salesforceType.ToString());
                 }
             }
         }
@@ -225,18 +231,18 @@ namespace terminalSalesforce.Services
         {
             return objectDescriptions ?? (objectDescriptions = new FieldDTO[]
                                                 {
-                                                    new FieldDTO("Account", "Account", AvailabilityType.Configuration),
-                                                    new FieldDTO("Case", "Case", AvailabilityType.Configuration),
-                                                    new FieldDTO("Contact", "Contact", AvailabilityType.Configuration),
-                                                    new FieldDTO("Contract", "Contract", AvailabilityType.Configuration),
-                                                    new FieldDTO("Document", "Document", AvailabilityType.Configuration),
-                                                    new FieldDTO("Group", "Group", AvailabilityType.Configuration),
-                                                    new FieldDTO("Lead", "Lead", AvailabilityType.Configuration),
-                                                    new FieldDTO("Opportunity", "Opportunity", AvailabilityType.Configuration),
-                                                    new FieldDTO("Order", "Order", AvailabilityType.Configuration),
-                                                    new FieldDTO("Product2", "Product2", AvailabilityType.Configuration),
-                                                    new FieldDTO("Solution", "Solution", AvailabilityType.Configuration),
-                                                    new FieldDTO("User", "User", AvailabilityType.Configuration)
+                                                    new FieldDTO("Account"),
+                                                    new FieldDTO("Case"),
+                                                    new FieldDTO("Contact"),
+                                                    new FieldDTO("Contract"),
+                                                    new FieldDTO("Document"),
+                                                    new FieldDTO("Group"),
+                                                    new FieldDTO("Lead"),
+                                                    new FieldDTO("Opportunity"),
+                                                    new FieldDTO("Order"),
+                                                    new FieldDTO("Product2"),
+                                                    new FieldDTO("Solution"),
+                                                    new FieldDTO("User")
                                                 });
         }
 
@@ -245,12 +251,12 @@ namespace terminalSalesforce.Services
             return await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.DeleteAsync(objectType.ToString(), objectId), authToken);
         }
         [Obsolete("Use Task<StandardTableDataCM> Query(SalesforceObjectType, IEnumerable<string>, string, AuthorizationTokenDO) instead")]
-        public async Task<IList<FieldDTO>> GetUsersAndGroups(AuthorizationToken authToken)
+        public async Task<IList<KeyValueDTO>> GetUsersAndGroups(AuthorizationToken authToken)
         {
-            var chatterObjectSelectPredicate = new Dictionary<string, Func<JToken, FieldDTO>>();
-            chatterObjectSelectPredicate.Add("groups", x => new FieldDTO(x.Value<string>("name"), x.Value<string>("id"), AvailabilityType.Configuration));
-            chatterObjectSelectPredicate.Add("users", x => new FieldDTO(x.Value<string>("displayName"), x.Value<string>("id"), AvailabilityType.Configuration));
-            var chatterNamesList = new List<FieldDTO>();
+            var chatterObjectSelectPredicate = new Dictionary<string, Func<JToken, KeyValueDTO>>();
+            chatterObjectSelectPredicate.Add("groups", x => new KeyValueDTO(x.Value<string>("name"), x.Value<string>("id")));
+            chatterObjectSelectPredicate.Add("users", x => new KeyValueDTO(x.Value<string>("displayName"), x.Value<string>("id")));
+            var chatterNamesList = new List<KeyValueDTO>();
             //get chatter groups and persons
             var chatterObjects = (JObject)await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.GetGroupsAsync<object>(), authToken);
             chatterObjects.Merge((JObject)await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.GetUsersAsync<object>(), authToken));
@@ -277,12 +283,13 @@ namespace terminalSalesforce.Services
             {
                 Table = parsedObjects.Select(x => x.Properties()
                                             .Where(y => y.Value.Type == JTokenType.String && !string.IsNullOrEmpty(y.Value.Value<string>()))
-                                            .Select(y => new FieldDTO
-                                            {
-                                                Key = y.Name,
-                                                Value = y.Value.Value<string>()
-                                            })
-                                            .Select(y => new TableCellDTO { Cell = y }))
+                                            .Select(y => new TableCellDTO
+                                            { Cell = new KeyValueDTO
+                                                {
+                                                    Key = y.Name,
+                                                    Value = y.Value.Value<string>()
+                                                }
+                                            }))
                                      .Select(x => new TableRowDTO { Row = x.ToList() })
                                      .ToList()
             };
@@ -302,7 +309,7 @@ namespace terminalSalesforce.Services
             }
             catch (ForceException ex)
             {
-                if (ex.Message.Equals("Session expired or invalid") && !retried)
+                if (ex.Message.Contains("Session expired or invalid", StringComparison.InvariantCulture) && !retried)
                 {
                     retried = true;
                     client = await clientProvider(authToken, true);
@@ -317,16 +324,38 @@ namespace terminalSalesforce.Services
 
         private async Task<ForceClient> CreateForceClient(AuthorizationToken authToken, bool isRefreshTokenRequired = false)
         {
-            authToken = isRefreshTokenRequired ? await _authentication.RefreshAccessToken(authToken) : authToken;
+            if (isRefreshTokenRequired)
+            {
+                authToken = await RefreshToken(authToken);                
+            }
             var salesforceToken = ToSalesforceToken(authToken);
             return new ForceClient(salesforceToken.InstanceUrl, salesforceToken.Token, salesforceToken.ApiVersion);
         }
 
         private async Task<ChatterClient> CreateChatterClient(AuthorizationToken authToken, bool isRefreshTokenRequired = false)
         {
-            authToken = isRefreshTokenRequired ? await _authentication.RefreshAccessToken(authToken) : authToken;
+            if (isRefreshTokenRequired)
+            {
+                authToken = await RefreshToken(authToken);
+            }
             var salesforceToken = ToSalesforceToken(authToken);
+
+            // When debugging, decimal point gets messed up and Salesforce client rejects to work properly.
+            // var ci = new System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.Name);
+            // if (ci.NumberFormat.NumberDecimalSeparator != ".")
+            // {
+            //     ci.NumberFormat.NumberDecimalSeparator = ".";
+            //     System.Threading.Thread.CurrentThread.CurrentCulture = ci;
+            // }
+
             return new ChatterClient(salesforceToken.InstanceUrl, salesforceToken.Token, salesforceToken.ApiVersion);
+        }
+
+        private async Task<AuthorizationToken> RefreshToken(AuthorizationToken token)
+        {
+            token = await _authentication.RefreshAccessToken(token);
+            await _hubCommunicator.RenewToken(Mapper.Map<AuthorizationTokenDTO>(token));
+            return token;
         }
 
         private IEnumerable<FieldDTO> objectDescriptions;
@@ -339,7 +368,7 @@ namespace terminalSalesforce.Services
             var apiVersion = ourToken.AdditionalAttributes.Substring(startIndexOfApiVersion, ourToken.AdditionalAttributes.Length - startIndexOfApiVersion);
             instanceUrl = instanceUrl.Replace("instance_url=", "");
             apiVersion = apiVersion.Replace("api_version=", "");
-            return new SalesforceAuthToken { ApiVersion = apiVersion, InstanceUrl = instanceUrl, Token = ourToken.Token };
+            return new SalesforceAuthToken { ApiVersion = apiVersion, InstanceUrl = instanceUrl, Token = JsonConvert.DeserializeObject<dynamic>(ourToken.Token).AccessToken };
         }
 
         private struct SalesforceAuthToken

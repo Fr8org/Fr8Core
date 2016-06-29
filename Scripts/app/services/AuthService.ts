@@ -1,6 +1,7 @@
 ﻿module dockyard.services {
     export class AuthService {
         private _pendingActivities: { [key: string]: model.ActivityDTO };
+        private _canceledActivities: { [key: string]: boolean };
         private _authDialogDisplayed: boolean;
         private _currentPlan: interfaces.IPlanVM;
 
@@ -15,6 +16,8 @@
 
             self._pendingActivities = {};
             self._authDialogDisplayed = false;
+            self._canceledActivities = {};
+
             self.$interval(function () {
                 self.intervalHandler();
             }, 1000);
@@ -25,7 +28,7 @@
                 var activities: Array<model.ActivityDTO> = [];
                 var key;
                 for (key in this._pendingActivities) {
-                    if (!this._pendingActivities.hasOwnProperty(key)) {
+                    if (!this._pendingActivities.hasOwnProperty(key) || this._canceledActivities[key]) {
                         continue;
                     }
 
@@ -40,10 +43,21 @@
 
         public setCurrentPlan(plan: interfaces.IPlanVM) {
             this._currentPlan = plan;
+            this._canceledActivities = {};
         }
 
         public clear() {
             this._pendingActivities = {};
+        }
+
+        public enableAuthentication(activityId: string) {
+            if (this._canceledActivities[activityId]) {
+                delete this._canceledActivities[activityId];
+            }
+        }
+
+        public isAuthenticationCanceled(activityId: string) {
+            return !!this._canceledActivities[activityId];
         }
 
         public enqueue(activity: model.ActivityDTO) {
@@ -115,6 +129,12 @@
                 }
             })
             .catch((result) => {
+                angular.forEach(activities, function (a) {
+                    if (!self._canceledActivities[a.id]) {
+                        self._canceledActivities[a.id] = true;
+                    }
+                });
+
                 angular.forEach(activities, it => {
                     self.$rootScope.$broadcast(
                         dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthFailure],

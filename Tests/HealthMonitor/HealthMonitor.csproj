@@ -219,8 +219,8 @@
       <HintPath>..\..\packages\PusherServer.2.1.1.0\lib\net35\PusherServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="RestSharp, Version=105.2.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\RestSharp.105.2.2\lib\net45\RestSharp.dll</HintPath>
+    <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\RestSharp.105.2.3\lib\net45\RestSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SendGrid.SmtpApi">
@@ -357,6 +357,14 @@
       <Project>{2b78433b-ba79-470b-bef6-dba5c1904865}</Project>
       <Name>PlanDirectory</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\terminalFacebook\terminalFacebook.csproj">
+      <Project>{c982a6fe-6fd4-47fa-a69d-91ffa80fedaa}</Project>
+      <Name>terminalFacebook</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalStatX\terminalStatX.csproj">
+      <Project>{5fb0adc8-24c7-4b32-a4d2-afa31b0baaa7}</Project>
+      <Name>terminalStatX</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Fr8.Testing\Fr8.Testing.csproj">
       <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
       <Name>Fr8.Testing</Name>
@@ -392,6 +400,10 @@
     <ProjectReference Include="..\..\terminalExcel\terminalExcel.csproj">
       <Project>{57373d06-6b82-4ec6-af62-ed25fe170c61}</Project>
       <Name>terminalExcel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\terminalFacebookTests\terminalFacebookTests.csproj">
+      <Project>{380c028e-2623-4207-b8af-f21b92183ed8}</Project>
+      <Name>terminalFacebookTests</Name>
     </ProjectReference>
     <ProjectReference Include="..\terminalFr8CoreTests\terminalFr8CoreTests.csproj">
       <Project>{6c3090fc-50d2-4a7e-9b29-eab9d8802f42}</Project>
@@ -444,6 +456,10 @@
     <ProjectReference Include="..\..\terminalSlack\terminalSlack.csproj">
       <Project>{990db8cb-aad6-42fe-940d-3a731df56abe}</Project>
       <Name>terminalSlack</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\terminalStatXTests\terminalStatXTests.csproj">
+      <Project>{e0e04964-f77e-435f-8b90-f4338c30ddad}</Project>
+      <Name>terminalStatXTests</Name>
     </ProjectReference>
     <ProjectReference Include="..\terminalTwilioTests\terminalTwilioTests.csproj">
       <Project>{6b807ab1-f549-49cb-9f52-52bc33d23443}</Project>
@@ -506,6 +522,9 @@
     <Content Include="SQL\CountActiveTestPlans.sql" />
     <Content Include="SQL\CountFileStats.sql" />
     <Content Include="SQL\CountStats.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

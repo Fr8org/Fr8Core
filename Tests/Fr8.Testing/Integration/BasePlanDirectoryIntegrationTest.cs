@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Net.Http;
+using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 using StructureMap;
 using Fr8.Infrastructure.Communication;
@@ -42,7 +43,7 @@ namespace Fr8.Testing.Integration
             _httpClient.Timeout = TimeSpan.FromMinutes(2);
 
             Crate = new CrateManager();
-            _hmacService = new Fr8HMACService();
+            _hmacService = new Fr8HMACService(ObjectFactory.GetInstance<MediaTypeFormatter>());
             _baseUrl = GetPlanDirectoryBaseApiUrl();
             RestfulServiceClient = new RestfulServiceClient(_httpClient);
 
@@ -62,16 +63,25 @@ namespace Fr8.Testing.Integration
             return hubBaseUrl;
         }
 
-        private async Task AuthenticateWebApi(string email, string password)
+        protected async Task AuthenticateWebApi(string email, string password)
         {
-            var content = await HttpPostAsync<string, object>(
-                _baseUrl + string.Format(
-                    "authentication/login?username={0}&password={1}",
-                    Uri.EscapeDataString(email),
-                    Uri.EscapeDataString(password)
-                ),
-                null
-            );
+            try
+            {
+                var content = await HttpPostAsync<string, object>(
+                    _baseUrl + string.Format(
+                        "authentication/login?username={0}&password={1}",
+                        Uri.EscapeDataString(email),
+                        Uri.EscapeDataString(password)
+                    ),
+                    null
+                );
+                System.Diagnostics.Trace.WriteLine("Authenticated with PlanDirectory successfully.");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.WriteLine("Error during authentication with PlanDirectory: " + ex.Message);
+
+            }
         }
     }
 }

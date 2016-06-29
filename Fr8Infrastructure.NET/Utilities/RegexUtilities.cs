@@ -8,17 +8,17 @@ namespace Fr8.Infrastructure.Utilities
 {
     public class RegexUtilities
     {
-        public static void ValidateEmailAddress(String emailAddress)
+        public static void ValidateEmailAddress(IConfigRepository configRepository, String emailAddress)
         {
-            if (!IsValidEmailAddress(emailAddress))
+            if (!IsValidEmailAddress(configRepository, emailAddress))
                 throw new ValidationException(new[] { new ValidationFailure("emailAddress", "Invalid email address: '" + emailAddress + "'") });
         }
-        public static bool IsValidEmailAddress(String emailAddress)
+        public static bool IsValidEmailAddress(IConfigRepository configRepository, String emailAddress)
         {
-            return ExtractFromString(emailAddress, true, true).Count == 1;
+            return ExtractEmailFromString(configRepository, emailAddress, true, true).Count == 1;
         }
 
-        public static List<ParsedEmailAddress> ExtractFromString(String textToSearch, bool includeReserved = false, bool strict = false)
+        public static List<ParsedEmailAddress> ExtractEmailFromString(IConfigRepository configRepository, String textToSearch, bool includeReserved = false, bool strict = false)
         {
             if (String.IsNullOrEmpty(textToSearch))
                 return new List<ParsedEmailAddress>();
@@ -59,7 +59,7 @@ namespace Fr8.Infrastructure.Utilities
                     Email = match.Groups["email"].Value.ToLower()
                 };
 
-                if (includeReserved || !FilterUtility.IsReservedEmailAddress(parse.Email))
+                if (includeReserved || !FilterUtility.IsReservedEmailAddress(configRepository, parse.Email))
                     result.Add(parse);
             }
             return result;

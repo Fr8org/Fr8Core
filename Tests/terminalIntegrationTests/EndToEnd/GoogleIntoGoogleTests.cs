@@ -36,16 +36,16 @@ namespace terminalIntegrationTests.EndToEnd
             _plansHelper = new IntegrationTestTools(this);
             _fr8ActivityConfigurator = new IntegrationTestTools_terminalFr8(this);
         }
-        
+
         [Test, Category("Integration.terminalGoogle")]
         public async Task GoogleIntoGoogleEndToEnd()
         {
-            
+
             var googleAuthTokenId = await new Fr8.Testing.Integration.Tools.Terminals.IntegrationTestTools_terminalGoogle(this).ExtractGoogleDefaultToken();
             var defaultGoogleAuthToken = GetGoogleAuthToken(googleAuthTokenId);
 
             //create a new plan
-            var googleSheetApi = new GoogleSheet(new GoogleIntegration(ObjectFactory.GetInstance<IRestfulServiceClient>()));
+            var googleSheetApi = new GoogleSheet(new GoogleIntegration(ObjectFactory.GetInstance<IRestfulServiceClient>()), new GoogleDrive());
             var sourceSpreadsheetUri = string.Empty;
             var destinationSpreadsheetUri = string.Empty;
             var sourceSpreadsheetName = Guid.NewGuid().ToString();
@@ -95,7 +95,7 @@ namespace terminalIntegrationTests.EndToEnd
                     await googleSheetApi.DeleteSpreadSheet(destinationSpreadsheetUri, defaultGoogleAuthToken);
                 }
             }
-            
+
         }
 
         private StandardTableDataCM GetTestSpreadsheetContent()
@@ -109,18 +109,18 @@ namespace terminalIntegrationTests.EndToEnd
                     {
                         Row = new List<TableCellDTO>
                         {
-                            new TableCellDTO { Cell = new FieldDTO("email", "email") },
-                            new TableCellDTO { Cell = new FieldDTO("subject", "subject") },
-                            new TableCellDTO { Cell = new FieldDTO("body", "body") }
+                            new TableCellDTO { Cell = new KeyValueDTO("email", "email") },
+                            new TableCellDTO { Cell = new KeyValueDTO("subject", "subject") },
+                            new TableCellDTO { Cell = new KeyValueDTO("body", "body") }
                         }
                     },
                     new TableRowDTO
                     {
                         Row = new List<TableCellDTO>
                         {
-                            new TableCellDTO { Cell = new FieldDTO("email", "fake@fake.com") },
-                            new TableCellDTO { Cell = new FieldDTO("subject", "Fake Subject") },
-                            new TableCellDTO { Cell = new FieldDTO("body", "Fake Body") }
+                            new TableCellDTO { Cell = new KeyValueDTO("email", "fake@fake.com") },
+                            new TableCellDTO { Cell = new KeyValueDTO("subject", "Fake Subject") },
+                            new TableCellDTO { Cell = new KeyValueDTO("body", "Fake Body") }
                         }
                     }
 

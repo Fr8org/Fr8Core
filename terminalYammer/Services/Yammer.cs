@@ -7,7 +7,6 @@ using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Errors;
 using Newtonsoft.Json.Linq;
-using StructureMap;
 using terminalYammer.Interfaces;
 using terminalYammer.Model;
 
@@ -16,9 +15,9 @@ namespace terminalYammer.Services
     public class Yammer : IYammer
     {
         private readonly IRestfulServiceClient _client;
-        public Yammer()
+        public Yammer(IRestfulServiceClient restfulServiceClient)
         {
-            _client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+            _client = restfulServiceClient;
         }
         /// <summary>
         /// Build external Yammer OAuth url.
@@ -62,15 +61,15 @@ namespace terminalYammer.Services
             return jsonObj.Value<string>("email");
         }
 
-        public async Task<List<FieldDTO>> GetGroupsList(string oauthToken)
+        public async Task<List<KeyValueDTO>> GetGroupsList(string oauthToken)
         {
             var url = PrepareTokenUrl("YammerGroupListUrl", oauthToken);
 
             var groupsDTO = await _client.GetAsync<List<YammerGroup>>(new Uri(url), null, GetAuthenticationHeader(oauthToken));
-            var result = new List<FieldDTO>();
+            var result = new List<KeyValueDTO>();
             foreach (var group in groupsDTO)
             {
-                result.Add(new FieldDTO()
+                result.Add(new KeyValueDTO()
                 {
                     Key = group.Name,
                     Value = group.GroupID

@@ -8,8 +8,6 @@ namespace Fr8.Infrastructure.Interfaces
 {
     public interface IRestfulServiceClient
     {
-        Uri BaseUri { get; set; }
-
         Task<Stream> DownloadAsync(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null);
         Task<TResponse> GetAsync<TResponse>(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null);
         Task<string> GetAsync(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null);

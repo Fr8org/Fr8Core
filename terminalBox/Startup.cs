@@ -19,6 +19,11 @@ namespace terminalBox
 {
     public class Startup : BaseConfiguration
     {
+        public Startup()
+            : base(TerminalData.TerminalDTO)
+        {
+        }
+
         public void Configuration(IAppBuilder app)
         {
             Configuration(app, false);
@@ -36,14 +41,14 @@ namespace terminalBox
 
             if (!selfHost)
             {
-                StartHosting("terminalAzure");
+                StartHosting();
             }
         }
 
         protected override void RegisterActivities()
         {
-            ActivityStore.RegisterActivity<GenerateTableActivity_v1>(GenerateTableActivity_v1.ActivityTemplateDTO);
-            ActivityStore.RegisterActivity<SaveToFile_v1>(SaveToFile_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Generate_Table_Activity_v1>(Generate_Table_Activity_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Save_To_File_v1>(Save_To_File_v1.ActivityTemplateDTO);
         }
 
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)

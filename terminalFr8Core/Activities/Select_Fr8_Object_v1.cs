@@ -17,8 +17,10 @@ using StructureMap;
 namespace terminalFr8Core.Activities
 {
     // The generic interface inheritance.
-    public class Select_Fr8_Object_v1 : BaseTerminalActivity
+    public class Select_Fr8_Object_v1 : ExplicitTerminalActivity
     {
+        private readonly IRestfulServiceClient _restfulServiceClient;
+
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "Select_Fr8_Object",
@@ -61,12 +63,12 @@ namespace terminalFr8Core.Activities
 
         private Crate PackFr8ObjectCrate()
         {
-            var fields = new List<FieldDTO> {
-                    new FieldDTO(){
+            var fields = new List<KeyValueDTO> {
+                    new KeyValueDTO(){
                        Key = "Plans",
                        Value = "19"
                    },
-                   new FieldDTO(){
+                   new KeyValueDTO(){
                        Key = "Containers",
                        Value = "21"
                    }
@@ -81,17 +83,17 @@ namespace terminalFr8Core.Activities
         // Get the Design time fields crate.
         private async Task<Crate> GetDesignTimeFieldsCrateOfSelectedFr8Object(string fr8Object)
         {
-            var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/manifests?id="
                 + int.Parse(fr8Object);
-            var response = await client.GetAsync<CrateDTO>(new Uri(url));
+            var response = await _restfulServiceClient.GetAsync<CrateDTO>(new Uri(url));
             return CrateManager.FromDto(response);
 		}
 
-        public Select_Fr8_Object_v1(ICrateManager crateManager)
+        public Select_Fr8_Object_v1(ICrateManager crateManager, IRestfulServiceClient restfulServiceClient)
             : base(crateManager)
         {
+            _restfulServiceClient = restfulServiceClient;
         }
 
         public override Task Run()

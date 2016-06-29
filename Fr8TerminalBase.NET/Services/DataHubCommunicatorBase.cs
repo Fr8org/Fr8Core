@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
-using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
-using StructureMap;
 
 namespace Fr8.TerminalBase.Services
 {
@@ -22,33 +20,18 @@ namespace Fr8.TerminalBase.Services
     {
         public ICrateManager Crate { get; set; }
         public string ExplicitData { get; set; }
-        protected string TerminalSecret { get; set; }
-        protected string TerminalId { get; set; }
-
         private string _userId;
 
         public string UserId => _userId;
 
-        protected DataHubCommunicatorBase(string explicitData)
+        protected DataHubCommunicatorBase(string explicitData, ICrateManager crateManager)
         {
-            Crate = ObjectFactory.GetInstance<ICrateManager>();
+            Crate = crateManager;
             ExplicitData = explicitData;
         }
         
-        public void Configure(string terminalName, string userId)
+        public void Authorize(string userId)
         {
-            if (string.IsNullOrEmpty(terminalName))
-                throw new ArgumentNullException(nameof(terminalName));
-
-            TerminalSecret = CloudConfigurationManager.GetSetting("TerminalSecret");
-            TerminalId = CloudConfigurationManager.GetSetting("TerminalId");
-
-            //we might be on integration test currently
-            if (TerminalSecret == null || TerminalId == null)
-            {
-                TerminalSecret = ConfigurationManager.AppSettings[terminalName + "TerminalSecret"];
-                TerminalId = ConfigurationManager.AppSettings[terminalName + "TerminalId"];
-            }
             _userId = userId;
             IsConfigured = true;
         }
@@ -69,6 +52,11 @@ namespace Fr8.TerminalBase.Services
                     crate.Label = crate.Label.Substring((prefix + "_").Length);
                 }
             }
+        }
+
+        public Task<PlanEmptyDTO> LoadPlan(JToken planContents)
+        {
+            throw new NotImplementedException();
         }
 
         public Task<PayloadDTO> GetPayload(Guid containerId)
@@ -161,7 +149,7 @@ namespace Fr8.TerminalBase.Services
             var activityTemplates = crateStorage
                 .Where(x => x.Label == searchLabel)
                 .Select(x => JsonConvert.DeserializeObject<ActivityTemplateDTO>(
-                    x.Get<FieldDescriptionsCM>().Fields[0].Value
+                    x.Get<KeyValueListCM>().Values[0].Value
                     )
                 )
                 .ToList();
@@ -201,11 +189,9 @@ namespace Fr8.TerminalBase.Services
         
         public async Task<IncomingCratesDTO> GetAvailableData(Guid activityId, CrateDirection direction, AvailabilityType availability)
         {
-            var fields = await GetCratesByDirection<FieldDescriptionsCM>(activityId, direction);
             var crates = await GetCratesByDirection<CrateDescriptionCM>(activityId, direction);
             var availableData = new IncomingCratesDTO();
 
-            availableData.AvailableFields.AddRange(fields.SelectMany(x => x.Content.Fields).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
             availableData.AvailableFields.AddRange(crates.SelectMany(x => x.Content.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0).SelectMany(x => x.Fields));
             availableData.AvailableCrates.AddRange(crates.SelectMany(x => x.Content.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
 
@@ -267,6 +253,26 @@ namespace Fr8.TerminalBase.Services
             return Task.FromResult(0);
         }
 
+        public Task SendEvent(Crate eventPayload)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<TManifest>> QueryWarehouse<TManifest>(List<FilterConditionDTO> query) where TManifest : Manifest
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddOrUpdateWarehouse(params Manifest[] manifests)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteFromWarehouse<TManifest>(List<FilterConditionDTO> query) where TManifest : Manifest
+        {
+            throw new NotImplementedException();
+        }
+
         public Task RenewToken(string id, string externalAccountId, string token)
         {
             throw new NotImplementedException();
@@ -312,7 +318,22 @@ namespace Fr8.TerminalBase.Services
             throw new NotImplementedException();
         }
 
-        public Task ScheduleEvent(string externalAccountId, string minutes)
+        public Task ScheduleEvent(string externalAccountId, string minutes, bool triggerImmediately = false, string additionalConfigAttributes = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<AuthenticationTokenTerminalDTO>> GetTokens()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<AuthorizationTokenDTO> GenerateOAuthToken(ExternalAuthenticationDTO authDTO)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri)
         {
             throw new NotImplementedException();
         }

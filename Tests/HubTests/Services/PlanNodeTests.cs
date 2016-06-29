@@ -47,7 +47,7 @@ namespace HubTests.Services
             var fieldsCrate = planNodeService.GetIncomingData(testActionTree.ChildNodes.Last().Id, CrateDirection.Upstream, AvailabilityType.NotSet);
             Assert.NotNull(fieldsCrate);
             Assert.NotNull(fieldsCrate.AvailableCrates.SelectMany(x=> x.Fields).ToList());
-            Assert.AreEqual(396, fieldsCrate.AvailableCrates.SelectMany(x => x.Fields).ToList().Count);
+            Assert.AreEqual(33, fieldsCrate.AvailableCrates.SelectMany(x => x.Fields).ToList().Count);
         }
 
         [Test]

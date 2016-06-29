@@ -74,10 +74,6 @@
       <HintPath>..\packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Google.Apis.Core, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.Core.1.11.1\lib\net45\Google.Apis.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Hyak.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Hyak.Common.1.0.2\lib\net45\Hyak.Common.dll</HintPath>
       <Private>True</Private>
@@ -179,10 +175,6 @@
       <HintPath>..\packages\WindowsAzure.Storage.5.0.2\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Moq, Version=4.2.1507.118, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
-      <HintPath>..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -199,8 +191,8 @@
       <HintPath>..\packages\PusherServer.2.1.1.0\lib\net35\PusherServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="RestSharp, Version=105.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RestSharp.105.0.1\lib\net4\RestSharp.dll</HintPath>
+    <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.105.2.3\lib\net45\RestSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="StructureMap, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
@@ -271,6 +263,7 @@
     <Compile Include="Entities\PermissionSetDO.cs" />
     <Compile Include="Entities\PlanNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
+    <Compile Include="Entities\TerminalRegistrationDO.cs" />
     <Compile Include="Entities\TerminalSubscriptionDO.cs" />
     <Compile Include="Entities\WebServiceDO.cs" />
     <Compile Include="Expressions\ConversionMethods.cs" />
@@ -288,9 +281,11 @@
     <Compile Include="Entities\ActivityDO.cs" />
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
     <Compile Include="Entities\BaseDO.cs" />
+    <Compile Include="Infrastructure\StructureMapUnitOfWorkFactory.cs" />
     <Compile Include="Interfaces\IAspNetUserClaimDO.cs" />
     <Compile Include="Interfaces\IFileRepository.cs" />
     <Compile Include="Interfaces\ITrackingChangesRepository.cs" />
+    <Compile Include="Interfaces\IUnitOfWorkFactory.cs" />
     <Compile Include="Interfaces\IUtilizationDataProvider.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.Designer.cs">
@@ -669,10 +664,6 @@
     <Compile Include="Migrations\201605231150066_AddOrganizationAndAccountToObjectRolePermissions.Designer.cs">
       <DependentUpon>201605231150066_AddOrganizationAndAccountToObjectRolePermissions.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201606070712251_RemoveFr8CoreActivities.cs" />
-    <Compile Include="Migrations\201606070712251_RemoveFr8CoreActivities.Designer.cs">
-      <DependentUpon>201606070712251_RemoveFr8CoreActivities.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201606071223281_Delete FindObjects solution.cs" />
     <Compile Include="Migrations\201606071223281_Delete FindObjects solution.Designer.cs">
       <DependentUpon>201606071223281_Delete FindObjects solution.cs</DependentUpon>
@@ -684,6 +675,46 @@
     <Compile Include="Migrations\201606090249437_RemovingUnusedObjects.cs" />
     <Compile Include="Migrations\201606090249437_RemovingUnusedObjects.Designer.cs">
       <DependentUpon>201606090249437_RemovingUnusedObjects.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606091512284_FillManifestRegistry.cs" />
+    <Compile Include="Migrations\201606091512284_FillManifestRegistry.Designer.cs">
+      <DependentUpon>201606091512284_FillManifestRegistry.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606141326120_FR-3514 Make activity classes naming consistent.cs" />
+    <Compile Include="Migrations\201606141326120_FR-3514 Make activity classes naming consistent.Designer.cs">
+      <DependentUpon>201606141326120_FR-3514 Make activity classes naming consistent.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606122001330_HistoryDateIndex.cs" />
+    <Compile Include="Migrations\201606122001330_HistoryDateIndex.Designer.cs">
+      <DependentUpon>201606122001330_HistoryDateIndex.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606131241031_PlanTemplate-Permissions.cs" />
+    <Compile Include="Migrations\201606131241031_PlanTemplate-Permissions.Designer.cs">
+      <DependentUpon>201606131241031_PlanTemplate-Permissions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606131429309_RemovedDocuSignAccountId.cs" />
+    <Compile Include="Migrations\201606131429309_RemovedDocuSignAccountId.Designer.cs">
+      <DependentUpon>201606131429309_RemovedDocuSignAccountId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606180953421_AddedTerminalRegistrationDO.cs" />
+    <Compile Include="Migrations\201606180953421_AddedTerminalRegistrationDO.Designer.cs">
+      <DependentUpon>201606180953421_AddedTerminalRegistrationDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606181115160_MoveFr8TerminalsTxtToDB.cs" />
+    <Compile Include="Migrations\201606181115160_MoveFr8TerminalsTxtToDB.Designer.cs">
+      <DependentUpon>201606181115160_MoveFr8TerminalsTxtToDB.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606190931116_Add_terminalStatX_Migration.cs" />
+    <Compile Include="Migrations\201606190931116_Add_terminalStatX_Migration.Designer.cs">
+      <DependentUpon>201606190931116_Add_terminalStatX_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606241050298_AddedTerminalFacebook.cs" />
+    <Compile Include="Migrations\201606241050298_AddedTerminalFacebook.Designer.cs">
+      <DependentUpon>201606241050298_AddedTerminalFacebook.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606271048030_NullableExpiresAtForAuthToken.cs" />
+    <Compile Include="Migrations\201606271048030_NullableExpiresAtForAuthToken.Designer.cs">
+      <DependentUpon>201606271048030_NullableExpiresAtForAuthToken.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -790,6 +821,7 @@
     <Compile Include="Repositories\SqlBased\SqlConnectionProvider.cs" />
     <Compile Include="Repositories\Security\StorageImpl\SqlBased\SqlSecurityObjectsStorageProvider.cs" />
     <Compile Include="Repositories\TagRepository.cs" />
+    <Compile Include="Repositories\TerminalRegistrationRepository.cs" />
     <Compile Include="Repositories\TerminalRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="Repositories\TerminalSubscriptionRepository.cs" />
@@ -818,7 +850,6 @@
     <Compile Include="Infrastructure\StructureMap\ISecurityServices.cs" />
     <Compile Include="Infrastructure\StructureMap\MockedSecurityServices.cs" />
     <Compile Include="Interfaces\IBookingRequestDO.cs" />
-    <Compile Include="Interfaces\IDocusignAccountDO.cs" />
     <Compile Include="Interfaces\IEmailDO.cs" />
     <Compile Include="Interfaces\IHistoryItemDO.cs" />
     <Compile Include="Interfaces\IMailerDO.cs" />
@@ -1255,9 +1286,6 @@
     <EmbeddedResource Include="Migrations\201605231150066_AddOrganizationAndAccountToObjectRolePermissions.resx">
       <DependentUpon>201605231150066_AddOrganizationAndAccountToObjectRolePermissions.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201606070712251_RemoveFr8CoreActivities.resx">
-      <DependentUpon>201606070712251_RemoveFr8CoreActivities.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606071223281_Delete FindObjects solution.resx">
       <DependentUpon>201606071223281_Delete FindObjects solution.cs</DependentUpon>
     </EmbeddedResource>
@@ -1266,6 +1294,36 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606090249437_RemovingUnusedObjects.resx">
       <DependentUpon>201606090249437_RemovingUnusedObjects.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606091512284_FillManifestRegistry.resx">
+      <DependentUpon>201606091512284_FillManifestRegistry.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606141326120_FR-3514 Make activity classes naming consistent.resx">
+      <DependentUpon>201606141326120_FR-3514 Make activity classes naming consistent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606122001330_HistoryDateIndex.resx">
+      <DependentUpon>201606122001330_HistoryDateIndex.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606131241031_PlanTemplate-Permissions.resx">
+      <DependentUpon>201606131241031_PlanTemplate-Permissions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606131429309_RemovedDocuSignAccountId.resx">
+      <DependentUpon>201606131429309_RemovedDocuSignAccountId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606180953421_AddedTerminalRegistrationDO.resx">
+      <DependentUpon>201606180953421_AddedTerminalRegistrationDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606181115160_MoveFr8TerminalsTxtToDB.resx">
+      <DependentUpon>201606181115160_MoveFr8TerminalsTxtToDB.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606190931116_Add_terminalStatX_Migration.resx">
+      <DependentUpon>201606190931116_Add_terminalStatX_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606241050298_AddedTerminalFacebook.resx">
+      <DependentUpon>201606241050298_AddedTerminalFacebook.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606271048030_NullableExpiresAtForAuthToken.resx">
+      <DependentUpon>201606271048030_NullableExpiresAtForAuthToken.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -33,8 +33,6 @@ namespace HubTests.Entities
             {
                 
                 uow.AspNetRolesRepository.Add(FixtureData.TestRole());
-                var u = new Fr8AccountDO();
-                var user = new Fr8Account();
 
                 //SETUP                 
 

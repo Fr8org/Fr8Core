@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using Hub.Services;
@@ -41,6 +42,8 @@ namespace HubWeb
 
             public void Configuration(IAppBuilder app)
             {
+                Fr8.Infrastructure.Utilities.Server.ServerPhysicalPath = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
+
                 HttpConfiguration config = new HttpConfiguration();
                 WebApiConfig.Register(config);
                 app.SetDataProtectionProvider(new DpapiDataProtectionProvider());
@@ -76,7 +79,7 @@ namespace HubWeb
                     typeof(ContainersController),
                     typeof(DocumentationController),
                     typeof(EventsController),
-                    typeof(FieldController),
+                    //typeof(FieldController),
                     typeof(FilesController),
                     typeof(ManifestsController),
                     typeof(ReportController),

@@ -14,7 +14,7 @@ namespace Fr8.TerminalBase.Services
             _type = type;
         }
 
-        public IActivity Create()
+        public IActivity Create(IContainer container)
         {
             var firstConstructor = _type.GetConstructors().OrderBy(x => x.GetParameters().Length).FirstOrDefault();
 
@@ -29,7 +29,7 @@ namespace Fr8.TerminalBase.Services
             for (int index = 0; index < parameters.Length; index++)
             {
                 var parameterInfo = parameters[index];
-                paramArguments[index] = ObjectFactory.GetInstance(parameterInfo.ParameterType);
+                paramArguments[index] = container.GetInstance(parameterInfo.ParameterType);
             }
 
             var instance = firstConstructor.Invoke(paramArguments.ToArray()) as IActivity;

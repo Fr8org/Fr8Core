@@ -16,9 +16,10 @@ namespace terminalQuickBooks.Services
     public class JournalEntry : IJournalEntry
     {
         private readonly IServiceWorker _serviceWorker;
-        public JournalEntry()
+
+        public JournalEntry(IServiceWorker serviceWorker)
         {
-            _serviceWorker = ObjectFactory.GetInstance<IServiceWorker>();
+            _serviceWorker = serviceWorker;
         }
 
         /// <summary>

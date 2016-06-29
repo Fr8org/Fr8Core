@@ -63,7 +63,6 @@ namespace HubTests.Security
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var user = new Fr8Account();
                 var emailAddress = new EmailAddressDO
                 {
                     Address = "tester@gmail.com",
@@ -92,7 +91,6 @@ namespace HubTests.Security
                 };
                 uow.AuthorizationTokenRepository.Add(tokenDO);
 
-                tokenDO.ExpiresAt = DateTime.UtcNow.AddYears(100);
                 tokenDO.Token = Token;
                 uow.SaveChanges();
 

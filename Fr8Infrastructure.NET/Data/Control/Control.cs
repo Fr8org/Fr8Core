@@ -446,6 +446,9 @@ namespace Fr8.Infrastructure.Data.Control
         [JsonProperty("valueSource")]
         public string ValueSource;
 
+        [JsonProperty("groupLabelText")]
+        public string GroupLabelText;
+
         [JsonIgnore]
         public FieldDTO UpstreamField => SelectedItem;
 
@@ -454,10 +457,11 @@ namespace Fr8.Infrastructure.Data.Control
             Type = ControlTypes.TextSource;
         }
 
-        public TextSource(string initialLabel, string upstreamSourceLabel, string name) : this()
+        public TextSource(string initialLabel, string upstreamSourceLabel, string name, string groupLabelText = "") : this()
         {
             InitialLabel = initialLabel;
             Name = name;
+            GroupLabelText = groupLabelText;
             Source = new FieldSourceDTO
             {
                 Label = upstreamSourceLabel,
@@ -816,11 +820,27 @@ namespace Fr8.Infrastructure.Data.Control
         }
     }
 
-    public class UpstreamFieldChooser : ControlDefinitionDTO
+    public class UpstreamFieldChooser : DropDownList
     {
         public UpstreamFieldChooser()
         {
             Type = ControlTypes.UpstreamFieldChooser;
+        }
+
+        public string GetValue(ICrateStorage payloadCrateStorage)
+        {
+            if (payloadCrateStorage == null)
+            {
+                throw new Exception("Can't resolve upstream value without payload crate storage provided");
+            }
+
+            //This is for backward compatibility as controls in existing activites may not be reconfigured to use full field information
+            if (SelectedItem == null)
+            {
+                return payloadCrateStorage.FindField(this.selectedKey);
+            }
+
+            return payloadCrateStorage.FindField(SelectedItem);
         }
     }
 

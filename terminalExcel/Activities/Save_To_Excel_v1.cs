@@ -18,8 +18,11 @@ using terminalUtilities.Excel;
 
 namespace terminalExcel.Actions
 {
-    public class Save_To_Excel_v1 : EnhancedTerminalActivity<Save_To_Excel_v1.ActivityUi>
+    public class Save_To_Excel_v1 : TerminalActivity<Save_To_Excel_v1.ActivityUi>
     {
+        private readonly ExcelUtils _excelUtils;
+        private readonly IPushNotificationService _pushNotificationService;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public CrateChooser UpstreamCrateChooser { get; set; }
@@ -131,9 +134,11 @@ namespace terminalExcel.Actions
         private const string SelectedSpreadsheetCrateLabel = "Selected Spreadsheet";
 
 
-        public Save_To_Excel_v1(ICrateManager crateManager)
+        public Save_To_Excel_v1(ICrateManager crateManager, ExcelUtils excelUtils, IPushNotificationService pushNotificationService)
             : base(crateManager)
         {
+            _excelUtils = excelUtils;
+            _pushNotificationService = pushNotificationService;
         }
 
         public override async Task Initialize()
@@ -186,8 +191,8 @@ namespace terminalExcel.Actions
         {
             get
             {
-                var storedValue = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == SelectedSpreadsheetCrateLabel);
-                return storedValue?.Content.Fields.First().Key;
+                var storedValue = Storage.FirstCrateOrDefault<KeyValueListCM>(x => x.Label == SelectedSpreadsheetCrateLabel);
+                return storedValue?.Content.Values.First().Key;
             }
             set
             {
@@ -196,7 +201,7 @@ namespace terminalExcel.Actions
                 {
                     return;
                 }
-                Storage.Add(Crate<FieldDescriptionsCM>.FromContent(SelectedSpreadsheetCrateLabel, new FieldDescriptionsCM(new FieldDTO(value)), AvailabilityType.Configuration));
+                Storage.Add(Crate<KeyValueListCM>.FromContent(SelectedSpreadsheetCrateLabel, new KeyValueListCM(new KeyValueDTO(value, value)), AvailabilityType.Configuration));
             }
         }
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
@@ -276,7 +281,7 @@ namespace terminalExcel.Actions
                 if (ActivityUI.UseExistingWorksheetOption.Selected
                     || ActivityUI.ExistingWorksheetsList.ListItems.Any(x => x.Key == ActivityUI.NewWorksheetName.Value))
                 {
-                    var existingData = ExcelUtils.GetExcelFile(existingFileBytes, fileName, true, worksheetName);
+                    var existingData = _excelUtils.GetExcelFile(existingFileBytes, fileName, true, worksheetName);
 
                     StandardTableDataCMTools.AppendToStandardTableData(existingData, tableToSave);
                     dataToInsert = existingData;
@@ -326,7 +331,7 @@ namespace terminalExcel.Actions
 
         private async Task PushLaunchURLNotification(string url)
         {
-            await PushUserNotification("Success", "Excel File", $"The Excel file can be downloaded by navigating to this URL: {new Uri(url).AbsoluteUri}");
+            await _pushNotificationService.PushUserNotification(MyTemplate, "Success", "Excel File", $"The Excel file can be downloaded by navigating to this URL: {new Uri(url).AbsoluteUri}");
         }
     }
 }

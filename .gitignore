@@ -206,10 +206,14 @@ Views/Shared/CDN/
 /terminalAtlassian/log4net.terminals.Release.config
 /terminalAtlassian/log4net.terminals.Dev.config
 /terminalAtlassian/log4net.terminals.Demo.config
+/terminalDemo/log4net.terminals.Release.config
+/terminalDemo/log4net.terminals.Dev.config
+/terminalDemo/log4net.terminals.Demo.config
 
 
 /terminalAzure/log4net.terminals.Release.config
 /terminalAzure/log4net.terminals.Dev.config
 /terminalAzure/log4net.terminals.Demo.config
 /terminalAzure/log4net.terminals.config
+*.csproj.DotSettings
 *.csproj.DotSettings

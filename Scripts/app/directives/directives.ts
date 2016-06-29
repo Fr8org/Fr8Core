@@ -206,7 +206,7 @@ app.directive('delayedControl', ['$compile', ($compile: ng.ICompileService) => (
     },
     template: '',
     link: (scope: ng.IScope, elem: ng.IAugmentedJQuery, attr: ng.IAttributes) => {
-        
+
         elem.append("<configuration-control plan='plan' current-action='currentAction' field='field' change='change'></configuration-control>");
         $compile(elem.contents())(scope);
     }
@@ -288,7 +288,9 @@ app.directive('eventAdd', ['$timeout', '$window', function ($timeout, $window) {
         restrict: 'A',
         link: function (scope, element) {
             element.on('click', function () {
-                $window.analytics.track("Clicked Add Plan Button");
+                if ($window.analytics != null) {
+                    $window.analytics.track("Clicked Add Plan Button");
+                }
             });
         }
     };
@@ -299,7 +301,9 @@ app.directive('eventRun', ['$timeout', '$window', function ($timeout, $window) {
         restrict: 'A',
         link: function (scope, element) {
             element.on('click', function () {
-                $window.analytics.track("Clicked Run Plan Button");
+                if ($window.analytics != null) {
+                    $window.analytics.track("Clicked Run Plan Button");
+                }
             });
         }
     };
@@ -309,7 +313,9 @@ app.directive('eventAuthDialog', ['$timeout', '$window', function ($timeout, $wi
     return {
         restrict: 'A',
         link: function (scope, element) {
-            $window.analytics.track("Auth Dialog Opened");
+            if ($window.analytics != null) {
+                $window.analytics.track("Auth Dialog Opened");
+            }
         }
     };
 }]);
@@ -318,7 +324,9 @@ app.directive('eventPlanbuilder', ['$timeout', '$window', function ($timeout, $w
     return {
         restrict: 'A',
         link: function (scope, element) {
-            $window.analytics.page("Visited Page - Plan Builder");
+            if ($window.analytics != null) {
+                $window.analytics.page("Visited Page - Plan Builder");
+            }
         }
     };
 }]);

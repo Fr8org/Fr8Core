@@ -20,9 +20,12 @@ namespace terminalUtilities.Excel
     public class ExcelUtils
     {
         private readonly IRestfulServiceClient _restfulServiceClient;
-        public ExcelUtils()
+        private readonly ICrateManager _crateManager;
+
+        public ExcelUtils(IRestfulServiceClient restfulServiceClient, ICrateManager crateManager)
         {
-            _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
+            _restfulServiceClient = restfulServiceClient;
+            _crateManager = crateManager;
         }
 
         public static void ConvertToCsv(string pathToExcel, string pathToCsv)
@@ -245,10 +248,9 @@ namespace terminalUtilities.Excel
         }
 
 
-        public static StandardTableDataCM GetExcelFile(byte[] fileAsByteArray, string selectedFilePath, bool isFirstRowAsColumnNames = true, string sheetName = null)
+        public StandardTableDataCM GetExcelFile(byte[] fileAsByteArray, string selectedFilePath, bool isFirstRowAsColumnNames = true, string sheetName = null)
         {
             var ext = Path.GetExtension(selectedFilePath);
-            var crateManager = ObjectFactory.GetInstance<ICrateManager>();
             // Read file from repository
             // Fetch column headers in Excel file
             var headersArray = GetColumnHeaders(fileAsByteArray, ext, sheetName);
@@ -263,7 +265,7 @@ namespace terminalUtilities.Excel
                 var rows = CreateTableCellPayloadObjects(rowsDictionary, headersArray, isFirstRowAsColumnNames);
                 if (rows != null && rows.Count > 0)
                 {
-                    curExcelPayloadRowsCrateDTO = crateManager.CreateStandardTableDataCrate("Excel Payload Rows", isFirstRowAsColumnNames, rows.ToArray());
+                    curExcelPayloadRowsCrateDTO = _crateManager.CreateStandardTableDataCrate("Excel Payload Rows", isFirstRowAsColumnNames, rows.ToArray());
                 }
             }
 
@@ -289,16 +291,15 @@ namespace terminalUtilities.Excel
             var listOfRows = new List<TableRowDTO>();
             if (includeHeadersAsFirstRow)
             {
-                listOfRows.Add(new TableRowDTO { Row = headersArray.Select(x => new TableCellDTO { Cell = new FieldDTO(x, x) }).ToList() });
+                listOfRows.Add(new TableRowDTO { Row = headersArray.Select(x => new TableCellDTO { Cell = new KeyValueDTO(x, x) }).ToList() });
             }
             // Process each item in the dictionary and add it as an item in List<TableRowDTO>
             foreach (var row in rowsDictionary)
             {
                 var listOfCells = row.Value.Select(x => new TableCellDTO
                 {
-                    Cell = new FieldDTO
+                    Cell = new KeyValueDTO
                     {
-
                         Key = headersArray != null ? headersArray[int.Parse(x.Item1) - 1] : x.Item1, // Column header
                         Value = x.Item2 // Column/cell value
                     }
@@ -307,13 +308,7 @@ namespace terminalUtilities.Excel
             }
             return listOfRows;
         }
-
-        public async Task<FieldDescriptionsCM> GetColumnHeadersData(string uploadFilePath, string label = null)
-        {
-            var columnHeaders = await GetColumnHeaders(uploadFilePath);
-            return new FieldDescriptionsCM(columnHeaders.Select(col => new FieldDTO { Key = col, Value = col, Availability = AvailabilityType.RunTime, SourceCrateLabel = label }));
-        }
-
+        
         private static DataTable ToDataTable(StandardTableDataCM tableCM)
         {
             if (tableCM == null || tableCM.Table == null || tableCM.Table.Count == 0)

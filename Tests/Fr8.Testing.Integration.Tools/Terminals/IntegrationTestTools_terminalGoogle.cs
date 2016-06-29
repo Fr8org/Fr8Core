@@ -35,7 +35,7 @@ namespace Fr8.Testing.Integration.Tools.Terminals
         {
             var defaultGoogleAuthToken = GetGoogleAuthToken(authorizationTokenId);
 
-            var googleSheetApi = new GoogleSheet(new GoogleIntegration(ObjectFactory.GetInstance<IRestfulServiceClient>()));
+            var googleSheetApi = new GoogleSheet(new GoogleIntegration(ObjectFactory.GetInstance<IRestfulServiceClient>()), new GoogleDrive());
             var googleSheets = await googleSheetApi.GetSpreadsheets(defaultGoogleAuthToken);
 
             Assert.IsNotNull(googleSheets.FirstOrDefault(x => x.Value == spreadsheetName), "Selected spreadsheet was not found into existing google files.");
@@ -50,7 +50,7 @@ namespace Fr8.Testing.Integration.Tools.Terminals
             //Adding header row if possible
             if (dataRows.Count > 0)
             {
-                dataRows.Insert(0, new TableRowDTO { Row = dataRows.First().Row.Select(x => new TableCellDTO { Cell = new FieldDTO(x.Cell.Key, x.Cell.Key) }).ToList() });
+                dataRows.Insert(0, new TableRowDTO { Row = dataRows.First().Row.Select(x => new TableCellDTO { Cell = new KeyValueDTO(x.Cell.Key, x.Cell.Key) }).ToList() });
                 hasHeaderRow = true;
             }
 
@@ -67,7 +67,7 @@ namespace Fr8.Testing.Integration.Tools.Terminals
         /// <returns></returns>
         public async Task<string> CreateNewSpreadsheet(Guid authorizationTokenId, string spreadsheetName, string worksheetName, StandardTableDataCM tableData)
         {
-            var googleSheetApi = new GoogleSheet(new GoogleIntegration(ObjectFactory.GetInstance<IRestfulServiceClient>()));
+            var googleSheetApi = new GoogleSheet(new GoogleIntegration(ObjectFactory.GetInstance<IRestfulServiceClient>()), new GoogleDrive());
             var defaultGoogleAuthToken = GetGoogleAuthToken(authorizationTokenId);
             var spreadsheetId = await googleSheetApi.CreateSpreadsheet(spreadsheetName, defaultGoogleAuthToken);
 
@@ -95,7 +95,7 @@ namespace Fr8.Testing.Integration.Tools.Terminals
         /// <returns></returns>
         public async Task DeleteSpreadSheet(Guid authorizationTokenId, string spreadsheetId)
         {
-            var googleSheetApi = new GoogleSheet(new GoogleIntegration(ObjectFactory.GetInstance<IRestfulServiceClient>()));
+            var googleSheetApi = new GoogleSheet(new GoogleIntegration(ObjectFactory.GetInstance<IRestfulServiceClient>()), new GoogleDrive());
             var defaultGoogleAuthToken = GetGoogleAuthToken(authorizationTokenId);
             await googleSheetApi.DeleteSpreadSheet(spreadsheetId, defaultGoogleAuthToken);
         }

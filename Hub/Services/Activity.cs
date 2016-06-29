@@ -20,6 +20,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Exceptions;
 using Hub.Infrastructure;
 using Hub.Interfaces;
@@ -49,15 +50,20 @@ namespace Hub.Services
 
         public async Task<ActivityDTO> SaveOrUpdateActivity(ActivityDO submittedActivityData)
         {
+            //lets skip locking for save operations
+            return await SaveOrUpdateActivityCore(submittedActivityData);
+
+            /*
             if (submittedActivityData.Id == Guid.Empty)
             {
                 return await SaveOrUpdateActivityCore(submittedActivityData);
             }
 
+            
             using (await _configureLock.Lock(submittedActivityData.Id))
             {
                 return await SaveOrUpdateActivityCore(submittedActivityData);
-            }
+            }*/
         }
 
         [AuthorizeActivity(Permission = PermissionType.ReadObject, ParamType = typeof(Guid), TargetType = typeof(PlanNodeDO))]
@@ -66,7 +72,7 @@ namespace Hub.Services
             return uow.PlanRepository.GetById<ActivityDO>(id);
         }
 
-        public async Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
+        public async Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null, PlanVisibility newPlanVisibility = PlanVisibility.Standard)
         {
             if (parentNodeId != null && createPlan)
             {
@@ -81,7 +87,7 @@ namespace Hub.Services
             // to avoid null pointer exception while creating parent node if label is null 
             if (name == null)
             {
-                name = userId + "_" + activityTemplateId.ToString();
+                name = userId + "_" + activityTemplateId;
             }
 
             PlanNodeDO parentNode;
@@ -89,7 +95,7 @@ namespace Hub.Services
 
             if (createPlan)
             {
-                plan = ObjectFactory.GetInstance<IPlan>().Create(uow, name);
+                plan = ObjectFactory.GetInstance<IPlan>().Create(uow, name, ownerId: userId, visibility: newPlanVisibility);
 
                 plan.ChildNodes.Add(parentNode = new SubplanDO
                 {
@@ -177,7 +183,6 @@ namespace Hub.Services
                 {
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
-                        AuthorizationTokenDO authToken;
                         var existingAction = uow.PlanRepository.GetById<ActivityDO>(submittedActivity.Id);
 
                         if (existingAction == null)
@@ -189,8 +194,9 @@ namespace Hub.Services
                         {
                             return Mapper.Map<ActivityDTO>(submittedActivity);
                         }
-
+                        Logger.LogInfo($"Before calling terminal activation of activity (Id - {submittedActivity.Id})");
                         var activatedActivityDTO = await CallTerminalActivityAsync<ActivityDTO>(uow, "activate", null, submittedActivity, Guid.Empty);
+                        Logger.LogInfo($"Call to terminal activation of activity (Id - {submittedActivity.Id}) completed");
                         var activatedActivityDo = Mapper.Map<ActivityDO>(activatedActivityDTO);
 
                         var storage = _crate.GetStorage(activatedActivityDo);
@@ -577,7 +583,7 @@ namespace Hub.Services
             return Mapper.Map<ActivityDO>(tempActionDTO);
         }
 
-        private Task<TResult> CallTerminalActivityAsync<TResult>(
+        private async Task<TResult> CallTerminalActivityAsync<TResult>(
             IUnitOfWork uow,
             string activityName,
             IEnumerable<KeyValuePair<string, string>> parameters,
@@ -610,13 +616,13 @@ namespace Hub.Services
                 var containerDO = uow.ContainerRepository.GetByKey(containerId);
                 EventManager.ContainerSent(containerDO, curActivityDO);
 
-                var reponse = ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<TResult>(activityName, parameters, fr8DataDTO, containerId.ToString());
+                var response = ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<TResult>(activityName, parameters, fr8DataDTO, containerId.ToString());
 
                 EventManager.ContainerReceived(containerDO, curActivityDO);
-                return reponse;
+                return await response;
             }
 
-            return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<TResult>(activityName, parameters, fr8DataDTO, containerId.ToString());
+            return await ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<TResult>(activityName, parameters, fr8DataDTO, containerId.ToString());
         }
 
         private void ReportActivityInvocationError(ActivityDO activity, string error, string containerId, string objectId, Action<string, string, string, string> reportingAction)
@@ -658,7 +664,7 @@ namespace Hub.Services
                 //find the activity by the provided name
 
                 // To prevent mismatch between db and terminal solution lists, Single or Default used
-                var curActivityTerminalDTO = allActivityTemplates.SingleOrDefault(a => a.Name == activityDTO.ActivityTemplate.Name);
+                var curActivityTerminalDTO = allActivityTemplates.OrderByDescending(x => Int32.Parse(x.Version)).FirstOrDefault(a => a.Name == activityDTO.ActivityTemplate.Name);
                 //prepare an Activity object to be sent to Activity in a Terminal
                 //IMPORTANT: this object will not be hold in the database
                 //It is used to transfer data
@@ -712,9 +718,12 @@ namespace Hub.Services
             var solutionNameList = new List<string>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curActivities = uow.ActivityTemplateRepository.GetAll()
-                    .Where(a => a.Terminal.Name == terminalName
-                                && a.Category == ActivityCategory.Solution)
+                var curActivities = uow.ActivityTemplateRepository
+                    .GetQuery()
+                    .Where(x => x.Terminal.Name == terminalName && x.Category == ActivityCategory.Solution)
+                    .GroupBy(x => x.Name)
+                    .AsEnumerable()
+                    .Select(x => x.OrderByDescending(y => int.Parse(y.Version)).First())
                     .ToList();
                 solutionNameList.AddRange(curActivities.Select(activity => activity.Name));
             }

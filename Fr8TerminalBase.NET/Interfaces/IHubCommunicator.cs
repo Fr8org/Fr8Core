@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Fr8.Infrastructure.Data.Constants;
+using Newtonsoft.Json.Linq;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.Models;
 
@@ -14,9 +15,12 @@ namespace Fr8.TerminalBase.Interfaces
     {
         string UserId { get; }
 
-        void Configure(string terminalName, string userId);
+        void Authorize(string userId);
 
+        Task<PlanEmptyDTO> LoadPlan(JToken planContents);
         Task<PayloadDTO> GetPayload(Guid containerId);
+        Task<List<AuthenticationTokenTerminalDTO>> GetTokens();
+        Task<AuthorizationTokenDTO> GenerateOAuthToken(ExternalAuthenticationDTO authDTO);
         Task<UserDTO> GetCurrentUser();
         Task<IncomingCratesDTO> GetAvailableData(Guid activityId, CrateDirection direction, AvailabilityType availability);
         Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(Guid activityId, CrateDirection direction);
@@ -25,9 +29,9 @@ namespace Fr8.TerminalBase.Interfaces
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(bool getLatestsVersionsOnly = false);
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category, bool getLatestsVersionsOnly = false);
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, bool getLatestsVersionsOnly = false);
-        Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields);
+        //Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields);
         Task<AuthorizationToken> GetAuthToken(string authTokenId);
-        Task ScheduleEvent(string externalAccountId, string minutes);
+        Task ScheduleEvent(string externalAccountId, string minutes, bool triggerImmediately = false, string additionalConfigAttributes = null);
         Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload);
         Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload);
         Task<ActivityPayload> CreateAndConfigureActivity(Guid templateId, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null);
@@ -46,5 +50,10 @@ namespace Fr8.TerminalBase.Interfaces
         Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan);
         Task NotifyUser(TerminalNotificationDTO notificationMessage);
         Task RenewToken(AuthorizationTokenDTO token);
+        Task SendEvent(Crate eventPayload);
+        Task<List<TManifest>> QueryWarehouse<TManifest>(List<FilterConditionDTO> query) where TManifest : Manifest;
+        Task AddOrUpdateWarehouse(params Manifest[] manifests);
+        Task DeleteFromWarehouse<TManifest>(List<FilterConditionDTO> query) where TManifest : Manifest;
+        Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri);
     }
 }

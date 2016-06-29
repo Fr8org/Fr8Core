@@ -12,6 +12,7 @@ gulp.task('bower', function (done) {
     return bower({ layout: "byComponent" });
 });
 
+
 gulp.task('concattemplates', function () {
     return gulp.src(['Views/AngularTemplate/**/*.cshtml',
         /*we are excluding those files - because they contain razor code*/
@@ -91,6 +92,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/EventArgsBase.js',
         'Scripts/app/directives/directives.js',
         'Scripts/app/directives/indiClick.js',
+        'Scripts/app/directives/fillHeight.js',
         'Scripts/app/directives/layout.js',
         'Scripts/app/directives/PaneWorkflowDesigner/Messages.js',
         'Scripts/app/directives/PaneWorkflowDesigner/PaneWorkflowDesigner.js',
@@ -122,6 +124,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Controls/DatePicker.js',
         'Scripts/app/directives/Controls/UpstreamDataChooser.js',
         'Scripts/app/directives/Controls/UpstreamFieldChooser.js',
+        'Scripts/app/directives/Controls/UpstreamFieldChooserButton.js',
         'Scripts/app/directives/Controls/UpstreamCrateChooser.js',
         'Scripts/app/directives/Controls/CrateChooser.js',
         'Scripts/app/directives/Controls/ContainerTransition.js',
@@ -151,6 +154,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/AccountListController.js',
         'Scripts/app/controllers/AccountDetailsController.js',
         'Scripts/app/controllers/InternalAuthenticationController.js',
+        'Scripts/app/controllers/PhoneNumberAuthenticationController.js',
         'Scripts/app/controllers/AuthenticationDialogController.js',
         'Scripts/app/controllers/SelectActionController.js',
         'Scripts/app/controllers/ContainerListController.js',
