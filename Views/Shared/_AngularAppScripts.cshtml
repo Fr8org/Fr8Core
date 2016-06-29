@@ -53,5 +53,5 @@
 @Scripts.Render("~/bundles/js/fr8")
 
 <script>
-    var appKey = "@( new ConfigRepository().Get("pusherAppKey"))";
+    var appKey = "@(Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("pusherAppKey"))";
 </script>
