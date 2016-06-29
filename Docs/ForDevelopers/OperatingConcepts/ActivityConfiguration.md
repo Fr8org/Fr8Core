@@ -36,4 +36,18 @@ When the client receives a response to a Configuration call, it triggers configu
 
 Learn more about the [UI Control Definitions.](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/ConfigurationControls.md)
 
+### 1. Configure
+
+When user creates an activity on PlanBuilder (PB), hub calls configure function of the activity. (Please see [Hub-Terminal Communication](/Docs/HubTerminalCommunication.md)) An activity must respond this call with an ActivityDTO.
+Respond of the activity gets sent to PB. All activities are expected to have a [StandardConfigurationControlsCM](/Docs/Manifests/StandardConfigurationControlsCM.md) with a label of "Collection_Controls". This is the UI part of an activity. PB inspects this crate and renders each ControlDefinitionDTO sequentially (Read about [Activity Controls](/Docs/ActivityControls.md)). And voila our activity has a face which can be configured by the user.
+
+#### 1.1. Initial and FollowUp Configuration
+
+Configure calls allow user to design and configure activity for run and activation time.
+
+When user first creates an activity, hub calls activity configure function with an empty storage. When a configure call contains an empty storage, activity might assume that this is the initial call. Activities are expected to create the StandardConfigurationControlsCM and insert it into their storage on their initial call. An activity might need to do some additional operations too, like connecting to a remote service and loading data. (PostToSlack activity loads channel list from slack and inserts this data into a dropdown control. allowing user to select a channel)
+When a configure call contains non empty storage, activity might assume this is the followup call. this call might be triggered by a ControlDefinitionDTO change or manually by user. An activity might need to do operations on each configure call. Like checking if the user filled a required data to connect to an external service.
+
+Each configure call to activity re-renders activity UI completely. An activity might add new controls or modify existing ones on these calls.
+
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
