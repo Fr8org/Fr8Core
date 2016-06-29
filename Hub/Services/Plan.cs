@@ -809,6 +809,10 @@ namespace Hub.Services
                     var oldId = planNodeDO.Id;
                     planNodeDO.Id = Guid.NewGuid();
                     planNodeDO.Fr8Account = currentUser;
+                    //if (planNodeDO is ActivityDO)
+                    //{
+                    //    (planNodeDO as ActivityDO).AuthorizationTokenId = null;
+                    //}
                     parentMap.Add(oldId, planNodeDO);
                     planNodeDO.ChildNodes = new List<PlanNodeDO>();
                     if (planNodeDO.ParentPlanNodeId != null)
@@ -831,6 +835,24 @@ namespace Hub.Services
                     {
                         //this should be a plan because it has null ParentId
                         uow.PlanRepository.Add(planNodeDO as PlanDO);
+                    }
+                }
+
+                //lets update all existing ids in crateStorages of new activities
+                //there might be some fields or crates published with sourceActivityId
+                foreach (var idMap in parentMap)
+                {
+                    foreach (var planNodeDO in planTree)
+                    {
+                        var activity = planNodeDO as ActivityDO;
+                        if (activity == null)
+                        {
+                            continue;
+                        }
+
+                        var oldId = idMap.Key.ToString();
+                        var newId = idMap.Value.Id.ToString();
+                        activity.CrateStorage = activity.CrateStorage.Replace(oldId, newId);
                     }
                 }
 

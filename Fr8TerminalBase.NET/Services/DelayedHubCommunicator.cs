@@ -265,5 +265,23 @@ namespace Fr8.TerminalBase.Services
                 }
             }
         }
+
+        public async Task<List<AuthenticationTokenTerminalDTO>> GetTokens()
+        {
+            await InitializeUnderlyingCommunicator();
+            return await _underlyingHubCommunicator.GetTokens();
+        }
+
+        public async Task<AuthorizationTokenDTO> GenerateOAuthToken(ExternalAuthenticationDTO authDTO)
+        {
+            await InitializeUnderlyingCommunicator();
+            return await _underlyingHubCommunicator.GenerateOAuthToken(authDTO);
+        }
+
+        public async Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri)
+        {
+            await InitializeUnderlyingCommunicator();
+            return await _underlyingHubCommunicator.GetHMACHeader(requestUri);
+        }
     }
 }
