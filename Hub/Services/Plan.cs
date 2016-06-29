@@ -60,7 +60,11 @@ namespace Hub.Services
             planQueryDTO.Page = planQueryDTO.Page < 1 ? 1 : planQueryDTO.Page;
             planQueryDTO.PlanPerPage = planQueryDTO.PlanPerPage ?? DefaultPlanPageSize;
             planQueryDTO.PlanPerPage = planQueryDTO.PlanPerPage < MinPlanPageSize ? MinPlanPageSize : planQueryDTO.PlanPerPage;
-            planQueryDTO.IsDescending = planQueryDTO.IsDescending ?? true;
+            planQueryDTO.IsDescending = planQueryDTO.IsDescending ?? planQueryDTO.OrderBy?.StartsWith("-") ?? true;
+            if (planQueryDTO.OrderBy?.StartsWith("-") == true)
+            {
+                planQueryDTO.OrderBy = planQueryDTO.OrderBy.Substring(1);
+            }
 
             var planQuery = unitOfWork.PlanRepository.GetPlanQueryUncached()
                 .Where(x => x.Visibility == PlanVisibility.Standard);
@@ -809,6 +813,10 @@ namespace Hub.Services
                     var oldId = planNodeDO.Id;
                     planNodeDO.Id = Guid.NewGuid();
                     planNodeDO.Fr8Account = currentUser;
+                    //if (planNodeDO is ActivityDO)
+                    //{
+                    //    (planNodeDO as ActivityDO).AuthorizationTokenId = null;
+                    //}
                     parentMap.Add(oldId, planNodeDO);
                     planNodeDO.ChildNodes = new List<PlanNodeDO>();
                     if (planNodeDO.ParentPlanNodeId != null)
@@ -831,6 +839,24 @@ namespace Hub.Services
                     {
                         //this should be a plan because it has null ParentId
                         uow.PlanRepository.Add(planNodeDO as PlanDO);
+                    }
+                }
+
+                //lets update all existing ids in crateStorages of new activities
+                //there might be some fields or crates published with sourceActivityId
+                foreach (var idMap in parentMap)
+                {
+                    foreach (var planNodeDO in planTree)
+                    {
+                        var activity = planNodeDO as ActivityDO;
+                        if (activity == null)
+                        {
+                            continue;
+                        }
+
+                        var oldId = idMap.Key.ToString();
+                        var newId = idMap.Value.Id.ToString();
+                        activity.CrateStorage = activity.CrateStorage.Replace(oldId, newId);
                     }
                 }
 
