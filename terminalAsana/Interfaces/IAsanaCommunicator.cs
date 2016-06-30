@@ -10,5 +10,6 @@ namespace terminalAsana.Interfaces
     public interface IAsanaOAuthCommunicator : IRestfulServiceClient
     {
         IAsanaOAuth OAuthService { get; set; }
+        Task<Dictionary<string, string>> PrepareHeader(Dictionary<string, string> existingHeaders);
     }
 }

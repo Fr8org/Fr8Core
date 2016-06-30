@@ -24,14 +24,44 @@ namespace terminalAsana.Asana.Services
             _restfulClient = client;
         }
 
-        private async Task<Dictionary<string,string>> PrepareHeader()
+        public async Task<TResponse> ApiCall<TResponse>(Func<Task<TResponse>> apiCall)
+        {
+
+            if (auth.ExpiresAt != null && auth.ExpiresAt < DateTime.UtcNow)
+            {
+                auth = await RefreshTokenImpl(auth);
+            }
+            try
+            {
+                return await apiCall(auth).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                if (!IsExpiredAccessTokenException(ex))
+                {
+                    throw;
+                }
+                await OAuthService.RefreshOAuthTokenAsync();
+                return await apiCall().ConfigureAwait(false);
+            }
+        }
+
+
+        /// <summary>
+        /// Add OAuth access_token to headers
+        /// </summary>
+        /// <param name="header"></param>
+        /// <returns></returns>
+        private async Task<Dictionary<string,string>> PrepareHeader(Dictionary<string,string> header)
         {
             var token = await OAuthService.RefreshTokenIfExpiredAsync();
             var headers = new Dictionary<string, string>()
             {
                 {"Authorization", $"Bearer {token.AccessToken}"},
             };
-            return headers;
+            
+            var combinedHeaders = headers?.Concat(header).ToDictionary(k => k.Key, v => v.Value) ?? header;
+            return combinedHeaders;
         }
         
         public Task<Stream> DownloadAsync(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)
@@ -41,13 +71,12 @@ namespace terminalAsana.Asana.Services
 
         public async Task<TResponse> GetAsync<TResponse>(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)
         {
-            var header = await PrepareHeader();
-            var combinedHeaders = headers == null ? header : headers.Concat(header); 
+            var header = await PrepareHeader(headers);
+             
 
-            var response = await _restfulClient.GetAsync<TResponse>(requestUri, CorrelationId, combinedHeaders.ToDictionary( k=>k.Key, v=>v.Value));
+            var response = await _restfulClient.GetAsync<TResponse>(requestUri, CorrelationId, header);
 
             return response;
-            //throw new NotImplementedException();
         }
 
         public Task<string> GetAsync(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)

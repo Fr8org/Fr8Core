@@ -17,6 +17,7 @@ using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Errors;
 using Microsoft.Ajax.Utilities;
 using terminalAsana.Asana;
+using terminalAsana.Asana.Entities;
 using terminalAsana.Asana.Services;
 using terminalAsana.Interfaces;
 
@@ -37,9 +38,11 @@ namespace terminalAsana.Activities
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
-            NeedsAuthentication = true            
+            NeedsAuthentication = true             
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+        
+
 
         private const string RunTimeCrateLabel = "Post Comment";
         private const string ResultFieldLabel = "ActivityResult";
@@ -47,7 +50,6 @@ namespace terminalAsana.Activities
 
         public class ActivityUi : StandardConfigurationControlsCM
         {
-            
             public DropDownList Workspaces { get; set; }
             public DropDownList Tasks { get; set; }
             public TextSource   Comment { get; set; }
@@ -60,7 +62,7 @@ namespace terminalAsana.Activities
                     Name = nameof(Workspaces),
                     Required = true,
                     ListItems = new List<ListItem>(),
-                    
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
                 Tasks = new DropDownList
                 {
@@ -74,6 +76,8 @@ namespace terminalAsana.Activities
                     InitialLabel = "Comment",
                     Label = "Comment",
                     Name = nameof(Comment),
+                    GroupLabelText = "",
+                    
                     Source = new FieldSourceDTO
                     {
                         ManifestType = CrateManifestTypes.StandardDesignTimeFields,
@@ -87,6 +91,7 @@ namespace terminalAsana.Activities
         public Post_Comment_v1(ICrateManager crateManager, IAsanaOAuth oAuth, IRestfulServiceClient client)
             : base(crateManager,oAuth, client)
         {
+            DisableValidationOnFollowup = true;
         }
 
         protected override void InitializeInternalState()
@@ -111,6 +116,12 @@ namespace terminalAsana.Activities
 
         public override Task FollowUp()
         {
+            if (!ActivityUI.Workspaces.Value.IsNullOrWhiteSpace())
+            {
+                var tasks = _tasks.Query(new AsanaTaskQuery() {Workspace = ActivityUI.Workspaces.Value}).Result;
+                ActivityUI.Tasks.ListItems = tasks.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();
+
+            }
 
             return Task.FromResult(0);
         }

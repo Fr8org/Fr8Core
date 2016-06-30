@@ -12,19 +12,17 @@ namespace terminalAsana.Asana
     public class Users : IAsanaUsers
     {
         private readonly IRestfulServiceClient _restfulClient;
-        private readonly IAsanaOAuth _oAuthService;
+        private readonly IAsanaParameters _asanaParams;
 
-        public Users(IRestfulServiceClient client, IAsanaOAuth oAuth)
+        public Users(IRestfulServiceClient client, IAsanaParameters asanaParams)
         {
             _restfulClient = client;
-            _oAuthService = oAuth;
+            _asanaParams = asanaParams;
         }
-        
-
-
 
         public async Task<AsanaUser> Me()
         {
+
             return new AsanaUser() {Name = "Test"};
         }
 
@@ -33,8 +31,9 @@ namespace terminalAsana.Asana
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<AsanaUser>> GetUsers()
+        public async Task<IEnumerable<AsanaUser>> GetUsers(string  workspaceId)
         {
+
             throw new NotImplementedException();
         }
     }

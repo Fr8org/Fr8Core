@@ -44,12 +44,12 @@ namespace terminalAsana.Asana.Services
         public async Task<IEnumerable<AsanaTask>> Query(AsanaTaskQuery query)
         {
             var url = _asanaParams.TasksUrl + "?";
-            url = query.Workspace ?? url + $"workspace={query.Workspace}&";
-            url = query.Assignee ?? url + $"assignee={query.Assignee}&";
-            url = query.CompletedSince ?? url + $"completed_since={query.Workspace}&";
-            url = query.ModifiedSince ?? url + $"modified_since={query.Workspace}&";
-            url = query.Project ?? url + $"project={query.Workspace}&";
-            url = query.Tag ?? url + $"tag={query.Workspace}";
+            url = query.Workspace != null ? url + $"workspace={query.Workspace}&": url;
+            url = query.Assignee != null  ? url + $"assignee={query.Assignee}&" : url + $"assignee=me&";
+            url = query.CompletedSince != null  ? url + $"completed_since={query.Workspace}&" : url;
+            url = query.ModifiedSince != null ? url + $"modified_since={query.Workspace}&" : url;
+            url = query.Project != null ? url + $"project={query.Workspace}&" : url;
+            url = query.Tag != null ? url + $"tag={query.Workspace}" : url;
 
             var uri = new Uri(url);
             

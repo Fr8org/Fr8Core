@@ -26,7 +26,7 @@ namespace terminalAsana.Interfaces
         /// Returns the user records for all users in all workspaces and organizations accessible to the authenticated user. 
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<AsanaUser>> GetUsers();
+        Task<IEnumerable<AsanaUser>> GetUsers(string workspaceId);
 
 
     }
