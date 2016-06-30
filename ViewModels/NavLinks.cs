@@ -18,7 +18,6 @@ namespace HubWeb.ViewModels
                 }
                 return _baseUrl;
             }
-            set { _baseUrl = value; }
         }
         public static string Blog = "http://blog.fr8.co";
         public static string Developers = "https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md";
