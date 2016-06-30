@@ -66,14 +66,7 @@ namespace HubWeb
 
             //Register global Exception Filter for WebAPI 
             GlobalConfiguration.Configuration.Filters.Add(new WebApiExceptionFilterAttribute());
-
-            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
-            ObjectFactory.Configure(Fr8.Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
-            ObjectFactory.GetInstance<AutoMapperBootStrapper>().ConfigureAutoMapper();
-
-            var db = ObjectFactory.GetInstance<DbContext>();
-            db.Database.Initialize(true);
-
+            
             if (!selfHostMode)
             {
                 Fr8.Infrastructure.Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
@@ -82,45 +75,14 @@ namespace HubWeb
                 if (!segmentWriteKey.IsNullOrEmpty())
                     Analytics.Initialize(segmentWriteKey);
             }
-
-            EventReporter curReporter = ObjectFactory.GetInstance<EventReporter>();
-            curReporter.SubscribeToAlerts();
-
-            IncidentReporter incidentReporter = ObjectFactory.GetInstance<IncidentReporter>();
-            incidentReporter.SubscribeToAlerts();
-
+            
             ModelBinders.Binders.Add(typeof(DateTimeOffset), new KwasantDateBinder());
-
-            var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                //THIS IS CURRENTLY CAUSING AN EXCEPTION
-                //uow.RemoteServiceProviderRepository.CreateRemoteServiceProviders(configRepository);
-                uow.SaveChanges();
-            }
-
-            SetServerUrl();
-
-            //Logger.GetLogger().Warn("Dockyard  starting...");
+            
             Logger.LogWarning("Dockyard  starting...");
 
             ConfigureValidationEngine();
-            StartupMigration.CreateSystemUser();
-            StartupMigration.MoveSalesforceRefreshTokensIntoKeyVault();
-
-            RegisterTerminalActions();
         }
-
-
-        public void RegisterTerminalActions()
-        {
-            var terminalDiscovery = ObjectFactory.GetInstance<ITerminalDiscoveryService>();
-
-#pragma warning disable 4014
-            terminalDiscovery.Discover();
-#pragma warning restore 4014
-        }
-
+        
         private void ConfigureValidationEngine()
         {
             FluentValidationModelValidatorProvider.Configure(GlobalConfiguration.Configuration);
@@ -155,7 +117,7 @@ namespace HubWeb
         {
 
 #if DEBUG
-            SetServerUrl(HttpContext.Current);
+            //SetServerUrl(HttpContext.Current);
             TelemetryConfiguration.Active.DisableTelemetry = true;
 #endif
             NormalizeUrl();
@@ -207,7 +169,7 @@ namespace HubWeb
             Response.AddHeader("Location", path);
         }
 
-        private void SetServerUrl(HttpContext context = null)
+        /*private void SetServerUrl(HttpContext context = null)
         {
             if (!_IsInitialised)
             {
@@ -257,7 +219,7 @@ namespace HubWeb
                     }
                 }
             }
-        }
+        }*/
 
         public void Application_End()
         {
