@@ -8,5 +8,6 @@ namespace Data.Repositories.MultiTenant.Queryable
         where T : Manifest
     {
         IEnumerator<T> RunQuery(IMtQueryable<T> queryable);
+        int Count(IMtQueryable<T> queryable);
     }
 }
