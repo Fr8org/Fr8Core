@@ -12,7 +12,7 @@
 #>
 
 param(
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory = $false)]
 	[string]$connectionString,
 
     [Parameter(Mandatory = $false)]
@@ -37,8 +37,10 @@ param(
 	[string]$smtpUsername,
 
     [Parameter(Mandatory = $true)]
-	[string]$smtpPassword
+	[string]$smtpPassword,
 
+    [Parameter(Mandatory = $true)]
+	[string]$hubApiBaseUrl
 )
 
 $ErrorActionPreference = 'Stop'
@@ -49,31 +51,36 @@ if ([System.String]::IsNullOrEmpty($overrideDbName) -ne $true) {
 	$connectionString = $builder.ToString()
 }
 
+$RootDir = Split-Path -parent (Split-Path -parent $MyInvocation.MyCommand.Path)
+$ConfigPath = $RootDir+"\terminalCloudService"
+$ConfigFile = $ConfigPath+"\ServiceConfiguration.Release.cscfg"
+$epConfigFile = $ConfigPath+"\ServiceDefinition.csdef"
+
+
+$deployment = Get-AzureDeployment -ServiceName $serviceName -Slot Staging
+$hostName = $deployment.Url.Host
+
 # Get terminal list. Don't do it if just restoring default endpoints (enherited from web.config) 
 # since in this case we only need to reset settings in the XML file to empty strings.
 $terminalList = @{}
+
 if ($inheritEndpoints -ne $true) {
-	$commandText = 'SELECT Name, Endpoint FROM Terminals WHERE Version = ' + $terminalVerson
-
-	$connection = new-object system.data.SqlClient.SQLConnection($connectionString)
-	$command = new-object system.data.sqlclient.sqlcommand($commandText, $connection)
-	$connection.Open()
-	$command.CommandTimeout = 300 #5 minutes
-
-	$reader = $command.ExecuteReader()
-	while ($reader.read()) {
+		
+	$xml = [xml](Get-Content $epConfigFile)
+	$roleNode = $xml.ServiceDefinition.WebRole | where {$_.name -eq 'terminalWebRole'}
+	$terminalEndpointSettings = $roleNode.Endpoints.InputEndpoint | where {($_.name -like 'terminal*') -and ($_.protocol -like 'http')}
+    $terminalEndpointSettings | ForEach-Object {
+		$terminalPort = $_.port
+		$terminalName = $_.name
+				
 		try {
-			$terminalList.Add($reader.GetString(0), $reader.GetString(1))
+			$terminalList.Add($terminalName, $hostName + ":" + $terminalPort)
 		}
 		catch {
 			#Ignore duplicates 
 		}
-	}
+   }
 }
-
-$RootDir = Split-Path -parent (Split-Path -parent $MyInvocation.MyCommand.Path)
-$ConfigPath = $RootDir+"\terminalCloudService"
-$ConfigFile = $ConfigPath+"\ServiceConfiguration.Release.cscfg"
 
 if(Test-Path $ConfigFile)
 {  
@@ -88,6 +95,10 @@ if(Test-Path $ConfigFile)
 	# Update CoreWebServerUrl
 	$urlNode = $roleNode.ConfigurationSettings.Setting | where {$_.name -eq 'CoreWebServerUrl'}
 	$urlNode.value=$coreWebServerUrl
+
+	# Update HubApiBaseUrl
+	$hubApiBaseUrlNode = $roleNode.ConfigurationSettings.Setting | where {$_.name -eq 'HubApiBaseUrl'}
+	$hubApiBaseUrlNode.value=$hubApiBaseUrl
 
 	#Update SMTP Credentials
 	Write-Host "Setting SMTP Credentials"
@@ -106,7 +117,7 @@ if(Test-Path $ConfigFile)
 			Write-Host "$terminalName - inherit from web.config" 
 		}
 		else {
-			$_.value = $terminalList[$terminalName]
+			$_.value = "http://" + $terminalList[$terminalName]
 			Write-Host "$terminalName  - "$_.value
 		}
     }

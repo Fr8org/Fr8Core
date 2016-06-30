@@ -204,12 +204,12 @@ namespace terminalDocuSignTests.Integration
             using (var updatableStorage = Crate.GetUpdatableStorage(sendEnvelopeAction))
             {
                 controlsCrate = updatableStorage.CratesOfType<StandardConfigurationControlsCM>().First();
-                emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role email");
+                emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "freight testing role email");
                 emailField.ValueSource = "specific";
                 emailField.Value = TestEmail;
                 emailField.TextValue = TestEmail;
 
-                emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role name");
+                emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "freight testing role name");
                 emailNameField.ValueSource = "specific";
                 emailNameField.Value = TestEmailName;
                 emailNameField.TextValue = TestEmailName;
@@ -224,11 +224,11 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual("9a4d2154-5b18-4316-9824-09432e62f458", docuSignTemplate.Value, "Selected DocuSign Template did not save on Send DocuSign Envelope action.");
             Assert.AreEqual("Medical_Form_v1", docuSignTemplate.selectedKey, "Selected DocuSign Template did not save on Send DocuSign Envelope action.");
 
-            emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role email");
+            emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "freight testing role email");
             Assert.AreEqual(TestEmail, emailField.Value, "Email did not save on Send DocuSign Envelope action.");
             Assert.AreEqual(TestEmail, emailField.TextValue, "Email did not save on Send DocuSign Envelope action.");
 
-            emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role name");
+            emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "freight testing role name");
             Assert.AreEqual(TestEmailName, emailNameField.Value, "Email Name did not save on Send DocuSign Envelope action.");
             Assert.AreEqual(TestEmailName, emailNameField.TextValue, "Email Name did not save on Send DocuSign Envelope action.");
 

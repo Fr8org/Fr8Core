@@ -1,11 +1,9 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
-using Data.Entities;
-using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Validations;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Hub.Infrastructure;
 using Hub.Interfaces;
@@ -13,11 +11,11 @@ using StructureMap;
 
 namespace HubWeb.Controllers
 {
-    [Fr8ApiAuthorize]
 	public class TerminalsController : ApiController
 	{
         private readonly ISecurityServices _security = ObjectFactory.GetInstance<ISecurityServices>();
         private readonly ITerminal _terminal = ObjectFactory.GetInstance<ITerminal>();
+        private readonly ITerminalDiscoveryService _terminalDiscovery = ObjectFactory.GetInstance<ITerminalDiscoveryService>();
         
         [HttpGet]
 		public IHttpActionResult Get()
@@ -34,7 +32,22 @@ namespace HubWeb.Controllers
             }
 		}
 
+	    [HttpGet]
+	    [Fr8ApiAuthorize]
+	    public IHttpActionResult Registrations()
+	    {
+	        using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+	        {
+	            var terminals = uow.TerminalRegistrationRepository.GetAll()
+	                .Select(Mapper.Map<TerminalRegistrationDTO>)
+	                .ToList();
+
+	            return Ok(terminals);
+	        }
+	    }
+
         [HttpGet]
+        [Fr8ApiAuthorize]
         public IHttpActionResult All()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -47,39 +60,23 @@ namespace HubWeb.Controllers
             }
         }
 
-		[HttpPost]
-		public IHttpActionResult Post(TerminalDTO terminalDto)
+        [HttpPost]
+        //[Fr8ApiAuthorize]
+        public async Task<IHttpActionResult> Post([FromBody]TerminalRegistrationDTO registration)
 		{
-            TerminalDO terminal = Mapper.Map<TerminalDO>(terminalDto);
+		    await _terminalDiscovery.RegisterTerminal(registration.Endpoint);
+		    return Ok();
+     	}
 
-            var validator = new TerminalValidator();
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        [HttpPost]
+        public async Task<ResponseMessageDTO> ForceDiscover([FromBody] string callbackUrl)
+        {
+            if (!await _terminalDiscovery.Discover(callbackUrl))
             {
-                if (terminalDto == null || !validator.Validate(terminalDto).IsValid)
-                {
-                    return BadRequest("Some of the request data is invalid");
-                }
-
-                terminal.Version = "1";
-                terminal.UserDO = _security.GetCurrentAccount(uow);
-
-                terminal = _terminal.RegisterOrUpdate(terminal);
-                
-
-                var subscriptionDO = new TerminalSubscriptionDO
-                {
-                    TerminalId = terminal.Id,
-                    UserDO = terminal.UserDO
-                };
-                uow.TerminalSubscriptionRepository.Add(subscriptionDO);
-                uow.SaveChanges();
+                return ErrorDTO.InternalError($"Failed to call /discover for enpoint {callbackUrl}");
             }
-            EventManager.Fr8AccountTerminalRegistration(terminal);
 
-            var model = Mapper.Map<TerminalDTO>(terminal);
-
-			return Ok(model);
-		}
+            return new ResponseMessageDTO();
+        }
 	}
 }

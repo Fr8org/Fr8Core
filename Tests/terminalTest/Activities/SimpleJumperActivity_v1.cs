@@ -6,6 +6,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Services;
 
 namespace terminalTest.Actions
 {
@@ -60,7 +61,7 @@ namespace terminalTest.Actions
             {
                 ActivityUI.AddChild.Clicked = false;
                 var activityTemplate = await GetActivityTemplateByName(ActivityUI.ActivityToAdd.Value);
-                await AddAndConfigureChildActivity(ActivityId, activityTemplate, ActivityPayload.Label + "." + (ActivityPayload.ChildrenActivities.Count + 1), ActivityPayload.Label + "." + (ActivityPayload.ChildrenActivities.Count + 1));
+                await HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, activityTemplate, ActivityPayload.Label + "." + (ActivityPayload.ChildrenActivities.Count + 1), ActivityPayload.Label + "." + (ActivityPayload.ChildrenActivities.Count + 1));
             }
         }
 

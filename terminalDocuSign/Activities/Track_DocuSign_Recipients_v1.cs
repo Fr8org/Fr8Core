@@ -12,6 +12,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.Models;
+using Fr8.TerminalBase.Services;
 using Hub.Services.MT;
 using Newtonsoft.Json;
 using terminalDocuSign.Services.New_Api;
@@ -132,7 +133,7 @@ namespace terminalDocuSign.Activities
             _container = container;
         }
 
-        protected override async Task InitializeDS()
+        public override async Task Initialize()
         {
             Storage.Clear();
             Storage.Add(PackControls(new ActivityUi()));
@@ -142,7 +143,7 @@ namespace terminalDocuSign.Activities
             Storage.Add(PackAvailableRunTimeDataFields());
         }
 
-        protected override async Task FollowUpDS()
+        public override async Task FollowUp()
         {
             var specificRecipientOption = ((RadioButtonGroup)ConfigurationControls.Controls[0]).Radios[0];
             var specificTemplateOption = ((RadioButtonGroup)ConfigurationControls.Controls[0]).Radios[1];
@@ -172,26 +173,26 @@ namespace terminalDocuSign.Activities
                 ActivityPayload.ChildrenActivities.Clear();
             }
 
-            var monitorDocusignAT = await GetActivityTemplate("terminalDocuSign", "Monitor_DocuSign_Envelope_Activity");
-            var setDelayAT = await GetActivityTemplate("terminalFr8Core", "Set_Delay");
-            var queryFr8WareHouseAT = await GetActivityTemplate("terminalFr8Core", "Query_Fr8_Warehouse");
-            var testIncomingDataAT = await GetActivityTemplate("terminalFr8Core", "Test_Incoming_Data");
-            var buildMessageAT = await GetActivityTemplate("terminalFr8Core", "Build_Message");
+            var monitorDocusignAT = await HubCommunicator.GetActivityTemplate("terminalDocuSign", "Monitor_DocuSign_Envelope_Activity");
+            var setDelayAT = await HubCommunicator.GetActivityTemplate("terminalFr8Core", "Set_Delay");
+            var queryFr8WareHouseAT = await HubCommunicator.GetActivityTemplate("terminalFr8Core", "Query_Fr8_Warehouse");
+            var testIncomingDataAT = await HubCommunicator.GetActivityTemplate("terminalFr8Core", "Test_Incoming_Data");
+            var buildMessageAT = await HubCommunicator.GetActivityTemplate("terminalFr8Core", "Build_Message");
            
             //DocuSign
             var tasks = new List<Task>();
-            var monitorDocuSignActionTask = AddAndConfigureChildActivity(ActivityPayload, monitorDocusignAT, "Monitor Docusign Envelope Activity", "Monitor Docusign Envelope Activity", 1);
+            var monitorDocuSignActionTask = HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, monitorDocusignAT, "Monitor Docusign Envelope Activity", "Monitor Docusign Envelope Activity", 1);
             tasks.Add(monitorDocuSignActionTask);
-            var setDelayActionTask = AddAndConfigureChildActivity(ActivityPayload, setDelayAT, "Set Delay", "Set Delay", 2);
+            var setDelayActionTask = HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, setDelayAT, "Set Delay", "Set Delay", 2);
             tasks.Add(setDelayActionTask);
-            var queryFr8WarehouseActionTask = AddAndConfigureChildActivity(ActivityPayload, queryFr8WareHouseAT, "Query Fr8 Warehouse", "Query Fr8 Warehouse", 3);
+            var queryFr8WarehouseActionTask = HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, queryFr8WareHouseAT, "Query Fr8 Warehouse", "Query Fr8 Warehouse", 3);
             tasks.Add(queryFr8WarehouseActionTask);
-            var filterActionTask = AddAndConfigureChildActivity(ActivityPayload, testIncomingDataAT, "Test Incoming Data", "Test Incoming Data", 4);
+            var filterActionTask = HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, testIncomingDataAT, "Test Incoming Data", "Test Incoming Data", 4);
             tasks.Add(filterActionTask);
             Task<ActivityPayload> buildMessageActivityTask = null;
             if (!hasChildren)
             {
-                buildMessageActivityTask = AddAndConfigureChildActivity((Guid)ActivityPayload.ParentPlanNodeId, buildMessageAT, "Build a Message", "Build a Message", 2);
+                buildMessageActivityTask = HubCommunicator.AddAndConfigureChildActivity((Guid)ActivityPayload.ParentPlanNodeId, buildMessageAT, "Build a Message", "Build a Message", 2);
                 tasks.Add(buildMessageActivityTask);
             }
 
@@ -225,8 +226,8 @@ namespace terminalDocuSign.Activities
 
             if (!hasChildren)
             {
-                var notifierAT = await GetActivityTemplate(Guid.Parse(howToBeNotifiedDdl.Value));
-                var notifierActivity = await AddAndConfigureChildActivity((Guid)ActivityPayload.ParentPlanNodeId, notifierAT, howToBeNotifiedDdl.selectedKey, howToBeNotifiedDdl.selectedKey, 3);
+                var notifierAT = await HubCommunicator.GetActivityTemplate(Guid.Parse(howToBeNotifiedDdl.Value));
+                var notifierActivity = await HubCommunicator.AddAndConfigureChildActivity((Guid)ActivityPayload.ParentPlanNodeId, notifierAT, howToBeNotifiedDdl.selectedKey, howToBeNotifiedDdl.selectedKey, 3);
                 SetNotifierActivityBody(notifierActivity);
                 await HubCommunicator.ConfigureActivity(notifierActivity);
             }
@@ -315,7 +316,7 @@ namespace terminalDocuSign.Activities
             var queryableCriteria = new FieldDescriptionsCM(
                 new FieldDTO()
                 {
-                    Key = "Status",
+                    Name = "Status",
                     Label = "Status",
                     FieldType = FieldType.String
                 });
@@ -392,8 +393,7 @@ namespace terminalDocuSign.Activities
             var fields = DocuSignManager.GetTemplatesList(conf);
             var crate = CrateManager.CreateDesignTimeFieldsCrate(
                 "AvailableTemplates",
-                AvailabilityType.Configuration,
-                fields.ToArray());
+               fields.ToArray());
             return crate;
         }
 
@@ -403,7 +403,7 @@ namespace terminalDocuSign.Activities
 
             var availableRecipientEventsCrate =
                 CrateManager.CreateDesignTimeFieldsCrate(
-                    "AvailableRecipientEvents", events.Select(x => new FieldDTO(x, x)).ToArray()
+                    "AvailableRecipientEvents", events.Select(x => new KeyValueDTO(x, x)).ToArray()
                 );
 
             return availableRecipientEventsCrate;
@@ -415,7 +415,7 @@ namespace terminalDocuSign.Activities
 
             var availableRecipientEventsCrate =
                 CrateManager.CreateDesignTimeFieldsCrate(
-                    "AvailableRunTimeDataFields", events.Select(x => new FieldDTO(x, x)).ToArray()
+                    "AvailableRunTimeDataFields", events.Select(x => new KeyValueDTO(x, x)).ToArray()
                 );
 
             return availableRecipientEventsCrate;
@@ -429,7 +429,7 @@ namespace terminalDocuSign.Activities
             var availableHandlersCrate =
                 CrateManager.CreateDesignTimeFieldsCrate(
                     "AvailableHandlers",
-                    taggedTemplates.Select(x => new FieldDTO(x.Label, x.Id.ToString())).ToArray()
+                    taggedTemplates.Select(x => new KeyValueDTO(x.Label, x.Id.ToString())).ToArray()
                 );
 
             return availableHandlersCrate;
@@ -447,7 +447,7 @@ namespace terminalDocuSign.Activities
             }
         }
 
-        protected override async Task RunDS()
+        public override async Task Run()
         {
             var descendants = new List<ActivityPayload>();
 
@@ -455,15 +455,15 @@ namespace terminalDocuSign.Activities
 
             var configControls = descendants.SelectMany(c => c.CrateStorage.FirstCrateOrDefault<StandardConfigurationControlsCM>()?.Content?.Controls).Where(x => x != null).ToArray();
             var delayValue = (Duration)configControls.Single(c => c.Name == "Delay_Duration" && c.Type == ControlTypes.Duration);
-            var runTimePayloadData = new List<FieldDTO>();
+            var runTimePayloadData = new List<KeyValueDTO>();
             var delayTimeString = delayValue.Days + " days, " + delayValue.Hours + " hours and " + delayValue.Minutes + " minutes";
-            runTimePayloadData.Add(new FieldDTO("DelayTime", delayTimeString, AvailabilityType.RunTime));
+            runTimePayloadData.Add(new KeyValueDTO("DelayTime", delayTimeString));
             var filterPane = (FilterPane)configControls.Single(c => c.Name == "Selected_Filter" && c.Type == ControlTypes.FilterPane);
             var conditions = JsonConvert.DeserializeObject<FilterDataDTO>(filterPane.Value);
             var statusField = conditions.Conditions.FirstOrDefault(c => c.Field == "Status");
             if (statusField != null)
             {
-                runTimePayloadData.Add(new FieldDTO("ActionBeingTracked", statusField.Value, AvailabilityType.RunTime));
+                runTimePayloadData.Add(new KeyValueDTO("ActionBeingTracked", statusField.Value));
             }
             Payload.Add(Crate.FromContent("Track DocuSign Recipients Payload Data", new StandardPayloadDataCM(runTimePayloadData)));
             Success();
@@ -480,24 +480,24 @@ namespace terminalDocuSign.Activities
         {
             if (curDocumentation.Contains("MainPage"))
             {
-                var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
+                var curSolutionPage = new DocumentationResponseDTO(SolutionName, SolutionVersion, TerminalName, SolutionBody);
                 return Task.FromResult(curSolutionPage);
             }
             if (curDocumentation.Contains("HelpMenu"))
             {
                 if (curDocumentation.Contains("TrackDocuSignRecipients"))
                 {
-                    return Task.FromResult(GenerateDocumentationResponse(@"This solution work with notifications"));
+                    return Task.FromResult(new DocumentationResponseDTO(@"This solution work with notifications"));
                 }
                 if (curDocumentation.Contains("ExplainService"))
                 {
-                    return Task.FromResult(GenerateDocumentationResponse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                    return Task.FromResult(new DocumentationResponseDTO(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
                 }
-                return Task.FromResult(GenerateErrorResponse("Unknown contentPath"));
+                return Task.FromResult(new DocumentationResponseDTO("Unknown contentPath"));
             }
             return
                 Task.FromResult(
-                    GenerateErrorResponse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
+                    new DocumentationResponseDTO("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }

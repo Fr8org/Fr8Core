@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using StructureMap;
@@ -11,7 +13,7 @@ namespace Fr8.TerminalBase.Services
 {
     public class ActivityStore : IActivityStore
     {
-        public readonly ConcurrentDictionary<ActivityRegistrationKey, IActivityFactory> _activityRegistrations = new ConcurrentDictionary<ActivityRegistrationKey, IActivityFactory>();
+        private readonly ConcurrentDictionary<ActivityRegistrationKey, IActivityFactory> _activityRegistrations = new ConcurrentDictionary<ActivityRegistrationKey, IActivityFactory>();
         private readonly IContainer _container;
 
         public TerminalDTO Terminal { get; }
@@ -20,6 +22,8 @@ namespace Fr8.TerminalBase.Services
         {
             Terminal = terminal;
             _container = container;
+
+            Terminal.PublicIdentifier = CloudConfigurationManager.GetSetting("TerminalId") ?? ConfigurationManager.AppSettings[terminal.Name + "TerminalId"];
         }
 
         public void RegisterActivity(ActivityTemplateDTO activityTemplate, IActivityFactory activityFactory)
@@ -37,7 +41,7 @@ namespace Fr8.TerminalBase.Services
         /// <param name="activityTemplate"></param>
         public void RegisterActivity<T>(ActivityTemplateDTO activityTemplate) where T : IActivity
         {
-            RegisterActivity(activityTemplate, new DefaultActivityFactory(typeof(T), _container));
+            RegisterActivity(activityTemplate, new DefaultActivityFactory(typeof(T)));
         }
 
         public IActivityFactory GetFactory(ActivityTemplateDTO activityTemplate)

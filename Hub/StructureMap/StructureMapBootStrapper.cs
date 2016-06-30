@@ -77,6 +77,7 @@ namespace Hub.StructureMap
         {
             public LiveMode()
             {
+                For<ITerminalDiscoveryService>().Use<TerminalDiscoveryService>().Singleton();
                 For<IConfigRepository>().Use<ConfigRepository>();
                 For<IMappingEngine>().Use(Mapper.Engine);
 
@@ -100,7 +101,6 @@ namespace Hub.StructureMap
                 For<IPlanNode>().Use<PlanNode>();
                 For<ISubscription>().Use<Subscription>();
                 For<ISubplan>().Use<Subplan>();
-                For<IField>().Use<Field>();
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Hub.Services.Event>();
                 For<IActivityTemplate>().Use<ActivityTemplate>().Singleton();
@@ -125,6 +125,7 @@ namespace Hub.StructureMap
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
                 For<ITimer>().Use<Win32Timer>();
                 For<IManifestRegistryMonitor>().Use<ManifestRegistryMonitor>().Singleton();
+                
             }
         }
 
@@ -132,7 +133,7 @@ namespace Hub.StructureMap
         {
             public TestMode()
             {
-
+                For<ITerminalDiscoveryService>().Use<TerminalDiscoveryService>().Singleton();
                 For<IConfigRepository>().Use<MockedConfigRepository>();
                 For<IMappingEngine>().Use(Mapper.Engine);
 
@@ -160,7 +161,6 @@ namespace Hub.StructureMap
                 For<IPlan>().Use<Hub.Services.Plan>();
 
                 For<ISubplan>().Use<Subplan>();
-                For<IField>().Use<Field>();
                 //var mockProcess = new Mock<IProcessService>();
                 //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
                 //For<IProcessService>().Use(mockProcess.Object);
@@ -189,13 +189,14 @@ namespace Hub.StructureMap
                 For<IPageDefinition>().Use<PageDefinition>();
 
                 For<TelemetryClient>().Use<TelemetryClient>();
-                For<ITerminal>().Use(new TerminalServiceForTests()).Singleton();
+                For<ITerminal>().Use(x=>new TerminalServiceForTests(x.GetInstance<IConfigRepository>())).Singleton();
                 For<IJobDispatcher>().Use<MockJobDispatcher>();
                 // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
                 For<IPlanTemplates>().Use<PlanTemplates>();
                 For<IUtilizationMonitoringService>().Use<UtilizationMonitoringService>().Singleton();
                 For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
                 For<ITimer>().Use<Win32Timer>();
+                
             }
         }
 
@@ -211,9 +212,14 @@ namespace Hub.StructureMap
         {
             private readonly ITerminal _terminal;
 
-            public TerminalServiceForTests()
+            public TerminalServiceForTests(IConfigRepository configRepository)
             {
-                _terminal = new Terminal();
+                _terminal = new Terminal(configRepository);
+            }
+
+            public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal)
+            {
+                return new Dictionary<string, string>();
             }
 
             public Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId)

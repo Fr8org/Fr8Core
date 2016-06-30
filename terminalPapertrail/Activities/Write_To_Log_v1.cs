@@ -17,7 +17,7 @@ namespace terminalPapertrail.Actions
     /// <summary>
     /// Write To Log action which writes Log Messages to Papertrail at run time
     /// </summary>
-    public class Write_To_Log_v1 : BaseTerminalActivity
+    public class Write_To_Log_v1 : ExplicitTerminalActivity
     {
         private IPapertrailLogger _papertrailLogger;
 

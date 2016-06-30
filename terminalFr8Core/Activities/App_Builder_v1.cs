@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web.Hosting;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Control;
 using Fr8.Infrastructure.Data.Crates;
@@ -12,13 +13,15 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using terminalUtilities.Excel;
 
 namespace terminalFr8Core.Activities
 {
-    public class App_Builder_v1 : BaseTerminalActivity
+    public class App_Builder_v1 : ExplicitTerminalActivity
     {
         private readonly ExcelUtils _excelUtils;
+        private readonly IPushNotificationService _pushNotificationService;
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -55,7 +58,7 @@ namespace terminalFr8Core.Activities
                                     CloudConfigurationManager.GetSetting("CoreWebServerUrl") +
                                 "redirect/cloneplan?id=" + ActivityId;
 
-            await PushUserNotification("success", "Plan URL", msg);
+            await _pushNotificationService.PushUserNotification(MyTemplate, "Success", "Plan URL", msg);
         }
 
         private async Task UpdateMetaControls()
@@ -86,78 +89,36 @@ namespace terminalFr8Core.Activities
         {
             var controlContainer = GetControl<MetaControlContainer>("control_container");
             var collectionControls = controlContainer.CreateControls();
-            var fieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(RuntimeFieldCrateLabelPrefix, AvailabilityType.RunTime, new FieldDTO[] { });
-
-            Storage.RemoveByLabel(RuntimeFieldCrateLabelPrefix);
-            Storage.Add(fieldsCrate);
+            //we need our own crate signaller to publish fields without source activity id
+            //because when we are cloning the plan for appBuilder ids change
+            var configurator = CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeFieldCrateLabelPrefix, true);
 
             foreach (var controlDefinitionDTO in collectionControls)
             {
-                PublishCollectionControl(controlDefinitionDTO);
+                PublishCollectionControl(controlDefinitionDTO, configurator);
             }
-            
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeFieldCrateLabelPrefix, true);
 
             //TODO this part should be modified with 2975
             //PublishFilePickers(pStorage, collectionControls.Controls.Where(a => a.Type == ControlTypes.FilePicker));
         }
 
-        private void PublishCollectionControl(ControlDefinitionDTO controlDefinitionDTO)
+        private void PublishCollectionControl(ControlDefinitionDTO controlDefinitionDTO, CrateSignaller.FieldConfigurator fieldConfigurator)
         {
             if (controlDefinitionDTO is TextBox)
             {
-                PublishTextBox((TextBox)controlDefinitionDTO);
+                PublishTextBox((TextBox)controlDefinitionDTO, fieldConfigurator);
             }
         }
 
-        /*
-        public override async Task FollowUp()
-        {
-            if(ConfigurationControls.Controls[0].Value != null)
-            {
-                ActivityPayload.Label = ConfigurationControls.Controls[0].Value;
-            }
-
-            var controlContainer = ConfigurationControls.FindByName<MetaControlContainer>("control_container");
-            if (!controlContainer.MetaDescriptions.Any())
-            {
-                //TODO add error label
-                return;
-            }
-
-            //user might have pressed submit button on Collection UI
-            var collectionControls = GetMetaControls();
-            if (collectionControls != null)
-            {
-                var submitButton = collectionControls.FindByName<Button>("submit_button");
-                if (submitButton.Clicked)
-                {
-                    if (ActivityPayload.RootPlanNodeId == null)
-                    {
-                        throw new Exception($"Activity with id \"{ActivityId}\" has no owner plan");
-                    }
-                    
-                    var flagCrate = CrateManager.CreateDesignTimeFieldsCrate(RunFromSubmitButtonLabel,
-                        AvailabilityType.RunTime);
-                    var payload = new List<CrateDTO>() {CrateManager.ToDto(flagCrate)};
-                    //we need to start the process - run current plan - that we belong to
-                    await HubCommunicator.RunPlan(ActivityPayload.RootPlanNodeId.Value, payload, CurrentUserId);
-                    //after running the plan - let's reset button state
-                    //so next configure calls will be made with a fresh state
-                    UnClickSubmitButton();
-                }
-            }
-        }
-        */
         private bool WasActivityRunFromSubmitButton()
         {
-            return Payload.CratesOfType<FieldDescriptionsCM>(c => c.Label == RunFromSubmitButtonLabel).Any();
+            return Payload.CratesOfType<KeyValueListCM>(c => c.Label == RunFromSubmitButtonLabel).Any();
         }
 
         private void RemoveFlagCrate()
         {
             Payload.RemoveByLabel(RunFromSubmitButtonLabel);
-            }
+        }
 
         private static string GetUriFileExtension(string uri)
         {
@@ -189,16 +150,15 @@ namespace terminalFr8Core.Activities
         private string GetFileDescriptionLabel(ControlDefinitionDTO filepicker, int labeless_filepickers)
         { return filepicker.Label ?? ("File from App Builder #" + ++labeless_filepickers); }
 
-        private void PublishTextBox(TextBox textBox)
+        private void PublishTextBox(TextBox textBox, CrateSignaller.FieldConfigurator fieldConfigurator)
         {
-            var fieldsCrate = Storage.CratesOfType<FieldDescriptionsCM>(c => c.Label == RuntimeFieldCrateLabelPrefix).First();
-            fieldsCrate.Content.Fields.Add(new FieldDTO(textBox.Label, textBox.Label));
+            fieldConfigurator.AddField(textBox.Label);
         }
 
         private void ProcessTextBox(TextBox textBox)
         {
             var fieldsCrate = Payload.CratesOfType<StandardPayloadDataCM>(c => c.Label == RuntimeFieldCrateLabelPrefix).First();
-            fieldsCrate.Content.PayloadObjects[0].PayloadObject.Add(new FieldDTO(textBox.Label, textBox.Value));
+            fieldsCrate.Content.PayloadObjects[0].PayloadObject.Add(new KeyValueDTO(textBox.Label, textBox.Value));
         }
 
         private async Task ProcessFilePickers( IEnumerable<ControlDefinitionDTO> filepickers)
@@ -239,9 +199,10 @@ namespace terminalFr8Core.Activities
 
         private async Task ProcessCollectionControls(StandardConfigurationControlsCM collectionControls)
         {
-            var fieldsPayloadCrate = Crate.FromContent(RuntimeFieldCrateLabelPrefix, new StandardPayloadDataCM(new FieldDTO[] { }), AvailabilityType.RunTime);
-            Payload.Add(fieldsPayloadCrate);
+            var fieldsPayloadCrate = Crate.FromContent(RuntimeFieldCrateLabelPrefix, new StandardPayloadDataCM(new KeyValueDTO[] { }));
+            fieldsPayloadCrate.SourceActivityId = ActivityId.ToString();
 
+            Payload.Add(fieldsPayloadCrate);
             foreach (var controlDefinitionDTO in collectionControls.Controls)
             {
                 ProcessCollectionControl(controlDefinitionDTO);
@@ -292,10 +253,11 @@ namespace terminalFr8Core.Activities
             return PackControlsCrate(Label,infoText, cc);
         }
 
-        public App_Builder_v1(ICrateManager crateManager, ExcelUtils excelUtils)
+        public App_Builder_v1(ICrateManager crateManager, ExcelUtils excelUtils, IPushNotificationService pushNotificationService)
             : base(crateManager)
         {
             _excelUtils = excelUtils;
+            _pushNotificationService = pushNotificationService;
         }
 
 
@@ -355,11 +317,21 @@ namespace terminalFr8Core.Activities
                         throw new Exception($"Activity with id \"{ActivityId}\" has no owner plan");
                     }
 
-                    var flagCrate = CrateManager.CreateDesignTimeFieldsCrate(RunFromSubmitButtonLabel,
-                        AvailabilityType.RunTime);
+                    var flagCrate = CrateManager.CreateDesignTimeFieldsCrate(RunFromSubmitButtonLabel);
                     var payload = new List<CrateDTO>() { CrateManager.ToDto(flagCrate) };
-                    //we need to start the process - run current plan - that we belong to
+
+                    
+                    await HubCommunicator.SaveActivity(ActivityContext.ActivityPayload);
                     HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, payload);
+
+                    /*
+                    //we must save ourselves before running activity
+                    HubCommunicator.SaveActivity(ActivityContext.ActivityPayload).ConfigureAwait(false);
+                    HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, payload);
+                    */
+
+
+                    //we need to start the process - run current plan - that we belong to
                     //after running the plan - let's reset button state
                     //so next configure calls will be made with a fresh state
                     UnClickSubmitButton();

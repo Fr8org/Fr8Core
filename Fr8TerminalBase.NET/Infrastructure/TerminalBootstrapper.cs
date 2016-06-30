@@ -17,10 +17,12 @@ namespace Fr8.TerminalBase.Infrastructure
         {
             public LiveMode()
             {
-                For<IConfigRepository>().Use<ConfigRepository>();
-                For<ICrateManager>().Use<CrateManager>();
+                For<IConfigRepository>().Use<ConfigRepository>().Singleton();
+                For<ICrateManager>().Use<CrateManager>().Singleton();
                 For<IActivityExecutor>().Use<ActivityExecutor>();
-                For<IHubEventReporter>().Use<HubEventReporter>();
+                For<IHubEventReporter>().Use<HubEventReporter>().Singleton();
+                For<IHubDiscoveryService>().Use<HubDiscoveryService>().Singleton();
+                For<IRetryPolicy>().Use(() => new SimpleRetryPolicy(5, 2000));
             }            
         }
 
@@ -29,9 +31,11 @@ namespace Fr8.TerminalBase.Infrastructure
             public TestMode()
             {
                 For<IConfigRepository>().Use<MockedConfigRepository>();
-                For<ICrateManager>().Use<CrateManager>();
+                For<ICrateManager>().Use<CrateManager>().Singleton();
                 For<IActivityExecutor>().Use<ActivityExecutor>();
-                For<IHubEventReporter>().Use<HubEventReporter>();
+                For<IHubEventReporter>().Use<HubEventReporter>().Singleton();
+                For<IHubDiscoveryService>().Use<HubDiscoveryService>().Singleton();
+                For<IRetryPolicy>().Use<SingleRunRetryPolicy>();
             }
         }
     }

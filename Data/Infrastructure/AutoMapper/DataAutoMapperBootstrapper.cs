@@ -125,7 +125,9 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.PlanId, opts => opts.ResolveUsing(x => x.RootPlanNodeId))
                 .ForMember(x => x.SubPlanId, opts => opts.ResolveUsing(x => x.Id));
 
-     
+
+            Mapper.CreateMap<TerminalRegistrationDO, TerminalRegistrationDTO>();
+            Mapper.CreateMap<TerminalRegistrationDTO, TerminalRegistrationDO>();
 
             Mapper.CreateMap<PlanDO, PlanFullDTO>().ConvertUsing<PlanDOFullConverter>();
 
@@ -159,13 +161,16 @@ namespace Data.Infrastructure.AutoMapper
                     x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentClientActivityName))
                 );
             Mapper.CreateMap<AuthorizationTokenDTO, AuthorizationTokenDO>()
-                .ForMember(x => x.UserID,    x => x.ResolveUsing(y => y.UserId))
-                .ForMember(x => x.Id, x => x.ResolveUsing(y => y.Id != null ? new Guid(y.Id) : (Guid?)null))
-                .ForMember(x => x.ExternalDomainId, x => x.ResolveUsing(y => y.ExternalDomainId));
+                  .ForMember(x => x.UserID, x => x.ResolveUsing(y => y.UserId))
+                  .ForMember(x => x.Id, x => x.ResolveUsing(y => y.Id != null ? new Guid(y.Id) : (Guid?)null))
+                  .ForMember(x => x.ExternalDomainId, x => x.ResolveUsing(y => y.ExternalDomainId))
+                  .ForMember(x => x.ExpiresAt, x => x.ResolveUsing(y => y.ExpiresAt));
+            
             Mapper.CreateMap<AuthorizationTokenDO, AuthorizationTokenDTO>()
                 .ForMember(x => x.UserId, x => x.ResolveUsing(y => y.UserID))
                 .ForMember(x => x.Id, x => x.ResolveUsing(y => y.Id.ToString()))
-                .ForMember(x => x.ExternalDomainId, x => x.ResolveUsing(y => y.ExternalDomainId));
+                .ForMember(x => x.ExternalDomainId, x => x.ResolveUsing(y => y.ExternalDomainId))
+                .ForMember(x => x.ExpiresAt, x => x.ResolveUsing(y => y.ExpiresAt));
 
             Mapper.CreateMap<ManifestDescriptionCM, ManifestDescriptionDTO>();
             Mapper.CreateMap<ManifestDescriptionDTO, ManifestDescriptionCM>();
@@ -176,7 +181,6 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.LastUpdated, opts => opts.Ignore())
                 .ForMember(x => x.CreateDate, opts => opts.Ignore())
                 .ForMember(x => x.Id, opts => opts.Ignore())
-                .ForMember(x => x.PublicIdentifier, opts => opts.Ignore())
                 .ForMember(x => x.Secret, opts => opts.Ignore())
                 .ForMember(x => x.AuthenticationTypeTemplate, opts => opts.Ignore());
 

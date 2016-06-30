@@ -15,7 +15,7 @@ using terminalSlack.Services;
 
 namespace terminalSlack.Activities
 {
-    public class Publish_To_Slack_v2 : EnhancedTerminalActivity<Publish_To_Slack_v2.ActivityUi>
+    public class Publish_To_Slack_v2 : TerminalActivity<Publish_To_Slack_v2.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -39,8 +39,11 @@ namespace terminalSlack.Activities
 
             public ActivityUi(UiBuilder uiBuilder)
             {
-                ChannelSelector = new DropDownList { Label = "Select Slack Channel" };
-                MessageSource = uiBuilder.CreateSpecificOrUpstreamValueChooser("Message", nameof(MessageSource), requestUpstream: true, availability: AvailabilityType.RunTime);
+                ChannelSelector = new DropDownList {
+                    Label = "Select Slack Channel",
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
+                };
+                MessageSource = uiBuilder.CreateSpecificOrUpstreamValueChooser("Message", nameof(MessageSource), addRequestConfigEvent: true, requestUpstream: true, availability: AvailabilityType.RunTime);
                 Controls.Add(ChannelSelector);
                 Controls.Add(MessageSource);
             }
@@ -53,7 +56,6 @@ namespace terminalSlack.Activities
             : base(crateManager)
         {
             _slackIntegration = slackIntegration;
-            DisableValidationOnFollowup = true;
         }
         public override async Task Initialize()
         {

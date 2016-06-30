@@ -24,7 +24,7 @@ namespace terminalDocuSignTests.Activities
         public async Task Initialize_Always_FillsFolderAndStatusSources()
         {
             ObjectFactory.GetInstance<Mock<IDocuSignFolders>>().Setup(x => x.GetFolders(It.IsAny<DocuSignApiConfiguration>()))
-                .Returns(new[] { new FieldDTO("Name", "Id") });
+                .Returns(new[] { new KeyValueDTO("Name", "Id") });
             var activity = ObjectFactory.Container.GetInstance<Query_DocuSign_v2>();
             var activityContext = new ActivityContext
             {

@@ -10,7 +10,7 @@ using Fr8.TerminalBase.Errors;
 
 namespace terminalFr8Core.Activities
 {
-    public class Set_Delay_v1 : BaseTerminalActivity
+    public class Set_Delay_v1 : ExplicitTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {

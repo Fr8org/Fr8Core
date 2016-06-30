@@ -76,6 +76,8 @@ namespace Data.Interfaces
 
         IPageDefinitionRepository PageDefinitionRepository { get; }
 
+        TerminalRegistrationRepository TerminalRegistrationRepository { get; }
+
 	    /// <summary>
         /// Call this to commit the unit of work
         /// </summary>

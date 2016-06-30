@@ -15,7 +15,7 @@ using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Actions
 {
-    public class Get_File_From_Fr8_Store_v1 : BaseTerminalActivity
+    public class Get_File_From_Fr8_Store_v1 : ExplicitTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -24,6 +24,7 @@ namespace terminalFr8Core.Actions
             Category = ActivityCategory.Receivers,
             Version = "1",
             Type = ActivityType.Standard,
+            MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO
         };
@@ -113,6 +114,7 @@ namespace terminalFr8Core.Actions
             //build a controls crate to render the pane
             var configurationCrate = CreateControlsCrate();
             await FillFileSelectorSource(configurationCrate, "FileSelector");
+            configurationCrate.Availability = AvailabilityType.Always;
             Storage.Add(configurationCrate);
         }
 

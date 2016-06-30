@@ -59,12 +59,12 @@ namespace Fr8.Infrastructure.Utilities
                 }
                 else if (startsWithSpace)
                 {
-                    //Remove nonspace separator from the end e.g 'Coca-' from 'The Coca-cola company'
+                    //Remove nonspace separator from the end e.g 'Sam-' from 'The Sam-Co company'
                     from++;
                 }
                 else if (endsWithSpace)
                 {
-                    //Remove nonspace separator from the start e.g. '-cola' from 'The Coca-cola company'
+                    //Remove nonspace separator from the start e.g. '-Co' from 'The Sam-Co company'
                     to--;
                 }
             }

@@ -9,11 +9,11 @@ namespace terminalAtlassian.Interfaces
     public interface IAtlassianService
     {
         Task<bool> CheckAuthenticationAsync(CredentialsDTO credentials);
-        List<FieldDTO> GetJiraIssue(string jiraKey, AuthorizationToken authToken);
-        List<FieldDTO> GetProjects(AuthorizationToken authToken);
-        List<FieldDTO> GetIssueTypes(string projectKey, AuthorizationToken authToken);
-        List<FieldDTO> GetPriorities(AuthorizationToken authToken);
-        List<FieldDTO> GetCustomFields(AuthorizationToken authToken);
+        List<KeyValueDTO> GetJiraIssue(string jiraKey, AuthorizationToken authToken);
+        List<KeyValueDTO> GetProjects(AuthorizationToken authToken);
+        List<KeyValueDTO> GetIssueTypes(string projectKey, AuthorizationToken authToken);
+        List<KeyValueDTO> GetPriorities(AuthorizationToken authToken);
+        List<KeyValueDTO> GetCustomFields(AuthorizationToken authToken);
         Task CreateIssue(IssueInfo issueInfo, AuthorizationToken authToken);
         Task<List<UserInfo>> GetUsersAsync(string projectCode, AuthorizationToken token);
 

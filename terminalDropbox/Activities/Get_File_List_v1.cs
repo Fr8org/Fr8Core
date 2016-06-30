@@ -14,7 +14,7 @@ using Fr8.TerminalBase.Errors;
 
 namespace terminalDropbox.Actions
 {
-    public class Get_File_List_v1 : EnhancedTerminalActivity<Get_File_List_v1.ActivityUi>
+    public class Get_File_List_v1 : TerminalActivity<Get_File_List_v1.ActivityUi>
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -62,7 +62,9 @@ namespace terminalDropbox.Actions
             var fileNames = await _dropboxService.GetFileList(AuthorizationToken);
             ActivityUI.FileList.ListItems = fileNames
                 .Select(filePath => new ListItem { Key = Path.GetFileName(filePath), Value = Path.GetFileName(filePath) }).ToList();
+
             CrateSignaller.MarkAvailableAtRuntime<StandardFileListCM>(RuntimeCrateLabel);
+
             Storage.ReplaceByLabel(PackDropboxFileListCrate(fileNames));
         }
 
