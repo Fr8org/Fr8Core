@@ -385,6 +385,7 @@
     <Compile Include="Controllers\Api\ConfigurationController.cs" />
     <Compile Include="Controllers\Api\ManifestRegistriesController.cs" />
     <Compile Include="Controllers\Api\ManifestsController.cs" />
+    <Compile Include="Controllers\Api\PageDefinitionsController.cs" />
     <Compile Include="Controllers\Api\SubPlansController.cs" />
     <Compile Include="Controllers\Api\PlansController.cs" />
     <Compile Include="Controllers\Api\TerminalsController.cs" />
@@ -957,6 +958,7 @@
     <Content Include="Views\AngularTemplate\UpstreamFieldChooser.cshtml" />
     <Content Include="_PowerShellScripts\Set-WebsiteAppSettings.ps1" />
     <Content Include="_PowerShellScripts\Create-SDKNuget.ps1" />
+    <Content Include="Views\AngularTemplate\PageDefinitionList.cshtml" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\KioskModeOrganizationHeaderController.ts" />
@@ -967,6 +969,8 @@
     <TypeScriptCompile Include="Scripts\app\controllers\PhoneNumberAuthenticationController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\PlanUploadModalController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\PlanUploadController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\PageDefinitionFormController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\PageDefinitionListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionDocumentationController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\BuildMessageAppender.ts" />
@@ -996,11 +1000,13 @@
     <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\AuthenticationDialogController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManageAuthTokenController.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\IPageDefinition.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IManifestRegistry.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IProfile.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ActivityResponseDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\AdvisoryMessages.ts" />
     <TypeScriptCompile Include="Scripts\app\model\AlertDTO.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\PageDefinition.ts" />
     <TypeScriptCompile Include="Scripts\app\model\TerminalRegistrationDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ValidationResults.ts" />
     <TypeScriptCompile Include="Scripts\app\model\HistoryDTO.ts" />
@@ -1014,6 +1020,7 @@
     <TypeScriptCompile Include="Scripts\app\services\ConfigureTrackerService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\FileDetailsService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\FileService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\PageDefinitionService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ManifestRegistryService.ts" />
     <TypeScriptCompile Include="Scripts\app\model\DocumentationResponseDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\services\AuthService.ts" />
