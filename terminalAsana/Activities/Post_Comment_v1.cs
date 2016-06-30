@@ -12,9 +12,12 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Interfaces;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Errors;
 using Microsoft.Ajax.Utilities;
+using terminalAsana.Asana;
+using terminalAsana.Asana.Services;
 using terminalAsana.Interfaces;
 
 namespace terminalAsana.Activities
@@ -81,17 +84,26 @@ namespace terminalAsana.Activities
             }
         }
 
-        public Post_Comment_v1(ICrateManager crateManager)
-            : base(crateManager)
+        public Post_Comment_v1(ICrateManager crateManager, IAsanaOAuth oAuth, IRestfulServiceClient client)
+            : base(crateManager,oAuth, client)
         {
         }
 
+        protected override void InitializeInternalState()
+        {
+            base.InitializeInternalState();
+
+            var asanaParams = new AsanaParametersService();
+            _workspaces = new Workspaces(OAuthCommunicator, asanaParams);
+            _tasks = new Tasks(OAuthCommunicator, asanaParams);
+        }
 
 
         public override Task Initialize()
         {
-            var workspaces = 
-
+            var workspaces = _workspaces.GetAll();
+            ActivityUI.Workspaces.ListItems = workspaces.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();
+            
             //var resultField = new FieldDTO(ResultFieldLabel, AvailabilityType.RunTime);
             //CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel, true).AddField(resultField);
             return Task.FromResult(0);
@@ -99,6 +111,7 @@ namespace terminalAsana.Activities
 
         public override Task FollowUp()
         {
+
             return Task.FromResult(0);
         }
 

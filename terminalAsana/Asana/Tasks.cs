@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Newtonsoft.Json.Linq;
 using terminalAsana.Asana.Entities;
 using terminalAsana.Interfaces;
 
@@ -14,7 +15,7 @@ namespace terminalAsana.Asana.Services
         private IAsanaParameters _asanaParams;
 
 
-        public Tasks(IAsanaParameters parameters, IAsanaOAuthCommunicator client)
+        public Tasks(IAsanaOAuthCommunicator client, IAsanaParameters parameters)
         {
             _asanaParams = parameters;
             _restClient = client;
@@ -42,11 +43,23 @@ namespace terminalAsana.Asana.Services
 
         public async Task<IEnumerable<AsanaTask>> Query(AsanaTaskQuery query)
         {
-            var result = new List<AsanaTask>();
+            var url = _asanaParams.TasksUrl + "?";
+            url = query.Workspace ?? url + $"workspace={query.Workspace}&";
+            url = query.Assignee ?? url + $"assignee={query.Assignee}&";
+            url = query.CompletedSince ?? url + $"completed_since={query.Workspace}&";
+            url = query.ModifiedSince ?? url + $"modified_since={query.Workspace}&";
+            url = query.Project ?? url + $"project={query.Workspace}&";
+            url = query.Tag ?? url + $"tag={query.Workspace}";
 
+            var uri = new Uri(url);
+            
+            //_intergration.ApiCall()
 
+            var response = Task.Run(() => _restClient.GetAsync<JObject>(uri)).Result;
+            var result = response.GetValue("data").ToObject<IEnumerable<AsanaTask>>();
 
             return result;
+            
         }
 
         public Task<IEnumerable<AsanaTask>> GetAllSubtasksAsync(string taskId)

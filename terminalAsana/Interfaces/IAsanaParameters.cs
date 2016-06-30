@@ -14,6 +14,7 @@ namespace terminalAsana.Interfaces
 
 
         string WorkspacesUrl { get; }
+        string TasksUrl { get; }
 
     }
 }

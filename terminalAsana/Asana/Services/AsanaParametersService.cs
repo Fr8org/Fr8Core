@@ -14,5 +14,6 @@ namespace terminalAsana.Asana.Services
         public string ApiEndpoint => this.DomainName + this.ApiVersion;
 
         public string WorkspacesUrl => this.ApiEndpoint + CloudConfigurationManager.GetSetting("WorlspacesUrl");
+        public string TasksUrl => this.ApiEndpoint + CloudConfigurationManager.GetSetting("TasksUrl");
     }
 }

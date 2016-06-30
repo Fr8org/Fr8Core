@@ -11,6 +11,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Interfaces;
 using Fr8.TerminalBase.BaseClasses;
 using terminalAsana.Asana;
 using terminalAsana.Asana.Services;
@@ -57,7 +58,7 @@ namespace terminalAsana.Activities
             }
         }
 
-        public Get_Workspaces_v1(ICrateManager crateManager, IAsanaOAuth oAuth) : base(crateManager, oAuth)
+        public Get_Workspaces_v1(ICrateManager crateManager, IAsanaOAuth oAuth, IRestfulServiceClient client) : base(crateManager, oAuth, client)
         {
         }
 
