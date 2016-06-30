@@ -27,7 +27,7 @@ namespace terminalAtlassian.Controllers
             {
                 return new AuthorizationTokenDTO()
                 {
-                    Error = "The form of the domain is generally https://[yourprojectname].atlassian.net"
+                    Error = "The form of the domain is generally [yourprojectname].atlassian.net"
                 };
             }
             if (await _atlassianService.CheckAuthenticationAsync(credentials))
