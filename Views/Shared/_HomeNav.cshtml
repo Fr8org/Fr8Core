@@ -15,7 +15,7 @@
                 <ul class="dropdown-menu">
                     <li><a href="@NavLinks.BaseUrl/Services/DocuSign">DocuSign</a></li>
                     <li><a href="@NavLinks.BaseUrl/Services/Salesforce">Salesforce.com</a></li>
-                    <li><a href="@NavLinks.PlanDiscovery">Plan Discovery</a></li>
+                    <li><a href="@NavLinks.PlanDirectory">Plan Directory</a></li>
                 </ul>
             </li>
             <!--Developers-->
@@ -26,13 +26,15 @@
                 <ul class="dropdown-menu">
                     <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/Company/#vision">Vision</a></li>
                     <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/Company/#team">Team</a></li>
+                    <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/Company/#press">Press Releases</a></li>
                     <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/Company/#location">Location</a></li>
-                    <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/Company/#company">Jobs</a></li>
-                    <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/#aboutus">About Us</a></li>
+                    <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/Company/#jobs">Jobs</a></li>
                 </ul>
             </li>
             <!--Contact-->
             <li><a href="@NavLinks.BaseUrl/Support" title="Contact">Contact</a></li>
+            <!--Blog-->
+            <li><a href="@NavLinks.Blog" target="_blank">Blog</a></li>
             <!--Login Button on Right-->
             <li><a href="@NavLinks.BaseUrl/dashboard/#myaccount">My Account</a> </li>
             @if (User.IsInRole("Guest"))
@@ -50,14 +52,14 @@
     <!-- MENU -->
     <ul class="nav navbar-nav @(ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "home-nav" : "")">
         <!--How It Works-->
-        <li><a href="@NavLinks.BaseUrl/Services/HowItWorks" title="How It Works">How It Works</a></li>
+        <li><a href="@NavLinks.BaseUrl/#about" title="How It Works">How It Works</a></li>
         <!--Services-->
         <li data-scroll="scrolling" class="dropdown">
             <a href="@NavLinks.BaseUrl/#services" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Services">Solutions <span class="caret"></span></a>
             <ul class="dropdown-menu">
                 <li><a href="@NavLinks.BaseUrl/Services/DocuSign">DocuSign</a></li>
                 <li><a href="@NavLinks.BaseUrl/Services/Salesforce">Salesforce.com</a></li>
-                <li><a href="@NavLinks.PlanDiscovery">Plan Discovery</a></li>
+                <li><a href="@NavLinks.PlanDirectory">Plan Directory</a></li>
             </ul>
         </li>
         <!--Developers-->
@@ -68,10 +70,9 @@
             <ul class="dropdown-menu">
                 <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/Company/#vision">Vision</a></li>
                 <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/Company/#team">Team</a></li>
+                <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/Company/#press">Press Releases</a></li>
                 <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/Company/#location">Location</a></li>
-                <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/Company/#company">Jobs</a></li>
-                <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/#aboutus">About Us</a></li>
-                <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/Support">Support</a></li>
+                <li data-scroll="scrolling"><a href="@NavLinks.BaseUrl/Company/#jobs">Jobs</a></li>
             </ul>
         </li>
         <!--Contact-->
