@@ -142,7 +142,7 @@ namespace terminalStatX.Activities
                         CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel).AddFields(CreateStatValueFields(StatXUtilities.MapToStatItemCrateManifest(currentStat)));
                     }
                 }
-                SelectedGroup = ActivityUI.ExistingGroupsList.Value;
+                SelectedStat= ActivityUI.ExistingGroupStats.Value;
             }
             else
             {
