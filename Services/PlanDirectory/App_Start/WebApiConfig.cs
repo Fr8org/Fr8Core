@@ -4,7 +4,7 @@ using System.Web.Http.Routing;
 using System.Web.Http.Dispatcher;
 using Hub.Infrastructure;
 
-namespace PlanDirectory.App_Start
+namespace PlanDirectory
 {
 	public static class WebApiConfig
 	{
@@ -50,6 +50,6 @@ namespace PlanDirectory.App_Start
             HttpConfiguration config1 = GlobalConfiguration.Configuration;
             config.Formatters.JsonFormatter.SerializerSettings.Formatting =
                 Newtonsoft.Json.Formatting.Indented;
-        }
-    }
+		}
+	}
 }

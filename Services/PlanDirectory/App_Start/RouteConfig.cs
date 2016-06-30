@@ -1,7 +1,7 @@
 ﻿using System.Web.Mvc;
 using System.Web.Routing;
 
-namespace PlanDirectory.App_Start
+namespace PlanDirectory
 {
     public class RouteConfig
     {

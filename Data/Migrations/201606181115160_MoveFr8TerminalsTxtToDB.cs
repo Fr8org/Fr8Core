@@ -24,7 +24,8 @@ USING(select 'localhost:51234' as Endpoint
         union select 'localhost:39768' as Endpoint
         union select 'localhost:39555' as Endpoint
         union select 'localhost:54642' as Endpoint
-        union select 'localhost:22555' as Endpoint) AS S
+        union select 'localhost:22555' as Endpoint
+        union select 'localhost:59022' as Endpoint) AS S
 ON(T.Endpoint = S.Endpoint)
 WHEN NOT MATCHED BY TARGET
     THEN INSERT(Endpoint, LastUpdated, CreateDate) VALUES(S.Endpoint, GetDate(), GetDate());");

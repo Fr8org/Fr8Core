@@ -65,6 +65,11 @@ namespace HubTests.Utilization
         {
             public readonly List<string> Notifications = new List<string>();
 
+            public string GetChanelMessages(string email)
+            {
+                throw new NotImplementedException();
+            }
+
             public void Notify(string channelName, string eventName, object message)
             {
                 Notifications.Add(message.ToString());

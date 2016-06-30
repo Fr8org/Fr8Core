@@ -233,6 +233,7 @@ namespace Data.Repositories.MultiTenant.Sql
                     }
 
                     command.CommandText = string.Format(MtSelectQueryTemplate, tableDefintionOuter, tableDefintionInner, whereTemplate);
+                    command.CommandTimeout = 120;
 
                     var result = new List<MtObject>();
 

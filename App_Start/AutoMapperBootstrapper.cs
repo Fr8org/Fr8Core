@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.Optimization;
 using AutoMapper;
 using Data.Entities;
 using Fr8.Infrastructure.Data.DataTransferObjects;
@@ -53,24 +54,30 @@ namespace HubWeb.App_Start
                 .ForMember(mu => mu.HasGoogleToken, opts => opts.Ignore())
                 .ForMember(mu => mu.GoogleSpreadsheets, opts => opts.Ignore());
 
-          
+
             Mapper.CreateMap<UserVM, EmailAddressDO>()
                 .ForMember(userDO => userDO.Address, opts => opts.ResolveUsing(e => e.EmailAddress));
 
-            
 
-            
+
+
 
             Mapper.CreateMap<UserVM, Fr8AccountDO>()
                 .ForMember(userDO => userDO.Id, opts => opts.ResolveUsing(e => e.Id))
                 .ForMember(userDO => userDO.FirstName, opts => opts.ResolveUsing(e => e.FirstName))
                 .ForMember(userDO => userDO.LastName, opts => opts.ResolveUsing(e => e.LastName))
                 .ForMember(userDO => userDO.UserName, opts => opts.ResolveUsing(e => e.UserName))
-                .ForMember(userDO => userDO.EmailAddress, opts => opts.ResolveUsing(e => new EmailAddressDO {Address = e.EmailAddress}))
+                .ForMember(userDO => userDO.EmailAddress, opts => opts.ResolveUsing(e => new EmailAddressDO { Address = e.EmailAddress }))
                 .ForMember(userDO => userDO.Roles, opts => opts.Ignore());
 
+            Mapper.CreateMap<PageDefinitionDTO, PageDefinitionDO>()
+                .ForMember(dest => dest.Url, opts => opts.Ignore())
+                .ForMember(dest => dest.Tags, opts => opts.MapFrom(
+                    x => x.Tags.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList()));
 
-            
+            Mapper.CreateMap<PageDefinitionDO, PageDefinitionDTO>()
+                .ForMember(dest => dest.Tags, opts => opts.MapFrom(x => string.Join(", ", x.Tags)));
+
         }
 
         private static List<PlanNodeDO> MapActivities(IEnumerable<ActivityDTO> activities)
@@ -107,7 +114,7 @@ namespace HubWeb.App_Start
 
             if (ad.ActivityTemplateId == Guid.Empty)
             {
-                return null;                
+                return null;
             }
 
             return Mapper.Map<ActivityTemplateDTO>(_activityTemplate.GetByKey(ad.ActivityTemplateId));
