@@ -74,6 +74,10 @@ namespace HubWeb.Controllers
                 model.TerminalId = response.AuthorizationToken.TerminalID;
                 model.TerminalName = terminal.Name;
 
+                if (response.AuthorizationToken.ExternalAccountId == "ga_admin@fr8.co")
+                {
+                    EventManager.TerminalAuthenticationCompleted(response.AuthorizationToken.UserId, terminal, response.AuthorizationToken);
+                }
                 return View(model);
             }
             else

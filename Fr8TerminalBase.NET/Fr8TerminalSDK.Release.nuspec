@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Fr8.TerminalBase</id>
+    <version>1.0.0.1</version>
+    <title>Fr8 Terminal Developer SDK</title>
+    <authors>The Fr8 Company</authors>
+    <owners>The Fr8 Company</owners>
+    <licenseUrl>https://github.com/Fr8org/Fr8Core.NET</licenseUrl>
+    <projectUrl>https://github.com/Fr8org/Fr8Core.NET</projectUrl>
+    <iconUrl>https://fr8.co/Content/img/dockyard_logo_white.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A set of classes to help developers easily start developing their Fr8 terminals.</description>
+    <releaseNotes>Initial release</releaseNotes>
+    <copyright>Copyright © The Fr8 Company 2016</copyright>
+  </metadata>	
+  <files>
+    <file src="bin\Release\Fr8Infrastructure.NET.dll" target="lib\net40" /> 
+    <file src="bin\Release\Fr8TerminalBase.NET.dll" target="lib\net40" /> 
+  </files>
+</package>

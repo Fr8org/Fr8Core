@@ -105,7 +105,7 @@ app.controller('HeaderController', ['$scope', '$http', '$window', ($scope, $http
             .then(function (res) {
                 var token = res.data.token;
                 var url = planDirectoryUrl + '/AuthenticateByToken?token=' + token;
-                $window.location.href = url;
+                $window.open(url, '_blank');
             });
     };
 

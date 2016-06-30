@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Policy;
 using System.Text;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -18,6 +19,7 @@ using Data.Interfaces;
 using Data.States;
 using Hub.Interfaces;
 using System.Threading.Tasks;
+using System.Web;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates;
@@ -175,18 +177,6 @@ namespace HubWeb.Controllers
         //formerly  GetByQuery
         public IHttpActionResult Query([FromUri] PlanQueryDTO planQuery)
         {
-            //i want to leave md-data-tables related logic inside controller
-            //that is why this operation is done here - our backend service shouldn't know anything
-            //about frontend libraries
-            if (planQuery != null && planQuery.OrderBy.StartsWith("-"))
-            {
-                planQuery.IsDescending = true;
-            }
-            else if (planQuery != null && !planQuery.OrderBy.StartsWith("-"))
-            {
-                planQuery.IsDescending = false;
-            }
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var planResult = _plan.GetForUser(
@@ -195,7 +185,6 @@ namespace HubWeb.Controllers
                     planQuery,
                     _security.IsCurrentUserHasRole(Roles.Admin)
                 );
-
                 return Ok(planResult);
             }
         }
@@ -463,6 +452,11 @@ namespace HubWeb.Controllers
 
             await client.PostAsync<PublishPlanTemplateDTO>(uri, dto, headers: headers);
 
+            // Notify user with directing him to PlanDirectory with related search query
+            var url = CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/#?planSearch=" + HttpUtility.UrlEncode(dto.Name);
+            _pusherNotifier.NotifyUser(new { Message = $"Plan Shared. To view, click on " + url, Collapsed = false}, 
+                NotificationChannel.GenericSuccess, User.Identity.GetUserId());
+            
             return Ok();
         }
 
