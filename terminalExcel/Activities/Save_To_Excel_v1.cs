@@ -133,7 +133,6 @@ namespace terminalExcel.Actions
 
         private const string SelectedSpreadsheetCrateLabel = "Selected Spreadsheet";
 
-
         public Save_To_Excel_v1(ICrateManager crateManager, ExcelUtils excelUtils, IPushNotificationService pushNotificationService)
             : base(crateManager)
         {
@@ -178,7 +177,7 @@ namespace terminalExcel.Actions
 
         private async Task<List<ListItem>> GetWorksheets(int fileId, string fileName)
         {
-            //let's download this file
+            // Let's download this file
             Stream file = await HubCommunicator.DownloadFile(fileId);
             var fileBytes = ExcelUtils.StreamToByteArray(file);
 
