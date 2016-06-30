@@ -40,9 +40,13 @@ namespace terminalAsana.Asana.Services
             throw new NotImplementedException();
         }
 
-        public Task<AsanaTask> Query(AsanaTaskQuery query)
+        public async Task<IEnumerable<AsanaTask>> Query(AsanaTaskQuery query)
         {
-            throw new NotImplementedException();
+            var result = new List<AsanaTask>();
+
+
+
+            return result;
         }
 
         public Task<IEnumerable<AsanaTask>> GetAllSubtasksAsync(string taskId)

@@ -42,7 +42,7 @@ namespace terminalAsana.Interfaces
         /// </summary>
         /// <param name="query">You must specify a project or tag if you do not specify assignee and workspace</param>
         /// <returns></returns>
-        Task<AsanaTask>                 Query(AsanaTaskQuery query);
+        Task<IEnumerable<AsanaTask>>    Query(AsanaTaskQuery query);
 
 
         /// <summary>
