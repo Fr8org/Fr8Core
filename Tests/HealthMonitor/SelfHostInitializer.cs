@@ -102,7 +102,7 @@ namespace HealthMonitor
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 Dispose();
                 throw ;

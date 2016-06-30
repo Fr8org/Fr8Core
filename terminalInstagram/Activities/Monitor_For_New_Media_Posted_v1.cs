@@ -6,7 +6,6 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
-using System;
 using terminalInstagram.Interfaces;
 using Fr8.Infrastructure.Data.Crates;
 using System.Linq;
@@ -15,6 +14,7 @@ namespace terminalInstagram.Actions
 {
     public class Monitor_For_New_Media_Posted_v1: TerminalActivity<Monitor_For_New_Media_Posted_v1.ActivityUi>
     {
+
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "Monitor_For_New_Media_Posted",
@@ -30,9 +30,11 @@ namespace terminalInstagram.Actions
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
         private readonly IInstagramIntegration _instagramIntegration;
         private readonly IInstagramEventManager _instagramEventManager;
-        public const string ResultPayloadCrateLabel = "Instagram Media";
+
+        private const string InstagramMedia = "media";
         private const string RuntimeCrateLabel = "Monitor Instagram Runtime Fields";
-        public const string EventSubscriptionsCrateLabel = "Instagram user event";
+        private const string EventSubscriptionsCrateLabel = "Instagram user event";
+
         private const string InstagramMediaId = "Media Id";
         private const string InstagramCaptionId = "Caption Id";
         private const string InstagramCaptionText = "Caption Text";
@@ -40,6 +42,20 @@ namespace terminalInstagram.Actions
         private const string InstagramImageUrl = "Image Url";
         private const string InstagramImageUrlStandardResolution = "Image Url Standard Resolution";
 
+        public class ActivityUi : StandardConfigurationControlsCM
+        {
+            public TextBlock Description { get; set; }
+
+            public ActivityUi()
+            {
+                Description = new TextBlock()
+                {
+                    Value = "This activity will monitor when a new media is shared from your account",
+                    Name = "info_text"
+                };
+                Controls = new List<ControlDefinitionDTO> { Description };
+            }
+        }
         public override Task FollowUp()
         {
             return Task.FromResult(0);
@@ -54,7 +70,6 @@ namespace terminalInstagram.Actions
 
         public override async Task Initialize()
         {
-            var oAuthToken = AuthorizationToken.Token;
             Storage.Add(CreateEventSubscriptionCrate());
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeCrateLabel)
                                             .AddField(InstagramMediaId)
@@ -68,7 +83,7 @@ namespace terminalInstagram.Actions
 
         private Crate CreateEventSubscriptionCrate()
         {
-            return CrateManager.CreateStandardEventSubscriptionsCrate(EventSubscriptionsCrateLabel, "Instagram", "media");
+            return CrateManager.CreateStandardEventSubscriptionsCrate(EventSubscriptionsCrateLabel, "Instagram", InstagramMedia);
         }
         public override async Task Activate()
         {
@@ -85,7 +100,7 @@ namespace terminalInstagram.Actions
             }
 
             var instagramEventPayload = eventCrate.EventPayload.CrateContentsOfType<InstagramUserEventCM>()
-                    .FirstOrDefault();
+                    .FirstOrDefault(e => e.ChangedAspect.Contains(InstagramMedia));
 
             if (instagramEventPayload == null)
             {
@@ -93,37 +108,23 @@ namespace terminalInstagram.Actions
                 return;
             }
             var instagramPost = await _instagramIntegration.GetPostById(instagramEventPayload.MediaId, AuthorizationToken.Token);
+
             if (instagramPost == null)
             {
-                //this probably was a deletion operation
-                //let's stop for now
                 TerminateHubExecution("Deletions are not handled by monitor feed posts");
                 return;
             }
 
             Payload.Add(Crate<StandardPayloadDataCM>.FromContent(RuntimeCrateLabel, new StandardPayloadDataCM(
-                                                                          new KeyValueDTO(InstagramMediaId, instagramPost.data.id),
-                                                                          new KeyValueDTO(InstagramCaptionId, instagramPost.data.caption.id),
-                                                                          new KeyValueDTO(InstagramCaptionText, instagramPost.data.caption.text),
-                                                                          new KeyValueDTO(InstagramCaptionCreatedTimeField, instagramPost.data.caption.createdTime),
-                                                                          new KeyValueDTO(InstagramImageUrl, instagramPost.data.link),
-                                                                          new KeyValueDTO(InstagramImageUrlStandardResolution, instagramPost.data.instagramImage.standardResolution.url)
-                                                                          )));
+                                                                new KeyValueDTO(InstagramMediaId, instagramPost.data.id),
+                                                                new KeyValueDTO(InstagramCaptionId, instagramPost.data.caption?.id),
+                                                                new KeyValueDTO(InstagramCaptionText, instagramPost.data.caption?.text),
+                                                                new KeyValueDTO(InstagramCaptionCreatedTimeField, instagramPost.data.caption?.createdTime),
+                                                                new KeyValueDTO(InstagramImageUrl, instagramPost.data.link),
+                                                                new KeyValueDTO(InstagramImageUrlStandardResolution, instagramPost.data.instagramImage.standardResolution.url)
+                                                                )));
         }
 
-        public class ActivityUi : StandardConfigurationControlsCM
-        {
-            public TextBlock Description { get; set; }
-
-            public ActivityUi()
-            {
-                Description = new TextBlock()
-                {
-                    Value = "This activity will monitor when a new media is shared from your account",
-                    Name = "info_text"
-                };
-                Controls = new List<ControlDefinitionDTO> {Description};
-            }
-        }
+        
     }
 }

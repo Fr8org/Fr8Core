@@ -203,6 +203,17 @@
           <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-terminalFacebook.fr8.co" />
         </Bindings>
       </Site>
+      <Site name="terminalInstagram" physicalDirectory="..\..\..\terminalInstagram\azure.publish">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="terminalInstagram" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalInstagram.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="dev-terminalInstagram.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="demo-terminalInstagram.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="terminalInstagram.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="dev-terminalInstagram.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-terminalInstagram.fr8.co" />
+        </Bindings>
+      </Site>
       <Site name="PlanDirectory" physicalDirectory="..\..\..\Services\PlanDirectory\azure.publish">
         <Bindings>
           <Binding name="Endpoint1" endpointName="PlanDirectory" />

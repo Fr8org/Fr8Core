@@ -43,13 +43,12 @@ namespace terminalInstagram.Services
             parameters.Add(new KeyValuePair<string, string>("client_secret", clientSecret));
             parameters.Add(new KeyValuePair<string, string>("object", "user")); 
             parameters.Add(new KeyValuePair<string, string>("aspect", "media"));
-            parameters.Add(new KeyValuePair<string, string>("verify_token","123")); 
+            parameters.Add(new KeyValuePair<string, string>("verify_token", "fr8instagrameventverification")); 
             parameters.Add(new KeyValuePair<string, string>("callback_url", "https://c8f6590d.ngrok.io/terminals/terminalinstagram/subscribe"));
             var formContent = new FormUrlEncodedContent(parameters);
 
             var url = new Uri("https://api.instagram.com/v1/subscriptions");
             var subscription = await _client.PostAsync<JObject>(url, formContent);
-            var x = 0;
         }
 
         public void Unsubscribe(Guid planId)
@@ -60,14 +59,13 @@ namespace terminalInstagram.Services
         private async void OnMessageReceived(object sender)
         {
         }
-        public async Task<List<Crate>> ProcessUserEvents(IContainer container, string curExternalEventPayload)
+        public async Task<Crate> ProcessUserEvents(IContainer container, string curExternalEventPayload)
         {
             var media = JsonConvert.DeserializeObject<InstagramMedia>(curExternalEventPayload.Substring(1, curExternalEventPayload.Length - 2));
             if (media.Object != "user")
             {
                 throw new Exception("Unknown event source");
             }
-            var eventList = new List<Crate>();
 
             var instagramEventCM = new InstagramUserEventCM
             {
@@ -87,8 +85,7 @@ namespace terminalInstagram.Services
             };
             ////prepare the event report
             var curEventReport = Crate.FromContent("Instagram user event", eventReportContent);
-            eventList.Add(curEventReport);
-            return eventList;
+            return curEventReport;
         }
     }
 }

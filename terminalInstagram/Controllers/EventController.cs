@@ -33,9 +33,15 @@ namespace terminalInstagram.Controllers
         {
             HttpClient client = new HttpClient();
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
-            response.Content = new StringContent(msg.Challenge, Encoding.UTF8, "application/json");
-            return response; 
-
+            if (msg.VerifyToken == "fr8instagrameventverification")
+            {
+                response.Content = new StringContent(msg.Challenge, Encoding.UTF8, "application/json");
+            }
+            else
+            {
+                response.Content = new StringContent("Unknown verification call", Encoding.UTF8, "application/json");
+            }
+            return response;
         }
         [HttpPost]
         [Route("subscribe")]
@@ -43,17 +49,8 @@ namespace terminalInstagram.Controllers
         {
             var hash = Request.Headers.GetValues("x-hub-signature").FirstOrDefault();
             string eventPayLoadContent = await Request.Content.ReadAsStringAsync();
-            var eventList = await _event.ProcessUserEvents(_container, eventPayLoadContent);
-            foreach (var instagramEvent in eventList)
-            {
-                try
-                {
-                    await _eventReporter.Broadcast(instagramEvent);
-                } catch(Exception ex)
-                {
-                    var x = 1;
-                }
-            }
+            var instagramEvent = await _event.ProcessUserEvents(_container, eventPayLoadContent);
+            await _eventReporter.Broadcast(instagramEvent);
             return Ok();
         }
     }

@@ -11,6 +11,6 @@ namespace terminalInstagram.Interfaces
     {
         Task Subscribe(AuthorizationToken token, Guid planId);
         void Unsubscribe(Guid planId);
-        Task<List<Crate>> ProcessUserEvents(IContainer container, string curExternalEventPayload);
+        Task<Crate> ProcessUserEvents(IContainer container, string curExternalEventPayload);
     }
 }
