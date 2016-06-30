@@ -17,7 +17,7 @@ using StructureMap;
 namespace terminalFr8Core.Activities
 {
     // The generic interface inheritance.
-    public class Select_Fr8_Object_v1 : BaseTerminalActivity
+    public class Select_Fr8_Object_v1 : ExplicitTerminalActivity
     {
         private readonly IRestfulServiceClient _restfulServiceClient;
 
@@ -63,12 +63,12 @@ namespace terminalFr8Core.Activities
 
         private Crate PackFr8ObjectCrate()
         {
-            var fields = new List<FieldDTO> {
-                    new FieldDTO(){
+            var fields = new List<KeyValueDTO> {
+                    new KeyValueDTO(){
                        Key = "Plans",
                        Value = "19"
                    },
-                   new FieldDTO(){
+                   new KeyValueDTO(){
                        Key = "Containers",
                        Value = "21"
                    }

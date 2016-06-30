@@ -12,6 +12,7 @@ gulp.task('bower', function (done) {
     return bower({ layout: "byComponent" });
 });
 
+
 gulp.task('concattemplates', function () {
     return gulp.src(['Views/AngularTemplate/**/*.cshtml',
         /*we are excluding those files - because they contain razor code*/
@@ -85,6 +86,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/services/ManifestRegistryService.js',
         'Scripts/app/services/SolutionDocumentationService.js',
         'Scripts/app/services/UpstreamExtractor.js',
+        'Scripts/app/services/PageDefinitionService.js',
         'Scripts/app/filters/PlanState.js',
         'Scripts/app/filters/ContainerState.js',
         'Scripts/app/filters/FilterByTag.js',
@@ -153,6 +155,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/AccountListController.js',
         'Scripts/app/controllers/AccountDetailsController.js',
         'Scripts/app/controllers/InternalAuthenticationController.js',
+        'Scripts/app/controllers/PhoneNumberAuthenticationController.js',
         'Scripts/app/controllers/AuthenticationDialogController.js',
         'Scripts/app/controllers/SelectActionController.js',
         'Scripts/app/controllers/ContainerListController.js',
@@ -177,6 +180,8 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/ManageUserController.js',
         'Scripts/app/controllers/PlanUploadModalController.js',
         'Scripts/app/controllers/PlanUploadController.js',
+        'Scripts/app/controllers/PageDefinitionListController.js',
+        'Scripts/app/controllers/PageDefinitionFormController.js',
         'Scripts/app/directives/Controls/Fr8Event.js'
     ])
         .pipe(sourcemaps.init())

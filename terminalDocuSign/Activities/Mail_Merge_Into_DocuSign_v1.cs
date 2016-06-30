@@ -14,6 +14,7 @@ using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.Infrastructure.Behaviors;
 using Fr8.TerminalBase.Infrastructure.States;
 using Fr8.TerminalBase.Models;
+using Fr8.TerminalBase.Services;
 using terminalDocuSign.Activities;
 using terminalDocuSign.Services.New_Api;
 
@@ -44,7 +45,7 @@ namespace terminalDocuSign.Actions
         private const double SolutionVersion = 1.0;
         private const string TerminalName = "DocuSign";
 
-        private const string SolutionBody = @"<p>This solution is designed to take data from any table-like source(initially supported: Microsoft Excel and Google Sheets) and create and send DocuSign Envelopes.A DocuSign Template is used to generate the envelopes, and Fr8 makes it easy to map data from the sources to the DocuSign Template for automatic insertion.</p>
+        private const string SolutionBody = @"<p>This solution is designed to take data from any table-like source (initially supported: Microsoft Excel and Google Sheets) and create and send DocuSign Envelopes. A DocuSign Template is used to generate the envelopes, and Fr8 makes it easy to map data from the sources to the DocuSign Template for automatic insertion.</p>
                                               <p>This Activity also highlights the use of the Loop activity, which can process any amount of table data, one row at a time.</p>
                                               <iframe src='https://player.vimeo.com/video/162762690' width='500' height='343' frameborder='0' webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>";
 
@@ -60,7 +61,7 @@ namespace terminalDocuSign.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        protected override Task RunDS()
+        public override Task Run()
         {
             Success();
             return Task.FromResult(0);
@@ -104,7 +105,7 @@ namespace terminalDocuSign.Actions
         /// <summary>
         /// Looks for upstream and downstream Creates.
         /// </summary>
-        protected override async Task InitializeDS()
+        public override async Task Initialize()
         {
                         //build a controls crate to render the pane
             var configurationCrate = await CreateConfigurationControlsCrate();
@@ -180,7 +181,7 @@ namespace terminalDocuSign.Actions
             return activityTemplate.Tags != null && activityTemplate.Tags.Split(',').Any(t => t.ToLowerInvariant().Contains("table"));
         }
 
-        protected override async Task FollowUpDS()
+        public override async Task FollowUp()
         {
             var reconfigList = new List<ConfigurationRequest>()
             {
@@ -236,9 +237,9 @@ namespace terminalDocuSign.Actions
             // Let's check if activity template generates table data
             var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
 
-            var selectedReceiverTemplate = await GetActivityTemplate(selectedReceiver.Id);
+            var selectedReceiverTemplate = await HubCommunicator.GetActivityTemplate(selectedReceiver.Id);
 
-            var dataSourceActivity = await AddAndConfigureChildActivity(
+            var dataSourceActivity = await HubCommunicator.AddAndConfigureChildActivity(
                 context.SolutionActivity,
                 selectedReceiverTemplate,
                 order: 1
@@ -319,8 +320,8 @@ namespace terminalDocuSign.Actions
 
             if (DoesActivityTemplateGenerateTableData(selectedReceiver))
             {
-                var loopAT = await GetActivityTemplate("terminalFr8Core", "Loop");
-                var loopActivity = await AddAndConfigureChildActivity(context.SolutionActivity, loopAT, "Loop", "Loop", 2);
+                var loopAT = await HubCommunicator.GetActivityTemplate("terminalFr8Core", "Loop");
+                var loopActivity = await HubCommunicator.AddAndConfigureChildActivity(context.SolutionActivity, loopAT, "Loop", "Loop", 2);
                 var loopConfigControls = ControlHelper.GetConfigurationControls(loopActivity.CrateStorage);
                 var crateChooser = ControlHelper.GetControl<CrateChooser>(loopConfigControls, "Available_Crates");
                 var firstActivity = context.SolutionActivity.ChildrenActivities.OrderBy(x => x.Ordering).First();
@@ -343,14 +344,14 @@ namespace terminalDocuSign.Actions
                 activityIndex = 2;
             }
 
-            var sendDocusignEnvelopeAT = await GetActivityTemplate("terminalDocuSign", "Send_DocuSign_Envelope");
-            var sendDocuSignActivity = await AddAndConfigureChildActivity(parentActivity, sendDocusignEnvelopeAT, order: activityIndex);
+            var sendDocusignEnvelopeAT = await HubCommunicator.GetActivityTemplate("terminalDocuSign", "Send_DocuSign_Envelope", activityTemplateVersion: "2");
+            var sendDocuSignActivity = await HubCommunicator.AddAndConfigureChildActivity(parentActivity, sendDocusignEnvelopeAT, order: activityIndex);
             // Set docusign template
-            ControlHelper.SetControlValue(sendDocuSignActivity,"target_docusign_template",
+            ControlHelper.SetControlValue(sendDocuSignActivity, "TemplateSelector",
                 _docuSignTemplate.ListItems.FirstOrDefault(a => a.Key == _docuSignTemplate.selectedKey)
             );
 
-            await ConfigureChildActivity(parentActivity, sendDocuSignActivity);
+            await HubCommunicator.ConfigureChildActivity(parentActivity, sendDocuSignActivity);
             return activityIndex == 1 ? sendDocuSignActivity : parentActivity;
         }
 
@@ -374,7 +375,7 @@ namespace terminalDocuSign.Actions
                     throw new ApplicationException("Invalid solution structure, no Loop activity found.");
                 }
 
-                loopActivity = await ConfigureChildActivity(context.SolutionActivity, loopActivity);
+                loopActivity = await HubCommunicator.ConfigureChildActivity(context.SolutionActivity, loopActivity);
 
                 var loopConfigControls = ControlHelper.GetConfigurationControls(loopActivity.CrateStorage);
                 var crateChooser = ControlHelper.GetControl<CrateChooser>(loopConfigControls, "Available_Crates");
@@ -399,7 +400,7 @@ namespace terminalDocuSign.Actions
                 );
 
             sendDocuSignEnvelope.CrateStorage = new CrateStorage();
-            sendDocuSignEnvelope = await ConfigureChildActivity(parentActivity, sendDocuSignEnvelope);
+            sendDocuSignEnvelope = await HubCommunicator.ConfigureChildActivity(parentActivity, sendDocuSignEnvelope);
 
             ControlHelper.SetControlValue(
                 sendDocuSignEnvelope,
@@ -408,7 +409,7 @@ namespace terminalDocuSign.Actions
                     .FirstOrDefault(a => a.Key == _docuSignTemplate.selectedKey)
             );
 
-            sendDocuSignEnvelope = await ConfigureChildActivity(parentActivity, sendDocuSignEnvelope);
+            sendDocuSignEnvelope = await HubCommunicator.ConfigureChildActivity(parentActivity, sendDocuSignEnvelope);
 
             return sendDocuSignEnvelope;
         }
@@ -425,7 +426,7 @@ namespace terminalDocuSign.Actions
         {
             if (curDocumentation.Contains("MainPage"))
             {
-                var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
+                var curSolutionPage = new DocumentationResponseDTO(SolutionName, SolutionVersion, TerminalName, SolutionBody);
                 return Task.FromResult(curSolutionPage);
 
             }
@@ -433,17 +434,17 @@ namespace terminalDocuSign.Actions
             {
                 if (curDocumentation.Contains("ExplainMailMerge"))
                 {
-                    return Task.FromResult(GenerateDocumentationResponse(@"This solution helps you to work with email and move data from them to DocuSign service"));
+                    return Task.FromResult(new DocumentationResponseDTO(@"This solution helps you to work with email and move data from them to DocuSign service"));
                 }
                 if (curDocumentation.Contains("ExplainService"))
                 {
-                    return Task.FromResult(GenerateDocumentationResponse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                    return Task.FromResult(new DocumentationResponseDTO(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
                 }
-                return Task.FromResult(GenerateErrorResponse("Unknown contentPath"));
+                return Task.FromResult(new DocumentationResponseDTO("Unknown contentPath"));
             }
             return
                 Task.FromResult(
-                    GenerateErrorResponse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
+                    new DocumentationResponseDTO("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }

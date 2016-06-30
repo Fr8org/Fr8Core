@@ -381,6 +381,8 @@ namespace Data.Infrastructure
             modelBuilder.Entity<NodeTransitionDO>().ToTable("NodeTransitions");
             modelBuilder.Entity<PlanNodeDescriptionDO>().ToTable("PlanNodeDescriptions");
             modelBuilder.Entity<PlanTemplateDO>().ToTable("PlanTemplates");
+            modelBuilder.Entity<PageDefinitionDO>().ToTable("PageDefinitions");
+            modelBuilder.Entity<TerminalRegistrationDO>().ToTable("TerminalRegistration");
 
             base.OnModelCreating(modelBuilder);
         }

@@ -97,30 +97,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Utilities\Fr8.AI.DependencyCollector.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Apis, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>packages\Google.Apis.1.11.1\lib\net45\Google.Apis.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Google.Apis.Auth, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>packages\Google.Apis.Auth.1.11.1\lib\net45\Google.Apis.Auth.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Google.Apis.Auth.Mvc4, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>packages\Google.Apis.Auth.Mvc.1.11.1\lib\net45\Google.Apis.Auth.Mvc4.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Google.Apis.Auth.PlatformServices, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>packages\Google.Apis.Auth.1.11.1\lib\net45\Google.Apis.Auth.PlatformServices.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Google.Apis.Core, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>packages\Google.Apis.Core.1.11.1\lib\net45\Google.Apis.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Google.Apis.PlatformServices, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>packages\Google.Apis.1.11.1\lib\net45\Google.Apis.PlatformServices.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Hangfire.Core, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Hangfire.Core.1.6.0-beta2\lib\net45\Hangfire.Core.dll</HintPath>
       <Private>True</Private>
@@ -219,10 +195,6 @@
     </Reference>
     <Reference Include="Microsoft.Owin.Security.Facebook, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Owin.Security.Facebook.3.0.1\lib\net45\Microsoft.Owin.Security.Facebook.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.Google, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.Owin.Security.Google.3.0.1\lib\net45\Microsoft.Owin.Security.Google.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Owin.Security.MicrosoftAccount, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -413,6 +385,7 @@
     <Compile Include="Controllers\Api\ConfigurationController.cs" />
     <Compile Include="Controllers\Api\ManifestRegistriesController.cs" />
     <Compile Include="Controllers\Api\ManifestsController.cs" />
+    <Compile Include="Controllers\Api\PageDefinitionsController.cs" />
     <Compile Include="Controllers\Api\SubPlansController.cs" />
     <Compile Include="Controllers\Api\PlansController.cs" />
     <Compile Include="Controllers\Api\TerminalsController.cs" />
@@ -439,7 +412,6 @@
     <Compile Include="DependencyResolution\StructureMapDependencyScope.cs" />
     <Compile Include="ExceptionHandling\ExeceptionHandler.cs" />
     <Compile Include="ExceptionHandling\Fr8ExceptionHandler.ErrorResult.cs" />
-    <Compile Include="Fr8ApiAuthorizeAttribute.cs" />
     <Compile Include="ExceptionHandling\Fr8ExceptionHandler.cs" />
     <Compile Include="App_Start\AutoMapperBootstrapper.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
@@ -454,7 +426,6 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\Api\ReportController.cs" />
     <Compile Include="Controllers\TokenAuthController.cs" />
-    <Compile Include="ExceptionHandling\MvcHandleErrorAttribute.cs" />
     <Compile Include="Infrastructure_HubWeb\AngularTemplateCacheAttribute.cs" />
     <Compile Include="Infrastructure_HubWeb\FileActionResult.cs" />
     <Compile Include="Infrastructure_HubWeb\Fr8HubWebHMACAuthenticateAttribute.cs" />
@@ -474,8 +445,7 @@
     <Compile Include="ViewModels\ExternalLoginConfirmationVM.cs" />
     <Compile Include="ViewModels\LoginVM.cs" />
     <Compile Include="ViewModels\ManageUserVM.cs" />
-    <Compile Include="ViewModels\NavLinksHome.cs" />
-    <Compile Include="ViewModels\NavLinksShared.cs" />
+    <Compile Include="ViewModels\NavLinks.cs" />
     <Compile Include="ViewModels\RegisterVM.cs" />
     <Compile Include="ViewModels\RequestParameters\PlansGetParams.cs" />
     <Compile Include="ViewModels\RequestParameters\PlansPostParams.cs" />
@@ -500,8 +470,12 @@
     <Content Include="Content\css\homecss\main.css" />
     <Content Include="Content\css\shared\main.css" />
     <Content Include="Content\css\shared\navbar.css" />
+    <Content Include="Content\icons\web_services\basecamp2-icon-64x64.png" />
     <Content Include="Content\icons\web_services\Box-logo_64x64.png" />
+    <Content Include="Content\icons\web_services\facebook-icon-64x64.png" />
     <Content Include="Content\icons\web_services\fr8-demo-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\gmail-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\statX-icon-64x64.png" />
     <Content Include="Content\img\background-7.png" />
     <Content Include="Content\img\background-cta-3.jpg" />
     <Content Include="Content\img\background-cta-3.png" />
@@ -663,7 +637,6 @@
     <Content Include="Content\videos\motion_1920.mp4" />
     <Content Include="Documentation\DocuSignRESTAPI.html" />
     <Content Include="Documentation\UpstreamCrates.html" />
-    <Content Include="fr8terminals.txt" />
     <Content Include="Documentation\AccountCustomFields.html" />
     <Content Include="Documentation\AddaNewGroup.html" />
     <Content Include="Documentation\AddaUserSocialAccount.html" />
@@ -945,35 +918,8 @@
     <Content Include="Views\AngularTemplate\MiniHeader.cshtml" />
     <Content Include="Views\AngularTemplate\ActivityLabelModal.cshtml" />
     <Content Include="Views\AngularTemplate\AdvisoryMessagesPopup.cshtml" />
-    <Content Include="Config\HubWeb\Settings.config" />
-    <Content Include="Config\HealthMonitor\Settings.config.src" />
-    <None Include="Config\HubWeb\Settings.config.readme" />
-    <Content Include="Config\terminalYammer\Settings.Release.config" />
-    <Content Include="Config\terminalYammer\Settings.Dev.config" />
-    <Content Include="Config\terminalYammer\Settings.Demo.config" />
-    <Content Include="Config\terminalYammer\Settings.config" />
-    <Content Include="Config\terminalTwilio\Settings.config" />
-    <Content Include="Config\terminalSlack\Settings.Release.config" />
-    <Content Include="Config\terminalSlack\Settings.Dev.config" />
-    <Content Include="Config\terminalSlack\Settings.Demo.config" />
-    <Content Include="Config\terminalSlack\Settings.config" />
-    <Content Include="Config\terminalSendGrid\Settings.config" />
-    <Content Include="Config\terminalSalesforce\Settings.Release.config" />
-    <Content Include="Config\terminalSalesforce\Settings.Dev.config" />
-    <Content Include="Config\terminalSalesforce\Settings.Demo.config" />
-    <Content Include="Config\terminalSalesforce\Settings.config" />
-    <Content Include="Config\terminalQuickBooks\Settings.config" />
-    <Content Include="Config\terminalPapertrail\Settings.config" />
-    <Content Include="Config\terminalGoogle\Settings.config" />
-    <Content Include="Config\terminalFr8Core\Settings.config" />
-    <Content Include="Config\terminalExcel\Settings.config" />
-    <Content Include="Config\terminalDropbox\Settings.config" />
-    <Content Include="Config\terminalDocuSign\Settings.config" />
-    <Content Include="Config\terminalBox\Settings.config" />
-    <Content Include="Config\terminalAzure\Settings.config" />
-    <Content Include="Config\terminalAtlassian\Settings.config" />
-    <Content Include="Config\PlanDirectory\Settings.Release.config" />
-    <Content Include="Config\PlanDirectory\Settings.config" />
+    <Content Include="Config\Settings.config" />
+    <Content Include="Views\AngularTemplate\PhoneNumberAuthentication.cshtml" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="_PowerShellScripts\HM-job-run.cmd" />
@@ -1010,14 +956,21 @@
     <Content Include="_PowerShellScripts\Set-PlanDirectoryURL.ps1" />
     <Content Include="Views\Redirect\ClonePlan.cshtml" />
     <Content Include="Views\AngularTemplate\UpstreamFieldChooser.cshtml" />
+    <Content Include="_PowerShellScripts\Set-WebsiteAppSettings.ps1" />
+    <Content Include="_PowerShellScripts\Create-SDKNuget.ps1" />
+    <Content Include="Views\AngularTemplate\PageDefinitionList.cshtml" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\KioskModeOrganizationHeaderController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ManageUserController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\OrganizationController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\PhoneNumberAuthenticationController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\PlanUploadModalController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\PlanUploadController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\PageDefinitionFormController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\PageDefinitionListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionDocumentationController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\BuildMessageAppender.ts" />
@@ -1047,11 +1000,14 @@
     <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\AuthenticationDialogController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManageAuthTokenController.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\IPageDefinition.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IManifestRegistry.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IProfile.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ActivityResponseDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\AdvisoryMessages.ts" />
     <TypeScriptCompile Include="Scripts\app\model\AlertDTO.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\PageDefinition.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\TerminalRegistrationDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ValidationResults.ts" />
     <TypeScriptCompile Include="Scripts\app\model\HistoryDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\IncomingCratesDTO.ts" />
@@ -1064,6 +1020,7 @@
     <TypeScriptCompile Include="Scripts\app\services\ConfigureTrackerService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\FileDetailsService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\FileService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\PageDefinitionService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ManifestRegistryService.ts" />
     <TypeScriptCompile Include="Scripts\app\model\DocumentationResponseDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\services\AuthService.ts" />

@@ -17,7 +17,7 @@ using terminalUtilities.Excel;
 
 namespace terminalExcel.Activities
 {
-    public class Set_Excel_Template_v1 : BaseTerminalActivity
+    public class Set_Excel_Template_v1 : ExplicitTerminalActivity
     {
         private const string DataTableLabel = "Standard Data Table";
 

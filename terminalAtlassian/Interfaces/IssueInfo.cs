@@ -19,6 +19,6 @@ namespace terminalAtlassian.Interfaces
 
         public string Description { get; set; }
 
-        public List<FieldDTO> CustomFields { get; set; }
+        public List<KeyValueDTO> CustomFields { get; set; }
     }
 }

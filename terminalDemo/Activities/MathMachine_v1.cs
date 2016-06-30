@@ -10,10 +10,11 @@ using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Helpers;
+using Fr8.TerminalBase.Services;
 
 namespace terminalDemo.Activities
 {
-    public class MathMachine_v1 : EnhancedTerminalActivity<MathMachine_v1.ActivityUi>
+    public class MathMachine_v1 : TerminalActivity<MathMachine_v1.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -98,18 +99,18 @@ namespace terminalDemo.Activities
                 }
                 //everything seems fine
                 //lets create our children activities in parallel
-                var doMathActivityTemplateTask = GetActivityTemplate("terminalDemo", "Do_Math", "1", "1");
-                var buildMessageActivityTemplateTask = GetActivityTemplate("terminalFr8Core", "Build_Message", "1", "1");
-                var sendEmailActivityTemplateTask = GetActivityTemplate("terminalFr8Core", "Send_Email", "1", "1");
+                var doMathActivityTemplateTask = HubCommunicator.GetActivityTemplate("terminalDemo", "Do_Math", "1", "1");
+                var buildMessageActivityTemplateTask = HubCommunicator.GetActivityTemplate("terminalFr8Core", "Build_Message", "1", "1");
+                var sendEmailActivityTemplateTask = HubCommunicator.GetActivityTemplate("terminalFr8Core", "Send_Email", "1", "1");
                 await Task.WhenAll(doMathActivityTemplateTask, buildMessageActivityTemplateTask, sendEmailActivityTemplateTask);
                 var doMathActivityTemplate = doMathActivityTemplateTask.Result;
                 var buildMessageActivityTemplate = buildMessageActivityTemplateTask.Result;
                 var sendEmailActivityTemplate = sendEmailActivityTemplateTask.Result;
                 
                 //let's configure them all
-                var doMathActivityTask = AddAndConfigureChildActivity(ActivityPayload, doMathActivityTemplate, "Do Math", "Do Math with Math Machine", 1);
-                var buildMessageActivityTask = AddAndConfigureChildActivity(ActivityPayload, buildMessageActivityTemplate, "Build Message", "Build Message for Math Machine", 2);
-                var sendEmailActivityTask = AddAndConfigureChildActivity(ActivityPayload, sendEmailActivityTemplate, "Send Email", "Send Math Machine output as email", 3);
+                var doMathActivityTask = HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, doMathActivityTemplate, "Do Math", "Do Math with Math Machine", 1);
+                var buildMessageActivityTask = HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, buildMessageActivityTemplate, "Build Message", "Build Message for Math Machine", 2);
+                var sendEmailActivityTask = HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, sendEmailActivityTemplate, "Send Email", "Send Math Machine output as email", 3);
                 await Task.WhenAll(doMathActivityTask, buildMessageActivityTask, sendEmailActivityTask);
 
                 var doMathActivity = doMathActivityTask.Result;
@@ -138,7 +139,7 @@ namespace terminalDemo.Activities
                 ControlHelper.SetControlValue(buildMessageActivity, "Name", "MathMachineMessage");
 
                 //reconfigure BuildAMessage to publish it's message crate
-                await ConfigureChildActivity(ActivityPayload, buildMessageActivity);
+                await HubCommunicator.ConfigureChildActivity(ActivityPayload, buildMessageActivity);
 
                 //update SendEmail Activity
                 var sendEmailConfigurationControls = ControlHelper.GetConfigurationControls(sendEmailActivity.CrateStorage);

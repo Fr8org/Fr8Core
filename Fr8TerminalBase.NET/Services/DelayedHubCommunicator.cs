@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Fr8.Infrastructure.Data.Constants;
+using Newtonsoft.Json.Linq;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
@@ -35,6 +35,12 @@ namespace Fr8.TerminalBase.Services
                 _userId = userId;
                 _underlyingHubCommunicator?.Authorize(userId);
             }
+        }
+
+        public async Task<PlanEmptyDTO> LoadPlan(JToken planContents)
+        {
+            await InitializeUnderlyingCommunicator();
+            return await _underlyingHubCommunicator.LoadPlan(planContents);
         }
 
         public async Task<PayloadDTO> GetPayload(Guid containerId)
@@ -103,10 +109,10 @@ namespace Fr8.TerminalBase.Services
             return await _underlyingHubCommunicator.GetAuthToken(authTokenId);
         }
 
-        public async Task ScheduleEvent(string externalAccountId, string minutes)
+        public async Task ScheduleEvent(string externalAccountId, string minutes, bool triggerImmediately = false, string additionalConfigAttributes = null)
         {
             await InitializeUnderlyingCommunicator();
-            await _underlyingHubCommunicator.ScheduleEvent(externalAccountId, minutes);
+            await _underlyingHubCommunicator.ScheduleEvent(externalAccountId, minutes, triggerImmediately, additionalConfigAttributes);
         }
 
         public async Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload)
@@ -258,6 +264,24 @@ namespace Fr8.TerminalBase.Services
                     }
                 }
             }
+        }
+
+        public async Task<List<AuthenticationTokenTerminalDTO>> GetTokens()
+        {
+            await InitializeUnderlyingCommunicator();
+            return await _underlyingHubCommunicator.GetTokens();
+        }
+
+        public async Task<AuthorizationTokenDTO> GenerateOAuthToken(ExternalAuthenticationDTO authDTO)
+        {
+            await InitializeUnderlyingCommunicator();
+            return await _underlyingHubCommunicator.GenerateOAuthToken(authDTO);
+        }
+
+        public async Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri)
+        {
+            await InitializeUnderlyingCommunicator();
+            return await _underlyingHubCommunicator.GetHMACHeader(requestUri);
         }
     }
 }

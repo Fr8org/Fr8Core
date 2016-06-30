@@ -12,6 +12,7 @@ module dockyard.directives.containerTransition {
         onOperationChange: (transition: model.ContainerTransitionField) => void;
         onTargetChange: (transition: model.ContainerTransitionField) => void;
         change: () => (field: model.ControlDefinitionDTO) => void;
+        subPlan: model.SubPlanDTO;
         currentAction: model.ActivityDTO;
         removeTransition: (index: number) => void;
         PCA: directives.paneConfigureAction.IPaneConfigureActionController;
@@ -21,17 +22,35 @@ module dockyard.directives.containerTransition {
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     export function ContainerTransition(): ng.IDirective {
 
+        var warningMessageTemplate =
+            '<div class="modal-body">\
+                <p>\
+                    <div>Be careful!</div>\
+                    <div>It\'s very easy to create an infinite loop when you jump back to the beginning of the subplan that you\'re part of. Make sure that you have a way to break out of this loop. Otherwise this Plan will likely get shut down for overconsumption of Fr8 resources.</div>\
+                </p>\
+            </div>\
+            <div class="modal-footer">\
+                <button class="btn btn-default" ng-click="$dismiss()">Okay</button>\
+            </div>';
 
-        var controller = ['$scope', '$timeout', 'PlanService', ($scope: IContainerTransitionScope, $timeout: ng.ITimeoutService, PlanService: services.IPlanService) => {
+        var controller = ['$scope', '$timeout', 'PlanService', '$modal', ($scope: IContainerTransitionScope, $timeout: ng.ITimeoutService, PlanService: services.IPlanService, $modal: any) => {
 
             var planOptions = new Array<model.DropDownListItem>();
 
             //let's load and keep all plans in cache
             //TODO think about this - maybe we need to request data from PCA or PB
             //this direct access will create unnecessary requests to server
-            PlanService.getbystatus({ id: null, status: null, category: '' }).$promise.then((plans: Array<model.PlanDTO>) => {
+            PlanService.getbystatus({ id: null, status: null, category: '', orderBy: "name" }).$promise.then((result: any) => {
+                var plans = result.plans;
                 for (var i = 0; i < plans.length; i++) {
-                    planOptions.push(new model.DropDownListItem(plans[i].name, plans[i].id));
+                    var plan = plans[i];
+                    if (plan.id === $scope.plan.id) {
+                        plan.name = 'Jump back to the start of this plan';
+                        planOptions.unshift(new model.DropDownListItem(plan.name, plan.id));
+                    }
+                    else {
+                        planOptions.push(new model.DropDownListItem(plan.name, plan.id));
+                    }                    
                 }
             });
 
@@ -145,7 +164,16 @@ module dockyard.directives.containerTransition {
             var getCurrentSubplans = () => {
                 var subplans = new Array<model.DropDownListItem>();
                 for (var i = 0; i < $scope.plan.subPlans.length; i++) {
-                    subplans.push(new model.DropDownListItem($scope.plan.subPlans[i].name, $scope.plan.subPlans[i].subPlanId));
+                    var subPlanName;
+
+                    if ($scope.plan.subPlans[i].subPlanId === $scope.subPlan.subPlanId) {
+                        subPlanName = 'Jump back to the start of this subplan';
+                    }
+                    else {
+                        subPlanName = $scope.plan.subPlans[i].name;
+                    }
+
+                    subplans.push(new model.DropDownListItem(subPlanName, $scope.plan.subPlans[i].subPlanId));
                 }
 
                 return subplans;
@@ -255,6 +283,15 @@ module dockyard.directives.containerTransition {
                 var dd = <model.DropDownList>(<any>transition)._dummySecondaryOperationDD;
                 transition.targetNodeId = dd.value;
                 triggerChange();
+
+                if ((<any>transition)._dummyOperationDD.value === ContainerTransitions.JumpToSubplan.toString()
+                    && dd.value === $scope.subPlan.subPlanId) {
+
+                    $modal.open({
+                        template: warningMessageTemplate
+                    });
+                }
+
                 return angular.noop;
             };
 
@@ -319,6 +356,7 @@ module dockyard.directives.containerTransition {
             controller: controller,
             scope: {
                 plan: '=',
+                subPlan: '=',
                 field: '=',
                 currentAction: '='
             }

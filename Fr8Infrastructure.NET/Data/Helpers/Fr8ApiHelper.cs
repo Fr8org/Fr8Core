@@ -61,7 +61,7 @@ namespace Fr8.Infrastructure.Data.Helpers
             {
                 throw new ArgumentNullException(nameof(fieldToMatch));
             }
-            if (string.IsNullOrWhiteSpace(fieldToMatch.Key))
+            if (string.IsNullOrWhiteSpace(fieldToMatch.Name))
             {
                 return null;
             }
@@ -82,7 +82,7 @@ namespace Fr8.Infrastructure.Data.Helpers
             //iterate through found crates to find the payload
             foreach (var foundCrate in filteredCrates)
             {
-                var foundField = FindField(operationalState, foundCrate, fieldToMatch.Key);
+                var foundField = FindField(operationalState, foundCrate, fieldToMatch.Name);
                 if (foundField != null)
                 {
                     return foundField.Value;
@@ -92,7 +92,7 @@ namespace Fr8.Infrastructure.Data.Helpers
         }
 
 
-        private static FieldDTO FindField(OperationalStateCM operationalState, Crate crate, string fieldKey)
+        private static KeyValueDTO FindField(OperationalStateCM operationalState, Crate crate, string fieldKey)
         {
             object searchArea;
             //let's check if we are in a loop

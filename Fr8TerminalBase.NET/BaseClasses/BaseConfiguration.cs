@@ -10,6 +10,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.StructureMap;
 using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Services;
@@ -104,8 +105,13 @@ namespace Fr8.TerminalBase.BaseClasses
                 hubCommunicatorFactoryExpression = c => new DelayedHubCommunicator(c.GetInstance<IHubDiscoveryService>().GetMasterHubCommunicator());
             }
             
-            childContainer.Configure(x => x.For<IHubCommunicator>().Use(hubCommunicatorFactoryExpression));
-            childContainer.Configure(x => x.For<IContainer>().Use(childContainer));
+            childContainer.Configure(x =>
+            {
+                x.For<IHubCommunicator>().Use(hubCommunicatorFactoryExpression).Singleton();
+                x.For<IContainer>().Use(childContainer);
+                x.For<IPushNotificationService>().Use<PushNotificationService>().Singleton();
+                x.For<PlanService>().Use<PlanService>().Singleton();
+            });
 
             request.RegisterForDispose(childContainer);
 

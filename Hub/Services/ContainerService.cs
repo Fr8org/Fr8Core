@@ -266,7 +266,7 @@ namespace Hub.Services
                 errorMessage += ex.Message;
             }
 
-            _pusher.NotifyUser(errorMessage, NotificationChannel.GenericFailure, user.UserName);
+            _pusher.NotifyUser(errorMessage, NotificationChannel.GenericFailure, user.Id);
         }
     }
 }

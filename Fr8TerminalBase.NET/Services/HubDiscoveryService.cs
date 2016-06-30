@@ -207,10 +207,14 @@ namespace Fr8.TerminalBase.Services
         {
             try
             {
+                Logger.Info($"Terminal '{_activityStore.Terminal.Name}' wants to add Hub at '{hubUrl}' to subscription list");
+
                 var masterHubCommunicator = await GetMasterHubCommunicator();
 
                 masterHubCommunicator.Authorize(_activityStore.Terminal.PublicIdentifier);
                 await masterHubCommunicator.AddOrUpdateWarehouse(new HubSubscriptionCM(hubUrl.ToLower()));
+
+                Logger.Info($"Terminal '{_activityStore.Terminal.Name}' sucessfully added Hub '{hubUrl}' to subscription list");
             }
             catch (Exception ex)
             {
@@ -224,6 +228,8 @@ namespace Fr8.TerminalBase.Services
         {
             try
             {
+                Logger.Info($"Terminal '{_activityStore.Terminal.Name}' wants to remove Hub at '{hubUrl}' from subscription list");
+
                 var masterHubCommunicator = await GetMasterHubCommunicator();
 
                 masterHubCommunicator.Authorize(_activityStore.Terminal.PublicIdentifier);
@@ -237,6 +243,8 @@ namespace Fr8.TerminalBase.Services
                         Value = hubUrl.ToLower()
                     }
                 });
+
+                Logger.Info($"Terminal '{_activityStore.Terminal.Name}' sucessfully removed Hub '{hubUrl}' from subscription list");
             }
             catch (Exception ex)
             {
@@ -248,11 +256,25 @@ namespace Fr8.TerminalBase.Services
 
         private async Task RequestDiscoveryTask(string hubUrl)
         {
+            Exception lastException = null;
+
             try
             {
-                await _hubDiscoveryRetryPolicy.Do(() => _restfulServiceClient.PostAsync(new Uri(string.Concat(hubUrl, _apiSuffix, "/terminals/forceDiscover")), _activityStore.Terminal.Endpoint, (string) null));
+                Logger.Info($"Terminal {_activityStore.Terminal.Name} is requesting discovery for endpoint '{_activityStore.Terminal.Endpoint}' from Hub at '{hubUrl}' ");
+
+                var response = await _hubDiscoveryRetryPolicy.Do(() => _restfulServiceClient.PostAsync<string, ResponseMessageDTO>(new Uri(string.Concat(hubUrl, _apiSuffix, "/terminals/forceDiscover")), _activityStore.Terminal.Endpoint, (string) null));
+                
+                if (!string.IsNullOrWhiteSpace(response?.ErrorCode))
+                {
+                    lastException = new Exception(response.Message);
+                }
             }
             catch (Exception ex)
+            {
+                lastException = ex;
+            }
+
+            if (lastException != null)
             {
                 lock (_hubSecrets)
                 {
@@ -260,11 +282,39 @@ namespace Fr8.TerminalBase.Services
 
                     if (_hubSecrets.TryGetValue(hubUrl, out setSecretTask))
                     {
-                        setSecretTask.SetException(new Exception($"Failed to request discovery from the Hub at : {hubUrl}", ex));
+                        Logger.Error($"Hub at '{hubUrl}' refused to call terminal discovery endpoint: {lastException.Message}");
+                        setSecretTask.TrySetException(new Exception($"Failed to request discovery from the Hub at : {hubUrl}", lastException));
                     }
                 }
 
                 UnsubscribeFromHub(hubUrl);
+            }
+            else
+            {
+#pragma warning disable 4014
+                Task.Run(async () =>
+                {
+                    bool shouldUnubscribe = false;
+
+                    await Task.Delay(5000);
+
+                    lock (_hubSecrets)
+                    {
+                        TaskCompletionSource<string> setSecretTask;
+
+                        if (_hubSecrets.TryGetValue(hubUrl, out setSecretTask))
+                        {
+                            shouldUnubscribe = setSecretTask.TrySetException(new Exception($"Hub '{hubUrl}' failed to respond with discovery request within a given period of time."));
+                        }
+                    }
+
+                    if (shouldUnubscribe)
+                    {
+                        Logger.Error($"Hub at '{hubUrl}'failed to respond with discovery request within a given period of time");
+                        UnsubscribeFromHub(hubUrl);
+                    }
+                });
+#pragma warning restore 4014
             }
         }
 
@@ -278,6 +328,13 @@ namespace Fr8.TerminalBase.Services
             if (apiIndex > 0)
             {
                 url = url.Substring(0, apiIndex);
+            }
+
+            var schemaIndex = url.IndexOf("://", StringComparison.InvariantCulture);
+
+            if (schemaIndex < 0)
+            {
+                url = "http://" + url.TrimStart('/', '\\');
             }
 
             return url.TrimEnd('/', '\\');

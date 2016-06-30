@@ -185,12 +185,12 @@ namespace terminalDocuSignTests.Integration
             // Follow-up Configuration
             crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
             controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
-            var emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role email");
+            var emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "freight testing role email");
             emailField.ValueSource = "specific";
             emailField.Value = TestEmail;
             emailField.TextValue = TestEmail;
 
-            var emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role name");
+            var emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "freight testing role name");
             emailNameField.ValueSource = "specific";
             emailNameField.Value = TestEmailName;
             emailNameField.TextValue = TestEmailName;
@@ -210,11 +210,11 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual("9a4d2154-5b18-4316-9824-09432e62f458", docuSignTemplate.Value, "Selected DocuSign Template did not save on Send DocuSign Envelope action.");
             Assert.AreEqual("Medical_Form_v1", docuSignTemplate.selectedKey, "Selected DocuSign Template did not save on Send DocuSign Envelope action.");
 
-            emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role email");
+            emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "freight testing role email");
             Assert.AreEqual(TestEmail, emailField.Value, "Email did not save on Send DocuSign Envelope action.");
             Assert.AreEqual(TestEmail, emailField.TextValue, "Email did not save on Send DocuSign Envelope action.");
 
-            emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role name");
+            emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "freight testing role name");
             Assert.AreEqual(TestEmailName, emailNameField.Value, "Email Name did not save on Send DocuSign Envelope action.");
             Assert.AreEqual(TestEmailName, emailNameField.TextValue, "Email Name did not save on Send DocuSign Envelope action.");
 
@@ -312,32 +312,32 @@ namespace terminalDocuSignTests.Integration
             //chosen "Fr8 Fromentum Registration Form" contains 7 specific DocuSign tabs that will be configured with upstream values 
             crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
             controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
-            var emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingLead role email");
+            var emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "Lead role email");
             emailField.ValueSource = "upstream";
             emailField.Value = "emailaddress";
             emailField.selectedKey = "emailaddress";
 
-            var emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingLead role name");
+            var emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "Lead role name");
             emailNameField.ValueSource = "upstream";
             emailNameField.Value = "name";
             emailNameField.selectedKey = "name";
 
-            var phoneField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "MappingPhone(Lead)");
+            var phoneField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "Phone(Lead)");
             phoneField.ValueSource = "upstream";
             phoneField.Value = "phone";
             phoneField.selectedKey = "phone";
 
-            var titleField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "MappingTitle(Lead)");
+            var titleField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "Title(Lead)");
             titleField.ValueSource = "upstream";
             titleField.Value = "title";
             titleField.selectedKey = "title";
 
-            var companyField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "MappingCompany(Lead)");
+            var companyField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "Company(Lead)");
             companyField.ValueSource = "upstream";
             companyField.Value = "companyname";
             companyField.selectedKey = "companyname";
 
-            var radioGroup = controlsCrate.Content.Controls.OfType<RadioButtonGroup>().First(f => f.GroupName == "RadioGroupMappingRegistration Type(Lead)");
+            var radioGroup = controlsCrate.Content.Controls.OfType<RadioButtonGroup>().First(f => f.GroupName == "Registration Type(Lead)");
             foreach (var radios in radioGroup.Radios)
             {
                 //reset all preselected radioButtons
@@ -346,10 +346,10 @@ namespace terminalDocuSignTests.Integration
             var radioButton = radioGroup.Radios.FirstOrDefault(x => x.Name == "Buy 2, Get 3rd Free");
             radioButton.Selected = true;
 
-            var checkboxField = controlsCrate.Content.Controls.OfType<CheckBox>().First(f => f.Name == "CheckBoxMappingGovernmentEntity?(Lead)");
+            var checkboxField = controlsCrate.Content.Controls.OfType<CheckBox>().First(f => f.Name == "CheckBoxFields_GovernmentEntity?(Lead)");
             checkboxField.Selected = true;
 
-            var dropdownField = controlsCrate.Content.Controls.OfType<DropDownList>().First(f => f.Name == "DropDownMappingSize of Company(Lead)");
+            var dropdownField = controlsCrate.Content.Controls.OfType<DropDownList>().First(f => f.Name == "DropDownListFields_Size of Company(Lead)");
             dropdownField.Value = "Medium (51-250)";
             dropdownField.selectedKey = "Medium (51-250)";
 

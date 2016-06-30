@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace terminalFr8Core.Activities
 {
-    public class Add_Payload_Manually_v1 : BaseTerminalActivity
+    public class Add_Payload_Manually_v1 : ExplicitTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -41,7 +41,7 @@ namespace terminalFr8Core.Activities
                 RaiseError("Could not find FieldListControl.");
                 return Task.FromResult(0);
             }
-            var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
+            var userDefinedPayload = JsonConvert.DeserializeObject<List<KeyValueDTO>>(fieldListControl.Value);
             Payload.Add(Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(userDefinedPayload)));
             Success();
             return Task.FromResult(0);
@@ -66,12 +66,6 @@ namespace terminalFr8Core.Activities
             if (fieldListControl.Value != null)
             {
                 var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
-
-                userDefinedPayload.ForEach(x =>
-                {
-                    x.Value = x.Key;
-                    x.Availability = AvailabilityType.RunTime;
-                });
 
                 CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel, true).AddFields(userDefinedPayload);
             }

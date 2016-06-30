@@ -7,6 +7,7 @@ using System.Web;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Models;
+using Newtonsoft.Json;
 
 namespace terminalSalesforce.Infrastructure
 {
@@ -43,8 +44,7 @@ namespace terminalSalesforce.Infrastructure
             return externalAuthUrlDTO;
         }
 
-        public AuthorizationTokenDTO Authenticate(
-            ExternalAuthenticationDTO externalAuthDTO)
+        public AuthorizationTokenDTO Authenticate(ExternalAuthenticationDTO externalAuthDTO)
         {
             var query = HttpUtility.ParseQueryString(externalAuthDTO.RequestQueryString);
             //Code will be access code returned by the Salesforce after the user authenticates app
@@ -77,13 +77,11 @@ namespace terminalSalesforce.Infrastructure
 
             return new AuthorizationTokenDTO()
             {
-                Token = authClient.AccessToken,
+                Token = JsonConvert.SerializeObject(new { AccessToken = authClient.AccessToken, RefreshToken = authClient.RefreshToken }),
                 ExternalAccountId = externalAccountId,
                 ExternalAccountName = username,
                 ExternalStateToken = state,
-                AdditionalAttributes = $"refresh_token={authClient.RefreshToken};" +
-                                       $"instance_url={authClient.InstanceUrl};" +
-                                       $"api_version={authClient.ApiVersion}"
+                AdditionalAttributes = $"instance_url={authClient.InstanceUrl};api_version={authClient.ApiVersion}"
             };
         }
 
@@ -117,9 +115,7 @@ namespace terminalSalesforce.Infrastructure
         public async Task<AuthorizationToken> RefreshAccessToken(AuthorizationToken curAuthToken)
         {
             var authClient = new AuthenticationClient();
-            string authAttributes = curAuthToken.AdditionalAttributes;
-            string refreshToken = authAttributes.Substring(authAttributes.IndexOf("refresh_token"), authAttributes.IndexOf("instance_url") - 1);
-            refreshToken = refreshToken.Replace("refresh_token=", "");
+            var refreshToken = (string)JsonConvert.DeserializeObject<dynamic>(curAuthToken.Token).RefreshToken;
 
             //In Test scenario, the refresh token will be empty as we use Salesforce's UserName & Password login method. 
             //In that case, there will no refresh token be available. Return the input auth token.
@@ -128,11 +124,9 @@ namespace terminalSalesforce.Infrastructure
                 return curAuthToken;
             }
 
-            await authClient.TokenRefreshAsync(salesforceConsumerKey, refreshToken);
-            curAuthToken.Token = authClient.AccessToken;
-            curAuthToken.AdditionalAttributes = $"refresh_token={authClient.RefreshToken};" +
-                                                  $"instance_url={authClient.InstanceUrl};" +
-                                                  $"api_version={authClient.ApiVersion}";
+            await authClient.TokenRefreshAsync(salesforceConsumerKey, refreshToken);            
+            curAuthToken.Token = JsonConvert.SerializeObject(new { AccessToken = authClient.AccessToken, RefreshToken = refreshToken });
+            curAuthToken.AdditionalAttributes = $"instance_url={authClient.InstanceUrl};api_version={authClient.ApiVersion}";
             return curAuthToken;
         }
     }

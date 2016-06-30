@@ -16,6 +16,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using StructureMap;
+using Newtonsoft.Json;
 
 namespace Data.Migrations
 {
@@ -66,7 +67,6 @@ namespace Data.Migrations
                 AddDockyardAccounts(uow);
                 AddTestAccounts(uow);
                 AddDefaultProfiles(uow);
-                //Addterminals(uow);
 
                 //AddAuthorizationTokens(uow);
                 uow.SaveChanges();
@@ -83,9 +83,45 @@ namespace Data.Migrations
                 UpdateTerminalClientVisibility(uow);
 
                 RenameActivity(uow);
+
+                RegisterTerminals(uow);
             }
         }
 
+        private void RegisterTerminals(UnitOfWork uow)
+        {
+            // Example of terminal registration: RegisterTerminal (uow, "localhost:12345");   
+        }
+        
+        private void RegisterTerminal(UnitOfWork uow, string terminalEndpoint)
+        {
+            var terminalRegistration = new TerminalRegistrationDO();
+
+            terminalEndpoint = ExtractTerminalAuthority(terminalEndpoint);
+
+            if (uow.TerminalRegistrationRepository.GetAll().FirstOrDefault(x => string.Equals(ExtractTerminalAuthority(x.Endpoint), terminalEndpoint, StringComparison.OrdinalIgnoreCase)) != null)
+            {
+                return;
+            }
+
+            terminalRegistration.Endpoint = terminalEndpoint;
+
+            uow.TerminalRegistrationRepository.Add(terminalRegistration);
+            uow.SaveChanges();
+        }
+
+        private static string ExtractTerminalAuthority(string terminalUrl)
+        {
+            string terminalAuthority = terminalUrl;
+
+            if (!terminalUrl.Contains("http:") & !terminalUrl.Contains("https:"))
+            {
+                terminalAuthority = "http://" + terminalUrl.TrimStart('\\', '/');
+            }
+            
+            return terminalAuthority.TrimEnd('\\', '/');
+        }
+        
         private void RenameActivity(UnitOfWork uow)
         {
             var activities = uow.ActivityTemplateRepository.GetAll();
@@ -130,19 +166,19 @@ namespace Data.Migrations
             };
 
             docusignEventPayload.EventPayload.Add(Crate.FromContent("Payload Data",
-                new StandardPayloadDataCM(new List<FieldDTO>
+                new StandardPayloadDataCM(new List<KeyValueDTO>
             {
-                new FieldDTO
+                new KeyValueDTO
                 {
                     Key="EnvelopeId",
                     Value="38b8de65-d4c0-435d-ac1b-87d1b2dc5251"
                 },
-                new FieldDTO
+                new KeyValueDTO
                 {
                     Key="ExternalEventType",
                     Value="38b8de65-d4c0-435d-ac1b-87d1b2dc5251"
                 },
-                new FieldDTO
+                new KeyValueDTO
                 {
                     Key="RecipientId",
                     Value="279a1173-04cc-4902-8039-68b1992639e9"
@@ -157,7 +193,7 @@ namespace Data.Migrations
             new PlanBuilder("TestTemplate{0B6944E1-3CC5-45BA-AF78-728FFBE57358}", fr8AccountDO).AddCrate(GenerateInitialEventCrate()).Store(uow);
             new PlanBuilder("TestTemplate{77D78B4E-111F-4F62-8AC6-6B77459042CB}", fr8AccountDO)
                 .AddCrate(GenerateInitialEventCrate())
-                .AddCrate(Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(new FieldDTO("EnvelopeId", "38b8de65-d4c0-435d-ac1b-87d1b2dc5251")))).Store(uow);
+                .AddCrate(Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(new KeyValueDTO("EnvelopeId", "38b8de65-d4c0-435d-ac1b-87d1b2dc5251")))).Store(uow);
 
             uow.SaveChanges();
         }
@@ -393,7 +429,7 @@ namespace Data.Migrations
             CreateAdmin("maki.gjuroski@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("fr8system_monitor@fr8.company", "123qwe", unitOfWork);
             CreateAdmin("teh.netaholic@gmail.com", "123qwe", unitOfWork);
-
+            CreateAdmin("farrukh.normuradov@gmail.com", "123qwe", unitOfWork);
             //CreateAdmin("eschebenyuk@gmail.com", "kate235", unitOfWork);
             //CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork);
         }
@@ -471,94 +507,7 @@ namespace Data.Migrations
 
             return user;
         }
-
-        private void AddSubscription(IUnitOfWork uow, Fr8AccountDO curAccount, TerminalDO curTerminal, int curAccessLevel)
-        {
-            var curSub = new SubscriptionDO()
-            {
-                Terminal = curTerminal,
-
-                DockyardAccount = curAccount,
-                AccessLevel = curAccessLevel
-            };
-
-            uow.SubscriptionRepository.Add(curSub);
-        }
-
-
-        private void AddTerminals(IUnitOfWork uow)
-        {
-            // Create test DockYard account for terminal subscription.
-            // var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
-
-            // TODO: remove this, DO-1397
-            // AddTerminals(uow, "terminalDocuSign", "localhost:53234", "1", true);
-            // AddTerminals(uow, "terminalExcel", "localhost:47011", "1", false);
-            // AddTerminals(uow, "terminalSalesforce", "localhost:51234", "1", true);
-            AddTerminals(uow, "terminalDocuSign", "DocuSign", "localhost:53234", "1");
-            AddTerminals(uow, "terminalExcel", "Excel", "localhost:47011", "1");
-            AddTerminals(uow, "terminalSalesforce", "Salesforce", "localhost:51234", "1");
-
-            uow.SaveChanges();
-        }
-
-        // TODO: remove this, DO-1397
-
-        // private static void AddTerminals(IUnitOfWork uow, string terminalName, string endPoint,
-        //     string version, bool requiresAuthentication)
-        private static void AddTerminals(IUnitOfWork uow, string terminalName, string terminalLabel, 
-            string endPoint, string version)
-        {
-            // Check that terminal does not exist yet.
-            var terminalExists = uow.TerminalRepository.GetQuery().Any(x => x.Name == terminalName);
-
-            // Add new terminal and subscription to repository, if terminal doesn't exist.
-            if (!terminalExists)
-            {
-                // Create terminal instance.
-                var terminalDO = new TerminalDO()
-                {
-                    Name = terminalName,
-                    Label = terminalLabel,
-                    TerminalStatus = TerminalStatus.Active,
-                    Endpoint = endPoint,
-                    Version = version,
-                    // TODO: create a mechanism for those secrets
-                    Secret = Guid.NewGuid().ToString()
-                    // TODO: remove this, DO-1397
-                    // RequiresAuthentication = requiresAuthentication
-                };
-
-                uow.TerminalRepository.Add(terminalDO);
-
-            }
-        }
-
-
-        private void AddActionTemplates(IUnitOfWork uow)
-        {
-            AddActionTemplate(uow, "Filter Using Run-Time Data", "localhost:46281", "1");
-            AddActionTemplate(uow, "Wait For DocuSign Event", "localhost:53234", "1");
-            AddActionTemplate(uow, "Extract From DocuSign Envelope", "localhost:53234", "1");
-            AddActionTemplate(uow, "Extract Table Data", "localhost:47011", "1");
-            uow.SaveChanges();
-        }
-
-        private void AddActionTemplate(IUnitOfWork uow, string name, string endPoint, string version)
-        {
-            var existingActivityTemplateDO = uow.ActivityTemplateRepository
-                .GetQuery().Include("Terminal")
-
-                .SingleOrDefault(x => x.Name == name);
-
-            if (existingActivityTemplateDO != null)
-                return;
-
-            var curActivityTemplateDO = new ActivityTemplateDO(
-                name, version, endPoint, endPoint, endPoint);
-            uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
-        }
-
+        
         private void AddWebServices(IUnitOfWork uow)
         {
             var terminalToWs = new Dictionary<string, string>
@@ -660,26 +609,7 @@ namespace Data.Migrations
                 uow.WebServiceRepository.Add(webServiceDO);
             }
         }
-
-
-        //Getting random working time within next 3 days
-        private static DateTimeOffset GetRandomEventStartTime()
-        {
-            TimeSpan timeSpan = DateTime.UtcNow.AddDays(3) - DateTime.UtcNow;
-            var randomTest = new Random();
-            TimeSpan newSpan = new TimeSpan(0, randomTest.Next(0, (int)timeSpan.TotalMinutes), 0);
-            DateTime newDate = DateTime.UtcNow;
-            while (newDate.TimeOfDay.Hours < 9)
-            {
-                newDate = newDate.Add(new TimeSpan(1, 0, 0));
-            }
-            while (newDate.TimeOfDay.Hours > 16)
-            {
-                newDate = newDate.Add(new TimeSpan(-1, 0, 0));
-            }
-            return newDate;
-        }
-
+        
         private void UpdateRootPlanNodeId(IUnitOfWork uow)
         {
             var anyRootIdFlag = uow.PlanRepository.GetNodesQueryUncached().Any(x => x.RootPlanNodeId != null);
@@ -805,6 +735,9 @@ namespace Data.Migrations
             //default permissions for Users
             fr8AdminProfile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), true, false, true, fr8AdminProfile.Id, "Fr8 Administrator Permission Set", uow));
             
+            //default permissions for PageDefinitions
+            fr8AdminProfile.PermissionSets.Add(AddPermissionSet(nameof(PageDefinitionDO), true, false, false, fr8AdminProfile.Id, "Fr8 Administrator Permission Set", uow));
+
             profile.PermissionSets.Clear();
             //default permissions for Plans and PlanNodes
             profile.PermissionSets.Add(AddPermissionSet(nameof(PlanNodeDO), true, false, false, profile.Id,"System Administrator Permission Set", uow));
@@ -817,6 +750,9 @@ namespace Data.Migrations
 
             //default permissions for Users
             profile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), true, true, false, profile.Id, "System Administrator Permission Set", uow));
+
+            //default permissions for PageDefinitions
+            profile.PermissionSets.Add(AddPermissionSet(nameof(PageDefinitionDO), true, false, false, profile.Id, "System Administrator Permission Set", uow));
 
             //add standard user to all users without profile 
             var roles = uow.UserRepository.GetQuery().Where(x => x.ProfileId == null).ToList();
@@ -878,6 +814,7 @@ namespace Data.Migrations
             {
                 permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.ViewAllObjects));
                 permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.ModifyAllObjects));
+                permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int)PermissionType.EditPageDefinitions));
             }
 
             if (hasManageFr8Users)
