@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Data.Entities;
 using Data.Repositories;
 using Fr8.Infrastructure.Data.DataTransferObjects;
@@ -39,7 +35,7 @@ namespace terminalIntegrationTests.Unit
 
             var pd1 = fixture.Build<PageDefinitionDO>()
                 .Without(x => x.UrlString)
-                .With(x=>x.Tags, new []{"slack","excel"})
+                .With(x => x.Tags, new[] { "slack", "excel" })
                 .Create();
             pageDefinitionRepositoryStub.Setup(x => x.GetAll()).Returns(new List<PageDefinitionDO>
             {

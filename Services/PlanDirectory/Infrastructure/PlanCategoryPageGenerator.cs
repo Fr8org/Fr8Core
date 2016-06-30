@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using Data.Entities;
 using Data.Repositories;
 using PlanDirectory.CategoryPages;
 
@@ -27,7 +24,7 @@ namespace PlanDirectory.Infrastructure
             var pageDefinitions = _pageDefinitionRepository.GetAll();
             foreach (var webServiceTemplateTag in tags)
             {
-                
+
             }
 
             foreach (var webServiceTemplateTag in tags)
@@ -37,7 +34,11 @@ namespace PlanDirectory.Infrastructure
                 template.Session = new Dictionary<string, object>
                 {
                     ["Name"] = fileName,
-                    ["Tags"] = webServiceTemplateTag.TagsWithIcons
+                    ["Tags"] = webServiceTemplateTag.TagsWithIcons,
+                    ["RelatedPlans"] = new Dictionary<string, string>()
+                    {
+                        { "foo", "bar"}
+                    }
                 };
                 // Must call this to transfer values.
                 template.Initialize();
