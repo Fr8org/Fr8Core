@@ -426,7 +426,6 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\Api\ReportController.cs" />
     <Compile Include="Controllers\TokenAuthController.cs" />
-    <Compile Include="ExceptionHandling\MvcHandleErrorAttribute.cs" />
     <Compile Include="Infrastructure_HubWeb\AngularTemplateCacheAttribute.cs" />
     <Compile Include="Infrastructure_HubWeb\FileActionResult.cs" />
     <Compile Include="Infrastructure_HubWeb\Fr8HubWebHMACAuthenticateAttribute.cs" />
@@ -446,8 +445,7 @@
     <Compile Include="ViewModels\ExternalLoginConfirmationVM.cs" />
     <Compile Include="ViewModels\LoginVM.cs" />
     <Compile Include="ViewModels\ManageUserVM.cs" />
-    <Compile Include="ViewModels\NavLinksHome.cs" />
-    <Compile Include="ViewModels\NavLinksShared.cs" />
+    <Compile Include="ViewModels\NavLinks.cs" />
     <Compile Include="ViewModels\RegisterVM.cs" />
     <Compile Include="ViewModels\RequestParameters\PlansGetParams.cs" />
     <Compile Include="ViewModels\RequestParameters\PlansPostParams.cs" />
@@ -472,6 +470,7 @@
     <Content Include="Content\css\homecss\main.css" />
     <Content Include="Content\css\shared\main.css" />
     <Content Include="Content\css\shared\navbar.css" />
+    <Content Include="Content\icons\web_services\basecamp2-icon-64x64.png" />
     <Content Include="Content\icons\web_services\Box-logo_64x64.png" />
     <Content Include="Content\icons\web_services\facebook-icon-64x64.png" />
     <Content Include="Content\icons\web_services\fr8-demo-icon-64x64.png" />
@@ -957,6 +956,8 @@
     <Content Include="_PowerShellScripts\Set-PlanDirectoryURL.ps1" />
     <Content Include="Views\Redirect\ClonePlan.cshtml" />
     <Content Include="Views\AngularTemplate\UpstreamFieldChooser.cshtml" />
+    <Content Include="_PowerShellScripts\Set-WebsiteAppSettings.ps1" />
+    <Content Include="_PowerShellScripts\Create-SDKNuget.ps1" />
     <Content Include="Views\AngularTemplate\PageDefinitionList.cshtml" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />

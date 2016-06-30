@@ -37,7 +37,7 @@ namespace terminalStatX.Activities
 
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        private readonly string RunTimeCrateLabel = "Stat Value Items";
+        private readonly string RunTimeCrateLabel = "Stat Properties from Monitor StatX Changes";
 
         private string SelectedGroup
         {

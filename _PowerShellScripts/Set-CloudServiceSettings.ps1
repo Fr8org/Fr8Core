@@ -37,12 +37,19 @@ param(
 	[string]$smtpUsername,
 
     [Parameter(Mandatory = $true)]
-	[string]$smtpPassword
+	[string]$smtpPassword,
 
+    [Parameter(Mandatory = $true)]
+	[string]$hubApiBaseUrl
 )
 
 $ErrorActionPreference = 'Stop'
 
+if ([System.String]::IsNullOrEmpty($overrideDbName) -ne $true) {
+	$builder = new-object system.data.SqlClient.SqlConnectionStringBuilder($connectionString)
+	$builder["Initial Catalog"] = $overrideDbName
+	$connectionString = $builder.ToString()
+}
 
 $RootDir = Split-Path -parent (Split-Path -parent $MyInvocation.MyCommand.Path)
 $ConfigPath = $RootDir+"\terminalCloudService"
@@ -89,6 +96,10 @@ if(Test-Path $ConfigFile)
 	$urlNode = $roleNode.ConfigurationSettings.Setting | where {$_.name -eq 'CoreWebServerUrl'}
 	$urlNode.value=$coreWebServerUrl
 
+	# Update HubApiBaseUrl
+	$hubApiBaseUrlNode = $roleNode.ConfigurationSettings.Setting | where {$_.name -eq 'HubApiBaseUrl'}
+	$hubApiBaseUrlNode.value=$hubApiBaseUrl
+
 	#Update SMTP Credentials
 	Write-Host "Setting SMTP Credentials"
 	$usernameNode = $roleNode.ConfigurationSettings.Setting | where {$_.name -eq 'OutboundUserName'}
@@ -106,7 +117,7 @@ if(Test-Path $ConfigFile)
 			Write-Host "$terminalName - inherit from web.config" 
 		}
 		else {
-			$_.value = $terminalList[$terminalName]
+			$_.value = "http://" + $terminalList[$terminalName]
 			Write-Host "$terminalName  - "$_.value
 		}
     }
