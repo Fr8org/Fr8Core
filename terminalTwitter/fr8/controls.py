@@ -1,7 +1,9 @@
 import data
+import manifests
+import utility
 
 
-ControlTypes = data.enum(
+ControlTypes = utility.enum(
     DROP_DOWN_LIST      = 'DropDownList',
     TEXT_SOURCE         = 'TextSource'
 )
@@ -18,9 +20,9 @@ class ControlEvent(object):
             'handler': self.handler
         }
 
-
-def extract_event(json_data):
-    return ControlEvent(name=json_data.get('name'), handler=json_data.get('handler'))
+    @staticmethod
+    def from_fr8_json(json_data):
+        return ControlEvent(name=json_data.get('name'), handler=json_data.get('handler'))
 
 
 class ControlSource(object):
@@ -40,18 +42,18 @@ class ControlSource(object):
             'availabilityType': self.availability_type
         }
 
+    @staticmethod
+    def from_fr8_json(json_data):
+        if not json_data:
+            return None
 
-def extract_source(json_data):
-    if not json_data:
-        return None
-
-    return ControlSource(
-        manifest_type=json_data.get('manifestType'),
-        label=json_data.get('label'),
-        filter_by_tag=json_data.get('filterByTag'),
-        request_upstream=json_data.get('requestUpstream'),
-        availability_type=json_data.get('availabilityType')
-    )
+        return ControlSource(
+            manifest_type=json_data.get('manifestType'),
+            label=json_data.get('label'),
+            filter_by_tag=json_data.get('filterByTag'),
+            request_upstream=json_data.get('requestUpstream'),
+            availability_type=json_data.get('availabilityType')
+        )
 
 
 class ControlDefinitionDTO(object):
@@ -81,18 +83,22 @@ class ControlDefinitionDTO(object):
             'is_collapsed': self.is_collapsed
         }
 
+    @staticmethod
+    def from_fr8_json(json_data, control=None):
+        if not control:
+            control = ControlDefinitionDTO()
 
-def extract_control_definition_internal(control, json_data):
-    control.name = json_data.get('name')
-    control.required = json_data.get('required', False)
-    control.value = json_data.get('value')
-    control.label = json_data.get('label')
-    control.type = json_data.get('type')
-    control.selected = json_data.get('selected', False)
-    control.events = [extract_event(x) for x in json_data.get('events')] if json_data.get('events') else []
-    control.source = extract_source(json_data.get('source'))
-    control.is_hidden = json_data.get('is_hidden')
-    control.is_collapsed = json_data.get('is_collapsed')
+        control.name = json_data.get('name')
+        control.required = json_data.get('required', False)
+        control.value = json_data.get('value')
+        control.label = json_data.get('label')
+        control.type = json_data.get('type')
+        control.selected = json_data.get('selected', False)
+        control.events = [ControlEvent.from_fr8_json(x) for x in json_data.get('events')]\
+            if json_data.get('events') else []
+        control.source = ControlSource.from_fr8_json(json_data.get('source'))
+        control.is_hidden = json_data.get('is_hidden')
+        control.is_collapsed = json_data.get('is_collapsed')
 
 
 class DropDownList(ControlDefinitionDTO):
@@ -113,19 +119,17 @@ class DropDownList(ControlDefinitionDTO):
 
         return json_data
 
+    @staticmethod
+    def from_fr8_json(json_data, control=None):
+        if not control:
+            control = DropDownList()
 
-def extract_drop_down_list_internal(control, json_data):
-    extract_control_definition_internal(control, json_data)
-    control.list_items = json_data.get('listItems')
-    control.selected_key = json_data.get('selectedKey')
-    control.has_refresh_button = json_data.get('hasRefreshButton')
-    control.selected_item = json_data.get('selectedItem')
-
-
-def extract_drop_down_list(json_data):
-    control = DropDownList()
-    extract_drop_down_list_internal(control, json_data)
-    return control
+        ControlDefinitionDTO.from_fr8_json(json_data, control)
+        control.list_items = json_data.get('listItems')
+        control.selected_key = json_data.get('selectedKey')
+        control.has_refresh_button = json_data.get('hasRefreshButton')
+        control.selected_item = data.FieldDTO.from_fr8_json(json_data.get('selectedItem'))\
+            if json_data.get('selectedItem') else None
 
 
 class TextSource(DropDownList):
@@ -137,6 +141,15 @@ class TextSource(DropDownList):
         self.text_value = kwargs.get('text_value')
         self.value_source = kwargs.get('value_source')
 
+    def get_value(self, crate_storage, field):
+        crates = crate_storage.all_crates_of_type(manifests.ManifestType.STANDARD_PAYLOAD_DATA)
+        for c in crates:
+            for po in c.contents.payload_objects:
+                for f in po.payload_object:
+                    if f.key == field:
+                        return f.value
+        return None
+
     def to_fr8_json(self):
         json_data = super(TextSource, self).to_fr8_json()
         json_data['initialLabel'] = self.initial_label
@@ -146,21 +159,22 @@ class TextSource(DropDownList):
 
         return json_data
 
+    @staticmethod
+    def from_fr8_json(json_data, control=None):
+        if not control:
+            control = TextSource()
+        DropDownList.from_fr8_json(json_data, control)
+        control.initial_label = json_data.get('initialLabel')
+        control.upstream_source_label = json_data.get('upstreamSourceLabel')
+        control.text_value = json_data.get('textValue')
+        control.value_source = json_data.get('valueSource')
 
-def extract_text_source(json_data):
-    control = TextSource()
-    extract_drop_down_list_internal(control, json_data)
-    control.initial_label = json_data.get('initialLabel')
-    control.upstream_source_label = json_data.get('upstreamSourceLabel')
-    control.text_value = json_data.get('textValue')
-    control.value_source = json_data.get('valueSource')
-
-    return control
+        return control
 
 
 control_extractors = {
-    ControlTypes.DROP_DOWN_LIST: extract_drop_down_list,
-    ControlTypes.TEXT_SOURCE: extract_text_source
+    ControlTypes.DROP_DOWN_LIST: DropDownList.from_fr8_json,
+    ControlTypes.TEXT_SOURCE: TextSource.from_fr8_json
 }
 
 

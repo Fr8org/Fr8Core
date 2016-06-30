@@ -1,10 +1,16 @@
 import data
-import routines
+import hub
+import manifests
 
 
 class TerminalHandler(object):
-    def __init__(self, terminal, authentication_handler=None, activity_store=None, activities=None):
+    def __init__(self, terminal, hub_factory=None, authentication_handler=None, activity_store=None, activities=None):
         self.terminal = terminal
+
+        if not hub_factory:
+            self.hub_factory = hub.create_default_hub
+        else:
+            self.hub_factory = hub_factory
 
         if not activity_store:
             self.activity_store = ActivityStore()
@@ -19,7 +25,7 @@ class TerminalHandler(object):
 
     def discover(self):
         activity_templates = self.activity_store.get_activity_templates()
-        discover_data = data.StandardFr8TerminalCM(terminal=self.terminal, activities=activity_templates)
+        discover_data = manifests.StandardFr8TerminalCM(terminal=self.terminal, activities=activity_templates)
         return discover_data.to_fr8_json()
 
     def auth_request_url(self):
@@ -33,15 +39,48 @@ class TerminalHandler(object):
         if not self.authentication_handler:
             raise 'No authentication handler registered for TerminalHandler'
 
-        external_token_dto = routines.extract_fr8_external_token_data(request.json)
+        external_token_dto = data.ExternalAuthenticationDTO.from_fr8_json(request.json)
         auth_token_data = self.authentication_handler.extract_token(external_token_dto)
         return auth_token_data.to_fr8_json()
 
     def configure(self, request):
-        fr8_data = routines.extract_fr8_data(request.json)
+        fr8_data = data.Fr8DataDTO.from_fr8_json(request.json)
         activity_handler = self.activity_store.create_activity_handler(fr8_data.activity.activity_template)
-        configure_data = activity_handler.configure(fr8_data)
-        return configure_data.to_fr8_json()
+        activity_handler.configure(fr8_data)
+        return fr8_data.activity.to_fr8_json()
+
+    def activate(self, request):
+        fr8_data = data.Fr8DataDTO.from_fr8_json(request.json)
+        activity_handler = self.activity_store.create_activity_handler(fr8_data.activity.activity_template)
+        activity_handler.activate(fr8_data)
+        return fr8_data.activity.to_fr8_json()
+
+    def deactivate(self, request):
+        fr8_data = data.Fr8DataDTO.from_fr8_json(request.json)
+        activity_handler = self.activity_store.create_activity_handler(fr8_data.activity.activity_template)
+        activity_handler.deactivate(fr8_data)
+        return fr8_data.activity.to_fr8_json()
+
+    def run(self, request):
+        fr8_data = data.Fr8DataDTO.from_fr8_json(request.json)
+        hub_url = request.headers.get('FR8HUBCALLBACKURL')
+        terminal_secret = request.headers.get('FR8HUBCALLBACKSECRET')
+
+        hub_communicator = self.hub_factory(
+            hub_url,
+            self.terminal.id,
+            terminal_secret,
+            fr8_data.container_id,
+            fr8_data.activity.auth_token.user_id
+        )
+
+        payload = hub_communicator.get_payload()
+
+        activity_handler = self.activity_store.create_activity_handler(fr8_data.activity.activity_template)
+        activity_handler.deactivate(fr8_data)
+        activity_handler.run(fr8_data, payload, hub_communicator)
+
+        return payload.to_fr8_json()
 
 
 class ActivityStore(object):

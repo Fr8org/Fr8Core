@@ -4,10 +4,12 @@ twitter_consumer_key = 'j0CGin9tvfWEe5UrxsCcjC6fT'
 twitter_consumer_secret = 'yjSWPAqLOC5ABG8Yz1uAvsGEAWNph5IRThfnwjciAvobXh8Gc2'
 twitter_callback_url = 'http://localhost:30643/AuthenticationCallback/ProcessSuccessfulOAuthResponse?terminalName=terminalTwitter&terminalVersion=1'
 
-web_service = fr8.data.WebServiceDTO(name='Twitter')
+web_service = fr8.data.WebServiceDTO(name='Twitter', icon_path='/Content/icons/web_services/twitter-icon-64x64.png')
 
 terminal_id = 'B9CC8E6D-69B0-4E41-BCBC-251F25E10E75'
-terminal_endpoint = 'http://127.0.0.1:8080'
+terminal_port = 38080
+terminal_endpoint = 'http://127.0.0.1:' + str(terminal_port)
+
 terminal = fr8.data.TerminalDTO(
     id = terminal_id,
     name = 'terminalTwitter',
