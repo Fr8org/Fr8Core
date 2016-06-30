@@ -612,7 +612,7 @@ module dockyard.directives.paneConfigureAction {
                     onClickEvent.name = 'onClick';
                     onClickEvent.handler = 'requestConfig';
 
-                    var button = new model.Button(!authCancelled ? 'Try authenticate again' : 'Authentication unsuccessful, try again');
+                    var button = new model.Button(!authCancelled ? 'Authenticate' : 'Authentication unsuccessful, try again');
                     button.name = 'AuthUnsuccessfulButton';
                     button.events = [onClickEvent];
 

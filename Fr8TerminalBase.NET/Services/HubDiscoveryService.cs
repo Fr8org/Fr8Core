@@ -330,6 +330,13 @@ namespace Fr8.TerminalBase.Services
                 url = url.Substring(0, apiIndex);
             }
 
+            var schemaIndex = url.IndexOf("://", StringComparison.InvariantCulture);
+
+            if (schemaIndex < 0)
+            {
+                url = "http://" + url.TrimStart('/', '\\');
+            }
+
             return url.TrimEnd('/', '\\');
         }
 
