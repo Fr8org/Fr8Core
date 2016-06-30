@@ -106,6 +106,8 @@ namespace terminalAsana.Asana.Services
             originalTokenData["access_token"] = refreshedToken.AccessToken;
 
             this.AuthorizationToken.AdditionalAttributes = refreshedToken.ExpirationDate.ToString("O");
+            this.AuthorizationToken.ExpiresAt = refreshedToken.ExpirationDate;
+
             this.AuthorizationToken.Token = originalTokenData.ToString();
             try
             {
@@ -187,8 +189,8 @@ namespace terminalAsana.Asana.Services
                 this.OAuthToken.AccessToken = tokenData.Value<string>("access_token");
                 this.OAuthToken.RefreshToken = tokenData.Value<string>("refresh_token");
 
-                //this.OAuthToken.ExpirationDate = authorizationToken.ExpiresAt ?? DateTime.MinValue;
-                this.OAuthToken.ExpirationDate = DateTime.Parse(authorizationToken.AdditionalAttributes).ToUniversalTime();
+                this.OAuthToken.ExpirationDate = authorizationToken.ExpiresAt ?? DateTime.MinValue;
+                //this.OAuthToken.ExpirationDate = DateTime.Parse(authorizationToken.AdditionalAttributes).ToUniversalTime();
 
                 this.OAuthToken = await this.RefreshTokenIfExpiredAsync().ConfigureAwait(false);
 

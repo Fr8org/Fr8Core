@@ -14,11 +14,17 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Errors;
+using Microsoft.Ajax.Utilities;
+using terminalAsana.Interfaces;
 
 namespace terminalAsana.Activities
 {
-    public class Post_Comment_v1 : TerminalActivity<Post_Comment_v1.ActivityUi>
+    public class Post_Comment_v1 : AsanaOAuthBaseActivity<Post_Comment_v1.ActivityUi>
     {
+        private IAsanaWorkspaces    _workspaces;
+        private IAsanaTasks         _tasks;
+
+
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "Post_Comment",
@@ -38,50 +44,40 @@ namespace terminalAsana.Activities
 
         public class ActivityUi : StandardConfigurationControlsCM
         {
-            public TextSource LeftArgument { get; set; }
-            public DropDownList Operation { get; set; }
-            public TextSource RightArgument { get; set; }
+            
+            public DropDownList Workspaces { get; set; }
+            public DropDownList Tasks { get; set; }
+            public TextSource   Comment { get; set; }
 
             public ActivityUi()
             {
-                LeftArgument = new TextSource
+                Workspaces = new DropDownList
                 {
-                    InitialLabel = "Left Argument",
-                    Label = "Left Argument",
-                    Name = nameof(LeftArgument),
-                    Source = new FieldSourceDTO
-                    {
-                        ManifestType = CrateManifestTypes.StandardDesignTimeFields,
-                        RequestUpstream = true
-                    }
-                };
-                Operation = new DropDownList
-                {
-                    Label = "Operation",
-                    Name = nameof(Operation),
+                    Label = "Select Workspace",
+                    Name = nameof(Workspaces),
                     Required = true,
-                    ListItems = new List<ListItem>
-                    {
-                        new ListItem() { Key = "+", Selected = true, Value = "+"},
-                        new ListItem() { Key = "-", Selected = false, Value = "-"},
-                        new ListItem() { Key = "*", Selected = false, Value = "*"},
-                        new ListItem() { Key = "/", Selected = false, Value = "/"}
-                    },
-                    Value = "+",
-                    selectedKey = "+"
+                    ListItems = new List<ListItem>(),
+                    
                 };
-                RightArgument = new TextSource
+                Tasks = new DropDownList
                 {
-                    InitialLabel = "Right Argument",
-                    Label = "Right Argument",
-                    Name = nameof(RightArgument),
+                    Label = "Select Task",
+                    Name = nameof(Tasks),
+                    Required = true,
+                    ListItems = new List<ListItem>(),
+                };
+                Comment = new TextSource
+                {
+                    InitialLabel = "Comment",
+                    Label = "Comment",
+                    Name = nameof(Comment),
                     Source = new FieldSourceDTO
                     {
                         ManifestType = CrateManifestTypes.StandardDesignTimeFields,
                         RequestUpstream = true
                     }
                 };
-                Controls = new List<ControlDefinitionDTO> { LeftArgument, Operation, RightArgument };
+                Controls = new List<ControlDefinitionDTO> { Workspaces, Tasks, Comment };
             }
         }
 
@@ -90,10 +86,14 @@ namespace terminalAsana.Activities
         {
         }
 
+
+
         public override Task Initialize()
         {
-            var resultField = new FieldDTO(ResultFieldLabel, AvailabilityType.RunTime);
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel, true).AddField(resultField);
+            var workspaces = 
+
+            //var resultField = new FieldDTO(ResultFieldLabel, AvailabilityType.RunTime);
+            //CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel, true).AddField(resultField);
             return Task.FromResult(0);
         }
 
@@ -104,37 +104,33 @@ namespace terminalAsana.Activities
 
         protected override Task Validate()
         {
-            if (!ActivityUI.RightArgument.HasValue)
+            if (ActivityUI.Workspaces.selectedKey == null)
             {
-                ValidationManager.SetError("No data was entered for RightArgument", nameof(ActivityUI.RightArgument));
+                ValidationManager.SetError("No workspace was selected", nameof(ActivityUI.Workspaces));
             }
-            if (!ActivityUI.LeftArgument.HasValue)
+
+            if (ActivityUI.Tasks.selectedKey == null)
             {
-                ValidationManager.SetError("No data was entered for LeftArgument", nameof(ActivityUI.LeftArgument));
+                ValidationManager.SetError("No task was selected", nameof(ActivityUI.Tasks));
             }
-            var operators = new char[] { '-', '*', '/', '+' };
-            if (ActivityUI.Operation.selectedKey == null || ActivityUI.Operation.selectedKey.IndexOfAny(operators) < 0)
+
+            if (!ActivityUI.Comment.HasValue)
             {
-                ValidationManager.SetError("No operator was selected", nameof(ActivityUI.Operation));
+                ValidationManager.SetError("No data was entered for Comment", nameof(ActivityUI.Comment));
             }
+            
             return Task.FromResult(0);
         }
 
         protected bool IsValid()
         {
-            double argumentOutput;
-            var isRightArgumentValid = double.TryParse(ActivityUI.RightArgument.GetValue(Payload), out argumentOutput);
-            if (!isRightArgumentValid)
+            var isCommentValid = !ActivityUI.Comment.GetValue(Payload).IsNullOrWhiteSpace();
+            if (!isCommentValid)
             {
-                ValidationManager.SetError("Invalid data entered for RightArgument", nameof(ActivityUI.RightArgument));
+                ValidationManager.SetError("Invalid data entered for Comment", nameof(ActivityUI.Comment));
                 return false;
             }
-            var isLeftArgumentValid = double.TryParse(ActivityUI.LeftArgument.GetValue(Payload), out argumentOutput);
-            if (!isLeftArgumentValid)
-            {
-                ValidationManager.SetError("Invalid data entered for LeftArgument", nameof(ActivityUI.LeftArgument));
-                return false;
-            }
+
             return true;
         }
 
@@ -148,30 +144,11 @@ namespace terminalAsana.Activities
             }
             else
             {
-                var rightArgument = double.Parse(ActivityUI.RightArgument.GetValue(Payload));
-                var leftArgument = double.Parse(ActivityUI.LeftArgument.GetValue(Payload));
-                double result;
-                switch (ActivityUI.Operation.selectedKey)
-                {
-                    case "-":
-                        result = rightArgument - leftArgument;
-                        break;
-                    case "*":
-                        result = rightArgument * leftArgument;
-                        break;
-                    case "+":
-                        result = rightArgument + leftArgument;
-                        break;
-                    case "/":
-                        result = rightArgument / leftArgument;
-                        break;
-                    default:
-                        throw new ActivityExecutionException("Unknown operator selected");
-                }
+                
 
-                var resultField = new KeyValueDTO(ResultFieldLabel, result.ToString(CultureInfo.InvariantCulture));
-                var resultCrate = Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(resultField));
-                Payload.Add(resultCrate);
+                //var resultField = new KeyValueDTO(ResultFieldLabel, result.ToString(CultureInfo.InvariantCulture));
+                //var resultCrate = Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(resultField));
+                //Payload.Add(resultCrate);
                 
             }
             return Task.FromResult(0);

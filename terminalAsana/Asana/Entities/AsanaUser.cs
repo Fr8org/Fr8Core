@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using terminalAsana.Interfaces;
 
 namespace terminalAsana.Asana.Entities
 {
 
-    public class AsanaUser
+    public class AsanaUser : IAsanaEntity
     {
         [JsonProperty("id")]
         public string Id { get; set; }

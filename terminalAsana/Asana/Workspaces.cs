@@ -16,7 +16,6 @@ namespace terminalAsana.Asana
     {
         private IAsanaOAuthCommunicator _restClient;
         private IAsanaParameters _asanaParams;
-        private IOAuthApiIntegration _intergration;
 
 
         public Workspaces(IAsanaOAuthCommunicator client, IAsanaParameters asanaParams)
@@ -27,14 +26,11 @@ namespace terminalAsana.Asana
 
         public IEnumerable<AsanaWorkspace> GetAll()
         {
-            IEnumerable<AsanaWorkspace> result;
             var uri = new Uri(_asanaParams.WorkspacesUrl);
-
             //_intergration.ApiCall()
-
-            var response = Task.Run(()=> _restClient.GetAsync<JObject>(uri)).Result;
-            result = JsonConvert.DeserializeObject<IEnumerable<AsanaWorkspace>>(response.ToString());
-
+          
+            var response = Task.Run(() => _restClient.GetAsync<JObject>(uri)).Result; 
+            var result = response.GetValue("data").ToObject<IEnumerable<AsanaWorkspace>>();
 
             return result;
         }

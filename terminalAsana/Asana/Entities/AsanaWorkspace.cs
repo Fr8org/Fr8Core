@@ -1,8 +1,9 @@
 ﻿using Newtonsoft.Json;
+using terminalAsana.Interfaces;
 
 namespace terminalAsana.Asana.Entities
 {
-    public class AsanaWorkspace
+    public class AsanaWorkspace : IAsanaEntity
     {
         [JsonProperty("id")]
         public string Id { get; set; }

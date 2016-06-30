@@ -49,6 +49,12 @@ namespace Hub.Interfaces
         void RenewToken(Guid authTokenId, string externalAccountId, string token, DateTime? expiresAt = null);
 
         /// <summary>
+        /// Updates token in database
+        /// </summary>
+        /// <param name=""></param>
+        void RenewToken(AuthorizationTokenDTO token);
+
+        /// <summary>
         /// Send authentication code to your mobile phone number that is used later for receiving access token
         /// </summary>
         /// <param name="account"></param>

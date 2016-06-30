@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Fr8.Infrastructure.Communication;
 using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
@@ -17,10 +18,8 @@ using terminalAsana.Interfaces;
 
 namespace terminalAsana.Activities
 {
-    public class Get_Workspaces_v1 : TerminalActivity<Get_Workspaces_v1.ActivityUi>
+    public class Get_Workspaces_v1 : AsanaOAuthBaseActivity<Get_Workspaces_v1.ActivityUi>
     {
-        private IAsanaOAuth _asanaOAuth;
-        private IAsanaOAuthCommunicator _oAuthCommunicator;
         private IAsanaWorkspaces _workspaces;
 
 
@@ -58,29 +57,29 @@ namespace terminalAsana.Activities
             }
         }
 
-        public Get_Workspaces_v1(ICrateManager crateManager, IAsanaOAuth oAuth) : base(crateManager)
+        public Get_Workspaces_v1(ICrateManager crateManager, IAsanaOAuth oAuth) : base(crateManager, oAuth)
         {
-            _asanaOAuth = oAuth;
         }
 
         protected override void InitializeInternalState()
         {
             base.InitializeInternalState();
-            _asanaOAuth = Task.Run(() => _asanaOAuth.InitializeAsync(this.AuthorizationToken)).Result;
-            _oAuthCommunicator = new AsanaCommunicatorService(_asanaOAuth, new RestfulServiceClient());
 
             var asanaParams = new AsanaParametersService();
-            _workspaces = new Workspaces(_oAuthCommunicator, asanaParams);
+            _workspaces = new Workspaces(OAuthCommunicator, asanaParams);
         }
 
         public override async Task Initialize()
         {
-            ActivityUI.WorkspacesList.ListItems = _workspaces.GetAll().Select( w => new ListItem() { Key= w.Id, Value = w.Name} ).ToList();
+            var items = _workspaces.GetAll();
+            ActivityUI.WorkspacesList.ListItems = items.Select( w => new ListItem() { Key= w.Name, Value = w.Id} ).ToList();
+            
+            CrateSignaller.MarkAvailableAlways<StandardPayloadDataCM>(RunTimeCrateLabel).AddField("workspace_id")
+                .AddField("workspace name");
         }
 
         public override async Task FollowUp()
-        {
-            
+        {     
             
         }
 

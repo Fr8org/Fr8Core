@@ -19,6 +19,8 @@ namespace Fr8.TerminalBase.Interfaces
 
         Task<PlanEmptyDTO> LoadPlan(JToken planContents);
         Task<PayloadDTO> GetPayload(Guid containerId);
+        Task<List<AuthenticationTokenTerminalDTO>> GetTokens();
+        Task<AuthorizationTokenDTO> GenerateOAuthToken(ExternalAuthenticationDTO authDTO);
         Task<UserDTO> GetCurrentUser();
         Task<IncomingCratesDTO> GetAvailableData(Guid activityId, CrateDirection direction, AvailabilityType availability);
         Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(Guid activityId, CrateDirection direction);
@@ -52,5 +54,6 @@ namespace Fr8.TerminalBase.Interfaces
         Task<List<TManifest>> QueryWarehouse<TManifest>(List<FilterConditionDTO> query) where TManifest : Manifest;
         Task AddOrUpdateWarehouse(params Manifest[] manifests);
         Task DeleteFromWarehouse<TManifest>(List<FilterConditionDTO> query) where TManifest : Manifest;
+        Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri);
     }
 }

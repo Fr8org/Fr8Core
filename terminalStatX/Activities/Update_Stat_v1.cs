@@ -114,12 +114,12 @@ namespace terminalStatX.Activities
                         {
                             foreach (var item in firstStat.StatItems)
                             {
-                                ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(item.Name, item.Name, requestUpstream: true, groupLabelText: "Available Stat Value Items"));
+                                ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(item.Name, item.Name, requestUpstream: true, groupLabelText: "Available Stat Properties"));
                             }
                         }
                         else
                         {
-                            ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(string.IsNullOrEmpty(firstStat.Title) ? firstStat.Id : firstStat.Title, string.IsNullOrEmpty(firstStat.Title) ? firstStat.Id : firstStat.Title, requestUpstream: true, groupLabelText: "Available Stat Value Items"));
+                            ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(string.IsNullOrEmpty(firstStat.Title) ? firstStat.Id : firstStat.Title, string.IsNullOrEmpty(firstStat.Title) ? firstStat.Id : firstStat.Title, requestUpstream: true, groupLabelText: "Available Stat Properties"));
                         }
                     }
                 }
@@ -148,12 +148,12 @@ namespace terminalStatX.Activities
                         {
                             foreach (var item in currentStat.StatItems)
                             {
-                                ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(item.Name, item.Name, requestUpstream: true, groupLabelText: "Available Stat Value Items"));
+                                ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(item.Name, item.Name, requestUpstream: true, groupLabelText: "Available Stat Properties"));
                             }
                         }
                         else
                         {
-                            ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(string.IsNullOrEmpty(currentStat.Title) ? currentStat.Id : currentStat.Title, string.IsNullOrEmpty(currentStat.Title) ? currentStat.Id : currentStat.Title, requestUpstream: true, groupLabelText: "Available Stat Value Items"));
+                            ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(string.IsNullOrEmpty(currentStat.Title) ? currentStat.Id : currentStat.Title, string.IsNullOrEmpty(currentStat.Title) ? currentStat.Id : currentStat.Title, requestUpstream: true, groupLabelText: "Available Stat Properties"));
                         }
                     }
                 }

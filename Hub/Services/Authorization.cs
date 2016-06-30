@@ -593,6 +593,25 @@ namespace Hub.Services
             }
         }
 
+
+        public void RenewToken(AuthorizationTokenDTO token)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var authToken = uow.AuthorizationTokenRepository
+                    .FindTokenById(new Guid(token.Id));
+
+                if (authToken == null)
+                    return;
+                authToken.ExternalAccountId = token.ExternalAccountId;
+                authToken.Token = token.Token;
+                authToken.ExpiresAt = token.ExpiresAt;
+                authToken.AdditionalAttributes = token.AdditionalAttributes;
+                
+                uow.SaveChanges();
+            }
+        }
+
         private void RemoveToken(IUnitOfWork uow, AuthorizationTokenDO authToken)
         {
             EventManager.AuthTokenRemoved(authToken);

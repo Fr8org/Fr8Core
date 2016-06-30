@@ -175,12 +175,19 @@ namespace HubWeb.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Updates several fields of token using passed object 
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         [HttpPost]
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
         public IHttpActionResult RenewToken([FromBody]AuthorizationTokenDTO token)
         {
-            _authorization.RenewToken(Guid.Parse(token.Id), token.ExternalAccountId, token.Token, token.ExpiresAt);
+            //be careful - not all properties of token will be saved to database.
+            _authorization.RenewToken(token);
+            //_authorization.RenewToken(Guid.Parse(token.Id), token.ExternalAccountId, token.Token, token.ExpiresAt);
             return Ok();
         }
 
