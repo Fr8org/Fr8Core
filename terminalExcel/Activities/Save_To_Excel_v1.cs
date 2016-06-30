@@ -51,7 +51,7 @@ namespace terminalExcel.Actions
             {
                 UpstreamCrateChooser = builder.CreateCrateChooser(
                         "Available_Crates",
-                        "This Loop will process the data inside of",
+                        "Save which data:",
                         true,
                         requestConfig: true
                     );
