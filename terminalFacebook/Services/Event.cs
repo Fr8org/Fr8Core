@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Crates;
-using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
-using Fr8.TerminalBase.Interfaces;
-using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using StructureMap;
 using terminalFacebook.Interfaces;
 using terminalFacebook.Models;
@@ -60,22 +54,5 @@ namespace terminalFacebook.Services
             }
             return eventList;
         }
-        
-
-        //private Crate ProcessEntry(Entry entry)
-        //{
-        //    foreach (var changedField in entry.ChangedFields)
-        //    {
-        //        switch (changedField)
-        //        {
-        //            case FEED_UPDATE:
-                        
-        //                break;
-        //        }
-        //    }
-        //    ////prepare the event report
-        //    var curEventReport = Crate.FromContent("Standard Event Report", null);
-        //    return curEventReport;
-        //}
     }
 }

@@ -230,15 +230,6 @@ namespace terminalFr8Core.Activities
             return true;
         }
 
-        private static ControlDefinitionDTO CreateTextBoxQueryControl(
-            string key)
-        {
-            return new TextBox()
-            {
-                Name = "QueryField_" + key
-            };
-        }
-
         private Crate<StandardQueryCM> ExtractQueryCrate(string mtObject)
         {
             var configurationControls = Storage
