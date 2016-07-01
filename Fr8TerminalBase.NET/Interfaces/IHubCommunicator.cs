@@ -20,7 +20,6 @@ namespace Fr8.TerminalBase.Interfaces
         Task<PlanEmptyDTO> LoadPlan(JToken planContents);
         Task<PayloadDTO> GetPayload(Guid containerId);
         Task<List<AuthenticationTokenTerminalDTO>> GetTokens();
-        Task<AuthorizationTokenDTO> GenerateOAuthToken(ExternalAuthenticationDTO authDTO);
         Task<UserDTO> GetCurrentUser();
         Task<IncomingCratesDTO> GetAvailableData(Guid activityId, CrateDirection direction, AvailabilityType availability);
         Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(Guid activityId, CrateDirection direction);
