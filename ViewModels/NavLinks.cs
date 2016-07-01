@@ -12,7 +12,7 @@ namespace HubWeb.ViewModels
                 _baseUrl = ConfigurationManager.AppSettings["ServerProtocol"] +
                           ConfigurationManager.AppSettings["ServerDomainName"];
                 var port = ConfigurationManager.AppSettings["ServerPort"];
-                if ( port.Length != 0 && !port.Contains("80") && !port.Contains("443"))
+                if ( port != null && !port.Contains("80") && !port.Contains("443"))
                 {
                     _baseUrl = _baseUrl + ':' + port;
                 }
