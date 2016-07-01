@@ -23,7 +23,7 @@ Developers often associate Crates with [Manifests](https://github.com/Fr8org/Fr8
 
 ### Additional information
 - [Crate JSON Definition](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CrateJSON.md)
-
+- [Signalling of Crate Data](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Signalling.md)
 
 
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
