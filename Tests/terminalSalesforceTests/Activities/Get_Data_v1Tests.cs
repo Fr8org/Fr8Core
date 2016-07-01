@@ -88,7 +88,7 @@ namespace terminalSalesforceTests.Actions
 
             // Assert
             var storage = activityContext.ActivityPayload.CrateStorage;
-            Assert.AreEqual(4, storage.Count, "Number of configuration crates not populated correctly");
+            Assert.AreEqual(3, storage.Count, "Number of configuration crates not populated correctly");
 
             // Assert.IsNotNull(storage.FirstCrateOrDefault<TypedFieldsCM>(x => x.Label == Get_Data_v1.QueryFilterCrateLabel), 
             //                  "There is not crate with query fields descriptions and expected label in activity storage");
@@ -127,7 +127,7 @@ namespace terminalSalesforceTests.Actions
             await _getData_v1.Run(activityContext, executionContext);
             //Assert
             var stroage = executionContext.PayloadStorage;
-            Assert.AreEqual(4, stroage.Count, "Number of Payload crates not populated correctly");
+            Assert.AreEqual(3, stroage.Count, "Number of Payload crates not populated correctly");
 
             Assert.IsNotNull(stroage.CratesOfType<StandardTableDataCM>().Single(), "Not able to get the required salesforce object");
         }
