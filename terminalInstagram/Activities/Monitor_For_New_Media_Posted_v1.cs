@@ -51,7 +51,8 @@ namespace terminalInstagram.Actions
                 Description = new TextBlock()
                 {
                     Value = "This activity will monitor when a new media is shared from your account",
-                    Name = "info_text"
+                    Label = "Description",
+                    Name = nameof(Description)
                 };
                 Controls = new List<ControlDefinitionDTO> { Description };
             }
@@ -87,7 +88,7 @@ namespace terminalInstagram.Actions
         }
         public override async Task Activate()
         {
-            await _instagramEventManager.Subscribe(AuthorizationToken, ActivityPayload.RootPlanNodeId.Value).ConfigureAwait(false);
+            await _instagramEventManager.Subscribe().ConfigureAwait(false);
         }
 
         public override async Task Run()

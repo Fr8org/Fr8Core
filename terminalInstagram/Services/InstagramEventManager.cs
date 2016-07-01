@@ -25,6 +25,7 @@ namespace terminalInstagram.Services
         private readonly IRestfulServiceClient _client;
         private string clientId = CloudConfigurationManager.GetSetting("InstagramClientId");
         private string clientSecret = CloudConfigurationManager.GetSetting("InstagramClientSecret");
+        private string callback_url = CloudConfigurationManager.GetSetting("InstagramCallbackUrl");
 
         public void Dispose()
         {
@@ -35,8 +36,7 @@ namespace terminalInstagram.Services
             _client = client;
         }
 
-
-        public async Task Subscribe(AuthorizationToken token, Guid planId)
+        public async Task Subscribe()
         {
             var parameters = new List<KeyValuePair<string, string>>();
             parameters.Add(new KeyValuePair<string, string>("client_id", clientId));
@@ -44,7 +44,7 @@ namespace terminalInstagram.Services
             parameters.Add(new KeyValuePair<string, string>("object", "user")); 
             parameters.Add(new KeyValuePair<string, string>("aspect", "media"));
             parameters.Add(new KeyValuePair<string, string>("verify_token", "fr8instagrameventverification")); 
-            parameters.Add(new KeyValuePair<string, string>("callback_url", "https://c8f6590d.ngrok.io/terminals/terminalinstagram/subscribe"));
+            parameters.Add(new KeyValuePair<string, string>("callback_url", callback_url));
             var formContent = new FormUrlEncodedContent(parameters);
 
             var url = new Uri("https://api.instagram.com/v1/subscriptions");

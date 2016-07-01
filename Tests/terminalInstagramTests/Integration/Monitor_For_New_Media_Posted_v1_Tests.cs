@@ -28,8 +28,8 @@ namespace terminalInstagramTests.Integration
         {
             Assert.AreEqual(1, control.Controls.Count, "Control count is not 1");
             Assert.IsTrue(control.Controls[0] is TextBlock, "First control isn't a TextBlock");
-            Assert.AreEqual("Message", control.Controls[0].Label, "Invalid Label on control");
-            Assert.AreEqual("Message", control.Controls[0].Name, "Invalid Name on control");
+            Assert.AreEqual("Description", control.Controls[0].Label, "Invalid Label on control");
+            Assert.AreEqual("Description", control.Controls[0].Name, "Invalid Name on control");
         }
 
         private void AssertConfigureCrate(ICrateStorage crateStorage)
@@ -45,7 +45,7 @@ namespace terminalInstagramTests.Integration
             var fields = fieldDescriptions.Content.CrateDescriptions.Single().Fields;
 
             Assert.AreEqual("Monitor Instagram Runtime Fields", fieldDescriptions.Content.CrateDescriptions.Single().Label, "Monitor Instagram Runtime Fields labeled CrateDescription was not found");
-            Assert.AreEqual(4, fieldDescriptions.Content.CrateDescriptions.Single().Fields.Count, "Published runtime field count is not 4");
+            Assert.AreEqual(6, fieldDescriptions.Content.CrateDescriptions.Single().Fields.Count, "Published runtime field count is not 6");
 
             Assert.IsTrue(fields.Exists(x => x.Name == InstagramMediaId), "InstagramMediaId is not signalled");
             Assert.IsTrue(fields.Exists(x => x.Name == InstagramCaptionId), "InstagramCaptionId is not signalled");
