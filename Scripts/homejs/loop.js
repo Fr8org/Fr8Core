@@ -312,7 +312,7 @@ jQuery(function ($) {
             if ($message == "success") {
                 $theForm.slideUp('medium', function () {
                     $alert.removeClass('alert-danger');
-                    $alert.addClass('alert-success').html("Thanks for contacting us.").slideDown('medium');
+                    $alert.addClass('alert-success').html("Thanks for contacting us. We will be back to you shortly.").slideDown('medium');
                 });
             } else {
                 $alert.addClass('alert-danger').html($message).slideDown('medium');
