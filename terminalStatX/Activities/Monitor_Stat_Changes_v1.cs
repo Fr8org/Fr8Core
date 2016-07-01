@@ -156,7 +156,7 @@ namespace terminalStatX.Activities
 
         public override async Task Activate()
         {
-            await _statXPolling.SchedulePolling(HubCommunicator, $"{AuthorizationToken.ExternalAccountId}_{ActivityId}", true, 
+            await _statXPolling.SchedulePolling(HubCommunicator, $"{AuthorizationToken.ExternalAccountId}_{ActivityId.ToString().Substring(0, 20)}", true, 
                 ActivityUI.ExistingGroupsList.Value, ActivityUI.ExistingGroupStats.Value);
         }
 
