@@ -8,7 +8,7 @@ namespace terminalTelegram
     {
         public static WebServiceDTO WebServiceDTO = new WebServiceDTO
         {
-            Name = "Telegram Activities",
+            Name = "Telegram",
             IconPath = "/Content/icons/web_services/telegram-icon-64x64.png"
         };
 
