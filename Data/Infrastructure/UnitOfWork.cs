@@ -532,6 +532,11 @@ namespace Data.Infrastructure
             }
         }
 
+        private IPageDefinitionRepository _pageDefinitionRepository;
+
+        public IPageDefinitionRepository PageDefinitionRepository => 
+            _pageDefinitionRepository ?? (_pageDefinitionRepository = new PageDefinitionRepository(this));
+
         private TerminalRegistrationRepository _terminalRegistrationRepository;
         public TerminalRegistrationRepository TerminalRegistrationRepository
         {

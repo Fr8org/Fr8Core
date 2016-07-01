@@ -149,7 +149,7 @@ namespace terminalFr8Core.Activities
             foreach (var condition in conditions)
             {
                 var expression = ParseCriteriaExpression(condition, fields);
-                var results = fields.Provider.CreateQuery<FieldDTO>(expression);
+                var results = fields.Provider.CreateQuery<KeyValueDTO>(expression);
 
                 if (results.Any())
                 {

@@ -61,7 +61,8 @@ namespace terminalStatX.Services
                 return pollingData;
             }
 
-            var token = await hubCommunicator.GetAuthToken(pollingData.ExternalAccountId);
+            var currentExternalAccountId = pollingData.ExternalAccountId.Split('_').First();
+            var token = await hubCommunicator.GetAuthToken(currentExternalAccountId);
 
             if (token == null)
             {
