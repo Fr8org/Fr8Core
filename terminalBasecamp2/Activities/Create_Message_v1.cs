@@ -165,12 +165,6 @@ namespace terminalBasecamp2.Activities
             set { this["Account"] = value; }
         }
 
-        private string PreviousSelectedProject
-        {
-            get { return this["Project"]; }
-            set { this["Project"] = value; }
-        }
-
         private async Task LoadProjectsAndSelectTheOnlyOne()
         {
             var selectedAccount = ActivityUI.AccountSelector.Value;
@@ -196,7 +190,6 @@ namespace terminalBasecamp2.Activities
                 {
                     ActivityUI.ProjectSelector.SelectByKey(ActivityUI.ProjectSelector.ListItems[0].Key);
                     ActivityUI.ProjectSelector.IsHidden = true;
-                    PreviousSelectedProject = ActivityUI.ProjectSelector.Value;
                 }
             }
         }

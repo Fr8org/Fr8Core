@@ -45,7 +45,7 @@ namespace terminalGoogle.Services
 
         public async Task<PollingDataDTO> Poll(IHubCommunicator hubCommunicator, PollingDataDTO pollingData)
         {
-            Logger.Info("Polling for Gmail was launched");
+            Logger.Info($"Polling for Gmail was launched {pollingData.ExternalAccountId}");
 
             var token = await hubCommunicator.GetAuthToken(pollingData.ExternalAccountId);
             if (token == null)
@@ -68,16 +68,15 @@ namespace terminalGoogle.Services
 
                 //then we have to get its details and historyId (to use with history listing API method)
                 pollingData.Payload = GetHistoryId(service, list.Messages.FirstOrDefault().Id, token.ExternalAccountId);
-                Logger.Info("Polling for Gmail: remembered the last email in the inbox");
+                Logger.Info($"Polling for Gmail {pollingData.ExternalAccountId}: remembered the last email in the inbox");
             }
             else
             {
                 var request = service.Users.History.List(token.ExternalAccountId);
                 request.StartHistoryId = ulong.Parse(pollingData.Payload);
                 var result = request.Execute();
-                Logger.Info("Polling for Gmail: received a history of changes");
+                Logger.Info($"Polling for Gmail {pollingData.ExternalAccountId}: received a history of changes");
                 if (result.History != null)
-
                     foreach (var historyRecord in result.History)
                     {
                         if (historyRecord.MessagesAdded != null)
@@ -101,6 +100,8 @@ namespace terminalGoogle.Services
                             }
                         }
                     }
+                else Logger.Info($"Polling for Gmail {pollingData.ExternalAccountId}: no new emails");
+
             }
             pollingData.Result = true;
             return pollingData;

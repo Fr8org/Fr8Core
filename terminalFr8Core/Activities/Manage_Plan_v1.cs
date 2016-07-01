@@ -5,7 +5,6 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
-using terminalFr8Core.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
@@ -24,9 +23,6 @@ namespace terminalFr8Core.Activities
             Terminal = TerminalData.TerminalDTO
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
-
-        private readonly FindObjectHelper _findObjectHelper = new FindObjectHelper();
-
 
         #region Configuration.
 
