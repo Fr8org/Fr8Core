@@ -298,7 +298,6 @@
     <Compile Include="Entities\UserTests.cs" />
     <Compile Include="ExcelUtilsTests.cs" />
     <Compile Include="Fixtures\ActivityResponseFixtureData.cs" />
-    <Compile Include="Infrastructure\DatabaseTests.cs" />
     <Compile Include="Infrastructure\Fr8HubWebHMACAuthenticateAttributeTests.cs" />
     <Compile Include="Infrastructure\MultiTenantTests.cs" />
     <Compile Include="Integration\AccountITests.cs" />
@@ -324,8 +323,6 @@
     <Compile Include="Repositories\Plan\PlanRepositoryTests.cs" />
     <Compile Include="Repositories\Plan\PlanSnapshotTests.cs" />
     <Compile Include="Security\AuthorizationMethodsTests.cs" />
-    <Compile Include="Security\AuthorizationTokenTests.cs" />
-    <Compile Include="Security\AuthorizeActivityTests.cs" />
     <Compile Include="Services\ActivityServiceTests.cs" />
     <Compile Include="Services\ActivityTemplateTests.cs" />
     <Compile Include="Services\AuthorizationTests.cs" />

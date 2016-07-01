@@ -190,28 +190,6 @@ namespace HealthMonitor
             }
         }
 
-        private void ReportToConsole(string appName, TestReport report)
-        {
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Application: {0}", appName);
-            Console.WriteLine("Integration tests result: {0} / {1} passed", report.Tests.Count(x => x.Success), report.Tests.Count());
-            Console.ForegroundColor = ConsoleColor.Gray;
-
-            foreach (var test in report.Tests.Where(x => !x.Success))
-            {
-                Console.WriteLine();
-                Console.WriteLine();
-                Console.WriteLine("----------------------------------------");
-
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Integration Test Failure: {0}", test.Name);
-
-                Console.ForegroundColor = ConsoleColor.Gray;
-                Console.WriteLine("Message: {0}", test.Message);
-                Console.WriteLine("StackTrace: {0}", test.StackTrace);
-            }
-        }
-
         private int Run(
             bool ensureTerminalsStartup,
             bool sendEmailReport,

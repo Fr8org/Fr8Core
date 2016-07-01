@@ -25,6 +25,7 @@ using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Models;
 using StructureMap;
 using terminalDocuSign.Actions;
+using Fr8.TerminalBase.Interfaces;
 
 namespace terminalIntegrationTests.EndToEnd
 {
@@ -32,11 +33,20 @@ namespace terminalIntegrationTests.EndToEnd
     public class MailMergeFromSalesforceTests : BaseHubIntegrationTest
     {
         private readonly IntegrationTestTools_terminalDocuSign _docuSignTestTools;
+        private readonly IContainer _container;
 
         public MailMergeFromSalesforceTests()
         {
             _docuSignTestTools = new IntegrationTestTools_terminalDocuSign(this);
             Mapper.CreateMap<AuthorizationTokenDO, AuthorizationToken>();
+
+            _container = ObjectFactory.Container.CreateChildContainer();
+            _container.Configure(MockedHubCommunicatorConfiguration);
+        }
+
+        public static void MockedHubCommunicatorConfiguration(ConfigurationExpression configuration)
+        {
+            configuration.AddRegistry<MockedHubCommunicatorRegistry>();
         }
 
         public override string TerminalName
@@ -199,16 +209,24 @@ namespace terminalIntegrationTests.EndToEnd
         private async Task<bool> DeleteCase(string caseId, AuthorizationTokenDO authToken)
         {
             var token = Mapper.Map<AuthorizationToken>(authToken);
-            return await ObjectFactory.GetInstance<SalesforceManager>().Delete(SalesforceObjectType.Case, caseId, token);
+            return await _container.GetInstance<SalesforceManager>().Delete(SalesforceObjectType.Case, caseId, token);
         }
 
         private async Task<Tuple<string, string>> CreateCase(AuthorizationTokenDO authToken)
         {
             var token = Mapper.Map<AuthorizationToken>(authToken);
-            var manager = ObjectFactory.GetInstance<SalesforceManager>();
+            var manager = _container.GetInstance<SalesforceManager>();
             var name = Guid.NewGuid().ToString();
             var data = new Dictionary<string, object> { { "SuppliedEmail", TestEmail }, { "SuppliedName", name } };
             return new Tuple<string, string>(await manager.Create(SalesforceObjectType.Case, data, token), name);
+        }
+
+        public class MockedHubCommunicatorRegistry : StructureMap.Configuration.DSL.Registry
+        {
+            public MockedHubCommunicatorRegistry()
+            {
+                For<IHubCommunicator>().Use(new Moq.Mock<IHubCommunicator>(Moq.MockBehavior.Default).Object);
+            }
         }
     }
 }

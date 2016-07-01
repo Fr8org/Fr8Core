@@ -98,7 +98,7 @@ namespace Hub.Services
         public async Task Discover()
         {
             var terminalUrls = ListTerminalEndpoints();
-            var discoverTerminalsTasts = terminalUrls.Select(Discover).ToArray();
+            var discoverTerminalsTasts = terminalUrls.Select(x=> DiscoverInternal(NormalizeTerminalEndpoint(x))).ToArray();
 
             await Task.WhenAll(discoverTerminalsTasts);
         }
@@ -174,6 +174,11 @@ namespace Hub.Services
                 var terminal = Mapper.Map<TerminalDO>(terminalRegistrationInfo.Definition);
 
                 terminal.Secret = secret;
+
+                if (string.IsNullOrWhiteSpace(terminal.Label))
+                {
+                    terminal.Label = terminal.Name;
+                }
 
                 terminal = _terminal.RegisterOrUpdate(terminal);
 

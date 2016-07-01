@@ -61,6 +61,7 @@ namespace HubWeb.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> Polling([FromUri] string terminalId, [FromBody]PollingDataDTO pollingData)
         {
+            Logger.Info($"Polling: requested for {pollingData.ExternalAccountId} from a terminal {terminalId}");
             pollingData.JobId = terminalId + "|" + pollingData.ExternalAccountId;
             RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalId), "*/" + pollingData.PollingIntervalInMinutes + " * * * *");
             if (pollingData.TriggerImmediately)
@@ -73,8 +74,11 @@ namespace HubWeb.Controllers
 
     public static class SchedullerHelper
     {
+        private static readonly ILog Logger = Fr8.Infrastructure.Utilities.Logging.Logger.GetCurrentClassLogger();
+
         public static void ExecuteSchedulledJob(PollingDataDTO pollingData, string terminalId)
         {
+            Logger.Info($"Polling: executing request for {pollingData.ExternalAccountId} to a terminal {terminalId}");
             IRestfulServiceClient _client = new RestfulServiceClient();
             var request = RequestPolling(pollingData, terminalId, _client);
             var result = request.Result;
@@ -82,15 +86,30 @@ namespace HubWeb.Controllers
             if (result != null)
             {
                 if (!result.Result)
+                {
+                    Logger.Info($"Polling: got result for {pollingData.ExternalAccountId} from a terminal {terminalId}. Deschedulling the job");
                     RecurringJob.RemoveIfExists(pollingData.JobId);
+                }
                 else
+                {
+                    Logger.Info($"Polling: got result for {pollingData.ExternalAccountId} from a terminal {terminalId}. Success");
                     RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(result, terminalId), "*/" + result.PollingIntervalInMinutes + " * * * *");
+                }
             }
             else
             {
+                Logger.Info($"Polling: no result for {pollingData.ExternalAccountId} from a terminal {terminalId}. Terminal didn't answer");
                 //we didn't get any response from the terminal (it might have not started yet, for example) Let's give it one more chance, and if it will fail - the job will be descheduled cause of Result set to false;
-                pollingData.Result = false;
-                RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(result, terminalId), "*/" + result.PollingIntervalInMinutes + " * * * *");
+                if (pollingData.Result) //was the job successfull last time we polled?
+                {
+                    pollingData.Result = false;
+                    RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalId), "*/" + pollingData.PollingIntervalInMinutes + " * * * *");
+                }
+                else
+                {
+                    //last polling was unsuccessfull, so let's deschedulle it
+                    RecurringJob.RemoveIfExists(pollingData.JobId);
+                }
             }
         }
 
