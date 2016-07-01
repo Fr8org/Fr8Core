@@ -31,8 +31,6 @@ namespace HealthMonitor
             var smtpUsername = string.Empty;
             var smtpPassword = string.Empty;
 
-            args = new string[] { "--self-hosting", "--skip-local", "--connectionString", "\"Data Source=.;Initial Catalog=DockyardDB2;Integrated Security=SSPI;Transaction Binding=Explicit Unbind;\"" };
-
             if (args != null)
             {
                 for (var i = 0; i < args.Length; ++i)
