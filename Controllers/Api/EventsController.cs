@@ -16,15 +16,11 @@ namespace HubWeb.Controllers
     /// </summary>
     public class EventsController : ApiController
     {
-        private readonly IEvent _event;
         private readonly ICrateManager _crate;
-        private IJobDispatcher _jobDispatcher;
-
-        private delegate void EventRouter(LoggingDataCM loggingDataCm);
+        private readonly IJobDispatcher _jobDispatcher;
 
         public EventsController()
         {
-            _event = ObjectFactory.GetInstance<IEvent>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _jobDispatcher = ObjectFactory.GetInstance<IJobDispatcher>();
         }

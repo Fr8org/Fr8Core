@@ -91,11 +91,6 @@ namespace HealthMonitor
             }
         }
 
-        private string GetScriptPath(string rootPath, string scriptName)
-        {
-            return Path.Combine(rootPath, scriptName);
-        }
-
 
         private void error_DataAdded(object sender, DataAddedEventArgs e)
         {
