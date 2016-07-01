@@ -1,12 +1,12 @@
-# CRATE – DEFINITION
+# Crates
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
+[Go to Index](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
 
 A Crate is a Json element that can contain arbitrary data.  It creates a standardized way to store different kinds of data in an organized way.
 
 Crates are stored inside of Activities (where they’re used to store design-time information used to drive the client user experience) and Containers (where they contain run-time payload, the “real information” that the user wants to manipulate.
 
-Crates are stored in an array inside the crateStorage element.
+Crates are stored in an array inside the crateStorage element of these parent elements.
 
 Here’s a sample of crates inside of an Activity’s crate storage:
 
@@ -60,5 +60,7 @@ ParentCrateId |	string |	Crates can be put inside of other Crates
 [ManifestId](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CratesManifest.md)  |	int |	An optional way to signal the schema of the contents.   
 Manufacturer |	ManufacturerDTO |	A data structure identifying the Terminal that created the crate   
 Mode |	string |	choices “Design-Time”, “Run-Time”. [Review for need]   
+
+[Crate Manifests](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CratesManifest.md)
  
- [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
+ [Go to Index](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
