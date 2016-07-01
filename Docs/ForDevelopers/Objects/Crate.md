@@ -1,4 +1,4 @@
-# CRATES
+# Crates
 
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
 
@@ -22,7 +22,7 @@ Organizationally, when constructing a Crate of data, expect that the metadata ab
 Developers often associate Crates with [Manifests](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CratesManifest.md)
 
 ### Additional information
-- [Crate JSON Definition](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Crate.md)
+- [Crate JSON Definition](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CrateJSON.md)
 
 - [Property: Availability](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CratePropertyAvailability.md)
 
