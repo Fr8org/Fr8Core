@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Logging;
 using Fr8.TerminalBase.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -28,11 +29,17 @@ namespace terminalAsana.Asana
         {
             var uri = new Uri(_asanaParams.WorkspacesUrl);
             //_intergration.ApiCall()
-          
-            var response = Task.Run(() => _restClient.GetAsync<JObject>(uri)).Result; 
-            var result = response.GetValue("data").ToObject<IEnumerable<AsanaWorkspace>>();
-
-            return result;
+            try
+            {
+                var response = Task.Run(() => _restClient.GetAsync<JObject>(uri)).Result;
+                var result = response.GetValue("data").ToObject<IEnumerable<AsanaWorkspace>>();
+                return result;
+            }
+            catch (Exception exp)
+            {
+                Logger.LogError($"terminalAsana error = {exp.Message}");
+                throw;
+            }
         }
 
         public bool UpdateWorkspace(AsanaWorkspace workspace)

@@ -74,14 +74,14 @@ namespace terminalAsana.Activities
         {
             var items = _workspaces.GetAll();
             ActivityUI.WorkspacesList.ListItems = items.Select( w => new ListItem() { Key= w.Name, Value = w.Id} ).ToList();
-            
-            CrateSignaller.MarkAvailableAlways<StandardPayloadDataCM>(RunTimeCrateLabel).AddField("workspace_id")
-                .AddField("workspace name");
+
+            CrateSignaller.MarkAvailableAlways<StandardPayloadDataCM>(RunTimeCrateLabel).AddField("Workspace");
+
         }
 
         public override async Task FollowUp()
-        {     
-            
+        {
+
         }
 
         public override async Task Run()

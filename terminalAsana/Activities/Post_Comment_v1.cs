@@ -118,7 +118,7 @@ namespace terminalAsana.Activities
         {
             if (!ActivityUI.Workspaces.Value.IsNullOrWhiteSpace())
             {
-                var tasks = _tasks.Query(new AsanaTaskQuery() {Workspace = ActivityUI.Workspaces.Value}).Result;
+                var tasks = _tasks.GetAsync(new AsanaTaskQuery() {Workspace = ActivityUI.Workspaces.Value}).Result;
                 ActivityUI.Tasks.ListItems = tasks.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();
 
             }

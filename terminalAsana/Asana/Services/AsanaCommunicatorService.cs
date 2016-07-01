@@ -24,35 +24,13 @@ namespace terminalAsana.Asana.Services
             _restfulClient = client;
         }
 
-        public async Task<TResponse> ApiCall<TResponse>(Func<Task<TResponse>> apiCall)
-        {
-
-            if (auth.ExpiresAt != null && auth.ExpiresAt < DateTime.UtcNow)
-            {
-                auth = await RefreshTokenImpl(auth);
-            }
-            try
-            {
-                return await apiCall(auth).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                if (!IsExpiredAccessTokenException(ex))
-                {
-                    throw;
-                }
-                await OAuthService.RefreshOAuthTokenAsync();
-                return await apiCall().ConfigureAwait(false);
-            }
-        }
-
 
         /// <summary>
         /// Add OAuth access_token to headers
         /// </summary>
         /// <param name="header"></param>
         /// <returns></returns>
-        private async Task<Dictionary<string,string>> PrepareHeader(Dictionary<string,string> header)
+        public async Task<Dictionary<string,string>> PrepareHeader(Dictionary<string,string> currentHeader)
         {
             var token = await OAuthService.RefreshTokenIfExpiredAsync();
             var headers = new Dictionary<string, string>()
@@ -60,7 +38,7 @@ namespace terminalAsana.Asana.Services
                 {"Authorization", $"Bearer {token.AccessToken}"},
             };
             
-            var combinedHeaders = headers?.Concat(header).ToDictionary(k => k.Key, v => v.Value) ?? header;
+            var combinedHeaders = currentHeader?.Concat(headers).ToDictionary(k => k.Key, v => v.Value) ?? headers;
             return combinedHeaders;
         }
         

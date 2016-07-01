@@ -41,7 +41,7 @@ namespace terminalAsana.Asana.Services
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<AsanaTask>> Query(AsanaTaskQuery query)
+        public async Task<IEnumerable<AsanaTask>> GetAsync(AsanaTaskQuery query)
         {
             var url = _asanaParams.TasksUrl + "?";
             url = query.Workspace != null ? url + $"workspace={query.Workspace}&": url;

@@ -14,7 +14,12 @@ namespace terminalAsana.Interfaces
 
 
         string WorkspacesUrl { get; }
-        string TasksUrl { get; }
+        string TasksUrl      { get; }
+        string UsersUrl      { get; }
+        string UsersInWorkspaceUrl { get; }
+        string UsersMeUrl    { get; }
+
+
 
     }
 }
