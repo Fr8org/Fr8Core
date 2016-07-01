@@ -83,9 +83,45 @@ namespace Data.Migrations
                 UpdateTerminalClientVisibility(uow);
 
                 RenameActivity(uow);
+
+                RegisterTerminals(uow);
             }
         }
 
+        private void RegisterTerminals(UnitOfWork uow)
+        {
+            // Example of terminal registration: RegisterTerminal (uow, "localhost:12345");   
+        }
+        
+        private void RegisterTerminal(UnitOfWork uow, string terminalEndpoint)
+        {
+            var terminalRegistration = new TerminalRegistrationDO();
+
+            terminalEndpoint = ExtractTerminalAuthority(terminalEndpoint);
+
+            if (uow.TerminalRegistrationRepository.GetAll().FirstOrDefault(x => string.Equals(ExtractTerminalAuthority(x.Endpoint), terminalEndpoint, StringComparison.OrdinalIgnoreCase)) != null)
+            {
+                return;
+            }
+
+            terminalRegistration.Endpoint = terminalEndpoint;
+
+            uow.TerminalRegistrationRepository.Add(terminalRegistration);
+            uow.SaveChanges();
+        }
+
+        private static string ExtractTerminalAuthority(string terminalUrl)
+        {
+            string terminalAuthority = terminalUrl;
+
+            if (!terminalUrl.Contains("http:") & !terminalUrl.Contains("https:"))
+            {
+                terminalAuthority = "http://" + terminalUrl.TrimStart('\\', '/');
+            }
+            
+            return terminalAuthority.TrimEnd('\\', '/');
+        }
+        
         private void RenameActivity(UnitOfWork uow)
         {
             var activities = uow.ActivityTemplateRepository.GetAll();
@@ -471,48 +507,7 @@ namespace Data.Migrations
 
             return user;
         }
-
-        private void AddSubscription(IUnitOfWork uow, Fr8AccountDO curAccount, TerminalDO curTerminal, int curAccessLevel)
-        {
-            var curSub = new SubscriptionDO()
-            {
-                Terminal = curTerminal,
-
-                DockyardAccount = curAccount,
-                AccessLevel = curAccessLevel
-            };
-
-            uow.SubscriptionRepository.Add(curSub);
-        }
-
-        private static void AddTerminals(IUnitOfWork uow, string terminalName, string terminalLabel, 
-            string endPoint, string version)
-        {
-            // Check that terminal does not exist yet.
-            var terminalExists = uow.TerminalRepository.GetQuery().Any(x => x.Name == terminalName);
-
-            // Add new terminal and subscription to repository, if terminal doesn't exist.
-            if (!terminalExists)
-            {
-                // Create terminal instance.
-                var terminalDO = new TerminalDO()
-                {
-                    Name = terminalName,
-                    Label = terminalLabel,
-                    TerminalStatus = TerminalStatus.Active,
-                    Endpoint = endPoint,
-                    Version = version,
-                    // TODO: create a mechanism for those secrets
-                    Secret = Guid.NewGuid().ToString()
-                    // TODO: remove this, DO-1397
-                    // RequiresAuthentication = requiresAuthentication
-                };
-
-                uow.TerminalRepository.Add(terminalDO);
-
-            }
-        }
-
+        
         private void AddWebServices(IUnitOfWork uow)
         {
             var terminalToWs = new Dictionary<string, string>
@@ -614,26 +609,7 @@ namespace Data.Migrations
                 uow.WebServiceRepository.Add(webServiceDO);
             }
         }
-
-
-        //Getting random working time within next 3 days
-        private static DateTimeOffset GetRandomEventStartTime()
-        {
-            TimeSpan timeSpan = DateTime.UtcNow.AddDays(3) - DateTime.UtcNow;
-            var randomTest = new Random();
-            TimeSpan newSpan = new TimeSpan(0, randomTest.Next(0, (int)timeSpan.TotalMinutes), 0);
-            DateTime newDate = DateTime.UtcNow;
-            while (newDate.TimeOfDay.Hours < 9)
-            {
-                newDate = newDate.Add(new TimeSpan(1, 0, 0));
-            }
-            while (newDate.TimeOfDay.Hours > 16)
-            {
-                newDate = newDate.Add(new TimeSpan(-1, 0, 0));
-            }
-            return newDate;
-        }
-
+        
         private void UpdateRootPlanNodeId(IUnitOfWork uow)
         {
             var anyRootIdFlag = uow.PlanRepository.GetNodesQueryUncached().Any(x => x.RootPlanNodeId != null);
@@ -759,6 +735,9 @@ namespace Data.Migrations
             //default permissions for Users
             fr8AdminProfile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), true, false, true, fr8AdminProfile.Id, "Fr8 Administrator Permission Set", uow));
             
+            //default permissions for PageDefinitions
+            fr8AdminProfile.PermissionSets.Add(AddPermissionSet(nameof(PageDefinitionDO), true, false, false, fr8AdminProfile.Id, "Fr8 Administrator Permission Set", uow));
+
             profile.PermissionSets.Clear();
             //default permissions for Plans and PlanNodes
             profile.PermissionSets.Add(AddPermissionSet(nameof(PlanNodeDO), true, false, false, profile.Id,"System Administrator Permission Set", uow));
@@ -771,6 +750,9 @@ namespace Data.Migrations
 
             //default permissions for Users
             profile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), true, true, false, profile.Id, "System Administrator Permission Set", uow));
+
+            //default permissions for PageDefinitions
+            profile.PermissionSets.Add(AddPermissionSet(nameof(PageDefinitionDO), true, false, false, profile.Id, "System Administrator Permission Set", uow));
 
             //add standard user to all users without profile 
             var roles = uow.UserRepository.GetQuery().Where(x => x.ProfileId == null).ToList();
@@ -832,6 +814,7 @@ namespace Data.Migrations
             {
                 permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.ViewAllObjects));
                 permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.ModifyAllObjects));
+                permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int)PermissionType.EditPageDefinitions));
             }
 
             if (hasManageFr8Users)
