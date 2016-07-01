@@ -256,6 +256,7 @@
     <Compile Include="Entities\AspNetUserClaimDO.cs" />
     <Compile Include="Entities\EncryptedAuthorizationData.cs" />
     <Compile Include="Entities\OrganizationDO.cs" />
+    <Compile Include="Entities\PageDefinitionDO.cs" />
     <Compile Include="Entities\PlanTemplates\ActivityDescriptionDO.cs" />
     <Compile Include="Entities\PlanTemplates\NodeTransitionDO.cs" />
     <Compile Include="Entities\PlanTemplates\PlanTemplateDO.cs" />
@@ -716,6 +717,10 @@
     <Compile Include="Migrations\201606271048030_NullableExpiresAtForAuthToken.Designer.cs">
       <DependentUpon>201606271048030_NullableExpiresAtForAuthToken.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201606300937169_AddPageDefinition.cs" />
+    <Compile Include="Migrations\201606300937169_AddPageDefinition.Designer.cs">
+      <DependentUpon>201606300937169_AddPageDefinition.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -732,6 +737,7 @@
     <Compile Include="Repositories\Authorization\Impl\MockedDbAuthorizationTokenStorageProvider.cs" />
     <Compile Include="Repositories\EnvelopeRepository.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtObjectStorage.Queries.cs" />
+    <Compile Include="Repositories\PageDefinitionRepository.cs" />
     <Compile Include="Repositories\PlanTemplates\ActivityDescriptionRepository.cs" />
     <Compile Include="Repositories\PlanTemplates\NodeTransitionRepository.cs" />
     <Compile Include="Repositories\PlanTemplates\PlanNodeDescriptionsRepository.cs" />
@@ -1324,6 +1330,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606271048030_NullableExpiresAtForAuthToken.resx">
       <DependentUpon>201606271048030_NullableExpiresAtForAuthToken.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606300937169_AddPageDefinition.resx">
+      <DependentUpon>201606300937169_AddPageDefinition.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

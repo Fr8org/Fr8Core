@@ -328,11 +328,6 @@ namespace Fr8.TerminalBase.Services
             throw new NotImplementedException();
         }
 
-        public Task<AuthorizationTokenDTO> GenerateOAuthToken(ExternalAuthenticationDTO authDTO)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri)
         {
             throw new NotImplementedException();

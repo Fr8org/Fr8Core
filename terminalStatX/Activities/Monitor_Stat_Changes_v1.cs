@@ -37,7 +37,7 @@ namespace terminalStatX.Activities
 
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        private readonly string RunTimeCrateLabel = "Stat Value Items";
+        private readonly string RunTimeCrateLabel = "Stat Properties from Monitor StatX Changes";
 
         private string SelectedGroup
         {
@@ -85,11 +85,6 @@ namespace terminalStatX.Activities
 
         public override async Task Initialize()
         {
-            Storage.Remove<EventSubscriptionCM>();
-            Storage.Add(CrateManager.CreateStandardEventSubscriptionsCrate(
-                "Standard Event Subscriptions",
-                "StatX","StatXValueChange"));
-
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel);
 
             ActivityUI.ExistingGroupsList.ListItems = (await _statXIntegration.GetGroups(StatXUtilities.GetStatXAuthToken(AuthorizationToken)))
@@ -142,7 +137,13 @@ namespace terminalStatX.Activities
                         CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel).AddFields(CreateStatValueFields(StatXUtilities.MapToStatItemCrateManifest(currentStat)));
                     }
                 }
-                SelectedGroup = ActivityUI.ExistingGroupsList.Value;
+                SelectedStat= ActivityUI.ExistingGroupStats.Value;
+
+                Storage.Remove<EventSubscriptionCM>();
+                Storage.Add(CrateManager.CreateStandardEventSubscriptionsCrate(
+                    "Standard Event Subscriptions",
+                    "StatX", "StatXValueChange_" + SelectedStat.Substring(0, 18)));
+
             }
             else
             {
@@ -156,7 +157,7 @@ namespace terminalStatX.Activities
 
         public override async Task Activate()
         {
-            await _statXPolling.SchedulePolling(HubCommunicator, AuthorizationToken.ExternalAccountId, true, 
+            await _statXPolling.SchedulePolling(HubCommunicator, $"{AuthorizationToken.ExternalAccountId}_{SelectedStat.Substring(0, 18)}", true, 
                 ActivityUI.ExistingGroupsList.Value, ActivityUI.ExistingGroupStats.Value);
         }
 
