@@ -11,12 +11,7 @@ using Data.States.Templates;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
-using Fr8.Infrastructure.Data.Crates;
-using Fr8.Infrastructure.Data.DataTransferObjects;
-using Fr8.Infrastructure.Data.Manifests;
-using Fr8.Infrastructure.Data.States;
 using StructureMap;
-using Newtonsoft.Json;
 
 namespace Data.Migrations
 {
@@ -27,7 +22,7 @@ namespace Data.Migrations
             //Do not ever turn this on! It will break database upgrades
             AutomaticMigrationsEnabled = false;
 
-            this.CommandTimeout = 60 * 15;
+            CommandTimeout = 60 * 15;
 
             //Do not modify this, otherwise migrations will run twice!
             ContextKey = "Data.Infrastructure.DockyardDbContext";
@@ -68,22 +63,12 @@ namespace Data.Migrations
                 AddTestAccounts(uow);
                 AddDefaultProfiles(uow);
 
-                //AddAuthorizationTokens(uow);
                 uow.SaveChanges();
-                Fr8AccountDO fr8AccountDO = GetFr8Account(uow, "alex@edelstein.org");
-
-                // TODO: to be fixed, crashes when resolving IUnitOfWork out of global ObjectFactory container.
-                // Commented out by yakov.gnusin.
-                // AddContainerDOForTestingApi(uow, fr8AccountDO);
 
                 AddWebServices(uow);
-
                 AddTestUser(uow);
-
                 UpdateTerminalClientVisibility(uow);
-
                 RenameActivity(uow);
-
                 RegisterTerminals(uow);
             }
         }
@@ -93,6 +78,7 @@ namespace Data.Migrations
             // Example of terminal registration: RegisterTerminal (uow, "localhost:12345");   
         }
         
+        // ReSharper disable once UnusedMember.Local
         private void RegisterTerminal(UnitOfWork uow, string terminalEndpoint)
         {
             var terminalRegistration = new TerminalRegistrationDO();
@@ -112,7 +98,7 @@ namespace Data.Migrations
 
         private static string ExtractTerminalAuthority(string terminalUrl)
         {
-            string terminalAuthority = terminalUrl;
+            var terminalAuthority = terminalUrl;
 
             if (!terminalUrl.Contains("http:") & !terminalUrl.Contains("https:"))
             {
@@ -138,10 +124,7 @@ namespace Data.Migrations
             var activities = uow.ActivityTemplateRepository.GetAll();
             foreach (var activity in activities)
             {
-                if (activity.Name == "Monitor_DocuSign_Envelope_Activity")
-                    activity.ClientVisibility = false;
-                else
-                    activity.ClientVisibility = true;
+                activity.ClientVisibility = activity.Name != "Monitor_DocuSign_Envelope_Activity";
             }
             uow.SaveChanges();
         }
@@ -152,89 +135,6 @@ namespace Data.Migrations
             SeedConstants(uow);
             SeedInstructions(uow);
         }
-
-        private static void AddPlan(IUnitOfWork uow)
-        {
-        }
-
-        private static Crate GenerateInitialEventCrate()
-        {
-            var docusignEventPayload = new EventReportCM
-            {
-                EventNames = "DocuSign Envelope Sent",
-                ExternalAccountId = "docusign_developer@dockyard.company",
-            };
-
-            docusignEventPayload.EventPayload.Add(Crate.FromContent("Payload Data",
-                new StandardPayloadDataCM(new List<KeyValueDTO>
-            {
-                new KeyValueDTO
-                {
-                    Key="EnvelopeId",
-                    Value="38b8de65-d4c0-435d-ac1b-87d1b2dc5251"
-                },
-                new KeyValueDTO
-                {
-                    Key="ExternalEventType",
-                    Value="38b8de65-d4c0-435d-ac1b-87d1b2dc5251"
-                },
-                new KeyValueDTO
-                {
-                    Key="RecipientId",
-                    Value="279a1173-04cc-4902-8039-68b1992639e9"
-                }
-            })));
-
-            return Crate.FromContent("Standard Event Report", docusignEventPayload);
-        }
-
-        private static void AddContainerDOForTestingApi(IUnitOfWork uow, Fr8AccountDO fr8AccountDO)
-        {
-            new PlanBuilder("TestTemplate{0B6944E1-3CC5-45BA-AF78-728FFBE57358}", fr8AccountDO).AddCrate(GenerateInitialEventCrate()).Store(uow);
-            new PlanBuilder("TestTemplate{77D78B4E-111F-4F62-8AC6-6B77459042CB}", fr8AccountDO)
-                .AddCrate(GenerateInitialEventCrate())
-                .AddCrate(Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(new KeyValueDTO("EnvelopeId", "38b8de65-d4c0-435d-ac1b-87d1b2dc5251")))).Store(uow);
-
-            uow.SaveChanges();
-        }
-
-        private static Fr8AccountDO GetFr8Account(IUnitOfWork uow, string emailAddress)
-        {
-            return uow.UserRepository.FindOne(u => u.EmailAddress.Address == emailAddress);
-        }
-
-
-        //        private static void AddAuthorizationTokens(IUnitOfWork uow)
-        //        {
-        //            AddDocusignAuthToken(uow);
-        //        }
-        //
-        //        private static void AddDocusignAuthToken(IUnitOfWork uow)
-        //        {
-        //            // Check that terminal does not exist yet.
-        //            var docusignAuthToken = uow.AuthorizationTokenRepository.GetQuery()
-        //                .Any(x => x.ExternalAccountId == "docusign_developer@dockyard.company");
-        //
-        //            // Add new terminal and subscription to repository, if terminal doesn't exist.
-        //
-        //            if (!docusignAuthToken)
-        //            {
-        //                var token = new AuthorizationTokenDO();
-        //                token.ExternalAccountId = "docusign_developer@dockyard.company";
-        //                token.Token = "";
-        //                token.UserDO = uow.UserRepository.GetOrCreateUser("alex@edelstein.org");
-        //
-        //                var docuSignTerminal = uow.TerminalRepository.FindOne(p => p.Name == "terminalDocuSign");
-        //                token.Terminal = docuSignTerminal;
-        //                token.TerminalID = docuSignTerminal.Id;
-        //
-        //                token.ExpiresAt = DateTime.UtcNow.AddDays(10);
-        //
-        //                uow.AuthorizationTokenRepository.Add(token);
-        //                uow.SaveChanges();
-        //
-        //            }
-        //        }
 
         //This method will automatically seed any constants file
         //It looks for rows which implement IConstantRow<>
@@ -317,7 +217,7 @@ namespace Data.Migrations
             // ReSharper restore UnusedMember.Local
             where TConstantDO : class, IStateTemplate<TConstantsType>, new()
         {
-            FieldInfo[] constants = typeof(TConstantsType).GetFields();
+            var constants = typeof(TConstantsType).GetFields();
             List<TConstantDO> instructionsToAdd;
             if (typeof (TConstantsType).BaseType == typeof (Enum))
             {
@@ -335,12 +235,8 @@ namespace Data.Migrations
                                          let value = constant.GetValue(null)
                                          select creatorFunc((int)value, name)).ToList();
             }
-
-
-
             //First, we find rows in the DB that don't exist in our seeding. We delete those.
             //Then, we find rows in our seeding that don't exist in the DB. We create those ones (or update the name).
-
             var repo = new GenericRepository<TConstantDO>(uow);
             var allRows = new GenericRepository<TConstantDO>(uow).GetAll().ToList();
             foreach (var row in allRows)
@@ -365,15 +261,15 @@ namespace Data.Migrations
 
         private static void SeedInstructions(IUnitOfWork unitOfWork)
         {
-            Type[] nestedTypes = typeof(InstructionConstants).GetNestedTypes();
+            var nestedTypes = typeof(InstructionConstants).GetNestedTypes();
             var instructionsToAdd = new List<InstructionDO>();
-            foreach (Type nestedType in nestedTypes)
+            foreach (var nestedType in nestedTypes)
             {
-                FieldInfo[] constants = nestedType.GetFields();
-                foreach (FieldInfo constant in constants)
+                var constants = nestedType.GetFields();
+                foreach (var constant in constants)
                 {
-                    string name = constant.Name;
-                    object value = constant.GetValue(null);
+                    var name = constant.Name;
+                    var value = constant.GetValue(null);
                     instructionsToAdd.Add(new InstructionDO
                     {
                         Id = (int)value,
@@ -395,7 +291,7 @@ namespace Data.Migrations
             {
                 Name = name
             };
-            FieldInfo[] constants = typeof(Roles).GetFields();
+            var constants = typeof(Roles).GetFields();
             var rolesToAdd = (from constant in constants
                               let name = constant.Name
                               let value = constant.GetValue(null)
@@ -430,8 +326,6 @@ namespace Data.Migrations
             CreateAdmin("fr8system_monitor@fr8.company", "123qwe", unitOfWork);
             CreateAdmin("teh.netaholic@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("farrukh.normuradov@gmail.com", "123qwe", unitOfWork);
-            //CreateAdmin("eschebenyuk@gmail.com", "kate235", unitOfWork);
-            //CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork);
         }
 
         /// <summary>
@@ -463,7 +357,7 @@ namespace Data.Migrations
         /// <param name="curPassword"></param>
         /// <param name="uow"></param>
         /// <returns></returns>
-        private static Fr8AccountDO CreateAdmin(string userEmail, string curPassword, IUnitOfWork uow)
+        private static void CreateAdmin(string userEmail, string curPassword, IUnitOfWork uow)
         {
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
             uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
@@ -471,23 +365,21 @@ namespace Data.Migrations
             uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Booker, user.Id);
             uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, user.Id);
             uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.OwnerOfCurrentObject, user.Id);
-
             user.TestAccount = false;
-            return user;
         }
 
-        private static Fr8AccountDO CreateTestAccount(string userEmail, string curPassword, string userName, IUnitOfWork uow)
+        private static void CreateTestAccount(string userEmail, string curPassword, string userName, IUnitOfWork uow)
         {
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
-            if (user == null)
+            if (user != null)
             {
-                uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
-                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, user.Id);
-                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Booker, user.Id);
-                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, user.Id);
-                user.TestAccount = true;
+                return;
             }
-            return user;
+            uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
+            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, user.Id);
+            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Booker, user.Id);
+            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, user.Id);
+            user.TestAccount = true;
         }
 
         /// <summary>
@@ -502,9 +394,7 @@ namespace Data.Migrations
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
             uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
             uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, user.Id);
-
             user.TestAccount = true;
-
             return user;
         }
         
@@ -564,50 +454,43 @@ namespace Data.Migrations
             const string email = "integration_test_runner@fr8.company";
             const string password = "fr8#s@lt!";
 
-            Fr8AccountDO newDockyardAccountDO = null;
             //check if we know this email address
 
-            var existingEmailAddressDO =
-                uow.EmailAddressRepository.GetQuery().FirstOrDefault(ea => ea.Address == email);
+            var existingEmailAddressDO = uow.EmailAddressRepository.GetQuery().FirstOrDefault(ea => ea.Address == email);
             if (existingEmailAddressDO != null)
             {
-                var existingUserDO = uow.UserRepository
-                    .GetQuery()
-                    .FirstOrDefault(u => u.EmailAddressID == existingEmailAddressDO.Id);
-
-                newDockyardAccountDO = RegisterTestUser(uow, email, email, email, password, Roles.Customer);
+                RegisterTestUser(uow, email, password, Roles.Customer);
             }
             else
             {
-                newDockyardAccountDO = RegisterTestUser(uow, email, email, email, password, Roles.Customer);
+                RegisterTestUser(uow, email, password, Roles.Customer);
             }
 
             uow.SaveChanges();
         }
 
-        private Fr8AccountDO RegisterTestUser(IUnitOfWork uow, string userName,
-            string firstName, string lastName, string password, string roleID)
+        private void RegisterTestUser(IUnitOfWork uow, string userName, string password, string roleId)
         {
-            var userDO = uow.UserRepository.GetOrCreateUser(userName, roleID);
+            var userDO = uow.UserRepository.GetOrCreateUser(userName, roleId);
             uow.UserRepository.UpdateUserCredentials(userDO, userName, password);
-            uow.AspNetUserRolesRepository.AssignRoleToUser(roleID, userDO.Id);
-            return userDO;
+            uow.AspNetUserRolesRepository.AssignRoleToUser(roleId, userDO.Id);
         }
 
         private void AddWebService(IUnitOfWork uow, string name, string iconPath)
         {
             var isWsExists = uow.WebServiceRepository.GetQuery().Any(x => x.Name == name);
 
-            if (!isWsExists)
+            if (isWsExists)
             {
-                var webServiceDO = new WebServiceDO
-                {
-                    Name = name,
-                    IconPath = iconPath
-                };
-
-                uow.WebServiceRepository.Add(webServiceDO);
+                return;
             }
+            var webServiceDO = new WebServiceDO
+                               {
+                                   Name = name,
+                                   IconPath = iconPath
+                               };
+
+            uow.WebServiceRepository.Add(webServiceDO);
         }
         
         private void UpdateRootPlanNodeId(IUnitOfWork uow)
@@ -634,8 +517,7 @@ namespace Data.Migrations
                 planNodes.Add(planNode);
             }
 
-            var roots = fullTree
-                .Where(x => parentChildMap.ContainsKey(x.Id) && !x.ParentPlanNodeId.HasValue);
+            var roots = fullTree.Where(x => parentChildMap.ContainsKey(x.Id) && !x.ParentPlanNodeId.HasValue);
 
             var queue = new Queue<PlanNodeDO>();
             foreach (var root in roots)
@@ -670,7 +552,7 @@ namespace Data.Migrations
             var fr8AdminProfile = uow.ProfileRepository.GetQuery().FirstOrDefault(x => x.Name == DefaultProfiles.Fr8Administrator);
             if (fr8AdminProfile == null)
             {
-                fr8AdminProfile = new ProfileDO()
+                fr8AdminProfile = new ProfileDO
                 {
                     Id = Guid.NewGuid(),
                     Name = DefaultProfiles.Fr8Administrator,
@@ -688,7 +570,7 @@ namespace Data.Migrations
             var profile = uow.ProfileRepository.GetQuery().FirstOrDefault(x => x.Name == DefaultProfiles.SystemAdministrator);
             if (profile == null)
             {
-                profile = new ProfileDO()
+                profile = new ProfileDO
                 {
                     Id = Guid.NewGuid(),
                     Name = DefaultProfiles.SystemAdministrator,
@@ -784,24 +666,25 @@ namespace Data.Migrations
             standardProfile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), false, false, false, standardProfile.Id, "Standard User Permission Set", uow));
         }
 
-        private static PermissionSetDO AddPermissionSet(string objectType, bool isFullSet, bool hasManageInternalUsers, bool hasManageFr8Users,
-            Guid profileId, string name, IUnitOfWork uow)
+        private static PermissionSetDO AddPermissionSet(
+            string objectType, 
+            bool isFullSet, 
+            bool hasManageInternalUsers, 
+            bool hasManageFr8Users,
+            Guid profileId, 
+            string name, 
+            IUnitOfWork uow)
         {
-            var permissionSet = uow.PermissionSetRepository.GetQuery().FirstOrDefault(x => x.Name == name && x.ObjectType == objectType);
+            var permissionSet = uow.PermissionSetRepository.GetQuery().FirstOrDefault(x => x.Name == name && x.ObjectType == objectType) ?? new PermissionSetDO
+                                                                                                                                            {
+                                                                                                                                                Name = name,
+                                                                                                                                                ProfileId = profileId,
+                                                                                                                                                ObjectType = objectType,
+                                                                                                                                                CreateDate = DateTimeOffset.Now,
+                                                                                                                                                LastUpdated = DateTimeOffset.Now,
+                                                                                                                                                HasFullAccess = isFullSet
+                                                                                                                                            };
 
-            if (permissionSet == null)
-            {
-                permissionSet = new PermissionSetDO()
-                {
-                    Name = name,
-                    ProfileId = profileId,
-                    ObjectType = objectType,
-                    CreateDate = DateTimeOffset.Now,
-                    LastUpdated = DateTimeOffset.Now,
-                    HasFullAccess = isFullSet
-                };
-            }
-        
             var repo = new GenericRepository<_PermissionTypeTemplate>(uow);
 
             permissionSet.Permissions.Clear();
