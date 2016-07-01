@@ -19,11 +19,11 @@ Fr8 Crates are similar. Each Crate consists of a set of JSON properties. One pro
 
 Organizationally, when constructing a Crate of data, expect that the metadata about the Crate will remain publicly viewable. CrateStorage is not automatically encrypted, but the Fr8 design anticipates that some users will want to encrypt their CrateStorage.
 
+Developers often associate Crates with [Manifests](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CratesManifest.md)
+
 ### Additional information
 - [Crate JSON Definition](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Crate.md)
 
 - [Property: Availability](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CratePropertyAvailability.md)
-
-- [Crate Manifests](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CratesManifest.md)
 
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
