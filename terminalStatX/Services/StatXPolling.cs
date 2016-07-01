@@ -61,7 +61,8 @@ namespace terminalStatX.Services
                 return pollingData;
             }
 
-            var token = await hubCommunicator.GetAuthToken(pollingData.ExternalAccountId);
+            var currentExternalAccountId = pollingData.ExternalAccountId.Split('_').First();
+            var token = await hubCommunicator.GetAuthToken(currentExternalAccountId);
 
             if (token == null)
             {
@@ -85,7 +86,7 @@ namespace terminalStatX.Services
                 {
                     var eventReportContent = new EventReportCM
                     {
-                        EventNames = "StatXValueChange",
+                        EventNames = "StatXValueChange_"+ statId.Substring(0, 18),
                         ContainerDoId = "",
                         EventPayload = new CrateStorage(Crate.FromContent("StatXValueChange", latestStatWithValues)),
                         Manufacturer = "StatX",

@@ -236,6 +236,17 @@
           <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-terminalBox.fr8.co" />
         </Bindings>
       </Site>
+      <Site name="terminalTelegram" physicalDirectory="..\..\..\terminalTelegram\azure.publish">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="terminalTelegram" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalTelegram.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="dev-terminalTelegram.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="demo-terminalTelegram.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="terminalTelegram.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="dev-terminalTelegram.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-terminalTelegram.fr8.co" />
+        </Bindings>
+      </Site>
 
     </Sites>
     <ConfigurationSettings>
@@ -262,6 +273,7 @@
       <Setting name="terminalBox.TerminalEndpoint"/>
 	    <Setting name="terminalStatX.TerminalEndpoint"/>
       <Setting name="terminalFacebook.TerminalEndpoint"/>
+      <Setting name="terminalTelegram.TerminalEndpoint"/>
       <Setting name="OutboundUserName"/>
       <Setting name="OutboundUserPassword"/>
     </ConfigurationSettings>
@@ -290,6 +302,7 @@
 	    <InputEndpoint name="terminalStatX" protocol="http" port="48675" />
       <InputEndpoint name="terminalFacebook" protocol="http" port="22666" />
       <InputEndpoint name="terminalBox" protocol="http" port="54642" />
+      <InputEndpoint name="terminalTelegram" protocol="http" port="59022" />
       <InputEndpoint name="PlanDirectory" protocol="http" port="64879" />
     </Endpoints>
     <Imports>
