@@ -309,12 +309,6 @@
     <Compile Include="Startup.cs" />
     <Compile Include="StructureMapConfigurationcs.cs" />
     <Compile Include="TerminalData.cs" />
-    <Compile Include="Tests\Activities\Generate_DocuSign_Report_Tests.cs" />
-    <Compile Include="Tests\Activities\Monitor_DocuSignTests.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Tests\Activities\Query_DocuSign_Tests.cs" />
-    <Compile Include="Tests\Activities\Search_DocuSign_Tests.cs" />
     <Compile Include="Tests\Fixtures\TerminalFixtureData - DocuSignReport.cs" />
     <Compile Include="Tests\Fixtures\TerminalFixtureData - Folders.cs" />
     <Compile Include="Tests\Infrastructure\DocuSignTemplateTests.cs" />

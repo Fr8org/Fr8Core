@@ -33,8 +33,6 @@ namespace terminalFr8Core.Activities
         private const string ImmediatelyBelowKey = "Immediately below";
         private const string ImmediatelyBelowValue = "immediately_below";
 
-        private const string ExtractedFieldsCrateLabel = "ExtractedFields";
-
         private const string AvailableCellsCrateLabel = "AvailableCells";
 
         private bool AreValuesSelected(DropDownList chosenCell, DropDownList position)
@@ -46,7 +44,7 @@ namespace terminalFr8Core.Activities
 
         private FieldDTO GetChosenField(DropDownList chosenCell, DropDownList position)
         {
-            var key = "";
+            string key;
             if (position.Value == ImmediatelyBelowValue)
             {
                 key = "Value " + ImmediatelyBelowKey + " of " + chosenCell.selectedKey;
@@ -61,8 +59,7 @@ namespace terminalFr8Core.Activities
 
         private KeyValueDTO ExtractFieldFromTable(StandardTableDataCM table, DropDownList chosenCell, DropDownList position)
         {
-            KeyValueDTO field = position.Value == ImmediatelyBelowValue ?
-                GetValueBelowSelectedCell(table, chosenCell.Value) : GetValueRightToSelectedCell(table, chosenCell.Value);
+            var field = position.Value == ImmediatelyBelowValue ? GetValueBelowSelectedCell(table, chosenCell.Value) : GetValueRightToSelectedCell(table, chosenCell.Value);
 
             if (field == null)
             {
@@ -262,9 +259,6 @@ namespace terminalFr8Core.Activities
 
             Success();
         }
-
-            
-        
 
         public override async Task Initialize()
         {
