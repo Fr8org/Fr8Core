@@ -1,4 +1,5 @@
-# CRATES – MANIFEST
+# Manifests
+
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
 A Manifest is a simple json schema that defines the contents of a Crate of data. Use of Manifests is optional. They’re essentially a way for activities to effectively process structured data. Put another way, if you know the Manifest of a Crate, you can use it to deserialize the contents (which is just a big json string) into structured data. This can be as basic as a set of key/value pairs, but the real power of manifests comes when unrelated activities both process something much more structured, like a DocuSign Envelope. 
 
