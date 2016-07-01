@@ -43,7 +43,7 @@ namespace terminalIntegrationTests.Unit
             });
 
             var sut = new PlanCategoryPageGenerator(pageDefinitionRepositoryStub.Object);
-            sut.Generate(new[] { tag1, tag2 });
+            //sut.Generate(new[] { tag1, tag2 });
         }
     }
 }

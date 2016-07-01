@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Data.Repositories;
+using Fr8.Infrastructure.Data.Manifests;
 using PlanDirectory.CategoryPages;
 
 namespace PlanDirectory.Infrastructure
@@ -18,17 +20,15 @@ namespace PlanDirectory.Infrastructure
             _pageDefinitionRepository = pageDefinitionRepository;
         }
 
-        public void Generate(IEnumerable<WebServiceTemplateTag> tags)
+        public Task Generate(IEnumerable<TemplateTag> tags, PlanTemplateCM planTemplate)
         {
             var path = @"D:\\Dev\\fr8company\\Services\\PlanDirectory\\CategoryPages\\";
-            var pageDefinitions = _pageDefinitionRepository.GetAll();
-            foreach (var webServiceTemplateTag in tags)
-            {
 
-            }
-
-            foreach (var webServiceTemplateTag in tags)
+            foreach (var tag in tags)
             {
+                if (!(tag is WebServiceTemplateTag))
+                    continue;
+                var webServiceTemplateTag = tag as WebServiceTemplateTag;
                 var fileName = GeneratePageNameFromTags(webServiceTemplateTag.TagsWithIcons.Select(x => x.Key));
                 var template = new PlanCategoryTemplate();
                 template.Session = new Dictionary<string, object>
@@ -37,7 +37,7 @@ namespace PlanDirectory.Infrastructure
                     ["Tags"] = webServiceTemplateTag.TagsWithIcons,
                     ["RelatedPlans"] = new Dictionary<string, string>()
                     {
-                        { "foo", "bar"}
+                        {planTemplate.Name, planTemplate.Description }
                     }
                 };
                 // Must call this to transfer values.
@@ -46,6 +46,7 @@ namespace PlanDirectory.Infrastructure
                 string pageContent = template.TransformText();
                 File.WriteAllText(path + fileName + PageExtension, pageContent);
             }
+            return Task.FromResult(0);
         }
 
         /// <summary>

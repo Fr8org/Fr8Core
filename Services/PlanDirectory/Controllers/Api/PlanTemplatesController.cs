@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Data.Entities;
+using Data.Repositories;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Interfaces;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Hub.Infrastructure;
+using Hub.Interfaces;
 using PlanDirectory.Infrastructure;
 using PlanDirectory.Interfaces;
 
@@ -19,6 +23,8 @@ namespace PlanDirectory.Controllers.Api
         private readonly IPlanTemplate _planTemplate;
         private readonly ISearchProvider _searchProvider;
         private readonly ITagGenerator _tagGenerator;
+        private readonly IPageDefinition _pageDefinition;
+        private readonly IPageGenerator _pageGenerator;
 
         public PlanTemplatesController()
         {
@@ -28,6 +34,7 @@ namespace PlanDirectory.Controllers.Api
             _planTemplate = ObjectFactory.GetInstance<IPlanTemplate>();
             _searchProvider = ObjectFactory.GetInstance<ISearchProvider>();
             _tagGenerator = ObjectFactory.GetInstance<ITagGenerator>();
+            _pageGenerator = ObjectFactory.GetInstance<IPageGenerator>();
         }
 
         [HttpPost]
@@ -45,7 +52,17 @@ namespace PlanDirectory.Controllers.Api
 
                 await _searchProvider.CreateOrUpdate(planTemplateCM);
 
-                //TODO: update page definitions
+                var tagsString = string.Join(", ", tags.Select(x => x.Title));
+
+                var pd = new PageDefinitionDO()
+                {
+                    Title = tagsString,
+                    Tags = tags.Select(x=>x.Title)
+                };
+
+                _pageDefinition.CreateOrUpdate(pd);
+
+                await _pageGenerator.Generate(tags, planTemplateCM);
 
                 return Ok();
             });
