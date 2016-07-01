@@ -38,9 +38,8 @@ namespace HubWeb.Controllers
             //check if its not null
             if (raw == null)
                 throw new ArgumentNullException("Parameter Standard Event Report is null.");
-            try
-            {
-                var curCrateStandardEventReport = _crate.FromDto(raw);
+
+            var curCrateStandardEventReport = _crate.FromDto(raw);
 
             //check if Standard Event Report inside CrateDTO
             if (!curCrateStandardEventReport.IsOfType<EventReportCM>())
@@ -62,10 +61,6 @@ namespace HubWeb.Controllers
             }
 
             _jobDispatcher.Enqueue(() => ProcessEventsInternal(raw));
-            } catch(Exception ex)
-            {
-                var x = 1;
-            }
             return Ok();
         }
     }
