@@ -157,7 +157,7 @@ namespace terminalStatX.Activities
                         }
                     }
                 }
-                SelectedGroup = ActivityUI.ExistingGroupsList.Value;
+                SelectedStat = ActivityUI.ExistingGroupStats.Value;
             }
             else
             {
