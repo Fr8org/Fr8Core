@@ -12,5 +12,6 @@ module dockyard.interfaces {
         organizationId: number;
         profileId: string;
         class: string;
+        canManagePageDefinitions: boolean;
     }
 }

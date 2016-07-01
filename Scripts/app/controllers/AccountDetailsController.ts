@@ -38,7 +38,7 @@ module dockyard.controllers {
             //Save button
             $scope.submit = function (isValid) {
                 if (isValid) {
-                    var result = UserService.updateUserProfile({ userId: $scope.user.id, profileId: $scope.user.profileId, userClass: $scope.user.class });
+                    var result = UserService.updateUserProfile($scope.user);
                     result.$promise.then(() => { $state.go('accounts'); });
                 }
             };
