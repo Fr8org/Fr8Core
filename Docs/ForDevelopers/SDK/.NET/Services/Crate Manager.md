@@ -1,6 +1,6 @@
 # Crate Manager
 
-The crate manager provides utility methods for processing the data in [Crate](/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Fr8Crates.md) objects.
+The crate manager provides utility methods for processing the data in [Crate](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Crate.md) objects.
 
 ## Features
 
