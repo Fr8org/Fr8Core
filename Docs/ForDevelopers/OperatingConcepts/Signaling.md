@@ -1,7 +1,7 @@
 # Design-Time Signalling of Crate and Field Data
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md) 
 
-Signalling is a process that takes place in Design mode. The Terminal signals the types of data that an Activity will generate when executed in Run mode, so that the user can configure connections between Activities.
+Signaling is a process that takes place in Design mode. The Terminal signals the types of data that an Activity will generate when executed in Run mode, so that the user can configure connections between Activities.
 
 For example, suppose a User is building a Plan that will load customer information out of an Google Form and use that information to carry out a DocuSign mail merge so that each customer receives a customized DocuSign document and envelope.
 
