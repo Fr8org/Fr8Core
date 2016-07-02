@@ -1460,3 +1460,9 @@ md-checkbox.md-checked.green .md-icon {
     color: rgba(0,0,0,0.54);
     transform: translate3d(0,-50%,0) rotate(0deg) !important;
 }
+
+
+/********* fix for FR-3998 ********/
+span.btn a.btn-link i.glyphicon-remove {
+    display: none;
+}
