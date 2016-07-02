@@ -18,7 +18,8 @@ define it in web.config.
   <!-- This settings file is referenced by all the projects which need HubWeb settings: 
   HubWeb itself, HealthMonitor and HealthMonitor.HubLauncher -->
   
-  <!-- Plan Directory connection -->
+  <!-- Plan Directory connection. This secret must match the secret specified 
+  in the PlanDirectory configuration file.-->
   <add key="PlanDirectorySecret" value="" />
 
   <!-- System user account -->

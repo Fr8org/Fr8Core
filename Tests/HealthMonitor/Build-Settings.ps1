@@ -13,7 +13,7 @@ $healthMonitorPath = Split-Path -parent $PSCommandPath
 $configPath = "$healthMonitorPath\Config\HealthMonitor\Settings.config.src"
 $solutionRootPath = Split-Path -parent (Split-Path -parent $configPath)
 $ignoredSettings = @('HubApiVersion', 'TerminalSecret', 'TerminalId', 'owin:AutomaticAppStartup', 'CoreWebServerUrl')
-
+[string[]] $only
 
 if(-not (Test-Path $configPath)) {
 	Write-Warning "Cannot find HealthMonitor external configuration file Config/Settings.config. Exiting."
@@ -27,11 +27,35 @@ ForEach ($curInclude in $includeNodes) {
 	# Resovle relative path to absolute path
 	$curExtSettingPath =  [System.IO.Path]::GetFullPath((Join-Path $healthMonitorPath $curInclude.src))
 	if(Test-Path $curExtSettingPath) {
+		if ($curInclude.only) {
+			$only = $curInclude.only -split ","
+			$only = $only | % { $_.Trim() } # remove spaces
+			Echo ("Filter: " + $only | Format-List)
+		}
+		else {
+			$only = @()
+		}
+
 		Echo ("Including appSettings from {0}" -f $curExtSettingPath)
 		$includeNodesToDelete.Add($curInclude) | Out-Null
 		# Get appSettings from the file and copy them to the HM external configuration file.
 		$curConfigXml = [xml](Get-Content $curExtSettingPath)
-		ForEach ($curSetting in $curConfigXml.appSettings.add) {
+		
+		# Get appSettigns section
+		$settings = $curConfigXml.appSettings.add # if an incuded settings file
+		if (($settings -eq $null) -or ($settings.Count -eq 0))
+		{
+			$settings = $curConfigXml.configuration.appSettings.add # if a web.config
+		}
+
+		ForEach ($curSetting in $settings) {
+			# Apply settings filter if enabled
+			if ($only.Count -gt 0) {
+				if (-not $only.Contains($curSetting.key)) {
+					Continue
+				}
+			}
+
 			# Check if a duplicating setting
 			$hmConfigXml.appSettings.add | Where-Object { $_.key -ieq $curSetting.key} | ForEach-Object {
 				Write-Warning ("Attempt to add a duplicating setting '{0}' with value '{1}'. Skipping." -f $_.key, $curSetting.value)
@@ -41,7 +65,7 @@ ForEach ($curInclude in $includeNodes) {
 			# Copy only if setting not ignored 
 			If ($ignoredSettings.IndexOf($curSetting.key) -ieq -1) {
 				$clonedSetting = $hmConfigXml.ImportNode($curSetting, $false)
-				$hmConfigXml.appSettings.AppendChild($clonedSetting) | Out-Null
+				$curInclude.ParentNode.InsertAfter($clonedSetting, $curInclude) | Out-Null
 			}
 		}
 	}

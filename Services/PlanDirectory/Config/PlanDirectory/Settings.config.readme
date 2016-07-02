@@ -15,7 +15,7 @@ define it in web.config.
 -->
 
 <appSettings>
-  <add key="PlanDirectorySecret" value="5116B620-A497-4462-B036-E9DDEBA48DDE" />
+  <add key="PlanDirectorySecret" value="specify a GUID-based secret here" />
   
   <!-- Specify your Azure Search details below -->
   <add key="AzureSearchServiceName" value="" />
