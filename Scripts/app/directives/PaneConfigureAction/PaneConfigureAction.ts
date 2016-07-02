@@ -141,6 +141,7 @@ module dockyard.directives.paneConfigureAction {
         populateAllActivities: () => void;
         allActivities: Array<interfaces.IActivityDTO>;
         view: string;
+        plan: model.PlanDTO;
         showAdvisoryPopup: boolean;
     }
     
@@ -338,13 +339,15 @@ module dockyard.directives.paneConfigureAction {
                 this.$scope.currentAction.configurationControls,
                 this.$scope.currentAction.crateStorage,
                 this.$scope.view
-            );
-        }
+                );
+            }
 
                 this.$scope.currentAction.crateStorage.crateDTO = this.$scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
+
                 this.ActionService.save({ id: this.$scope.currentAction.id }, this.$scope.currentAction, null, null)
                     .$promise
                     .then(() => {
+                        
                         if (this.$scope.currentAction.childrenActivities
                             && this.$scope.currentAction.childrenActivities.length > 0) {
 
@@ -353,6 +356,10 @@ module dockyard.directives.paneConfigureAction {
                             }
                         }
                     });
+                // save request will stop running plans, so FE should know that
+                if (this.$scope.plan.planState === 2) {
+                    this.$scope.plan.planState = 1;
+                }
             }
 
         private getControlEventHandler(control: model.ControlDefinitionDTO, eventName: string) {
