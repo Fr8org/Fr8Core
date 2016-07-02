@@ -148,6 +148,40 @@ namespace Data.Repositories.MultiTenant.Sql
             return Upsert(connectionProvider, fr8AccountId, obj, @where, true, false);
         }
 
+        public int QueryScalar(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode @where)
+        {
+            using (var connection = OpenConnection(connectionProvider))
+            {
+                using (var command = new SqlCommand())
+                {
+                    command.Connection = connection;
+                    command.Parameters.AddWithValue("@type", type.Id);
+                    command.Parameters.AddWithValue("@account", fr8AccountId);
+                    command.Parameters.AddWithValue("@isDeleted", false);
+
+                    string whereTemplate = string.Empty;
+
+                    if (where != null)
+                    {
+                        var astConverter = new AstToSqlConverter(type, _converter, "[md]");
+
+                        astConverter.Convert(@where);
+
+                        whereTemplate = " and " + astConverter.SqlCommand;
+
+                        for (int index = 0; index < astConverter.Constants.Count; index++)
+                        {
+                            command.Parameters.AddWithValue("@param" + index, astConverter.Constants[index]);
+                        }
+                    }
+
+                    command.CommandText = string.Format(MtSelectScalarTemplate, whereTemplate); 
+                    
+                    return (int)Convert.ChangeType(command.ExecuteScalar(), typeof(int));
+                }
+            }
+        }
+
         public IEnumerable<MtObject> Query(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode @where)
         {
             var fields = new List<string>
@@ -160,8 +194,7 @@ namespace Data.Repositories.MultiTenant.Sql
             var parameters = new List<string>
             {
                 "@type",
-                "@account1",
-                "@account2",
+                "@account",
                 "@isDeleted"
             };
 
@@ -171,27 +204,27 @@ namespace Data.Repositories.MultiTenant.Sql
                 fields.Add("Value" + (mtPropertyInfo.Index + 1));
             }
 
-            var tableDefintion = string.Join(", ", fields);
-
+            var tableDefintionOuter = string.Join(", ", fields.Select(x=> "tmp." + x));
+            var tableDefintionInner = string.Join(", ", fields.Select(x => "[md]." + x));
+            
             using (var connection = OpenConnection(connectionProvider))
             {
                 using (var command = new SqlCommand())
                 {
                     command.Connection = connection;
                     command.Parameters.AddWithValue("@type", type.Id);
-                    command.Parameters.AddWithValue("@account1", fr8AccountId);
-                    command.Parameters.AddWithValue("@account2", fr8AccountId);
+                    command.Parameters.AddWithValue("@account", fr8AccountId);
                     command.Parameters.AddWithValue("@isDeleted", false);
 
-                    string cmd = string.Format(MtSelectQueryTemplate, tableDefintion);
+                    string whereTemplate = string.Empty;
 
                     if (where != null)
                     {
-                        var astConverter = new AstToSqlConverter(type, _converter);
+                        var astConverter = new AstToSqlConverter(type, _converter, "[md]");
 
                         astConverter.Convert(@where);
 
-                        cmd += " where " + astConverter.SqlCommand;
+                        whereTemplate = " and " + astConverter.SqlCommand;
 
                         for (int index = 0; index < astConverter.Constants.Count; index++)
                         {
@@ -199,8 +232,9 @@ namespace Data.Repositories.MultiTenant.Sql
                         }
                     }
 
-                    command.CommandText = cmd;
-                    command.CommandTimeout = 600;
+                    command.CommandText = string.Format(MtSelectQueryTemplate, tableDefintionOuter, tableDefintionInner, whereTemplate);
+                    command.CommandTimeout = 120;
+
                     var result = new List<MtObject>();
 
                     using (var reader = command.ExecuteReader())
