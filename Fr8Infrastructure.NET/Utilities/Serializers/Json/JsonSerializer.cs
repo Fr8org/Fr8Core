@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Globalization;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -63,9 +62,9 @@ namespace Fr8.Infrastructure.Utilities.Serializers.Json
             if (responseJson.StartsWith("{\"messages\":{")) return default(IList<T>);
             if (responseJson == "[]") return default(IList<T>);
 
-            object result = JsonConvert.DeserializeObject<object>(responseJson, Settings);
+            var result = JsonConvert.DeserializeObject<object>(responseJson, Settings);
             IList<T> listT = new List<T>();
-            foreach (KeyValuePair<string, JToken> item in ((Newtonsoft.Json.Linq.JObject)(result)))
+            foreach (var item in ((Newtonsoft.Json.Linq.JObject)(result)))
             {
                 listT.Add(Deserialize<T>(item.Value.ToString()));
             }
@@ -83,8 +82,6 @@ namespace Fr8.Infrastructure.Utilities.Serializers.Json
         }
         public class CustomPropertyNamesContractResolver : DefaultContractResolver
         {
-            private static readonly CultureInfo Culture = CultureInfo.InvariantCulture;
-
             public CustomPropertyNamesContractResolver(bool shareCache = false)
                 : base(shareCache)
             {
@@ -102,11 +99,11 @@ namespace Fr8.Infrastructure.Utilities.Serializers.Json
 
             private string ChangeCase(string s)
             {
-                StringBuilder sb = new StringBuilder();
+                var sb = new StringBuilder();
 
                //NOT USED RIGHT NOW bool addNoUnderscore = true;//applies for the first char, and for chars that follow a capital char (i.e. we don't want "CC" to become "C_C")
-                bool lastCharUpper = true;
-                foreach (char c in s)
+                var lastCharUpper = true;
+                foreach (var c in s)
                 {
 
                     if (char.IsLower(c))
@@ -131,9 +128,6 @@ namespace Fr8.Infrastructure.Utilities.Serializers.Json
                 }
                 return sb.ToString();
             }
-
-
         }
-
     }
 }
