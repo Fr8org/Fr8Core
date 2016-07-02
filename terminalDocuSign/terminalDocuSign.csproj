@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -309,6 +309,12 @@
     <Compile Include="Startup.cs" />
     <Compile Include="StructureMapConfigurationcs.cs" />
     <Compile Include="TerminalData.cs" />
+    <Compile Include="Tests\Activities\Generate_DocuSign_Report_Tests.cs" />
+    <Compile Include="Tests\Activities\Monitor_DocuSignTests.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tests\Activities\Query_DocuSign_Tests.cs" />
+    <Compile Include="Tests\Activities\Search_DocuSign_Tests.cs" />
     <Compile Include="Tests\Fixtures\TerminalFixtureData - DocuSignReport.cs" />
     <Compile Include="Tests\Fixtures\TerminalFixtureData - Folders.cs" />
     <Compile Include="Tests\Infrastructure\DocuSignTemplateTests.cs" />
@@ -358,8 +364,6 @@
     </None>
     <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
     <Content Include="Config\terminalDocuSign\Settings.config.readme" />
-    <Content Include="Config\terminalQuickBooks\Settings.config" />
-    <Content Include="Config\terminalGoogle\Settings.config" />
     <Content Include="Config\HealthMonitor\Settings.config.src" />
     <Content Include="Config\terminalYammer\Settings.Release.config" />
     <Content Include="Config\terminalYammer\Settings.Dev.config" />
@@ -375,7 +379,9 @@
     <Content Include="Config\terminalSalesforce\Settings.Dev.config" />
     <Content Include="Config\terminalSalesforce\Settings.Demo.config" />
     <Content Include="Config\terminalSalesforce\Settings.config" />
+    <Content Include="Config\terminalQuickBooks\Settings.config" />
     <Content Include="Config\terminalPapertrail\Settings.config" />
+    <Content Include="Config\terminalGoogle\Settings.config" />
     <Content Include="Config\terminalFr8Core\Settings.config" />
     <Content Include="Config\terminalExcel\Settings.config" />
     <Content Include="Config\terminalDropbox\Settings.config" />
