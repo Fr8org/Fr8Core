@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using NUnit.Core;
-using HealthMonitor.Configuration;
 using Fr8.Testing.Integration;
 using System.Reflection;
 using System.IO;
@@ -12,7 +10,7 @@ namespace HealthMonitor
 {
     public class NUnitTestRunner
     {
-        string _appInsightsInstrumentationKey;
+        readonly string _appInsightsInstrumentationKey;
 
         public NUnitTestRunner()
         {
@@ -25,7 +23,7 @@ namespace HealthMonitor
         
         public class NUnitTestRunnerFilter : ITestFilter
         {
-            public bool IsEmpty { get { return false; } }
+            public bool IsEmpty => false;
 
             public bool Match(ITest test)
             {
@@ -38,36 +36,12 @@ namespace HealthMonitor
             }
         }
 
-
-        private Type[] GetTestSuiteTypes(bool skipLocal)
-        {
-            var healthMonitorCS = (HealthMonitorConfigurationSection)
-                ConfigurationManager.GetSection("healthMonitor");
-
-            if (healthMonitorCS == null || healthMonitorCS.TestSuites == null)
-            {
-                return null;
-            }
-
-            var testSuites = healthMonitorCS.TestSuites
-                .Select(x => Type.GetType(x.Type))
-                .Where(x => x != null);
-
-            if (skipLocal)
-            {
-                testSuites = testSuites
-                    .Where(x => !x.GetCustomAttributes(typeof(SkipLocalAttribute), false).Any());
-            }
-
-            return testSuites.ToArray();
-        }
-
         private Type[] GetTestSuiteTypesUsingReflection(bool skipLocal)
         {
             var integrationTests = new List<Type>();
             var assemblies = GetTestsAssemblies();
 
-            foreach (Assembly assembly in assemblies)
+            foreach (var assembly in assemblies)
             {
                 var types = assembly.GetTypes().AsEnumerable<Type>();
                 
@@ -109,8 +83,7 @@ namespace HealthMonitor
                 }
                 else
                 {
-                    var assembly = AppDomain.CurrentDomain.GetAssemblies().Where(a =>
-                            AssemblyName.ReferenceMatchesDefinition(assemblyName, a.GetName())).First();
+                    var assembly = AppDomain.CurrentDomain.GetAssemblies().First(a => AssemblyName.ReferenceMatchesDefinition(assemblyName, a.GetName()));
                     assemblies.Add(assembly);
                 }
 
@@ -124,7 +97,7 @@ namespace HealthMonitor
         private IEnumerable<Type> PrepareForRunning(List<Type> integrationTests)
         {
             // remove duplicates
-            HashSet<string> elements = new HashSet<string>();
+            var elements = new HashSet<string>();
             integrationTests.RemoveAll(test => !elements.Add(test.FullName));
 
             // apply proper order
@@ -213,7 +186,7 @@ namespace HealthMonitor
                 }
             }
             
-            using (NUnitTraceListener listener = new NUnitTraceListener(_appInsightsInstrumentationKey))
+            using (var listener = new NUnitTraceListener(_appInsightsInstrumentationKey))
             {
                 var testResult = testSuite.Run(listener, new NUnitTestRunnerFilter());
                

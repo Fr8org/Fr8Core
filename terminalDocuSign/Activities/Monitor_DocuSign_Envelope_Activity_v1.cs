@@ -369,13 +369,6 @@ namespace terminalDocuSign.Actions
             return result;
         }
 
-        private struct DocuSignEvents
-        {
-            public bool EnvelopeSent { get; set; }
-            public bool EnvelopRecieved { get; set; }
-            public bool EnvelopeSigned { get; set; }
-        }
-
         private class ActivityUi
         {
             public TextArea ActivityDescription { get; set; }

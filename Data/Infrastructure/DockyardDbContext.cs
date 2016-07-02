@@ -20,31 +20,23 @@ namespace Data.Infrastructure
     [DbConfigurationType(typeof(Fr8DbConfiguration))]
     public class DockyardDbContext : IdentityDbContext<IdentityUser>, IDBContext
     {
-        public static string DefaultConnectionStringName
-        {
-            get { return "DockyardDB"; }
-        }
+        public static string DefaultConnectionStringName => "DockyardDB";
 
         //This is to ensure compile will break if the reference to sql server is removed
         private static Type m_SqlProvider = typeof(SqlProviderServices);
 
         public class PropertyChangeInformation
         {
-            public String PropertyName;
-            public Object OriginalValue;
-            public Object NewValue;
+            public string PropertyName;
+            public object OriginalValue;
+            public object NewValue;
 
-            public override string ToString()
-            {
-
-                const string displayChange = "[{0}]: [{1}] -> [{2}]";
-                return String.Format(displayChange, PropertyName, OriginalValue, NewValue);
-            }
+            public override string ToString() => $"[{PropertyName}]: [{OriginalValue}] -> [{NewValue}]";
         }
 
         public class EntityChangeInformation
         {
-            public String EntityName;
+            public string EntityName;
             public List<PropertyChangeInformation> Changes;
         }
 
@@ -62,13 +54,12 @@ namespace Data.Infrastructure
             //"Fr8.ConnectionString" is a configuration setting defined in terminalWebRole (Azure Cloud Service) 
             //and required to enable connection string management in order to run integration tests in Production/Staging 
             //environment (FR-2480).  
-            string cs = CloudConfigurationManager.AppSettings.GetSetting("Fr8.ConnectionString");
-            if (String.IsNullOrEmpty(cs))
+            var cs = CloudConfigurationManager.AppSettings.GetSetting("Fr8.ConnectionString");
+            if (string.IsNullOrEmpty(cs))
             {
                 return "name=" + DefaultConnectionStringName;
             }
-            else
-                return cs;
+            return cs;
         }
 
         public List<PropertyChangeInformation> GetEntityModifications<T>(T entity)
@@ -107,38 +98,31 @@ namespace Data.Infrastructure
         {
             ChangeTracker.DetectChanges();
             //Debug code!
-            List<object> adds = ChangeTracker.Entries().Where(e => e.State == EntityState.Added).Select(e => e.Entity).ToList();
-            List<object> modifies = ChangeTracker.Entries().Where(e => e.State == EntityState.Modified).Select(e => e.Entity).ToList();
-            List<object> deletes = ChangeTracker.Entries().Where(e => e.State == EntityState.Deleted).Select(e => e.Entity).ToList();
-            List<object> all = ChangeTracker.Entries().Where(e => e.State != EntityState.Unchanged).Select(e => e.Entity).ToList();
+            var adds = ChangeTracker.Entries().Where(e => e.State == EntityState.Added).Select(e => e.Entity).ToList();
 
-            List<DbEntityEntry<ICreateHook>> addHooks = ChangeTracker.Entries<ICreateHook>().Where(u => u.State.HasFlag(EntityState.Added)).ToList();
-            List<DbEntityEntry<IModifyHook>> modifyHooks = ChangeTracker.Entries<IModifyHook>().Where(e => e.State == EntityState.Modified).ToList();
-            List<DbEntityEntry<IDeleteHook>> deleteHooks = ChangeTracker.Entries<IDeleteHook>().Where(e => e.State == EntityState.Deleted).ToList();
-            List<DbEntityEntry<ISaveHook>> allHooks = ChangeTracker.Entries<ISaveHook>().Where(e => e.State != EntityState.Unchanged).ToList();
+            var addHooks = ChangeTracker.Entries<ICreateHook>().Where(u => u.State.HasFlag(EntityState.Added)).ToList();
+            var modifyHooks = ChangeTracker.Entries<IModifyHook>().Where(e => e.State == EntityState.Modified).ToList();
+            var deleteHooks = ChangeTracker.Entries<IDeleteHook>().Where(e => e.State == EntityState.Deleted).ToList();
+            var allHooks = ChangeTracker.Entries<ISaveHook>().Where(e => e.State != EntityState.Unchanged).ToList();
 
-            foreach (DbEntityEntry<ISaveHook> entity in allHooks)
+            foreach (var entity in allHooks)
             {
                 entity.Entity.BeforeSave();
             }
 
-            foreach (DbEntityEntry<IModifyHook> entity in modifyHooks)
+            foreach (var entity in modifyHooks)
             {
                 entity.Entity.OnModify(entity.OriginalValues, entity.CurrentValues);
             }
 
-            foreach (DbEntityEntry<IDeleteHook> entity in deleteHooks)
+            foreach (var entity in deleteHooks)
             {
                 entity.Entity.OnDelete(entity.OriginalValues);
             }
 
             //the only way we know what is being created is to look at EntityState.Added. But after the savechanges, that will all be erased.
             //so we have to build a little list of entities that will have their AfterCreate hook called.
-            var createdEntityList = new List<DbEntityEntry<ICreateHook>>();
-            foreach (DbEntityEntry<ICreateHook> entity in addHooks)
-            {
-                createdEntityList.Add(entity);
-            }
+            var createdEntityList = addHooks.ToList();
 
             FixForeignKeyIDs(adds);
             foreach (var createdEntity in createdEntityList)
@@ -157,7 +141,7 @@ namespace Data.Infrastructure
             return saveResult;
         }
 
-        public IDbSet<TEntity> Set<TEntity>() where TEntity : class
+        public new IDbSet<TEntity> Set<TEntity>() where TEntity : class
         {
             return base.Set<TEntity>();
         }
@@ -255,14 +239,12 @@ namespace Data.Infrastructure
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-
             modelBuilder.Entity<ContainerDO>().ToTable("Containers");
             modelBuilder.Entity<AttachmentDO>().ToTable("Attachments");
             modelBuilder.Entity<CommunicationConfigurationDO>().ToTable("CommunicationConfigurations");
             modelBuilder.Entity<RecipientDO>().ToTable("Recipients");
             modelBuilder.Entity<EmailAddressDO>().ToTable("EmailAddresses");
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
-            //modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");
             modelBuilder.Entity<InstructionDO>().ToTable("Instructions");
             modelBuilder.Entity<InvitationDO>().ToTable("Invitations");
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
@@ -330,9 +312,6 @@ namespace Data.Infrastructure
                 .WithMany(e => e.Attachments)
                 .HasForeignKey(a => a.EmailID);
 
-            // modelBuilder.Entity<ActionDO>()
-            //     .Property(p => p.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
-
             modelBuilder.Entity<PlanNodeDO>().ToTable("PlanNodes");
 
             modelBuilder.Entity<PlanNodeDO>()
@@ -386,7 +365,5 @@ namespace Data.Infrastructure
 
             base.OnModelCreating(modelBuilder);
         }
-
-        // public System.Data.Entity.DbSet<Data.Entities.ProcessDO> Processes { get; set; }
     }
 }

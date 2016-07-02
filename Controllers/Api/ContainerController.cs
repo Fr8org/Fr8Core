@@ -53,11 +53,33 @@ namespace HubWeb.Controllers
             }
         }
 
+        [Fr8ApiAuthorize]
+        [HttpGet]
+        public IHttpActionResult Get()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                IList<ContainerDO> curContainer = _containerService
+                    .GetByFr8Account(
+                        uow,
+                        _security.GetCurrentAccount(uow),
+                        _security.IsCurrentUserHasRole(Roles.Admin),
+                        null
+                    );
+
+                if (curContainer.Any())
+                {
+                    return Ok(curContainer.Select(Mapper.Map<ContainerDTO>));
+                }
+                return Ok();
+            }
+        }
+
         // Return the Containers accordingly to ID given
         [Fr8ApiAuthorize]
         //[Route("get/{id:guid?}")]
         [HttpGet]
-        public IHttpActionResult Get(Guid? id = null)
+        public IHttpActionResult Get(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -71,12 +93,7 @@ namespace HubWeb.Controllers
 
                 if (curContainer.Any())
                 {
-                    if (id.HasValue)
-                    {
-                        return Ok(Mapper.Map<ContainerDTO>(curContainer.First()));
-                    }
-
-                    return Ok(curContainer.Select(Mapper.Map<ContainerDTO>));
+                    return Ok(Mapper.Map<ContainerDTO>(curContainer.First()));
                 }
                 return Ok();
             }
