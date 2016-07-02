@@ -49,11 +49,8 @@ namespace terminalAsana.Asana.Services
 
         public async Task<TResponse> GetAsync<TResponse>(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)
         {
-            var header = await PrepareHeader(headers);
-             
-
+            var header = await PrepareHeader(headers);             
             var response = await _restfulClient.GetAsync<TResponse>(requestUri, CorrelationId, header);
-
             return response;
         }
 
@@ -62,9 +59,11 @@ namespace terminalAsana.Asana.Services
             throw new NotImplementedException();
         }
 
-        public Task<TResponse> PostAsync<TResponse>(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)
+        public async Task<TResponse> PostAsync<TResponse>(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)
         {
-            throw new NotImplementedException();
+            var header = await PrepareHeader(headers);
+            var response = await _restfulClient.PostAsync<TResponse>(requestUri, CorrelationId, header);
+            return response;
         }
 
         public Task<string> PostAsync(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)
@@ -104,9 +103,11 @@ namespace terminalAsana.Asana.Services
             throw new NotImplementedException();
         }
 
-        public Task<TResponse> PostAsync<TResponse>(Uri requestUri, HttpContent content, string CorrelationId = null, Dictionary<string, string> headers = null)
+        public async Task<TResponse> PostAsync<TResponse>(Uri requestUri, HttpContent content, string CorrelationId = null, Dictionary<string, string> headers = null)
         {
-            throw new NotImplementedException();
+            var header = await PrepareHeader(headers);
+            var response = await _restfulClient.PostAsync<TResponse>(requestUri, content, CorrelationId, header);
+            return response;
         }
 
         public Task<TResponse> PutAsync<TResponse>(Uri requestUri, HttpContent content, string CorrelationId = null, Dictionary<string, string> headers = null)

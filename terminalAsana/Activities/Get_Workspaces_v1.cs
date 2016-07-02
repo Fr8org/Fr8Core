@@ -27,7 +27,7 @@ namespace terminalAsana.Activities
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "Get_Workspaces",
-            Label = "Get Workspaces",
+            Label = "GetAsync Workspaces",
             Category = ActivityCategory.Receivers,
             Version = "1",
             MinPaneWidth = 330,
@@ -37,7 +37,7 @@ namespace terminalAsana.Activities
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        private const string RunTimeCrateLabel = "Get Workspaces";
+        private const string RunTimeCrateLabel = "GetAsync Workspaces";
         private const string ResultFieldLabel = "ActivityResult";
 
 
@@ -72,7 +72,7 @@ namespace terminalAsana.Activities
 
         public override async Task Initialize()
         {
-            var items = _workspaces.GetAll();
+            var items = _workspaces.Get();
             ActivityUI.WorkspacesList.ListItems = items.Select( w => new ListItem() { Key= w.Name, Value = w.Id} ).ToList();
 
             CrateSignaller.MarkAvailableAlways<StandardPayloadDataCM>(RunTimeCrateLabel).AddField("Workspace");

@@ -28,7 +28,7 @@ namespace terminalAsana.Interfaces
         /// Returns the compact records for all workspaces visible to the authorized user.
         /// </summary>
         /// <returns></returns>
-        IEnumerable<AsanaWorkspace> GetAll();
+        IEnumerable<AsanaWorkspace> Get();
 
         /// <summary>
         /// Currently the only field that can be modified for a workspace is its name

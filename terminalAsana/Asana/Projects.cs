@@ -3,36 +3,42 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Logging;
-using Fr8.TerminalBase.Interfaces;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using terminalAsana.Asana.Entities;
 using terminalAsana.Interfaces;
+using Newtonsoft.Json.Linq;
 
 namespace terminalAsana.Asana
 {
-    public class Workspaces : IAsanaWorkspaces
+    public class Projects:IAsanaProjects
     {
         private IAsanaOAuthCommunicator _restClient;
         private IAsanaParameters _asanaParams;
 
-
-        public Workspaces(IAsanaOAuthCommunicator client, IAsanaParameters asanaParams)
+        public Projects(IAsanaOAuthCommunicator client, IAsanaParameters asanaParams)
         {
             _restClient = client;
             _asanaParams = asanaParams;
         }
 
-        public IEnumerable<AsanaWorkspace> Get()
+        public Task<AsanaProject> CreateProject(AsanaProject project)
         {
-            var uri = new Uri(_asanaParams.WorkspacesUrl);
+            throw new NotImplementedException();
+        }
+
+        public Task<AsanaProject> Get(string projectId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<AsanaProject>> Get(AsanaProjectQuery query)
+        {
+            var uri = new Uri(_asanaParams.ProjectsUrl);
             //_intergration.ApiCall()
             try
             {
-                var response = Task.Run(() => _restClient.GetAsync<JObject>(uri)).Result;
-                var result = response.GetValue("data").ToObject<IEnumerable<AsanaWorkspace>>();
+                var response = await _restClient.GetAsync<JObject>(uri);
+                var result = response.GetValue("data").ToObject<IEnumerable<AsanaProject>>();
                 return result;
             }
             catch (Exception exp)
@@ -40,35 +46,26 @@ namespace terminalAsana.Asana
                 Logger.LogError($"terminalAsana error = {exp.Message}");
                 throw;
             }
+
+
         }
 
-        public bool UpdateWorkspace(AsanaWorkspace workspace)
+        public Task<AsanaProject> Update(AsanaProject project)
         {
             throw new NotImplementedException();
         }
 
-        public AsanaWorkspace Get(int id)
+        public Task Delete(string projectId)
         {
             throw new NotImplementedException();
         }
 
-
-        public AsanaWorkspace Update(AsanaWorkspace workspace)
+        public Task<IEnumerable<AsanaTask>> GetTasks(string projectId)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<string> Search(WorkspaceSearchQuery query)
-        {
-            throw new NotImplementedException();
-        }
-
-        public AsanaUser AddUser(AsanaUser user)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool RemoveUser(AsanaUser user)
+        public Task<IEnumerable<AsanaSection>> GetSections(string projectId)
         {
             throw new NotImplementedException();
         }

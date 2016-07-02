@@ -26,7 +26,9 @@ namespace terminalAsana.Activities
     public class Post_Comment_v1 : AsanaOAuthBaseActivity<Post_Comment_v1.ActivityUi>
     {
         private IAsanaWorkspaces    _workspaces;
+        private IAsanaProjects      _projects;
         private IAsanaTasks         _tasks;
+        private IAsanaStories       _stories;
 
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
@@ -51,6 +53,7 @@ namespace terminalAsana.Activities
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public DropDownList Workspaces { get; set; }
+            public DropDownList Projects { get; set; }
             public DropDownList Tasks { get; set; }
             public TextSource   Comment { get; set; }
 
@@ -64,6 +67,15 @@ namespace terminalAsana.Activities
                     ListItems = new List<ListItem>(),
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
+                Projects = new DropDownList
+                {
+                    Label = "Select Project",
+                    Name = nameof(Projects),
+                    Required = true,
+                    ListItems = new List<ListItem>(),
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
+                };
+
                 Tasks = new DropDownList
                 {
                     Label = "Select Task",
@@ -84,7 +96,7 @@ namespace terminalAsana.Activities
                         RequestUpstream = true
                     }
                 };
-                Controls = new List<ControlDefinitionDTO> { Workspaces, Tasks, Comment };
+                Controls = new List<ControlDefinitionDTO> { Workspaces, Projects, Tasks, Comment };
             }
         }
 
@@ -100,13 +112,14 @@ namespace terminalAsana.Activities
 
             var asanaParams = new AsanaParametersService();
             _workspaces = new Workspaces(OAuthCommunicator, asanaParams);
+            _projects = new Projects(OAuthCommunicator, asanaParams);
             _tasks = new Tasks(OAuthCommunicator, asanaParams);
+            _stories = new Stories(OAuthCommunicator, asanaParams);
         }
-
 
         public override Task Initialize()
         {
-            var workspaces = _workspaces.GetAll();
+            var workspaces = _workspaces.Get();
             ActivityUI.Workspaces.ListItems = workspaces.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();
             
             //var resultField = new FieldDTO(ResultFieldLabel, AvailabilityType.RunTime);
@@ -114,16 +127,25 @@ namespace terminalAsana.Activities
             return Task.FromResult(0);
         }
 
-        public override Task FollowUp()
+        public override async Task FollowUp()
         {
             if (!ActivityUI.Workspaces.Value.IsNullOrWhiteSpace())
             {
-                var tasks = _tasks.GetAsync(new AsanaTaskQuery() {Workspace = ActivityUI.Workspaces.Value}).Result;
+                var projects = await _projects.Get(new AsanaProjectQuery() {Workspace = ActivityUI.Workspaces.Value});
+                ActivityUI.Projects.ListItems = projects.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();
+
+                IEnumerable<AsanaTask> tasks;
+                if (!ActivityUI.Projects.Value.IsNullOrWhiteSpace())
+                {
+                    tasks = await _tasks.GetAsync(new AsanaTaskQuery() { Project = ActivityUI.Projects.Value });
+                }
+                else
+                {
+                    tasks = await _tasks.GetAsync(new AsanaTaskQuery() { Workspace = ActivityUI.Workspaces.Value });
+                }
+                
                 ActivityUI.Tasks.ListItems = tasks.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();
-
             }
-
-            return Task.FromResult(0);
         }
 
         protected override Task Validate()
@@ -158,24 +180,25 @@ namespace terminalAsana.Activities
             return true;
         }
 
-        public override Task Run()
+        public override async Task Run()
         {
             if (!IsValid())
             {
                 RaiseError("Invalid input was selected/entered", ErrorType.Generic,
                     ActivityErrorCode.DESIGN_TIME_DATA_INVALID, MyTemplate.Name, MyTemplate.Terminal.Name);
-
             }
             else
             {
-                
+                var taskId = ActivityUI.Tasks.Value;
+                var payloadMessage = ActivityUI.Comment.GetValue(Payload);
+
+                var comment = await _stories.PostCommentAsync(taskId, payloadMessage);
 
                 //var resultField = new KeyValueDTO(ResultFieldLabel, result.ToString(CultureInfo.InvariantCulture));
                 //var resultCrate = Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(resultField));
                 //Payload.Add(resultCrate);
-                
             }
-            return Task.FromResult(0);
+            
         }
     }
 }

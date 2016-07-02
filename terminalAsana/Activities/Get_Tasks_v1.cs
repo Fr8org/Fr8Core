@@ -27,11 +27,13 @@ namespace terminalAsana.Activities
         private IAsanaWorkspaces _workspaces;
         private IAsanaUsers _users;
         private IAsanaTasks _tasks;
+        private IAsanaProjects _projects;
+
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "Get_Tasks",
-            Label = "Get Tasks",
+            Label = "GetAsync Tasks",
             Category = ActivityCategory.Receivers,
             Version = "1",
             MinPaneWidth = 330,
@@ -42,7 +44,7 @@ namespace terminalAsana.Activities
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
         
 
-        private const string RunTimeCrateLabel = "Get Tasks";
+        private const string RunTimeCrateLabel = "GetAsync Tasks";
         private const string ResultFieldLabel = "ActivityResult";
 
 
@@ -50,7 +52,8 @@ namespace terminalAsana.Activities
         {
             public DropDownList WorkspacesList;
             public DropDownList UsersList;
-            
+            public DropDownList ProjectsList;
+
             public ActivityUi()
             {
                 WorkspacesList = new DropDownList()
@@ -60,6 +63,15 @@ namespace terminalAsana.Activities
                     ListItems = new List<ListItem>(),
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig },
                 };
+
+                ProjectsList = new DropDownList()
+                {
+                    Label = "Projects in workspace",
+                    Name = nameof(ProjectsList),
+                    ListItems = new List<ListItem>(),
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
+                };
+
                 UsersList = new DropDownList()
                 {
                     Label = "Users in workspace",
@@ -68,7 +80,7 @@ namespace terminalAsana.Activities
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
 
-                Controls = new List<ControlDefinitionDTO>(){ WorkspacesList, UsersList };
+                Controls = new List<ControlDefinitionDTO>(){ WorkspacesList, UsersList, ProjectsList };
             }
 
 
@@ -87,14 +99,15 @@ namespace terminalAsana.Activities
             _workspaces = new Workspaces(OAuthCommunicator, asanaParams);
             _users = new Users(OAuthCommunicator, asanaParams);
             _tasks = new Tasks(OAuthCommunicator, asanaParams);
+            _projects = new Projects(OAuthCommunicator, asanaParams);
         }
 
         public override async Task Initialize()
         {
-            var workspaces = _workspaces.GetAll();
+            var workspaces = _workspaces.Get();
             ActivityUI.WorkspacesList.ListItems = workspaces.Select( w => new ListItem() { Key= w.Name, Value = w.Id} ).ToList();
 
-            CrateSignaller.MarkAvailableAlways<StandardPayloadDataCM>(RunTimeCrateLabel)
+            CrateSignaller.MarkAvailableAlways<KeyValueListCM>(RunTimeCrateLabel)
                 .AddField(new FieldDTO("Task name", AvailabilityType.Always))
                 .AddField(new FieldDTO("Task id",AvailabilityType.Always));
 
@@ -106,6 +119,10 @@ namespace terminalAsana.Activities
             {
                 var users =  await _users.GetUsersAsync(ActivityUI.WorkspacesList.Value);
                 ActivityUI.UsersList.ListItems = users.Select(w => new ListItem() {Key = w.Name, Value = w.Id}).ToList();
+
+                var projects =
+                    await _projects.Get(new AsanaProjectQuery() {Workspace = ActivityUI.WorkspacesList.Value });
+                ActivityUI.ProjectsList.ListItems = projects.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();
             }
             
             //Crate
@@ -120,13 +137,11 @@ namespace terminalAsana.Activities
             if (ActivityUI.WorkspacesList.Value.IsNullOrWhiteSpace())
             {
                 ValidationManager.SetError("Workspace should not be empty", nameof(ActivityUI.WorkspacesList));
-             
             }
 
             if (ActivityUI.UsersList.Value.IsNullOrWhiteSpace())
             {
-                ValidationManager.SetError("Task should not be empty", nameof(ActivityUI.UsersList));
-             
+                ValidationManager.SetError("User should not be empty", nameof(ActivityUI.UsersList));
             }
             return Task.FromResult(0);
         }
@@ -144,28 +159,26 @@ namespace terminalAsana.Activities
                 var query = new AsanaTaskQuery()
                 {
                     Workspace = ActivityUI.WorkspacesList.Value,
-                    Assignee = ActivityUI.UsersList.Value
+                    Assignee = ActivityUI.UsersList.Value,
+                    Project = ActivityUI.ProjectsList.Value
                 };
 
                 var tasks = await _tasks.GetAsync(query);
 
-                var payloadObj = tasks.Select(t => new KeyValueDTO("Task name", t.Name));
-                
+                var payloadObjNames = tasks.Select(t => new KeyValueDTO("Task name", t.Name));
+                var payloadObjIds = tasks.Select(t => new KeyValueDTO("Task id", t.Id));
 
-                //foreach (var task in tasks)
-                //{
-                //    var taskName = new KeyValueDTO("Task name",task.Name);
-
-                //}
-
-                var payload = Crate<StandardPayloadDataCM>.FromContent(    RunTimeCrateLabel,
-                                                                    new StandardPayloadDataCM(payloadObj),
+                var payloadNames = Crate<KeyValueListCM>.FromContent(    RunTimeCrateLabel,
+                                                                    new KeyValueListCM(payloadObjNames),
                                                                     AvailabilityType.Always);
 
-                Payload.Add(payload);
+                var payloadIds = Crate<KeyValueListCM>.FromContent(RunTimeCrateLabel,
+                                                                    new KeyValueListCM(payloadObjIds),
+                                                                    AvailabilityType.Always);
+
+                Payload.Add(payloadNames);
+                Payload.Add(payloadIds);
             }
-
-
         }                               
         
     }

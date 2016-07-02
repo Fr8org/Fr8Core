@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Fr8.Infrastructure.Utilities.Logging;
 using Newtonsoft.Json.Linq;
 using terminalAsana.Asana.Entities;
 using terminalAsana.Interfaces;
@@ -43,23 +44,30 @@ namespace terminalAsana.Asana.Services
 
         public async Task<IEnumerable<AsanaTask>> GetAsync(AsanaTaskQuery query)
         {
-            var url = _asanaParams.TasksUrl + "?";
+            var baseUrl = _asanaParams.TasksUrl + "?";
+            var url = baseUrl;
             url = query.Workspace != null ? url + $"workspace={query.Workspace}&": url;
             url = query.Assignee != null  ? url + $"assignee={query.Assignee}&" : url + $"assignee=me&";
-            url = query.CompletedSince != null  ? url + $"completed_since={query.Workspace}&" : url;
-            url = query.ModifiedSince != null ? url + $"modified_since={query.Workspace}&" : url;
-            url = query.Project != null ? url + $"project={query.Workspace}&" : url;
-            url = query.Tag != null ? url + $"tag={query.Workspace}" : url;
+            url = query.Project != null ? baseUrl + $"project={query.Project}&" : url;
+            url = query.Tag != null ? baseUrl + $"tag={query.Tag}" : url;
+            url = query.CompletedSince != null  ? url + $"completed_since={query.CompletedSince}&" : url;
+            url = query.ModifiedSince != null ? url + $"modified_since={query.ModifiedSince}&" : url;
+            
 
             var uri = new Uri(url);
-            
-            //_intergration.ApiCall()
 
-            var response = Task.Run(() => _restClient.GetAsync<JObject>(uri)).Result;
-            var result = response.GetValue("data").ToObject<IEnumerable<AsanaTask>>();
-
-            return result;
-            
+            try
+            {
+                //_intergration.ApiCall()
+                var response = await _restClient.GetAsync<JObject>(uri);
+                var result = response.GetValue("data").ToObject<IEnumerable<AsanaTask>>();
+                return result;
+            }
+            catch (Exception exp)
+            {
+                Logger.LogError($"terminalAsana error = {exp.Message}");
+                throw;
+            }
         }
 
         public Task<IEnumerable<AsanaTask>> GetAllSubtasksAsync(string taskId)

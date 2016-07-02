@@ -178,14 +178,17 @@
     <Compile Include="Asana\Entities\AsanaOrganization.cs" />
     <Compile Include="Asana\Entities\AsanaProject.cs" />
     <Compile Include="Asana\Entities\AsanaProjectInsertion.cs" />
+    <Compile Include="Asana\Entities\AsanaProjectQuery.cs" />
     <Compile Include="Asana\Entities\AsanaProjectStatus.cs" />
     <Compile Include="Asana\Entities\AsanaSection.cs" />
     <Compile Include="Asana\Entities\AsanaStories.cs" />
     <Compile Include="Asana\Entities\AsanaTag.cs" />
     <Compile Include="Asana\Entities\AsanaTask.cs" />
     <Compile Include="Asana\Entities\AsanaTaskQuery.cs" />
+    <Compile Include="Asana\Projects.cs" />
     <Compile Include="Asana\Services\AsanaCommunicatorService.cs" />
     <Compile Include="Asana\OAuthToken.cs" />
+    <Compile Include="Asana\Stories.cs" />
     <Compile Include="Asana\Tasks.cs" />
     <Compile Include="Asana\Users.cs" />
     <Compile Include="Asana\Workspaces.cs" />
@@ -202,6 +205,8 @@
     <Compile Include="Interfaces\IAsanaEntity.cs" />
     <Compile Include="Interfaces\IAsanaParameters.cs" />
     <Compile Include="Interfaces\IAsanaOAuth.cs" />
+    <Compile Include="Interfaces\IAsanaProjects.cs" />
+    <Compile Include="Interfaces\IAsanaStories.cs" />
     <Compile Include="Interfaces\IAsanaTasks.cs" />
     <Compile Include="Interfaces\IAsanaUsers.cs" />
     <Compile Include="Interfaces\IAsanaWorkspaces.cs" />
