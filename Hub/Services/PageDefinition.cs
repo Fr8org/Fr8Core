@@ -39,7 +39,6 @@ namespace Hub.Services
             pageDefinitionDO.PageName = GeneratePageNameFromTags(pageDefinitionDO);
             if (pageDefinitionDO.Id > 0)
             {
-
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     var pageDefinitionToUpdate = uow.PageDefinitionRepository.GetByKey(pageDefinitionDO.Id);
@@ -57,8 +56,11 @@ namespace Hub.Services
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    uow.PageDefinitionRepository.Add(pageDefinitionDO);
-                    uow.SaveChanges();
+                    if (uow.PageDefinitionRepository.FindOne(x => x.PageName.Equals(pageDefinitionDO.PageName)) == null)
+                    {
+                        uow.PageDefinitionRepository.Add(pageDefinitionDO);
+                        uow.SaveChanges();
+                    }
                 }
             }
         }
