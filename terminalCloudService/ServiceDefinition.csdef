@@ -303,6 +303,7 @@
       <InputEndpoint name="terminalFacebook" protocol="http" port="22666" />
       <InputEndpoint name="terminalBox" protocol="http" port="54642" />
       <InputEndpoint name="terminalTelegram" protocol="http" port="59022" />
+      <InputEndpoint name="terminalInstagram" protocol="http" port="10109" />
       <InputEndpoint name="PlanDirectory" protocol="http" port="64879" />
     </Endpoints>
     <Imports>

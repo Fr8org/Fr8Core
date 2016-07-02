@@ -27,6 +27,7 @@
       <Setting name="terminalFacebook.TerminalEndpoint" value="" />
       <Setting name="terminalBox.TerminalEndpoint" value="" />
       <Setting name="terminalTelegram.TerminalEndpoint" value="" />
+      <Setting name="terminalInstagram.TerminalEndpoint" value="" />
    	  <Setting name="OutboundUserName" value="sendgrid_dev_dockyard" />
       <Setting name="OutboundUserPassword" value="thales123" />
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.Enabled" value="true" />
