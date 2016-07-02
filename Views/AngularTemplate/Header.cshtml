@@ -157,6 +157,20 @@
                             <li><a href="/Documentation/RestAPIGuide.html">Fr8 Development Resources - DocuSign</a></li>
                             <li><a ui-sref="manifestregistry">Manage Manifest Registry</a></li>
                             <li><a ui-sref="terminals">Manage Terminals List</a></li>
+                            <li class="dropdown-submenu">
+                                <a class="dropdown-toggle">API</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="/swagger">Hub API</a></li>
+                                    <li class="dropdown-submenu">
+                                        <a  class="dropdown-toggle">Terminals API</a>
+                                        <ul class="dropdown-menu">
+                                            <li ng-repeat="terminal in terminals">
+                                                <a href="{{terminal.endpoint}}/swagger">{{terminal.name}}</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
                         </ul>
                     </li>
 
