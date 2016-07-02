@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
-using Hub.Services;
-using HubWeb;
 using HubWeb.Controllers;
 using HubWeb.Controllers.Api;
 using Microsoft.Owin.Hosting;
@@ -13,14 +11,9 @@ using System.Web.Http.Controllers;
 using System.Net.Http;
 using System.Linq;
 using Microsoft.Owin.Security.DataProtection;
-using Microsoft.Owin.Security.Cookies;
-using Microsoft.AspNet.Identity;
-using Microsoft.Owin;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
-using System.Threading.Tasks;
-using System.Threading;
 
 namespace HubWeb
 {
@@ -28,18 +21,6 @@ namespace HubWeb
     {
         public class SelfHostStartup
         {
-            private static bool IsJsonRequest(IOwinRequest request)
-            {
-                IReadableStringCollection query = request.Query;
-                if ((query != null) && (query["X-Requested-With"] == "XMLHttpRequest"))
-                {
-                    return true;
-                }
-                IHeaderDictionary headers = request.Headers;
-                return ((headers != null) && ((headers["X-Requested-With"] == "XMLHttpRequest") || (headers["Content-Type"] == "application/json")));
-            }
-
-
             public void Configuration(IAppBuilder app)
             {
                 Fr8.Infrastructure.Utilities.Server.ServerPhysicalPath = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
@@ -79,11 +60,9 @@ namespace HubWeb
                     typeof(ContainersController),
                     typeof(DocumentationController),
                     typeof(EventsController),
-                    //typeof(FieldController),
                     typeof(FilesController),
                     typeof(ManifestsController),
                     typeof(ReportController),
-                    // typeof(PlanTemplatesController),
                     typeof(PlanNodesController),
                     typeof(PlansController),
                     typeof(TerminalsController),

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Mvc;
 using Microsoft.Owin;
 using Microsoft.Owin.Hosting;
 using Owin;
@@ -20,10 +19,8 @@ using Hub.Managers;
 using Hub.Security;
 using Hangfire;
 using Hangfire.StructureMap;
-using Hub.ModelBinders;
 using Hub.StructureMap;
 using HubWeb.App_Start;
-using Segment;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 

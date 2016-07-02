@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Fr8.Infrastructure.Data.Constants;
-using Fr8.Infrastructure.Data.Control;
 using Fr8.Infrastructure.Data.Crates;
-using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
-using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using Fr8.Testing.Unit;
