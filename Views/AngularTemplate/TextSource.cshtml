@@ -13,10 +13,8 @@
         </div>
         <div style="padding-left: 20px;" >
             <input ng-click="onUpStreamChange(field.name)"  ng-checked="field.valueSource=='upstream'" name="pca_chk_ts_{{uniqueDirectiveId}}" type="radio" id="pca__chk{{field.$$hashKey}}__crate{{uniqueDirectiveId}}" value="upstream" ng-model="field.valueSource" stop-click-propagation/>
-            <label for="pca__chk{{field.$$hashKey}}__crate{{uniqueDirectiveId}}" stop-click-propagation>use this incoming value:<a href="/documentation/UpstreamCrates.html" class="documentation-link"><i class="fa fa-question-circle"></i></a></label>
-            <div>
+            <label for="pca__chk{{field.$$hashKey}}__crate{{uniqueDirectiveId}}" stop-click-propagation>use</label>
                 <upstream-field-chooser-button ng-click="field.valueSource='upstream'" class="upstream-field-chooser" field="field" current-action="currentAction" change='onUpStreamChange'></upstream-field-chooser-button>
-            </div>
         </div>
     </div>
 </div>
