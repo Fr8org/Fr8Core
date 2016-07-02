@@ -20,9 +20,17 @@ namespace HubTests.Controllers.Api
             Assert.IsTrue(authAttribute.Any());
         }
 
-        protected void ShouldHaveFr8ApiAuthorizeOnFunction(Type controllerType, string functionName)
+        protected void ShouldHaveFr8ApiAuthorizeOnFunction(Type controllerType, string functionName, Type[] types = null)
         {
-            var methodInfo = controllerType.GetMethod(functionName);
+            MethodInfo methodInfo;
+            if (types == null)
+            {
+                methodInfo = controllerType.GetMethod(functionName);
+            }
+            else
+            {
+                methodInfo = controllerType.GetMethod(functionName, types);
+            }
             var authAttribute = methodInfo.GetCustomAttributes(typeof(Fr8ApiAuthorizeAttribute), true);
             Assert.IsTrue(authAttribute.Any());
         }
