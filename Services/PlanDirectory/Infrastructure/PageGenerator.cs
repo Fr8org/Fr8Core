@@ -8,27 +8,25 @@ using PlanDirectory.CategoryPages;
 
 namespace PlanDirectory.Infrastructure
 {
-    public class PlanCategoryPageGenerator : IPageGenerator
+    public class PageGenerator : IPageGenerator
     {
         private const string TagsSeparator = "-";
         private const string PageExtension = ".html";
 
         private readonly IPageDefinitionRepository _pageDefinitionRepository;
 
-        public PlanCategoryPageGenerator(IPageDefinitionRepository pageDefinitionRepository)
+        public PageGenerator(IPageDefinitionRepository pageDefinitionRepository)
         {
             _pageDefinitionRepository = pageDefinitionRepository;
         }
 
-        public Task Generate(IEnumerable<TemplateTag> tags, PlanTemplateCM planTemplate)
+        public Task Generate(TemplateTagStorage storage, PlanTemplateCM planTemplate)
         {
             var path = @"D:\\Dev\\fr8company\\Services\\PlanDirectory\\CategoryPages\\";
 
-            foreach (var tag in tags)
+            foreach (var tag in storage.WebServiceTemplateTags)
             {
-                if (!(tag is WebServiceTemplateTag))
-                    continue;
-                var webServiceTemplateTag = tag as WebServiceTemplateTag;
+                var webServiceTemplateTag = tag;
                 var fileName = GeneratePageNameFromTags(webServiceTemplateTag.TagsWithIcons.Select(x => x.Key));
                 var template = new PlanCategoryTemplate();
                 template.Session = new Dictionary<string, object>

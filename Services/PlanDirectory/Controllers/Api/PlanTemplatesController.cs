@@ -35,6 +35,7 @@ namespace PlanDirectory.Controllers.Api
             _searchProvider = ObjectFactory.GetInstance<ISearchProvider>();
             _tagGenerator = ObjectFactory.GetInstance<ITagGenerator>();
             _pageGenerator = ObjectFactory.GetInstance<IPageGenerator>();
+            _pageDefinition = ObjectFactory.GetInstance<IPageDefinition>();
         }
 
         [HttpPost]
@@ -48,21 +49,21 @@ namespace PlanDirectory.Controllers.Api
 
                 var planTemplateCM = await _planTemplate.CreateOrUpdate(fr8AccountId, dto);
 
-                var tags = await _tagGenerator.GetTags(planTemplateCM, fr8AccountId);
+                var storage = await _tagGenerator.GetTags(planTemplateCM, fr8AccountId);
 
                 await _searchProvider.CreateOrUpdate(planTemplateCM);
 
-                var tagsString = string.Join(", ", tags.Select(x => x.Title));
+                var tagsTitles = storage.WebServiceTemplateTags.Select(x => x.Title).ToList(); 
 
                 var pd = new PageDefinitionDO()
                 {
-                    Title = tagsString,
-                    Tags = tags.Select(x=>x.Title)
+                    Title = string.Join(", ", tagsTitles),
+                    Tags = tagsTitles
                 };
 
                 _pageDefinition.CreateOrUpdate(pd);
 
-                await _pageGenerator.Generate(tags, planTemplateCM);
+                await _pageGenerator.Generate(storage, planTemplateCM);
 
                 return Ok();
             });

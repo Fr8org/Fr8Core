@@ -6,6 +6,6 @@ namespace PlanDirectory.Infrastructure
 {
     public interface IPageGenerator
     {
-        Task Generate(IEnumerable<TemplateTag> tags, PlanTemplateCM planTemplate);
+        Task Generate(TemplateTagStorage storage, PlanTemplateCM planTemplate);
     }
 }
