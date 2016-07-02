@@ -21,7 +21,7 @@ namespace PlanDirectory.Infrastructure
                 For<IPlanTemplate>().Use<PlanTemplate>();
                 For<ISearchProvider>().Use<SearchProvider>();
                 For<ITagGenerator>().Use<TagGenerator>();
-                For<IPageGenerator>().Use<PlanCategoryPageGenerator>();
+                For<IPageGenerator>().Use<PageGenerator>();
                 For<IPageDefinition>().Use<PageDefinition>();
                 For<IPageDefinitionRepository>().Use<PageDefinitionRepository>();
                 For<IHubCommunicator>().Use(

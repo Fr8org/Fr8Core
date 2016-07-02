@@ -2,6 +2,7 @@
 using Data.Entities;
 using Data.Repositories;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 using Moq;
 using NUnit.Framework;
 using PlanDirectory.Infrastructure;
@@ -41,9 +42,12 @@ namespace terminalIntegrationTests.Unit
             {
                 pd1
             });
+            var storage = new TemplateTagStorage();
+            storage.WebServiceTemplateTags.Add(tag1);
+            storage.WebServiceTemplateTags.Add(tag2);
+            var sut = new PageGenerator(pageDefinitionRepositoryStub.Object);
 
-            var sut = new PlanCategoryPageGenerator(pageDefinitionRepositoryStub.Object);
-            //sut.Generate(new[] { tag1, tag2 });
+            sut.Generate(storage, new PlanTemplateCM() { Name = "foo", Description = null });
         }
     }
 }

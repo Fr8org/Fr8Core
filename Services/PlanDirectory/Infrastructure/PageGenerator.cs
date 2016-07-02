@@ -35,7 +35,7 @@ namespace PlanDirectory.Infrastructure
                     ["Tags"] = webServiceTemplateTag.TagsWithIcons,
                     ["RelatedPlans"] = new Dictionary<string, string>()
                     {
-                        {planTemplate.Name, planTemplate.Description }
+                        { planTemplate.Name, planTemplate.Description ?? planTemplate.Name }
                     }
                 };
                 // Must call this to transfer values.

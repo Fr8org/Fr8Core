@@ -58,7 +58,8 @@ namespace PlanDirectory.Controllers.Api
                 var pd = new PageDefinitionDO()
                 {
                     Title = string.Join(", ", tagsTitles),
-                    Tags = tagsTitles
+                    Tags = tagsTitles,
+                    Type = "1"
                 };
 
                 _pageDefinition.CreateOrUpdate(pd);
