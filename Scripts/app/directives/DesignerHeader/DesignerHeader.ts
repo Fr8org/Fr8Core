@@ -116,11 +116,6 @@ module dockyard.directives.designerHeader {
                         }
                     });
                 };
-                $scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionUpdated], (event: ng.IAngularEvent, data: any) => asdasd()));
-
-                var asdasd = function () {
-                    console.log("asdasd");
-                }
                 $scope.resetPlanStatus = () => {
                     var subPlan = $scope.plan.subPlans[0];
                     var initialActivity: interfaces.IActivityDTO = subPlan ? subPlan.activities[0] : null;

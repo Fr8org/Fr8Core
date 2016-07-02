@@ -360,6 +360,10 @@ module dockyard.directives.paneConfigureAction {
                 if (this.$scope.plan.planState === 2) {
                     this.$scope.plan.planState = 1;
                 }
+                // the save request is sent, so we can run the plan
+                if (this.$scope.plan.planState === 3) {
+                    this.$scope.plan.planState = 1;
+                }
             }
 
         private getControlEventHandler(control: model.ControlDefinitionDTO, eventName: string) {
@@ -577,6 +581,7 @@ module dockyard.directives.paneConfigureAction {
             }
 
             this.$timeout.cancel(this.timeoutPromise);  //does nothing, if timeout alrdy done
+            this.$scope.plan.planState = 3; // a control value is changed, the plan should not be run after the change request is sent to server
             this.timeoutPromise = this.$timeout(() => {   //Set timeout to prevent sending more than one save requests for changes lasts less than 1 sec.
                 this.$scope.onConfigurationChanged(newValue, oldValue);
             }, 1000);
