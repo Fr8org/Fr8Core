@@ -45,9 +45,9 @@ namespace terminalIntegrationTests.Unit
             var storage = new TemplateTagStorage();
             storage.WebServiceTemplateTags.Add(tag1);
             storage.WebServiceTemplateTags.Add(tag2);
-            var sut = new PageGenerator(pageDefinitionRepositoryStub.Object);
+            //var sut = new PageGenerator(pageDefinitionRepositoryStub.Object);
 
-            sut.Generate(storage, new PlanTemplateCM() { Name = "foo", Description = null });
+            //sut.Generate(storage, new PlanTemplateCM() { Name = "foo", Description = null });
         }
     }
 }

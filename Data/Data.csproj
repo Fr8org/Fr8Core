@@ -721,6 +721,10 @@
     <Compile Include="Migrations\201606300937169_AddPageDefinition.Designer.cs">
       <DependentUpon>201606300937169_AddPageDefinition.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201607021403344_AddPlanTemplatesReferenceToPageDefinitions.cs" />
+    <Compile Include="Migrations\201607021403344_AddPlanTemplatesReferenceToPageDefinitions.Designer.cs">
+      <DependentUpon>201607021403344_AddPlanTemplatesReferenceToPageDefinitions.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -1333,6 +1337,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606300937169_AddPageDefinition.resx">
       <DependentUpon>201606300937169_AddPageDefinition.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607021403344_AddPlanTemplatesReferenceToPageDefinitions.resx">
+      <DependentUpon>201607021403344_AddPlanTemplatesReferenceToPageDefinitions.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

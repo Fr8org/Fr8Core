@@ -49,6 +49,7 @@ namespace Hub.Services
                     pageDefinitionToUpdate.Type = pageDefinitionDO.Type;
                     pageDefinitionToUpdate.Url = pageDefinitionDO.Url;
                     pageDefinitionToUpdate.LastUpdated = DateTimeOffset.Now;
+                    pageDefinitionToUpdate.PlanTemplatesIds.AddRange(pageDefinitionDO.PlanTemplatesIds);
                     uow.SaveChanges();
                 }
             }
@@ -56,9 +57,23 @@ namespace Hub.Services
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    if (uow.PageDefinitionRepository.FindOne(x => x.PageName.Equals(pageDefinitionDO.PageName)) == null)
+                    var existedPd =
+                        uow.PageDefinitionRepository.FindOne(x => x.PageName.Equals(pageDefinitionDO.PageName));
+                    if (existedPd == null)
                     {
                         uow.PageDefinitionRepository.Add(pageDefinitionDO);
+                        uow.SaveChanges();
+                    }
+                    else
+                    {
+                        existedPd.Title = pageDefinitionDO.Title;
+                        existedPd.Description = pageDefinitionDO.Description;
+                        existedPd.PageName = pageDefinitionDO.PageName;
+                        existedPd.Tags = pageDefinitionDO.Tags;
+                        existedPd.Type = pageDefinitionDO.Type;
+                        existedPd.Url = pageDefinitionDO.Url;
+                        existedPd.LastUpdated = DateTimeOffset.Now;
+                        existedPd.PlanTemplatesIds.AddRange(pageDefinitionDO.PlanTemplatesIds);
                         uow.SaveChanges();
                     }
                 }

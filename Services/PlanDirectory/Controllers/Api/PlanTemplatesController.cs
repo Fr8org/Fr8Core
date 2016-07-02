@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -53,18 +54,19 @@ namespace PlanDirectory.Controllers.Api
 
                 await _searchProvider.CreateOrUpdate(planTemplateCM);
 
-                var tagsTitles = storage.WebServiceTemplateTags.Select(x => x.Title).ToList(); 
-
-                var pd = new PageDefinitionDO()
+                var pageDefinitions = new List<PageDefinitionDO>();
+                foreach (var tag in storage.WebServiceTemplateTags)
                 {
-                    Title = string.Join(", ", tagsTitles),
-                    Tags = tagsTitles,
-                    Type = "1"
-                };
+                    var pd = new PageDefinitionDO()
+                    {
+                        Title = tag.Title,
+                        Tags = tag.TagsWithIcons.Select(x => x.Key),
+                        Type = "WebService"
+                    };
+                    pageDefinitions.Add(pd);
+                }
 
-                _pageDefinition.CreateOrUpdate(pd);
-
-                await _pageGenerator.Generate(storage, planTemplateCM);
+                await _pageGenerator.Generate(storage, planTemplateCM, pageDefinitions, fr8AccountId);
 
                 return Ok();
             });

@@ -44,5 +44,15 @@ namespace Data.Entities
 
         public string Description { get; set; }
         public string PageName { get; set; }
+
+        [NotMapped]
+        public List<string> PlanTemplatesIds { get; set; }
+
+        [Column("PlanTemplatesIds")]
+        public string PlanTemplatesString
+        {
+            get { return PlanTemplatesIds != null && PlanTemplatesIds.Any() ? string.Join(",", PlanTemplatesIds.Distinct()) : string.Empty; }
+            set { PlanTemplatesIds = value?.Split(',').ToList(); }
+        }
     }
 }
