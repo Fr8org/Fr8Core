@@ -85,11 +85,6 @@ namespace terminalStatX.Activities
 
         public override async Task Initialize()
         {
-            Storage.Remove<EventSubscriptionCM>();
-            Storage.Add(CrateManager.CreateStandardEventSubscriptionsCrate(
-                "Standard Event Subscriptions",
-                "StatX", "StatXValueChange"));
-
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel);
 
             ActivityUI.ExistingGroupsList.ListItems = (await _statXIntegration.GetGroups(StatXUtilities.GetStatXAuthToken(AuthorizationToken)))

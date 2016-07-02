@@ -63,7 +63,6 @@ define it in web.config.
   <add key="CustomerSupportEmail" value="support@yourdomain.com" />
   <add key="EmailAddress_GeneralInfo" value="info@yourdomain.com" />
   <add key="DocumentationFr8Site_SMSLink" value="http://documentation.fr8.co/sms" />
-  <add key="log4net.Internal.Debug" value="true" />
 
   <!-- Terminal Secret-Id -->
   <!-- For production use be sure to change the secrets and keep the new secrets confidential. Don't change Ids -->
