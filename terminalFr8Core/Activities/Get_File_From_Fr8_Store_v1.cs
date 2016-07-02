@@ -30,16 +30,6 @@ namespace terminalFr8Core.Actions
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        private MemoryStream GenerateStreamFromString(string s)
-        {
-            var stream = new MemoryStream();
-            var writer = new StreamWriter(stream);
-            writer.Write(s);
-            writer.Flush();
-            stream.Position = 0;
-            return stream;
-        }
-
         private Crate CreateControlsCrate()
         {
             var fileSelectionDropdown = new DropDownList
@@ -92,7 +82,7 @@ namespace terminalFr8Core.Actions
                 return;
             }
 
-            string textRepresentation = string.Empty;
+            string textRepresentation;
             using (var reader = new StreamReader(file, Encoding.UTF8))
             {
                 textRepresentation = reader.ReadToEnd();

@@ -259,7 +259,7 @@ namespace terminalStatX.Services
                     updateStatContent.Items.AddRange(statValues.Select(x=>new StatItemValueDTO()
                     {
                         Name = x.Key,
-                        Value = x.Value
+                        Value = string.IsNullOrEmpty(x.Value) ? currentStat.StatItems.FirstOrDefault(l => l.Name == x.Key).Value : x.Value
                     }).ToList());
 
                     response = await _restfulServiceClient.PutAsync<UpdateStatWithItemsDTO>(uri, updateStatContent, null, GetStatxAPIHeaders(statXAuthDTO));

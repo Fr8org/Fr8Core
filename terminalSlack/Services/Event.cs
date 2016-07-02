@@ -20,8 +20,6 @@ namespace terminalSlack.Services
             }
             externalEventPayload = externalEventPayload.Trim('\"');
             var payloadFields = ParseSlackPayloadData(externalEventPayload);
-            //Currently Slack username is stored in ExternalAccountId property of AuthorizationToken (in order to display it in authentication dialog)
-            //TODO: this should be changed. We should have ExternalAccountName and ExternalDomainName for displaying purposes
             //This is for backwards compatibility. Messages received from Slack RTM mechanism will contain the owner of subscription whereas messegas received from WebHooks not
             var userName = payloadFields.FirstOrDefault(x => x.Key == "owner_name")?.Value ?? payloadFields.FirstOrDefault(x => x.Key == "user_name")?.Value;
             var teamId = payloadFields.FirstOrDefault(x => x.Key == "team_id")?.Value;
@@ -43,26 +41,9 @@ namespace terminalSlack.Services
             return Task.FromResult((Crate)curEventReport);
         }
 
-        private List<Guid> ParsePlansAffected(string plansAffectedString)
-        {
-            if (string.IsNullOrEmpty(plansAffectedString))
-            {
-                return null;
-            }
-            try
-            {
-                return plansAffectedString.Split(',').Select(x => Guid.Parse(x)).ToList();
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
         private List<KeyValueDTO> ParseSlackPayloadData(string message)
         {
-            var tokens = message.Split(
-                new[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+            var tokens = message.Split(new[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
 
             var payloadFields = new List<KeyValueDTO>();
             foreach (var token in tokens)
