@@ -26,6 +26,7 @@
 	  <Setting name="terminalStatX.TerminalEndpoint" value="" />
       <Setting name="terminalFacebook.TerminalEndpoint" value="" />
       <Setting name="terminalBox.TerminalEndpoint" value="" />
+      <Setting name="terminalTelegram.TerminalEndpoint" value="" />
    	  <Setting name="terminalMailChimp.TerminalEndpoint" value="" />
    	  <Setting name="OutboundUserName" value="sendgrid_dev_dockyard" />
       <Setting name="OutboundUserPassword" value="thales123" />

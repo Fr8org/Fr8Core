@@ -46,7 +46,7 @@ namespace Hub.Services
             {
                 string terminalAuthority = url;
 
-                if (url.Contains("http:"))
+                if (url.Contains("http:") || url.Contains("https:"))
                 {
                     try
                     {
@@ -69,20 +69,13 @@ namespace Hub.Services
                 throw new ArgumentException("Invalid url", nameof(endpoint));
             }
 
-            endpoint = endpoint.ToLower().TrimEnd('\\', '/');
-
-            var discoverOp = endpoint.IndexOf("/discover", StringComparison.Ordinal);
+            endpoint = ExtractTerminalAuthority(endpoint);
             
-            if (discoverOp > 0)
-            {
-                endpoint = endpoint.Substring(0, discoverOp);
-            }
-
             using (var uow = _unitOfWorkFactory.Create())
             {
                 var terminalRegistration = new TerminalRegistrationDO();
 
-                if (uow.TerminalRegistrationRepository.GetByKey(endpoint) != null)
+                if (uow.TerminalRegistrationRepository.GetAll().FirstOrDefault(x => string.Equals(ExtractTerminalAuthority(x.Endpoint), endpoint, StringComparison.OrdinalIgnoreCase)) != null)
                 {
                     throw new Exception($"Terminal with endpoint '{endpoint}' was already registered");
                 }
@@ -105,7 +98,7 @@ namespace Hub.Services
         public async Task Discover()
         {
             var terminalUrls = ListTerminalEndpoints();
-            var discoverTerminalsTasts = terminalUrls.Select(Discover).ToArray();
+            var discoverTerminalsTasts = terminalUrls.Select(x=> DiscoverInternal(NormalizeTerminalEndpoint(x))).ToArray();
 
             await Task.WhenAll(discoverTerminalsTasts);
         }
@@ -123,7 +116,26 @@ namespace Hub.Services
                 }
             }
 
-            return await DiscoverInternal(terminalUrl);
+            return await DiscoverInternal(NormalizeTerminalEndpoint(terminalUrl));
+        }
+
+        private static string ExtractTerminalAuthority(string terminalUrl)
+        {
+            string terminalAuthority = terminalUrl;
+
+            if (!terminalUrl.Contains("http:") & !terminalUrl.Contains("https:"))
+            {
+                terminalAuthority = "http://" + terminalUrl.TrimStart('\\', '/');
+            }
+
+            var discoverOp = terminalAuthority.IndexOf("/discover", StringComparison.OrdinalIgnoreCase);
+
+            if (discoverOp > 0)
+            {
+                terminalAuthority = terminalAuthority.Substring(0, discoverOp);
+            }
+
+            return terminalAuthority.TrimEnd('\\', '/');
         }
 
         private async Task<bool> DiscoverInternal(string terminalUrl)
@@ -131,15 +143,12 @@ namespace Hub.Services
             try
             {
                 string secret = null;
+                var terminalAuthority = ExtractTerminalAuthority(terminalUrl);
+                var exisitingTerminal = _terminal.GetAll().FirstOrDefault(x => string.Equals(ExtractTerminalAuthority(x.Endpoint), terminalAuthority, StringComparison.OrdinalIgnoreCase)); 
 
-                using (var uow = _unitOfWorkFactory.Create())
+                if (!string.IsNullOrWhiteSpace(exisitingTerminal?.Secret))
                 {
-                    var exisitingTerminal = uow.TerminalRepository.GetQuery().FirstOrDefault(x => x.Endpoint == terminalUrl);
-
-                    if (!string.IsNullOrWhiteSpace(exisitingTerminal?.Secret))
-                    {
-                        secret = exisitingTerminal.Secret;
-                    }
+                    secret = exisitingTerminal.Secret;
                 }
 
                 if (secret == null)
@@ -154,11 +163,22 @@ namespace Hub.Services
                 };
 
                 var terminalRegistrationInfo = await _restfulServiceClient.GetAsync<StandardFr8TerminalCM>(new Uri(terminalUrl, UriKind.Absolute), null, headers);
+
+                if (terminalRegistrationInfo == null)
+                {
+                    throw new Exception("Terminal didn't return meaningfull reply for discovery request.");
+                }
+
                 var activityTemplates = terminalRegistrationInfo.Activities.Select(Mapper.Map<ActivityTemplateDO>).ToList();
 
                 var terminal = Mapper.Map<TerminalDO>(terminalRegistrationInfo.Definition);
 
                 terminal.Secret = secret;
+
+                if (string.IsNullOrWhiteSpace(terminal.Label))
+                {
+                    terminal.Label = terminal.Name;
+                }
 
                 terminal = _terminal.RegisterOrUpdate(terminal);
 
@@ -196,9 +216,9 @@ namespace Hub.Services
 
         private string NormalizeTerminalEndpoint(string endpoint)
         {
-            var uri = endpoint.StartsWith("http") ? endpoint : "http://" + endpoint;
+            var authority = ExtractTerminalAuthority(endpoint);
 
-            return uri.TrimEnd('\\', '/').ToLower() + "/discover";
+            return authority.ToLower() + "/discover";
         }
 
         private string[] ListTerminalEndpoints()
@@ -209,7 +229,7 @@ namespace Hub.Services
             {
                 foreach (var terminalRegistration in uow.TerminalRegistrationRepository.GetAll())
                 {
-                    terminalUrls.Add(NormalizeTerminalEndpoint(terminalRegistration.Endpoint));
+                    terminalUrls.Add(terminalRegistration.Endpoint);
                 }
             }
 
