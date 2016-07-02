@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Data.Entity;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Security.Claims;
 using System.Threading;
 using System.Web;
@@ -10,21 +7,16 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
-using Data.Interfaces;
 using Fr8.Infrastructure.Utilities;
 using FluentValidation.WebApi;
 using Hub.Infrastructure;
-using Hub.Interfaces;
-using Hub.Managers;
 using Hub.ModelBinders;
-using Hub.StructureMap;
 using HubWeb.App_Start;
 using HubWeb.ExceptionHandling;
 using LogentriesCore.Net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Segment;
-using StructureMap;
 using Microsoft.ApplicationInsights.Extensibility;
 using Logger = Fr8.Infrastructure.Utilities.Logging.Logger;
 using System.Globalization;
@@ -108,8 +100,6 @@ namespace HubWeb
             //Logger.GetLogger().Error(errorMessage, exception);
             Logger.LogError($"{exception}");
         }
-
-        private readonly object _initLocker = new object();
 
         //Optimization. Even if running in DEBUG mode, this will only execute once.
         //But on production, there is no need for this call

@@ -142,7 +142,13 @@ namespace terminalStatX.Activities
                         CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel).AddFields(CreateStatValueFields(StatXUtilities.MapToStatItemCrateManifest(currentStat)));
                     }
                 }
-                SelectedStat = ActivityUI.ExistingGroupStats.Value;
+                SelectedStat= ActivityUI.ExistingGroupStats.Value;
+
+                Storage.Remove<EventSubscriptionCM>();
+                Storage.Add(CrateManager.CreateStandardEventSubscriptionsCrate(
+                    "Standard Event Subscriptions",
+                    "StatX", "StatXValueChange_" + SelectedStat.Substring(0, 18)));
+
             }
             else
             {
@@ -156,7 +162,7 @@ namespace terminalStatX.Activities
 
         public override async Task Activate()
         {
-            await _statXPolling.SchedulePolling(HubCommunicator, $"{AuthorizationToken.ExternalAccountId}_{ActivityId}", true,
+            await _statXPolling.SchedulePolling(HubCommunicator, $"{AuthorizationToken.ExternalAccountId}_{SelectedStat.Substring(0, 18)}", true, 
                 ActivityUI.ExistingGroupsList.Value, ActivityUI.ExistingGroupStats.Value);
         }
 

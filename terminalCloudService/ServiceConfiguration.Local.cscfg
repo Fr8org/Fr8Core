@@ -31,6 +31,7 @@
 	    <Setting name="terminalStatX.TerminalEndpoint" value="" />
 	    <Setting name="terminalBox.TerminalEndpoint" value="" />
       <Setting name="terminalFacebook.TerminalEndpoint" value="" />
+      <Setting name="terminalTelegram.TerminalEndpoint" value="" />
    	  <Setting name="OutboundUserName" value="" />
       <Setting name="OutboundUserPassword" value="" />
     </ConfigurationSettings>
