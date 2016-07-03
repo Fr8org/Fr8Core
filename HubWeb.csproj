@@ -923,6 +923,18 @@
     <Content Include="Config\HubWeb\Settings.config.readme">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Config\terminalTelegram\Settings.Release.config" />
+    <Content Include="Config\terminalTelegram\Settings.Dev.config" />
+    <Content Include="Config\terminalTelegram\Settings.Demo.config" />
+    <Content Include="Config\terminalTelegram\Settings.config" />
+    <Content Include="Config\terminalFacebook\Settings.Release.config" />
+    <Content Include="Config\terminalFacebook\Settings.Dev.config" />
+    <Content Include="Config\terminalFacebook\Settings.Demo.config" />
+    <Content Include="Config\terminalFacebook\Settings.config" />
+    <Content Include="Config\terminalBasecamp2\Settings.Release.config" />
+    <Content Include="Config\terminalBasecamp2\Settings.Dev.config" />
+    <Content Include="Config\terminalBasecamp2\Settings.Demo.config" />
+    <Content Include="Config\terminalBasecamp2\Settings.config" />
     <Content Include="Config\HubWeb\Settings.config" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />

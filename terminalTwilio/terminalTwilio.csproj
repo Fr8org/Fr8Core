@@ -359,11 +359,16 @@
     </None>
     <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
     <Content Include="Config\terminalTwilio\Settings.config.readme" />
+    <Content Include="Config\HealthMonitor\Settings.config.src" />
     <Content Include="Config\terminalYammer\Settings.Release.config" />
     <Content Include="Config\terminalYammer\Settings.Dev.config" />
     <Content Include="Config\terminalYammer\Settings.Demo.config" />
     <Content Include="Config\terminalYammer\Settings.config" />
     <Content Include="Config\terminalTwilio\Settings.config" />
+    <Content Include="Config\terminalTelegram\Settings.Release.config" />
+    <Content Include="Config\terminalTelegram\Settings.Dev.config" />
+    <Content Include="Config\terminalTelegram\Settings.Demo.config" />
+    <Content Include="Config\terminalTelegram\Settings.config" />
     <Content Include="Config\terminalSlack\Settings.Release.config" />
     <Content Include="Config\terminalSlack\Settings.Dev.config" />
     <Content Include="Config\terminalSlack\Settings.Demo.config" />
@@ -377,16 +382,22 @@
     <Content Include="Config\terminalPapertrail\Settings.config" />
     <Content Include="Config\terminalGoogle\Settings.config" />
     <Content Include="Config\terminalFr8Core\Settings.config" />
-    <Content Include="Config\terminalExcel\Settings.config" />
+    <Content Include="Config\terminalFacebook\Settings.Release.config" />
+    <Content Include="Config\terminalFacebook\Settings.Dev.config" />
+    <Content Include="Config\terminalFacebook\Settings.Demo.config" />
+    <Content Include="Config\terminalFacebook\Settings.config" />
     <Content Include="Config\terminalDropbox\Settings.config" />
     <Content Include="Config\terminalDocuSign\Settings.config" />
     <Content Include="Config\terminalBox\Settings.config" />
+    <Content Include="Config\terminalBasecamp2\Settings.Release.config" />
+    <Content Include="Config\terminalBasecamp2\Settings.Dev.config" />
+    <Content Include="Config\terminalBasecamp2\Settings.Demo.config" />
+    <Content Include="Config\terminalBasecamp2\Settings.config" />
     <Content Include="Config\terminalAzure\Settings.config" />
     <Content Include="Config\terminalAtlassian\Settings.config" />
     <Content Include="Config\PlanDirectory\Settings.Release.config" />
     <Content Include="Config\PlanDirectory\Settings.config" />
     <Content Include="Config\HubWeb\Settings.config" />
-    <Content Include="Config\HealthMonitor\Settings.config.src" />
     <None Include="Web.Demo.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

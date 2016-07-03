@@ -267,6 +267,18 @@
     <Content Include="Config\terminalTwilio\Settings.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Config\terminalTelegram\Settings.Release.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalTelegram\Settings.Dev.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalTelegram\Settings.Demo.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalTelegram\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Config\terminalSlack\Settings.Release.config" />
   </ItemGroup>
   <ItemGroup>
@@ -306,7 +318,16 @@
     <Content Include="Config\terminalFr8Core\Settings.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Config\terminalExcel\Settings.config" />
+    <Content Include="Config\terminalFacebook\Settings.Release.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalFacebook\Settings.Dev.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalFacebook\Settings.Demo.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalFacebook\Settings.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Config\terminalDropbox\Settings.config" />
@@ -316,6 +337,18 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Config\terminalBox\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalBasecamp2\Settings.Release.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalBasecamp2\Settings.Dev.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalBasecamp2\Settings.Demo.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalBasecamp2\Settings.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Config\terminalAzure\Settings.config" />
