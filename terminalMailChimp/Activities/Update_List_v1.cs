@@ -9,6 +9,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Infrastructure;
 using terminalMailChimp.Interfaces;
 
 namespace terminalMailChimp.Activities
@@ -22,9 +23,18 @@ namespace terminalMailChimp.Activities
             _mailChimpIntegration = mailChimpIntegration;
         }
 
+        private string SelectedMailChimpList
+        {
+            get { return this[nameof(SelectedMailChimpList)]; }
+            set { this[nameof(SelectedMailChimpList)] = value; }
+        }
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public DropDownList MailChimpListSelector { get; set; }
+
+            [DynamicControls]
+            public List<TextSource> AvailableSubscriberProperties { get; set; }
 
             public ActivityUi()
             {
@@ -34,6 +44,13 @@ namespace terminalMailChimp.Activities
                     Name = nameof(MailChimpListSelector),
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
+
+                AvailableSubscriberProperties = new List<TextSource>();
+            }
+
+            public void ClearDynamicFields()
+            {
+                AvailableSubscriberProperties?.Clear();
             }
         }
 
@@ -57,9 +74,32 @@ namespace terminalMailChimp.Activities
                 .Select(x => new ListItem { Key = x.Name, Value = x.Id }).ToList();
         }
 
-        public override Task FollowUp()
+        public override async Task FollowUp()
         {
-            throw new NotImplementedException();
+            if (!string.IsNullOrEmpty(ActivityUI.MailChimpListSelector.Value))
+            {
+                var previousGroup = SelectedMailChimpList;
+                if (string.IsNullOrEmpty(previousGroup) || !string.Equals(previousGroup, ActivityUI.MailChimpListSelector.Value))
+                {
+                    var mailChimpLists = await _mailChimpIntegration.GetLists(AuthorizationToken);
+
+                    ActivityUI.MailChimpListSelector.ListItems = mailChimpLists.Select(x => new ListItem { Key = x.Name, Value = x.Id }).ToList();
+
+                    var firstList = mailChimpLists.FirstOrDefault();
+                    if (firstList != null)
+                    {
+                        //render available subscriber properties
+                    }
+                }
+                SelectedMailChimpList = ActivityUI.MailChimpListSelector.Value;
+            }
+            else
+            {
+                ActivityUI.MailChimpListSelector.ListItems.Clear();
+                ActivityUI.MailChimpListSelector.selectedKey = string.Empty;
+                ActivityUI.MailChimpListSelector.Value = string.Empty;
+                SelectedMailChimpList = string.Empty;
+            }
         }
 
         public override Task Run()
