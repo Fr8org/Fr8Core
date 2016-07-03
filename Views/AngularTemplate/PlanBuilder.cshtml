@@ -24,8 +24,8 @@
                             <div ng-repeat="envelope in group.envelopes track by $index">
                                 <div class="action" ng-class="{'solution-action': envelope.activity.activityTemplate.category==='Solution'  && mode !== 'solution'}" layout-action popover-toggle="envelope.activity.showAdvisoryPopup" popover-template="'/AngularTemplate/AdvisoryMessagesPopup'" popover-placement="right-top">
                                     <div activity-resize minwidth="{{envelope.activity.activityTemplate.minPaneWidth}}" class="ap-resize">
-                                        <md-toolbar dnd-draggable="envelope.activity.id" class="action-header solution-action-header handle" dropdown transfer-click-configure-pane >
-                                            <div class="md-toolbar-tools">
+                                        <md-toolbar dnd-draggable="current.plan.planState==1 ? envelope.activity.id : false" class="action-header solution-action-header handle" dropdown transfer-click-configure-pane >
+                                             <div class="md-toolbar-tools">
                                                 <!-- Icon -->
                                                 <div class="action-header-icon" style="display: flex;">
                                                     <img ng-src="{{envelope.activity.activityTemplate.webService.iconPath}}" ng-if="envelope.activity.activityTemplate.webService.iconPath"/>

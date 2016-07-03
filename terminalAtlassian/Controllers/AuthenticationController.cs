@@ -23,6 +23,13 @@ namespace terminalAtlassian.Controllers
         public async Task<AuthorizationTokenDTO> GenerateInternalOAuthToken(CredentialsDTO credentials)
         {
             credentials = credentials.EnforceDomainSchema();
+            if (!await _atlassianService.CheckDomain(credentials.Domain))
+            {
+                return new AuthorizationTokenDTO()
+                {
+                    Error = "The form of the domain is generally [yourprojectname].atlassian.net"
+                };
+            }
             if (await _atlassianService.CheckAuthenticationAsync(credentials))
             {
                 return new AuthorizationTokenDTO()

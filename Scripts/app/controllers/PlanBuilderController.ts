@@ -456,12 +456,14 @@ module dockyard.controllers {
 
         private reloadFirstActions() {
             this.$timeout(() => {
-                this.$scope.current.plan.subPlans.forEach(
-                    plan => {
-                        if (plan.activities.length > 0) {
-                            this.$scope.reConfigureAction(plan.activities[0])
-                        }
-                    });
+                if (this.$scope.current.plan.planState != dockyard.model.PlanState.Running) {
+                    this.$scope.current.plan.subPlans.forEach(
+                        plan => {
+                            if (plan.activities.length > 0) {
+                                this.$scope.reConfigureAction(plan.activities[0])
+                            }
+                        });
+                }
             }, 1500);
         }
 
