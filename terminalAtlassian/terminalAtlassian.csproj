@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -288,7 +288,6 @@
     </None>
     <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
     <Content Include="Config\terminalAtlassian\Settings.config.readme" />
-    <Content Include="Config\HealthMonitor\Settings.config.src" />
     <Content Include="Config\terminalYammer\Settings.Release.config" />
     <Content Include="Config\terminalYammer\Settings.Dev.config" />
     <Content Include="Config\terminalYammer\Settings.Demo.config" />
@@ -327,6 +326,7 @@
     <Content Include="Config\PlanDirectory\Settings.Release.config" />
     <Content Include="Config\PlanDirectory\Settings.config" />
     <Content Include="Config\HubWeb\Settings.config" />
+    <Content Include="Config\HealthMonitor\Settings.config.src" />
     <None Include="Web.Demo.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
