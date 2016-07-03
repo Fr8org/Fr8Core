@@ -289,7 +289,6 @@
     </None>
     <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
     <Content Include="Config\terminalSlack\Settings.config.readme" />
-    <Content Include="Config\HealthMonitor\Settings.config.src" />
     <Content Include="Config\terminalYammer\Settings.Release.config" />
     <Content Include="Config\terminalYammer\Settings.Dev.config" />
     <Content Include="Config\terminalYammer\Settings.Demo.config" />
@@ -328,6 +327,7 @@
     <Content Include="Config\PlanDirectory\Settings.Release.config" />
     <Content Include="Config\PlanDirectory\Settings.config" />
     <Content Include="Config\HubWeb\Settings.config" />
+    <Content Include="Config\HealthMonitor\Settings.config.src" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
