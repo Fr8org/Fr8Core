@@ -70,7 +70,7 @@ namespace Hub.Services
             }
 
             endpoint = ExtractTerminalAuthority(endpoint);
-            
+
             using (var uow = _unitOfWorkFactory.Create())
             {
                 var terminalRegistration = new TerminalRegistrationDO();
@@ -79,7 +79,7 @@ namespace Hub.Services
                 {
                     throw new Exception($"Terminal with endpoint '{endpoint}' was already registered");
                 }
-                 
+
                 terminalRegistration.UserId = Thread.CurrentPrincipal.Identity.GetUserId();
                 terminalRegistration.Endpoint = endpoint.ToLower();
 
@@ -89,7 +89,7 @@ namespace Hub.Services
                 {
                     throw new Exception($"Unable to discover terminal at '{normaizedEndpoint}'");
                 }
-                
+
                 uow.TerminalRegistrationRepository.Add(terminalRegistration);
                 uow.SaveChanges();
             }
@@ -98,11 +98,11 @@ namespace Hub.Services
         public async Task Discover()
         {
             var terminalUrls = ListTerminalEndpoints();
-            var discoverTerminalsTasts = terminalUrls.Select(x=> DiscoverInternal(NormalizeTerminalEndpoint(x))).ToArray();
+            var discoverTerminalsTasts = terminalUrls.Select(x => DiscoverInternal(NormalizeTerminalEndpoint(x))).ToArray();
 
             await Task.WhenAll(discoverTerminalsTasts);
         }
-        
+
         public async Task<bool> Discover(string terminalUrl)
         {
             // validate terminal url
@@ -144,7 +144,7 @@ namespace Hub.Services
             {
                 string secret = null;
                 var terminalAuthority = ExtractTerminalAuthority(terminalUrl);
-                var exisitingTerminal = _terminal.GetAll().FirstOrDefault(x => string.Equals(ExtractTerminalAuthority(x.Endpoint), terminalAuthority, StringComparison.OrdinalIgnoreCase)); 
+                var exisitingTerminal = _terminal.GetAll().FirstOrDefault(x => string.Equals(ExtractTerminalAuthority(x.Endpoint), terminalAuthority, StringComparison.OrdinalIgnoreCase));
 
                 if (!string.IsNullOrWhiteSpace(exisitingTerminal?.Secret))
                 {
