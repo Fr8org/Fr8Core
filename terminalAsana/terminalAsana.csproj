@@ -170,7 +170,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activities\Get_Tasks_v1.cs" />
-    <Compile Include="Activities\Get_Workspaces_v1.cs" />
     <Compile Include="Activities\AsanaOAuthBaseActivity.cs" />
     <Compile Include="Activities\Post_Comment_v1.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />

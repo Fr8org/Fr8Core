@@ -22,7 +22,7 @@ namespace terminalAsana.Asana.Services
     public class AsanaOAuthService: IAsanaOAuth
     {
         
-        private readonly IRestfulServiceClient _restfulClient;
+        private IRestfulServiceClient _restfulClient;
         private IHubCommunicator _hubCommunicator;
 
         public OAuthToken OAuthToken { get; set; }

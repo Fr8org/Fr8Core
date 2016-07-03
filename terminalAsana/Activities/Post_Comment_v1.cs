@@ -30,6 +30,7 @@ namespace terminalAsana.Activities
         private IAsanaTasks         _tasks;
         private IAsanaStories       _stories;
 
+        private IAsanaParameters    _parameters;
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -100,21 +101,21 @@ namespace terminalAsana.Activities
             }
         }
 
-        public Post_Comment_v1(ICrateManager crateManager, IAsanaOAuth oAuth, IRestfulServiceClient client)
+        public Post_Comment_v1(ICrateManager crateManager, IAsanaOAuth oAuth, IRestfulServiceClient client, IAsanaParameters parameters)
             : base(crateManager,oAuth, client)
         {
             DisableValidationOnFollowup = true;
+            _parameters = parameters;
         }
 
         protected override void InitializeInternalState()
         {
             base.InitializeInternalState();
 
-            var asanaParams = new AsanaParametersService();
-            _workspaces = new Workspaces(OAuthCommunicator, asanaParams);
-            _projects = new Projects(OAuthCommunicator, asanaParams);
-            _tasks = new Tasks(OAuthCommunicator, asanaParams);
-            _stories = new Stories(OAuthCommunicator, asanaParams);
+            _workspaces = new Workspaces(OAuthCommunicator, _parameters);
+            _projects = new Projects(OAuthCommunicator, _parameters);
+            _tasks = new Tasks(OAuthCommunicator, _parameters);
+            _stories = new Stories(OAuthCommunicator, _parameters);
         }
 
         public override Task Initialize()

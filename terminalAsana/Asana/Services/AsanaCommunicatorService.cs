@@ -24,11 +24,10 @@ namespace terminalAsana.Asana.Services
             _restfulClient = client;
         }
 
-
         /// <summary>
         /// Add OAuth access_token to headers
         /// </summary>
-        /// <param name="header"></param>
+        /// <param name="currentHeader"></param>
         /// <returns></returns>
         public async Task<Dictionary<string,string>> PrepareHeader(Dictionary<string,string> currentHeader)
         {
