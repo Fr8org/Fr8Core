@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -14,12 +13,10 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Interfaces;
-using Fr8.Infrastructure.Utilities;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Fr8.Infrastructure.Utilities.Configuration;
 
 namespace Fr8.TerminalBase.Services
 {
@@ -390,13 +387,6 @@ namespace Fr8.TerminalBase.Services
             var uri = new Uri(url);
             var authTokenDTO = await _restfulServiceClient.GetAsync<AuthorizationTokenDTO>(uri, null, await GetHMACHeader(uri));
             return Mapper.Map<AuthorizationToken>(authTokenDTO);
-        }
-
-        public async Task RenewToken(string id, string externalAccountId, string token)
-        {
-            var url = $"{GetHubUrlWithApiVersion()}/authentication/renewtoken?id={id}&externalAccountId={externalAccountId}&token={token}";
-            var uri = new Uri(url);
-            await _restfulServiceClient.PostAsync(uri, null, await GetHMACHeader(uri));
         }
 
         public async Task RenewToken(AuthorizationTokenDTO token)

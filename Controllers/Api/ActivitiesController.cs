@@ -10,6 +10,7 @@ using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;
 using Microsoft.AspNet.Identity;
 using StructureMap;
+using System.Web.Http.Description;
 
 namespace HubWeb.Controllers
 {
@@ -29,53 +30,59 @@ namespace HubWeb.Controllers
         {
             _activity = service;
         }
-
-
+        /// <summary>
+        /// Performs configuration of specified activity and returns updated instance of this activity        
+        /// </summary>
+        /// <remarks>
+        /// Callers to this endpoint expect to receive back what they need to know to encode user configuration data into the Action. The typical scenario involves a front-end client calling this and receiving back the same Action they passed, but with an attached Configuration Crate. The client renders UI based on the Configuration Crate, collects user inputs, and saves them as values in the Configuration Crate JSON. The updated Configuration Crate is then saved to the server so it will be available to the processing Terminal at run-time.
+        /// </remarks>
+        /// <param name="curActionDesignDTO">Activity to configure</param>
+        /// <response code="200">Configured activity</response>
+        /// <response code="400">Activity is not specified or doesn't exist</response>
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Create(Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, Guid? authorizationTokenId = null)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var userId = User.Identity.GetUserId();
-                var result = await _activity.CreateAndConfigure(uow, userId, activityTemplateId, label, name, order, parentNodeId, false, authorizationTokenId) as ActivityDO;
-                return Ok(Mapper.Map<ActivityDTO>(result));
-            }
-        }
-
-
-        //WARNING. there's lots of potential for confusion between this POST method and the GET method following it.
-
-        [HttpPost]
-        [Fr8HubWebHMACAuthenticate]
+        [ResponseType(typeof(ActivityDTO))]
         public async Task<IHttpActionResult> Configure(ActivityDTO curActionDesignDTO)
         {
-            // WebMonitor.Tracer.Monitor.StartMonitoring("Configuring action " + curActionDesignDTO.Name);
-            curActionDesignDTO.CurrentView = null;
-            ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDesignDTO);
-            var userId = User.Identity.GetUserId();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            if (curActionDesignDTO == null || curActionDesignDTO?.Id == Guid.Empty)
             {
+                return BadRequest("Empty activity can't be configured");
+            }
+            if (!_activity.Exists(curActionDesignDTO.Id))
+            {
+                return BadRequest("Activity doesn't exist");
+            }
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {               
+                curActionDesignDTO.CurrentView = null;
+                ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDesignDTO);
+                var userId = User.Identity.GetUserId();
                 ActivityDTO activityDTO = await _activity.Configure(uow, userId, curActivityDO);
                 return Ok(activityDTO);
             }
         }
 
         /// <summary>
-        /// GET : Returns an action with the specified id
+        /// Returns an activity with the specified Id
         /// </summary>
+        /// <response code="200">Retrieved activity</response>
+        /// <response code="400">Activity doesn't exist</response>
         [HttpGet]
-        public ActivityDTO Get(Guid id)
+        [ResponseType(typeof(ActivityDTO))]
+        public IHttpActionResult Get(Guid id)
         {
+            if (!_activity.Exists(id))
+            {
+                return BadRequest("Activity doesn't exist");
+            }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return Mapper.Map<ActivityDTO>(_activity.GetById(uow, id));
+                return Ok(Mapper.Map<ActivityDTO>(_activity.GetById(uow, id)));
             }
         }
 
         /// <summary>
-        /// DELETE: if flag withChldNodes seted to true Remove all child Nodes and clear activity values
-        /// Oterwise delete activity with 'id'
+        /// Deletes activity with specified Id. If 'deleteChildNodes' flag is specified, only deletes child activities of specified activity
         /// </summary>
         [HttpDelete]
         [Fr8HubWebHMACAuthenticate]
@@ -92,37 +99,13 @@ namespace HubWeb.Controllers
             return Ok();
         }
 
-        //[HttpDelete]
-        //public async Task<IHttpActionResult> Delete(Guid id, bool confirmed = false)
-        //{
-        //    await _activity.Delete(id);
-        //    return Ok();
-        //}
-
-        //[HttpDelete]
-        //[Fr8HubWebHMACAuthenticate]
-        //public async Task<IHttpActionResult> DeleteActivity(Guid id)
-        //{
-        //    await _activity.Delete(id);
-        //    return Ok();
-        //}
-
         /// <summary>
-        /// DELETE: Remove all child Nodes and clear activity values
+        /// Updates activity if one with specified Id exists. Otherwise creates a new activity
         /// </summary>
-        //[HttpDelete]
-        //[Fr8HubWebHMACAuthenticate]
-        //public async Task<IHttpActionResult> DeleteChildNodes(Guid activityId)
-        //{
-        //    await _activity.DeleteChildNodes(activityId);
-        //    return Ok();
-        //}
-
-        /// <summary>
-        /// POST : Saves or updates the given action
-        /// </summary>
+        /// <response code="200">Newly created or updated activity</response>
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
+        [ResponseType(typeof(ActivityDTO))]
         public async Task<IHttpActionResult> Save(ActivityDTO curActionDTO)
         {
             var submittedActivityDO = Mapper.Map<ActivityDO>(curActionDTO);

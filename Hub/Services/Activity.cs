@@ -2,7 +2,6 @@
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
-using Newtonsoft.Json;
 using StructureMap;
 using System;
 using System.Collections.Generic;
@@ -22,7 +21,6 @@ using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Exceptions;
-using Hub.Infrastructure;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
@@ -109,7 +107,7 @@ namespace Hub.Services
 
                 if (parentNode is PlanDO)
                 {
-                    if (((PlanDO) parentNode).StartingSubplan == null)
+                    if (((PlanDO)parentNode).StartingSubplan == null)
                     {
                         parentNode.ChildNodes.Add(parentNode = new SubplanDO
                         {
@@ -119,7 +117,7 @@ namespace Hub.Services
                     }
                     else
                     {
-                        parentNode = ((PlanDO) parentNode).StartingSubplan;
+                        parentNode = ((PlanDO)parentNode).StartingSubplan;
                     }
 
                 }
@@ -524,7 +522,7 @@ namespace Hub.Services
             }
             else
             {
-               skipDeactivation = true;
+                skipDeactivation = true;
             }
 
             if (!skipDeactivation)
@@ -629,7 +627,7 @@ namespace Hub.Services
         {
             var endpoint = _activityTemplate.GetTerminalUrl(activity.ActivityTemplateId) ?? "<no terminal url>";
 
-            var additionalData = containerId.IsNullOrEmpty() ? " no data " : " Container Id = " + containerId; 
+            var additionalData = containerId.IsNullOrEmpty() ? " no data " : " Container Id = " + containerId;
 
             reportingAction(endpoint, additionalData, error, objectId);
         }
@@ -728,6 +726,14 @@ namespace Hub.Services
                 solutionNameList.AddRange(curActivities.Select(activity => activity.Name));
             }
             return solutionNameList;
+        }
+
+        public bool Exists(Guid id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return uow.PlanRepository.GetActivityQueryUncached().Any(x => x.Id == id);
+            }
         }
     }
 }
