@@ -920,8 +920,23 @@
     <Content Include="Views\AngularTemplate\MiniHeader.cshtml" />
     <Content Include="Views\AngularTemplate\ActivityLabelModal.cshtml" />
     <Content Include="Views\AngularTemplate\AdvisoryMessagesPopup.cshtml" />
-    <Content Include="Config\Settings.config" />
     <Content Include="Views\AngularTemplate\PhoneNumberAuthentication.cshtml" />
+    <Content Include="Config\HubWeb\Settings.config.readme">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Config\terminalTelegram\Settings.Release.config" />
+    <Content Include="Config\terminalTelegram\Settings.Dev.config" />
+    <Content Include="Config\terminalTelegram\Settings.Demo.config" />
+    <Content Include="Config\terminalTelegram\Settings.config" />
+    <Content Include="Config\terminalFacebook\Settings.Release.config" />
+    <Content Include="Config\terminalFacebook\Settings.Dev.config" />
+    <Content Include="Config\terminalFacebook\Settings.Demo.config" />
+    <Content Include="Config\terminalFacebook\Settings.config" />
+    <Content Include="Config\terminalBasecamp2\Settings.Release.config" />
+    <Content Include="Config\terminalBasecamp2\Settings.Dev.config" />
+    <Content Include="Config\terminalBasecamp2\Settings.Demo.config" />
+    <Content Include="Config\terminalBasecamp2\Settings.config" />
+    <Content Include="Config\HubWeb\Settings.config" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="_PowerShellScripts\HM-job-run.cmd" />
@@ -4561,6 +4576,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+    <Error Condition="!Exists('packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets'))" />
   </Target>
   <PropertyGroup>
     <CopyAllFilesToSingleFolderForPackageDependsOn>
@@ -4643,4 +4659,6 @@
   </Target>
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
   <Import Project="packages\Microsoft.ApplicationInsights.Agent.Intercept.0.17.0\build\Microsoft.ApplicationInsights.Agent.Intercept.targets" Condition="Exists('packages\Microsoft.ApplicationInsights.Agent.Intercept.0.17.0\build\Microsoft.ApplicationInsights.Agent.Intercept.targets')" />
+  <Import Project="packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets" Condition="Exists('packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" />
+  <Import Project="targets\Fr8.NugetContentRestore.targets" Condition="Exists('targets\Fr8.NugetContentRestore.targets')" />
 </Project>

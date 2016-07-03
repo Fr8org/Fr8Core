@@ -67,9 +67,6 @@
     <DiagnosticsConfiguration Include="terminalWebRoleContent\diagnostics.wadcfgx" />
   </ItemGroup>
   <ItemGroup>
-    <PublishProfile Include="Profiles\fr8companySAProduction.azurePubxml" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\terminalWebRole\terminalWebRole.csproj">
       <Name>terminalWebRole</Name>
       <Project>{8c7f0cb5-9cd8-40d8-a539-51f451ccb29e}</Project>
