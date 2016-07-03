@@ -61,10 +61,43 @@ namespace terminalMailChimp.Services
 
         public async Task<List<MailChimpList>> GetLists(AuthorizationToken authorizationToken)
         {
-            var result = new List<MailChimpList>();
+            try
+            {
+                var relativeUrl = "/lists";
 
+                var listsResponse = await _restfulServiceClient.GetAsync(new Uri(MailChimpDataCenterApiEndpoint + relativeUrl), null,
+                    new Dictionary<string, string>() { { "Authorization", $"apikey {authorizationToken.Token}" } });
 
-            return result;
+                //parse lists
+                var jsonObj = JsonConvert.DeserializeObject<JObject>(listsResponse);
+
+                var jsonListToken = jsonObj.GetValue("lists");
+
+                return jsonListToken.Select(listItem => new MailChimpList()
+                {
+                    Id = listItem["id"]?.ToString(),
+                    Name = listItem["name"]?.ToString()
+                }).ToList();
+            }
+            catch (Exception ex)
+            {
+                //extract the error messsage and send to activity stream
+                //properties:
+                //status
+                //type
+                //detail
+                throw ex;
+            }
+        }
+
+        public Task CreateList(AuthorizationToken authorizationToken, MailChimpList mailChimpList)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateListWithNewSubscriber(AuthorizationToken authorizationToken, Subscriber subscriber)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<AuthorizationTokenDTO> GetAuthToken(string code, string state)
@@ -107,11 +140,6 @@ namespace terminalMailChimp.Services
                 ExternalAccountId = jsonAccountDetails.Value<string>("account_id"),
                 ExternalAccountName = jsonAccountDetails.Value<string>("account_name")
             };
-        }
-
-        public Task<string> GetExternalUserId(object oauthToken)
-        {
-            throw new NotImplementedException();
         }
     }
 }
