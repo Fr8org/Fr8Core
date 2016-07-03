@@ -424,7 +424,6 @@
     <Content Include="Config\terminalPapertrail\Settings.config" />
     <Content Include="Config\terminalGoogle\Settings.config" />
     <Content Include="Config\terminalFr8Core\Settings.config" />
-    <Content Include="Config\terminalExcel\Settings.config" />
     <Content Include="Config\terminalDropbox\Settings.config" />
     <Content Include="Config\terminalDocuSign\Settings.config" />
     <Content Include="Config\terminalBox\Settings.config" />
