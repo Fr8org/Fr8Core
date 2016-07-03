@@ -2,7 +2,7 @@
 
 <!--- 
 ====================================
-terminalQuickbooks Configuration File
+terminalFacebook Configuration File
 ====================================
 
 This configuration file is intended for sensitive settings which you don't want to share
@@ -26,9 +26,7 @@ exclude them from .gitignore.
 -->
 
 <appSettings>
-  <!-- Add your QuickBooks integration details -->
-  <add key="QuickBooksAppToken" value="" />
-  <add key="QuickBooksConsumerKey" value="" />
-  <add key="QuickBooksConsumerSecret" value="" />
-  <add key="QuickBooksOAuthAuthorizeUrl" value="" />
+  <!-- Facebook integration details-->
+  <add key="FacebookSecret" value="your-facebook-secret" />
+  <add key="FacebookId" value="your-facebook-id" />
 </appSettings>

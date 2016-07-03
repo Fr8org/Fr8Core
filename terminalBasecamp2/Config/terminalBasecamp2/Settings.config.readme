@@ -2,7 +2,7 @@
 
 <!--- 
 ====================================
-terminalQuickbooks Configuration File
+terminalBasecamp Configuration File
 ====================================
 
 This configuration file is intended for sensitive settings which you don't want to share
@@ -26,9 +26,7 @@ exclude them from .gitignore.
 -->
 
 <appSettings>
-  <!-- Add your QuickBooks integration details -->
-  <add key="QuickBooksAppToken" value="" />
-  <add key="QuickBooksConsumerKey" value="" />
-  <add key="QuickBooksConsumerSecret" value="" />
-  <add key="QuickBooksOAuthAuthorizeUrl" value="" />
+  <!-- Basecamp integration details-->
+  <add key="AppClientId" value="your-basecamp-client-id" />
+  <add key="AppClientSecret" value="your-basecamp-client-secret" />
 </appSettings>
