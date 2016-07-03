@@ -64,6 +64,7 @@ namespace terminalAsana.Controllers
                     ExternalAccountId = userInfo.Value<string>("id"),
                     ExternalAccountName = userInfo.Value<string>("name"),
                     ExternalStateToken = state,
+                    ExpiresAt = expirationDate,
                     AdditionalAttributes = expirationDate.ToString("O")
                 };
             }
