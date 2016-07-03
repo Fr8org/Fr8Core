@@ -308,7 +308,7 @@ namespace Hub.Services
             if (newFr8Account != null)
             {
                 EventManager.UserRegistration(newFr8Account);
-                ObjectFactory.GetInstance<ITracker>().Alias(anonimousId, newFr8Account);
+                ObjectFactory.GetInstance<ITracker>().Registered(anonimousId, newFr8Account);
             }
 
             return curRegStatus;

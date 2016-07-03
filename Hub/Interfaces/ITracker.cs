@@ -10,7 +10,7 @@ namespace Hub.Interfaces
     {
         void Identify(String userId);
         void Identify(Fr8AccountDO fr8AccountDO);
-        void Alias(string anonimousId, Fr8AccountDO fr8AccountDO);
+        void Registered(string anonimousId, Fr8AccountDO fr8AccountDO);
         void Track(Fr8AccountDO fr8AccountDO, String eventName, String action, Dictionary<String, object> properties = null);
         void Track(Fr8AccountDO fr8AccountDO, String eventName, Dictionary<String, object> properties = null);
         void Track(IUnitOfWork uow, string userId, string eventName, Segment.Model.Properties properties);

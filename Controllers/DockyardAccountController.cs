@@ -1,10 +1,10 @@
-
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Logging;
@@ -351,6 +351,7 @@ Please register first.");
         public async Task<ActionResult> ProcessGuestUserMode()
         {
             LoginStatus loginStatus = await _account.CreateAuthenticateGuestUser();
+            Session["analytics_user_id"] = ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser();
             return RedirectToAction("Index", "Welcome");
         }
     }

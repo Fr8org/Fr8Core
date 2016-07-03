@@ -85,13 +85,3 @@
         </ul>
     }
 }
-<script type="text/javascript">
-    document.getElementById("logoffLink").addEventListener("click", function () {
-        if (window.analytics != null) {
-            window.analytics.user().logout();
-        }
-        if (window.mixpanel != null) {
-            window.mixpanel.cookie.clear();
-        }
-    });
-</script>

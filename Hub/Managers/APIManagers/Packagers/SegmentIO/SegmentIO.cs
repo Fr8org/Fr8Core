@@ -46,12 +46,10 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
             };
         }
 
-        public void Alias(string anonimousId, Fr8AccountDO fr8AccountDO)
+        public void Registered(string anonimousId, Fr8AccountDO fr8AccountDO)
         {
             if (Analytics.Client == null)
                 return;
-            Analytics.Client.Alias(anonimousId, fr8AccountDO.Id);
-            Analytics.Client.Flush();
 
             var userProperties = GetProperties(fr8AccountDO);
             Analytics.Client.Identify(fr8AccountDO.Id, userProperties);
@@ -65,13 +63,7 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
             foreach (var prop in GetProperties(fr8AccountDO))
                 props.Add(prop.Key, prop.Value);
             Analytics.Client.Identify(fr8AccountDO.Id, GetProperties(fr8AccountDO));
-            Options mpCallOptions = new Options()
-                .SetIntegration("all", false)
-                .SetIntegration("Mixpanel", true)
-                .SetContext(new Context() {
-                    { "distinct_id", fr8AccountDO.Id }
-                });
-            Analytics.Client.Track(fr8AccountDO.Id, "User Logged In", props, mpCallOptions);
+            Analytics.Client.Track(fr8AccountDO.Id, "User Logged In", props);
         }
 
         public void Track(Fr8AccountDO fr8AccountDO, string eventName, string action, Dictionary<string, object> properties = null)
