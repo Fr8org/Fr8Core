@@ -101,7 +101,7 @@ namespace HubWeb.Controllers
                         {
                             organizationDO = _organization.GetOrCreateOrganization(uow, submittedRegData.OrganizationName, out isNewOrganization);
                         }
-                        
+
                         if (!String.IsNullOrWhiteSpace(submittedRegData.GuestUserTempEmail))
                         {
                             curRegStatus = await _account.UpdateGuestUserRegistration(uow, submittedRegData.Email.Trim()
@@ -156,8 +156,9 @@ namespace HubWeb.Controllers
                 {
 
                     string username = model.Email.Trim();
-                    LoginStatus curLoginStatus =
-                        await _account.ProcessLoginRequest(username, model.Password, model.RememberMe);
+                    var resultTuple = await _account.ProcessLoginRequest(username, model.Password, model.RememberMe);
+                    LoginStatus curLoginStatus = resultTuple.Item1;
+
                     switch (curLoginStatus)
                     {
                         case LoginStatus.InvalidCredential:
@@ -185,6 +186,7 @@ Please register first.");
                                 }
                                 else
                                 {
+                                    TempData["guestUserId"] = resultTuple.Item2;
                                     return RedirectToAction("Index", "Welcome");
                                 }
                             }
@@ -350,8 +352,9 @@ Please register first.");
         [AllowAnonymous]
         public async Task<ActionResult> ProcessGuestUserMode()
         {
-            LoginStatus loginStatus = await _account.CreateAuthenticateGuestUser();
-            Session["analytics_user_id"] = ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser();
+            Tuple<LoginStatus, string> resultTuple = await _account.CreateAuthenticateGuestUser();
+            TempData["guestUserId"] = resultTuple.Item2;
+            TempData["mode"] = "guestUser";
             return RedirectToAction("Index", "Welcome");
         }
     }

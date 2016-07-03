@@ -24,15 +24,6 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
             }
             _fr8Account = fr8Account;
         }
-
-        public void Identify(string userID)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                Identify(uow.UserRepository.GetByKey(userID));
-            }
-        }
-
         private Traits GetProperties(Fr8AccountDO fr8AccountDO)
         {
             return new Traits
@@ -65,18 +56,9 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
             Analytics.Client.Identify(fr8AccountDO.Id, GetProperties(fr8AccountDO));
             Analytics.Client.Track(fr8AccountDO.Id, "User Logged In", props);
         }
-
-        public void Track(Fr8AccountDO fr8AccountDO, string eventName, string action, Dictionary<string, object> properties = null)
-        {
-            if (Analytics.Client == null)
-                return;
-            if (properties == null)
-                properties = new Dictionary<string, object>();
-            properties["Activity Name"] = action;
-
-            Track(fr8AccountDO, eventName, properties);
-        }
-
+        //https://segment.com/docs/integrations/mixpanel/#identify
+        //For Mixpanel People, it’s important to identify a user before you call track. 
+        //A track without an identify won’t create a user in Mixpanel People.
         public void Track(Fr8AccountDO fr8AccountDO, string eventName, Dictionary<string, object> properties = null)
         {
             if (Analytics.Client == null)
@@ -92,30 +74,6 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
             }
             Analytics.Client.Identify(fr8AccountDO.Id, GetProperties(fr8AccountDO));
             Analytics.Client.Track(fr8AccountDO.Id, eventName, props);
-        }
-        public void Track(IUnitOfWork uow, string userId, string eventName, Segment.Model.Properties properties)
-        {
-            if (Analytics.Client == null)
-                return;
-            Fr8AccountDO fr8AccountDO;
-            using (uow) { fr8AccountDO = uow.UserRepository.GetByKey(userId); }
-            var props = new Segment.Model.Properties();
-            foreach (var prop in GetProperties(fr8AccountDO))
-                props.Add(prop.Key, prop.Value);
-
-            Analytics.Client.Track(fr8AccountDO.Id, eventName, props);
-        }
-        public void Track(string userId, string eventName, Dict properties)
-        {
-            if (Analytics.Client == null)
-                return;
-            var newProps = new Segment.Model.Properties();
-            foreach (var prop in properties)
-            {
-                newProps.Add(prop.Key, prop.Value);
-            }
-            Analytics.Client.Track(userId, eventName, newProps);
-            Analytics.Client.Flush();
         }
     }
 }
