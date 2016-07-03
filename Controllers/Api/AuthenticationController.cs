@@ -20,6 +20,7 @@ using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;
 using System.Web.Http.Description;
 using Fr8.Infrastructure;
+using Newtonsoft.Json;
 
 namespace HubWeb.Controllers
 {
@@ -175,11 +176,19 @@ namespace HubWeb.Controllers
         //    return Ok();
         //}
 
+
         //Used internally to pass existing authentication to PlanDirectory. Doesn't show up in API listing
+
+        /// <summary>
+        /// Passes existing authentication to PlanDirectory
+        /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <response code="200">Authorization token</response>
+        /// <response code="403">Unauthorized request</response>
         [HttpPost]
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
-        [ApiExplorerSettings(IgnoreApi = true)]
+        [ResponseType(typeof(TokenWrapper))]
         public async Task<IHttpActionResult> AuthenticatePlanDirectory()
         {
             var hmacService = ObjectFactory.GetInstance<IHMACService>();
@@ -194,7 +203,7 @@ namespace HubWeb.Controllers
             var json = await client.PostAsync<JObject>(uri, headers: headers);
             var token = json.Value<string>("token");
 
-            return Ok(new { token });
+            return Ok(new TokenWrapper { Token = token });
         }
         /// <summary>
         /// Updates existing authorization token with new values provided
@@ -388,6 +397,12 @@ namespace HubWeb.Controllers
                 AuthTokenId = response.AuthorizationToken?.Id.ToString(),
                 Error = response.Error
             });
-        }
+        }        
+    }
+    //This class is purely for Swagger documentation purposes
+    public class TokenWrapper
+    {
+        [JsonProperty("token")]
+        public string Token { get; set; }
     }
 }
