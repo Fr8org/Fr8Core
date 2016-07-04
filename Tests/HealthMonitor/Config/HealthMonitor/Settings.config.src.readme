@@ -113,7 +113,8 @@ files for predictability) -->
 
   <!-- terminalGoogle settings -->
   <include src="Config\terminalGoogle\Settings.config"/>
-  <include src="..\..\terminalGoogle\web.config" only="terminalGoogle.TerminalEndpoint , GoogleRedirectUri , GoogleFormEventWebServerUrl"/>
+  <!-- We need actual GoogleFormEventWebServerUrl value for the current configuration -->
+  <include src="..\..\terminalGoogle\obj\Dev\TransformWebConfig\transformed\web.config" only="terminalGoogle.TerminalEndpoint , GoogleRedirectUri , GoogleFormEventWebServerUrl"/>
 
   <!-- terminalPapertrail settings -->
   <include src="Config\terminalPapertrail\Settings.config"/>
