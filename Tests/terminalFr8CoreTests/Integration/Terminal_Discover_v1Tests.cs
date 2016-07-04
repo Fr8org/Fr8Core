@@ -22,7 +22,7 @@ namespace terminalFr8CoreTests.Integration
         private const string SetDelayName = "Set_Delay";
         private const string ConvertRelatedFieldsIntoTableName = "Convert_Related_Fields_Into_Table";
         private const string QueryFr8WarehouseName = "Query_Fr8_Warehouse";
-        private const string ShowReportName = "Show_Report_Onscreen";
+        //private const string ShowReportName = "Show_Report_Onscreen";
         private const string StoreFileName = "Store_File";
         private const string MonitorFr8Events = "Monitor_Fr8_Events";
         private const string GetFileFromFr8Store = "Get_File_From_Fr8_Store";
@@ -62,7 +62,7 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SetDelayName), "SetDelayName wasn`t found");
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ConvertRelatedFieldsIntoTableName), "ConvertRelatedFieldsIntoTableName wasn`t found");
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == QueryFr8WarehouseName), "QueryFr8WarehouseName wasn`t found");
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ShowReportName), "ShowReportName wasn`t found");
+            //Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ShowReportName), "ShowReportName wasn`t found");
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == StoreFileName), "StoreFileName wasn`t found");
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == MonitorFr8Events), "MonitorFr8Events wasn`t found");
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == GetFileFromFr8Store), "GetFileFromFr8Store wasn`t found");
