@@ -1,16 +1,12 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Fr8.Infrastructure.Communication;
 using Fr8.Infrastructure.Data.Control;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Testing.Integration;
-using Hub.StructureMap;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using StructureMap;
 using terminalDocuSignTests.Fixtures;
 
 namespace terminalDocuSignTests
@@ -211,14 +207,6 @@ namespace terminalDocuSignTests
             // exact same way we do on front-end.
             var docuSignTemplateControlDTO = (DropDownList)controlsMS.Controls.Single(x => x.Name == "target_docusign_template");
             docuSignTemplateControlDTO.Value = docuSignTemplateControlDTO.ListItems.First().Value;
-        }
-
-        private void SendDocuSignEnvelope_SetSpecificRecipient(ICrateStorage curCrateStorage)
-        {
-            var controls = curCrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-            var recipient = controls.Controls.Single(c => c.Name == "Recipient") as TextSource;
-            recipient.ValueSource = "specific";
-            recipient.Value = "test@test.com";
         }
 
         [Test]

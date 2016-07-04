@@ -50,11 +50,11 @@ namespace terminalFr8Core.Activities
         private bool Evaluate(string criteria, Guid processId, IEnumerable<KeyValueDTO> values)
         {
             if (criteria == null)
-                throw new ArgumentNullException("criteria");
+                throw new ArgumentNullException(nameof(criteria));
             if (criteria == string.Empty)
-                throw new ArgumentException("criteria is empty", "criteria");
+                throw new ArgumentException("criteria is empty", nameof(criteria));
             if (values == null)
-                throw new ArgumentNullException("envelopeData");
+                throw new ArgumentNullException(nameof(values));
 
             return Filter(criteria, processId, values.AsQueryable()).Any();
         }
@@ -63,23 +63,19 @@ namespace terminalFr8Core.Activities
             Guid processId, IQueryable<KeyValueDTO> values)
         {
             if (criteria == null)
-                throw new ArgumentNullException("criteria");
+                throw new ArgumentNullException(nameof(criteria));
             if (criteria == string.Empty)
-                throw new ArgumentException("criteria is empty", "criteria");
+                throw new ArgumentException("criteria is empty", nameof(criteria));
             if (values == null)
-                throw new ArgumentNullException("envelopeData");
+                throw new ArgumentNullException(nameof(values));
 
             var filterDataDTO = JsonConvert.DeserializeObject<FilterDataDTO>(criteria);
             if (filterDataDTO.ExecutionType == FilterExecutionType.WithoutFilter)
             {
                 return values;
             }
-            else
-            {
-                EventManager.CriteriaEvaluationStarted(processId);
-
-                return filterDataDTO.Conditions.Select(condition => ParseCriteriaExpression(condition, values)).Aggregate<Expression, IQueryable<KeyValueDTO>>(null, (current, filterExpression) => current?.Provider.CreateQuery<KeyValueDTO>(filterExpression) ?? values.Provider.CreateQuery<KeyValueDTO>(filterExpression));
-            }
+            EventManager.CriteriaEvaluationStarted(processId);
+            return filterDataDTO.Conditions.Select(condition => ParseCriteriaExpression(condition, values)).Aggregate<Expression, IQueryable<KeyValueDTO>>(null, (current, filterExpression) => current?.Provider.CreateQuery<KeyValueDTO>(filterExpression) ?? values.Provider.CreateQuery<KeyValueDTO>(filterExpression));
         }
         public static int Compare(object left, object right)
         {
@@ -155,24 +151,6 @@ namespace terminalFr8Core.Activities
             return whereCallExpression;
         }
 
-        private static readonly Lazy<Expression<Func<string, IComparable>>> TryMakeDecimalExpression =
-            new Lazy<Expression<Func<string, IComparable>>>(() =>
-            {
-                var value = Expression.Parameter(typeof(string), "value");
-                var returnValue = Expression.Variable(typeof(IComparable), "result");
-                var decimalValue = Expression.Variable(typeof(decimal), "decimalResult");
-                var ifExpression = Expression.IfThenElse(
-                    Expression.Call(typeof(decimal), "TryParse", null,
-                            Expression.TypeAs(value, typeof(string)), decimalValue),
-                    Expression.Assign(returnValue, Expression.TypeAs(decimalValue, typeof(IComparable))),
-                    Expression.Assign(returnValue, Expression.TypeAs(value, typeof(IComparable))));
-                var func = Expression.Block(
-                    new[] { returnValue, decimalValue },
-                    ifExpression,
-                    returnValue);
-                return Expression.Lambda<Func<string, IComparable>>(func, "TryMakeDecimal", new[] { value });
-            });
-
         protected virtual Crate CreateControlsCrate()
         {
             var fieldFilterPane = new FilterPane()
@@ -185,45 +163,11 @@ namespace terminalFr8Core.Activities
                     Label = "Queryable Criteria",
                     ManifestType = CrateManifestTypes.StandardDesignTimeFields,
                     RequestUpstream = true
-                },
-                // Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
+                }
             };
 
             return PackControlsCrate(fieldFilterPane);
         }
-
-        //protected async Task<Crate> ValidateFields(List<FieldValidationDTO> requiredFieldList)
-        //{
-        //    var result = await HubCommunicator.ValidateFields(requiredFieldList);
-        //    var validationErrorList = new List<FieldDTO>();
-        //    //lets create necessary validationError crates
-        //    for (var i = 0; i < result.Count; i++)
-        //    {
-        //        var fieldCheckResult = result[i];
-        //        if (fieldCheckResult == FieldValidationResult.NotExists)
-        //        {
-        //            validationErrorList.Add(new FieldDTO() { Key = requiredFieldList[i].FieldName, Value = "Required" });
-        //        }
-        //    }
-        //    if (validationErrorList.Any())
-        //    {
-        //        return CrateManager.CreateDesignTimeFieldsCrate("Validation Errors", validationErrorList.ToArray());
-        //    }
-        //    return null;
-        //}
-
-        //protected async Task<CrateDTO> ValidateByStandartDesignTimeFields(FieldDescriptionsCM designTimeFields)
-        //{
-        //    var fields = designTimeFields.Fields;
-        //    var validationList = fields.Select(f => new FieldValidationDTO(ActivityId, f.Key)).ToList();
-        //    return CrateManager.ToDto(await ValidateFields(validationList));
-        //}
-
-        //protected async Task<CrateDTO> ValidateActivity()
-        //{
-        //    return await ValidateByStandartDesignTimeFields(Storage.FirstCrate<FieldDescriptionsCM>(x => x.Label == "Queryable Criteria").Content);
-        //}
-
 
         public override async Task Run()
         {
@@ -245,7 +189,7 @@ namespace terminalFr8Core.Activities
             {
                 result = Evaluate(filterPaneControl.Value, ExecutionContext.ContainerId, curValues);
             }
-            catch (Exception e)
+            catch (Exception)
             {
             }
 
@@ -260,35 +204,13 @@ namespace terminalFr8Core.Activities
 
         public override async Task Initialize()
         {
-           /* var curUpstreamFields = (await GetDesignTimeFields(CrateDirection.Upstream, AvailabilityType.RunTime))
-                .Fields
-                .ToArray();
-            //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
-            // var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
-            var queryFieldsCrate = Crate.FromContent(
-                "Queryable Criteria",
-                new FieldDescriptionsCM(curUpstreamFields)
-            );
-            */
-            //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
             Storage.Add(configurationControlsCrate);
-           // Storage.Add(queryFieldsCrate);
         }
 
-        public override async Task FollowUp()
+        public override Task FollowUp()
         {
-           /* var curUpstreamFields = (await GetDesignTimeFields(CrateDirection.Upstream, AvailabilityType.RunTime))
-                .Fields
-                .ToArray();
-            //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
-            // var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
-            var queryFieldsCrate = Crate.FromContent(
-                "Queryable Criteria",
-                new FieldDescriptionsCM(curUpstreamFields)
-            );
-            Storage.RemoveByLabel("Queryable Criteria");
-            Storage.Add(queryFieldsCrate);*/
+            return Task.FromResult(0);
         }
     }
 }

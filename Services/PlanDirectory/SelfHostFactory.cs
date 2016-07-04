@@ -5,7 +5,6 @@ using Microsoft.Owin.Hosting;
 using Microsoft.Owin.Security.DataProtection;
 using StructureMap;
 using Hub.Infrastructure;
-using PlanDirectory.App_Start;
 using PlanDirectory.Infrastructure;
 using System.Web.Http.Dispatcher;
 

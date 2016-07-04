@@ -40,9 +40,17 @@ module dockyard.directives.containerTransition {
             //let's load and keep all plans in cache
             //TODO think about this - maybe we need to request data from PCA or PB
             //this direct access will create unnecessary requests to server
-            PlanService.getbystatus({ id: null, status: null, category: '' }).$promise.then((plans: Array<model.PlanDTO>) => {
+            PlanService.getbystatus({ id: null, status: null, category: '', orderBy: "name" }).$promise.then((result: any) => {
+                var plans = result.plans;
                 for (var i = 0; i < plans.length; i++) {
-                    planOptions.push(new model.DropDownListItem(plans[i].name, plans[i].id));
+                    var plan = plans[i];
+                    if (plan.id === $scope.plan.id) {
+                        plan.name = 'Jump back to the start of this plan';
+                        planOptions.unshift(new model.DropDownListItem(plan.name, plan.id));
+                    }
+                    else {
+                        planOptions.push(new model.DropDownListItem(plan.name, plan.id));
+                    }                    
                 }
             });
 

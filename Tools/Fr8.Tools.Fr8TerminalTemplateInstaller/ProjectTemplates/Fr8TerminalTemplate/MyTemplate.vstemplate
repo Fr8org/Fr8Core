@@ -14,7 +14,7 @@
     <Icon>__TemplateIcon.png</Icon>
   </TemplateData>
   <TemplateContent>
-    <Project TargetFileName="$projectsafename$.csproj" File="Fr8.Tools.TerminalTemplate.Content.csproj" ReplaceParameters="true">
+    <Project TargetFileName="$safeprojectname$.csproj" File="Fr8.Tools.TerminalTemplate.Content.csproj" ReplaceParameters="true">
       <Folder Name="Activities" TargetFolderName="Activities">
         <ProjectItem ReplaceParameters="true" TargetFileName="Activity_v1.cs">Activity_v1.cs</ProjectItem>
       </Folder>

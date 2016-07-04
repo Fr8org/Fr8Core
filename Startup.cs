@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Owin;
@@ -18,6 +19,8 @@ using Hub.Managers;
 using Hub.Security;
 using Hangfire;
 using Hangfire.StructureMap;
+using Hub.StructureMap;
+using HubWeb.App_Start;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 
@@ -32,13 +35,54 @@ namespace HubWeb
 
         public async void Configuration(IAppBuilder app, bool selfHostMode)
         {
-            //ConfigureDaemons();
-            // ConfigureAuth(app);
-            OwinInitializer.ConfigureAuth(app, "/DockyardAccount/Index");
+            ObjectFactory.Configure(Fr8.Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
+            ObjectFactory.GetInstance<AutoMapperBootStrapper>().ConfigureAutoMapper();
 
-
-            ConfigureHangfire(app, "DockyardDB");
+            var db = ObjectFactory.GetInstance<DbContext>();
+            db.Database.Initialize(true);
             
+            EventReporter curReporter = ObjectFactory.GetInstance<EventReporter>();
+            curReporter.SubscribeToAlerts();
+
+            IncidentReporter incidentReporter = ObjectFactory.GetInstance<IncidentReporter>();
+            incidentReporter.SubscribeToAlerts();
+            
+            StartupMigration.CreateSystemUser();
+            StartupMigration.MoveSalesforceRefreshTokensIntoKeyVault();
+
+            SetServerUrl();
+
+            OwinInitializer.ConfigureAuth(app, "/DockyardAccount/Index");
+            
+            ConfigureHangfire(app, "DockyardDB");
+
+#pragma warning disable 4014
+            RegisterTerminalActions(selfHostMode);
+#pragma warning restore 4014
+        }
+
+        private void SetServerUrl()
+        {
+            var config = ObjectFactory.GetInstance<IConfigRepository>();
+
+            var serverProtocol = config.Get("ServerProtocol", String.Empty);
+            var domainName = config.Get("ServerDomainName", String.Empty);
+            var domainPort = config.Get<int?>("ServerPort", null);
+
+            if (!String.IsNullOrWhiteSpace(domainName) && !String.IsNullOrWhiteSpace(serverProtocol) && domainPort.HasValue)
+            {
+                Server.ServerUrl = $"{serverProtocol}{domainName}{(domainPort.Value == 80 ? String.Empty : (":" + domainPort.Value))}/";
+                Server.ServerHostName = domainName;
+            }
+        }
+
+        private async Task RegisterTerminalActions(bool selfHostMode)
+        {
+            var terminalDiscovery = ObjectFactory.GetInstance<ITerminalDiscoveryService>();
+
+            await terminalDiscovery.Discover();
+
             if (!selfHostMode)
             {
 #pragma warning disable 4014 
