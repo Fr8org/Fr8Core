@@ -96,7 +96,7 @@ namespace HubWeb.Controllers
                     {
                         pollingData.RetryCounter++;
                         Logger.Info($"Polling: got result for {pollingData.ExternalAccountId} from a terminal {terminalId}. Starting Retry {pollingData.RetryCounter}");
-                        RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalId), "*/" + 10 + " * * * *");
+                        RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalId), "*/" + result.PollingIntervalInMinutes + " * * * *");
                     }
                 }
                 else
