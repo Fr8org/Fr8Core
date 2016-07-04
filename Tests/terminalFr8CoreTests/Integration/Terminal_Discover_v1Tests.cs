@@ -9,7 +9,7 @@ namespace terminalFr8CoreTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
-        private const int Fr8CoreActivityCount = 25;
+        private const int Fr8CoreActivityCount = 24;
         private const string TestIncomingDataName = "Test_Incoming_Data";
         private const string AddPayloadManuallyName = "Add_Payload_Manually";
         private const string SaveToFr8WarehouseName = "Save_To_Fr8_Warehouse";
