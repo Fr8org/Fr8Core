@@ -131,6 +131,7 @@ namespace HubWeb.Controllers
                         pollingData.RetryCounter++;
                         RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalId), "*/" + 10 + " * * * *");
                     }
+
                 }
             }
         }
