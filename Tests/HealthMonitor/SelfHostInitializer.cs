@@ -96,7 +96,6 @@ namespace HealthMonitor
                         }
                         catch (Exception ex)
                         {
-
                             throw new Exception($"Failed to initialize terminal '{app.Name}' at '{app.Endpoint}'");
                         }
                     }
@@ -122,7 +121,7 @@ namespace HealthMonitor
 #elif RELEASE
             "release";
 #elif DEMO
-            "demo   ";
+            "demo";
 #else
             "debug";
 #endif
