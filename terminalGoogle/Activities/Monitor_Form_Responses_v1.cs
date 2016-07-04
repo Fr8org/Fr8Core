@@ -44,11 +44,6 @@ namespace terminalGoogle.Actions
 
         private KeyValueDTO SelectedForm
         {
-            get
-            {
-                var storedValues = Storage.FirstCrateOrDefault<KeyValueListCM>(x => x.Label == ConfigurationCrateLabel)?.Content;
-                return storedValues?.Values.First();
-            }
             set
             {
                 if (value == null)

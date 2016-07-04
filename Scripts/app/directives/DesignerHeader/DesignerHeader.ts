@@ -4,6 +4,7 @@ module dockyard.directives.designerHeader {
     'use strict';
 
     import designHeaderEvents = dockyard.Fr8Events.DesignerHeader;
+    import pca = dockyard.directives.paneConfigureAction;
 
     export interface IDesignerHeaderScope extends ng.IScope {
         editing: boolean;
@@ -83,18 +84,6 @@ module dockyard.directives.designerHeader {
                     result.$promise.then(() => { });
                 };
 
-
-                //moved to PlanDetailsController
-                //$scope.sharePlan = () => {
-                //    PlanService.share($scope.plan.id)
-                //        .then(() => {
-                //            console.log('sharePlan: Success');
-                //        })
-                //        .catch(() => {
-                //            console.log('sharePlan: Failure');
-                //        });
-                //};
-
                 $scope.runPlan = () => {
                     // mark plan as Active
                     $scope.plan.planState = 2;                   
@@ -127,7 +116,6 @@ module dockyard.directives.designerHeader {
                         }
                     });
                 };
-
                 $scope.resetPlanStatus = () => {
                     var subPlan = $scope.plan.subPlans[0];
                     var initialActivity: interfaces.IActivityDTO = subPlan ? subPlan.activities[0] : null;

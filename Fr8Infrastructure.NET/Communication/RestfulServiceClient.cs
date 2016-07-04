@@ -8,13 +8,11 @@ using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Logging;
-using log4net;
 
 namespace Fr8.Infrastructure.Communication
 {
     public class RestfulServiceClient : IRestfulServiceClient
     {
-        private static readonly ILog Log = Logger.GetLogger();
         private const string HttpLogFormat = "--New Request--\nIsSuccess: {0}\nFinished: {1}\nTotal Elapsed: {2}\nCorrelation ID: {3}\nHttp Status: {4}({5})\n";
         class FormatterLogger : IFormatterLogger
         {
