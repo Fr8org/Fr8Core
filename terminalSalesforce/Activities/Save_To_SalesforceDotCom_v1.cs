@@ -31,7 +31,8 @@ namespace terminalSalesforce.Actions
             Category = ActivityCategory.Forwarders,
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[] { ActivityCategories.Forward }
         };
 
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

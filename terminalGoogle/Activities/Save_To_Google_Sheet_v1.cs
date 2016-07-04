@@ -30,7 +30,8 @@ namespace terminalGoogle.Activities
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             MinPaneWidth = 300,
-            WebService = TerminalData.GooogleWebServiceDTO
+            WebService = TerminalData.GooogleWebServiceDTO,
+            Categories = new[] { ActivityCategories.Forward }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

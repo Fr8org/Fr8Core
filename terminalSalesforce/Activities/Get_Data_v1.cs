@@ -27,7 +27,8 @@ namespace terminalSalesforce.Actions
             MinPaneWidth = 550,
             Tags = Tags.TableDataGenerator,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[] { ActivityCategories.Receive }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

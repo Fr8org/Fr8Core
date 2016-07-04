@@ -230,7 +230,8 @@ namespace terminalExcel.Activities
             Terminal = TerminalData.TerminalDTO,
             Tags = "Table Data Generator,Getter",
             MinPaneWidth = 300,
-            WebService = TerminalData.WebServiceDTO
+            WebService = TerminalData.WebServiceDTO,
+            Categories = new[] { ActivityCategories.Receive }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

@@ -30,7 +30,8 @@ namespace terminalExcel.Activities
             Category = ActivityCategory.Processors,
             Terminal = TerminalData.TerminalDTO,
             Tags = "Table Data Generator,Skip At Run-Time",
-            WebService = TerminalData.WebServiceDTO
+            WebService = TerminalData.WebServiceDTO,
+            Categories = new[] { ActivityCategories.Process }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

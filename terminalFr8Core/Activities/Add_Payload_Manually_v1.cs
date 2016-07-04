@@ -22,7 +22,8 @@ namespace terminalFr8Core.Activities
             Terminal = TerminalData.TerminalDTO,
             Version = "1",
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO
+            WebService = TerminalData.WebServiceDTO,
+            Categories = new[] { ActivityCategories.Process }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
         private const string RunTimeCrateLabel = "ManuallyAddedPayload";

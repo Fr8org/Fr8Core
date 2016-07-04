@@ -27,7 +27,8 @@ namespace terminalDocuSign.Activities
             MinPaneWidth = 330,
             Tags = Tags.Internal,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[] { ActivityCategories.Monitor }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

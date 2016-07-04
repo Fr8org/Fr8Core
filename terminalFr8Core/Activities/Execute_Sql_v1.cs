@@ -25,7 +25,8 @@ namespace terminalFr8Core.Activities
             Version = "1",
             Tags = Tags.Internal,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[] { ActivityCategories.Process }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

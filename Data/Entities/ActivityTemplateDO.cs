@@ -36,7 +36,6 @@ namespace Data.Entities
         /// <param name="version"></param>
         ///<param name="label"></param>
         /// <param name="terminalName">Name of the new TerminalDO</param>
-        /*<param name="baseEndPoint">New TerminalDO base end point</param>*/
         /// <param name="Endpoint">New TerminalDO end point</param>
         public ActivityTemplateDO(string name, string version,
             string terminalName, string terminalLabel, string endPoint, string label = "", string description = "") : this()

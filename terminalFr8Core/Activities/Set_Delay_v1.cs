@@ -21,7 +21,8 @@ namespace terminalFr8Core.Activities
             MinPaneWidth = 330,
             Type = ActivityType.Standard,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[] { ActivityCategories.Process }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

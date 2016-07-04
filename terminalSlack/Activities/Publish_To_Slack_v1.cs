@@ -31,7 +31,8 @@ namespace terminalSlack.Activities
             NeedsAuthentication = true,
             Version = "1",
             WebService = TerminalData.WebServiceDTO,
-            MinPaneWidth = 330
+            MinPaneWidth = 330,
+            Categories = new[] { ActivityCategories.Forward }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

@@ -29,6 +29,7 @@ namespace terminalStatX.Activities
             NeedsAuthentication = true,
             MinPaneWidth = 300,
             WebService = TerminalData.WebServiceDTO,
+            Categories = new[] { ActivityCategories.Monitor }
         };
 
         private readonly IStatXIntegration _statXIntegration;

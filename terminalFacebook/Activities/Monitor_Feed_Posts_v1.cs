@@ -30,7 +30,8 @@ namespace terminalFacebook.Activities
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
-            NeedsAuthentication = true
+            NeedsAuthentication = true,
+            Categories = new[] { ActivityCategories.Monitor }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

@@ -253,6 +253,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\ActivityCategoryDO.cs" />
+    <Compile Include="Entities\ActivityCategorySetDO.cs" />
     <Compile Include="Entities\AspNetUserClaimDO.cs" />
     <Compile Include="Entities\EncryptedAuthorizationData.cs" />
     <Compile Include="Entities\OrganizationDO.cs" />
@@ -720,6 +722,10 @@
     <Compile Include="Migrations\201606300937169_AddPageDefinition.cs" />
     <Compile Include="Migrations\201606300937169_AddPageDefinition.Designer.cs">
       <DependentUpon>201606300937169_AddPageDefinition.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607041029473_ActivityCategory.cs" />
+    <Compile Include="Migrations\201607041029473_ActivityCategory.Designer.cs">
+      <DependentUpon>201607041029473_ActivityCategory.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1333,6 +1339,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606300937169_AddPageDefinition.resx">
       <DependentUpon>201606300937169_AddPageDefinition.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607041029473_ActivityCategory.resx">
+      <DependentUpon>201607041029473_ActivityCategory.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

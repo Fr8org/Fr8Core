@@ -29,7 +29,8 @@ namespace terminalPapertrail.Actions
             Category = ActivityCategory.Forwarders,
             Terminal = TerminalData.TerminalDTO,
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO
+            WebService = TerminalData.WebServiceDTO,
+            Categories = new[] { ActivityCategories.Forward }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

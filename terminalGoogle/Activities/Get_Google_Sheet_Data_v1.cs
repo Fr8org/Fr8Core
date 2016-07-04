@@ -26,7 +26,8 @@ namespace terminalGoogle.Activities
             NeedsAuthentication = true,
             MinPaneWidth = 300,
             WebService = TerminalData.GooogleWebServiceDTO,
-            Tags = "Table Data Generator"
+            Tags = "Table Data Generator",
+            Categories = new[] { ActivityCategories.Receive }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

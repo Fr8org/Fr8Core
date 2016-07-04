@@ -28,7 +28,8 @@ namespace terminalTwilio.Activities
             Version = "1",
             MinPaneWidth = 330,
             Terminal = TerminalData.TerminalDTO,
-            WebService = TerminalData.WebServiceDTO
+            WebService = TerminalData.WebServiceDTO,
+            Categories = new[] { ActivityCategories.Forward }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

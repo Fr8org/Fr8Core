@@ -28,6 +28,7 @@ namespace terminalStatX.Activities
             NeedsAuthentication = true,
             MinPaneWidth = 300,
             WebService = TerminalData.WebServiceDTO,
+            Categories = new[] { ActivityCategories.Forward }
         };
 
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
