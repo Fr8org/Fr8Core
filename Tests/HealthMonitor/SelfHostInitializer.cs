@@ -83,7 +83,9 @@ namespace HealthMonitor
                                 app.Endpoint = ConfigurationManager.AppSettings[app.Name+ ".TerminalEndpoint"];
                                 if (app.Endpoint == null)
                                 {
-                                    throw new ApplicationException($"Cannot find terminal {app.Name}, version {CURRENT_TERMINAL_VERSION} in the Terminals table.");
+                                    Console.WriteLine($"Failed to find endpoint settings for terminal {app.Name}");
+                                    continue;
+                                    //throw new ApplicationException($"Cannot find terminal {app.Name}, version {CURRENT_TERMINAL_VERSION} in the Terminals table.");
                                 }
                             }
                         }
