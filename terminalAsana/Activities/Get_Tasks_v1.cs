@@ -108,10 +108,7 @@ namespace terminalAsana.Activities
             var workspaces = _workspaces.Get();
             ActivityUI.WorkspacesList.ListItems = workspaces.Select( w => new ListItem() { Key= w.Name, Value = w.Id} ).ToList();
 
-            CrateSignaller.MarkAvailableAlways<KeyValueListCM>(RunTimeCrateLabel)
-                .AddField(new FieldDTO("Task name", AvailabilityType.Always))
-                .AddField(new FieldDTO("Task id",AvailabilityType.Always));
-
+            CrateSignaller.MarkAvailableAtRuntime<KeyValueListCM>(RunTimeCrateLabel).AddFields("Task name", "Task id");
         }
 
         public override async Task FollowUp()
@@ -125,24 +122,19 @@ namespace terminalAsana.Activities
                     await _projects.Get(new AsanaProjectQuery() {Workspace = ActivityUI.WorkspacesList.Value });
                 ActivityUI.ProjectsList.ListItems = projects.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();
             }
-            
-            //Crate
-            //Storage - design time
-            //Payload - run time
-            //CrateManager
-            //CrateSignaller
+
         }
 
         protected override Task Validate()
         {
             if (ActivityUI.WorkspacesList.Value.IsNullOrWhiteSpace())
             {
-                ValidationManager.SetError("Workspace should not be empty", nameof(ActivityUI.WorkspacesList));
+                ValidationManager.SetError("Workspace should not be empty", ActivityUI.WorkspacesList);
             }
 
             if (ActivityUI.UsersList.Value.IsNullOrWhiteSpace())
             {
-                ValidationManager.SetError("User should not be empty", nameof(ActivityUI.UsersList));
+                ValidationManager.SetError("User should not be empty", ActivityUI.UsersList);
             }
             return Task.FromResult(0);
         }
@@ -150,13 +142,7 @@ namespace terminalAsana.Activities
 
         public override async Task Run()
         {
-            if (ValidationManager.HasErrors)
-            {
-                RaiseError("Invalid input was selected/entered", ErrorType.Generic,
-                    ActivityErrorCode.DESIGN_TIME_DATA_INVALID, MyTemplate.Name, MyTemplate.Terminal.Name);
-            }
-            else
-            {
+           
                 var query = new AsanaTaskQuery()
                 {
                     Workspace = ActivityUI.WorkspacesList.Value,
@@ -167,20 +153,12 @@ namespace terminalAsana.Activities
                 var tasks = await _tasks.GetAsync(query);
 
                 var payloadObjNames = tasks.Select(t => new KeyValueDTO("Task name", t.Name));
-                var payloadObjIds = tasks.Select(t => new KeyValueDTO("Task id", t.Id));
+                var payloadObjIds = tasks.Select(t => new KeyValueDTO("Task id", t.Id));                
 
-                var payloadNames = Crate<KeyValueListCM>.FromContent(    RunTimeCrateLabel,
-                                                                    new KeyValueListCM(payloadObjNames),
-                                                                    AvailabilityType.Always);
-
-                var payloadIds = Crate<KeyValueListCM>.FromContent(RunTimeCrateLabel,
-                                                                    new KeyValueListCM(payloadObjIds),
-                                                                    AvailabilityType.Always);
-
-                Payload.Add(payloadNames);
-                Payload.Add(payloadIds);
-            }
-        }                               
+                Payload.Add(RunTimeCrateLabel, new KeyValueListCM(payloadObjNames));
+                Payload.Add(RunTimeCrateLabel, new KeyValueListCM(payloadObjIds));
+        }
+                            
         
     }
 }
