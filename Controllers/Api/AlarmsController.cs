@@ -88,7 +88,7 @@ namespace HubWeb.Controllers
                 if (!result.Result)
                 {
                     Logger.Info($"Polling: got result for {pollingData.ExternalAccountId} from a terminal {terminalId}. Deschedulling the job");
-                    if (pollingData.RetryCounter > 3)
+                    if (pollingData.RetryCounter > 20)
                     {
                         RecurringJob.RemoveIfExists(pollingData.JobId);
                     }
@@ -115,11 +115,11 @@ namespace HubWeb.Controllers
 
                     //in case of ongoing deployment when we have a minimal polling interval, could happen to remove the job. Add default polling interval of 10 minutes in this case as retry
                     pollingData.Result = false;
-                    RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalId), "*/" + 10 + " * * * *");
+                    RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalId), "*/" + pollingData.PollingIntervalInMinutes + " * * * *");
                 }
                 else
                 {
-                    if (pollingData.RetryCounter > 3)
+                    if (pollingData.RetryCounter > 20)
                     {
                         Logger.Info($"Polling: no result for {pollingData.ExternalAccountId} from a terminal {terminalId}. Remove Job");
                         //last polling was unsuccessfull, so let's deschedulle it
@@ -129,7 +129,7 @@ namespace HubWeb.Controllers
                     {
                         Logger.Info($"Polling: no result for {pollingData.ExternalAccountId} from a terminal {terminalId}. Retry Counter {pollingData.RetryCounter}");
                         pollingData.RetryCounter++;
-                        RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalId), "*/" + 10 + " * * * *");
+                        RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalId), "*/" + pollingData.PollingIntervalInMinutes + " * * * *");
                     }
 
                 }
