@@ -131,7 +131,7 @@ namespace Hub.Services
                 CrateStorage = _crate.EmptyStorageAsStr(),
                 AuthorizationTokenId = authorizationTokenId
             };
-
+            
             parentNode.AddChild(activity, order);
 
             uow.SaveChanges();

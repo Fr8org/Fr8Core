@@ -45,7 +45,7 @@
         <!-- DownDownList template -->
         <div ng-if='field.type == "DropDownList"'>
             <label ng-if="field.label !== null && field.label.length > 0" class='control-label' ng-bind-html="field.label"></label>
-            <drop-down-list-box current-action="currentAction" field='field' click='onClick' change='onChange' data-field-name='{{::field.name}}'></drop-down-list-box>
+            <drop-down-list-box current-action="currentAction" field='field' click='onClick' change='onChange' data-field-name='{{::field.name}}' is-disabled='plan.planState==2'></drop-down-list-box>
         </div>
 
         <!-- TextBlock template -->

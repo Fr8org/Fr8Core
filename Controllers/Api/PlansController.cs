@@ -29,6 +29,7 @@ using Hub.Infrastructure;
 using HubWeb.Infrastructure_HubWeb;
 using HubWeb.ViewModels.RequestParameters;
 using Newtonsoft.Json.Linq;
+using Segment;
 
 namespace HubWeb.Controllers
 {
@@ -112,6 +113,7 @@ namespace HubWeb.Controllers
                 {
                     throw new ArgumentException($"actionTemplate (solution) name {solutionName} is not found in the database.");
                 }
+                ObjectFactory.GetInstance<ITracker>().Track(_security.GetCurrentAccount(uow), "Loaded Solution", new Segment.Model.Properties().Add("Solution Name", solutionName));
                 var result = await _activity.CreateAndConfigure(
                     uow,
                     userId,
