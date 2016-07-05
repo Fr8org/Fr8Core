@@ -120,7 +120,7 @@
 </body>
 </html>
 <script>
-    var segmentKey = "lAk2GWKyJDefCRdsofopUKwiG1Z0HoY5";
+    var segmentKey = "@(Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey"))";
     if (segmentKey !== "") {
         window.analytics = window.analytics || [], window.analytics.methods = ["identify", "group", "track", "page", "pageview", "alias", "ready", "on", "once", "off", "trackLink", "trackForm", "trackClick", "trackSubmit"], window.analytics.factory = function (t) {
             return function () {
