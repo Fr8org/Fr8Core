@@ -62,11 +62,15 @@ namespace terminalIntegrationTests.Integration
             var url = $"{GetHubApiBaseUrl()}/plans?name=MonitorSubmissionTerminalForm&visibility=2";
             var response = await RestfulServiceClient.GetAsync(new Uri(url), null, await GetHMACHeader(new Uri(url), userId));
 
-            var plans = JsonConvert.DeserializeObject<IEnumerable<PlanDTO>>(response);
+            var plans = JsonConvert.DeserializeObject<IEnumerable<PlanDTO>>(response).ToArray();
             var plan = plans.FirstOrDefault().Plan.SubPlans.FirstOrDefault();
 
-            if(plan.Activities.Where(a => a.Ordering == 8).FirstOrDefault() != null)
+            if (plan.Activities.Where(a => a.Ordering == 8).FirstOrDefault() != null)
             {
+                // deactivate plan before editing
+                var deactivateUrl = GetHubApiBaseUrl() + "plans/deactivate?planId=" + plans.FirstOrDefault().Plan.Id;
+                await RestfulServiceClient.PostAsync(new Uri(deactivateUrl), new List<CrateDTO>(), null, await GetHMACHeader(new Uri(deactivateUrl), userId));
+
                 var deleteActivityUrl = GetHubApiBaseUrl() + "activities/delete/" + plan.Activities.Where(a => a.Ordering == 8).FirstOrDefault().Id;
                 await RestfulServiceClient.DeleteAsync(new Uri(deleteActivityUrl), null, await GetHMACHeader(new Uri(deleteActivityUrl), userId));
             }

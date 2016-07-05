@@ -99,7 +99,16 @@ namespace HubWeb.Controllers
                 if (!result.Result)
                 {
                     Logger.Info($"Polling: got result for {pollingData.ExternalAccountId} from a terminal {terminalId}. Deschedulling the job");
-                    RecurringJob.RemoveIfExists(pollingData.JobId);
+                    if (pollingData.RetryCounter > 20)
+                    {
+                        RecurringJob.RemoveIfExists(pollingData.JobId);
+                    }
+                    else
+                    {
+                        pollingData.RetryCounter++;
+                        Logger.Info($"Polling: got result for {pollingData.ExternalAccountId} from a terminal {terminalId}. Starting Retry {pollingData.RetryCounter}");
+                        RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalId), "*/" + result.PollingIntervalInMinutes + " * * * *");
+                    }
                 }
                 else
                 {
@@ -117,14 +126,23 @@ namespace HubWeb.Controllers
 
                     //in case of ongoing deployment when we have a minimal polling interval, could happen to remove the job. Add default polling interval of 10 minutes in this case as retry
                     pollingData.Result = false;
-                    RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalId), "*/" + 10 + " * * * *");
+                    RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalId), "*/" + pollingData.PollingIntervalInMinutes + " * * * *");
                 }
                 else
                 {
-                    Logger.Info($"Polling: no result for {pollingData.ExternalAccountId} from a terminal {terminalId}. Remove Job");
+                    if (pollingData.RetryCounter > 20)
+                    {
+                        Logger.Info($"Polling: no result for {pollingData.ExternalAccountId} from a terminal {terminalId}. Remove Job");
+                        //last polling was unsuccessfull, so let's deschedulle it
+                        RecurringJob.RemoveIfExists(pollingData.JobId);
+                    }
+                    else
+                    {
+                        Logger.Info($"Polling: no result for {pollingData.ExternalAccountId} from a terminal {terminalId}. Retry Counter {pollingData.RetryCounter}");
+                        pollingData.RetryCounter++;
+                        RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalId), "*/" + pollingData.PollingIntervalInMinutes + " * * * *");
+                    }
 
-                    //last polling was unsuccessfull, so let's deschedulle it
-                    RecurringJob.RemoveIfExists(pollingData.JobId);
                 }
             }
         }
