@@ -249,7 +249,7 @@ namespace Fr8.TerminalBase.Services
             var postUrl = $"?activityTemplateId={templateId}&createPlan={createPlan}";
             if (name != null)
             {
-                postUrl += "&name=" + name;
+                postUrl += "&name=" + HttpUtility.UrlEncode(name);
             }
             if (parentNodeId != null)
             {

@@ -32,6 +32,36 @@ namespace HubWeb.Controllers
             _activityService = activityService;
         }
         /// <summary>
+        /// Creates new activity with specified parameters
+        /// </summary>
+        /// <remarks>
+        /// Fr8 authentication headers must be provided
+        /// </remarks>
+        /// <param name="activityTemplateId">Activity template Id</param>
+        /// <param name="label">Label to use in activity header</param>
+        /// <param name="name">Name of the plan being created. If parentNodeId parameter is specified then this parameter is ignored</param>
+        /// <param name="order">Position inside parent plan. If not specified then newly created activity is placed at the end of plan</param>
+        /// <param name="parentNodeId">Id of plan to add activity to. If not specified then new plan will be created and set as parent</param>
+        /// <param name="authorizationTokenId">Id of authorization token to grant to the new activity. Can be empty</param>
+        /// <response code="200">Activity was succesfully created</response>
+        /// <response code="403">Unauthorized request</response>
+        /// <response code="423">Specified plan is in running state and activity can't be added to it</response>
+        [HttpPost]
+        [Fr8HubWebHMACAuthenticate]
+        public async Task<IHttpActionResult> Create(Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, Guid? authorizationTokenId = null)
+        {
+            using (var uow = _uowFactory.Create())
+            {
+                if (parentNodeId != null && _planService.GetPlanState(uow, parentNodeId.Value) == PlanState.Running)
+                {
+                    return new LockedHttpActionResult();
+                }
+                var userId = User.Identity.GetUserId();
+                var result = await _activityService.CreateAndConfigure(uow, userId, activityTemplateId, label, name, order, parentNodeId, !parentNodeId.HasValue, authorizationTokenId) as ActivityDO;
+                return Ok(Mapper.Map<ActivityDTO>(result));
+            }
+        }
+        /// <summary>
         /// Performs configuration of specified activity and returns updated instance of this activity        
         /// </summary>
         /// <remarks>

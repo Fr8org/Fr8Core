@@ -76,12 +76,12 @@ namespace HubWeb.Controllers
         {
             parameters = parameters ?? new PlansPostParams();
 
-            if (!parameters.SolutionName.IsNullOrEmpty())
+            if (!parameters.solution_name.IsNullOrEmpty())
             {
-                return await CreateSolution(parameters.SolutionName);
+                return await CreateSolution(parameters.solution_name);
             }
 
-            return await Post(planDto, parameters.UpdateRegistrations);
+            return await Post(planDto, parameters.update_registrations);
         }
 
         [HttpPost]
