@@ -117,11 +117,11 @@ namespace HubWeb.Controllers
         /// </summary>
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Save(ActivityDTO curActionDTO)
+        public async Task<IHttpActionResult> Save(ActivityDTO curActionDTO, [FromUri]bool force = false)
         {
             using (var uow = _uowFactory.Create())
             {
-                if (_planService.GetPlanState(uow, curActionDTO.Id) == PlanState.Running)
+                if (_planService.GetPlanState(uow, curActionDTO.Id) == PlanState.Running && !force)
                 {
                     return new LockedHttpActionResult();
                 }
