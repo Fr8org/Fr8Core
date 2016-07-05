@@ -84,6 +84,9 @@ namespace HubWeb.Controllers
         /// <summary>
         /// Deletes activity with specified Id. If 'deleteChildNodes' flag is specified, only deletes child activities of specified activity
         /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <response code="200">Activity was successfully deleted</response>
+        /// <response code="403">Unauthorized request</response>
         [HttpDelete]
         [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> Delete([FromUri] Guid id, [FromUri(Name = "delete_child_nodes")] bool deleteChildNodes = false)

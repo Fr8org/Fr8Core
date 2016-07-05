@@ -35,6 +35,7 @@ namespace HubWeb.Controllers
             return Ok();
         }
         [ApiExplorerSettings(IgnoreApi = true)]
+        [NonAction]
         public void Execute(AlarmDTO alarmDTO)
         {
             try

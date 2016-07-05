@@ -1,8 +1,12 @@
-﻿namespace HubWeb.ViewModels.RequestParameters
+﻿using Newtonsoft.Json;
+
+namespace HubWeb.ViewModels.RequestParameters
 {
     public class PlansPostParams
     {
-        public string solution_name { get; set; }
-        public bool update_registrations { get; set; } = false;
+        [JsonProperty("solution_name")]
+        public string SolutionName { get; set; }
+        [JsonProperty("update_registrations")]
+        public bool UpdateRegistrations { get; set; } = false;
     }
 }
