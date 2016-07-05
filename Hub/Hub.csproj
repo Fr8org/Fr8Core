@@ -280,6 +280,9 @@
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="TLSharp.Core">
+      <HintPath>..\lib\TLSharp.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Twilio.Api, Version=3.4.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Twilio.4.1.0\lib\3.5\Twilio.Api.dll</HintPath>
       <Private>True</Private>
