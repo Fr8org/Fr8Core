@@ -47,9 +47,7 @@ namespace PlanDirectory
                 constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Delete) }
             );
 
-#if DEV
             config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
-#endif // DEV
 
             HttpConfiguration config1 = GlobalConfiguration.Configuration;
             config.Formatters.JsonFormatter.SerializerSettings.Formatting =
