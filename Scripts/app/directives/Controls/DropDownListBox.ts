@@ -120,7 +120,7 @@ module dockyard.directives.dropDownListBox {
                 $scope.toggle = false;
 
                 $scope.toggleDropDown = $select => {
-                    debugger;
+                   
                     // added by Tony
                     if ($scope.isDisabled) {
                         return false;
