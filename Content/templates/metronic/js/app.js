@@ -98,14 +98,13 @@ initialization can be disabled and Layout.init() should be called on page load c
 
 /* Setup Layout Part - Header */
 MetronicApp.controller('HeaderController', ['$scope', '$http', '$location', function ($scope, $http, $location) {
-    debugger;
+    
 
     $scope.$on('$includeContentLoaded', function() {
         Layout.initHeader(); // init header
     });
 
     $scope.goToPlanDirectory = function (planDirectoryUrl) {
-        debugger;
 
         $http.post('/api/authentication/authenticatePlanDirectory')
             .then(function (res) {
