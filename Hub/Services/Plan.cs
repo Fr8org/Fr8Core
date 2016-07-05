@@ -912,26 +912,35 @@ namespace Hub.Services
 
             _pusher.NotifyUser(errorMessage, NotificationChannel.GenericFailure, plan.Fr8AccountId);
 
+            //Sending an Email
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var userEmail = _security.GetUserName();
-                var emailDO = new EmailDO();
-                IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-                string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
-                var emailAddressDO = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress);
-                emailDO.From = emailAddressDO;
-                emailDO.FromID = emailAddressDO.Id;
-                emailDO.AddEmailRecipient(EmailParticipantType.To,
-                    uow.EmailAddressRepository.GetOrCreateEmailAddress(userEmail));
-                emailDO.Subject = "Your plan was deactivated due to authentication expiration";
-                string htmlText = $"Plan “{plan.Name}” was deactivated due to authentication problems. <br>If you would like to keep it active, please reauthenticate <a href='{Server.ServerUrl}dashboard/plans/{plan.Id}/builder?viewMode=plan'>here</a>";
-                emailDO.HTMLText = htmlText;
+                var account = uow.UserRepository.GetQuery().Where(a => a.Id == plan.Fr8AccountId).FirstOrDefault();
 
-                uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, configRepository.Get("PlanDeactivated_Template"));
-                uow.SaveChanges();
+                try
+                {
+                    var userEmail = account.UserName;
+                    var emailDO = new EmailDO();
+                    IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+                    string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
+                    var emailAddressDO = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress);
+                    emailDO.From = emailAddressDO;
+                    emailDO.FromID = emailAddressDO.Id;
+                    emailDO.AddEmailRecipient(EmailParticipantType.To,
+                        uow.EmailAddressRepository.GetOrCreateEmailAddress(userEmail));
+                    emailDO.Subject = "Your plan was deactivated due to authentication expiration";
+                    string htmlText = $"Plan “{plan.Name}” was deactivated due to authentication problems. <br>If you would like to keep it active, please reauthenticate <a href='{Server.ServerUrl}dashboard/plans/{plan.Id}/builder?viewMode=plan'>here</a>";
+                    emailDO.HTMLText = htmlText;
 
-                await ObjectFactory.GetInstance<IEmailPackager>().Send(new EnvelopeDO { Email = emailDO });
+                    uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, "PlanDeactivated_Template");
+                    uow.SaveChanges();
+
+                    await ObjectFactory.GetInstance<IEmailPackager>().Send(new EnvelopeDO { Email = emailDO });
+                }
+
+                catch { Logger.LogError($"Couldn't send email to user {account.Id} to notify him about plan deactivation"); }
             }
         }
     }
+}
 }
