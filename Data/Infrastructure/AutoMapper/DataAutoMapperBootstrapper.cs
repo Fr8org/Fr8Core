@@ -71,7 +71,7 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.ShowDocumentation, opts => opts.Ignore());
 
             Mapper.CreateMap<ActivityTemplateDTO, ActivityTemplateDO>()
-                .ConstructUsing((Func<ResolutionContext, ActivityTemplateDO>) (r => new ActivityTemplateDO()))
+                .ConstructUsing((Func<ResolutionContext, ActivityTemplateDO>)(r => new ActivityTemplateDO()))
                 .ForMember(x => x.Id, opts => opts.MapFrom(x => x.Id))
                 .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
@@ -87,7 +87,22 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.ActivityTemplateState, opts => opts.Ignore())
                 .ForMember(x => x.TerminalId, opts => opts.Ignore())
                 .ForMember(x => x.LastUpdated, opts => opts.Ignore())
-                .ForMember(x => x.CreateDate, opts => opts.Ignore());
+                .ForMember(x => x.CreateDate, opts => opts.Ignore())
+                .ForMember(
+                    x => x.Categories,
+                    opts => opts.ResolveUsing((ActivityTemplateDTO x) =>
+                        x.Categories
+                            .Select(y => new ActivityCategorySetDO()
+                            {
+                                ActivityCategory = new ActivityCategoryDO()
+                                {
+                                    Name = y.Name,
+                                    IconPath = y.IconPath
+                                }
+                            })
+                            .ToList()
+                    )
+                );
 
             //
             //            Mapper.CreateMap<ActionListDO, ActionListDTO>()

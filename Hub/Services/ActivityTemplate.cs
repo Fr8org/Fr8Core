@@ -60,7 +60,11 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                foreach (var activityTemplate in uow.ActivityTemplateRepository.GetQuery().Include(x=>x.WebService))
+                var query = uow.ActivityTemplateRepository.GetQuery()
+                    .Include(x => x.WebService)
+                    .Include(x => x.Categories)
+                    .Include("Categories.ActivityCategory");
+                foreach (var activityTemplate in query)
                 {
                     _activityTemplates[activityTemplate.Id] = Clone(activityTemplate);
                 }
