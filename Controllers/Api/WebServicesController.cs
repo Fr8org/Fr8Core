@@ -31,7 +31,7 @@ namespace HubWeb.Controllers
         {
             if (id >= 0)
             {
-                var category = (ActivityCategory)id;
+                var category = (Fr8.Infrastructure.Data.States.ActivityCategory)id;
                 List<WebServiceActivitySetDTO> webServiceList;
 
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

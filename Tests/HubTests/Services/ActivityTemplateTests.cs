@@ -148,7 +148,7 @@ namespace HubTests.Services
             {
                 Id = id,
                 ActivityTemplateState = 1,
-                Category = ActivityCategory.Forwarders,
+                Category = Fr8.Infrastructure.Data.States.ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
                 ComponentActivities = prefix + "ca" + id,
                 Description = prefix + "des" + id,

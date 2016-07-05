@@ -729,6 +729,8 @@
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
+    <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
+    <Compile Include="Repositories\ActivityCategory\ActivityCategorySetRepository.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenChangeTracker.cs" />

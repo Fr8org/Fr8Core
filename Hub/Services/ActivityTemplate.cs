@@ -16,6 +16,7 @@ namespace Hub.Services
     public class ActivityTemplate : IActivityTemplate
     {
         private readonly ITerminal _terminal;
+        private readonly IActivityCategory _activityCategory;
         private readonly Dictionary<Guid, ActivityTemplateDO> _activityTemplates = new Dictionary<Guid, ActivityTemplateDO>();
         private bool _isInitialized;
 
@@ -25,10 +26,11 @@ namespace Hub.Services
             private set;
         }
         
-        public ActivityTemplate(ITerminal terminal)
+        public ActivityTemplate(ITerminal terminal, IActivityCategory activityCategory)
         {
             IsATandTCacheDisabled = string.Equals(CloudConfigurationManager.GetSetting("DisableATandTCache"), "true", StringComparison.InvariantCultureIgnoreCase);
             _terminal = terminal;
+            _activityCategory = activityCategory;
         }
 
         private void Initialize()
@@ -160,18 +162,32 @@ namespace Hub.Services
         private ActivityTemplateDO Clone(ActivityTemplateDO source)
         {
             var newTemplate = new ActivityTemplateDO();
-
             CopyPropertiesHelper.CopyProperties(source, newTemplate, false);
-
             newTemplate.Terminal = _terminal.GetByKey(source.TerminalId);
           
             if (source.WebService != null)
             {
                 var webService = new WebServiceDO();
-                
                 CopyPropertiesHelper.CopyProperties(source.WebService, webService, false);
-                
                 newTemplate.WebService = webService;
+            }
+
+            if (source.Categories != null)
+            {
+                newTemplate.Categories = new List<ActivityCategorySetDO>();
+                foreach (var acs in source.Categories)
+                {
+                    var newActivityCategory = new ActivityCategoryDO();
+                    CopyPropertiesHelper.CopyProperties(acs.ActivityCategory, newActivityCategory, false);
+
+                    newTemplate.Categories.Add(new ActivityCategorySetDO()
+                    {
+                        ActivityTemplateId = newTemplate.Id,
+                        ActivityTemplate = newTemplate,
+                        ActivityCategoryId = newActivityCategory.Id,
+                        ActivityCategory = newActivityCategory
+                    });
+                }
             }
 
             return newTemplate;
@@ -218,6 +234,43 @@ namespace Hub.Services
           
         }
 
+        private List<ActivityCategorySetDO> ApplyActivityCategories(
+            IUnitOfWork uow, 
+            ActivityTemplateDO activityTemplate,
+            List<ActivityCategoryDO> activityCategories)
+        {
+            // Remove previously registered ActivityCategorySets.
+            var existingActivityCategorySets = uow.ActivityCategorySetRepository
+                .GetQuery()
+                .Where(x => x.ActivityTemplateId == activityTemplate.Id)
+                .ToList();
+
+            foreach (var activityCategorySet in existingActivityCategorySets)
+            {
+                uow.ActivityCategorySetRepository.Remove(activityCategorySet);
+            }
+
+            // Add new activityCategorySets.
+            var activityCategorySets = new List<ActivityCategorySetDO>();
+
+            foreach (var activityCategory in activityCategories)
+            {
+                var registeredActivityCategory = _activityCategory.RegisterOrUpdate(activityCategory);
+
+                var activityCategorySet = new ActivityCategorySetDO()
+                {
+                    Id = Guid.NewGuid(),
+                    ActivityTemplateId = activityTemplate.Id,
+                    ActivityCategoryId = registeredActivityCategory.Id
+                };
+
+                activityCategorySets.Add(activityCategorySet);
+                uow.ActivityCategorySetRepository.Add(activityCategorySet);
+            }
+
+            return activityCategorySets;
+        }
+
         public void RegisterOrUpdate(ActivityTemplateDO activityTemplateDo)
         {
             if (activityTemplateDo == null)
@@ -233,6 +286,7 @@ namespace Hub.Services
             
             clone.Terminal = activityTemplateDo.Terminal;
 
+            // Make copy of web-service reference and add it to 
             if (activityTemplateDo.WebService != null)
             {
                 var wsClone = new WebServiceDO();
@@ -240,8 +294,17 @@ namespace Hub.Services
                 clone.WebService = wsClone;
             }
 
+            // Create list of activity categories for current ActivityTemplate.
+            var activityCategories = new List<ActivityCategoryDO>();
+            if (activityTemplateDo.Categories != null)
+            {
+                foreach (var acs in activityTemplateDo.Categories)
+                {
+                    activityCategories.Add(acs.ActivityCategory);
+                }
+            }
+
             activityTemplateDo = clone;
-            
             activityTemplateDo.Terminal = null; // otherwise we can add dupliacte terminals into the DB
             
             if (!IsATandTCacheDisabled)
@@ -253,6 +316,7 @@ namespace Hub.Services
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
+                    // Create new WebService entity or update reference to existing WebService entity.
                     if (activityTemplateDo.WebService != null)
                     {
                         var existingWebService = uow.WebServiceRepository.FindOne(x => x.Name == activityTemplateDo.WebService.Name);
@@ -269,22 +333,39 @@ namespace Hub.Services
                         }
                     }
                     
-                    var activity = uow.ActivityTemplateRepository.GetQuery().Include(x => x.WebService).FirstOrDefault(t => t.Name == activityTemplateDo.Name
-                                                                                                                         && t.TerminalId == activityTemplateDo.TerminalId
-                                                                                                                         && t.Version == activityTemplateDo.Version);
+                    // Try to extract existing ActivityTemplate.
+                    var activity = uow.ActivityTemplateRepository.GetQuery()
+                        .Include(x => x.WebService)
+                        .FirstOrDefault(t => t.Name == activityTemplateDo.Name
+                            && t.TerminalId == activityTemplateDo.TerminalId
+                            && t.Version == activityTemplateDo.Version);
 
+                    // We're creating new ActivityTemplate.
                     if (activity == null)
                     {
+                        activity = activityTemplateDo;
                         activityTemplateDo.Id = Guid.NewGuid();
-                        uow.ActivityTemplateRepository.Add(activity = activityTemplateDo);
+
+                        var activityCategorySets = ApplyActivityCategories(
+                            uow, activityTemplateDo, activityCategories
+                        );
+
+                        uow.ActivityTemplateRepository.Add(activityTemplateDo);
                         uow.SaveChanges();
+
+                        activityTemplateDo.Categories = activityCategorySets;
                     }
+                    // We're updating existing ActivityTemplate.
                     else
                     {
                         // This is for updating activity template
                         CopyPropertiesHelper.CopyProperties(activityTemplateDo, activity, false, x => x.Name != "Id");
                         activity.ActivityTemplateState = ActivityTemplateState.Active;
                         activity.WebService = activityTemplateDo.WebService;
+
+                        var activityCategorySets = ApplyActivityCategories(uow, activity, activityCategories);
+                        activity.Categories = activityCategorySets;
+
                         uow.SaveChanges();
                     }
 
