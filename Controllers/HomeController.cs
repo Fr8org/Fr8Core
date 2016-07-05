@@ -45,7 +45,7 @@ namespace HubWeb.Controllers
                     dockyardAccountDO = uow.UserRepository.GetByKey(userID);
                 }
 
-                var returnVM = new HomeVM { SegmentWriteKey = Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey") };
+                var returnVM = new HomeVM { SegmentWriteKey = "lAk2GWKyJDefCRdsofopUKwiG1Z0HoY5" };
 
                 if (dockyardAccountDO != null)
                 {

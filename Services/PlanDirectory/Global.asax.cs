@@ -23,7 +23,7 @@ namespace PlanDirectory
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
 
             Fr8.Infrastructure.Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
-            var segmentWriteKey = Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey");
+            var segmentWriteKey = "lAk2GWKyJDefCRdsofopUKwiG1Z0HoY5";
             if (!string.IsNullOrEmpty(segmentWriteKey))
                 Analytics.Initialize(segmentWriteKey);
 
