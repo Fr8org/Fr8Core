@@ -26,7 +26,6 @@ namespace PlanDirectory
             var segmentWriteKey = "lAk2GWKyJDefCRdsofopUKwiG1Z0HoY5";
             if (!string.IsNullOrEmpty(segmentWriteKey))
                 Analytics.Initialize(segmentWriteKey);
-
             await ObjectFactory.GetInstance<ISearchProvider>().Initialize(false);
         }
     }
