@@ -924,7 +924,11 @@ div[dnd-list].dndDragover {
 }
 
 .upstream-field-chooser span{
-    margin-left:5px;
+    margin-left:0;
+}
+
+.upstream-field-chooser button {
+    margin-bottom:10px;
 }
 
 .upstream-field-chooser-modal  th[title]{
@@ -1262,6 +1266,10 @@ i.activity-stream-font {
 
 .fr8-text-source-panel {
     padding: 6px 0 0 0;
+}
+
+.fr8-text-source-panel div:last-child label {
+    margin-top:9px;
 }
 
 .fr8-config-pane-padding {

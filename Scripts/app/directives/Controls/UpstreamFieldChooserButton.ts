@@ -140,7 +140,7 @@ module dockyard.directives.upstreamDataChooser {
         public link: (scope: IUpstreamFieldChooserButtonScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public controller: any;
 
-        public template = '<span><button class="btn btn-primary btn-xs" ng-click="openModal()">this incoming data</button><a href="/documentation/UpstreamCrates.html" class="documentation-link"><i class="fa fa-question-circle"></i></a><span></br>{{field.value}}  {{field.selectedItem.sourceCrateLabel}}</span></span>';
+        public template = '<span><button class="btn btn-primary btn-xs" ng-click="openModal()">incoming data</button><a href="/documentation/UpstreamCrates.html" class="documentation-link"><i class="fa fa-question-circle"></i></a><span></br>{{field.value}}  {{field.selectedItem.sourceCrateLabel}}</span></span>';
         public restrict = 'E';
         public scope = {
             field: '=',
