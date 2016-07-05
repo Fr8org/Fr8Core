@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Data.States.Templates;
@@ -89,6 +90,9 @@ namespace Data.Entities
 
         [Required]
         public ActivityType Type { get; set; }
+
+        [InverseProperty("ActivityTemplate")]
+        public virtual IList<ActivityCategorySetDO> Categories { get; set; }
 
         public int MinPaneWidth { get; set; }
 
