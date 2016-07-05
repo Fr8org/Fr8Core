@@ -7,6 +7,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.States;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using HubWeb.Controllers.Api;
