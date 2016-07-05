@@ -4,6 +4,7 @@ using System.Linq;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using Fr8.Infrastructure.Data.Control;
 using Fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates;
 using Fr8.Infrastructure.Data.Managers;
@@ -76,7 +77,7 @@ namespace Hub.Services
                     Id = Guid.NewGuid(),
                     Fr8AccountId = fr8UserId,
                     Name = planTemplate.Name,// + " — from PlanDirectory",
-                    PlanState = 1,
+                    PlanState = PlanState.Inactive,
                     ChildNodes = new List<PlanNodeDO>(),
                     Description = planTemplate.Description
                 };

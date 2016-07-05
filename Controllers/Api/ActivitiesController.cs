@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Hub.Infrastructure;
 using Hub.Interfaces;
+using HubWeb.Controllers.Api;
 using HubWeb.Infrastructure_HubWeb;
 using Microsoft.AspNet.Identity;
 using StructureMap;
@@ -16,29 +19,30 @@ namespace HubWeb.Controllers
     [Fr8ApiAuthorize]
     public class ActivitiesController : ApiController
     {
-        private readonly IActivity _activity;
-        private readonly ITerminal _terminal;
+        private readonly IActivity _activityService;
+        private readonly IPlan _planService;
+        private readonly IUnitOfWorkFactory _uowFactory;
 
-        public ActivitiesController()
+        public ActivitiesController(IActivity activityService, IPlan planService, IUnitOfWorkFactory uowFactory)
         {
-            _activity = ObjectFactory.GetInstance<IActivity>();
-            _terminal = ObjectFactory.GetInstance<ITerminal>();
+            _planService = planService;
+            _uowFactory = uowFactory;
+            _activityService = activityService;
         }
-
-        public ActivitiesController(IActivity service)
-        {
-            _activity = service;
-        }
-
-
+        
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> Create(Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, Guid? authorizationTokenId = null)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var uow = _uowFactory.Create())
             {
+                if (parentNodeId != null && _planService.GetPlanState(uow, parentNodeId.Value) == PlanState.Running)
+                {
+                    return new LockedHttpActionResult();
+                }
+
                 var userId = User.Identity.GetUserId();
-                var result = await _activity.CreateAndConfigure(uow, userId, activityTemplateId, label, name, order, parentNodeId, false, authorizationTokenId) as ActivityDO;
+                var result = await _activityService.CreateAndConfigure(uow, userId, activityTemplateId, label, name, order, parentNodeId, false, authorizationTokenId) as ActivityDO;
                 return Ok(Mapper.Map<ActivityDTO>(result));
             }
         }
@@ -54,9 +58,15 @@ namespace HubWeb.Controllers
             curActionDesignDTO.CurrentView = null;
             ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDesignDTO);
             var userId = User.Identity.GetUserId();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var uow = _uowFactory.Create())
             {
-                ActivityDTO activityDTO = await _activity.Configure(uow, userId, curActivityDO);
+                if (_planService.GetPlanState(uow, curActionDesignDTO.Id) == PlanState.Running)
+                {
+                    return new LockedHttpActionResult();
+                }
+
+                ActivityDTO activityDTO = await _activityService.Configure(uow, userId, curActivityDO);
+
                 return Ok(activityDTO);
             }
         }
@@ -69,7 +79,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return Mapper.Map<ActivityDTO>(_activity.GetById(uow, id));
+                return Mapper.Map<ActivityDTO>(_activityService.GetById(uow, id));
             }
         }
 
@@ -81,43 +91,26 @@ namespace HubWeb.Controllers
         [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> Delete([FromUri] Guid id, [FromUri(Name = "delete_child_nodes")] bool deleteChildNodes = false)
         {
+            using (var uow = _uowFactory.Create())
+            {
+                if (_planService.GetPlanState(uow, id) == PlanState.Running)
+                {
+                    return new LockedHttpActionResult();
+                }
+            }
+
             if (deleteChildNodes)
             {
-                await _activity.DeleteChildNodes(id);
+                await _activityService.DeleteChildNodes(id);
             }
             else
             {
-                await _activity.Delete(id);
+                await _activityService.Delete(id);
             }
+
             return Ok();
         }
-
-        //[HttpDelete]
-        //public async Task<IHttpActionResult> Delete(Guid id, bool confirmed = false)
-        //{
-        //    await _activity.Delete(id);
-        //    return Ok();
-        //}
-
-        //[HttpDelete]
-        //[Fr8HubWebHMACAuthenticate]
-        //public async Task<IHttpActionResult> DeleteActivity(Guid id)
-        //{
-        //    await _activity.Delete(id);
-        //    return Ok();
-        //}
-
-        /// <summary>
-        /// DELETE: Remove all child Nodes and clear activity values
-        /// </summary>
-        //[HttpDelete]
-        //[Fr8HubWebHMACAuthenticate]
-        //public async Task<IHttpActionResult> DeleteChildNodes(Guid activityId)
-        //{
-        //    await _activity.DeleteChildNodes(activityId);
-        //    return Ok();
-        //}
-
+        
         /// <summary>
         /// POST : Saves or updates the given action
         /// </summary>
@@ -125,9 +118,17 @@ namespace HubWeb.Controllers
         [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> Save(ActivityDTO curActionDTO)
         {
+            using (var uow = _uowFactory.Create())
+            {
+                if (_planService.GetPlanState(uow, curActionDTO.Id) == PlanState.Running)
+                {
+                    return new LockedHttpActionResult();
+                }
+            }
+
             var submittedActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
 
-            var resultActionDTO = await _activity.SaveOrUpdateActivity(submittedActivityDO);
+            var resultActionDTO = await _activityService.SaveOrUpdateActivity(submittedActivityDO);
 
             return Ok(resultActionDTO);
         }

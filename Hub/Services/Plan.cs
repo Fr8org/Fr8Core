@@ -116,6 +116,14 @@ namespace Hub.Services
 
         }
 
+        public int? GetPlanState(IUnitOfWork uow, Guid planNodeId)
+        {
+            var existingNode = uow.PlanRepository.GetById<PlanNodeDO>(planNodeId);
+            var root = existingNode?.GetTreeRoot() as PlanDO;
+
+            return root?.PlanState;
+        }
+
         public bool IsMonitoringPlan(IUnitOfWork uow, PlanDO plan)
         {
             var initialActivity = plan.StartingSubplan.GetDescendantsOrdered()
