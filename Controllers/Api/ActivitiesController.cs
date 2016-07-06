@@ -69,21 +69,22 @@ namespace HubWeb.Controllers
         /// Callers to this endpoint expect to receive back what they need to know to encode user configuration data into the Action. The typical scenario involves a front-end client calling this and receiving back the same Action they passed, but with an attached Configuration Crate. The client renders UI based on the Configuration Crate, collects user inputs, and saves them as values in the Configuration Crate JSON. The updated Configuration Crate is then saved to the server so it will be available to the processing Terminal at run-time.
         /// </remarks>
         /// <param name="curActionDesignDTO">Activity to configure</param>
+        /// <param name="force">True (1) to force updting activity that belong to plan that is currently in running state. Otherwise activity belong or being added to running plan won't be saved</param>
         /// <response code="200">Configured activity</response>
         /// <response code="400">Activity is not specified or doesn't exist</response>
         /// <response code="403">Unauthorized request</response>
-        /// <response code="423">Owning plan is in running state and activity can't be changed</response>
+        /// <response code="423">Owning plan is in running state and activity can't be changed and force flag is not overriden</response>
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
         [ResponseType(typeof(ActivityDTO))]
-        public async Task<IHttpActionResult> Configure(ActivityDTO curActionDesignDTO)
+        public async Task<IHttpActionResult> Configure(ActivityDTO curActionDesignDTO, [FromUri]bool force = false)
         {
             curActionDesignDTO.CurrentView = null;
             ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDesignDTO);
             var userId = User.Identity.GetUserId();
             using (var uow = _uowFactory.Create())
             {
-                if (_planService.GetPlanState(uow, curActionDesignDTO.Id) == PlanState.Running)
+                if (_planService.GetPlanState(uow, curActionDesignDTO.Id) == PlanState.Running && !force)
                 {
                     return new LockedHttpActionResult();
                 }

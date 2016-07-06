@@ -7,6 +7,7 @@ using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Services;
 using terminalGoogle.Actions;
 using terminalGoogle.Activities;
+using System.Web.Http;
 
 [assembly: OwinStartup(typeof(terminalGoogle.Startup))]
 
@@ -28,6 +29,7 @@ namespace terminalGoogle
         {
             ConfigureProject(selfHost, TerminalGoogleBootstrapper.ConfigureLive);
             Container.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
+            SwaggerConfig.Register(_configuration);
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
             app.UseWebApi(_configuration);
