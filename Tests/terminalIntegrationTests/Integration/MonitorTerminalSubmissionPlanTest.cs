@@ -93,7 +93,7 @@ namespace terminalIntegrationTests.Integration
             var issues = jira.GetIssuesFromJql("summary ~ " + guidTestId.ToString());
 
             //Searching for slack message
-            var slackUrl = "https://slack.com/api/search.messages?token="+ slackToken + "&query=" + guidTestId.ToString() + "%20in%3A%23general";
+            var slackUrl = "https://slack.com/api/search.messages?token="+ slackToken + "&query=" + guidTestId.ToString();
             var result = await RestfulServiceClient.GetAsync(new Uri(slackUrl));
 
             var slackSearchResult = JObject.Parse(result);
