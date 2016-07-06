@@ -30,6 +30,7 @@ using System.Web;
 namespace terminalIntegrationTests.Integration
 {
     [Explicit]
+    [Ignore]
     public class MonitorTerminalSubmissionPlanTest : BaseHubIntegrationTest
     {
         public override string TerminalName
