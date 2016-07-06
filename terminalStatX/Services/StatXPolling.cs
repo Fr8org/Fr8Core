@@ -86,7 +86,7 @@ namespace terminalStatX.Services
                 {
                     var eventReportContent = new EventReportCM
                     {
-                        EventNames = "StatXValueChange",
+                        EventNames = "StatXValueChange_"+ statId.Substring(0, 18),
                         ContainerDoId = "",
                         EventPayload = new CrateStorage(Crate.FromContent("StatXValueChange", latestStatWithValues)),
                         Manufacturer = "StatX",

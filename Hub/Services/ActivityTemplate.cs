@@ -221,6 +221,38 @@ namespace Hub.Services
                 return;
             }
 
+            // validate values
+            if (string.IsNullOrWhiteSpace(activityTemplateDo.Name))
+            {
+                throw new ArgumentOutOfRangeException("ActivityTemplate.Name can't be empty");
+            }
+
+            if (string.IsNullOrWhiteSpace(activityTemplateDo.Label))
+            {
+                throw new ArgumentOutOfRangeException("ActivityTemplate.Label can't be empty");
+            }
+
+            if (string.IsNullOrWhiteSpace(activityTemplateDo.Version))
+            {
+                throw new ArgumentOutOfRangeException("ActivityTemplate.Version can't be empty");
+            }
+
+            int tempVersion;
+            if (!int.TryParse(activityTemplateDo.Version, out tempVersion))
+            {
+                throw new ArgumentOutOfRangeException($"ActivityTemplate.Version is not a valid integer value: {activityTemplateDo.Version}");
+            }
+
+            if (activityTemplateDo.WebService == null)
+            {
+                throw new ArgumentOutOfRangeException("ActivityTemplate.WebService is not set");
+            }
+
+            if (string.IsNullOrWhiteSpace(activityTemplateDo.WebService.Name))
+            {
+                throw new ArgumentOutOfRangeException("ActivityTemplate.WebService.Name can't be empty");
+            }
+
             // we are going to change activityTemplateDo. It is not good to corrupt method's input parameters.
             // make a copy
             var clone = new ActivityTemplateDO();

@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using System.Web.Http;
+using System.Web.Http.Controllers;
+using System.Web.Http.Dispatcher;
 using Microsoft.Owin;
 using Microsoft.Owin.Hosting;
 using Owin;
@@ -12,6 +16,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
+using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Infrastructure;
@@ -20,16 +25,15 @@ using Hub.Managers;
 using Hub.Security;
 using Hangfire;
 using Hangfire.StructureMap;
-using Hub.ModelBinders;
 using Hub.StructureMap;
 using HubWeb.App_Start;
-using Segment;
+using GlobalConfiguration = Hangfire.GlobalConfiguration;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 
 namespace HubWeb
 {
-    public partial class Startup
+    public class Startup : IHttpControllerActivator
     {
         public void Configuration(IAppBuilder app)
         {
@@ -57,12 +61,22 @@ namespace HubWeb
             SetServerUrl();
 
             OwinInitializer.ConfigureAuth(app, "/DockyardAccount/Index");
-            
+
+            if (!selfHostMode)
+            {
+                System.Web.Http.GlobalConfiguration.Configure(ConfigureControllerActivator);
+            }
+
             ConfigureHangfire(app, "DockyardDB");
 
 #pragma warning disable 4014
             RegisterTerminalActions(selfHostMode);
 #pragma warning restore 4014
+        }
+
+        public void ConfigureControllerActivator(HttpConfiguration configuration)
+        {
+            configuration.Services.Replace(typeof(IHttpControllerActivator), this);
         }
 
         private void SetServerUrl()
@@ -179,8 +193,11 @@ namespace HubWeb
         //        }
         //    }
         //}
-
-       
+        
+        public IHttpController Create(HttpRequestMessage request, HttpControllerDescriptor controllerDescriptor, Type controllerType)
+        {
+            return ObjectFactory.GetInstance(controllerType) as IHttpController;
+        }
 
         public static IDisposable CreateServer(string url)
         {

@@ -17,5 +17,6 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         public string PollingIntervalInMinutes { get; set; }
         public string Payload { get; set; }
         public string AdditionalConfigAttributes { get; set; }
+        public int RetryCounter { get; set; }
     }
 }

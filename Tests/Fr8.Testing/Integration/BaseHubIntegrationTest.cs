@@ -16,31 +16,18 @@ namespace Fr8.Testing.Integration
 {
     public abstract class BaseHubIntegrationTest : BaseIntegrationTest
     {
-        HttpClient _httpClient;
+        private readonly HttpClient _httpClient;
 
-        protected virtual string TestUserEmail
-        {
-            get { return "integration_test_runner@fr8.company"; }
-        }
+        protected virtual string TestUserEmail => "integration_test_runner@fr8.company";
 
-        protected virtual string TestUserPassword
-        {
-            get { return "fr8#s@lt!"; }
-        }
+        protected virtual string TestUserPassword => "fr8#s@lt!";
 
         protected string TestEmail;
         protected string TestEmailName;
 
         public CredentialsDTO GetDocuSignCredentials()
         {
-            //var creds = new CredentialsDTO()
-            //{
-            //    Username = "integration_test_runner@fr8.company",
-            //    Password = "I6HmXEbCxN",
-            //    IsDemoAccount = false
-            //};
-
-            var creds = new CredentialsDTO()
+            var creds = new CredentialsDTO
             {
                 Username = "freight.testing@gmail.com",
                 Password = "I6HmXEbCxN",
@@ -49,11 +36,11 @@ namespace Fr8.Testing.Integration
             return creds;
         }
 
-        public BaseHubIntegrationTest()
+        protected BaseHubIntegrationTest()
         {
             ObjectFactory.Initialize();
             ObjectFactory.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
-            ObjectFactory.Configure(Fr8.Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
+            ObjectFactory.Configure(Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
 
             // Use a common HttpClient for all REST operations within testing session 
             // to ensure the presense of the authentication cookie. 
@@ -100,7 +87,7 @@ namespace Fr8.Testing.Integration
             {
                 await AuthenticateWebApi(email, password);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
         }
@@ -116,18 +103,12 @@ namespace Fr8.Testing.Integration
                 _baseUrl + "authentication/tokens"
             );
 
-            if (tokens != null)
+            var docusignTokens = tokens?.FirstOrDefault(x => x.Name == terminalName);
+            if (docusignTokens != null)
             {
-                var docusignTokens = tokens.FirstOrDefault(x => x.Name == terminalName);
-                if (docusignTokens != null)
+                foreach (var token in docusignTokens.AuthTokens)
                 {
-                    foreach (var token in docusignTokens.AuthTokens)
-                    {
-                        await HttpPostAsync<string>(
-                            _baseUrl + "authentication/tokens/revoke?id=" + token.Id.ToString(),
-                            null
-                        );
-                    }
+                    await HttpPostAsync<string>(_baseUrl + "authentication/tokens/revoke?id=" + token.Id, null);
                 }
             }
         }
@@ -141,8 +122,7 @@ namespace Fr8.Testing.Integration
 
         private async Task AuthenticateWebApi(string email, string password)
         {
-            await HttpPostAsync<string, object>(_baseUrl
-                + string.Format("authentication/login?username={0}&password={1}", Uri.EscapeDataString(email), Uri.EscapeDataString(password)), null);
+            await HttpPostAsync<string, object>(_baseUrl + $"authentication/login?username={Uri.EscapeDataString(email)}&password={Uri.EscapeDataString(password)}", null);
         }
 
         public async Task<IncomingCratesDTO> GetRuntimeCrateDescriptionsFromUpstreamActivities(Guid curActivityId)
@@ -162,45 +142,9 @@ namespace Fr8.Testing.Integration
             return token.Id;
         }
 
-
-        private async Task Authenticate(string email, string password, string verificationToken, HttpClient httpClient)
-        {
-            var authenticationEndpointUrl = "/dockyardaccount/login";
-
-            var formContent = new FormUrlEncodedContent(new[]
-                {
-                    new KeyValuePair<string, string>("__RequestVerificationToken", verificationToken),
-                    new KeyValuePair<string, string>("Email", email),
-                    new KeyValuePair<string, string>("Password", password),
-                });
-
-            var response = await httpClient.PostAsync(authenticationEndpointUrl, formContent);
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-        }
-
-        private async Task<string> GetVerificationToken(HttpClient httpClient)
-        {
-            var loginFormUrl = "/dockyardaccount";
-            var response = await httpClient.GetAsync(loginFormUrl);
-            response.EnsureSuccessStatusCode();
-            var loginPageText = await response.Content.ReadAsStringAsync();
-            var regEx = new System.Text.RegularExpressions.Regex(@"<input\s+name=""__RequestVerificationToken""\s+type=""hidden""\s+value=\""([\w\d-_]+)""\s+\/>");
-            var matches = regEx.Match(loginPageText);
-            if (matches == null || matches.Groups.Count < 2)
-            {
-                throw new Exception("Unable to find verification token in the login page HTML code.");
-            }
-            string formToken = matches.Groups[1].Value;
-            return formToken;
-        }
-
         protected async Task<ActivityDTO> ConfigureActivity(ActivityDTO activity)
         {
-            activity = await HttpPostAsync<ActivityDTO, ActivityDTO>(
-                _baseUrl + "activities/configure",
-                activity
-            );
+            activity = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", activity);
 
             return activity;
         }
@@ -208,7 +152,7 @@ namespace Fr8.Testing.Integration
         protected async Task<PayloadDTO> ExtractContainerPayload(ContainerDTO container)
         {
             var payload = await HttpGetAsync<PayloadDTO>(
-                _baseUrl + "containers/payload?id=" + container.Id.ToString()
+                _baseUrl + "containers/payload?id=" + container.Id
             );
 
             return payload;
@@ -217,7 +161,7 @@ namespace Fr8.Testing.Integration
         protected async Task<ContainerDTO> ExecutePlan(PlanFullDTO plan)
         {
             var container = await HttpPostAsync<string, ContainerDTO>(
-                _baseUrl + "plans/run?planId=" + plan.Id.ToString(),
+                _baseUrl + "plans/run?planId=" + plan.Id,
                 null
             );
 
@@ -261,10 +205,10 @@ namespace Fr8.Testing.Integration
                         parsedCondition += " <= ";
                         break;
                     default:
-                        throw new NotSupportedException(string.Format("Not supported operator: {0}", condition.Operator));
+                        throw new NotSupportedException($"Not supported operator: {condition.Operator}");
                 }
 
-                parsedCondition += string.Format("'{0}'", condition.Value);
+                parsedCondition += $"'{condition.Value}'";
                 parsedConditions.Add(parsedCondition);
             });
 

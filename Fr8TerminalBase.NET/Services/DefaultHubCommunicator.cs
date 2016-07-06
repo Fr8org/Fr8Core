@@ -117,16 +117,6 @@ namespace Fr8.TerminalBase.Services
             return tokens;
         }
 
-
-        public async Task<AuthorizationTokenDTO> GenerateOAuthToken(ExternalAuthenticationDTO authDTO)
-        {
-            var uri = new Uri($"{CloudConfigurationManager.GetSetting("terminalGoogle.TerminalEndpoint")}/authentication/token", UriKind.Absolute);
-            var tokens = await _restfulServiceClient.PostAsync<ExternalAuthenticationDTO>(uri, authDTO);
-
-            var terminalResponseAuthTokenDTO = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(tokens);
-            return terminalResponseAuthTokenDTO;
-        }
-
         public async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(Guid activityId, CrateDirection direction)
         {
             var directionSuffix = direction == CrateDirection.Upstream
@@ -249,7 +239,7 @@ namespace Fr8.TerminalBase.Services
 
         public async Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload)
         {
-            var url = $"{GetHubUrlWithApiVersion()}/activities/save";
+            var url = $"{GetHubUrlWithApiVersion()}/activities/save?force=true";
             var uri = new Uri(url);
             var activityDTO = Mapper.Map<ActivityDTO>(activityPayload);
             var resultActivityDTO = await _restfulServiceClient.PostAsync<ActivityDTO, ActivityDTO>(uri, activityDTO, null, await GetHMACHeader(uri, activityDTO));
