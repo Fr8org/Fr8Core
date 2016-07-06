@@ -115,16 +115,16 @@ namespace Fr8.TerminalBase.Services
             await _underlyingHubCommunicator.ScheduleEvent(externalAccountId, minutes, triggerImmediately, additionalConfigAttributes);
         }
 
-        public async Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload)
+        public async Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload, bool force)
         {
             await InitializeUnderlyingCommunicator();
-            return await _underlyingHubCommunicator.ConfigureActivity(activityPayload);
+            return await _underlyingHubCommunicator.ConfigureActivity(activityPayload, force);
         }
 
-        public async Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload)
+        public async Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload, bool force)
         {
             await InitializeUnderlyingCommunicator();
-            return await _underlyingHubCommunicator.SaveActivity(activityPayload);
+            return await _underlyingHubCommunicator.SaveActivity(activityPayload, force);
         }
 
         public async Task<ActivityPayload> CreateAndConfigureActivity(Guid templateId, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)

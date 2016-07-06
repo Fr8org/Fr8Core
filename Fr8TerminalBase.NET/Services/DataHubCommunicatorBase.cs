@@ -203,12 +203,12 @@ namespace Fr8.TerminalBase.Services
             throw new NotImplementedException();
         }
 
-        public Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload)
+        public Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload, bool force)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload)
+        public Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload, bool force)
         {
             throw new NotImplementedException();
         }
