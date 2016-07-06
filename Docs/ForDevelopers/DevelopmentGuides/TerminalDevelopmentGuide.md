@@ -23,7 +23,7 @@ The main Fr8 Hub runs many of these Terminals itself, but the architecture is de
 
 Also you can run your own Hub by creating a web service that is built based on [Fr8 Hub Specification](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Specifications/Fr8HubSpecification.md).
 
-Terminals can be written in any language, and only need to support a handful of [HTTP endpoints](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Terminals/TerminalEndpoints.md).
+Terminals can be written in any language, and only need to support a handful of [HTTP endpoints](replace with swagger link).
 
 Connecting to Hubs
 ===
@@ -39,10 +39,14 @@ The ActivityTemplates are saved by the Hub, and provided to the Client so it kno
 Endpoints
 ===
 
-Terminals need to support the following core endpoints:
+In addition to the discover endpoint, Terminals need to support the following core endpoints:
+* discover
 * configure
 * run
 * activate/deactivate
+
+For most purposes, these are implemented separately for each Activity that the Terminal supports. The Terminal has a base controller that receives the calls from the Hub, and it then directs the call to the appropriate Activity class for processing.
+
 See the full set of Terminal [API Endpoints]((https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Terminals/TerminalEndpoints.md))
 
 ### Configure
@@ -99,6 +103,12 @@ Terminals should post important event information to the Hub's [/events endpoint
 2) status/logging type messages, including errors. These should be posted so the User and Fr8Admins can figure out what went wrong.
 
 
+### Crates
+Crates are the basic packaging unit of data in the Fr8 system. Your terminal should generally put all of the data it creates into Crates, and then place those Crates either in the run-time Payload Container or the design-time Activity that is being configured. 
+
+Your terminal first creates a Crate of JSON data when it responds to the /discover call. 
+
+Read about [Crate Best Practices](/Docs/ForDevelopers/DevelopmentGuides/CrateBestPractices.md).
 
 ## Platform-Specific SDK
 =====
