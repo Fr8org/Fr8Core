@@ -178,7 +178,8 @@ namespace Hub.Services
                 foreach (var acs in source.Categories)
                 {
                     var newActivityCategory = new ActivityCategoryDO();
-                    CopyPropertiesHelper.CopyProperties(acs.ActivityCategory, newActivityCategory, false);
+                    var activityCategory = _activityCategory.GetById(acs.ActivityCategoryId);
+                    CopyPropertiesHelper.CopyProperties(activityCategory, newActivityCategory, false);
 
                     newTemplate.Categories.Add(new ActivityCategorySetDO()
                     {
@@ -267,6 +268,8 @@ namespace Hub.Services
                 activityCategorySets.Add(activityCategorySet);
                 uow.ActivityCategorySetRepository.Add(activityCategorySet);
             }
+
+            uow.SaveChanges();
 
             return activityCategorySets;
         }
@@ -377,15 +380,12 @@ namespace Hub.Services
                     {
                         activity = activityTemplateDo;
                         activityTemplateDo.Id = Guid.NewGuid();
-
-                        var activityCategorySets = ApplyActivityCategories(
-                            uow, activityTemplateDo, activityCategories
-                        );
+                        activityTemplateDo.Categories = null;
 
                         uow.ActivityTemplateRepository.Add(activityTemplateDo);
                         uow.SaveChanges();
 
-                        activityTemplateDo.Categories = activityCategorySets;
+                        activityTemplateDo.Categories = ApplyActivityCategories(uow, activityTemplateDo, activityCategories);
                     }
                     // We're updating existing ActivityTemplate.
                     else
@@ -394,11 +394,9 @@ namespace Hub.Services
                         CopyPropertiesHelper.CopyProperties(activityTemplateDo, activity, false, x => x.Name != "Id");
                         activity.ActivityTemplateState = ActivityTemplateState.Active;
                         activity.WebService = activityTemplateDo.WebService;
-
-                        var activityCategorySets = ApplyActivityCategories(uow, activity, activityCategories);
-                        activity.Categories = activityCategorySets;
-
                         uow.SaveChanges();
+
+                        activity.Categories = ApplyActivityCategories(uow, activity, activityCategories);
                     }
 
                     _activityTemplates[activity.Id] = Clone(activity);
