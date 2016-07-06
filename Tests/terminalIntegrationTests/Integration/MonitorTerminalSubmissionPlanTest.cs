@@ -199,7 +199,7 @@ namespace terminalIntegrationTests.Integration
 
         private async Task<ActivityPayload> GetPayload(Guid activityId)
         {
-            var activity = await RestfulServiceClient.GetAsync(new Uri(GetHubApiBaseUrl()+ "/activities/get/" + activityId));
+            var activity = await RestfulServiceClient.GetAsync(new Uri(GetHubApiBaseUrl()+ "activities/get/" + activityId));
             var DTO = JsonConvert.DeserializeObject<ActivityDTO>(activity);
             return Mapper.Map<ActivityPayload>(DTO);
         }
