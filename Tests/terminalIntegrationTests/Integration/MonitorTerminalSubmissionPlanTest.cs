@@ -30,7 +30,7 @@ using System.Web;
 namespace terminalIntegrationTests.Integration
 {
     [Explicit]
-    [Ignore]
+    [Ignore] // This test works unsable. Test is being fixed in the scope of https://maginot.atlassian.net/browse/FR-4271?filter=-2
     public class MonitorTerminalSubmissionPlanTest : BaseHubIntegrationTest
     {
         public override string TerminalName
