@@ -230,7 +230,7 @@ namespace Fr8.TerminalBase.Services
 
         public async Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload)
         {
-            var url = $"{GetHubUrlWithApiVersion()}/activities/configure";
+            var url = $"{GetHubUrlWithApiVersion()}/activities/configure?force=true";
             var uri = new Uri(url);
             var activityDTO = Mapper.Map<ActivityDTO>(activityPayload);
             var resultActivityDTO = await _restfulServiceClient.PostAsync<ActivityDTO, ActivityDTO>(uri, activityDTO, null, await GetHMACHeader(uri, activityDTO));
