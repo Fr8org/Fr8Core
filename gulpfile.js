@@ -86,6 +86,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/services/ManifestRegistryService.js',
         'Scripts/app/services/SolutionDocumentationService.js',
         'Scripts/app/services/UpstreamExtractor.js',
+        'Scripts/app/services/PageDefinitionService.js',
         'Scripts/app/filters/PlanState.js',
         'Scripts/app/filters/ContainerState.js',
         'Scripts/app/filters/FilterByTag.js',
@@ -179,6 +180,8 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/ManageUserController.js',
         'Scripts/app/controllers/PlanUploadModalController.js',
         'Scripts/app/controllers/PlanUploadController.js',
+        'Scripts/app/controllers/PageDefinitionListController.js',
+        'Scripts/app/controllers/PageDefinitionFormController.js',
         'Scripts/app/directives/Controls/Fr8Event.js'
     ])
         .pipe(sourcemaps.init())

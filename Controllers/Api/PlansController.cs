@@ -2,14 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Security.Policy;
-using System.Text;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
-using Hub.Exceptions;
 using HubWeb.Controllers.Helpers;
 using Microsoft.AspNet.Identity;
 using StructureMap;
@@ -33,6 +29,7 @@ using Hub.Infrastructure;
 using HubWeb.Infrastructure_HubWeb;
 using HubWeb.ViewModels.RequestParameters;
 using Newtonsoft.Json.Linq;
+using Segment;
 
 namespace HubWeb.Controllers
 {
@@ -88,7 +85,7 @@ namespace HubWeb.Controllers
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
         [HttpPost]
-        public async Task<IHttpActionResult> Post([FromBody] PlanEmptyDTO planDto,[FromUri] PlansPostParams parameters = null)
+        public async Task<IHttpActionResult> Post([FromBody] PlanEmptyDTO planDto, [FromUri] PlansPostParams parameters = null)
         {
             parameters = parameters ?? new PlansPostParams();
 
@@ -129,11 +126,12 @@ namespace HubWeb.Controllers
                 {
                     throw new ArgumentException($"actionTemplate (solution) name {solutionName} is not found in the database.");
                 }
+                ObjectFactory.GetInstance<ITracker>().Track(_security.GetCurrentAccount(uow), "Loaded Solution", new Segment.Model.Properties().Add("Solution Name", solutionName));
                 var result = await _activity.CreateAndConfigure(
-                    uow, 
-                    userId, 
-                    activityTemplate.Id, 
-                    name: activityTemplate.Label, 
+                    uow,
+                    userId,
+                    activityTemplate.Id,
+                    name: activityTemplate.Label,
                     createPlan: true);
                 return Ok(PlanMappingHelper.MapPlanToDto(uow, (PlanDO)result));
             }
@@ -165,7 +163,7 @@ namespace HubWeb.Controllers
             }
         }
 
-        
+
         /// <summary>
         /// Get PlanResult depending on passed query parameters. 
         /// </summary>
@@ -298,7 +296,7 @@ namespace HubWeb.Controllers
                 var planResult = _plan.GetForUser(
                     uow,
                     _security.GetCurrentAccount(uow),
-                    new PlanQueryDTO() {Id = id}, 
+                    new PlanQueryDTO() { Id = id },
                     _security.IsCurrentUserHasRole(Roles.Admin)
                 );
 
@@ -331,13 +329,13 @@ namespace HubWeb.Controllers
             return Ok(id);
         }
 
-        
+
         [HttpPost]
         [Fr8ApiAuthorize]
         public async Task<IHttpActionResult> Deactivate(Guid planId)
         {
             await _plan.Deactivate(planId);
-           
+
             return Ok();
         }
 
@@ -379,7 +377,7 @@ namespace HubWeb.Controllers
         [HttpGet]
         public async Task<IHttpActionResult> Run(Guid planId, Guid? containerId = null)
         {
-            var result =  await _plan.Run(planId, null, containerId);
+            var result = await _plan.Run(planId, null, containerId);
 
             if (result == null)
             {
@@ -454,9 +452,9 @@ namespace HubWeb.Controllers
 
             // Notify user with directing him to PlanDirectory with related search query
             var url = CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/#?planSearch=" + HttpUtility.UrlEncode(dto.Name);
-            _pusherNotifier.NotifyUser(new { Message = $"Plan Shared. To view, click on " + url, Collapsed = false}, 
+            _pusherNotifier.NotifyUser(new { Message = $"Plan Shared. To view, click on " + url, Collapsed = false },
                 NotificationChannel.GenericSuccess, User.Identity.GetUserId());
-            
+
             return Ok();
         }
 

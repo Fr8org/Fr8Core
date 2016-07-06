@@ -1,0 +1,32 @@
+﻿<?xml version="1.0"?>
+
+<!--- 
+====================================
+terminalTelegram Configuration File
+====================================
+
+This configuration file is intended for sensitive settings which you don't want to share
+when contributing to the open source repository. 
+
+Add your own configuration settings in this file and remove the ".readme" extension from filename.
+
+You may also need to modify settings in the appSettings section of web.config. 
+
+Note that all the settings defined in this file cannot take advantage of XML transformation. 
+If you need a setting to be able to change depending on build configuration (Debug/Release/etc),
+define it in web.config. 
+
+If different sensitive settings should be used depending on build configuration, 
+create a setting file per each configuration: Setting.Release.config, 
+Setting.Dev.config, etc. See terminalSlack or terminalSalesforce for an example. 
+
+IMPORTANT: Settings.config files are .gitignored by default so they won't be persisted 
+in along with other project files. If you want to save .config files in your default git repository,
+exclude them from .gitignore.
+-->
+
+<appSettings>
+  <!-- Telegram integration -->
+  <add key="AppClientId" value="your-telegram-client-id" />
+  <add key="AppClientSecret" value="your-telegram-client-secret" />
+</appSettings>

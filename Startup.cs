@@ -1,7 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.Http.Controllers;
+using System.Web.Http.Dispatcher;
 using Microsoft.Owin;
 using Microsoft.Owin.Hosting;
 using Owin;
@@ -10,6 +16,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
+using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Infrastructure;
@@ -18,12 +25,15 @@ using Hub.Managers;
 using Hub.Security;
 using Hangfire;
 using Hangfire.StructureMap;
+using Hub.StructureMap;
+using HubWeb.App_Start;
+using GlobalConfiguration = Hangfire.GlobalConfiguration;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 
 namespace HubWeb
 {
-    public partial class Startup
+    public class Startup : IHttpControllerActivator
     {
         public void Configuration(IAppBuilder app)
         {
@@ -32,13 +42,64 @@ namespace HubWeb
 
         public async void Configuration(IAppBuilder app, bool selfHostMode)
         {
-            //ConfigureDaemons();
-            // ConfigureAuth(app);
+            ObjectFactory.Configure(Fr8.Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
+            ObjectFactory.GetInstance<AutoMapperBootStrapper>().ConfigureAutoMapper();
+
+            var db = ObjectFactory.GetInstance<DbContext>();
+            db.Database.Initialize(true);
+            
+            EventReporter curReporter = ObjectFactory.GetInstance<EventReporter>();
+            curReporter.SubscribeToAlerts();
+
+            IncidentReporter incidentReporter = ObjectFactory.GetInstance<IncidentReporter>();
+            incidentReporter.SubscribeToAlerts();
+            
+            StartupMigration.CreateSystemUser();
+            StartupMigration.MoveSalesforceRefreshTokensIntoKeyVault();
+
+            SetServerUrl();
+
             OwinInitializer.ConfigureAuth(app, "/DockyardAccount/Index");
 
+            if (!selfHostMode)
+            {
+                System.Web.Http.GlobalConfiguration.Configure(ConfigureControllerActivator);
+            }
 
             ConfigureHangfire(app, "DockyardDB");
-            
+
+#pragma warning disable 4014
+            RegisterTerminalActions(selfHostMode);
+#pragma warning restore 4014
+        }
+
+        public void ConfigureControllerActivator(HttpConfiguration configuration)
+        {
+            configuration.Services.Replace(typeof(IHttpControllerActivator), this);
+        }
+
+        private void SetServerUrl()
+        {
+            var config = ObjectFactory.GetInstance<IConfigRepository>();
+
+            var serverProtocol = config.Get("ServerProtocol", String.Empty);
+            var domainName = config.Get("ServerDomainName", String.Empty);
+            var domainPort = config.Get<int?>("ServerPort", null);
+
+            if (!String.IsNullOrWhiteSpace(domainName) && !String.IsNullOrWhiteSpace(serverProtocol) && domainPort.HasValue)
+            {
+                Server.ServerUrl = $"{serverProtocol}{domainName}{(domainPort.Value == 80 ? String.Empty : (":" + domainPort.Value))}/";
+                Server.ServerHostName = domainName;
+            }
+        }
+
+        private async Task RegisterTerminalActions(bool selfHostMode)
+        {
+            var terminalDiscovery = ObjectFactory.GetInstance<ITerminalDiscoveryService>();
+
+            await terminalDiscovery.Discover();
+
             if (!selfHostMode)
             {
 #pragma warning disable 4014 
@@ -132,8 +193,11 @@ namespace HubWeb
         //        }
         //    }
         //}
-
-       
+        
+        public IHttpController Create(HttpRequestMessage request, HttpControllerDescriptor controllerDescriptor, Type controllerType)
+        {
+            return ObjectFactory.GetInstance(controllerType) as IHttpController;
+        }
 
         public static IDisposable CreateServer(string url)
         {

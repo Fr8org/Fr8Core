@@ -280,6 +280,9 @@
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="TLSharp.Core">
+      <HintPath>..\lib\TLSharp.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Twilio.Api, Version=3.4.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Twilio.4.1.0\lib\3.5\Twilio.Api.dll</HintPath>
       <Private>True</Private>
@@ -309,6 +312,7 @@
     <Compile Include="Infrastructure\Fr8ApiAuthorizeAttribute.cs" />
     <Compile Include="Infrastructure\OwinInitializer.cs" />
     <Compile Include="Interfaces\IManifestRegistryMonitor.cs" />
+    <Compile Include="Interfaces\IPageDefinition.cs" />
     <Compile Include="Interfaces\IPlanTemplates.cs" />
     <Compile Include="Interfaces\ITimer.cs" />
     <Compile Include="Managers\APIManagers\Packagers\IEmailPackager.cs" />
@@ -387,6 +391,7 @@
     <Compile Include="Services\MT\MTSearchHelper.MtQueryProviderT.cs" />
     <Compile Include="Services\MT\MTTypesHelper.cs" />
     <Compile Include="Services\PlanBased\ManifestRegistryMonitor.cs" />
+    <Compile Include="Services\PageDefinition.cs" />
     <Compile Include="Services\PlanTemplates.cs" />
     <Compile Include="Services\PlanNode.cs" />
     <Compile Include="Services\Organization.cs" />

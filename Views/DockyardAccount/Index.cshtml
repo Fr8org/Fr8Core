@@ -1,5 +1,4 @@
 ﻿@model HubWeb.ViewModels.LoginVM
-@using Fr8.Infrastructure.Utilities
 @{
     ViewBag.title = "Log in";
 }
@@ -73,8 +72,8 @@
 </div>
 <script type="text/javascript">
     $(function () {
-        var segmentKey = "@(Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey"))";
-        if (segmentKey != "") {
+        var segmentKey = Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey");
+        if (segmentKey !== "") {
             window.analytics = window.analytics || [], window.analytics.methods = ["identify", "group", "track", "page", "pageview", "alias", "ready", "on", "once", "off", "trackLink", "trackForm", "trackClick", "trackSubmit"], window.analytics.factory = function (t) {
                 return function () {
                     var a = Array.prototype.slice.call(arguments);

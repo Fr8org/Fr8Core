@@ -42,6 +42,22 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Dev|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Demo|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ionic.ZLib, Version=2.0.0.14, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -77,6 +93,10 @@
     </Reference>
     <Reference Include="Microsoft.ApplicationInsights, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ApplicationInsights.2.0.0\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.ApplicationInsights.Log4NetAppender, Version=1.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.Log4NetAppender.1.2.5\lib\net45\Microsoft.ApplicationInsights.Log4NetAppender.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -149,7 +169,53 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Config\terminalTelegram\Settings.config.readme" />
+    <Content Include="Config\terminalYammer\Settings.Release.config" />
+    <Content Include="Config\terminalYammer\Settings.Dev.config" />
+    <Content Include="Config\terminalYammer\Settings.Demo.config" />
+    <Content Include="Config\terminalYammer\Settings.config" />
+    <Content Include="Config\terminalTwilio\Settings.config" />
+    <Content Include="Config\terminalTelegram\Settings.Release.config" />
+    <Content Include="Config\terminalTelegram\Settings.Dev.config" />
+    <Content Include="Config\terminalTelegram\Settings.Demo.config" />
+    <Content Include="Config\terminalTelegram\Settings.config" />
+    <Content Include="Config\terminalSlack\Settings.Release.config" />
+    <Content Include="Config\terminalSlack\Settings.Dev.config" />
+    <Content Include="Config\terminalSlack\Settings.Demo.config" />
+    <Content Include="Config\terminalSlack\Settings.config" />
+    <Content Include="Config\terminalSendGrid\Settings.config" />
+    <Content Include="Config\terminalSalesforce\Settings.Release.config" />
+    <Content Include="Config\terminalSalesforce\Settings.Dev.config" />
+    <Content Include="Config\terminalSalesforce\Settings.Demo.config" />
+    <Content Include="Config\terminalSalesforce\Settings.config" />
+    <Content Include="Config\terminalQuickBooks\Settings.config" />
+    <Content Include="Config\terminalPapertrail\Settings.config" />
+    <Content Include="Config\terminalGoogle\Settings.config" />
+    <Content Include="Config\terminalFr8Core\Settings.config" />
+    <Content Include="Config\terminalFacebook\Settings.Release.config" />
+    <Content Include="Config\terminalFacebook\Settings.Dev.config" />
+    <Content Include="Config\terminalFacebook\Settings.Demo.config" />
+    <Content Include="Config\terminalFacebook\Settings.config" />
+    <Content Include="Config\terminalDropbox\Settings.config" />
+    <Content Include="Config\terminalDocuSign\Settings.config" />
+    <Content Include="Config\terminalBox\Settings.config" />
+    <Content Include="Config\terminalBasecamp2\Settings.Release.config" />
+    <Content Include="Config\terminalBasecamp2\Settings.Dev.config" />
+    <Content Include="Config\terminalBasecamp2\Settings.Demo.config" />
+    <Content Include="Config\terminalBasecamp2\Settings.config" />
+    <Content Include="Config\terminalAzure\Settings.config" />
+    <Content Include="Config\terminalAtlassian\Settings.config" />
+    <Content Include="Config\PlanDirectory\Settings.Release.config" />
+    <Content Include="Config\PlanDirectory\Settings.config" />
+    <Content Include="Config\HubWeb\Settings.config" />
+    <Content Include="Config\HealthMonitor\Settings.config.src" />
     <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Demo.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.Release.config">
@@ -209,7 +275,12 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+    <Error Condition="!Exists('..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets'))" />
   </Target>
+  <Import Project="..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets" Condition="Exists('..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" />
+  <Target Name="BeforeBuild">
+  </Target>
+  <Import Project="..\targets\Fr8.NugetContentRestore.targets" Condition="Exists('..\targets\Fr8.NugetContentRestore.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
