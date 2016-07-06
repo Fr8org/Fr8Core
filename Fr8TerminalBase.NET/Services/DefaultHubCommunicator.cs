@@ -228,18 +228,18 @@ namespace Fr8.TerminalBase.Services
             await _restfulServiceClient.PostAsync(uri, token, null, await GetHMACHeader(uri, token));
         }
 
-        public async Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload)
+        public async Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload, bool force)
         {
-            var url = $"{GetHubUrlWithApiVersion()}/activities/configure?force=true";
+            var url = $"{GetHubUrlWithApiVersion()}/activities/configure?force="+force;
             var uri = new Uri(url);
             var activityDTO = Mapper.Map<ActivityDTO>(activityPayload);
             var resultActivityDTO = await _restfulServiceClient.PostAsync<ActivityDTO, ActivityDTO>(uri, activityDTO, null, await GetHMACHeader(uri, activityDTO));
             return Mapper.Map<ActivityPayload>(resultActivityDTO);
         }
 
-        public async Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload)
+        public async Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload, bool force)
         {
-            var url = $"{GetHubUrlWithApiVersion()}/activities/save?force=true";
+            var url = $"{GetHubUrlWithApiVersion()}/activities/save?force=" + force;
             var uri = new Uri(url);
             var activityDTO = Mapper.Map<ActivityDTO>(activityPayload);
             var resultActivityDTO = await _restfulServiceClient.PostAsync<ActivityDTO, ActivityDTO>(uri, activityDTO, null, await GetHMACHeader(uri, activityDTO));
