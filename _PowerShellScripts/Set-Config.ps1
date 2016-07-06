@@ -85,10 +85,17 @@ if(Test-Path $configPath)
 		}
 	}
 
+	# Get appSettigns section
+	$settings = $xml.appSettings.add # if an incuded settings file
+	if (($settings -eq $null) -or ($settings.Count -eq 0))
+	{
+		$settings = $xml.configuration.appSettings.add # if a web/app.config
+	}
+
 	ForEach($item in $appSettings.GetEnumerator())
 	{
 		Write-Host ("Updating {0} value" -f $item.Name) 
-		$node = $xml.configuration.appSettings.add | where {$_.key -eq $item.Name}
+		$node = $settings | where {$_.key -eq $item.Name}
 		if ($node -ne $NULL)
 		{
 			# Handle reference to Staging Cloud Service URL 
