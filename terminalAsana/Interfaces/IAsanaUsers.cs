@@ -13,20 +13,20 @@ namespace terminalAsana.Interfaces
         /// Returns the full user record for the currently authenticated user.
         /// </summary>
         /// <returns></returns>
-        Task<AsanaUser> Me();
+        Task<AsanaUser> MeAsync();
 
         /// <summary>
         /// Returns the full user record for the single user with the provided ID.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<AsanaUser> GetUser(int id);
+        Task<AsanaUser> GetUserAsync(string id);
 
         /// <summary>
         /// Returns the user records for all users in all workspaces and organizations accessible to the authenticated user. 
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<AsanaUser>> GetUsers(string workspaceId);
+        Task<IEnumerable<AsanaUser>> GetUsersAsync(string workspaceId);
 
 
     }

@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using Fr8.Infrastructure.Communication;
+using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Control;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
@@ -13,7 +14,9 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.TerminalBase.BaseClasses;
+using Microsoft.Ajax.Utilities;
 using terminalAsana.Asana;
+using terminalAsana.Asana.Entities;
 using terminalAsana.Asana.Services;
 using terminalAsana.Interfaces;
 
@@ -23,11 +26,15 @@ namespace terminalAsana.Activities
     {
         private IAsanaWorkspaces _workspaces;
         private IAsanaUsers _users;
+        private IAsanaTasks _tasks;
+        private IAsanaProjects _projects;
+
+        private IAsanaParameters _parameters;
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "Get_Tasks",
-            Label = "Get Tasks",
+            Label = "GetAsync Tasks",
             Category = ActivityCategory.Receivers,
             Version = "1",
             MinPaneWidth = 330,
@@ -36,8 +43,9 @@ namespace terminalAsana.Activities
             NeedsAuthentication = true
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+        
 
-        private const string RunTimeCrateLabel = "Get Tasks";
+        private const string RunTimeCrateLabel = "GetAsync Tasks";
         private const string ResultFieldLabel = "ActivityResult";
 
 
@@ -45,7 +53,7 @@ namespace terminalAsana.Activities
         {
             public DropDownList WorkspacesList;
             public DropDownList UsersList;
-
+            public DropDownList ProjectsList;
 
             public ActivityUi()
             {
@@ -53,52 +61,104 @@ namespace terminalAsana.Activities
                 {
                     Label = "Avaliable workspaces",
                     Name = nameof(WorkspacesList),
-                    ListItems = new List<ListItem>()
+                    ListItems = new List<ListItem>(),
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig },
                 };
+
+                ProjectsList = new DropDownList()
+                {
+                    Label = "Projects in workspace",
+                    Name = nameof(ProjectsList),
+                    ListItems = new List<ListItem>(),
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
+                };
+
                 UsersList = new DropDownList()
                 {
                     Label = "Users in workspace",
                     Name = nameof(UsersList),
-                    ListItems = new List<ListItem>()
+                    ListItems = new List<ListItem>(),
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
 
-                Controls = new List<ControlDefinitionDTO>(){ WorkspacesList};
+                Controls = new List<ControlDefinitionDTO>(){ WorkspacesList, UsersList, ProjectsList };
             }
 
 
         }
 
-        public Get_Tasks_v1(ICrateManager crateManager, IAsanaOAuth oAuth, IRestfulServiceClient client) : base(crateManager, oAuth, client)
+        public Get_Tasks_v1(ICrateManager crateManager, IAsanaOAuth oAuth, IRestfulServiceClient client, IAsanaParameters parameters) : base(crateManager, oAuth, client)
         {
+            DisableValidationOnFollowup = true;
+            _parameters = parameters;
         }
 
         protected override void InitializeInternalState()
         {
             base.InitializeInternalState();
 
-            var asanaParams = new AsanaParametersService();
-            _workspaces = new Workspaces(OAuthCommunicator, asanaParams);
-            _users = new Users(OAuthCommunicator, asanaParams);
+            _workspaces = new Workspaces(OAuthCommunicator, _parameters);
+            _users = new Users(OAuthCommunicator, _parameters);
+            _tasks = new Tasks(OAuthCommunicator, _parameters);
+            _projects = new Projects(OAuthCommunicator, _parameters);
         }
 
         public override async Task Initialize()
         {
-            var items = _workspaces.GetAll();
-            ActivityUI.WorkspacesList.ListItems = items.Select( w => new ListItem() { Key= w.Name, Value = w.Id} ).ToList();
-            
-            CrateSignaller.MarkAvailableAlways<StandardPayloadDataCM>(RunTimeCrateLabel).AddField("workspace_id")
-                .AddField("workspace name");
+            var workspaces = _workspaces.Get();
+            ActivityUI.WorkspacesList.ListItems = workspaces.Select( w => new ListItem() { Key= w.Name, Value = w.Id} ).ToList();
+
+            CrateSignaller.MarkAvailableAtRuntime<KeyValueListCM>(RunTimeCrateLabel).AddFields("Task name", "Task id");
         }
 
         public override async Task FollowUp()
-        {     
-            
+        {
+            if (!ActivityUI.WorkspacesList.Value.IsNullOrWhiteSpace())
+            {
+                var users =  await _users.GetUsersAsync(ActivityUI.WorkspacesList.Value);
+                ActivityUI.UsersList.ListItems = users.Select(w => new ListItem() {Key = w.Name, Value = w.Id}).ToList();
+
+                var projects =
+                    await _projects.Get(new AsanaProjectQuery() {Workspace = ActivityUI.WorkspacesList.Value });
+                ActivityUI.ProjectsList.ListItems = projects.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();
+            }
+
         }
+
+        protected override Task Validate()
+        {
+            if (ActivityUI.WorkspacesList.Value.IsNullOrWhiteSpace())
+            {
+                ValidationManager.SetError("Workspace should not be empty", ActivityUI.WorkspacesList);
+            }
+
+            if (ActivityUI.UsersList.Value.IsNullOrWhiteSpace())
+            {
+                ValidationManager.SetError("User should not be empty", ActivityUI.UsersList);
+            }
+            return Task.FromResult(0);
+        }
+
 
         public override async Task Run()
         {
-            
+           
+                var query = new AsanaTaskQuery()
+                {
+                    Workspace = ActivityUI.WorkspacesList.Value,
+                    Assignee = ActivityUI.UsersList.Value,
+                    Project = ActivityUI.ProjectsList.Value
+                };
+
+                var tasks = await _tasks.GetAsync(query);
+
+                var payloadObjNames = tasks.Select(t => new KeyValueDTO("Task name", t.Name));
+                var payloadObjIds = tasks.Select(t => new KeyValueDTO("Task id", t.Id));                
+
+                Payload.Add(RunTimeCrateLabel, new KeyValueListCM(payloadObjNames));
+                Payload.Add(RunTimeCrateLabel, new KeyValueListCM(payloadObjIds));
         }
+                            
         
     }
 }

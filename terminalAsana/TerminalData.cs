@@ -9,7 +9,7 @@ namespace terminalAsana
         public static WebServiceDTO WebServiceDTO = new WebServiceDTO
         {
             Name = "Asana",
-            IconPath = "http://d1gwm4cf8hecp4.cloudfront.net/images/favicons/favicon.ico"
+            IconPath = "https://asana.com/favicon.ico"
         };
 
         public static TerminalDTO TerminalDTO = new TerminalDTO

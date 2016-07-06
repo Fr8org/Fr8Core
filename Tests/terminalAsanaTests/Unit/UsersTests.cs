@@ -24,7 +24,7 @@ namespace terminalAsanaTests.Unit
             var httpClient = new Mock<IRestfulServiceClient>().Object;
             var oAuthSrv = new Mock<IAsanaOAuth>().Object;
 
-            _asanaUsersService = new Users(httpClient,oAuthSrv);
+            //_asanaUsersService = new Users(httpClient,);
         }
 
         [Test]

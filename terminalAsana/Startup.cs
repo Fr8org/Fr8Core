@@ -41,7 +41,7 @@ namespace terminalAsana
         protected override void RegisterActivities()
         {
             ActivityStore.RegisterActivity<Activities.Post_Comment_v1>(Activities.Post_Comment_v1.ActivityTemplateDTO);
-            ActivityStore.RegisterActivity<Activities.Get_Workspaces_v1>(Activities.Get_Workspaces_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Activities.Get_Tasks_v1>(Activities.Get_Tasks_v1.ActivityTemplateDTO);
         }
 
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)

@@ -170,7 +170,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activities\Get_Tasks_v1.cs" />
-    <Compile Include="Activities\Get_Workspaces_v1.cs" />
     <Compile Include="Activities\AsanaOAuthBaseActivity.cs" />
     <Compile Include="Activities\Post_Comment_v1.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -178,14 +177,17 @@
     <Compile Include="Asana\Entities\AsanaOrganization.cs" />
     <Compile Include="Asana\Entities\AsanaProject.cs" />
     <Compile Include="Asana\Entities\AsanaProjectInsertion.cs" />
+    <Compile Include="Asana\Entities\AsanaProjectQuery.cs" />
     <Compile Include="Asana\Entities\AsanaProjectStatus.cs" />
     <Compile Include="Asana\Entities\AsanaSection.cs" />
     <Compile Include="Asana\Entities\AsanaStories.cs" />
     <Compile Include="Asana\Entities\AsanaTag.cs" />
     <Compile Include="Asana\Entities\AsanaTask.cs" />
     <Compile Include="Asana\Entities\AsanaTaskQuery.cs" />
+    <Compile Include="Asana\Projects.cs" />
     <Compile Include="Asana\Services\AsanaCommunicatorService.cs" />
     <Compile Include="Asana\OAuthToken.cs" />
+    <Compile Include="Asana\Stories.cs" />
     <Compile Include="Asana\Tasks.cs" />
     <Compile Include="Asana\Users.cs" />
     <Compile Include="Asana\Workspaces.cs" />
@@ -202,6 +204,8 @@
     <Compile Include="Interfaces\IAsanaEntity.cs" />
     <Compile Include="Interfaces\IAsanaParameters.cs" />
     <Compile Include="Interfaces\IAsanaOAuth.cs" />
+    <Compile Include="Interfaces\IAsanaProjects.cs" />
+    <Compile Include="Interfaces\IAsanaStories.cs" />
     <Compile Include="Interfaces\IAsanaTasks.cs" />
     <Compile Include="Interfaces\IAsanaUsers.cs" />
     <Compile Include="Interfaces\IAsanaWorkspaces.cs" />
@@ -242,9 +246,33 @@
       <Name>Fr8TerminalBase.NET</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\Config\log4net.terminals.config">
+      <Link>log4net.terminals.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Config\log4net.terminals.Demo.config">
+      <Link>log4net.terminals.Demo.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Config\log4net.terminals.Dev.config">
+      <Link>log4net.terminals.Dev.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Config\log4net.terminals.Release.config">
+      <Link>log4net.terminals.Release.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup Label="SlowCheetah">
+    <SlowCheetahToolsPath>$([System.IO.Path]::GetFullPath( $(MSBuildProjectDirectory)\..\packages\SlowCheetah.2.5.15\tools\))</SlowCheetahToolsPath>
+    <SlowCheetah_EnableImportFromNuGet Condition=" '$(SlowCheetah_EnableImportFromNuGet)'=='' ">true</SlowCheetah_EnableImportFromNuGet>
+    <SlowCheetah_NuGetImportPath Condition=" '$(SlowCheetah_NuGetImportPath)'=='' ">$([System.IO.Path]::GetFullPath( $(MSBuildProjectDirectory)\Properties\SlowCheetah\SlowCheetah.Transforms.targets ))</SlowCheetah_NuGetImportPath>
+    <SlowCheetahTargets Condition=" '$(SlowCheetah_EnableImportFromNuGet)'=='true' and Exists('$(SlowCheetah_NuGetImportPath)') ">$(SlowCheetah_NuGetImportPath)</SlowCheetahTargets>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
@@ -273,22 +301,12 @@
     <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
   </Target>
   <ItemGroup>
-    <Log4netConfigFiles Include="..\Config\log4net.terminals.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Log4netConfigFiles>
-    <Log4netConfigFiles Include="..\Config\log4net.terminals.Demo.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Log4netConfigFiles>
-    <Log4netConfigFiles Include="..\Config\log4net.terminals.Dev.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Log4netConfigFiles>
-    <Log4netConfigFiles Include="..\Config\log4net.terminals.Release.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Log4netConfigFiles>
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.*" />
   </ItemGroup>
   <Target Name="BeforeBuild">
     <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
   </Target>
+  <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
