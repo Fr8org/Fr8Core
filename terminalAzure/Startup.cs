@@ -26,6 +26,7 @@ namespace terminalAzure
         public void Configuration(IAppBuilder app, bool selfHost)
         {
             ConfigureProject(selfHost, TerminalAzureSqlServerStructureMapRegistries.LiveConfiguration);
+            SwaggerConfig.Register(_configuration);
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
             app.UseWebApi(_configuration);
