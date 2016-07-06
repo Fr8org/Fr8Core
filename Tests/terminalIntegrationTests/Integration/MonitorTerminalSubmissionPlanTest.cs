@@ -30,6 +30,7 @@ using System.Web;
 namespace terminalIntegrationTests.Integration
 {
     [Explicit]
+    [Ignore] // This test works unsable. Test is being fixed in the scope of https://maginot.atlassian.net/browse/FR-4271?filter=-2
     public class MonitorTerminalSubmissionPlanTest : BaseHubIntegrationTest
     {
         public override string TerminalName
@@ -65,12 +66,12 @@ namespace terminalIntegrationTests.Integration
             var plans = JsonConvert.DeserializeObject<IEnumerable<PlanDTO>>(response).ToArray();
             var plan = plans.FirstOrDefault().Plan.SubPlans.FirstOrDefault();
 
+            // deactivate plan before editing
+            var deactivateUrl = GetHubApiBaseUrl() + "plans/deactivate?planId=" + plans.FirstOrDefault().Plan.Id;
+            await RestfulServiceClient.PostAsync(new Uri(deactivateUrl), new List<CrateDTO>(), null, await GetHMACHeader(new Uri(deactivateUrl), userId));
+
             if (plan.Activities.Where(a => a.Ordering == 8).FirstOrDefault() != null)
             {
-                // deactivate plan before editing
-                var deactivateUrl = GetHubApiBaseUrl() + "plans/deactivate?planId=" + plans.FirstOrDefault().Plan.Id;
-                await RestfulServiceClient.PostAsync(new Uri(deactivateUrl), new List<CrateDTO>(), null, await GetHMACHeader(new Uri(deactivateUrl), userId));
-
                 var deleteActivityUrl = GetHubApiBaseUrl() + "activities/delete/" + plan.Activities.Where(a => a.Ordering == 8).FirstOrDefault().Id;
                 await RestfulServiceClient.DeleteAsync(new Uri(deleteActivityUrl), null, await GetHMACHeader(new Uri(deleteActivityUrl), userId));
             }
