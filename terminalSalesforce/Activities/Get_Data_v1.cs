@@ -45,7 +45,7 @@ namespace terminalSalesforce.Actions
                     Name = nameof(SalesforceObjectSelector),
                     Label = "Get all objects of type:",
                     Required = true,
-                    Events = new List<ControlEvent> {  ControlEvent.RequestConfig }
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
                 SalesforceObjectFilter = new QueryBuilder
                 {
@@ -88,7 +88,6 @@ namespace terminalSalesforce.Actions
                 .Select(x => new ListItem() { Key = x.Name, Value = x.Name })
                 .ToList();
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel, true);
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PayloadDataCrateLabel, true);
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(CountObjectsCrateLabel, true);
 
             return Task.FromResult(true);
@@ -122,8 +121,6 @@ namespace terminalSalesforce.Actions
             //Publish information for downstream activities
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel, true)
                           .AddFields(selectedObjectProperties);
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PayloadDataCrateLabel, true)
-                          .AddFields(selectedObjectProperties);
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(CountObjectsCrateLabel, true)
                           .AddField(CountObjectsFieldLabel);
         }
@@ -134,7 +131,7 @@ namespace terminalSalesforce.Actions
             if (string.IsNullOrEmpty(salesforceObject))
             {
                 throw new ActivityExecutionException(
-                    "No Salesforce object is selected", 
+                    "No Salesforce object is selected",
                     ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
             var salesforceObjectFields = Storage
@@ -160,15 +157,6 @@ namespace terminalSalesforce.Actions
                     parsedCondition,
                     AuthorizationToken
                 );
-
-            Payload.Add(
-                Crate<StandardPayloadDataCM>
-                    .FromContent(
-                        PayloadDataCrateLabel,
-                        resultObjects.ToPayloadData(),
-                        AvailabilityType.RunTime
-                    )
-            );
 
             Payload.Add(
                 Crate<StandardTableDataCM>
