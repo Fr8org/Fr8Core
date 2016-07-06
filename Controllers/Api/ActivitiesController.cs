@@ -149,17 +149,19 @@ namespace HubWeb.Controllers
         /// Updates activity if one with specified Id exists. Otherwise creates a new activity
         /// </summary>
         /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <param name="curActionDTO">Activity data to save</param>
+        /// <param name="force">True (1) to force updting activity that belong to plan that is currently in running state. Otherwise activity belong or being added to running plan won't be saved</param>
         /// <response code="200">Newly created or updated activity</response>
         /// <response code="403">Unauthorized request</response>
-        /// <response code="423">Owning plan is in running state and activity can't be changed</response>
+        /// <response code="423">Owning plan is in running state and activity can't be changed and force flag is not overriden</response>
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
         [ResponseType(typeof(ActivityDTO))]
-        public async Task<IHttpActionResult> Save(ActivityDTO curActionDTO)
+        public async Task<IHttpActionResult> Save(ActivityDTO curActionDTO, [FromUri]bool force = false)
         {
             using (var uow = _uowFactory.Create())
             {
-                if (_planService.GetPlanState(uow, curActionDTO.Id) == PlanState.Running)
+                if (_planService.GetPlanState(uow, curActionDTO.Id) == PlanState.Running && !force)
                 {
                     return new LockedHttpActionResult();
                 }
