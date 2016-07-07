@@ -17,4 +17,6 @@ Configuring Plans
 
 Currently defined states are Running, Inactive, and Deleted
 
+[Moving and Sharing Plans](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Plans/MovingPlans.md)
+
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
