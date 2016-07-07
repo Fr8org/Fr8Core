@@ -30,6 +30,7 @@ module dockyard.directives.paneConfigureAction {
         change: any;
         onChange: (radio: model.ControlDefinitionDTO) => void;
         onClick: (event: any) => void;
+        isDisabled: boolean;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -42,7 +43,9 @@ module dockyard.directives.paneConfigureAction {
             field: '=',
             plan: '=',
             subPlan: '=',
-            change:'='
+            change: '=',
+            isDisabled: '='
+
         };
         public templateUrl = '/AngularTemplate/ConfigurationControl';
         public restrict = 'E';

@@ -1,5 +1,5 @@
 ﻿<div class='configuration-control-form-group'>
-    <fieldset ng-disabled="plan.planState==2">
+    <fieldset ng-disabled="plan.planState==2 || isDisabled">
         <!--
         This fine contains a map of snippets which are rendered by Angular depending on field type
         Type check occurs with help of the ng-if directive on the outermost <div> of the snippet.
@@ -39,13 +39,13 @@
         <!-- RadioButtonGroup template -->
         <div ng-if='field.type == "RadioButtonGroup"'>
             <label class='control-label' ng-bind-html="field.label"></label>
-            <radio-button-group field='field' current-action='currentAction' change='onChange'></radio-button-group>
+            <radio-button-group field='field' current-action='currentAction' change='onChange' is-disabled="plan.planState==2 || isDisabled"></radio-button-group>
         </div>
 
         <!-- DownDownList template -->
         <div ng-if='field.type == "DropDownList"'>
             <label ng-if="field.label !== null && field.label.length > 0" class='control-label' ng-bind-html="field.label"></label>
-            <drop-down-list-box current-action="currentAction" field='field' click='onClick' change='onChange' data-field-name='{{::field.name}}' is-disabled='plan.planState==2'></drop-down-list-box>
+            <drop-down-list-box current-action="currentAction" field='field' click='onClick' change='onChange' data-field-name='{{::field.name}}' is-disabled="plan.planState==2 || isDisabled"></drop-down-list-box>
         </div>
 
         <!-- TextBlock template -->
@@ -74,7 +74,7 @@
         <!-- Routing control group template -->
         <div ng-if='field.type == "Routing"'>
             <div class="container_box" ng-repeat="plan in field.plans">
-                <routing-control plan="plan" />
+                <routing-control plan="plan"/>
             </div>
         </div>
 
@@ -138,7 +138,7 @@
 
         <!-- DatePicker -->
         <div ng-if='field.type == "DatePicker"'>
-            <date-picker field="field" />
+            <date-picker field="field"/>
         </div>
 
         <!-- CrateChooser -->
