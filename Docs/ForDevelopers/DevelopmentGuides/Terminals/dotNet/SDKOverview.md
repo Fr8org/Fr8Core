@@ -5,19 +5,26 @@ The bulk of the SDK is found in the TerminalBase project, which is intended to c
 Base Classes
 ============
 
-BaseConfiguration.cs	
+BaseConfiguration.cs
 --------------------
 
-BaseTerminalActivity.cs	
------------------------
+BaseTerminalWebApiConfig.cs	
+---------------------------
 
-BaseTerminalActivityLegacy.cs	
------------------------------
+DefaultActivityController.cs
+----------------------------
 
-BaseTerminalController.cs	Renamed projects	
-------------------------------------------
-BaseTerminalWebApiConfig.cs	Renamed projects
-EnhancedTerminalActivity.cs	Renamed projects	
-RuntimeValidationScope.cs	Renamed projects
-SimpleActionBase.cs	Renamed projects	
-StatefullTerminalActivity.cs
+DefaultTerminalController.cs
+----------------------------
+
+ExplicitTerminalActivity.cs	
+----------------------------
+
+OAuthApiIntegrationBase.cs
+----------------------------
+
+TerminalActivity.cs	
+----------------------------
+
+TerminalActivityBase.cs	
+----------------------------
