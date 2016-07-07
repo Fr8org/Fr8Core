@@ -1,4 +1,4 @@
-# PLANS
+# Plans
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
 
 A Fr8 Plan is a JSON element that defines a series of Activities. It may have one or more Subplans. When a Plan is run, a Fr8 Hubs first generates a Payload Container, which is a JSON structure designed to store any data generated during the execution of the Plan. The Hub then identifies the Terminal responsible for the starting Activity, and posts the Payload Container off to it. 
