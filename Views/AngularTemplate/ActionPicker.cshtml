@@ -1,5 +1,12 @@
 ﻿<div class="action-add" ng-class="{'action-add--active': activeCategory != null}">
-    <div style="display: flex;">
+    <div>
+        <a href ng-click="onAddActivity()">
+            <i class="fa fa-plus action-add-button"></i>
+        </a>
+
+    <!-- TODO: FR-3969, remove this. -->
+    <!--<div style="display: flex;">-->
+        <!--
         <div class="action-categories">
             <div data-ng-repeat="actionCategory in actionCategories"
                  ng-class="{'action-category--active': actionCategory.id === activeCategory, 'invisible-icon': activeCategory !== null && activeCategory != actionCategory.id}" class="ng-isolate-scope action-category" data-ng-click="setActive(actionCategory.id)">
@@ -7,7 +14,9 @@
                 <div class="action-category-name">{{actionCategory.name}}</div>
             </div>
         </div>
+
         <i class="fa fa-plus action-add-button"></i>
+
         <div ng-class="{'action-slider': true, 'action-slider--active': activeCategory != null, 'action-terminal-active': activeTerminal != null}" class="ng-isolate-scope" style="box-shadow: 5px 5px 5px grey;">
             <div class="slide">
                 <div class="modal-header">
@@ -50,6 +59,6 @@
                 </div>
             </div>
         </div>
+        -->
     </div>
-
 </div>

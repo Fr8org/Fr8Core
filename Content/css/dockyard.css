@@ -449,7 +449,9 @@ div.action-header {
     right: -66px;
 }
 
-.action-add-button, .action-category-icon {
+/* TODO: FF-3969, remove this */
+/*.action-add-button, .action-category-icon {*/
+.action-add-button {
     background: #fCfCfC;
     border-radius: 50%;
     font-size: 24px !important;
@@ -466,12 +468,71 @@ div.action-header {
 
 .action-add-button {
     margin-top: 80px;
-    margin-left: -128px;
+    /*margin-left: 128px;*/
+    margin-left: 40px;
     transition: all 0.2s ease-out;
     pointer-events: none;
     z-index: 200;
 }
 
+.action-picker-container {
+    position: fixed;
+    margin-top: 39px;
+    width: 79%;
+    height: 40%;
+    z-index: 1019;
+
+    background-color: rgba(255, 255, 255, 0.9);
+    opacity: 1;
+
+    transition-property: height, opacity;
+    transition-timing-function: ease-out;
+    transition-duration: 0.2s;
+
+    border-left: 1px solid #E5E5E5;
+    border-right: 1px solid #E5E5E5;
+    border-bottom: 3px solid #26A69A;
+}
+
+.action-picker-container-hidden {
+    height: 0;
+    opacity: 0;
+}
+
+.action-picker-panel-header {
+    position: relative;
+}
+
+.action-picker-panel-search {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 48px;
+    height: 34px;
+}
+
+.action-picker-panel-search input[type="text"] {
+    height: 34px;
+}
+
+.action-picker-panel-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 48px;
+    height: 34px;
+    text-align: center;
+    border-bottom: 1px solid #E5E5E5;
+}
+
+.action-picker-panel-close a {
+    color: black;
+    line-height: 40px;
+}
+
+
+/* TODO: FF-3969, remove this */
+/*
 .action-categories {
     margin-top: 144px;
     transition: all 0.2s ease-out;
@@ -525,6 +586,7 @@ div.action-header {
 .action-add:hover .action-category-name, .action-add--active .action-category-name {
     opacity: 1;
 }
+*/
 
 .action-slider {
     background: white;

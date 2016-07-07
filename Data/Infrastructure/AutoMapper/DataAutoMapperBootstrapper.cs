@@ -68,7 +68,21 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
                 .ForMember(x => x.NeedsAuthentication, opts => opts.ResolveUsing(x => x.NeedsAuthentication))
-                .ForMember(x => x.ShowDocumentation, opts => opts.Ignore());
+                .ForMember(x => x.ShowDocumentation, opts => opts.Ignore())
+                .ForMember(
+                    x => x.Categories,
+                    opts => opts.ResolveUsing((ActivityTemplateDO x) =>
+                        x.Categories != null
+                        ? x.Categories
+                            .Where(y => y.ActivityCategory != null)
+                            .Select(y => new ActivityCategoryDTO()
+                            {
+                                Name = y.ActivityCategory.Name,
+                                IconPath = y.ActivityCategory.IconPath
+                            })
+                        : new List<ActivityCategoryDTO>()
+                    )
+                );
 
             Mapper.CreateMap<ActivityTemplateDTO, ActivityTemplateDO>()
                 .ConstructUsing((Func<ResolutionContext, ActivityTemplateDO>)(r => new ActivityTemplateDO()))
@@ -91,7 +105,8 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(
                     x => x.Categories,
                     opts => opts.ResolveUsing((ActivityTemplateDTO x) =>
-                        x.Categories
+                        x.Categories != null
+                        ? x.Categories
                             .Select(y => new ActivityCategorySetDO()
                             {
                                 ActivityCategory = new ActivityCategoryDO()
@@ -101,6 +116,7 @@ namespace Data.Infrastructure.AutoMapper
                                 }
                             })
                             .ToList()
+                        : null
                     )
                 );
 
