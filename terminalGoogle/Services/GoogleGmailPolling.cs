@@ -107,6 +107,7 @@ namespace terminalGoogle.Services
             return pollingData;
         }
 
+
         public string GetMimeString(MessagePart Parts)
         {
             string Body = "";
@@ -128,6 +129,7 @@ namespace terminalGoogle.Services
 
             return Body;
         }
+
 
         private StandardEmailMessageCM GetEmail(GmailService service, string Id, string externalAccountId)
         {
@@ -164,6 +166,7 @@ namespace terminalGoogle.Services
             return result;
         }
 
+
         private string GetPlainTextFromHtml(string htmlString)
         {
             string htmlTagPattern = "<.*?>";
@@ -176,6 +179,7 @@ namespace terminalGoogle.Services
 
             return htmlString;
         }
+
 
         private string GetHistoryId(GmailService service, string messageId, string externalAccountId)
         {
