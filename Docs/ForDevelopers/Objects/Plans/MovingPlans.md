@@ -1,3 +1,6 @@
+Moving and Sharing Plans
+========================
+
 Plan JSON is designed to be portable. You can download it and then upload it into a different Hub, and it should work. 
 
 Plans can be downloaded from the Plan Details page (reachable from [here](https://fr8.co/dashboard/myaccount)).
