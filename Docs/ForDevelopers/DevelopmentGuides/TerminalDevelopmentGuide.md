@@ -25,16 +25,7 @@ Also you can run your own Hub by creating a web service that is built based on [
 
 Terminals can be written in any language, and only need to support a handful of [HTTP endpoints](replace with swagger link).
 
-Connecting to Hubs
-===
 
-Once a new Terminal is created, you need to bring it to the attention of one or more Hubs by requesting that the Hub operator add your Terminal's endpoint URL to the Hub's fr8terminals.txt file. When Hubs startup, they make a /discover call to each of the Terminal endpoints that they know about.
-
-So each Terminal need to implement the /discover endpoint. When this call is received, the Terminal responds with a set of information that tells the Hub what Activities are currently being offered.  This response need to be serialized in JSON with this specific structure  [StandardFr8TerminalCM](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/RegisteredManifests.md) that encapsulates [TerminalDTO](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/DataTransfer/TerminalDTO.md) and a list of [Activity Templates](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/ActivityTemplates.md).
-
-The ActivityTemplates are saved by the Hub, and provided to the Client so it knows what Activities it can offer to users. Users can add Activities from multiple Terminals to form a single Plan.
-
- Activities should be put into categories. See [Activity Template Categories](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/ActivityTemplates.md#category). Terminals can also build more complex Solutions that are composed of multiple Activities.  [Solutions](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Solutions).
 
 Endpoints
 ===
@@ -48,6 +39,16 @@ In addition to the discover endpoint, Terminals need to support the following co
 For most purposes, these are implemented separately for each Activity that the Terminal supports. The Terminal has a base controller that receives the calls from the Hub, and it then directs the call to the appropriate Activity class for processing.
 
 See the full set of Terminal [API Endpoints]((https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Terminals/TerminalEndpoints.md))
+
+### Discovery
+
+Once a new Terminal is created, you need to bring it to the attention of one or more Hubs by requesting that the Hub operator add your Terminal's endpoint URL to the Hub's fr8terminals.txt file. When Hubs startup, they make a /discover call to each of the Terminal endpoints that they know about.
+
+So each Terminal need to implement the /discover endpoint. When this call is received, the Terminal responds with a set of information that tells the Hub what Activities are currently being offered.  This response need to be serialized in JSON with this specific structure  [StandardFr8TerminalCM](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/RegisteredManifests.md) that encapsulates [TerminalDTO](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/DataTransfer/TerminalDTO.md) and a list of [Activity Templates](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/ActivityTemplates.md).
+
+The ActivityTemplates are saved by the Hub, and provided to the Client so it knows what Activities it can offer to users. Users can add Activities from multiple Terminals to form a single Plan.
+
+ Activities should be put into categories. See [Activity Template Categories](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/ActivityTemplates.md#category). Terminals can also build more complex Solutions that are composed of multiple Activities.  [Solutions](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Solutions).
 
 ### Configure
 
