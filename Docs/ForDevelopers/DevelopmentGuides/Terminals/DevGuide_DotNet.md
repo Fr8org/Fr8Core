@@ -1,6 +1,8 @@
 ##Terminal Development on .Net
 
 [Getting Started](dotNet/TerminalDeveloping-GettingStarted.md)
+[Guide to the SDK](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/SDKOverview.md)
+
 
 ##### Chapter 1
 [Your first Terminal](dotNet/TerminalDeveloping-Chapter-1.md)
