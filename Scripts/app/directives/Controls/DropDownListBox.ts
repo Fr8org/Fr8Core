@@ -40,7 +40,7 @@ module dockyard.directives.dropDownListBox {
                     };
                     if (item) {
                         field = {
-                            value: item.value,
+                            value: item.key,
                             key: item.key
                         };
                     }
