@@ -230,15 +230,6 @@ namespace terminalFr8Core.Activities
             return true;
         }
 
-        private static ControlDefinitionDTO CreateTextBoxQueryControl(
-            string key)
-        {
-            return new TextBox()
-            {
-                Name = "QueryField_" + key
-            };
-        }
-
         private Crate<StandardQueryCM> ExtractQueryCrate(string mtObject)
         {
             var configurationControls = Storage
@@ -266,28 +257,19 @@ namespace terminalFr8Core.Activities
             );
 
             return Crate<StandardQueryCM>.FromContent(QueryCrateLabel, queryCM);
-        }
+       }
 
-        private IEnumerable<Crate> PackDesignTimeData()
-        {
-            yield return Crate.FromContent("Fr8 Search Report", new FieldDescriptionsCM(new FieldDTO
-            {
-                Key = "Fr8 Search Report",
-                Value = "Table",
-                Availability = AvailabilityType.RunTime
-            }));
-        }
 
         // create the dropdown design time fields.
-        private List<FieldDTO> GetFr8WarehouseTypes(AuthorizationToken oAuthToken)
+        private List<KeyValueDTO> GetFr8WarehouseTypes(AuthorizationToken oAuthToken)
         {
             using (var unitWork = _container.GetInstance<IUnitOfWork>())
             {
-                var warehouseTypes = new List<FieldDTO>();
+                var warehouseTypes = new List<KeyValueDTO>();
 
                 foreach (var mtTypeReference in unitWork.MultiTenantObjectRepository.ListTypeReferences())
                 {
-                    warehouseTypes.Add(new FieldDTO
+                    warehouseTypes.Add(new KeyValueDTO
                     {
                         Key = mtTypeReference.Alias,
                         Value = mtTypeReference.Id.ToString("N")
@@ -319,7 +301,6 @@ namespace terminalFr8Core.Activities
             var designTimefieldLists = GetFr8WarehouseTypes(AuthorizationToken);
             var availableMtObjects = CrateManager.CreateDesignTimeFieldsCrate("Queryable Objects", designTimefieldLists.ToArray());
             Storage.Add(availableMtObjects);
-            Storage.AddRange(PackDesignTimeData());
             return Task.FromResult(0);
         }
 

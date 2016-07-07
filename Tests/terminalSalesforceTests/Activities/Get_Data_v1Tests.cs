@@ -45,7 +45,7 @@ namespace terminalSalesforceTests.Actions
             ObjectFactory.Container.Inject(typeof(IHubCommunicator), hubCommunicatorMock.Object);
 
             Mock<ISalesforceManager> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceManager>());
-            FieldDTO testField = new FieldDTO("Account", "TestAccount");
+            FieldDTO testField = new FieldDTO("Account") {Label = "TestAccount"};
             salesforceIntegrationMock.Setup(
                 s => s.GetProperties(SalesforceObjectType.Account, It.IsAny<AuthorizationToken>(), false,null))
                 .Returns(() => Task.FromResult(new List<FieldDTO> { testField }));

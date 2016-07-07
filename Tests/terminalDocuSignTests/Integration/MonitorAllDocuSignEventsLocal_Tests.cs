@@ -13,6 +13,7 @@ using Data.Entities;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Newtonsoft.Json.Linq;
+using Data.Repositories.MultiTenant.Queryable;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -132,13 +133,17 @@ namespace terminalDocuSignTests.Integration
                 {
                     await Task.Delay(SingleAwaitPeriod);
 
+                    Debug.WriteLine($"Querying MT objects...");
+
                     mtDataCountAfter = unitOfWork.MultiTenantObjectRepository
-                        .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id.ToString()).Count();
+                        .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id).Count();
 
                     if (mtDataCountBefore < mtDataCountAfter)
                     {
                         break;
                     }
+
+                    Debug.WriteLine($"Number of objects stays unchanged: {mtDataCountBefore}");
                 }
 
                 Assert.IsTrue(mtDataCountBefore < mtDataCountAfter,

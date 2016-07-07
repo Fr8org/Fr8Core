@@ -37,7 +37,7 @@ namespace terminalDocuSign.Activities
         {
         }
 
-        protected override async Task RunDS()
+        public override async Task Run()
         {
             //Get template Id
             var control = GetControl<DropDownList>("Available_Templates");
@@ -69,7 +69,7 @@ namespace terminalDocuSign.Activities
             return Crate.FromContent("DocuSign Template", manifest);
         }
 
-        protected override Task InitializeDS()
+        public override Task Initialize()
         {
             var configurationCrate = CreateControlsCrate();
             FillDocuSignTemplateSource(configurationCrate, "Available_Templates");
@@ -78,7 +78,7 @@ namespace terminalDocuSign.Activities
             return Task.FromResult(0);
         }
 
-        protected override Task FollowUpDS()
+        public override Task FollowUp()
         {
             return Task.FromResult(0);
         }

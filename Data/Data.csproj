@@ -74,10 +74,6 @@
       <HintPath>..\packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Google.Apis.Core, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.Core.1.11.1\lib\net45\Google.Apis.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Hyak.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Hyak.Common.1.0.2\lib\net45\Hyak.Common.dll</HintPath>
       <Private>True</Private>
@@ -260,6 +256,7 @@
     <Compile Include="Entities\AspNetUserClaimDO.cs" />
     <Compile Include="Entities\EncryptedAuthorizationData.cs" />
     <Compile Include="Entities\OrganizationDO.cs" />
+    <Compile Include="Entities\PageDefinitionDO.cs" />
     <Compile Include="Entities\PlanTemplates\ActivityDescriptionDO.cs" />
     <Compile Include="Entities\PlanTemplates\NodeTransitionDO.cs" />
     <Compile Include="Entities\PlanTemplates\PlanTemplateDO.cs" />
@@ -716,6 +713,14 @@
     <Compile Include="Migrations\201606241050298_AddedTerminalFacebook.Designer.cs">
       <DependentUpon>201606241050298_AddedTerminalFacebook.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201606271048030_NullableExpiresAtForAuthToken.cs" />
+    <Compile Include="Migrations\201606271048030_NullableExpiresAtForAuthToken.Designer.cs">
+      <DependentUpon>201606271048030_NullableExpiresAtForAuthToken.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606300937169_AddPageDefinition.cs" />
+    <Compile Include="Migrations\201606300937169_AddPageDefinition.Designer.cs">
+      <DependentUpon>201606300937169_AddPageDefinition.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -732,6 +737,7 @@
     <Compile Include="Repositories\Authorization\Impl\MockedDbAuthorizationTokenStorageProvider.cs" />
     <Compile Include="Repositories\EnvelopeRepository.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtObjectStorage.Queries.cs" />
+    <Compile Include="Repositories\PageDefinitionRepository.cs" />
     <Compile Include="Repositories\PlanTemplates\ActivityDescriptionRepository.cs" />
     <Compile Include="Repositories\PlanTemplates\NodeTransitionRepository.cs" />
     <Compile Include="Repositories\PlanTemplates\PlanNodeDescriptionsRepository.cs" />
@@ -990,6 +996,45 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Config\HealthMonitor\Settings.config.src" />
+    <None Include="Config\HubWeb\Settings.config" />
+    <None Include="Config\PlanDirectory\Settings.config" />
+    <None Include="Config\PlanDirectory\Settings.Release.config" />
+    <None Include="Config\terminalAtlassian\Settings.config" />
+    <None Include="Config\terminalAzure\Settings.config" />
+    <None Include="Config\terminalBasecamp2\Settings.config" />
+    <None Include="Config\terminalBasecamp2\Settings.Demo.config" />
+    <None Include="Config\terminalBasecamp2\Settings.Dev.config" />
+    <None Include="Config\terminalBasecamp2\Settings.Release.config" />
+    <None Include="Config\terminalBox\Settings.config" />
+    <None Include="Config\terminalDocuSign\Settings.config" />
+    <None Include="Config\terminalDropbox\Settings.config" />
+    <None Include="Config\terminalFacebook\Settings.config" />
+    <None Include="Config\terminalFacebook\Settings.Demo.config" />
+    <None Include="Config\terminalFacebook\Settings.Dev.config" />
+    <None Include="Config\terminalFacebook\Settings.Release.config" />
+    <None Include="Config\terminalFr8Core\Settings.config" />
+    <None Include="Config\terminalGoogle\Settings.config" />
+    <None Include="Config\terminalPapertrail\Settings.config" />
+    <None Include="Config\terminalQuickBooks\Settings.config" />
+    <None Include="Config\terminalSalesforce\Settings.config" />
+    <None Include="Config\terminalSalesforce\Settings.Demo.config" />
+    <None Include="Config\terminalSalesforce\Settings.Dev.config" />
+    <None Include="Config\terminalSalesforce\Settings.Release.config" />
+    <None Include="Config\terminalSendGrid\Settings.config" />
+    <None Include="Config\terminalSlack\Settings.config" />
+    <None Include="Config\terminalSlack\Settings.Demo.config" />
+    <None Include="Config\terminalSlack\Settings.Dev.config" />
+    <None Include="Config\terminalSlack\Settings.Release.config" />
+    <None Include="Config\terminalTelegram\Settings.config" />
+    <None Include="Config\terminalTelegram\Settings.Demo.config" />
+    <None Include="Config\terminalTelegram\Settings.Dev.config" />
+    <None Include="Config\terminalTelegram\Settings.Release.config" />
+    <None Include="Config\terminalTwilio\Settings.config" />
+    <None Include="Config\terminalYammer\Settings.config" />
+    <None Include="Config\terminalYammer\Settings.Demo.config" />
+    <None Include="Config\terminalYammer\Settings.Dev.config" />
+    <None Include="Config\terminalYammer\Settings.Release.config" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -1321,6 +1366,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606241050298_AddedTerminalFacebook.resx">
       <DependentUpon>201606241050298_AddedTerminalFacebook.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606271048030_NullableExpiresAtForAuthToken.resx">
+      <DependentUpon>201606271048030_NullableExpiresAtForAuthToken.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606300937169_AddPageDefinition.resx">
+      <DependentUpon>201606300937169_AddPageDefinition.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

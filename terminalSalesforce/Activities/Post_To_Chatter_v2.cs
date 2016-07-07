@@ -130,11 +130,8 @@ namespace terminalSalesforce.Actions
         public override async Task Initialize()
         {
             IsPostingToQueryiedChatter = true;
-            AvailableChatters = _salesforceManager.GetSalesforceObjectTypes(filterByProperties: SalesforceObjectProperties.HasChatter).Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PostedFeedCrateLabel);
-            Storage.Add(Crate<FieldDescriptionsCM>.FromContent(PostedFeedPropertiesCrateLabel,
-                                                                              new FieldDescriptionsCM(new FieldDTO(FeedIdKeyName, FeedIdKeyName, AvailabilityType.RunTime) { SourceCrateLabel = FeedIdKeyName }),
-                                                                              AvailabilityType.RunTime));
+            AvailableChatters = _salesforceManager.GetSalesforceObjectTypes(filterByProperties: SalesforceObjectProperties.HasChatter).Select(x => new ListItem {Key = x.Name, Value = x.Label}).ToList();
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PostedFeedCrateLabel).AddField(FeedIdKeyName);
         }
 
         public override async Task FollowUp()
@@ -210,13 +207,13 @@ namespace terminalSalesforce.Actions
                     //If we did not find any chatter object we don't fail activity execution but rather returns empty list and inform caller about it 
                     if (!chatters.HasDataRows)
                     {
-                        Logger.Info($"No salesforce objects were found to use as chatter id.");
+                        Logger.Info("No salesforce objects were found to use as chatter id.");
                         Success($"No {SelectedChatter} that satisfies specified conditions were found. No message were posted");
                     }
                     else
                     {
                         var resultPayload = new StandardPayloadDataCM();
-                        resultPayload.PayloadObjects.AddRange(tasks.Select(x => new PayloadObjectDTO(new FieldDTO(FeedIdKeyName, x.Result))));
+                        resultPayload.PayloadObjects.AddRange(tasks.Select(x => new PayloadObjectDTO(new KeyValueDTO(FeedIdKeyName, x.Result))));
                         Payload.Add(Crate<StandardPayloadDataCM>.FromContent(PostedFeedCrateLabel, resultPayload));
                     }
                 }
@@ -240,18 +237,18 @@ namespace terminalSalesforce.Actions
 
                 Logger.Info($"Posting message to chatter succeded with feedId: {feedId}");
 
-                Payload.Add(Crate.FromContent(PostedFeedCrateLabel, new StandardPayloadDataCM(new FieldDTO(FeedIdKeyName, feedId))));
+                Payload.Add(Crate.FromContent(PostedFeedCrateLabel, new StandardPayloadDataCM(new KeyValueDTO(FeedIdKeyName, feedId))));
             }
         }
 
         public static string StripHTML(string input)
         {
-            return Regex.Replace(input, "<.*?>", String.Empty);
+            return Regex.Replace(input, "<.*?>", string.Empty);
         }
 
         #region Controls properties wrappers
 
-        private string SelectedChatter { get { return ActivityUI.ChatterSelector.selectedKey; } }
+        private string SelectedChatter => ActivityUI.ChatterSelector.selectedKey;
 
         private bool IsPostingToQueryiedChatter
         {
@@ -259,23 +256,18 @@ namespace terminalSalesforce.Actions
             set { ActivityUI.QueryForChatterOption.Selected = value; }
         }
 
-        private bool IsUsingIncomingChatterId
-        {
-            get { return ActivityUI.UseIncomingChatterIdOption.Selected; }
-            set { ActivityUI.UseIncomingChatterIdOption.Selected = value; }
-        }
+        private bool IsUsingIncomingChatterId => ActivityUI.UseIncomingChatterIdOption.Selected;
 
         private List<ListItem> AvailableChatters
         {
-            get { return ActivityUI.ChatterSelector.ListItems; }
             set { ActivityUI.ChatterSelector.ListItems = value; }
         }
 
-        private string FeedText { get { return ActivityUI.FeedTextSource.GetValue(Payload); } }
+        private string FeedText => ActivityUI.FeedTextSource.GetValue(Payload);
 
-        private string ChatterFilter { get { return ActivityUI.ChatterFilter.Value; } }
+        private string ChatterFilter => ActivityUI.ChatterFilter.Value;
 
-        private string IncomingChatterId { get { return Payload.FindField(ActivityUI.IncomingChatterIdSelector.selectedKey); } }
+        private string IncomingChatterId => Payload.FindField(ActivityUI.IncomingChatterIdSelector.selectedKey);
 
         #endregion
     }

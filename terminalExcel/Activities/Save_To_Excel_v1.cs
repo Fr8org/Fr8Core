@@ -51,7 +51,7 @@ namespace terminalExcel.Actions
             {
                 UpstreamCrateChooser = builder.CreateCrateChooser(
                         "Available_Crates",
-                        "This Loop will process the data inside of",
+                        "Save which data:",
                         true,
                         requestConfig: true
                     );
@@ -133,7 +133,6 @@ namespace terminalExcel.Actions
 
         private const string SelectedSpreadsheetCrateLabel = "Selected Spreadsheet";
 
-
         public Save_To_Excel_v1(ICrateManager crateManager, ExcelUtils excelUtils, IPushNotificationService pushNotificationService)
             : base(crateManager)
         {
@@ -178,7 +177,7 @@ namespace terminalExcel.Actions
 
         private async Task<List<ListItem>> GetWorksheets(int fileId, string fileName)
         {
-            //let's download this file
+            // Let's download this file
             Stream file = await HubCommunicator.DownloadFile(fileId);
             var fileBytes = ExcelUtils.StreamToByteArray(file);
 
@@ -191,8 +190,8 @@ namespace terminalExcel.Actions
         {
             get
             {
-                var storedValue = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == SelectedSpreadsheetCrateLabel);
-                return storedValue?.Content.Fields.First().Key;
+                var storedValue = Storage.FirstCrateOrDefault<KeyValueListCM>(x => x.Label == SelectedSpreadsheetCrateLabel);
+                return storedValue?.Content.Values.First().Key;
             }
             set
             {
@@ -201,9 +200,10 @@ namespace terminalExcel.Actions
                 {
                     return;
                 }
-                Storage.Add(Crate<FieldDescriptionsCM>.FromContent(SelectedSpreadsheetCrateLabel, new FieldDescriptionsCM(new FieldDTO(value)), AvailabilityType.Configuration));
+                Storage.Add(Crate<KeyValueListCM>.FromContent(SelectedSpreadsheetCrateLabel, new KeyValueListCM(new KeyValueDTO(value, value)), AvailabilityType.Configuration));
             }
         }
+
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "Save_To_Excel",

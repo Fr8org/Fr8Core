@@ -14,7 +14,6 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities;
 using Fr8.TerminalBase.BaseClasses;
-using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Models;
 using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
@@ -46,8 +45,6 @@ namespace terminalDocuSign.Activities
         private const double SolutionVersion = 1.0;
         private const string TerminalName = "DocuSign";
         private const string SolutionBody = @"<p>This is Generate DocuSign Report solution action</p>";
-
-        private const int MaxResultSize = 1000;
 
         // Here in this action we have query builder control to build queries against docusign API and out mt database.
         // Docusign and MT DB have different set of fileds and we want to provide ability to search by any field.
@@ -115,7 +112,7 @@ namespace terminalDocuSign.Activities
                     }
                 }));
 
-                Controls.Add(new Button()
+                Controls.Add(new Button
                 {
                     Label = "Generate Report",
                     Name = "Continue",
@@ -127,14 +124,13 @@ namespace terminalDocuSign.Activities
             }
         }
 
-        private IDocuSignManager _docuSignManager;
+        private readonly IDocuSignManager _docuSignManager;
         private readonly PlanService _planService;
 
         // Mapping between quiery builder control field names and information about how this field is routed to the backed 
         private Dictionary<string, FieldBackedRoutingInfo> _queryBuilderFields;
 
-        private static readonly string[] Statuses = new[]
-        {
+        private static readonly string[] Statuses = {
             "Created",
             "Deleted",
             "Sent",
@@ -212,11 +208,7 @@ namespace terminalDocuSign.Activities
             // Real-time search.
             var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(actionUi.QueryBuilder.Value);
             var existingEnvelopes = new HashSet<string>();
-            var searchResult = new StandardPayloadDataCM() { Name = "Docusign Report" };
-
-            // Commented out by yakov.gnusin in scope of FR-2462.
-            // var docuSignAuthToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-            // SearchDocusignInRealTime(docuSignAuthToken, criteria, searchResult, existingEnvelopes);
+            var searchResult = new StandardPayloadDataCM{ Name = "Docusign Report" };
 
             // Merge data from QueryMT action.
             var queryMTResult = Payload.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "Found MT Objects")
@@ -273,18 +265,18 @@ namespace terminalDocuSign.Activities
             {
                 if (map.Item2 == null)
                 {
-                    result.PayloadObject.Add(new FieldDTO(map.Item1, ""));
+                    result.PayloadObject.Add(new KeyValueDTO(map.Item1, ""));
                 }
                 else
                 {
                     string temp;
                     if (obj.TryGetValue(map.Item2, false, false, out temp))
                     {
-                        result.PayloadObject.Add(new FieldDTO(map.Item1, temp ?? ""));
+                        result.PayloadObject.Add(new KeyValueDTO(map.Item1, temp ?? ""));
                     }
                     else
                     {
-                        result.PayloadObject.Add(new FieldDTO(map.Item1, ""));
+                        result.PayloadObject.Add(new KeyValueDTO(map.Item1, ""));
                     }
                 }
             }
@@ -378,23 +370,13 @@ namespace terminalDocuSign.Activities
         {
             Storage.Add(PackControls(new ActivityUi()));
             Storage.AddRange(PackDesignTimeData());
-            PlanFullDTO plan = await _planService.UpdatePlanCategory(ActivityId, "report");
-            }
-
-        //private int ExtractDocuSignResultSize(
-        //    DocuSignAuthTokenDTO authToken,
-        //    List<FilterConditionDTO> criteria)
-        //{
-        //    var docusignQuery = BuildDocusignQuery(authToken, criteria);
-        //    var count = _docuSignManager.CountEnvelopes(authToken, docusignQuery);
-
-        //    return count;
-        //}
+            var plan = await _planService.UpdatePlanCategory(ActivityId, "report");
+        }
 
         public override async Task FollowUp()
         {
             var activityTemplates = (await HubCommunicator.GetActivityTemplates(null, true))
-                .Select(x => Mapper.Map<ActivityTemplateDO>(x))
+                .Select(Mapper.Map<ActivityTemplateDO>)
                 .ToList();
 
             try
@@ -406,38 +388,15 @@ namespace terminalDocuSign.Activities
                 Storage.Add(queryCrate);
 
                 var continueButton = GetControl<Button>("Continue");
-                    if (continueButton != null)
+                if (continueButton != null)
+                {
+                    continueClicked = continueButton.Clicked;
+
+                    if (continueButton.Clicked)
                     {
-                        continueClicked = continueButton.Clicked;
-
-                        if (continueButton.Clicked)
-                        {
-                            continueButton.Clicked = false;
-                        }
+                        continueButton.Clicked = false;
                     }
-
-                    // Commented out by yakov.gnusin in scope of FR-2462.
-                    // if (continueClicked)
-                    // {
-                    //     var docuSignAuthToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-                    //     var criteria = queryCrate.Content.Queries.First().Criteria;
-                    //     var resultSize = ExtractDocuSignResultSize(docuSignAuthToken, criteria);
-                    // 
-                    //     if (resultSize > MaxResultSize)
-                    //     {
-                    //         continueClicked = false;
-                    //         InsertControlAfter(
-                    //             crateStorage,
-                    //             new TextBlock()
-                    //             {
-                    //                 Name = "CannotProceedMessage",
-                    //                 Value = "Fr8 can not currently generate this report because the set size is too big.",
-                    //                 CssClass = "well well-lg"
-                    //             },
-                    //             "QueryBuilder"
-                    //         );
-                    //     }
-                    // }
+                }
 
                 if (continueClicked)
                 {
@@ -452,17 +411,9 @@ namespace terminalDocuSign.Activities
                     var queryFr8WarehouseAction = await HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, queryFr8WarehouseTemplate);
 
                     var crateStorage = queryFr8WarehouseAction.CrateStorage;
-                        crateStorage.RemoveByLabel("Upstream Crate Label List");
-
-                        var fields = new[]
-                        {
-                            new FieldDTO() { Key = QueryCrateLabel, Value = QueryCrateLabel }
-                        };
-                        var upstreamLabelsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
-                        crateStorage.Add(upstreamLabelsCrate);
-
+                       
                         var upstreamManifestTypes = crateStorage
-                            .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Upstream Crate ManifestType List")
+                            .CrateContentsOfType<KeyValueListCM>(x => x.Label == "Upstream Crate ManifestType List")
                             .FirstOrDefault();
 
                         var controls = crateStorage
@@ -484,8 +435,8 @@ namespace terminalDocuSign.Activities
                         {
                             if (upstreamManifestTypes != null)
                             {
-                                upstreamCrateChooser.SelectedCrates[0].ManifestType.selectedKey = upstreamManifestTypes.Fields[0].Key;
-                                upstreamCrateChooser.SelectedCrates[0].ManifestType.Value = upstreamManifestTypes.Fields[0].Value;
+                                upstreamCrateChooser.SelectedCrates[0].ManifestType.selectedKey = upstreamManifestTypes.Values[0].Key;
+                                upstreamCrateChooser.SelectedCrates[0].ManifestType.Value = upstreamManifestTypes.Values[0].Value;
                             }
 
                             upstreamCrateChooser.SelectedCrates[0].Label.selectedKey = QueryCrateLabel;
@@ -568,7 +519,7 @@ namespace terminalDocuSign.Activities
                 .Select(x =>
                     new FieldDTO()
                     {
-                        Key = x.Key,
+                        Name = x.Key,
                         Label = x.Key,
                         FieldType = x.Value.FieldType
                     }
@@ -627,12 +578,11 @@ namespace terminalDocuSign.Activities
 
             yield return Crate.FromContent(
                 "DocuSign Envelope Report",
-                new FieldDescriptionsCM(
-                    new FieldDTO
+                new KeyValueListCM(
+                    new KeyValueDTO
                     {
                         Key = "DocuSign Envelope Report",
                         Value = "Table",
-                        Availability = AvailabilityType.RunTime
                     }
                 )
             );
@@ -666,9 +616,7 @@ namespace terminalDocuSign.Activities
                 }
                 return Task.FromResult(new DocumentationResponseDTO("Unknown contentPath"));
             }
-            return
-                Task.FromResult(
-                    new DocumentationResponseDTO("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
+            return Task.FromResult(new DocumentationResponseDTO("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }

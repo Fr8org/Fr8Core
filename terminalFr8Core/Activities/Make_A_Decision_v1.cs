@@ -129,9 +129,9 @@ namespace terminalFr8Core.Activities
             };
         }
 
-        private bool CheckConditions(List<FilterConditionDTO> conditions, IQueryable<FieldDTO> fields)
+        private bool CheckConditions(List<FilterConditionDTO> conditions, IQueryable<KeyValueDTO> fields)
         {
-            foreach (FieldDTO field in fields)
+            foreach (var field in fields)
             {
                 double result = 0D;
                 if (Double.TryParse(field.Value,
@@ -149,7 +149,7 @@ namespace terminalFr8Core.Activities
             foreach (var condition in conditions)
             {
                 var expression = ParseCriteriaExpression(condition, fields);
-                var results = fields.Provider.CreateQuery<FieldDTO>(expression);
+                var results = fields.Provider.CreateQuery<KeyValueDTO>(expression);
 
                 if (results.Any())
                 {

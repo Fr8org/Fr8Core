@@ -1,7 +1,4 @@
-﻿@using Data.Infrastructure.StructureMap
-@using StructureMap
-@using Fr8.Infrastructure.Utilities
-@model HubWeb.ViewModels.HomeVM
+﻿@model HubWeb.ViewModels.HomeVM
 
 
 <!DOCTYPE html>
@@ -47,7 +44,7 @@
 </head>
 <body id="top">
 
-    @Html.Partial("_HomeNavNew", new HubWeb.ViewModels.NavLinksHome())
+    @Html.Partial("_HomeNavNew")
 
     <!-- HERO UNIT -->
     <div id="hero-unit" class="hero-unit hero-light hero-video" data-vide-bg="mp4: https://fr8.azureedge.net/Content/videos/motion_1920.mp4, webm: https://fr8.azureedge.net/Content/videos/motion.webm, ogv: https://fr8.azureedge.net/Content/videos/motion.ogv, poster: https://fr8.azureedge.net/Content/videos/motion_1920.jpg" data-vide-options="loop: true, posterType: jpg">
@@ -75,7 +72,7 @@
                 <div class="carousel-inner" role="listbox">
                     <div class="item active">
                         <div class="carousel-content">
-                            <h3>“Our team uses Fr8 to generate mail merges using Salesforce and DocuSign.<br/>It only takes a few seconds to automatically insert data into our complex DocuSign templates.<br /> Fr8 delivers huge time savings.”</h3>
+                            <h3>“Our team uses Fr8 to generate mail merges using Salesforce and DocuSign.<br />It only takes a few seconds to automatically insert data into our complex DocuSign templates.<br /> Fr8 delivers huge time savings.”</h3>
                             <p><b>Akkadian – <i>Peter Smith, Chief Operating Officer</i></b></p>
                         </div>
                     </div>
@@ -254,26 +251,29 @@
 </body>
 </html>
 <script>
-    window.analytics = window.analytics || [], window.analytics.methods = ["identify", "group", "track", "page", "pageview", "alias", "ready", "on", "once", "off", "trackLink", "trackForm", "trackClick", "trackSubmit"], window.analytics.factory = function (t) {
-        return function () {
-            var a = Array.prototype.slice.call(arguments);
-            return a.unshift(t), window.analytics.push(a), window.analytics
+    var segmentKey = "@(Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey"))";
+    if (segmentKey !== "") {
+        window.analytics = window.analytics || [], window.analytics.methods = ["identify", "group", "track", "page", "pageview", "alias", "ready", "on", "once", "off", "trackLink", "trackForm", "trackClick", "trackSubmit"], window.analytics.factory = function (t) {
+            return function () {
+                var a = Array.prototype.slice.call(arguments);
+                return a.unshift(t), window.analytics.push(a), window.analytics
+            }
+        };
+        for (var i = 0; i < window.analytics.methods.length; i++) {
+            var key = window.analytics.methods[i];
+            window.analytics[key] = window.analytics.factory(key);
         }
-    };
-    for (var i = 0; i < window.analytics.methods.length; i++) {
-        var key = window.analytics.methods[i];
-        window.analytics[key] = window.analytics.factory(key);
+        window.analytics.load = function (t) {
+            if (!document.getElementById("analytics-js")) {
+                var a = document.createElement("script");
+                a.type = "text/javascript", a.id = "analytics-js", a.async = !0, a.src = ("https:" === document.location.protocol ? "https://" : "http://") + "cdn.segment.io/analytics.js/v1/" + t + "/analytics.min.js";
+                var n = document.getElementsByTagName("script")[0];
+                n.parentNode.insertBefore(a, n);
+            }
+        }, window.analytics.SNIPPET_VERSION = "2.0.9",
+            window.analytics.load(segmentKey);
+        window.analytics.page('Visited Page - Home');
+        var btnTryItNow = document.getElementById("btn-contact");
+        window.analytics.trackLink(btnTryItNow, "Clicked Try It Now Button");
     }
-    window.analytics.load = function (t) {
-        if (!document.getElementById("analytics-js")) {
-            var a = document.createElement("script");
-            a.type = "text/javascript", a.id = "analytics-js", a.async = !0, a.src = ("https:" === document.location.protocol ? "https://" : "http://") + "cdn.segment.io/analytics.js/v1/" + t + "/analytics.min.js";
-            var n = document.getElementsByTagName("script")[0];
-            n.parentNode.insertBefore(a, n);
-        }
-    }, window.analytics.SNIPPET_VERSION = "2.0.9",
-       window.analytics.load("@(Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey"))");
-    window.analytics.page('Visited Page - Home');
-    var btnTryItNow = document.getElementById("btn-contact");
-    window.analytics.trackLink(btnTryItNow, "Clicked Try It Now Button");
 </script>

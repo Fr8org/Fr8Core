@@ -34,6 +34,7 @@ namespace terminalDocuSign
             Container.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
 
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
+            SwaggerConfig.Register(_configuration);
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
             app.UseWebApi(_configuration);
@@ -54,6 +55,7 @@ namespace terminalDocuSign
             ActivityStore.RegisterActivity<Mail_Merge_Into_DocuSign_v1>(Mail_Merge_Into_DocuSign_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Extract_Data_From_Envelopes_v1>(Extract_Data_From_Envelopes_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Track_DocuSign_Recipients_v1>(Track_DocuSign_Recipients_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Track_DocuSign_Recipients_v2>(Track_DocuSign_Recipients_v2.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Query_DocuSign_v1>(Query_DocuSign_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Query_DocuSign_v2>(Query_DocuSign_v2.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Search_DocuSign_History_v1>(Search_DocuSign_History_v1.ActivityTemplateDTO);

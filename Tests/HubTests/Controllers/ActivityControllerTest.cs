@@ -20,17 +20,9 @@ namespace HubTests.Controllers
     [Category("ActionController")]
     public class ActivityControllerTest : ApiControllerTestBase
     {
-
-        private IActivity _activity;
-
-        public ActivityControllerTest()
-        {
-
-        }
         public override void SetUp()
         {
             base.SetUp();
-            _activity = ObjectFactory.GetInstance<IActivity>();
             // DO-1214
             //CreateEmptyActionList();
             CreateActivityTemplate();
@@ -76,7 +68,7 @@ namespace HubTests.Controllers
             var actualAction = CreateActivityWithId(FixtureData.GetTestGuidById(1));
             actualAction.ParentPlanNodeId = subPlan.Id;
 
-            var controller = new ActivitiesController();
+            var controller = ObjectFactory.GetInstance<ActivitiesController>();
             var result = (OkNegotiatedContentResult<ActivityDTO>)await controller.Save(actualAction);
             var savedAction = result.Content;
 
@@ -116,7 +108,7 @@ namespace HubTests.Controllers
             var actualAction = CreateActivityWithId(FixtureData.GetTestGuidById(2));
             actualAction.ParentPlanNodeId = subplan.Id;
 
-            var controller = new ActivitiesController();
+            var controller = ObjectFactory.GetInstance<ActivitiesController>();
             var result = (OkNegotiatedContentResult<ActivityDTO>)await controller.Save(actualAction);
             var savedAction = result.Content;
 
@@ -160,7 +152,7 @@ namespace HubTests.Controllers
 
             actualAction.ParentPlanNodeId = plan.Id;
 
-            var controller = new ActivitiesController();
+            var controller = ObjectFactory.GetInstance<ActivitiesController>();
             controller.Save(actualAction);
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -186,7 +178,7 @@ namespace HubTests.Controllers
                 activityMock.Setup(a => a.Delete(It.IsAny<Guid>())).Returns(Task.FromResult(0));
 
                 ActivityDO activityDO = new FixtureData(uow).TestActivity3();
-                var controller = new ActivitiesController(activityMock.Object);
+                var controller = new ActivitiesController(activityMock.Object, ObjectFactory.GetInstance<IPlan>(), ObjectFactory.GetInstance<IUnitOfWorkFactory>());
                 await controller.Delete(activityDO.Id);
                 activityMock.Verify(a => a.Delete(activityDO.Id));
             }
@@ -202,7 +194,7 @@ namespace HubTests.Controllers
                 actionMock.Setup(a => a.GetById(It.IsAny<IUnitOfWork>(), It.IsAny<Guid>()));
 
                 ActivityDO activityDO = new FixtureData(uow).TestActivity3();
-                var controller = new ActivitiesController(actionMock.Object);
+                var controller = new ActivitiesController(actionMock.Object, ObjectFactory.GetInstance<IPlan>(), ObjectFactory.GetInstance<IUnitOfWorkFactory>());
                 controller.Get(activityDO.Id);
                 actionMock.Verify(a => a.GetById(It.IsAny<IUnitOfWork>(), activityDO.Id));
             }
@@ -251,7 +243,7 @@ namespace HubTests.Controllers
         public async Task ActivityController_GetConfigurationSettings_ValidActionDesignDTO()
         {
 
-            var controller = new ActivitiesController();
+            var controller = ObjectFactory.GetInstance<ActivitiesController>();
             ActivityDTO actionDesignDTO = CreateActivityWithId(FixtureData.GetTestGuidById(2));
             actionDesignDTO.ActivityTemplate = FixtureData.TestActivityTemplateDTOV2();
 
@@ -269,7 +261,7 @@ namespace HubTests.Controllers
         [ExpectedException(ExpectedException = typeof(ArgumentException), ExpectedMessage = "Current activity was not found.")]
         public async Task ActivityController_GetConfigurationSettings_IdIsMissing()
         { 
-            var controller = new ActivitiesController();
+            var controller = ObjectFactory.GetInstance<ActivitiesController>();
             ActivityDTO actionDesignDTO = CreateActivityWithId(FixtureData.GetTestGuidById(2));
             actionDesignDTO.Id = Guid.Empty;
 
@@ -287,7 +279,7 @@ namespace HubTests.Controllers
         [ExpectedException(ExpectedException = typeof(ArgumentException))]
         public async Task ActivityController_GetConfigurationSettings_ActionTemplateNameAndVersionIsMissing()
         {
-            var controller = new ActivitiesController();
+            var controller = ObjectFactory.GetInstance<ActivitiesController>();
             ActivityDTO actionDesignDTO = CreateActivityWithId(FixtureData.GetTestGuidById(2));
             var actionResult = await controller.Configure(actionDesignDTO);
 

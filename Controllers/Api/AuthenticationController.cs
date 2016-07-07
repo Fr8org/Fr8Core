@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
@@ -179,7 +178,7 @@ namespace HubWeb.Controllers
         [Fr8HubWebHMACAuthenticate]
         public IHttpActionResult RenewToken([FromBody]AuthorizationTokenDTO token)
         {
-            _authorization.RenewToken(Guid.Parse(token.Id), token.ExternalAccountId, token.Token);
+            _authorization.RenewToken(Guid.Parse(token.Id), token.ExternalAccountId, token.Token, token.ExpiresAt);
             return Ok();
         }
 

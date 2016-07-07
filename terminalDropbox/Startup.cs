@@ -32,6 +32,8 @@ namespace terminalDropbox
         {
             ConfigureProject(selfHost, TerminalDropboxStructureMapBootstrapper.LiveConfiguration);
 
+            SwaggerConfig.Register(_configuration);
+
             RoutesConfig.Register(_configuration);
 
             ConfigureFormatters();

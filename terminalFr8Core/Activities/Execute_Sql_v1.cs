@@ -42,8 +42,7 @@ namespace terminalFr8Core.Activities
             return queryCM.Queries[0];
         }
 
-        private ColumnInfo CreateColumnInfo(
-            string columnName, Dictionary<string, DbType> columnTypes)
+        private ColumnInfo CreateColumnInfo(string columnName, Dictionary<string, DbType> columnTypes)
         {
             DbType dbType;
             if (!columnTypes.TryGetValue(columnName, out dbType))
@@ -67,8 +66,7 @@ namespace terminalFr8Core.Activities
             return returnedQuery;
         }
 
-        private StandardPayloadDataCM BuildStandardPayloadData(
-            Table data, Dictionary<string, DbType> columnTypes)
+        private StandardPayloadDataCM BuildStandardPayloadData(Table data, Dictionary<string, DbType> columnTypes)
         {
             var findObjectHelper = new FindObjectHelper();
 
@@ -94,7 +92,7 @@ namespace terminalFr8Core.Activities
                         }
 
                         payloadObject.PayloadObject.Add(
-                            new FieldDTO()
+                            new KeyValueDTO()
                             {
                                 Key = fieldValue.Field,
                                 Value = findObjectHelper.ConvertValueToString(fieldValue.Value, dbType)
@@ -113,10 +111,10 @@ namespace terminalFr8Core.Activities
 
         private async Task<string> ExtractConnectionString()
         {
-            var upstreamCrates = await HubCommunicator.GetCratesByDirection<FieldDescriptionsCM>(ActivityId, CrateDirection.Upstream);
+            var upstreamCrates = await HubCommunicator.GetCratesByDirection<KeyValueListCM>(ActivityId, CrateDirection.Upstream);
             var connectionStringCrate = upstreamCrates?.FirstOrDefault(x => x.Label == "Sql Connection String");
             var connectionStringCM = connectionStringCrate?.Content;
-            var connectionStringFields = connectionStringCM?.Fields;
+            var connectionStringFields = connectionStringCM?.Values;
             if (connectionStringFields == null || connectionStringFields.Count == 0) { return null; }
             return connectionStringFields[0].Key;
         }

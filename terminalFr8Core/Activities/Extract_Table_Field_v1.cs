@@ -33,8 +33,6 @@ namespace terminalFr8Core.Activities
         private const string ImmediatelyBelowKey = "Immediately below";
         private const string ImmediatelyBelowValue = "immediately_below";
 
-        private const string ExtractedFieldsCrateLabel = "ExtractedFields";
-
         private const string AvailableCellsCrateLabel = "AvailableCells";
 
         private bool AreValuesSelected(DropDownList chosenCell, DropDownList position)
@@ -46,7 +44,7 @@ namespace terminalFr8Core.Activities
 
         private FieldDTO GetChosenField(DropDownList chosenCell, DropDownList position)
         {
-            var key = "";
+            string key;
             if (position.Value == ImmediatelyBelowValue)
             {
                 key = "Value " + ImmediatelyBelowKey + " of " + chosenCell.selectedKey;
@@ -56,13 +54,12 @@ namespace terminalFr8Core.Activities
                 key = "Value " + ImmediatelyToRightKey + " of " + chosenCell.selectedKey;
             }
 
-            return new FieldDTO(key, chosenCell.selectedKey);
+            return new FieldDTO(key);
         }
 
-        private FieldDTO ExtractFieldFromTable(StandardTableDataCM table, DropDownList chosenCell, DropDownList position)
+        private KeyValueDTO ExtractFieldFromTable(StandardTableDataCM table, DropDownList chosenCell, DropDownList position)
         {
-            FieldDTO field = position.Value == ImmediatelyBelowValue ?
-                GetValueBelowSelectedCell(table, chosenCell.Value) : GetValueRightToSelectedCell(table, chosenCell.Value);
+            var field = position.Value == ImmediatelyBelowValue ? GetValueBelowSelectedCell(table, chosenCell.Value) : GetValueRightToSelectedCell(table, chosenCell.Value);
 
             if (field == null)
             {
@@ -81,7 +78,7 @@ namespace terminalFr8Core.Activities
             return field;
         }
 
-        private FieldDTO GetValueBelowSelectedCell(StandardTableDataCM table, string selectedCellValue)
+        private KeyValueDTO GetValueBelowSelectedCell(StandardTableDataCM table, string selectedCellValue)
         {
             var rows = table.Table;
             //we might have out of bounds exceptions here
@@ -106,7 +103,7 @@ namespace terminalFr8Core.Activities
             return null;
         }
 
-        private FieldDTO GetValueRightToSelectedCell(StandardTableDataCM table, string selectedCellValue)
+        private KeyValueDTO GetValueRightToSelectedCell(StandardTableDataCM table, string selectedCellValue)
         {
             var rows = table.Table;
             //we might have out of bounds exceptions here
@@ -226,7 +223,7 @@ namespace terminalFr8Core.Activities
                 return;
             }
 
-            var extractedFieldList = new List<FieldDTO>();
+            var extractedFieldList = new List<KeyValueDTO>();
             var chosenCellList = GetControl< ControlList>("extractor_list");
             foreach (var cGroup in chosenCellList.ControlGroups)
             {
@@ -241,7 +238,7 @@ namespace terminalFr8Core.Activities
 
                 var table = crateToProcess.Get<StandardTableDataCM>();
 
-                FieldDTO field = ExtractFieldFromTable(table, chosenCell, position);
+                KeyValueDTO field = ExtractFieldFromTable(table, chosenCell, position);
                 if (field == null)
                 {
                     //hmm we couldn't find what we were looking for
@@ -262,9 +259,6 @@ namespace terminalFr8Core.Activities
 
             Success();
         }
-
-            
-        
 
         public override async Task Initialize()
         {
@@ -301,7 +295,6 @@ namespace terminalFr8Core.Activities
             var table = selectedCrate.Content;
             double temp;
             var tableFields = table.Table.SelectMany(c => c.Row).Select(r => r.Cell)
-                .Select(c => new FieldDTO(c.Value, c.Value))
                 .Where(c => !string.IsNullOrEmpty(c.Value) && !double.TryParse(c.Value, out temp));
 
             var tempChosenCellList = GetControl<ControlList>("extractor_list");
@@ -325,14 +318,11 @@ namespace terminalFr8Core.Activities
                 if (AreValuesSelected(chosenCell, position))
                 {
                     var field = GetChosenField(chosenCell, position);
-                    field.Availability = AvailabilityType.RunTime;
                     extractedFields.Add(field);
                 }
             }
-            Storage.RemoveByLabel(ExtractedFieldsCrateLabel);
-            var crate = Crate.FromContent(ExtractedFieldsCrateLabel, new FieldDescriptionsCM() { Fields = extractedFields });
-            crate.Availability = AvailabilityType.RunTime;
-            Storage.Add(crate);
+
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>("Extracted Field From Table").AddFields(extractedFields);
         }
     }
 }
