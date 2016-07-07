@@ -53,7 +53,7 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Configure(ActivityDTO curActionDesignDTO)
+        public async Task<IHttpActionResult> Configure(ActivityDTO curActionDesignDTO, [FromUri]bool force = false)
         {
             // WebMonitor.Tracer.Monitor.StartMonitoring("Configuring action " + curActionDesignDTO.Name);
             curActionDesignDTO.CurrentView = null;
@@ -61,7 +61,7 @@ namespace HubWeb.Controllers
             var userId = User.Identity.GetUserId();
             using (var uow = _uowFactory.Create())
             {
-                if (_planService.GetPlanState(uow, curActionDesignDTO.Id) == PlanState.Running)
+                if (_planService.GetPlanState(uow, curActionDesignDTO.Id) == PlanState.Running && !force)
                 {
                     return new LockedHttpActionResult();
                 }
@@ -117,11 +117,11 @@ namespace HubWeb.Controllers
         /// </summary>
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Save(ActivityDTO curActionDTO)
+        public async Task<IHttpActionResult> Save(ActivityDTO curActionDTO, [FromUri]bool force = false)
         {
             using (var uow = _uowFactory.Create())
             {
-                if (_planService.GetPlanState(uow, curActionDTO.Id) == PlanState.Running)
+                if (_planService.GetPlanState(uow, curActionDTO.Id) == PlanState.Running && !force)
                 {
                     return new LockedHttpActionResult();
                 }

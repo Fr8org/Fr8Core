@@ -920,7 +920,6 @@
     <Content Include="Views\AngularTemplate\MiniHeader.cshtml" />
     <Content Include="Views\AngularTemplate\ActivityLabelModal.cshtml" />
     <Content Include="Views\AngularTemplate\AdvisoryMessagesPopup.cshtml" />
-    <Content Include="Config\Settings.config" />
     <Content Include="Views\AngularTemplate\PhoneNumberAuthentication.cshtml" />
     <Content Include="Config\terminalYammer\Settings.Release.config" />
     <Content Include="Config\terminalYammer\Settings.Dev.config" />
@@ -1000,6 +999,7 @@
     <Content Include="_PowerShellScripts\Set-WebsiteAppSettings.ps1" />
     <Content Include="_PowerShellScripts\Create-SDKNuget.ps1" />
     <Content Include="Views\AngularTemplate\PageDefinitionList.cshtml" />
+    <Content Include="_PowerShellScripts\Reboot-CloudService.ps1" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\KioskModeOrganizationHeaderController.ts" />
