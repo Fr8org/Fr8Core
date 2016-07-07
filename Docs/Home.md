@@ -5,6 +5,8 @@
     - [Part 1 - Introduction](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Introduction.md)   
     - [Part 2 - Understanding the Fr8 Architectural Model](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/ArchitecturalModel.md)   
     - [Part 3 - The Fr8 Data Model](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DataModel.md)  
+    - [Video Gallery](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/VideoGallery.md)
+    
     - Operating Concepts
         * [Activity Validation](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/ActivitiesValidation.md)
         * [Signaling](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Signaling.md)
