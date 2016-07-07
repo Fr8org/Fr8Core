@@ -146,7 +146,7 @@ namespace HubWeb.Controllers
                 {
                     var terminal = uow.TerminalRepository.GetQuery().FirstOrDefault(a => a.PublicIdentifier == terminalId);
                     string url = terminal.Endpoint + "/terminals/" + terminal.Name + "/polling_notifications";
-                    Logger.Info($"Polling: executing request for {pollingData.ExternalAccountId} from {Server.ServerUrl} to a terminal {terminal.Name} at {terminal.Endpoint}");
+                    Logger.Info($"Polling: executing request for {pollingData?.ExternalAccountId} from {Server.ServerUrl} to a terminal {terminal?.Name} at {terminal?.Endpoint}");
 
                     using (var client = new HttpClient())
                     {
