@@ -16,19 +16,18 @@ In the real world, a Crate consists of the stuff inside the Crate (the “Storag
 
 ![crate_manifest](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/Fr8Crates_CrateManifest.png)
 
-Fr8 Crates are similar. Crate properties can be thought of as the "inside" of the Crate, which is stored in a JSON element called CrateStorage, and the "outside" of the Crate, which is generally referred to as the Manifest of the Crate, and which includes a bunch of individual pieces of metadata about the Crate, and (optionally) the ID of a registered ]Manifest schema](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CratesManifest.md) (generally just called a "Manifest") that provides a description of the structure of the data in the CrateStorage.
+Fr8 Crates are similar. Crate properties can be thought of as the "inside" of the Crate, which is stored in a JSON element called contents, and the "outside" of the Crate, which is generally referred to as the Manifest of the Crate, and which includes a bunch of individual pieces of metadata about the Crate, and (optionally) the ID of a registered ]Manifest schema](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CratesManifest.md) (generally just called a "Manifest") that provides a description of the structure of the data in the CrateStorage.
 
+![crate_json_example](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/crate_contents_example.png)
 
-
-
-Organizationally, when constructing a Crate of data, expect that the metadata about the Crate will remain publicly viewable. CrateStorage is not automatically encrypted, but the Fr8 design anticipates that some users will want to encrypt their CrateStorage.
+In the above example, a fragment of the Crate JSON for a Crate of UI Controls can be seen. The default Fr8 Client knows how to process Crates of UI Controls as long as they use the schema defined on the fr8.co registry at ID=6. (For more information on the registry, click [here](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CratesManifest.md))
 
 
 
 ### Additional information
 - [Crate JSON Definition](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CrateJSON.md)
 - [Signalling of Crate Data](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Signalling.md)
-- [Crate Best Practices](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/CrateBestPractices.md)
+- [Crate Development Best Practices](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/CrateBestPractices.md)
 
 
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
