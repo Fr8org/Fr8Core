@@ -6,7 +6,7 @@ Data is transported throughout the Fr8 network  in Crates. A Crate is simply a j
 
 1. When a user configures a Plan and its Activities in the Plan Builder (we call this "Design-Time"), information about the Activities and settings is stored in Crates that are then put into the CrateStorage of a Plan [Container](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Containers.md).
 
-2. When a user runs a Plan, a Payload Container is created, and as the different Terminals carry out their Activity processing, data is generated, crated, and stored in the Payload [Container](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Containers.md).
+2. When a Plan gets run (at "Run-Time"), a Payload Container is created, and as the different Terminals carry out their Activity processing, data is generated, crated, and stored in the Payload [Container](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Containers.md).
 
 
 
