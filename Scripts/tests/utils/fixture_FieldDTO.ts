@@ -38,9 +38,9 @@ module dockyard.tests.utils.fixtures {
 
         public static dropDownListBox: model.DropDownList = {
             listItems: [
-                { key: 'test1', data: null, fieldType: null, selected: false, value: 'value1', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null, sourceActivityId: null },
-                { key: 'test2', data: null, fieldType: null, selected: false, value: 'value2', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null, sourceActivityId: null },
-                { key: 'test3', data: null, fieldType: null, selected: false, value: 'value3', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null, sourceActivityId: null }
+                { key: 'test1', data: null, fieldType: null, selected: false, value: 'test1', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null, sourceActivityId: null },
+                { key: 'test2', data: null, fieldType: null, selected: false, value: 'test2', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null, sourceActivityId: null },
+                { key: 'test3', data: null, fieldType: null, selected: false, value: 'test3', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null, sourceActivityId: null }
             ],
             source: {
                 manifestType: 'testManifest',
