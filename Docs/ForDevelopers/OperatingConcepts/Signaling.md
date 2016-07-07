@@ -1,4 +1,4 @@
-# Design-Time Signaling of Crate and Field Data
+# Design-Time Signaling of Activity Data
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md) 
 
 Signaling is a process that takes place in Design mode. The Terminal signals the types of data that an Activity will generate when executed in Run mode, so that the user can configure connections between Activities.
