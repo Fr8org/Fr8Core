@@ -40,6 +40,7 @@ namespace Fr8.TerminalBase.Services
         {
             try
             {
+                Logger.Info($"Terminal at '{Terminal?.Endpoint}' is sedning event to Hub at '{hubUrl}'.");
                 var hubCommunicator = await _hubDiscovery.GetHubCommunicator(hubUrl);
                 await hubCommunicator.SendEvent(eventPayload);
             }
