@@ -13,7 +13,7 @@ param(
 	[string]$suffix,
 
 	[Parameter(Mandatory = $true)]
-	[string]$buildConfiguration - "Dev"
+	[string]$buildConfiguration = "Dev"
 
 )
 $ErrorActionPreference = 'Stop'
