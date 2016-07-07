@@ -65,12 +65,12 @@ namespace terminalIntegrationTests.Integration
             var plans = JsonConvert.DeserializeObject<IEnumerable<PlanDTO>>(response).ToArray();
             var plan = plans.FirstOrDefault().Plan.SubPlans.FirstOrDefault();
 
+            // deactivate plan before editing
+            var deactivateUrl = GetHubApiBaseUrl() + "plans/deactivate?planId=" + plans.FirstOrDefault().Plan.Id;
+            await RestfulServiceClient.PostAsync(new Uri(deactivateUrl), new List<CrateDTO>(), null, await GetHMACHeader(new Uri(deactivateUrl), userId));
+
             if (plan.Activities.Where(a => a.Ordering == 8).FirstOrDefault() != null)
             {
-                // deactivate plan before editing
-                var deactivateUrl = GetHubApiBaseUrl() + "plans/deactivate?planId=" + plans.FirstOrDefault().Plan.Id;
-                await RestfulServiceClient.PostAsync(new Uri(deactivateUrl), new List<CrateDTO>(), null, await GetHMACHeader(new Uri(deactivateUrl), userId));
-
                 var deleteActivityUrl = GetHubApiBaseUrl() + "activities/delete/" + plan.Activities.Where(a => a.Ordering == 8).FirstOrDefault().Id;
                 await RestfulServiceClient.DeleteAsync(new Uri(deleteActivityUrl), null, await GetHMACHeader(new Uri(deleteActivityUrl), userId));
             }
