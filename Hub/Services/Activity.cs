@@ -131,7 +131,7 @@ namespace Hub.Services
                 CrateStorage = _crate.EmptyStorageAsStr(),
                 AuthorizationTokenId = authorizationTokenId
             };
-            
+
             parentNode.AddChild(activity, order);
 
             uow.SaveChanges();
@@ -320,7 +320,8 @@ namespace Hub.Services
                     };
                 }
 
-                EventManager.ActivityRunRequested(curActivityDO, curContainerDO);
+                if (curActionExecutionMode != ActivityExecutionMode.ReturnFromChildren)
+                    EventManager.ActivityRunRequested(curActivityDO, curContainerDO);
 
                 var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, "Run", parameters, curActivityDO, curContainerDO.Id);
 
