@@ -44,6 +44,10 @@ namespace terminalIntegrationTests.Integration
 
         private readonly string slackToken = "xoxp-7518126694-28009203829-49624084150-131bd1c65b";
 
+        private const int MaxAwaitPeriod = 30000;
+        private const int SingleAwaitPeriod = 3000;
+        private const int PlanExecutionPeriod = 10000;
+
         [Test]
         public async Task MonitorTerminalSubmissionPlan()
         {
@@ -85,8 +89,8 @@ namespace terminalIntegrationTests.Integration
 
             await SubmitForm(googleEventUrl, guidTestId.ToString());
 
-            //Waiting for Plan execution
-            await Task.Delay(40000);
+            //Waiting 10 seconds for Plan execution
+            await Task.Delay(PlanExecutionPeriod);
 
             //Searching for created jira issue
             Jira jira = CreateRestClient(jiraToken);
@@ -94,14 +98,39 @@ namespace terminalIntegrationTests.Integration
 
             //Searching for slack message
             var slackUrl = "https://slack.com/api/search.messages?token="+ slackToken + "&query=" + guidTestId.ToString();
-            var result = await RestfulServiceClient.GetAsync(new Uri(slackUrl));
+            var resultFromSlack = await RestfulServiceClient.GetAsync(new Uri(slackUrl));
 
-            var slackSearchResult = JObject.Parse(result);
-            var total = (int)slackSearchResult.SelectToken("messages.pagination.total_count");
+            var slackSearchResult = JObject.Parse(resultFromSlack);
+            var totalMessagesFound = (int)slackSearchResult.SelectToken("messages.pagination.total_count");
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            while (stopwatch.ElapsedMilliseconds <= MaxAwaitPeriod)
+            {
+                if (issues.Count() == 0)
+                {
+                    issues = jira.GetIssuesFromJql("summary ~ " + guidTestId.ToString());
+                }
+
+                if(totalMessagesFound == 0)
+                {
+                    var result = await RestfulServiceClient.GetAsync(new Uri(slackUrl));
+
+                    var searchResult = JObject.Parse(result);
+                    totalMessagesFound = (int)searchResult.SelectToken("messages.pagination.total_count");
+                }
+
+                if (issues.Count() != 0 && totalMessagesFound != 0)
+                {
+                    break;
+                }
+                await Task.Delay(SingleAwaitPeriod);
+            }
 
             Assert.IsTrue(issues.Count() > 0,"Couldn't find jira issue");
             
-            Assert.IsTrue(total != 0,"Couldn't find slack message");
+            Assert.IsTrue(totalMessagesFound != 0,"Couldn't find slack message");
 
             //Deleting test issues
             foreach (var issue in issues)
