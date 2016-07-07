@@ -3,7 +3,7 @@
     The script retrieves the hostname of the staging Cloud Service deployment, adds port number 
 	of Plan Directory and calls the Set-Config script to save it to HealthMonitor app.config.
 
-	Add this script to VSO as an Azure Power Shell task since it requires Azure subscription context.
+	Add this script to VSO as an Azure Power Shell task since it requires the Azure subscription context.
 #>
 
 param(

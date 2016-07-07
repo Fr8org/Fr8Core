@@ -25,11 +25,11 @@ namespace Fr8.TerminalBase.BaseClasses
             //map attribute routes
             curTerminalConfiguration.MapHttpAttributeRoutes(new InheritanceSupportDirectRouteProvider());
 
-            curTerminalConfiguration.Routes.MapHttpRoute(
-                name: name,
-                routeTemplate: string.Format("terminal_{0}", curTerminalName) + "/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
-            );
+            //curTerminalConfiguration.Routes.MapHttpRoute(
+            //    name: name,
+            //    routeTemplate: string.Format("terminal_{0}", curTerminalName) + "/{controller}/{id}",
+            //    defaults: new { id = RouteParameter.Optional }
+            //);
             curTerminalConfiguration.Routes.MapHttpRoute(
                 name: string.Format("Terminal{0}ActivityCatchAll", curTerminalName),
                 routeTemplate: "activities/{*actionType}",
