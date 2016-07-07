@@ -95,10 +95,12 @@ initialization can be disabled and Layout.init() should be called on page load c
 ***/
 
 /* Setup Layout Part - Header */
-app.controller('HeaderController', ['$scope', '$http', '$window', ($scope, $http, $window) => {
+app.controller('HeaderController', ['$scope', '$http', '$window', 'TerminalService', ($scope, $http, $window, TerminalService) => {
     $scope.$on('$includeContentLoaded', () => {
         Layout.initHeader(); // init header
     });
+
+    $scope.terminals = TerminalService.getAll();
 
     $scope.goToPlanDirectory = function (planDirectoryUrl) {
         $http.post('/api/authentication/authenticatePlanDirectory', {})

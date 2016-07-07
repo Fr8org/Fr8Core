@@ -27,6 +27,7 @@ namespace terminalQuickBooks
         public void Configuration(IAppBuilder app, bool selfHost)
         {
             ConfigureProject(selfHost, TerminalQuickbooksBootstrapper.ConfigureLive);
+            SwaggerConfig.Register(_configuration);
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
 

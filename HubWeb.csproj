@@ -377,6 +377,7 @@
     <Compile Include="Controllers\Api\ActivitiesController.cs" />
     <Compile Include="Controllers\Api\ActivityTemplatesController.cs" />
     <Compile Include="Controllers\Api\DocumentationController.cs" />
+    <Compile Include="Controllers\Api\LockedHttpActionResult.cs" />
     <Compile Include="Controllers\Api\OrganizationsController.cs" />
     <Compile Include="Controllers\Api\Fr8BaseApiController.cs" />
     <Compile Include="Controllers\Api\NotificationsController.cs" />
@@ -920,22 +921,45 @@
     <Content Include="Views\AngularTemplate\ActivityLabelModal.cshtml" />
     <Content Include="Views\AngularTemplate\AdvisoryMessagesPopup.cshtml" />
     <Content Include="Views\AngularTemplate\PhoneNumberAuthentication.cshtml" />
-    <Content Include="Config\HubWeb\Settings.config.readme">
-      <SubType>Designer</SubType>
-    </Content>
+    <Content Include="Config\terminalYammer\Settings.Release.config" />
+    <Content Include="Config\terminalYammer\Settings.Dev.config" />
+    <Content Include="Config\terminalYammer\Settings.Demo.config" />
+    <Content Include="Config\terminalYammer\Settings.config" />
+    <Content Include="Config\terminalTwilio\Settings.config" />
     <Content Include="Config\terminalTelegram\Settings.Release.config" />
     <Content Include="Config\terminalTelegram\Settings.Dev.config" />
     <Content Include="Config\terminalTelegram\Settings.Demo.config" />
     <Content Include="Config\terminalTelegram\Settings.config" />
+    <Content Include="Config\terminalSlack\Settings.Release.config" />
+    <Content Include="Config\terminalSlack\Settings.Dev.config" />
+    <Content Include="Config\terminalSlack\Settings.Demo.config" />
+    <Content Include="Config\terminalSlack\Settings.config" />
+    <Content Include="Config\terminalSendGrid\Settings.config" />
+    <Content Include="Config\terminalSalesforce\Settings.Release.config" />
+    <Content Include="Config\terminalSalesforce\Settings.Dev.config" />
+    <Content Include="Config\terminalSalesforce\Settings.Demo.config" />
+    <Content Include="Config\terminalSalesforce\Settings.config" />
+    <Content Include="Config\terminalQuickBooks\Settings.config" />
+    <Content Include="Config\terminalPapertrail\Settings.config" />
+    <Content Include="Config\terminalGoogle\Settings.config" />
+    <Content Include="Config\terminalFr8Core\Settings.config" />
     <Content Include="Config\terminalFacebook\Settings.Release.config" />
     <Content Include="Config\terminalFacebook\Settings.Dev.config" />
     <Content Include="Config\terminalFacebook\Settings.Demo.config" />
     <Content Include="Config\terminalFacebook\Settings.config" />
+    <Content Include="Config\terminalDropbox\Settings.config" />
+    <Content Include="Config\terminalDocuSign\Settings.config" />
+    <Content Include="Config\terminalBox\Settings.config" />
     <Content Include="Config\terminalBasecamp2\Settings.Release.config" />
     <Content Include="Config\terminalBasecamp2\Settings.Dev.config" />
     <Content Include="Config\terminalBasecamp2\Settings.Demo.config" />
     <Content Include="Config\terminalBasecamp2\Settings.config" />
+    <Content Include="Config\terminalAzure\Settings.config" />
+    <Content Include="Config\terminalAtlassian\Settings.config" />
+    <Content Include="Config\PlanDirectory\Settings.Release.config" />
+    <Content Include="Config\PlanDirectory\Settings.config" />
     <Content Include="Config\HubWeb\Settings.config" />
+    <Content Include="Config\HealthMonitor\Settings.config.src" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="_PowerShellScripts\HM-job-run.cmd" />
@@ -975,6 +999,7 @@
     <Content Include="_PowerShellScripts\Set-WebsiteAppSettings.ps1" />
     <Content Include="_PowerShellScripts\Create-SDKNuget.ps1" />
     <Content Include="Views\AngularTemplate\PageDefinitionList.cshtml" />
+    <Content Include="_PowerShellScripts\Reboot-CloudService.ps1" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\KioskModeOrganizationHeaderController.ts" />
@@ -4575,7 +4600,6 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets'))" />
   </Target>
   <PropertyGroup>
     <CopyAllFilesToSingleFolderForPackageDependsOn>

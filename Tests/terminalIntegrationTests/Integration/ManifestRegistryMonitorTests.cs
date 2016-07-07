@@ -18,27 +18,23 @@ namespace terminalIntegrationTests.Integration
         public override string TerminalName => "terminalGoogle";
 
         private IConfigRepository _originalConfigRepository;
+        private IContainer _container;
 
         [SetUp]
         public void SetUp()
         {
-            ObjectFactory.Container.Inject(new Mock<IPusherNotifier>().Object);
-            if (_originalConfigRepository == null)
-            {
-                _originalConfigRepository = ObjectFactory.GetInstance<IConfigRepository>();
-            }
+            _container = ObjectFactory.Container.GetNestedContainer();
+            _container.Inject(new Mock<IPusherNotifier>().Object);
         }
 
         private ManifestRegistryMonitor CreateTarget(string systemUserEmail = null)
         {
-            var target = ObjectFactory.GetInstance<ManifestRegistryMonitor>();
             var configRepositoryMock = new Mock<IConfigRepository>();
-            if (systemUserEmail != null)
-            {
                 configRepositoryMock.Setup(x => x.Get("SystemUserEmail"))
                                     .Returns(systemUserEmail);
-            }
-            ObjectFactory.Container.Inject(configRepositoryMock.Object);
+            _container.Inject(configRepositoryMock.Object);
+
+            var target = _container.GetInstance<ManifestRegistryMonitor>();
             return target;
         }
 
