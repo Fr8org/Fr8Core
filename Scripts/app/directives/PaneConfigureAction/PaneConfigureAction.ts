@@ -525,6 +525,12 @@ module dockyard.directives.paneConfigureAction {
                 deferred.resolve(this.$scope.currentAction);
 
             }).catch((result) => {
+                    debugger;
+                if (result.status == 423) {
+                    this.$scope.processing = false;
+                    deferred.reject(result);
+                    return;
+                }
 
                 var errorText = 'Something went wrong. Click to retry.';
                 if (result.status && result.status >= 400) {
