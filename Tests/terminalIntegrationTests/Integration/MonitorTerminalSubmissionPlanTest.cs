@@ -92,16 +92,12 @@ namespace terminalIntegrationTests.Integration
             //Waiting 10 seconds for Plan execution
             await Task.Delay(PlanExecutionPeriod);
 
-            //Searching for created jira issue
+
             Jira jira = CreateRestClient(jiraToken);
-            var issues = jira.GetIssuesFromJql("summary ~ " + guidTestId.ToString());
+            IEnumerable<Issue> issues = new List<Issue>();
 
-            //Searching for slack message
             var slackUrl = "https://slack.com/api/search.messages?token="+ slackToken + "&query=" + guidTestId.ToString();
-            var resultFromSlack = await RestfulServiceClient.GetAsync(new Uri(slackUrl));
-
-            var slackSearchResult = JObject.Parse(resultFromSlack);
-            var totalMessagesFound = (int)slackSearchResult.SelectToken("messages.pagination.total_count");
+            var totalMessagesFound = 0;
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -110,13 +106,14 @@ namespace terminalIntegrationTests.Integration
             {
                 if (issues.Count() == 0)
                 {
+                    //Searching for created jira issue
                     issues = jira.GetIssuesFromJql("summary ~ " + guidTestId.ToString());
                 }
 
                 if(totalMessagesFound == 0)
                 {
+                    //Searching for slack message
                     var result = await RestfulServiceClient.GetAsync(new Uri(slackUrl));
-
                     var searchResult = JObject.Parse(result);
                     totalMessagesFound = (int)searchResult.SelectToken("messages.pagination.total_count");
                 }
