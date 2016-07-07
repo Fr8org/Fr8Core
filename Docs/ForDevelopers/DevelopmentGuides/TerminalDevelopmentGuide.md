@@ -15,11 +15,10 @@ Before proceeding, make sure you're familiar with the following basic topics:
 
 ## General Information
 
-This is platform-independent. For platform-specific information you can read on the bottom of the page.
+This is platform-independent data. For platform-specific information, see the SDK section at the bottom.
 
 Terminals are discrete Web Services that host Activity functionality.
 The main Fr8 Hub runs many of these Terminals itself, but the architecture is decoupled: as far as the Hub is concerned, each Terminal is on the other end of an HTTP request. A fully operational Hub may work with hundreds of different Terminals.
-
 
 Also you can run your own Hub by creating a web service that is built based on [Fr8 Hub Specification](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Specifications/Fr8HubSpecification.md).
 
