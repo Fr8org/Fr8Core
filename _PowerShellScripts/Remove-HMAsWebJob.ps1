@@ -17,4 +17,4 @@ param(
 	[string]$slot = "Staging"
 )
 
-Remove-AzureWebsiteJob -JobName $jobName -Name $siteName -Slot $slot -JobType continuous -Force
+Remove-AzureWebsiteJob -JobName $jobName -Name $siteName -Slot $slot -JobType triggered -Force
