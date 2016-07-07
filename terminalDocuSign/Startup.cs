@@ -34,6 +34,7 @@ namespace terminalDocuSign
             Container.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
 
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
+            SwaggerConfig.Register(_configuration);
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
             app.UseWebApi(_configuration);

@@ -68,7 +68,7 @@ namespace terminalFr8Core.Activities
             AddFileDescriptionToStorage(Storage, controls.Get<StandardConfigurationControlsCM>().Controls.Where(a => a.Type == ControlTypes.FilePicker).ToList());
             Storage.Add(controls);
 
-            await HubCommunicator.SaveActivity(ActivityContext.ActivityPayload);
+            await HubCommunicator.SaveActivity(ActivityContext.ActivityPayload, true);
             await PushLaunchURLNotification();
         }
 
