@@ -63,7 +63,7 @@ $site = Get-AzureWebsite -Name "fr8" -Slot $slot
 # $site = Get-AzureWebsite -Name "fr8dev"
 
 New-AzureWebsiteJob -Name $site[0].Name `
-  -JobName "HealthMonitor-$($buildConfiguration.ToUpper())" `
+  -JobName "HealthMonitor" `
   -JobType Triggered `
   -JobFile $outputArchiveFile `
   -Slot $slot;
