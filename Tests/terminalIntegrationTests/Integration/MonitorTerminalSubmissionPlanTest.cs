@@ -94,7 +94,7 @@ namespace terminalIntegrationTests.Integration
 
 
             Jira jira = CreateRestClient(jiraToken);
-            IEnumerable<Issue> issues = new List<Issue>();
+            Issue[] issues = new Issue[0];
 
             var slackUrl = "https://slack.com/api/search.messages?token="+ slackToken + "&query=" + guidTestId.ToString();
             var totalMessagesFound = 0;
@@ -104,10 +104,10 @@ namespace terminalIntegrationTests.Integration
 
             while (stopwatch.ElapsedMilliseconds <= MaxAwaitPeriod)
             {
-                if (issues.Count() == 0)
+                if (issues.Length == 0)
                 {
                     //Searching for created jira issue
-                    issues = jira.GetIssuesFromJql("summary ~ " + guidTestId.ToString());
+                    issues = jira.GetIssuesFromJql("summary ~ " + guidTestId.ToString()).ToArray();
                 }
 
                 if(totalMessagesFound == 0)
@@ -125,7 +125,7 @@ namespace terminalIntegrationTests.Integration
                 await Task.Delay(SingleAwaitPeriod);
             }
 
-            Assert.IsTrue(issues.Count() > 0,"Couldn't find jira issue");
+            Assert.IsTrue(issues.Length > 0,"Couldn't find jira issue");
             
             Assert.IsTrue(totalMessagesFound != 0,"Couldn't find slack message");
 
