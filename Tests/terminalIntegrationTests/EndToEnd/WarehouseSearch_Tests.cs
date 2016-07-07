@@ -70,6 +70,7 @@ namespace terminalIntegrationTests.EndToEnd
             Assert.AreEqual(mtData[1].EnvelopeId, searchedData[0].EnvelopeId, "Response from warehouse/query contains wrong value for EnvelopeId.");
         }
 
+
         [Test]
         public async Task WarehouseAdd()
         {
