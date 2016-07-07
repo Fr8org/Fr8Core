@@ -32,7 +32,8 @@ namespace terminalFr8Core
 
             Container.Configure(x => x.AddRegistry<Hub.StructureMap.StructureMapBootStrapper.LiveMode>());
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
-            
+
+            SwaggerConfig.Register(_configuration);
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
 
