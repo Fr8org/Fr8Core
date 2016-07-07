@@ -525,7 +525,7 @@ module dockyard.directives.paneConfigureAction {
                 deferred.resolve(this.$scope.currentAction);
 
             }).catch((result) => {
-                    debugger;
+                   
                 if (result.status == 423) {
                     this.$scope.processing = false;
                     deferred.reject(result);
