@@ -46,36 +46,33 @@ namespace terminalGoogle.Services
 
         public async Task<PollingDataDTO> Poll(IHubCommunicator hubCommunicator, PollingDataDTO pollingData)
         {
-            string endpoint = CloudConfigurationManager.GetSetting("terminalGoogle.TerminalEndpoint");
-            var token = await hubCommunicator.GetAuthToken(pollingData.ExternalAccountId);
-            if (token == null)
-            {
-                pollingData.Result = false;
-                return pollingData;
-            }
+
+            Logger.Info($"Polling for Gmail was launched {pollingData.ExternalAccountId}");
 
             var serv = new GoogleGmail();
-            var googleAuthToken = JsonConvert.DeserializeObject<GoogleAuthDTO>(token.Token);
+            var googleAuthToken = JsonConvert.DeserializeObject<GoogleAuthDTO>(pollingData.AuthToken);
             var service = await serv.CreateGmailService(googleAuthToken);
 
             if (string.IsNullOrEmpty(pollingData.Payload))
             {
                 //Polling is called for the first time
                 //we have no history id to synchronise partitially, so we request the last message from the inbox
-                UsersResource.MessagesResource.ListRequest request = service.Users.Messages.List(token.ExternalAccountId);
+                UsersResource.MessagesResource.ListRequest request = service.Users.Messages.List(pollingData.ExternalAccountId);
                 request.RequestParameters["maxResults"] = new Parameter() { DefaultValue = "1", Name = "maxResults", ParameterType = "query" };
                 var list = request.Execute();
 
                 //then we have to get its details and historyId (to use with history listing API method)
-                pollingData.Payload = GetHistoryId(service, list.Messages.FirstOrDefault().Id, token.ExternalAccountId);
-                Logger.Info($"Polling for Gmail {pollingData.ExternalAccountId} {endpoint}: remembered the last email in the inbox");
+
+                pollingData.Payload = GetHistoryId(service, list.Messages.FirstOrDefault().Id, pollingData.ExternalAccountId);
+                Logger.Info($"Polling for Gmail {pollingData.ExternalAccountId}: remembered the last email in the inbox");
+
             }
             else
             {
-                var request = service.Users.History.List(token.ExternalAccountId);
+                var request = service.Users.History.List(pollingData.ExternalAccountId);
                 request.StartHistoryId = ulong.Parse(pollingData.Payload);
                 var result = request.Execute();
-                Logger.Info($"Polling for Gmail {pollingData.ExternalAccountId} {endpoint}: received a history of changes");
+                Logger.Info($"Polling for Gmail {pollingData.ExternalAccountId}: received a history of changes");
                 if (result.History != null)
                     foreach (var historyRecord in result.History)
                     {
@@ -84,14 +81,14 @@ namespace terminalGoogle.Services
                             foreach (var mail in historyRecord.MessagesAdded.Reverse())
                             {
                                 //TODO: make a batch request for emails, instead of calling one by one
-                                var email = GetEmail(service, mail.Message.Id, token.ExternalAccountId);
+                                var email = GetEmail(service, mail.Message.Id, pollingData.ExternalAccountId);
                                 var eventReportContent = new EventReportCM
                                 {
                                     EventNames = "GmailInbox",
                                     ContainerDoId = "",
                                     EventPayload = new CrateStorage(Crate.FromContent("GmailInbox", email)),
                                     Manufacturer = "Google",
-                                    ExternalAccountId = token.ExternalAccountId
+                                    ExternalAccountId = pollingData.ExternalAccountId
                                 };
 
                                 pollingData.Payload = email.MessageID;
@@ -100,7 +97,7 @@ namespace terminalGoogle.Services
                             }
                         }
                     }
-                else Logger.Info($"Polling for Gmail {pollingData.ExternalAccountId} {endpoint}: no new emails");
+                else Logger.Info($"Polling for Gmail {pollingData.ExternalAccountId}: no new emails");
 
             }
             pollingData.Result = true;
