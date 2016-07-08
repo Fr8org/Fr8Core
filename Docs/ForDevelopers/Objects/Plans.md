@@ -5,6 +5,8 @@ A Fr8 Plan is a JSON element that defines a series of Activities. It may have on
 
 When a Terminal has completed the processing of an Activity, it returns the Payload Container (which it has probably modified in some way) to the Hub, and the Hub moves on to the next Activity.
 
+[Watch Video Introduction to Plans](https://vimeo.com/173975037)
+
 
 Creating Plans
 --------------
