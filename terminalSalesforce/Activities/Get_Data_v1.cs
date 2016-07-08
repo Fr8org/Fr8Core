@@ -136,8 +136,7 @@ namespace terminalSalesforce.Actions
             var salesforceObjectFields = Storage
                 .FirstCrate<FieldDescriptionsCM>(x => x.Label == QueryFilterCrateLabel)
                 .Content
-                .Fields
-                .Select(x => x.Name);
+                .Fields;
 
             var filterValue = ActivityUI.SalesforceObjectFilter.Value;
             var filterDataDTO = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(filterValue);

@@ -189,7 +189,7 @@ namespace terminalSalesforce.Actions
                 try
                 {
                     var chatters = await _salesforceManager.Query(SelectedChatter.ToEnum<SalesforceObjectType>(),
-                                                              new[] { "Id" },
+                                                              new[] { new FieldDTO("Id") },
                                                               ControlHelper.ParseConditionToText(JsonConvert.DeserializeObject<List<FilterConditionDTO>>(ChatterFilter)),
                                                               AuthorizationToken);
                     var tasks = new List<Task<string>>(chatters.Table.Count);
