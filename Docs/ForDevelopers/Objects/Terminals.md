@@ -23,6 +23,7 @@ Learn About:
 [Terminal Events](https://maginot.atlassian.net/wiki/display/SH/Events)
 
 [Terminal Registration](https://maginot.atlassian.net/wiki/display/SH/Registration+of+Terminals+%28Plugins%29+and+Actions)
+
 [Terminal Discovery](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Terminal/Discovery.md)
 
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)
