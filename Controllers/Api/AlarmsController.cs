@@ -13,6 +13,7 @@ using System.Net.Http;
 using Fr8.Infrastructure.Communication;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities;
 
 namespace HubWeb.Controllers
 {
@@ -78,7 +79,6 @@ namespace HubWeb.Controllers
 
         public static void ExecuteSchedulledJob(PollingDataDTO pollingData, string terminalId)
         {
-            Logger.Info($"Polling: executing request for {pollingData.ExternalAccountId} to a terminal {terminalId}");
             IRestfulServiceClient _client = new RestfulServiceClient();
             var request = RequestPolling(pollingData, terminalId, _client);
             var result = request.Result;
@@ -146,6 +146,7 @@ namespace HubWeb.Controllers
                 {
                     var terminal = uow.TerminalRepository.GetQuery().FirstOrDefault(a => a.PublicIdentifier == terminalId);
                     string url = terminal.Endpoint + "/terminals/" + terminal.Name + "/polling_notifications";
+                    Logger.Info($"Polling: executing request for {pollingData?.ExternalAccountId} from {Server.ServerUrl} to a terminal {terminal?.Name} at {terminal?.Endpoint}");
 
                     using (var client = new HttpClient())
                     {
