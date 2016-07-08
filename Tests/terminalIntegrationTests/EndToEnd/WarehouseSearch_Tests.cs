@@ -6,10 +6,12 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
 using Data.Interfaces;
+using Data.Infrastructure;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Testing.Integration;
+
 namespace terminalIntegrationTests.EndToEnd
 {
     [Explicit]
@@ -107,6 +109,8 @@ namespace terminalIntegrationTests.EndToEnd
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                System.Diagnostics.Debug.WriteLine("Adding to following MT database: " + ((DockyardDbContext)uow.Db).Database.Connection.ConnectionString);
+
                 var user = uow.UserRepository
                     .GetQuery()
                     .FirstOrDefault(x => x.UserName == TestUserEmail);

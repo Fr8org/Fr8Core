@@ -1,6 +1,7 @@
 ﻿using System.Web.Http;
 using StructureMap;
 using Microsoft.AspNet.Identity;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
@@ -20,6 +21,8 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                System.Console.WriteLine("Querying from following MT database: " + ((DockyardDbContext)uow.Db).Database.Connection.ConnectionString);
+
                 var mtTypeRef = uow.MultiTenantObjectRepository.FindTypeReference(query.Name);
                 var queryBuilder = MTSearchHelper.CreateQueryProvider(mtTypeRef.ClrType);
                 var foundObjects = queryBuilder.Query(
