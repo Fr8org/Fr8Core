@@ -68,6 +68,7 @@ module dockyard.directives {
 
 
     export interface IActionPickerPanelScope extends ng.IScope {
+        categories: Array<model.ActivityCategoryDTO>;
         onClose: () => void;
     }
 
@@ -76,8 +77,16 @@ module dockyard.directives {
         return {
             restrict: 'E',
             templateUrl: '/AngularTemplate/ActionPickerPanel',
-            controller: ['$scope',
-                ($scope: IActionPickerPanelScope) => {
+            controller: ['$scope', '$http',
+                ($scope: IActionPickerPanelScope, $http: ng.IHttpService) => {
+                    var _reload = () => {
+                        $http.get('/api/activity_templates/by_categories')
+                            .then((res: ng.IHttpPromiseCallbackArg<Array<model.ActivityCategoryDTO>>) => {
+                                $scope.categories = res.data;
+                            });
+                    };
+
+                    _reload();
                 }
             ],
             scope: {

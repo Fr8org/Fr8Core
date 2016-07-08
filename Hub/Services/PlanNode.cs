@@ -364,7 +364,34 @@ namespace Hub.Services
                     Name = c.Key.ToString()
                 })
                 .ToList();
+
             return curActivityTemplates;
+        }
+
+        public IEnumerable<ActivityTemplateCategoryDTO> GetGroupedByCategoriesActivityTemplates()
+        {
+            var categories = _activityTemplate
+                .GetQuery()
+                .Where(x => x.Categories != null)
+                .SelectMany(x => x.Categories)
+                .Select(x => new { x.ActivityCategory.Name, x.ActivityCategory.IconPath })
+                .OrderBy(x => x.Name)
+                .Distinct()
+                .ToList();
+
+            var result = categories
+                .Select(x => new ActivityTemplateCategoryDTO()
+                {
+                    Name = x.Name,
+                    IconPath = x.IconPath,
+                    Activities = _activityTemplate.GetQuery()
+                        .Where(y => y.Categories != null && y.Categories.Any(z => z.ActivityCategory.Name == x.Name))
+                        .Select(y => Mapper.Map<ActivityTemplateDTO>(y))
+                        .ToList()
+                })
+                .ToList();
+
+            return result;
         }
     }
 }

@@ -42,6 +42,15 @@ namespace HubWeb.Controllers
             return Ok(categoriesWithActivities);
         }
 
+        [AllowAnonymous]
+        [HttpGet]
+        [ActionName("by_categories")]
+        public IHttpActionResult GetByCategories()
+        {
+            var categoriesWithActivities = _activity.GetGroupedByCategoriesActivityTemplates();
+            return Ok(categoriesWithActivities);
+        }
+
         [ResponseType(typeof(IEnumerable<ActivityTemplateDTO>))]
         [AllowAnonymous]
         [HttpGet]

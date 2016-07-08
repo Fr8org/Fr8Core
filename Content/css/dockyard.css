@@ -530,6 +530,10 @@ div.action-header {
     line-height: 40px;
 }
 
+.action-picker-panel-content {
+    padding-top: 34px;
+}
+
 
 /* TODO: FF-3969, remove this */
 /*
