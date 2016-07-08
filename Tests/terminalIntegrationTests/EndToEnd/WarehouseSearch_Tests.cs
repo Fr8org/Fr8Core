@@ -30,7 +30,7 @@ namespace terminalIntegrationTests.EndToEnd
                     {
                         Field = "SentDate",
                         Operator = "gte",
-                        Value = "22-04-2021"
+                        Value = "21-04-2021"
                     }
                 }
             };
