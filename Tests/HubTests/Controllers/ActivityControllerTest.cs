@@ -35,13 +35,6 @@ namespace HubTests.Controllers
         }
 
         [Test]
-        public void ActivityController_ShouldHaveHMACOnCreateMethod()
-        {
-            var createMethod = typeof(ActivitiesController).GetMethod("Create", new[] { typeof(Guid), typeof(string), typeof(string), typeof(int?), typeof(Guid?), typeof(Guid?) });
-            ShouldHaveFr8HMACAuthorizeOnFunction(createMethod);
-        }
-
-        [Test]
         public void ActivityController_ShouldHaveHMACOnConfigureMethod()
         {
             ShouldHaveFr8HMACAuthorizeOnFunction(typeof(ActivitiesController), "Configure");
@@ -192,6 +185,7 @@ namespace HubTests.Controllers
             {
                 Mock<IActivity> actionMock = new Mock<IActivity>();
                 actionMock.Setup(a => a.GetById(It.IsAny<IUnitOfWork>(), It.IsAny<Guid>()));
+                actionMock.Setup(x => x.Exists(It.IsAny<Guid>())).Returns(true);
 
                 ActivityDO activityDO = new FixtureData(uow).TestActivity3();
                 var controller = new ActivitiesController(actionMock.Object, ObjectFactory.GetInstance<IPlan>(), ObjectFactory.GetInstance<IUnitOfWorkFactory>());
