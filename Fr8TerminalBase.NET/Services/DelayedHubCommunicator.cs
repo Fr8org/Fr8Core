@@ -103,12 +103,6 @@ namespace Fr8.TerminalBase.Services
         //    return await _underlyingHubCommunicator.ValidateFields(fields);
         //}
 
-        public async Task<AuthorizationToken> GetAuthToken(string authTokenId)
-        {
-            await InitializeUnderlyingCommunicator();
-            return await _underlyingHubCommunicator.GetAuthToken(authTokenId);
-        }
-
         public async Task ScheduleEvent(string externalAccountId, string minutes, bool triggerImmediately = false, string additionalConfigAttributes = null)
         {
             await InitializeUnderlyingCommunicator();
