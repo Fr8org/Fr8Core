@@ -51,7 +51,7 @@ namespace terminalIntegrationTests.EndToEnd
             };
         }
 
-        [Test]
+        [Test, Ignore("Temporarily disabled, being fixed in FR-4364")]
         public async Task WarehouseSearch_Query()
         {
             var mtData = MtDataFixture_1();
@@ -69,6 +69,7 @@ namespace terminalIntegrationTests.EndToEnd
 
             Assert.AreEqual(mtData[1].EnvelopeId, searchedData[0].EnvelopeId, "Response from warehouse/query contains wrong value for EnvelopeId.");
         }
+
 
         [Test]
         public async Task WarehouseAdd()
