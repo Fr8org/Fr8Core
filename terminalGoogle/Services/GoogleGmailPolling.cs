@@ -21,6 +21,7 @@ using Fr8.TerminalBase.Services;
 using System.Text;
 using System.Text.RegularExpressions;
 using log4net;
+using Fr8.Infrastructure.Utilities.Configuration;
 
 namespace terminalGoogle.Services
 {
@@ -45,34 +46,30 @@ namespace terminalGoogle.Services
 
         public async Task<PollingDataDTO> Poll(IHubCommunicator hubCommunicator, PollingDataDTO pollingData)
         {
+
             Logger.Info($"Polling for Gmail was launched {pollingData.ExternalAccountId}");
 
-            var token = await hubCommunicator.GetAuthToken(pollingData.ExternalAccountId);
-            if (token == null)
-            {
-                pollingData.Result = false;
-                return pollingData;
-            }
-
             var serv = new GoogleGmail();
-            var googleAuthToken = JsonConvert.DeserializeObject<GoogleAuthDTO>(token.Token);
+            var googleAuthToken = JsonConvert.DeserializeObject<GoogleAuthDTO>(pollingData.AuthToken);
             var service = await serv.CreateGmailService(googleAuthToken);
 
             if (string.IsNullOrEmpty(pollingData.Payload))
             {
                 //Polling is called for the first time
                 //we have no history id to synchronise partitially, so we request the last message from the inbox
-                UsersResource.MessagesResource.ListRequest request = service.Users.Messages.List(token.ExternalAccountId);
+                UsersResource.MessagesResource.ListRequest request = service.Users.Messages.List(pollingData.ExternalAccountId);
                 request.RequestParameters["maxResults"] = new Parameter() { DefaultValue = "1", Name = "maxResults", ParameterType = "query" };
                 var list = request.Execute();
 
                 //then we have to get its details and historyId (to use with history listing API method)
-                pollingData.Payload = GetHistoryId(service, list.Messages.FirstOrDefault().Id, token.ExternalAccountId);
+
+                pollingData.Payload = GetHistoryId(service, list.Messages.FirstOrDefault().Id, pollingData.ExternalAccountId);
                 Logger.Info($"Polling for Gmail {pollingData.ExternalAccountId}: remembered the last email in the inbox");
+
             }
             else
             {
-                var request = service.Users.History.List(token.ExternalAccountId);
+                var request = service.Users.History.List(pollingData.ExternalAccountId);
                 request.StartHistoryId = ulong.Parse(pollingData.Payload);
                 var result = request.Execute();
                 Logger.Info($"Polling for Gmail {pollingData.ExternalAccountId}: received a history of changes");
@@ -84,14 +81,14 @@ namespace terminalGoogle.Services
                             foreach (var mail in historyRecord.MessagesAdded.Reverse())
                             {
                                 //TODO: make a batch request for emails, instead of calling one by one
-                                var email = GetEmail(service, mail.Message.Id, token.ExternalAccountId);
+                                var email = GetEmail(service, mail.Message.Id, pollingData.ExternalAccountId);
                                 var eventReportContent = new EventReportCM
                                 {
                                     EventNames = "GmailInbox",
                                     ContainerDoId = "",
                                     EventPayload = new CrateStorage(Crate.FromContent("GmailInbox", email)),
                                     Manufacturer = "Google",
-                                    ExternalAccountId = token.ExternalAccountId
+                                    ExternalAccountId = pollingData.ExternalAccountId
                                 };
 
                                 pollingData.Payload = email.MessageID;
@@ -106,6 +103,7 @@ namespace terminalGoogle.Services
             pollingData.Result = true;
             return pollingData;
         }
+
 
         public string GetMimeString(MessagePart Parts)
         {
@@ -128,6 +126,7 @@ namespace terminalGoogle.Services
 
             return Body;
         }
+
 
         private StandardEmailMessageCM GetEmail(GmailService service, string Id, string externalAccountId)
         {
@@ -164,6 +163,7 @@ namespace terminalGoogle.Services
             return result;
         }
 
+
         private string GetPlainTextFromHtml(string htmlString)
         {
             string htmlTagPattern = "<.*?>";
@@ -176,6 +176,7 @@ namespace terminalGoogle.Services
 
             return htmlString;
         }
+
 
         private string GetHistoryId(GmailService service, string messageId, string externalAccountId)
         {

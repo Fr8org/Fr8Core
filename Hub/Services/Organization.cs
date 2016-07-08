@@ -21,7 +21,8 @@ namespace Hub.Services
             return $"AdminOfOrganization_{organizationName}";
         }
 
-        public OrganizationDTO GetOrganizationById(int id) {
+        public OrganizationDTO GetOrganizationById(int id)
+        {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var organization = uow.OrganizationRepository.GetByKey(id);
@@ -30,19 +31,17 @@ namespace Hub.Services
             }
         }
 
-        public OrganizationDTO UpdateOrganization(OrganizationDTO dto) {
+        public OrganizationDTO UpdateOrganization(OrganizationDTO dto)
+        {
             OrganizationDO curOrganization = null;
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 curOrganization = uow.OrganizationRepository.GetByKey(dto.Id);
                 if (curOrganization == null)
                 {
-                    throw new Exception(string.Format("Unable to find criteria by id = {0}", dto.Id));
+                    throw new ApplicationException($"Unable to find criteria by id = {dto.Id}");
                 }
-
-                Mapper.Map<OrganizationDTO, OrganizationDO>(dto, curOrganization);
-
+                Mapper.Map(dto, curOrganization);
                 uow.SaveChanges();
             }
             return Mapper.Map<OrganizationDTO>(curOrganization);
