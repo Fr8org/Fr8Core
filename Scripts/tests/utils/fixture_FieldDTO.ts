@@ -55,7 +55,7 @@ module dockyard.tests.utils.fixtures {
             name: 'DropDownList',
             isFocused: false,
             events: [],
-            value: 'test3',
+            value: 'value3',
             errorMessage: null,
             selectedKey: 'test3',
             isHidden: false,
