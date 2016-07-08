@@ -51,7 +51,7 @@ namespace terminalIntegrationTests.EndToEnd
             };
         }
 
-        [Test, Ignore("Temporarily disabled, being fixed in FR-4364")]
+        [Test]
         public async Task WarehouseSearch_Query()
         {
             var mtData = MtDataFixture_1();
