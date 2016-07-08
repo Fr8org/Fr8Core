@@ -109,8 +109,6 @@ namespace terminalIntegrationTests.EndToEnd
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                System.Diagnostics.Debug.WriteLine("Adding to following MT database: " + ((DockyardDbContext)uow.Db).Database.Connection.ConnectionString);
-
                 var user = uow.UserRepository
                     .GetQuery()
                     .FirstOrDefault(x => x.UserName == TestUserEmail);
