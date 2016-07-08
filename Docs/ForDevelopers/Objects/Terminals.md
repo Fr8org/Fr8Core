@@ -15,7 +15,7 @@ Command		| Description
 /activate |	A Hub calls this when it is preparing to activate a fr8Line that contains an Action hosted by this Terminal. Used to do things like register for notification with web services	
 /run |	Formerly “Execute”. A Hub calls this when it is processing a Pallet through a fr8Line and flow reaches a particular Action hosted by this Terminal	
 [/events](https://maginot.atlassian.net/wiki/display/SH/Events) |	Used by a Hub to pass a received external event notification in for parsing	
-[/discover](https://maginot.atlassian.net/wiki/display/SH/Terminal+Discovery) |	Used by a Hub to request Plugin information and ActivityTemplate data	
+[/discover](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Terminal/Discovery.md) |	Used by a Hub to request Plugin information and ActivityTemplate data	
 Learn About:
 
 [Terminal Authentication](https://maginot.atlassian.net/wiki/display/SH/Terminal+Authentication)
@@ -23,5 +23,6 @@ Learn About:
 [Terminal Events](https://maginot.atlassian.net/wiki/display/SH/Events)
 
 [Terminal Registration](https://maginot.atlassian.net/wiki/display/SH/Registration+of+Terminals+%28Plugins%29+and+Actions)
+[Terminal Discovery](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Terminal/Discovery.md)
 
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)
