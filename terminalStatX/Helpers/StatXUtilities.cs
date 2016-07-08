@@ -49,6 +49,10 @@ namespace terminalStatX.Helpers
             return oldStat.Value != newStat.Value;
         }
 
+        public static StatXAuthDTO GetStatXAuthToken(string token)
+        {
+            return JsonConvert.DeserializeObject<StatXAuthDTO>(token);
+        }
 
         public static StatXAuthDTO GetStatXAuthToken(AuthorizationToken token)
         {

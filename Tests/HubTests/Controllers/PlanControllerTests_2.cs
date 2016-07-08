@@ -75,7 +75,7 @@ namespace HubTests.Controllers
 
                 var controller = new PlansController();
                 // Act
-                var container = await controller.Run(plan.Id);
+                var container = await controller.Run(plan.Id, null);
 
                 AssertExecutionSequence(new[]
                 {
@@ -85,19 +85,6 @@ namespace HubTests.Controllers
 
                 Assert.NotNull(container); // Get not empty result
                 Assert.IsInstanceOf<OkNegotiatedContentResult<ContainerDTO>>(container); // Result of correct HTTP response type with correct payload
-
-                container = await controller.Run(plan.Id, ((OkNegotiatedContentResult<ContainerDTO>)container).Content.Id);
-
-                Assert.NotNull(container); // Get not empty result
-                Assert.IsInstanceOf<OkNegotiatedContentResult<ContainerDTO>>(container); // Result of correct HTTP response type with correct payload
-
-                AssertExecutionSequence(new[]
-                {
-                    new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(2)),
-                    new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(3)),
-                    new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(3)),
-                    new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(4)),
-                }, ActivityService.ExecutedActivities);
             }
         }
 
@@ -137,7 +124,7 @@ namespace HubTests.Controllers
             var controller = new PlansController();
 
             // Act
-            var result = controller.Run(Guid.NewGuid());
+            var result = controller.Run(Guid.NewGuid(), null);
 
             // Assert
             Assert.NotNull(result.Result);                                                  // Get not empty result
