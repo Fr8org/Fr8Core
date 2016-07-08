@@ -9,6 +9,11 @@
         </div>
     </div>
     <div class="action-picker-panel-content">
-        <div ng-repeat="c in categories">{{c.name}}</div>
+        <div class="category-icon-list">
+            <div ng-repeat="c in categories" class="category-item">
+                <div class="category-icon"><img ng-src="{{c.iconPath}}" ng-click="selectCategory(c)" /></div>
+                <div class="category-label" ng-click="selectCategory(c)">{{c.name}}</div>
+            </div>
+        </div>
     </div>
 </div>

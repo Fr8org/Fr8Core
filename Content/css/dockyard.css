@@ -477,6 +477,7 @@ div.action-header {
 
 .action-picker-container {
     position: fixed;
+    /*display: block;*/
     margin-top: 39px;
     width: 79%;
     height: 40%;
@@ -492,11 +493,13 @@ div.action-header {
     border-left: 1px solid #E5E5E5;
     border-right: 1px solid #E5E5E5;
     border-bottom: 3px solid #26A69A;
+    overflow: hidden;
 }
 
 .action-picker-container-hidden {
     height: 0;
     opacity: 0;
+    /*display: none;*/
 }
 
 .action-picker-panel-header {
@@ -531,7 +534,32 @@ div.action-header {
 }
 
 .action-picker-panel-content {
+    position: absolute;
+    top: 34px;
+    bottom: 0;
+    left: 0;
+    right: 0;
     padding-top: 34px;
+    overflow-y: auto;
+}
+
+.action-picker-panel-content > .category-icon-list {
+    margin-top: -34px;
+}
+
+.action-picker-panel-content > .category-icon-list .category-item {
+    float: left;
+    margin: 10px 15px 10px 15px;
+    cursor: pointer;
+}
+
+.action-picker-panel-content > .category-icon-list .category-item .category-icon img {
+    outline: none;
+}
+
+.action-picker-panel-content > .category-icon-list .category-item .category-label {
+    text-align: center;
+    outline: none;
 }
 
 
