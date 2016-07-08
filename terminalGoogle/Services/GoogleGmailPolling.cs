@@ -21,6 +21,7 @@ using Fr8.TerminalBase.Services;
 using System.Text;
 using System.Text.RegularExpressions;
 using log4net;
+using Fr8.Infrastructure.Utilities.Configuration;
 
 namespace terminalGoogle.Services
 {
@@ -45,8 +46,7 @@ namespace terminalGoogle.Services
 
         public async Task<PollingDataDTO> Poll(IHubCommunicator hubCommunicator, PollingDataDTO pollingData)
         {
-            Logger.Info($"Polling for Gmail was launched {pollingData.ExternalAccountId}");
-
+            string endpoint = CloudConfigurationManager.GetSetting("terminalGoogle.TerminalEndpoint");
             var token = await hubCommunicator.GetAuthToken(pollingData.ExternalAccountId);
             if (token == null)
             {
@@ -68,14 +68,14 @@ namespace terminalGoogle.Services
 
                 //then we have to get its details and historyId (to use with history listing API method)
                 pollingData.Payload = GetHistoryId(service, list.Messages.FirstOrDefault().Id, token.ExternalAccountId);
-                Logger.Info($"Polling for Gmail {pollingData.ExternalAccountId}: remembered the last email in the inbox");
+                Logger.Info($"Polling for Gmail {pollingData.ExternalAccountId} {endpoint}: remembered the last email in the inbox");
             }
             else
             {
                 var request = service.Users.History.List(token.ExternalAccountId);
                 request.StartHistoryId = ulong.Parse(pollingData.Payload);
                 var result = request.Execute();
-                Logger.Info($"Polling for Gmail {pollingData.ExternalAccountId}: received a history of changes");
+                Logger.Info($"Polling for Gmail {pollingData.ExternalAccountId} {endpoint}: received a history of changes");
                 if (result.History != null)
                     foreach (var historyRecord in result.History)
                     {
@@ -100,12 +100,13 @@ namespace terminalGoogle.Services
                             }
                         }
                     }
-                else Logger.Info($"Polling for Gmail {pollingData.ExternalAccountId}: no new emails");
+                else Logger.Info($"Polling for Gmail {pollingData.ExternalAccountId} {endpoint}: no new emails");
 
             }
             pollingData.Result = true;
             return pollingData;
         }
+
 
         public string GetMimeString(MessagePart Parts)
         {
@@ -128,6 +129,7 @@ namespace terminalGoogle.Services
 
             return Body;
         }
+
 
         private StandardEmailMessageCM GetEmail(GmailService service, string Id, string externalAccountId)
         {
@@ -164,6 +166,7 @@ namespace terminalGoogle.Services
             return result;
         }
 
+
         private string GetPlainTextFromHtml(string htmlString)
         {
             string htmlTagPattern = "<.*?>";
@@ -176,6 +179,7 @@ namespace terminalGoogle.Services
 
             return htmlString;
         }
+
 
         private string GetHistoryId(GmailService service, string messageId, string externalAccountId)
         {
