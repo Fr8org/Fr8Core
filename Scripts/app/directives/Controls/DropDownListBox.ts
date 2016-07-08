@@ -41,7 +41,7 @@ module dockyard.directives.dropDownListBox {
                     };
                     if (item) {
                         field = {
-                            value: item.key,
+                            value: item.value,
                             key: item.key
                         };
                     }
