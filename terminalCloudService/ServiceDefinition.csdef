@@ -254,6 +254,7 @@
       <Setting name="Fr8.ConnectionString"/>
       <Setting name="CoreWebServerUrl"/>
       <Setting name="HubApiBaseUrl"/>
+      <Setting name="LoggerNamePrefix"/>
       <Setting name="terminalAtlassian.TerminalEndpoint"/>
       <Setting name="terminalAzure.TerminalEndpoint"/>
       <Setting name="terminalBasecamp2.TerminalEndpoint"/>

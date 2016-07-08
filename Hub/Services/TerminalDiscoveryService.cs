@@ -12,12 +12,15 @@ using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities;
 using Hub.Interfaces;
 using Hub.Managers;
+using log4net;
 using Microsoft.AspNet.Identity;
 
 namespace Hub.Services
 {
     public class TerminalDiscoveryService : ITerminalDiscoveryService
     {
+        private static readonly ILog Logger = Fr8.Infrastructure.Utilities.Logging.Logger.GetCurrentClassLogger();
+
         private readonly IActivityTemplate _activityTemplateService;
         private readonly ITerminal _terminal;
         private readonly IRestfulServiceClient _restfulServiceClient;
@@ -69,6 +72,8 @@ namespace Hub.Services
                 throw new ArgumentException("Invalid url", nameof(endpoint));
             }
 
+            Logger.Info($"Registration of terminal at '{endpoint}' is requested.");
+
             endpoint = ExtractTerminalAuthority(endpoint);
 
             using (var uow = _unitOfWorkFactory.Create())
@@ -77,6 +82,7 @@ namespace Hub.Services
 
                 if (uow.TerminalRegistrationRepository.GetAll().FirstOrDefault(x => string.Equals(ExtractTerminalAuthority(x.Endpoint), endpoint, StringComparison.OrdinalIgnoreCase)) != null)
                 {
+                    Logger.Error($"Terminal with endpoint '{endpoint}' was already registered");
                     throw new Exception($"Terminal with endpoint '{endpoint}' was already registered");
                 }
 
@@ -93,6 +99,8 @@ namespace Hub.Services
                 uow.TerminalRegistrationRepository.Add(terminalRegistration);
                 uow.SaveChanges();
             }
+
+            Logger.Info($"Terminal at '{endpoint}' was successfully registered.");
         }
 
         public async Task Discover()
@@ -105,6 +113,8 @@ namespace Hub.Services
 
         public async Task<bool> Discover(string terminalUrl)
         {
+            Logger.Info($"Discovering of  terminal at '{terminalUrl}' was requested...");
+
             // validate terminal url
             var uri = new Uri(terminalUrl);
 
@@ -112,6 +122,7 @@ namespace Hub.Services
             {
                 if (!_knownTerminals.Contains(uri.Authority))
                 {
+                    Logger.Info($"Terminalat at '{terminalUrl}' was not registered within the Hub. Discovery request declied.");
                     return false;
                 }
             }
@@ -140,6 +151,8 @@ namespace Hub.Services
 
         private async Task<bool> DiscoverInternal(string terminalUrl)
         {
+            Logger.Info($"Starting discovering terminal at '{terminalUrl}'. Reporting about self as the Hub at '{_serverUrl}'.");
+
             try
             {
                 string secret = null;
@@ -153,6 +166,7 @@ namespace Hub.Services
 
                 if (secret == null)
                 {
+                    Logger.Info($"Generating new secret for terminal at '{terminalUrl}'");
                     secret = Guid.NewGuid().ToString("N");
                 }
 
@@ -166,7 +180,8 @@ namespace Hub.Services
 
                 if (terminalRegistrationInfo == null)
                 {
-                    throw new Exception("Terminal didn't return meaningfull reply for discovery request.");
+                    Logger.Error($"Terminal at '{terminalUrl}' didn't return meaningfull reply for discovery request.");
+                    throw new Exception($"Terminal at '{terminalUrl}' didn't return meaningfull reply for discovery request.");
                 }
 
                 var activityTemplates = terminalRegistrationInfo.Activities.Select(Mapper.Map<ActivityTemplateDO>).ToList();
@@ -184,6 +199,7 @@ namespace Hub.Services
 
                 foreach (var curItem in activityTemplates)
                 {
+                    Logger.Error($"Registering activity '{curItem.Name}' from terminal at '{terminalUrl}'");
                     try
                     {
                         curItem.Terminal = terminal;
@@ -210,6 +226,8 @@ namespace Hub.Services
                 var uri = new Uri(terminalUrl);
                 _knownTerminals.Add(uri.Authority);
             }
+
+            Logger.Info($"Successfully discovered terminal at '{terminalUrl}'.");
 
             return true;
         }
