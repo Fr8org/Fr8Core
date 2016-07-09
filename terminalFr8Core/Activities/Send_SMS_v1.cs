@@ -14,6 +14,7 @@ using PhoneNumbers;
 using StructureMap;
 using terminalUtilities.Twilio;
 using Twilio;
+using Fr8.TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
@@ -81,6 +82,20 @@ namespace terminalFr8Core.Activities
 
         public override async Task FollowUp()
         {
+        }
+
+        protected override Task Validate()
+        {
+            ValidationManager.Reset();
+            if (ActivityUI.SmsNumber.HasValue)
+            {
+                ValidationManager.ValidatePhoneNumber(GeneralisePhoneNumber(ActivityUI.SmsNumber.TextValue), ActivityUI.SmsNumber);
+            }
+            else
+            {
+                ValidationManager.SetError("No SMS Number Provided", ActivityUI.SmsNumber);
+            }
+            return Task.FromResult(0);
         }
 
         public override async Task Run()
