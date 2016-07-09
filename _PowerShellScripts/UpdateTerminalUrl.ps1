@@ -17,6 +17,19 @@ IF (EXISTS (SELECT *
                  WHERE TABLE_SCHEMA = 'dbo' 
                  AND  TABLE_NAME = 'TerminalRegistration'))
 BEGIN
+
+WITH cte
+    AS (SELECT ROW_NUMBER() OVER (PARTITION BY 
+     ('$newHostname' +
+        (CASE when CHARINDEX (':', REVERSE ([Endpoint])) = 0
+            then ''
+        else 
+            RIGHT ([Endpoint], CHARINDEX (':', REVERSE ([Endpoint])))end ))
+     ORDER BY ( SELECT 0)) RN
+        FROM   TerminalRegistration)
+	delete FROM cte
+	WHERE  RN > 1
+
 	 UPDATE TerminalRegistration SET [Endpoint] = 
 			( '$newHostname' +
 		(CASE when CHARINDEX (':', REVERSE ([Endpoint])) = 0
