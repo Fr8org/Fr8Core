@@ -38,7 +38,11 @@ namespace terminalGoogle.Activities
             NeedsAuthentication = true,
             WebService = TerminalData.GmailWebServiceDTO,
             MinPaneWidth = 300,
-            Categories = new[] { ActivityCategories.Monitor }
+            Categories = new[]
+            {
+                ActivityCategories.Monitor,
+                new ActivityCategoryDTO(TerminalData.GooogleWebServiceDTO.Name, TerminalData.GooogleWebServiceDTO.IconPath)
+            }
         };
 
         private IGoogleGmailPolling _gmailPollingService;

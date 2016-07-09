@@ -483,7 +483,7 @@ div.action-header {
     height: 40%;
     z-index: 1019;
 
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(255, 255, 255, 0.95);
     opacity: 1;
 
     transition-property: height, opacity;
@@ -506,12 +506,48 @@ div.action-header {
     position: relative;
 }
 
+.action-picker-panel-title,
 .action-picker-panel-search {
     position: absolute;
     left: 0;
     top: 0;
     right: 48px;
     height: 34px;
+}
+
+.action-picker-panel-title {
+    border-bottom: 1px solid #E5E5E5;
+    border-right: 1px solid #E5E5E5;
+}
+
+.action-picker-panel-title .category-back-button {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 48px;
+    height: 34px;
+    text-align: center;
+    border-right: 1px solid #E5E5E5;
+}
+
+.action-picker-panel-title .category-back-button a {
+    color: #525252;
+    line-height: 34px;
+}
+
+.action-picker-panel-title .category-title {
+    position: absolute;
+    top: 0;
+    left: 58px;
+    right: 48px;
+    line-height: 34px;
+}
+
+.action-picker-panel-title .category-title img {
+    width: 24px;
+    height: 24px;
+    border: 0;
+    margin-top: -5px;
 }
 
 .action-picker-panel-search input[type="text"] {
@@ -529,7 +565,7 @@ div.action-header {
 }
 
 .action-picker-panel-close a {
-    color: black;
+    color: #525252;
     line-height: 40px;
 }
 
@@ -554,14 +590,39 @@ div.action-header {
 }
 
 .action-picker-panel-content > .category-icon-list .category-item .category-icon img {
+    width: 64px;
+    height: 64px;
     outline: none;
 }
 
 .action-picker-panel-content > .category-icon-list .category-item .category-label {
+    width: 64px;
+    height: 20px;
+    overflow: hidden;
     text-align: center;
     outline: none;
 }
 
+.action-picker-panel-content > .activity-template-list {
+    margin-top: -34px;
+}
+
+.action-picker-panel-content > .activity-template-list > ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.action-picker-panel-content > .activity-template-list > ul > li {
+    margin: 0;
+    margin-left: 10px;
+    padding: 0;
+    padding: 10px 10px 0px 0px;
+}
+
+.action-picker-panel-content > .activity-template-list > ul > li:last-child {
+    padding-bottom: 10px;
+}
 
 /* TODO: FF-3969, remove this */
 /*

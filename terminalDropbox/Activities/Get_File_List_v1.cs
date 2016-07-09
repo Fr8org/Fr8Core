@@ -47,7 +47,11 @@ namespace terminalDropbox.Actions
             Category = ActivityCategory.Receivers,
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
-            Categories = new[] { ActivityCategories.Receive }
+            Categories = new[]
+            {
+                ActivityCategories.Receive,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
       

@@ -1,7 +1,17 @@
 ﻿<div class="action-picker-panel">
     <div class="action-picker-panel-header">
-        <div class="action-picker-panel-search">
-            <input type="text" class="form-control" placeholder="Search for any activity..." />
+        <div class="action-picker-panel-search" ng-if="!selectedCategory">
+            <input type="text" class="form-control" placeholder="Search for any activity..." ng-model="form.searchText" />
+        </div>
+
+        <div class="action-picker-panel-title" ng-if="selectedCategory">
+            <div class="category-back-button">
+                <a href ng-click="unselectCategory()"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+            </div>
+            <div class="category-title">
+                <img ng-src="{{selectedCategory.iconPath}}" />
+                <span>{{selectedCategory.name}}</span>
+            </div>
         </div>
 
         <div class="action-picker-panel-close">
@@ -9,11 +19,22 @@
         </div>
     </div>
     <div class="action-picker-panel-content">
-        <div class="category-icon-list">
-            <div ng-repeat="c in categories" class="category-item">
+        <div class="category-icon-list" ng-if="!selectedCategory">
+            <div ng-repeat="c in categories | filter: { name: form.searchText }" class="category-item">
                 <div class="category-icon"><img ng-src="{{c.iconPath}}" ng-click="selectCategory(c)" /></div>
                 <div class="category-label" ng-click="selectCategory(c)">{{c.name}}</div>
             </div>
+        </div>
+
+        <div class="activity-template-list" ng-if="selectedCategory">
+            <ul>
+                <li ng-repeat="at in selectedCategory.activities | orderBy: 'label'">
+                    <a href ng-click="selectActivityTemplate(at)">
+                        <i class="fa fa-cogs" aria-hidden="true"></i>
+                        <span>{{at.label}}</span>
+                    </a>
+                </li>
+            </ul>
         </div>
     </div>
 </div>

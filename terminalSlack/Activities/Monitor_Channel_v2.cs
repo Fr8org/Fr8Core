@@ -26,7 +26,11 @@ namespace terminalSlack.Activities
             Version = "2",
             WebService = TerminalData.WebServiceDTO,
             MinPaneWidth = 330,
-            Categories = new[] { ActivityCategories.Monitor }
+            Categories = new[]
+            {
+                ActivityCategories.Monitor,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

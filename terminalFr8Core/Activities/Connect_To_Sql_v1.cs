@@ -22,7 +22,11 @@ namespace terminalFr8Core.Activities
             Tags = Tags.Internal,
             Terminal = TerminalData.TerminalDTO,
             WebService = TerminalData.WebServiceDTO,
-            Categories = new[] { ActivityCategories.Process }
+            Categories = new[]
+            {
+                ActivityCategories.Process,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

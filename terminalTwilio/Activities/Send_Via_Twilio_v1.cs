@@ -29,7 +29,11 @@ namespace terminalTwilio.Activities
             MinPaneWidth = 330,
             Terminal = TerminalData.TerminalDTO,
             WebService = TerminalData.WebServiceDTO,
-            Categories = new[] { ActivityCategories.Forward }
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

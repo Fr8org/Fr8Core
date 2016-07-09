@@ -36,7 +36,11 @@ namespace terminalFr8Core.Activities
             Tags = Tags.HideChildren,
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
-            Categories = new[] { ActivityCategories.Solution }
+            Categories = new[]
+            {
+                ActivityCategories.Solution,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

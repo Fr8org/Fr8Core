@@ -24,7 +24,11 @@ namespace terminalTelegram.Activities
             WebService = TerminalData.WebServiceDTO,
             MinPaneWidth = 330,
             NeedsAuthentication = true,
-            Categories = new[] { ActivityCategories.Forward }
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
 
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
