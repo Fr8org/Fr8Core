@@ -368,7 +368,7 @@ namespace Hub.Services
             return curActivityTemplates;
         }
 
-        public IEnumerable<ActivityTemplateCategoryDTO> GetGroupedByCategoriesActivityTemplates()
+        public IEnumerable<ActivityTemplateCategoryDTO> GetActivityTemplatesGroupedByCategories()
         {
             var categories = _activityTemplate
                 .GetQuery()
