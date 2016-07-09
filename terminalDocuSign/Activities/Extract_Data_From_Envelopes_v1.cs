@@ -105,6 +105,12 @@ namespace terminalDocuSign.Activities
                 return;
             }
 
+            //Removing children activities when configuring solution after returning to Solution Introduction
+            if(ActivityPayload.ChildrenActivities.Count()> 0)
+            {
+                ActivityPayload.ChildrenActivities.RemoveAll(a => true);
+            }
+
             // Always use default template for solution
             const string firstTemplateName = "Monitor_DocuSign_Envelope_Activity";
             var monitorDocusignTemplate = await HubCommunicator.GetActivityTemplate("terminalDocuSign", firstTemplateName);
