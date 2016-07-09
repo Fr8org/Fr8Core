@@ -131,7 +131,7 @@ if(Test-Path $ConfigFile)
 			elseif ($item.Value.Contains("{cs}"))
 			{
 				# Assign connection string to the setting
-				if ($serviceName -ne $null)
+				if ($connectionString -ne $null)
 				{
 					$node.Value = $item.Value -replace "{cs}", $connectionString 
 				}
