@@ -449,8 +449,10 @@ div.action-header {
     right: -66px;
 }
 
-/* TODO: FF-3969, remove this */
-/*.action-add-button, .action-category-icon {*/
+.action-add-button-link {
+    padding: 25px 0 15px 0;
+}
+
 .action-add-button {
     background: #fCfCfC;
     border-radius: 50%;
@@ -623,63 +625,6 @@ div.action-header {
 .action-picker-panel-content > .activity-template-list > ul > li:last-child {
     padding-bottom: 10px;
 }
-
-/* TODO: FF-3969, remove this */
-/*
-.action-categories {
-    margin-top: 144px;
-    transition: all 0.2s ease-out;
-    z-index: 100;
-    background-color: #EFF3F8;
-}
-
-.action-category {
-    display: flex;
-    position: relative;
-    align-items: center;
-    margin-top: -72px;
-    transition: all 0.2s ease-out;
-}
-
-.action-category-name {
-    margin-left: 8px;
-    width: 56px;
-    opacity: 0;
-    transition: all 0.2s ease-out;
-    font-weight: bold;
-}
-
-.action-category-icon:hover, .action-category--active .action-category-icon {
-    cursor: pointer;
-    background: white;
-}
-
-.action-category--active .action-category-icon {
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    background: white;
-    color: #444d58;
-}
-
-.action-add:hover .action-add-button, .action-add--active .action-add-button {
-    opacity: 0;
-    transform: rotate(90deg);
-}
-
-.action-add:hover .action-categories, .action-add--active .action-categories {
-    margin-top: -16px;
-}
-
-.action-add .action-category, .action-add--active .action-category {
-    outline:none;
-}
-.action-add:hover .action-category, .action-add--active .action-category {
-    margin-top: 8px;
-}
-
-.action-add:hover .action-category-name, .action-add--active .action-category-name {
-    opacity: 1;
-}
-*/
 
 .action-slider {
     background: white;

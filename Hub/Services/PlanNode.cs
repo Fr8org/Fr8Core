@@ -386,7 +386,9 @@ namespace Hub.Services
                     IconPath = x.IconPath,
                     Activities = _activityTemplate.GetQuery()
                         .Where(y => y.Categories != null && y.Categories.Any(z => z.ActivityCategory.Name == x.Name))
-                        .Select(y => Mapper.Map<ActivityTemplateDTO>(y))
+                        .GroupBy(y => y.Name)
+                        .Select(y => Mapper.Map<ActivityTemplateDTO>(y.OrderByDescending(z => Int32.Parse(z.Version)).First()))
+                        .OrderBy(y => y.Label)
                         .ToList()
                 })
                 .ToList();
