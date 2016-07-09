@@ -11,6 +11,8 @@ namespace terminalAsana.Interfaces
         string ApiVersion           { get; }
         string DomainName           { get; }
         string ApiEndpoint          { get; }
+        string AsanaClientSecret    { get; }
+        string AsanaClientId        { get; }
 
         /// <summary>
         /// The number of objects to return per page. The value must be between 1 and 100.
@@ -24,7 +26,11 @@ namespace terminalAsana.Interfaces
         /// </summary>
         string Offset               { get; }
 
-
+        string MinutesBeforeTokenRenewal{ get; }
+        string AsanaOriginalRedirectUrl { get; }
+        string AsanaOAuthCodeUrl        { get; }
+        string AsanaOAuthTokenUrl       { get; } 
+                
         string WorkspacesUrl        { get; }
         string TasksUrl             { get; }
         string UsersUrl             { get; }

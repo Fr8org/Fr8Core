@@ -14,6 +14,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Infrastructure;
 using Microsoft.Ajax.Utilities;
 using terminalAsana.Asana;
 using terminalAsana.Asana.Entities;
@@ -31,10 +32,10 @@ namespace terminalAsana.Activities
 
         private IAsanaParameters _parameters;
 
-        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        public static readonly  ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "Get_Tasks",
-            Label = "GetAsync Tasks",
+            Label = "Get Tasks",
             Category = ActivityCategory.Receivers,
             Version = "1",
             MinPaneWidth = 330,
@@ -54,6 +55,7 @@ namespace terminalAsana.Activities
             public DropDownList WorkspacesList;
             public DropDownList UsersList;
             public DropDownList ProjectsList;
+            public TextBlock Information;
 
             public ActivityUi()
             {
@@ -65,12 +67,19 @@ namespace terminalAsana.Activities
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig },
                 };
 
+
                 ProjectsList = new DropDownList()
                 {
                     Label = "Projects in workspace",
                     Name = nameof(ProjectsList),
                     ListItems = new List<ListItem>(),
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
+                };
+
+                Information = new TextBlock()
+                {
+                    Name = nameof(Information),
+                    Label = "If you specify a project, username won`t be taken in account."
                 };
 
                 UsersList = new DropDownList()
@@ -81,7 +90,7 @@ namespace terminalAsana.Activities
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
 
-                Controls = new List<ControlDefinitionDTO>(){ WorkspacesList, UsersList, ProjectsList };
+                Controls = new List<ControlDefinitionDTO>(){ WorkspacesList, UsersList, Information, ProjectsList };
             }
 
 
@@ -105,58 +114,52 @@ namespace terminalAsana.Activities
 
         public override async Task Initialize()
         {
-            var workspaces = _workspaces.Get();
+            var workspaces = await _workspaces.GetAsync();
             ActivityUI.WorkspacesList.ListItems = workspaces.Select( w => new ListItem() { Key= w.Name, Value = w.Id} ).ToList();
 
-            CrateSignaller.MarkAvailableAtRuntime<KeyValueListCM>(RunTimeCrateLabel).AddFields("Task name", "Task id");
+            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel).AddFields("Task name", "Task id");
         }
 
         public override async Task FollowUp()
-        {
+        {           
             if (!ActivityUI.WorkspacesList.Value.IsNullOrWhiteSpace())
             {
                 var users =  await _users.GetUsersAsync(ActivityUI.WorkspacesList.Value);
-                ActivityUI.UsersList.ListItems = users.Select(w => new ListItem() {Key = w.Name, Value = w.Id}).ToList();
+                ActivityUI.UsersList.ListItems = users.Select(w => new ListItem() {Key = w.Name, Value = w.Id}).ToList();                
 
-                var projects =
-                    await _projects.Get(new AsanaProjectQuery() {Workspace = ActivityUI.WorkspacesList.Value });
-                ActivityUI.ProjectsList.ListItems = projects.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();
+                var projects = 
+                    await _projects.Get(new AsanaProjectQuery() {Workspace = ActivityUI.WorkspacesList.Value });     
+                ActivityUI.ProjectsList.ListItems = projects.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();                                         
             }
-
         }
 
         protected override Task Validate()
         {
-            if (ActivityUI.WorkspacesList.Value.IsNullOrWhiteSpace())
-            {
-                ValidationManager.SetError("Workspace should not be empty", ActivityUI.WorkspacesList);
-            }
-
-            if (ActivityUI.UsersList.Value.IsNullOrWhiteSpace())
-            {
-                ValidationManager.SetError("User should not be empty", ActivityUI.UsersList);
-            }
+            ValidationManager.ValidateDropDownListNotEmpty(ActivityUI.WorkspacesList, "Workspace should not be empty");
+            ValidationManager.ValidateDropDownListNotEmpty(ActivityUI.UsersList, "User should not be empty");
+ 
             return Task.FromResult(0);
         }
 
-
         public override async Task Run()
         {
-           
-                var query = new AsanaTaskQuery()
-                {
-                    Workspace = ActivityUI.WorkspacesList.Value,
-                    Assignee = ActivityUI.UsersList.Value,
-                    Project = ActivityUI.ProjectsList.Value
-                };
+            var query = new AsanaTaskQuery()
+            {
+                Workspace = ActivityUI.WorkspacesList.Value,
+                Assignee = ActivityUI.UsersList.Value,
+                Project = ActivityUI.ProjectsList.Value
+            };
 
-                var tasks = await _tasks.GetAsync(query);
+            var tasks = await _tasks.GetAsync(query);
+            
+            var dataRows = tasks.Select(t => new TableRowDTO()
+            { Row = {
+                new TableCellDTO() {Cell = new KeyValueDTO("Task name",t.Name)},
+                new TableCellDTO() {Cell = new KeyValueDTO("Task id",t.Id)}
+            }}).ToList();
 
-                var payloadObjNames = tasks.Select(t => new KeyValueDTO("Task name", t.Name));
-                var payloadObjIds = tasks.Select(t => new KeyValueDTO("Task id", t.Id));                
-
-                Payload.Add(RunTimeCrateLabel, new KeyValueListCM(payloadObjNames));
-                Payload.Add(RunTimeCrateLabel, new KeyValueListCM(payloadObjIds));
+            var payload = new StandardTableDataCM() {Table = dataRows};
+            Payload.Add(RunTimeCrateLabel, payload);
         }
                             
         

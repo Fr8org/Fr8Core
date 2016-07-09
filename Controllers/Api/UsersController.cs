@@ -15,6 +15,7 @@ using Hub.Managers;
 using Hub.Services;
 using Microsoft.AspNet.Identity.EntityFramework;
 using StructureMap;
+using System.Web.Http.Description;
 
 namespace HubWeb.Controllers
 {
@@ -33,8 +34,20 @@ namespace HubWeb.Controllers
             _fr8Account = ObjectFactory.GetInstance<Fr8Account>();
         }
 
-        #region API Endpoints 
+        #region API Endpoints
 
+        /// <summary>
+        /// Retrieves collection of users
+        /// </summary> 
+        /// <remarks>
+        /// User must be logged in. <br/>
+        /// Result collection depends on the security privilegies of current user. <br/>
+        /// If current user is Fr8 admin then all users are returned. <br/>
+        /// If current user is organization admin then all users from his organization are returned. <br/>
+        /// Otherwise empty collection is returned
+        /// </remarks>
+        /// <response code="200">Collection of users. Can be empty</response>
+        [ResponseType(typeof(List<UserDTO>))]
         public IHttpActionResult Get()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -59,8 +72,16 @@ namespace HubWeb.Controllers
                 return Ok();
             }
         }
-
+        /// <summary>
+        /// Retrieves the collection of user profiles
+        /// </summary>
+        /// <remarks>
+        /// User must be logged in. <br/>
+        /// Depending on the current user permissions some profiles may be unavailable
+        /// </remarks>
+        /// <response code="200">Collection of profiles. Can be empty</response>
         [HttpGet]
+        [ResponseType(typeof(List<ProfileDTO>))]
         public IHttpActionResult GetProfiles()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -78,9 +99,17 @@ namespace HubWeb.Controllers
                 return Ok(profiles.ToList());
             }
         }
-
+        /// <summary>
+        /// Retrieves user info for user with specified Id
+        /// </summary>
+        /// <remarks>
+        /// User must be logged in
+        /// </remarks>
+        /// <param name="id">User Id</param>
+        /// <response code="200">User info</response>
         [HttpGet]
         [DockyardAuthorize(Roles = Roles.Admin)]
+        [ResponseType(typeof(UserDTO))]
         public IHttpActionResult UserData(string id = "")
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -101,7 +130,15 @@ namespace HubWeb.Controllers
                 return Ok(userDTO);
             }
         }
-
+        /// <summary>
+        /// Changes password of the current user
+        /// </summary>
+        /// <remarks>
+        /// User must be logged in
+        /// </remarks>
+        /// <param name="oldPassword">Old password</param>
+        /// <param name="newPassword">New password</param>
+        /// <response code="200">Password was succesfully changed</response>
         [HttpPost]
         public IHttpActionResult Update(string oldPassword, string newPassword)
         {
@@ -123,7 +160,14 @@ namespace HubWeb.Controllers
 
             return Ok();
         }
-
+        /// <summary>
+        /// Updates user info
+        /// </summary>
+        /// <remarks>
+        /// User must be logged in
+        /// </remarks>
+        /// <param name="userDTO">New user info values</param>
+        /// <response code="200">User info was successfully updated</response>
         [HttpPost]
         public IHttpActionResult UpdateUserProfile(UserDTO userDTO)
         {
@@ -176,13 +220,13 @@ namespace HubWeb.Controllers
 
         public static string GetCallbackUrl(string providerName, string serverUrl)
         {
-            if (String.IsNullOrEmpty(serverUrl))
+            if (string.IsNullOrEmpty(serverUrl))
                 throw new ArgumentException("Server Url is empty", "serverUrl");
 
-            return String.Format("{0}{1}AuthCallback/IndexAsync", serverUrl.Replace("www.", ""), providerName);
+            return string.Format("{0}{1}AuthCallback/IndexAsync", serverUrl.Replace("www.", ""), providerName);
         }
-
-        public ICollection<IdentityUserRole> ConvertRoleStringToRoles(string selectedRole)
+        
+        private ICollection<IdentityUserRole> ConvertRoleStringToRoles(string selectedRole)
         {
             List<IdentityUserRole> userNewRoles = new List<IdentityUserRole>();
             string[] userRoles = { };
@@ -220,8 +264,14 @@ namespace HubWeb.Controllers
             else
                 return "";
         }
-
-        //Update DockYardAccount Status from user details view valid states are "Active" and "Deleted"
+        /// <summary>
+        /// Updates status of current user
+        /// </summary>
+        /// <remarks>
+        /// User must be logged in
+        /// </remarks>
+        /// <param name="userId">User Id</param>
+        /// <param name="status">Status to set. 0 - deleted, 1 - active</param>
         public void UpdateStatus(string userId, int status)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

@@ -18,6 +18,9 @@ using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;
+using System.Web.Http.Description;
+using Fr8.Infrastructure;
+using Newtonsoft.Json;
 
 namespace HubWeb.Controllers
 {
@@ -34,10 +37,17 @@ namespace HubWeb.Controllers
             _terminal = ObjectFactory.GetInstance<ITerminal>();
             _authorization = ObjectFactory.GetInstance<IAuthorization>();
         }
-
+        /// <summary>
+        /// Authenticates user with specified credentials within specified terminal
+        /// </summary>
+        /// <param name="credentials">Authentication parameters</param>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <response code="200">Receieved authorization token</response>
+        /// <response code="403">Unauthorized request</response>
         [HttpPost]
         [Fr8ApiAuthorize]
         [ActionName("token")]
+        [ResponseType(typeof(TokenResponseDTO))]
         public async Task<IHttpActionResult> Authenticate(CredentialsDTO credentials)
         {
             Fr8AccountDO account;
@@ -58,7 +68,7 @@ namespace HubWeb.Controllers
                 credentials.IsDemoAccount
             );
 
-            return Ok(new
+            return Ok(new TokenResponseDTO
             {
                 TerminalId = response.AuthorizationToken?.TerminalID,
                 TerminalName = terminalDO.Name,
@@ -66,9 +76,17 @@ namespace HubWeb.Controllers
                 Error = response.Error
             });
         }
-
+        /// <summary>
+        /// Retrieves URL used as auhtorization url in OAuth authorization scenario
+        /// </summary>
+        /// <param name="name">Terminal name</param>
+        /// <param name="version">Terminal version</param>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <response code="200">OAuth authorization URL</response>
+        /// <response code="403">Unauthorized request</response>
         [HttpGet]
         [Fr8ApiAuthorize]
+        [ResponseType(typeof(UrlResponseDTO))]
         [ActionName("initial_url")]
         public async Task<IHttpActionResult> GetOAuthInitiationURL(
             [FromUri(Name = "terminal")]string name,
@@ -90,15 +108,22 @@ namespace HubWeb.Controllers
             }
 
             var externalAuthUrlDTO = await _authorization.GetOAuthInitiationURL(account, terminal);
-            return Ok(new { Url = externalAuthUrlDTO.Url });
+            return Ok(new UrlResponseDTO { Url = externalAuthUrlDTO.Url });
         }
-
+        /// <summary>
+        /// Perform cookie-based authentication on Fr8 Hub. HTTP response will contain authentication cookies
+        /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <param name="username">Username</param>
+        /// <param name="password">Password</param>
+        /// <response code="200">Successful login attempt</response>
+        /// <response code="403">Username or password is invalid</response>
         [HttpPost]
         public IHttpActionResult Login([FromUri]string username, [FromUri]string password)
         {
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
-                return BadRequest();
+                return BadRequest("Username or password is not specified");
             }
 
             Request.GetOwinContext().Authentication.SignOut();
@@ -109,8 +134,7 @@ namespace HubWeb.Controllers
                 if (dockyardAccountDO != null)
                 {
                     var passwordHasher = new PasswordHasher();
-                    if (passwordHasher.VerifyHashedPassword(dockyardAccountDO.PasswordHash, password) ==
-                        PasswordVerificationResult.Success)
+                    if (passwordHasher.VerifyHashedPassword(dockyardAccountDO.PasswordHash, password) == PasswordVerificationResult.Success)
                     {
                         ISecurityServices security = ObjectFactory.GetInstance<ISecurityServices>();
                         ClaimsIdentity identity = security.GetIdentity(uow, dockyardAccountDO);
@@ -125,28 +149,46 @@ namespace HubWeb.Controllers
             }
             return StatusCode(System.Net.HttpStatusCode.Forbidden);
         }
+        //TODO: this method is commented at 07 Jul as it seems not be used anywhere. Also it violates the idea of transferring only DTO objects instead of DO
+        //If this method is not needed after a week, please delete it
+        /// <summary>
+        /// Retrieves auth token structure for the specified terminal and external account
+        /// </summary>
+        /// <param name="externalAccountId">Id of external account</param>
+        /// <param name="terminalId">Terminal Id</param>
+        /// <remarks>Id of external account must match that received during initial authentication</remarks>
+        /// <response code="403">Unauthorized request</response>
+        //[HttpGet]
+        //[Fr8ApiAuthorize]
+        //[Fr8HubWebHMACAuthenticate]
+        //public async Task<IHttpActionResult> GetAuthToken(
+        //    [FromUri]string externalAccountId,
+        //    [FromUri]string terminalId)
+        //{
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        var userId = User.Identity.GetUserId();
+        //        var terminalDO = await ObjectFactory.GetInstance<ITerminal>().GetTerminalByPublicIdentifier(terminalId);
+        //        var token = uow.AuthorizationTokenRepository.FindTokenByExternalAccount(externalAccountId, terminalDO.Id, userId);
+        //        if (token != null)
+        //            return Ok(token);
+        //    }
+        //    return Ok();
+        //}
 
-        [HttpGet]
-        [Fr8ApiAuthorize]
-        [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> GetAuthToken(
-            [FromUri]string externalAccountId,
-            [FromUri]string terminalId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var userId = User.Identity.GetUserId();
-                var terminalDO = await ObjectFactory.GetInstance<ITerminal>().GetTerminalByPublicIdentifier(terminalId);
-                var token = uow.AuthorizationTokenRepository.FindTokenByExternalAccount(externalAccountId, terminalDO.Id, userId);
-                if (token != null)
-                    return Ok(token);
-            }
-            return Ok();
-        }
 
+        //Used internally to pass existing authentication to PlanDirectory. Doesn't show up in API listing
+
+        /// <summary>
+        /// Passes existing authentication to PlanDirectory
+        /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <response code="200">Authorization token</response>
+        /// <response code="403">Unauthorized request</response>
         [HttpPost]
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
+        [ResponseType(typeof(TokenWrapper))]
         public async Task<IHttpActionResult> AuthenticatePlanDirectory()
         {
             var hmacService = ObjectFactory.GetInstance<IHMACService>();
@@ -161,41 +203,35 @@ namespace HubWeb.Controllers
             var json = await client.PostAsync<JObject>(uri, headers: headers);
             var token = json.Value<string>("token");
 
-            return Ok(new { token });
+            return Ok(new TokenWrapper { Token = token });
         }
-
-        [HttpPost]
-        [Fr8ApiAuthorize]
-        [Fr8HubWebHMACAuthenticate]
-        public IHttpActionResult RenewToken(string id, string externalAccountId, string token)
-        {
-            _authorization.RenewToken(Guid.Parse(id), externalAccountId, token);
-            return Ok();
-        }
-
         /// <summary>
-        /// Updates several fields of token using passed object 
+        /// Updates existing authorization token with new values provided
         /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <param name="token">Authorization token containing Id of existing token and new values to apply</param>
+        /// <response code="200">Token was successfully updated</response>
+        /// <response code="403">Unauthorized request</response>
         [HttpPost]
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
         public IHttpActionResult RenewToken([FromBody]AuthorizationTokenDTO token)
         {
-            //be careful - not all properties of token will be saved to database.
-            _authorization.RenewToken(token);
-            //_authorization.RenewToken(Guid.Parse(token.Id), token.ExternalAccountId, token.Token, token.ExpiresAt);
+            _authorization.RenewToken(Guid.Parse(token.Id), token.ExternalAccountId, token.Token, token.ExpiresAt);
             return Ok();
         }
 
         /// <summary>
-        /// Extract user's auth-tokens and parent terminals.
+        /// Lists all current user's authorization tokens grouped by terminal
         /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <response code="200">Collection of authorization tokens grouped by terminal</response>
+        /// <response code="403">Unauthorized request</response>
         [HttpGet]
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
         [ActionName("tokens")]
+        [ResponseType(typeof(List<AuthenticationTokenTerminalDTO>))]
         public IHttpActionResult UserTokens()
         {
             var terminals = _terminal.GetAll();
@@ -228,8 +264,12 @@ namespace HubWeb.Controllers
         }
 
         /// <summary>
-        /// Revoke token.
+        /// Removes authorization token with specified Id from any activity that uses it and then deletes it 
         /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <param name="id">Id of authorization token</param>
+        /// <response code="200">Token was successfully detached and removed</response>
+        /// <response code="403">Unauthorized request</response>
         [HttpPost]
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
@@ -240,7 +280,13 @@ namespace HubWeb.Controllers
 
             return Ok();
         }
-
+        /// <summary>
+        /// Marks authorization token as default allowing automatically assign it to all newly created activities
+        /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <param name="id">Id of authorization token</param>
+        /// <response code="200">Token was set as default</response>
+        /// <response code="403">Unauthorized request</response>
         [HttpPost]
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
@@ -251,7 +297,13 @@ namespace HubWeb.Controllers
 
             return Ok();
         }
-
+        /// <summary>
+        /// Assigns multiple authorization tokens to respictive activities and marks them as default if specified
+        /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <param name="authTokenList">List of authorization token Id/activity Id pairs</param>
+        /// <response code="200">All tokens were successfully granted</response>
+        /// <response code="403">Unauthorized request</response>
         [HttpPost]
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
@@ -273,12 +325,15 @@ namespace HubWeb.Controllers
         }
 
         /// <summary>
-        /// Enter phone number for authentication, that send a verification code to your phone device
+        /// Performs authentication based on sending SMS with verification code to the specified phone number
         /// </summary>
-        /// <param name="phoneNumberCredentials"></param>
-        /// <returns></returns>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <param name="phoneNumberCredentials">Object containing details about auhtorization request</param>
+        /// <response code="200">Result of successful verification request sent</response>
+        /// <response code="403">Unauthorized request</response>
         [HttpPost]
         [Fr8ApiAuthorize]
+        [ResponseType(typeof(PhoneNumberVerificationDTO))]
         public async Task<IHttpActionResult> AuthenticatePhoneNumber(PhoneNumberCredentialsDTO phoneNumberCredentials)
         {
             Fr8AccountDO account;
@@ -296,7 +351,7 @@ namespace HubWeb.Controllers
                 phoneNumberCredentials.PhoneNumber
             );
 
-            return Ok(new
+            return Ok(new PhoneNumberVerificationDTO
             {
                 TerminalId = terminalDO.Id,
                 TerminalName = terminalDO.Name,
@@ -307,9 +362,15 @@ namespace HubWeb.Controllers
                 Message = response.Message
             });
         }
-
+        /// <summary>
+        /// Verifies SMS-based authorization request by providing recieved verification code
+        /// </summary>
+        /// <param name="credentials">Object containing details about verification request and verification code</param>
+        /// <response code="200">Result of successful phone number verification</response>
+        /// <response code="403">Unauthorized request</response>
         [HttpPost]
         [Fr8ApiAuthorize]
+        [ResponseType(typeof(TokenResponseDTO))]
         public async Task<IHttpActionResult> VerifyPhoneNumberCode(PhoneNumberCredentialsDTO credentials)
         {
             Fr8AccountDO account;
@@ -329,13 +390,19 @@ namespace HubWeb.Controllers
                 credentials.ClientId,
                 credentials.ClientName);
 
-            return Ok(new
+            return Ok(new TokenResponseDTO
             {
                 TerminalId = response.AuthorizationToken?.TerminalID,
                 TerminalName = terminalDO.Name,
                 AuthTokenId = response.AuthorizationToken?.Id.ToString(),
                 Error = response.Error
             });
-        }
+        }        
+    }
+    //This class is purely for Swagger documentation purposes
+    public class TokenWrapper
+    {
+        [JsonProperty("token")]
+        public string Token { get; set; }
     }
 }

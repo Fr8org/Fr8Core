@@ -24,6 +24,7 @@ namespace terminalAsana.Asana.Services
         
         private IRestfulServiceClient _restfulClient;
         private IHubCommunicator _hubCommunicator;
+        private IAsanaParameters _parameters;
 
         public OAuthToken OAuthToken { get; set; }
         public AuthorizationToken AuthorizationToken { get; private set; }
@@ -33,10 +34,11 @@ namespace terminalAsana.Asana.Services
         /// </summary>
         public bool IsIntialized { get; private set; } 
 
-        public AsanaOAuthService(IRestfulServiceClient client, IHubCommunicator hubCommunicator)
+        public AsanaOAuthService(IRestfulServiceClient client, IHubCommunicator hubCommunicator, IAsanaParameters parameters)
         {
             _restfulClient = client;
             _hubCommunicator = hubCommunicator;
+            _parameters = parameters;
             OAuthToken = new OAuthToken();
             IsIntialized = false;
         }
@@ -73,7 +75,7 @@ namespace terminalAsana.Asana.Services
         public bool IsTokenExpired(OAuthToken token)
         {
             return token.ExpirationDate <
-                   DateTime.UtcNow.AddMinutes(int.Parse(CloudConfigurationManager.GetSetting("MinutesBeforeTokenRenewal")));
+                   DateTime.UtcNow.AddMinutes(int.Parse(_parameters.MinutesBeforeTokenRenewal));
         }
 
         public async Task<OAuthToken> RefreshTokenIfExpiredAsync()
@@ -116,7 +118,7 @@ namespace terminalAsana.Asana.Services
             }
             catch (Exception exp)
             {
-                var t = exp;
+                Logger.LogError(exp.Message,"Asana terminal");
             }          
             
             return this.OAuthToken;
@@ -149,8 +151,8 @@ namespace terminalAsana.Asana.Services
         public string CreateAuthUrl(string state)
         {
 
-            var redirectUri = CloudConfigurationManager.GetSetting("AsanaOriginalRedirectUrl");
-            var resultUrl = CloudConfigurationManager.GetSetting("AsanaOAuthCodeUrl");
+            var redirectUri = _parameters.AsanaOriginalRedirectUrl;
+            var resultUrl = _parameters.AsanaOAuthCodeUrl;
             resultUrl = resultUrl.  Replace("%STATE%", state).
                                     Replace("%REDIRECT_URI%", redirectUri);
             return resultUrl;
@@ -158,13 +160,13 @@ namespace terminalAsana.Asana.Services
 
         public async Task<JObject> GetOAuthTokenDataAsync(string code)
         {
-            var url = CloudConfigurationManager.GetSetting("AsanaOAuthTokenUrl");
+            var url = _parameters.AsanaOAuthTokenUrl;
             var contentDic = new Dictionary<string, string>()
             {
                 {"grant_type", "authorization_code" },
-                {"client_id", CloudConfigurationManager.GetSetting("AsanaClientId") },
-                {"client_secret", CloudConfigurationManager.GetSetting("AsanaClientSecret") },
-                {"redirect_uri", HttpUtility.UrlDecode(CloudConfigurationManager.GetSetting("AsanaOriginalRedirectUrl")) },
+                {"client_id", _parameters.AsanaClientId },
+                {"client_secret", _parameters.AsanaClientSecret },
+                {"redirect_uri", HttpUtility.UrlDecode(_parameters.AsanaOriginalRedirectUrl) },
                 {"code",HttpUtility.UrlDecode(code)}
             };
             
@@ -190,8 +192,6 @@ namespace terminalAsana.Asana.Services
                 this.OAuthToken.RefreshToken = tokenData.Value<string>("refresh_token");
 
                 this.OAuthToken.ExpirationDate = authorizationToken.ExpiresAt ?? DateTime.MinValue;
-                //this.OAuthToken.ExpirationDate = DateTime.Parse(authorizationToken.AdditionalAttributes).ToUniversalTime();
-
                 this.OAuthToken = await this.RefreshTokenIfExpiredAsync().ConfigureAwait(false);
 
                 this.IsIntialized = true;

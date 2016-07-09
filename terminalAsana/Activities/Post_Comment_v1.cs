@@ -15,6 +15,7 @@ using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Infrastructure;
 using Microsoft.Ajax.Utilities;
 using terminalAsana.Asana;
 using terminalAsana.Asana.Entities;
@@ -32,7 +33,7 @@ namespace terminalAsana.Activities
 
         private IAsanaParameters    _parameters;
 
-        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        public static readonly ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "Post_Comment",
             Label = "Post Comment",
@@ -93,7 +94,6 @@ namespace terminalAsana.Activities
                     
                     Source = new FieldSourceDTO
                     {
-                        ManifestType = CrateManifestTypes.StandardDesignTimeFields,
                         RequestUpstream = true
                     }
                 };
@@ -118,14 +118,10 @@ namespace terminalAsana.Activities
             _stories = new Stories(OAuthCommunicator, _parameters);
         }
 
-        public override Task Initialize()
+        public override async Task Initialize()
         {
-            var workspaces = _workspaces.Get();
-            ActivityUI.Workspaces.ListItems = workspaces.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();
-            
-            //var resultField = new FieldDTO(ResultFieldLabel, AvailabilityType.RunTime);
-            //CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel, true).AddField(resultField);
-            return Task.FromResult(0);
+            var workspaces = await _workspaces.GetAsync();
+            ActivityUI.Workspaces.ListItems = workspaces.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();           
         }
 
         public override async Task FollowUp()
@@ -151,10 +147,10 @@ namespace terminalAsana.Activities
 
         protected override Task Validate()
         {
-            if (ActivityUI.Workspaces.selectedKey == null)
-            {
-                ValidationManager.SetError("No workspace was selected", nameof(ActivityUI.Workspaces));
-            }
+
+            ValidationManager.ValidateDropDownListNotEmpty(ActivityUI.Workspaces, "No workspace was selected");
+            ValidationManager.ValidateDropDownListNotEmpty(ActivityUI.Tasks, "No task was selected");
+            ValidationManager.ValidateDropDownListNotEmpty(ActivityUI.Comment, "No data was entered for Comment");
 
             if (ActivityUI.Tasks.selectedKey == null)
             {
@@ -169,37 +165,12 @@ namespace terminalAsana.Activities
             return Task.FromResult(0);
         }
 
-        protected bool IsValid()
-        {
-            var isCommentValid = !ActivityUI.Comment.GetValue(Payload).IsNullOrWhiteSpace();
-            if (!isCommentValid)
-            {
-                ValidationManager.SetError("Invalid data entered for Comment", nameof(ActivityUI.Comment));
-                return false;
-            }
-
-            return true;
-        }
-
         public override async Task Run()
         {
-            if (!IsValid())
-            {
-                RaiseError("Invalid input was selected/entered", ErrorType.Generic,
-                    ActivityErrorCode.DESIGN_TIME_DATA_INVALID, MyTemplate.Name, MyTemplate.Terminal.Name);
-            }
-            else
-            {
-                var taskId = ActivityUI.Tasks.Value;
-                var payloadMessage = ActivityUI.Comment.GetValue(Payload);
+            var taskId = ActivityUI.Tasks.Value;
+            var payloadMessage = ActivityUI.Comment.GetValue(Payload);
 
-                var comment = await _stories.PostCommentAsync(taskId, payloadMessage);
-
-                //var resultField = new KeyValueDTO(ResultFieldLabel, result.ToString(CultureInfo.InvariantCulture));
-                //var resultCrate = Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(resultField));
-                //Payload.Add(resultCrate);
-            }
-            
+            var comment = await _stories.PostCommentAsync(taskId, payloadMessage);            
         }
     }
 }

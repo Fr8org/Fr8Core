@@ -13,8 +13,15 @@ namespace terminalAsana.Asana.Services
         public string DomainName => CloudConfigurationManager.GetSetting("AsanaApiDomainName");
         public string ApiEndpoint => this.DomainName + this.ApiVersion;
 
+        public string AsanaClientSecret => CloudConfigurationManager.GetSetting("AsanaClientSecret");
+        public string AsanaClientId => CloudConfigurationManager.GetSetting("AsanaClientId");
+
         public string Limit => CloudConfigurationManager.GetSetting("AsanaNumberOfObjectsLimit");
         public string Offset { get; }
+        public string MinutesBeforeTokenRenewal => CloudConfigurationManager.GetSetting("MinutesBeforeTokenRenewal");
+        public string AsanaOriginalRedirectUrl => CloudConfigurationManager.GetSetting("AsanaOriginalRedirectUrl");
+        public string AsanaOAuthCodeUrl => CloudConfigurationManager.GetSetting("AsanaOAuthCodeUrl");
+        public string AsanaOAuthTokenUrl => CloudConfigurationManager.GetSetting("AsanaOAuthTokenUrl");
 
 
         public string WorkspacesUrl => this.ApiEndpoint + CloudConfigurationManager.GetSetting("WorlspacesUrl");

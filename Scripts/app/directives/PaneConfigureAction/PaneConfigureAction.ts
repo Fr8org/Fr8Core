@@ -356,6 +356,7 @@ module dockyard.directives.paneConfigureAction {
                             }
                         }
                     });
+                debugger;
                 // save request will stop running plans, so FE should know that
                 if (this.$scope.plan.planState === 2) {
                     this.$scope.plan.planState = 1;

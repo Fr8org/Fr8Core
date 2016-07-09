@@ -36,7 +36,6 @@ namespace terminalAsana.Asana
         {
             var uri = new Uri(_asanaParams.StoriesUrl.Replace("{task-id}",taskId));
 
-            //_intergration.ApiCall()
             try
             {
                 var contentDic = new Dictionary<string, string>()

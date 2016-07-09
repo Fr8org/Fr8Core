@@ -25,13 +25,12 @@ namespace terminalAsana.Asana
             _asanaParams = asanaParams;
         }
 
-        public IEnumerable<AsanaWorkspace> Get()
+        public async Task<IEnumerable<AsanaWorkspace>> GetAsync()
         {
             var uri = new Uri(_asanaParams.WorkspacesUrl);
-            //_intergration.ApiCall()
             try
             {
-                var response = Task.Run(() => _restClient.GetAsync<JObject>(uri)).Result;
+                var response = await _restClient.GetAsync<JObject>(uri).ConfigureAwait(false);
                 var result = response.GetValue("data").ToObject<IEnumerable<AsanaWorkspace>>();
                 return result;
             }
@@ -42,33 +41,32 @@ namespace terminalAsana.Asana
             }
         }
 
-        public bool UpdateWorkspace(AsanaWorkspace workspace)
+        public Task<bool> UpdateWorkspaceAsync(AsanaWorkspace workspace)
         {
             throw new NotImplementedException();
         }
 
-        public AsanaWorkspace Get(int id)
+        public Task<AsanaWorkspace> GetAsync(int id)
         {
             throw new NotImplementedException();
         }
 
-
-        public AsanaWorkspace Update(AsanaWorkspace workspace)
+        public Task<AsanaWorkspace> UpdateAsync(AsanaWorkspace workspace)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<string> Search(WorkspaceSearchQuery query)
+        public Task<IEnumerable<string>> SearchAsync(WorkspaceSearchQuery query)
         {
             throw new NotImplementedException();
         }
 
-        public AsanaUser AddUser(AsanaUser user)
+        public Task<AsanaUser> AddUserAsync(AsanaUser user)
         {
             throw new NotImplementedException();
         }
 
-        public bool RemoveUser(AsanaUser user)
+        public Task<bool> RemoveUserAsync(AsanaUser user)
         {
             throw new NotImplementedException();
         }
