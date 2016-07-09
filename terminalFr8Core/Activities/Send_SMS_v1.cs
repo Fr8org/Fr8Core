@@ -23,7 +23,7 @@ namespace terminalFr8Core.Activities
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "Send_SMS",
-            Label = "Send SMS using Fr8 core account",
+            Label = "Send SMS",
             Version = "1",
             Category = ActivityCategory.Forwarders,
             NeedsAuthentication = false,
