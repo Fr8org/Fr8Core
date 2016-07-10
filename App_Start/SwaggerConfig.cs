@@ -2,10 +2,9 @@ using System.Web.Http;
 using WebActivatorEx;
 using HubWeb;
 using Swashbuckle.Application;
-using Swashbuckle.Swagger;
-using System.Web.Http.Description;
 using System.Linq;
-using System;
+using HubWeb.Documentation.Swagger;
+using Swashbuckle.Swagger;
 
 [assembly: PreApplicationStartMethod(typeof(SwaggerConfig), "Register")]
 
@@ -15,9 +14,7 @@ namespace HubWeb
     {
         public static void Register()
         {
-            var thisAssembly = typeof(SwaggerConfig).Assembly;
-
-            GlobalConfiguration.Configuration 
+            GlobalConfiguration.Configuration
                 .EnableSwagger(c =>
                     {
                         // By default, the service root url is inferred from the request used to access the docs.
@@ -108,7 +105,7 @@ namespace HubWeb
                         {
                             c.IncludeXmlComments(fileName);
                         }
-                        
+
 
                         // Swashbuckle makes a best attempt at generating Swagger compliant JSON schemas for the various types
                         // exposed in your API. However, there may be occasions when more control of the output is needed.
@@ -174,6 +171,7 @@ namespace HubWeb
 
                         //Removing duplicates filter
                         c.DocumentFilter<RemoveDuplicatesDocumentFilter>();
+                        c.DocumentFilter<AddDefaultValuesDocumentFilter>();
 
                         // In contrast to WebApi, Swagger 2.0 does not include the query string component when mapping a URL
                         // to an action. As a result, Swashbuckle will raise an exception if it encounters multiple actions
@@ -240,24 +238,6 @@ namespace HubWeb
                         //
                         //c.EnableOAuth2Support("test-client-id", "test-realm", "Swagger UI");
                     });
-        }
-    }
-
-    public class RemoveDuplicatesDocumentFilter : IDocumentFilter
-    {
-        public void Apply(SwaggerDocument swaggerDoc, SchemaRegistry schemaRegistry, IApiExplorer apiExplorer)
-        {
-            var duplicates1 = apiExplorer.ApiDescriptions.Where(x => x.RelativePath.ToLower().Contains("/" + x.HttpMethod.Method.ToLower() + "/") || x.RelativePath.ToLower().Contains("/" + x.HttpMethod.Method.ToLower() + "?")).ToList();
-            var duplicates2 = apiExplorer.ApiDescriptions.Where(x => x.RelativePath.EndsWith(x.HttpMethod.Method, System.StringComparison.OrdinalIgnoreCase)).ToList();
-            duplicates1.AddRange(duplicates2);
-            foreach (var item in duplicates1)
-            {
-                apiExplorer.ApiDescriptions.Remove(item);
-            }
-            foreach (var item in duplicates1)
-            {
-                swaggerDoc.paths.Remove("/" + item.RelativePath);
-            }
         }
     }
 }
