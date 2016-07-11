@@ -321,6 +321,9 @@
     <Content Include="Config\terminalPapertrail\Settings.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Config\terminalInstagram\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Config\terminalGoogle\Settings.config" />
   </ItemGroup>
   <ItemGroup>
