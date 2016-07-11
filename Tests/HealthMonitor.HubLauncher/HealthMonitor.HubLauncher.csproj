@@ -232,6 +232,7 @@
     <None Include="Config\terminalSlack\Settings.Demo.config" />
     <None Include="Config\terminalSlack\Settings.Dev.config" />
     <None Include="Config\terminalSlack\Settings.Release.config" />
+    <None Include="Config\terminalStatX\Settings.config" />
     <None Include="Config\terminalTelegram\Settings.config" />
     <None Include="Config\terminalTelegram\Settings.Demo.config" />
     <None Include="Config\terminalTelegram\Settings.Dev.config" />

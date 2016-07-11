@@ -376,6 +376,7 @@
     <Content Include="Config\terminalTelegram\Settings.Dev.config" />
     <Content Include="Config\terminalTelegram\Settings.Demo.config" />
     <Content Include="Config\terminalTelegram\Settings.config" />
+    <Content Include="Config\terminalStatX\Settings.config" />
     <Content Include="Config\terminalSlack\Settings.Release.config" />
     <Content Include="Config\terminalSlack\Settings.Dev.config" />
     <Content Include="Config\terminalSlack\Settings.Demo.config" />

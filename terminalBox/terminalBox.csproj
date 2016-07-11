@@ -288,6 +288,9 @@
     <Content Include="Config\terminalTelegram\Settings.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Config\terminalStatX\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Config\terminalSlack\Settings.Release.config" />
   </ItemGroup>
   <ItemGroup>
