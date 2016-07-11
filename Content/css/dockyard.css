@@ -469,9 +469,9 @@ div.action-header {
 }
 
 .action-add-button {
-    margin-top: 80px;
+    margin-top: 70px;
     /*margin-left: 128px;*/
-    margin-left: 40px;
+    margin-left: 20px;
     transition: all 0.2s ease-out;
     pointer-events: none;
     z-index: 200;
@@ -480,21 +480,19 @@ div.action-header {
 .action-picker-container {
     position: fixed;
     /*display: block;*/
-    margin-top: 39px;
+    margin-top: 36px;
     width: 79%;
     height: 40%;
-    z-index: 1019;
+    z-index: 1021;
 
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: rgba(255, 255, 255, 1);
     opacity: 1;
 
     transition-property: height, opacity;
     transition-timing-function: ease-out;
     transition-duration: 0.2s;
 
-    border-left: 1px solid #E5E5E5;
-    border-right: 1px solid #E5E5E5;
-    border-bottom: 3px solid #26A69A;
+    border: 1px solid #E5E5E5;
     overflow: hidden;
 }
 
@@ -515,6 +513,18 @@ div.action-header {
     top: 0;
     right: 48px;
     height: 34px;
+    border-right: 1px solid #E5E5E5;
+    border-bottom: 1px solid #E5E5E5;
+}
+
+.action-picker-panel-search input {
+    border: none;
+    /*border-right: 1px solid #E5E5E5;*/
+    border-bottom: 1px solid #E5E5E5;
+}
+
+.action-picker-panel-search input:focus {
+    border-color: #E5E5E5;
 }
 
 .action-picker-panel-title {

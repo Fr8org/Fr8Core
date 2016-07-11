@@ -121,6 +121,7 @@ module dockyard.directives {
 
                     $scope.callback.reload = () => {
                         $scope.unselectCategory();
+                        $scope.form.searchText = '';
                     };
 
                     var _reload = () => {
