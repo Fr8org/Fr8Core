@@ -10,32 +10,26 @@ Get an ApiKey from OpenWeatherMap.org. To do this, register an account for this 
 
 ![ApiKey](./Images/0_tdg_openweathermap.PNG "ApiKey")
 
+Decide on how you'll [test against a Hub](https://github.com/Fr8org/Fr8Core/blob/FR-3375/Docs/ForDevelopers/DevelopmentGuides/Terminal%20-%20Testing%20and%20Operations.md)For this terminal we will run a local hub.
 
-## Step 1 - Create Terminal Project 
-
-We have two options here:
-* using local hub for testing (currently only available for .NET terminals)
-* using one of public hubs, for example fr8.co
-
-For our first terminal we will use local hub.
-
-The easiest way to start is clone [Fr8 public repository](https://github.com/Fr8org/Fr8.NET "Fr8 public repository")  containing hub and common terminals.
-After that we will have solution tree looks like this:
+## Step 1 - Clone the Fr8 repo.
+Clone [Fr8](https://github.com/Fr8org/Fr8.NET "Fr8 public repository"). This repository contains the Hub and a bunch of Terminals.  
+After doing so, your solution tree should look like this:
 
 ![Fr8 Solution](./Images/1_tdg_defualutRepo.PNG "Fr8 solution tree")
 
-Now we can add project to **Terminals** folder. In order to do it we use VS project template.
-Add *New Project* and type *fr8* in search box, you should see online template
+## Step 2 - Create a new project in VS.
+We recommend using the Fr8 Visual Studio Project Template. Add *New Project* and type *Fr8* in search box, you should see online template
 
  ![Fr8 Terminal Template](./Images/2_tdg_projectTemplate.PNG "Fr8 Terminal Template")
 
-Enter a name of the terminal you want to build (it could looks like terminal%ServiceName%), after that you got new project:
+Enter a name of the terminal you want to build (it could look like terminal%ServiceName%). This will generate:
 
 ![Fr8 terminal](./Images/3_tdg_terminalProject.PNG "Fr8 terminal")
 
-## Step 2 - Fill terminal information
+## Step 3 - Specify your TerminalData Information
 
-Point your attention to **TerminalData.cs** file, here we have general information about our terminal:
+The TerminalData class, which can be found in the root of Terminal projects, contains information about your Terminal and any Web Services it works with.  
 
     namespace terminalOpenWeatherMap
     {
@@ -58,10 +52,10 @@ Point your attention to **TerminalData.cs** file, here we have general informati
         }
     }
 
-WebServiceDTO contains information about what you will see in hub's plan builder.<br/> *Enpoint* value shows url of our terminal, and it recives value via fr8 infrastructure helper class from configuration file.  Look inside that **web.config** file.  
+The *Endpoint* value specifies the URL where the Hub will attempt to contact your Terminal. (CloudConfigurationManager is a Microsoft Azure construct that first checks Azure configuration settings and then looks in web.config). Look in  **web.config** file, and you'll see that a URL (including a port) is specified.  
 
     <appSettings>
-        <add key="CoreWebServerUrl" value="http://localhost:30643/" />
+        <add key="DefaultHubURL" value="http://localhost:30643/" />
         <add key="HubApiVersion" value="v1" />
         <add key="terminalOpenWeatherMap.TerminalEndpoint" value="http://localhost:22587" />
         <add key="TerminalId" value="6a5c763f-4355-49c1-8b25-3e0423d7ecde" />
@@ -71,16 +65,15 @@ WebServiceDTO contains information about what you will see in hub's plan builder
         
     </appSettings>
 
- *CoreWebServerUrl* is Hub url. <br/>
- *TerminalId* is guid that will identify the terminal at Hub`s.<br/>
- *terminalOpenWeatherMap.TerminalEndpoint* is Url of the terminal <br/> 
-Last two values related to service we want to use.
+ *DefaultHubURL* is the Hub url that the Terminal will attempt to contact. <br/>
+ *TerminalId* is a GUID.<br/>
 
-Since our terminal don`t use authentification we can leave MVC Controllers as is. 
+Once this step is complete, you essentially have a complete response to any /discover call arriving from a Hub.
 
-## Step 3 - Add first Activity 
-In folder **Activities** we have single file, rename it and class inside to 'Get_Weather_v1', by convention activities named in snake_case notation with '_v%number%' at the end.
-Inside we have definition of activity template, which Hub will store in database. 
+## Step 3 - Define the ActivityTemplate
+In folder **Activities**, rename the file and its class to 'Get_Weather_v1'. In Fr8,  Activities are named using snake_case notation with '_v%number%' at the end.
+
+Activities are responsible for generating an ActivityTemplate that will be handed to the Hub as part of the /discover Response, and used by the Client to display the Activity as a choice to the user. Update the Activity as shown below:
 
      public class Get_Weather_v1 : TerminalActivity<Get_Weather_v1.ActivityUi>
      {
@@ -88,17 +81,21 @@ Inside we have definition of activity template, which Hub will store in database
         {
             Name = "Get_Weather",
             Label = "Get Weather",
-            Category = ActivityCategory.Receivers,
+            Category = ,
             Version = "1",
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
-        private const string RunTimeCrateLabel = "Weather in the city";
+        private const string RunTimeCrateLabel = "Weather in the City";
         .....        
-*Category* tells Hub what this activity does, in our case recives information. <br/>
-Next part of the class contains definition of user interface elements:
+*Category*  is deprecated. <br/>
+
+
+## Step 4 - Specify the UI that the User Should See
+
+[UI controls](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/ConfigurationControls.md) are specified using JSON. However, in this tutorial, we'll take advantage of helper tools in the .NET Fr8 SDK that allow us to use POCO to specify our UI. To do this, we create an ActivityUI class:
 
     public ActivityUi()
             {
@@ -139,8 +136,12 @@ Next part of the class contains definition of user interface elements:
             }
         }
 
-*Controls* list contains elements described above and they will appear in activity configuration pane from top to bottom in same order as in this list. 
-When we defined template and UI, activity is ready for actual work:
+When the user adds this Activity to a Plan, the Client will render this UI in the Activity's panel.  
+
+## Step 5 - Add Support for Configuration
+
+Configuration (also known as Design-Time) is one of the two main modes an Activity needs to support. In our example, the configuration requirements are pretty simple. 
+
 
         public Get_Weather_v1(ICrateManager crateManager)
             : base(crateManager)
@@ -154,8 +155,8 @@ When we defined template and UI, activity is ready for actual work:
             return Task.FromResult(0);
         }
 
-Initialization step method invoked  when activity has been added to a plan. Here we anounce that our activity adds to Payload data with name stored in variable *RunTimeCrateLabel*. Next method is *Followup*, it will have invoked every time activity will configured.
-We have not much to configure, so it is empty.
+Fr8 supports two types of configuration: [Initial and Follow-Up](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/ActivityConfiguration.md). Here we anounce that our activity adds to Payload data with name stored in variable *RunTimeCrateLabel*. This Activity is too simple to require a separate FollowUp behavior, so we just leave it as:   
+ 
 
     public override Task FollowUp()
     {
@@ -168,8 +169,9 @@ We have not much to configure, so it is empty.
         return Task.FromResult(0);
     }
 
-Validation method calls every time with *Folloup*, unless *DisableValidationOnFollowup* variable setted up to *true* inside Activity constructor.
-Now we are ready to do actual work, which happens when plan have been run.
+One thing that *does* happen each time followup /configure calls are received is that the Validate method gets called. (Learn more about [Validation](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/ActivitiesValidation.md)).   
+
+# Step 6 - Implement Support for /run 
 
     public override async Task Run()
     {     
@@ -192,19 +194,21 @@ Now we are ready to do actual work, which happens when plan have been run.
 
         Payload.Add(RunTimeCrateLabel,payload);
     }
- You can do it in a any style you like. Here we use *RestfulServiceClient* from fr8 infrastructure. Everything is pretty straightforward. Last line of code adds to payload received from service data, which will be used in descendant activities. 
+ Our code forms a RESTful call and posts it off to OpenWeatherMap.org. The .NET SDK includes a helper called RestfulServiceClient. Note the use of async calls (strongly recommended). The return value is parsed and formed into a string called result.
+ 
+ We add our data to the PayloadContainer with the last two lines. First we build a Crate with a StandardPayloadDataCM Manifest. This is the lowest common denominator manifest, useful for simple key value pairs. We then add it to Payload, another service of the SDK, and the SDK will handle the return of the modified Payload Container to the Hub for us.  
 
-## Step 4 - Register Activity in terminal Startup class.
-If you want make this Activity available for using in Hub, you should register it in Startup.cs 
+## Step 7 - Turn on the Activity
+To bring this Activity 'live', add it to the Terminal's RegisterActivities method in Startup.cs 
 
     protected override void RegisterActivities()
     {
         ActivityStore.RegisterActivity<Activities.Get_Weather_v1>(Activities.Get_Weather_v1.ActivityTemplateDTO);
     } 
 
-## Step 5 - Register your terminal in a hub.
+## Step 8 - Register your terminal in a hub.
 
-Now we are ready to start. First, configure our terminal project and solution, be sure that terminal Url is the same as in **web.config**:
+ First, configure our terminal project and solution, be sure that terminal Url is the same as in **web.config**:
 
 ![Fr8 terminal properties](./Images/4_tdg_terminalProjectConfig.PNG "Fr8 terminal properties")
 
