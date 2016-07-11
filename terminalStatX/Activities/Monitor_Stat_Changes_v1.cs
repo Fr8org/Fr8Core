@@ -105,6 +105,19 @@ namespace terminalStatX.Activities
                 {
                     var stats = await _statXIntegration.GetStatsForGroup(StatXUtilities.GetStatXAuthToken(AuthorizationToken), ActivityUI.ExistingGroupsList.Value);
 
+                    if (stats.Any(x => string.IsNullOrEmpty(x.Title)))
+                    {
+                        StatXUtilities.AddAdvisoryMessage(Storage);
+                    }
+                    else
+                    {
+                        if (Storage.CratesOfType<AdvisoryMessagesCM>().FirstOrDefault() != null)
+                        {
+                            ActivityUI.ExistingGroupStats.ListItems = stats.Select(x => new ListItem { Key = string.IsNullOrEmpty(x.Title) ? x.Id : x.Title, Value = x.Id }).ToList();
+                        }
+                        Storage.RemoveByLabel("Advisories");
+                    }
+
                     ActivityUI.ExistingGroupStats.ListItems = stats
                         .Select(x => new ListItem { Key = string.IsNullOrEmpty(x.Title) ? x.Id : x.Title, Value = x.Id }).ToList();
 
@@ -113,7 +126,7 @@ namespace terminalStatX.Activities
                     {
                         ActivityUI.ExistingGroupStats.SelectByValue(firstStat.Id);
                     }
-
+                    
                     CrateSignaller.ClearAvailableCrates();
                     CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel)
                         .AddFields(CreateStatValueFields(StatXUtilities.MapToStatItemCrateManifest(firstStat)));
@@ -134,6 +147,18 @@ namespace terminalStatX.Activities
                 if (string.IsNullOrEmpty(previousStat) || !string.Equals(previousStat, ActivityUI.ExistingGroupStats.Value))
                 {
                     var stats = await _statXIntegration.GetStatsForGroup(StatXUtilities.GetStatXAuthToken(AuthorizationToken), ActivityUI.ExistingGroupsList.Value);
+                    if (stats.Any(x => string.IsNullOrEmpty(x.Title)))
+                    {
+                        StatXUtilities.AddAdvisoryMessage(Storage);
+                    }
+                    else
+                    {
+                        if (Storage.CratesOfType<AdvisoryMessagesCM>().FirstOrDefault() != null)
+                        {
+                            ActivityUI.ExistingGroupStats.ListItems = stats.Select(x => new ListItem { Key = string.IsNullOrEmpty(x.Title) ? x.Id : x.Title, Value = x.Id }).ToList();
+                        }
+                        Storage.RemoveByLabel("Advisories");
+                    }
 
                     var currentStat = stats.FirstOrDefault(x => x.Id == ActivityUI.ExistingGroupStats.Value);
                     if (currentStat != null)
@@ -148,7 +173,6 @@ namespace terminalStatX.Activities
                 Storage.Add(CrateManager.CreateStandardEventSubscriptionsCrate(
                     "Standard Event Subscriptions",
                     "StatX", "StatXValueChange_" + SelectedStat.Substring(0, 18)));
-
             }
             else
             {
@@ -162,7 +186,7 @@ namespace terminalStatX.Activities
 
         public override async Task Activate()
         {
-            await _statXPolling.SchedulePolling(HubCommunicator, $"{AuthorizationToken.ExternalAccountId}_{SelectedStat.Substring(0, 18)}", true, 
+            await _statXPolling.SchedulePolling(HubCommunicator, AuthorizationToken.ExternalAccountId, true, 
                 ActivityUI.ExistingGroupsList.Value, ActivityUI.ExistingGroupStats.Value);
         }
 

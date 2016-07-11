@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
@@ -9,6 +11,9 @@ namespace terminalStatX.Helpers
 {
     public class StatXUtilities
     {
+        private const string AdvisoryName = "StatX Warning";
+        private const string AdvisoryContent = "There is a stat with missing Title value. Please insert the Title value inside your StatX mobile app for this stat, so it can have understandable name.";
+
         public static StatXItemCM MapToStatItemCrateManifest(StatDTO stat)
         {
             var result = new StatXItemCM()
@@ -53,6 +58,25 @@ namespace terminalStatX.Helpers
         {
             return JsonConvert.DeserializeObject<StatXAuthDTO>(token);
         }
+        public static void AddAdvisoryMessage(ICrateStorage storage)
+        {
+            var advisoryCrate = storage.CratesOfType<AdvisoryMessagesCM>().FirstOrDefault();
+            var currentAdvisoryResults = advisoryCrate == null ? new AdvisoryMessagesCM() : advisoryCrate.Content;
+
+            var advisory = currentAdvisoryResults.Advisories.FirstOrDefault(x => x.Name == AdvisoryName);
+
+            if (advisory == null)
+            {
+                currentAdvisoryResults.Advisories.Add(new AdvisoryMessageDTO { Name = AdvisoryName, Content = AdvisoryContent });
+            }
+            else
+            {
+                advisory.Content = AdvisoryContent;
+            }
+
+            storage.Add(Crate.FromContent("Advisories", currentAdvisoryResults));
+        }
+
 
         public static StatXAuthDTO GetStatXAuthToken(AuthorizationToken token)
         {
