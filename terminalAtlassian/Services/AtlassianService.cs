@@ -44,6 +44,19 @@ namespace terminalAtlassian.Services
             }           
         }
 
+        public async Task<bool> CheckDomain(string domain)
+        {
+            Uri uri = new Uri(domain);
+            if(uri.AbsolutePath == "/")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public List<KeyValueDTO> GetJiraIssue(string jiraKey, AuthorizationToken authToken)
         {
             return InterceptJiraExceptions(() =>
@@ -52,6 +65,20 @@ namespace terminalAtlassian.Services
                 var issue = jira.GetIssue(jiraKey);
                 return CreateKeyValuePairList(issue);
             });
+        }
+
+
+        public IEnumerable<Issue> GetIssueFromJql(string jql, AuthorizationToken authToken)
+        {
+            Jira jira = CreateRestClient(authToken.Token);
+            var issues = jira.GetIssuesFromJql(jql);
+            return issues;
+        }
+
+        public void DeleteIssue(Issue issue, AuthorizationToken authToken)
+        {
+            Jira jira = CreateRestClient(authToken.Token);
+            jira.DeleteIssue(issue);
         }
 
         public List<KeyValueDTO> GetProjects(AuthorizationToken authToken)

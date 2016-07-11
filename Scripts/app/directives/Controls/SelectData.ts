@@ -35,9 +35,13 @@ module dockyard.directives {
                         });
                 };
 
-                
-
+                var isConfiguring = false;
                 $scope.configure = () => {
+                    if (isConfiguring) {
+                        return;
+                    }
+                    isConfiguring = true;
+
                     $http.get('/api/activitytemplates/?id=' + $scope.field.activityTemplateId)
                         .then((res) => {
                             var activityTemplate = <model.ActivityTemplate>res.data;
@@ -70,7 +74,7 @@ module dockyard.directives {
                                             $scope.field.externalObjectName = externalObjectName;
                                         });
                                 });
-                        });
+                        }).finally(() => { isConfiguring = false; });
                 };
             }
         ];

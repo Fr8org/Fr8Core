@@ -23,7 +23,7 @@ namespace terminalSalesforceTests.Intergration
 {
     [Explicit]
     [Category("terminalSalesforceTests.Integration")]
-    public class SaveToSalesforce_And_GetSalesforceData_EndToEnd_Tests : BaseHubIntegrationTest
+    public class SaveToSalesforce_And_GetSalesforceData_EndToEnd_Tests : BaseSalesforceIntegrationTest
     {
         public override string TerminalName
         {
@@ -32,8 +32,7 @@ namespace terminalSalesforceTests.Intergration
         
         [Test]
         public async Task SaveToSalesforce_And_GetSalesforceData_EndToEnd()
-        {
-            
+        {            
             AuthorizationTokenDO authTokenDO = null;
             AuthorizationToken authorizationToken = null;
             Guid initialPlanId = Guid.Empty;
@@ -73,7 +72,7 @@ namespace terminalSalesforceTests.Intergration
                 //Assert
                 Debug.WriteLine("Asserting initial payload.");
                 var payloadList = Crate.GetUpdatableStorage(payload).CratesOfType<StandardPayloadDataCM>().ToList();
-                Assert.AreEqual(3, payloadList.Count, "The payload does not contian all activities payload");
+                Assert.AreEqual(2, payloadList.Count, "The payload does not contian all activities payload");
                 Assert.IsTrue(payloadList.Any(pl => pl.Label.Equals("Lead is saved in Salesforce.com")), "Save Data is Failed to save the lead.");
 
                 Debug.WriteLine("Asserting Save To Salesforce payload.");
@@ -85,7 +84,7 @@ namespace terminalSalesforceTests.Intergration
                 Debug.WriteLine("Newly created Lead ID is " + newLeadId);
 
                 Debug.WriteLine("Deleting newly created lead with " + newLeadId);
-                var isDeleted = await ObjectFactory.GetInstance<SalesforceManager>().Delete(SalesforceObjectType.Lead, newLeadId, authorizationToken);
+                var isDeleted = await _container.GetInstance<SalesforceManager>().Delete(SalesforceObjectType.Lead, newLeadId, authorizationToken);
                 Assert.IsTrue(isDeleted, "The newly created Lead for integration test purpose is not deleted.");
                 newLeadId = string.Empty;
 
@@ -146,7 +145,7 @@ namespace terminalSalesforceTests.Intergration
         {
             if(!string.IsNullOrEmpty(newLeadId))
             {
-                var isDeleted = await ObjectFactory.GetInstance<SalesforceManager>().Delete(SalesforceObjectType.Lead, newLeadId, authToken);
+                var isDeleted = await _container.GetInstance<SalesforceManager>().Delete(SalesforceObjectType.Lead, newLeadId, authToken);
                 Assert.IsTrue(isDeleted, "The newly created Lead for integration test purpose is not deleted.");
             }
 

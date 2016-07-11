@@ -2,7 +2,6 @@
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
-using Newtonsoft.Json;
 using StructureMap;
 using System;
 using System.Collections.Generic;
@@ -22,7 +21,6 @@ using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Exceptions;
-using Hub.Infrastructure;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
@@ -50,15 +48,20 @@ namespace Hub.Services
 
         public async Task<ActivityDTO> SaveOrUpdateActivity(ActivityDO submittedActivityData)
         {
+            //lets skip locking for save operations
+            return await SaveOrUpdateActivityCore(submittedActivityData);
+
+            /*
             if (submittedActivityData.Id == Guid.Empty)
             {
                 return await SaveOrUpdateActivityCore(submittedActivityData);
             }
 
+            
             using (await _configureLock.Lock(submittedActivityData.Id))
             {
                 return await SaveOrUpdateActivityCore(submittedActivityData);
-            }
+            }*/
         }
 
         [AuthorizeActivity(Permission = PermissionType.ReadObject, ParamType = typeof(Guid), TargetType = typeof(PlanNodeDO))]
@@ -104,7 +107,7 @@ namespace Hub.Services
 
                 if (parentNode is PlanDO)
                 {
-                    if (((PlanDO) parentNode).StartingSubplan == null)
+                    if (((PlanDO)parentNode).StartingSubplan == null)
                     {
                         parentNode.ChildNodes.Add(parentNode = new SubplanDO
                         {
@@ -114,7 +117,7 @@ namespace Hub.Services
                     }
                     else
                     {
-                        parentNode = ((PlanDO) parentNode).StartingSubplan;
+                        parentNode = ((PlanDO)parentNode).StartingSubplan;
                     }
 
                 }
@@ -317,7 +320,8 @@ namespace Hub.Services
                     };
                 }
 
-                EventManager.ActivityRunRequested(curActivityDO, curContainerDO);
+                if (curActionExecutionMode != ActivityExecutionMode.ReturnFromChildren)
+                    EventManager.ActivityRunRequested(curActivityDO, curContainerDO);
 
                 var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, "Run", parameters, curActivityDO, curContainerDO.Id);
 
@@ -519,7 +523,7 @@ namespace Hub.Services
             }
             else
             {
-               skipDeactivation = true;
+                skipDeactivation = true;
             }
 
             if (!skipDeactivation)
@@ -624,7 +628,7 @@ namespace Hub.Services
         {
             var endpoint = _activityTemplate.GetTerminalUrl(activity.ActivityTemplateId) ?? "<no terminal url>";
 
-            var additionalData = containerId.IsNullOrEmpty() ? " no data " : " Container Id = " + containerId; 
+            var additionalData = containerId.IsNullOrEmpty() ? " no data " : " Container Id = " + containerId;
 
             reportingAction(endpoint, additionalData, error, objectId);
         }
@@ -659,7 +663,7 @@ namespace Hub.Services
                 //find the activity by the provided name
 
                 // To prevent mismatch between db and terminal solution lists, Single or Default used
-                var curActivityTerminalDTO = allActivityTemplates.OrderByDescending(x => Int32.Parse(x.Version)).FirstOrDefault(a => a.Name == activityDTO.ActivityTemplate.Name);
+                var curActivityTerminalDTO = allActivityTemplates.OrderByDescending(x => int.Parse(x.Version)).FirstOrDefault(a => a.Name == activityDTO.ActivityTemplate.Name);
                 //prepare an Activity object to be sent to Activity in a Terminal
                 //IMPORTANT: this object will not be hold in the database
                 //It is used to transfer data
@@ -723,6 +727,14 @@ namespace Hub.Services
                 solutionNameList.AddRange(curActivities.Select(activity => activity.Name));
             }
             return solutionNameList;
+        }
+
+        public bool Exists(Guid id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return uow.PlanRepository.GetActivityQueryUncached().Any(x => x.Id == id);
+            }
         }
     }
 }

@@ -7,6 +7,16 @@
 *.sln.docstates
 .vs
 
+# Fr8 settings file
+[Ss]ettings.config
+[Ss]ettings.Dev.config
+[Ss]ettings.Release.config
+[Ss]ettings.Demo.config
+[Ss]ettings.config.src
+
+# Nuget packages
+.nupkg
+
 # Build results
 
 [Dd]ebug/
@@ -148,7 +158,14 @@ bower_components
 .bower-registry
 .bower-tmp
 
+### Node ###
 node_modules
+
+### VS Backup files ###
+_UpgradeReport_Files/
+Backup*/
+UpgradeLog*.XML
+UpgradeLog*.htm
 
 
 _NCrunch_Dockyard/

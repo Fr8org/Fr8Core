@@ -200,6 +200,7 @@
     <Compile Include="Data\DataTransferObjects\ManifestRegistryParams .cs" />
     <Compile Include="Data\DataTransferObjects\ManufacturerDTO.cs" />
     <Compile Include="Data\DataTransferObjects\OrganizationDTO.cs" />
+    <Compile Include="Data\DataTransferObjects\PageDefinitionDTO.cs" />
     <Compile Include="Data\DataTransferObjects\PayloadDTO.cs" />
     <Compile Include="Data\DataTransferObjects\PermissionDTO.cs" />
     <Compile Include="Data\DataTransferObjects\PhoneNumberCredentialsDTO.cs" />
@@ -223,6 +224,8 @@
     <Compile Include="Data\DataTransferObjects\TerminalDTO.cs" />
     <Compile Include="Data\DataTransferObjects\TerminalNotificationDTO.cs" />
     <Compile Include="Data\DataTransferObjects\TerminalRegistrationDTO.cs" />
+    <Compile Include="Data\DataTransferObjects\TokenResponseDTO.cs" />
+    <Compile Include="Data\DataTransferObjects\UrlResponseDTO.cs" />
     <Compile Include="Data\DataTransferObjects\UserDTO.cs" />
     <Compile Include="Data\DataTransferObjects\ValidationErrorsDTO.cs" />
     <Compile Include="Data\DataTransferObjects\ValidationResultDTO.cs" />
@@ -302,6 +305,7 @@
     <Compile Include="Interfaces\IHMACAuthenticator.cs" />
     <Compile Include="Interfaces\IHMACService.cs" />
     <Compile Include="Interfaces\IRestfulServiceClient.cs" />
+    <Compile Include="PhoneNumberVerificationDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -353,6 +357,45 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="Config\HealthMonitor\Settings.config.src" />
+    <None Include="Config\HubWeb\Settings.config" />
+    <None Include="Config\PlanDirectory\Settings.config" />
+    <None Include="Config\PlanDirectory\Settings.Release.config" />
+    <None Include="Config\terminalAtlassian\Settings.config" />
+    <None Include="Config\terminalAzure\Settings.config" />
+    <None Include="Config\terminalBasecamp2\Settings.config" />
+    <None Include="Config\terminalBasecamp2\Settings.Demo.config" />
+    <None Include="Config\terminalBasecamp2\Settings.Dev.config" />
+    <None Include="Config\terminalBasecamp2\Settings.Release.config" />
+    <None Include="Config\terminalBox\Settings.config" />
+    <None Include="Config\terminalDocuSign\Settings.config" />
+    <None Include="Config\terminalDropbox\Settings.config" />
+    <None Include="Config\terminalFacebook\Settings.config" />
+    <None Include="Config\terminalFacebook\Settings.Demo.config" />
+    <None Include="Config\terminalFacebook\Settings.Dev.config" />
+    <None Include="Config\terminalFacebook\Settings.Release.config" />
+    <None Include="Config\terminalFr8Core\Settings.config" />
+    <None Include="Config\terminalGoogle\Settings.config" />
+    <None Include="Config\terminalPapertrail\Settings.config" />
+    <None Include="Config\terminalQuickBooks\Settings.config" />
+    <None Include="Config\terminalSalesforce\Settings.config" />
+    <None Include="Config\terminalSalesforce\Settings.Demo.config" />
+    <None Include="Config\terminalSalesforce\Settings.Dev.config" />
+    <None Include="Config\terminalSalesforce\Settings.Release.config" />
+    <None Include="Config\terminalSendGrid\Settings.config" />
+    <None Include="Config\terminalSlack\Settings.config" />
+    <None Include="Config\terminalSlack\Settings.Demo.config" />
+    <None Include="Config\terminalSlack\Settings.Dev.config" />
+    <None Include="Config\terminalSlack\Settings.Release.config" />
+    <None Include="Config\terminalTelegram\Settings.config" />
+    <None Include="Config\terminalTelegram\Settings.Demo.config" />
+    <None Include="Config\terminalTelegram\Settings.Dev.config" />
+    <None Include="Config\terminalTelegram\Settings.Release.config" />
+    <None Include="Config\terminalTwilio\Settings.config" />
+    <None Include="Config\terminalYammer\Settings.config" />
+    <None Include="Config\terminalYammer\Settings.Demo.config" />
+    <None Include="Config\terminalYammer\Settings.Dev.config" />
+    <None Include="Config\terminalYammer\Settings.Release.config" />
     <None Include="packages.config" />
     <None Include="Utilities\regexes.yaml" />
   </ItemGroup>

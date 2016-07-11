@@ -203,12 +203,12 @@ namespace Fr8.TerminalBase.Services
             throw new NotImplementedException();
         }
 
-        public Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload)
+        public Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload, bool force)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload)
+        public Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload, bool force)
         {
             throw new NotImplementedException();
         }
@@ -319,6 +319,16 @@ namespace Fr8.TerminalBase.Services
         }
 
         public Task ScheduleEvent(string externalAccountId, string minutes, bool triggerImmediately = false, string additionalConfigAttributes = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<AuthenticationTokenTerminalDTO>> GetTokens()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri)
         {
             throw new NotImplementedException();
         }

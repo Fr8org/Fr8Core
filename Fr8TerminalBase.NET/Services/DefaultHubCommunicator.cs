@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -14,7 +13,6 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Interfaces;
-using Fr8.Infrastructure.Utilities;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
@@ -50,7 +48,7 @@ namespace Fr8.TerminalBase.Services
 
         #region HMAC
 
-        private async Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri)
+        public async Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri)
         {
             /*if (!IsConfigured)
                 throw new InvalidOperationException("Please call Configure() before using the class.");*/
@@ -107,6 +105,13 @@ namespace Fr8.TerminalBase.Services
             var uri = new Uri($"{GetHubUrlWithApiVersion()}/users/userdata?id={_userId}", UriKind.Absolute);
             var curUser = await _restfulServiceClient.GetAsync<UserDTO>(uri, null, await GetHMACHeader(uri));
             return curUser;
+        }
+
+        public async Task<List<AuthenticationTokenTerminalDTO>> GetTokens()
+        {
+            var uri = new Uri($"{GetHubUrlWithApiVersion()}/authentication/tokens", UriKind.Absolute);
+            var tokens = await _restfulServiceClient.GetAsync<List<AuthenticationTokenTerminalDTO>>(uri, null, await GetHMACHeader(uri));
+            return tokens;
         }
 
         public async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(Guid activityId, CrateDirection direction)
@@ -215,23 +220,23 @@ namespace Fr8.TerminalBase.Services
 
             var token = new[] { applyToken };
 
-            var url = $"{GetHubUrlWithApiVersion()}/ManageAuthToken/apply";
+            var url = $"{GetHubUrlWithApiVersion()}/authentication/granttokens";
             var uri = new Uri(url);
             await _restfulServiceClient.PostAsync(uri, token, null, await GetHMACHeader(uri, token));
         }
 
-        public async Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload)
+        public async Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload, bool force)
         {
-            var url = $"{GetHubUrlWithApiVersion()}/activities/configure";
+            var url = $"{GetHubUrlWithApiVersion()}/activities/configure?force="+force;
             var uri = new Uri(url);
             var activityDTO = Mapper.Map<ActivityDTO>(activityPayload);
             var resultActivityDTO = await _restfulServiceClient.PostAsync<ActivityDTO, ActivityDTO>(uri, activityDTO, null, await GetHMACHeader(uri, activityDTO));
             return Mapper.Map<ActivityPayload>(resultActivityDTO);
         }
 
-        public async Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload)
+        public async Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload, bool force)
         {
-            var url = $"{GetHubUrlWithApiVersion()}/activities/save";
+            var url = $"{GetHubUrlWithApiVersion()}/activities/save?force=" + force;
             var uri = new Uri(url);
             var activityDTO = Mapper.Map<ActivityDTO>(activityPayload);
             var resultActivityDTO = await _restfulServiceClient.PostAsync<ActivityDTO, ActivityDTO>(uri, activityDTO, null, await GetHMACHeader(uri, activityDTO));
@@ -244,7 +249,7 @@ namespace Fr8.TerminalBase.Services
             var postUrl = $"?activityTemplateId={templateId}&createPlan={createPlan}";
             if (name != null)
             {
-                postUrl += "&name=" + name;
+                postUrl += "&name=" + HttpUtility.UrlEncode(name);
             }
             if (parentNodeId != null)
             {
@@ -382,13 +387,6 @@ namespace Fr8.TerminalBase.Services
             var uri = new Uri(url);
             var authTokenDTO = await _restfulServiceClient.GetAsync<AuthorizationTokenDTO>(uri, null, await GetHMACHeader(uri));
             return Mapper.Map<AuthorizationToken>(authTokenDTO);
-        }
-
-        public async Task RenewToken(string id, string externalAccountId, string token)
-        {
-            var url = $"{GetHubUrlWithApiVersion()}/authentication/renewtoken?id={id}&externalAccountId={externalAccountId}&token={token}";
-            var uri = new Uri(url);
-            await _restfulServiceClient.PostAsync(uri, null, await GetHMACHeader(uri));
         }
 
         public async Task RenewToken(AuthorizationTokenDTO token)

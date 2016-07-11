@@ -87,6 +87,8 @@ namespace Fr8.TerminalBase.Services
 
         public void SetHubSecret(string hubUrl, string secret)
         {
+            Logger.Info($"Received the secret for Hub at '{hubUrl}'.");
+
             TaskCompletionSource<string> setSecretTask;
             var originalUrl = hubUrl;
 
@@ -328,6 +330,13 @@ namespace Fr8.TerminalBase.Services
             if (apiIndex > 0)
             {
                 url = url.Substring(0, apiIndex);
+            }
+
+            var schemaIndex = url.IndexOf("://", StringComparison.InvariantCulture);
+
+            if (schemaIndex < 0)
+            {
+                url = "http://" + url.TrimStart('/', '\\');
             }
 
             return url.TrimEnd('/', '\\');

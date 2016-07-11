@@ -33,9 +33,15 @@ namespace HubWeb.Controllers
             _security = ObjectFactory.GetInstance<ISecurityServices>();
             _tagService = ObjectFactory.GetInstance<ITag>();
         }
-
+        /// <summary>
+        /// Uploads the file content to Azure Blob storage and then saves the file object to the Fr8 database
+        /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <response code="200">Returns the description of file that was succesfully uploaded</response>
+        /// <response code="403">Unauthorized request</response>
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
+        [ResponseType(typeof(FileDO))]
         public async Task<IHttpActionResult> Post()
         {
             FileDO fileDO = null;
@@ -65,9 +71,12 @@ namespace HubWeb.Controllers
                 return Ok(fileDO);
             }
         }
-
+        /// <summary>
+        /// Retrieves file description by specified Id of file and owned by current user
+        /// </summary>
+        /// <param name="id">Id of file</param>
+        /// <reponse code="200">Return the description of file</reponse>
         [HttpGet]
-        //[Route("files/details/{id:int}")]
         [ActionName("details")]
         [ResponseType(typeof(FileDTO))]
         public IHttpActionResult Details(int id)
@@ -94,12 +103,15 @@ namespace HubWeb.Controllers
         }
 
         /// <summary>
-        /// Downloads user's given file
+        /// Downloads file with specified Id and owned by current user
         /// </summary>
-        /// <param name="id">id of requested file</param>
-        /// <returns>Filestream</returns>
+        /// <param name="id">Id of requested file</param>
+        /// <response code="200">Contents of specified file as byte array</response>
+        /// <response code="403">Unauthorized request</response>
+        /// <response code="404">File with specified Id doesn't exist</response>
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
+        [ResponseType(typeof(byte[]))]
         public IHttpActionResult Get(int id)
         {
             FileDO fileDO = null;
@@ -123,17 +135,17 @@ namespace HubWeb.Controllers
             var file = _fileService.Retrieve(fileDO);
             return new FileActionResult(file);
         }
-
-
-        
         /// <summary>
-        /// Downloads user's given file
+        /// Downloads file with specified path and owned by current user
         /// </summary>
-        /// <param name="id">id of requested file</param>
-        /// <returns>Filestream</returns>
+        /// <param name="path">Path of the requested file</param>
+        /// <response code="200">Contents of specified file as byte array</response>
+        /// <response code="403">Unauthorized request</response>
+        /// <response code="404">File with specified Id doesn't exist</response>
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
         [ActionName("byPath")]
+        [ResponseType(typeof(byte[]))]
         public IHttpActionResult DownloadFileByPath(string path)
         {
             FileDO fileDO = null;
@@ -159,12 +171,14 @@ namespace HubWeb.Controllers
         }
 
         /// <summary>
-        /// Gets all files current user stored on Fr8
+        /// Retrieves the list of file descriptions owned by current user
         /// </summary>
-        /// <returns>List of FileDTO</returns>
+        /// <response code="200">Contents of specified file as byte array</response>
+        /// <response code="403">Unauthorized request</response>
         [HttpGet]
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
+        [ResponseType(typeof(IList<FileDTO>))]
         public IHttpActionResult Get()
         {
             IList<FileDTO> fileList;
@@ -209,7 +223,13 @@ namespace HubWeb.Controllers
 
             return Ok(fileList);
         }
-
+        /// <summary>
+        /// Deletes file with specified Id
+        /// </summary>
+        /// <param name="id">Id of the file specified</param>
+        /// <response code="204">File was succesfully deleted</response>
+        [Fr8HubWebHMACAuthenticate]
+        [Fr8ApiAuthorize]
         public void Delete(int id)
         {
             _fileService.Delete(id);
