@@ -22,7 +22,6 @@ namespace Fr8.Testing.Integration
     {
         public ICrateManager Crate { get; set; }
         public IRestfulServiceClient RestfulServiceClient { get; set; }
-        public IHMACService _hmacService { get; set; }
         private string _terminalSecret;
         private string _terminalId;
         HttpClient _httpClient;
@@ -61,6 +60,15 @@ namespace Fr8.Testing.Integration
         {
             RestfulServiceClient = new RestfulServiceClient();
             Crate = new CrateManager();
+        }
+
+        public Dictionary<string, string> GetFr8AuthorizationHeader(string userId)
+        {
+            var _fr8Token = $"key={TerminalSecret}, user={userId}";
+            return new Dictionary<string, string>
+            {
+                {System.Net.HttpRequestHeader.Authorization.ToString(), $"FR8-TOKEN {_fr8Token}" }
+            };
         }
 
         private string GetTerminalUrlInternally()
@@ -159,16 +167,6 @@ namespace Fr8.Testing.Integration
             Assert.AreEqual(ActivityResponse.Error.ToString(), operationalStateCM.CurrentActivityResponse.Type);
             Assert.AreEqual(ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID, operationalStateCM.CurrentActivityErrorCode);
             Assert.AreEqual("No AuthToken provided.", errorMessage.Message);
-        }
-
-        public async Task<Dictionary<string, string>> GetHMACHeader<T>(Uri requestUri, string userId, T content)
-        {
-            return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId, content);
-        }
-
-        public async Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri, string userId)
-        {
-            return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId);
         }
 
         public async Task<TResponse> HttpPostAsync<TRequest, TResponse>(string url, TRequest request)

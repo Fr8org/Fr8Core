@@ -64,19 +64,19 @@ namespace terminalIntegrationTests.Integration
 
             //Reconfiguring plan activities 
             var url = $"{GetHubApiBaseUrl()}/plans?name=MonitorSubmissionTerminalForm&visibility=2";
-            var response = await RestfulServiceClient.GetAsync(new Uri(url), null, await GetHMACHeader(new Uri(url), userId));
+            var response = await RestfulServiceClient.GetAsync(new Uri(url), null, GetFr8AuthorizationHeader(userId));
 
             var plans = JsonConvert.DeserializeObject<IEnumerable<PlanDTO>>(response).ToArray();
             var plan = plans.FirstOrDefault().Plan.SubPlans.FirstOrDefault();
 
             // deactivate plan before editing
             var deactivateUrl = GetHubApiBaseUrl() + "plans/deactivate?planId=" + plans.FirstOrDefault().Plan.Id;
-            await RestfulServiceClient.PostAsync(new Uri(deactivateUrl), new List<CrateDTO>(), null, await GetHMACHeader(new Uri(deactivateUrl), userId));
+            await RestfulServiceClient.PostAsync(new Uri(deactivateUrl), new List<CrateDTO>(), null, GetFr8AuthorizationHeader(userId));
 
             if (plan.Activities.Where(a => a.Ordering == 8).FirstOrDefault() != null)
             {
                 var deleteActivityUrl = GetHubApiBaseUrl() + "activities/delete/" + plan.Activities.Where(a => a.Ordering == 8).FirstOrDefault().Id;
-                await RestfulServiceClient.DeleteAsync(new Uri(deleteActivityUrl), null, await GetHMACHeader(new Uri(deleteActivityUrl), userId));
+                await RestfulServiceClient.DeleteAsync(new Uri(deleteActivityUrl), null, GetFr8AuthorizationHeader(userId));
             }
 
             await ConfigureJira(plan.Activities.Where(a => a.Ordering == 5).FirstOrDefault().Id, userId);
@@ -85,7 +85,7 @@ namespace terminalIntegrationTests.Integration
 
             //Run plan again after reconfigure
             var runUrl = GetHubApiBaseUrl() + "plans/run?planId=" + plans.FirstOrDefault().Plan.Id;
-            await RestfulServiceClient.PostAsync(new Uri(runUrl), new List<CrateDTO>(), null, await GetHMACHeader(new Uri(runUrl), userId));
+            await RestfulServiceClient.PostAsync(new Uri(runUrl), new List<CrateDTO>(), null, GetFr8AuthorizationHeader(userId));
 
             await SubmitForm(googleEventUrl, guidTestId.ToString());
 
@@ -236,7 +236,7 @@ namespace terminalIntegrationTests.Integration
             SetDDL(payloadJira, "AvailableProjects", "fr8test");
             DeleteSprint(payloadJira);
             var DTO = Mapper.Map<ActivityDTO>(payloadJira);
-            await RestfulServiceClient.PostAsync(new Uri(GetHubApiBaseUrl() + "activities/configure"), DTO, null, await GetHMACHeader<ActivityDTO>(new Uri(GetHubApiBaseUrl() + "activities/configure"), userId, DTO));
+            await RestfulServiceClient.PostAsync(new Uri(GetHubApiBaseUrl() + "activities/configure"), DTO, null, GetFr8AuthorizationHeader(userId));
         }
 
         private void DeleteSprint(ActivityPayload payload)
@@ -256,7 +256,7 @@ namespace terminalIntegrationTests.Integration
             SetDDL(payloadSlack, slackCrates.Controls[0].Name, "#general");
             var DTO = Mapper.Map<ActivityDTO>(payloadSlack);
 
-            await RestfulServiceClient.PostAsync(new Uri(GetHubApiBaseUrl()+ "activities/save"), DTO, null, await GetHMACHeader(new Uri(GetHubApiBaseUrl() + "activities/save"), userId, DTO));
+            await RestfulServiceClient.PostAsync(new Uri(GetHubApiBaseUrl()+ "activities/save"), DTO, null, GetFr8AuthorizationHeader(userId));
         }
 
         private async Task ConfigureMessage(Guid activityId, string userId,string guid)
@@ -266,7 +266,7 @@ namespace terminalIntegrationTests.Integration
             var bodyTextBox = (BuildMessageAppender)messageCrates.FindByName("Body");
             bodyTextBox.Value = "testing terminal submission " + guid;
             var DTO = Mapper.Map<ActivityDTO>(payloadMessage);
-            await RestfulServiceClient.PostAsync(new Uri(GetHubApiBaseUrl()+ "activities/configure"), DTO, null, await GetHMACHeader<ActivityDTO>(new Uri(GetHubApiBaseUrl() + "activities/configure"), userId, DTO));
+            await RestfulServiceClient.PostAsync(new Uri(GetHubApiBaseUrl()+ "activities/configure"), DTO, null, GetFr8AuthorizationHeader(userId));
         }
 
         private void SetDDL(ActivityPayload payload, string name, string key)

@@ -49,7 +49,6 @@ namespace Fr8.Testing.Integration
             _httpClient.Timeout = TimeSpan.FromMinutes(2);
 
             Crate = new CrateManager();
-            _hmacService = new Fr8HMACService(ObjectFactory.GetInstance<MediaTypeFormatter>());
             _baseUrl = GetHubApiBaseUrl();
             RestfulServiceClient = new RestfulServiceClient(_httpClient);
 
