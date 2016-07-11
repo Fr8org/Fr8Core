@@ -22,7 +22,9 @@ $location="West US"
 $pipName = $vmName + '-PIP'
 $nicname = $vmName + '-NIC'
 $vnetName="BuildServers"
+$subscriptionId = "74b73aa6-5c40-4a73-b29c-775a6cd3f49f"
 
+Select-AzureRmSubscription -SubscriptionId $subscriptionId
 
 # Uncomment to use existing network objects
 #$pip = Get-AzureRmPublicIpAddress -Name $pipName -ResourceGroupName $rgName

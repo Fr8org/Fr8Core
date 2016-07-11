@@ -11,6 +11,7 @@ using Fr8.Infrastructure.Data.States;
 using Hub.Interfaces;
 using StructureMap;
 using Hub.Services;
+using System.Web.Http.Description;
 
 namespace HubWeb.Controllers
 {
@@ -25,8 +26,13 @@ namespace HubWeb.Controllers
             _fr8Account = ObjectFactory.GetInstance<Fr8Account>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
         }
-
+        /// <summary>
+        /// Retrieves collection of web services which contain activities of specified category. If category is not specified returns list of web servies only
+        /// </summary>
+        /// <param name="id">Id of activity category. 1 - Monitors, 2 - Receivers, 3 - Processors, 4 - Forwarders, 5 - Solutions</param>
+        /// <response code="200">Collection of web services</response>
         [HttpGet]
+        [ResponseType(typeof(List<WebServiceDTO>))]
         public IHttpActionResult Get(int id = -1)
         {
             if (id >= 0)
@@ -93,8 +99,13 @@ namespace HubWeb.Controllers
                 return Ok(models);
             }
         }
-
+        /// <summary>
+        /// Creates web service with specified data
+        /// </summary>
+        /// <param name="webService">Web service data to create web service from</param>
+        /// <response code="200">Web service was successfully saved</response>
         [HttpPost]
+        [ResponseType(typeof(WebServiceDTO))]
         public IHttpActionResult Post(WebServiceDTO webService)
         {
             WebServiceDO entity = Mapper.Map<WebServiceDO>(webService);

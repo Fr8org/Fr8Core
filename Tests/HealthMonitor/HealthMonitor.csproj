@@ -296,7 +296,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="HtmlReportBuilder.cs" />
-    <Compile Include="TerminalStartUpAwaiter.cs" />
     <Compile Include="SelfHostInitializer.cs" />
     <Compile Include="TestReport.cs" />
     <Compile Include="TestReportItem.cs" />

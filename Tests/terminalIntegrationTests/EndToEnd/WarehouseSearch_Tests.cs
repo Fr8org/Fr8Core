@@ -6,10 +6,12 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
 using Data.Interfaces;
+using Data.Infrastructure;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Testing.Integration;
+
 namespace terminalIntegrationTests.EndToEnd
 {
     [Explicit]
@@ -28,7 +30,7 @@ namespace terminalIntegrationTests.EndToEnd
                     {
                         Field = "SentDate",
                         Operator = "gte",
-                        Value = "22-04-2021"
+                        Value = "21-04-2021"
                     }
                 }
             };
@@ -69,6 +71,7 @@ namespace terminalIntegrationTests.EndToEnd
 
             Assert.AreEqual(mtData[1].EnvelopeId, searchedData[0].EnvelopeId, "Response from warehouse/query contains wrong value for EnvelopeId.");
         }
+
 
         [Test]
         public async Task WarehouseAdd()
