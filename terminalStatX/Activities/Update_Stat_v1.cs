@@ -112,6 +112,14 @@ namespace terminalStatX.Activities
                     {
                         StatXUtilities.AddAdvisoryMessage(Storage);
                     }
+                    else
+                    {
+                        if (Storage.CratesOfType<AdvisoryMessagesCM>().FirstOrDefault() != null)
+                        {
+                            ActivityUI.ExistingGroupStats.ListItems = stats.Select(x => new ListItem { Key = string.IsNullOrEmpty(x.Title) ? x.Id : x.Title, Value = x.Id }).ToList();
+                        }
+                        Storage.RemoveByLabel("Advisories");
+                    }
 
                     ActivityUI.ExistingGroupStats.ListItems = stats
                         .Select(x => new ListItem { Key = string.IsNullOrEmpty(x.Title) ? x.Id : x.Title, Value = x.Id }).ToList();
@@ -154,6 +162,14 @@ namespace terminalStatX.Activities
                     if (stats.Any(x => string.IsNullOrEmpty(x.Title)))
                     {
                         StatXUtilities.AddAdvisoryMessage(Storage);
+                    }
+                    else
+                    {
+                        if (Storage.CratesOfType<AdvisoryMessagesCM>().FirstOrDefault() != null)
+                        {
+                            ActivityUI.ExistingGroupStats.ListItems = stats.Select(x => new ListItem { Key = string.IsNullOrEmpty(x.Title) ? x.Id : x.Title, Value = x.Id }).ToList();
+                        }
+                        Storage.RemoveByLabel("Advisories");
                     }
 
                     var currentStat = stats.FirstOrDefault(x => x.Id == ActivityUI.ExistingGroupStats.Value);

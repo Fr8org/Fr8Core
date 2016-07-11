@@ -12,8 +12,7 @@ namespace terminalStatX.Helpers
     public class StatXUtilities
     {
         private const string AdvisoryName = "StatX Warning";
-        private const string AdvisoryContent = "Your selected stat is missing Title. Please insert Title value inside your mobile app for this stat, so you have understandable name.";
-
+        private const string AdvisoryContent = "There is a stat with missing Title value. Please insert the Title value inside your StatX mobile app for this stat, so it can have understandable name.";
 
         public static StatXItemCM MapToStatItemCrateManifest(StatDTO stat)
         {
