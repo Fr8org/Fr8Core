@@ -960,6 +960,7 @@
     <Content Include="Config\PlanDirectory\Settings.config" />
     <Content Include="Config\HubWeb\Settings.config" />
     <Content Include="Config\HealthMonitor\Settings.config.src" />
+    <Content Include="Views\AngularTemplate\ActionPickerPanel.cshtml" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="_PowerShellScripts\HM-job-run.cmd" />

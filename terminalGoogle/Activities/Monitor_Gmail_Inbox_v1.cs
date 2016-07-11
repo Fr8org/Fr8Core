@@ -15,6 +15,7 @@ using terminalGoogle.DataTransferObjects;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Utilities.Logging;
 
 namespace terminalGoogle.Activities
 {
@@ -36,7 +37,12 @@ namespace terminalGoogle.Activities
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             WebService = TerminalData.GmailWebServiceDTO,
-            MinPaneWidth = 300
+            MinPaneWidth = 300,
+            Categories = new[]
+            {
+                ActivityCategories.Monitor,
+                new ActivityCategoryDTO(TerminalData.GooogleWebServiceDTO.Name, TerminalData.GooogleWebServiceDTO.IconPath)
+            }
         };
 
         private IGoogleGmailPolling _gmailPollingService;
@@ -60,6 +66,7 @@ namespace terminalGoogle.Activities
 
         public override async Task Activate()
         {
+            Logger.LogInfo("Monitor_Gmail_Inbox activty is activated. Sending a request for polling");
             await _gmailPollingService.SchedulePolling(HubCommunicator, AuthorizationToken.ExternalAccountId, true);
         }
 

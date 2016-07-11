@@ -11,6 +11,8 @@ namespace terminalDocuSign.Services.New_Api
 {
     public interface IDocuSignManager
     {
+        DocuSignApiConfiguration SetUp(DocuSignAuthTokenDTO authToken);
+        DocuSignApiConfiguration SetUp(string token);
         DocuSignApiConfiguration SetUp(AuthorizationToken authTokenDO);
         List<KeyValueDTO> GetTemplatesList(DocuSignApiConfiguration conf);
         JObject DownloadDocuSignTemplate(DocuSignApiConfiguration config, string selectedDocusignTemplateId);

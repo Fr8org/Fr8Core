@@ -128,7 +128,7 @@ namespace Hub.Services
         {
             var initialActivity = plan.StartingSubplan.GetDescendantsOrdered()
                 .OfType<ActivityDO>()
-                .FirstOrDefault(x => uow.ActivityTemplateRepository.GetByKey(x.ActivityTemplateId).Category != ActivityCategory.Solution);
+                .FirstOrDefault(x => uow.ActivityTemplateRepository.GetByKey(x.ActivityTemplateId).Category != Fr8.Infrastructure.Data.States.ActivityCategory.Solution);
 
             if (initialActivity == null)
             {
@@ -137,7 +137,7 @@ namespace Hub.Services
 
             var activityTemplate = uow.ActivityTemplateRepository.GetByKey(initialActivity.ActivityTemplateId);
 
-            if (activityTemplate.Category == ActivityCategory.Monitors)
+            if (activityTemplate.Category == Fr8.Infrastructure.Data.States.ActivityCategory.Monitors)
             {
                 return true;
             }
