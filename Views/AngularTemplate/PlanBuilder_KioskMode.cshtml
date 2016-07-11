@@ -10,7 +10,7 @@
                     <div style="display: inline-block;">
                         <div ng-repeat="envelope in group.envelopes track by $index">
                             <div class="action" ng-class="{'solution-action': envelope.activity.activityTemplate.category==='Solution'  && mode !== 'solution'}" layout-action>
-                                <div activity-resize minwidth="{{envelope.activity.activityTemplate.minPaneWidth}}" class="ap-resize">
+                                <div class="ap-resize" activity-resize minwidth="{{envelope.activity.activityTemplate.minPaneWidth}}" >
                                     <md-toolbar class="action-header solution-action-header" dropdown transfer-click-configure-pane>
                                         <div class="md-toolbar-tools">
                                             <!-- Icon -->
