@@ -248,3 +248,5 @@ Configure the Publish to Slack Activity to source it's message text from the ups
 You should see updates in the Activity Stream bar at right side of your screen as the Hub processes your Plan, and you should finally see a message in Slack.
  
 ![Fr8 plan result](./Images/9_tdg_SlackResult.PNG "Fr8 plan result")
+
+Continue to [Part 3]().
