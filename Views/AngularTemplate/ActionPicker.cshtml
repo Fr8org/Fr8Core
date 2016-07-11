@@ -1,55 +1,7 @@
 ﻿<div class="action-add" ng-class="{'action-add--active': activeCategory != null}">
-    <div style="display: flex;">
-        <div class="action-categories">
-            <div data-ng-repeat="actionCategory in actionCategories"
-                 ng-class="{'action-category--active': actionCategory.id === activeCategory, 'invisible-icon': activeCategory !== null && activeCategory != actionCategory.id}" class="ng-isolate-scope action-category" data-ng-click="setActive(actionCategory.id)">
-                <i class="fa fa-{{actionCategory.icon}} action-category-icon"></i>
-                <div class="action-category-name">{{actionCategory.name}}</div>
-            </div>
-        </div>
-        <i class="fa fa-plus action-add-button"></i>
-        <div ng-class="{'action-slider': true, 'action-slider--active': activeCategory != null, 'action-terminal-active': activeTerminal != null}" class="ng-isolate-scope" style="box-shadow: 5px 5px 5px grey;">
-            <div class="slide">
-                <div class="modal-header">
-                    <button type="button" class="close" ng-click="activeCategory=null;"><span aria-hidden="true">×</span></button>
-                    <h4 class="modal-title">Services</h4>
-                </div>
-                <div style="height: 100%; overflow: auto; max-height: 230px;">
-                    <div data-ng-repeat="webServiceAction in webServiceActionList | orderBy:'webServiceName' | orderBy:sortBuiltinServices"
-                         data-ng-click="setActiveTerminal(webServiceAction)"
-                         class="web-service-action">
-                        <div class="media activity-list">
-                            <div class="media-left">
-                                <img ng-src="{{webServiceAction.webServiceIconPath}}"/>
-                            </div>
-                            <div class="media-body">
-                                <h4 class="media-heading">{{webServiceAction.webServiceName ? webServiceAction.webServiceName : 'Unknown Service'}}</h4>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="slide">
-                <div class="modal-header">
-                    <button type="button" class="close" ng-click="activeCategory=null;"><span aria-hidden="true">×</span></button>
-                    <h4 class="modal-title"><i class="fa fa-arrow-left" style="cursor: pointer; font-size: 16px; padding-right: 15px;" ng-click="deactivateTerminal()"></i> Activities</h4>
-                </div>
-                <div style="height: 100%; overflow: auto; max-height: 230px;">
-                    <div data-ng-repeat="action in activeTerminal.activities"
-                         data-ng-click="setActiveAction(action, group)"
-                         class="action-action">
-                        <div class="media activity-list">
-                            <div class="media-left" style="vertical-align: middle;">
-                                <i class="fa fa-cogs" style="font-size: 24px;"></i>
-                            </div>
-                            <div class="media-body">
-                                <h4 class="media-heading">{{action.label}}</h4>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div>
+        <a href ng-click="onAddActivity()" class="action-add-button-link">
+            <i class="fa fa-plus action-add-button"></i>
+        </a>
     </div>
-
 </div>
