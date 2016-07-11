@@ -326,7 +326,9 @@
     <Content Include="Config\PlanDirectory\Settings.Release.config" />
     <Content Include="Config\PlanDirectory\Settings.config" />
     <Content Include="Config\HubWeb\Settings.config" />
-    <Content Include="Config\HealthMonitor\Settings.config.src" />
+    <Content Include="Config\HealthMonitor\Settings.config.src">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

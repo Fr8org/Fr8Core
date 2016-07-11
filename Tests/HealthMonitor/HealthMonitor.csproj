@@ -406,6 +406,10 @@
       <Project>{c982a6fe-6fd4-47fa-a69d-91ffa80fedaa}</Project>
       <Name>terminalFacebook</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\terminalInstagram\terminalInstagram.csproj">
+      <Project>{26c15dc0-73ca-46e3-aeba-17353c59c2f3}</Project>
+      <Name>terminalInstagram</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\terminalStatX\terminalStatX.csproj">
       <Project>{5fb0adc8-24c7-4b32-a4d2-afa31b0baaa7}</Project>
       <Name>terminalStatX</Name>
@@ -465,6 +469,10 @@
     <ProjectReference Include="..\..\terminalGoogle\terminalGoogle.csproj">
       <Project>{cddccfab-28b8-446c-8585-72d2bb78f2dc}</Project>
       <Name>terminalGoogle</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\terminalInstagramTests\terminalInstagramTests.csproj">
+      <Project>{d0bbf260-ad17-41bf-9e11-6ea0cc8308e1}</Project>
+      <Name>terminalInstagramTests</Name>
     </ProjectReference>
     <ProjectReference Include="..\terminalIntegrationTests\terminalIntegrationTests.csproj">
       <Project>{579ba25f-1df5-474a-8a3e-0447ff75711c}</Project>
