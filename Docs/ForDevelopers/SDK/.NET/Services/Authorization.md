@@ -28,3 +28,29 @@ The action inherits from BaseTerminalActivity
     }
 ```
 
+
+Renewing Tokens
+---------------
+Every third-party system (Google, Quickbooks, Dropbox) has its own token expiration period. And as far as we validate each token on a terminal side, we have a simple process to refresh tokens into Database from terminals:
+
+HubCommunicator#RenewToken(AuthorizationTokenDTO token)
+
+You can access HubCommunicator from any terminal.
+
+```
+var newToken = _googleIntegration.RefreshToken(token);
+var tokenDTO = new AuthorizationTokenDTO()
+{
+	Id = AuthorizationToken.Id,
+	ExternalAccountId = AuthorizationToken.ExternalAccountId,
+	Token = JsonConvert.SerializeObject(newToken)
+};
+HubCommunicator.RenewToken(tokenDTO);
+```
+
+In example above token are refreshed via google API and after that renewed in DB using existing Id and ExternalAccountId
+
+
+With the next request, a terminal will get the new token from Hub.
+
+
