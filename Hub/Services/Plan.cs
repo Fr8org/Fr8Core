@@ -183,7 +183,11 @@ namespace Hub.Services
                 submittedPlan.Id = Guid.NewGuid();
                 submittedPlan.PlanState = PlanState.Inactive;
                 submittedPlan.Fr8Account = _security.GetCurrentAccount(uow);
-                submittedPlan.Name = "Untitled Plan " + (UserPlansCount(uow,_security.GetCurrentUser()) + 1);
+                if (string.IsNullOrEmpty(submittedPlan.Name))
+                {
+                    submittedPlan.Name = "Untitled Plan " + (UserPlansCount(uow, _security.GetCurrentUser()) + 1);
+                }
+
                 submittedPlan.ChildNodes.Add(new SubplanDO(true)
                 {
                     Id = Guid.NewGuid(),
