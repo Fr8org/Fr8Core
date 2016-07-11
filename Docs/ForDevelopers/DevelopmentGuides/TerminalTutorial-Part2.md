@@ -70,7 +70,7 @@ The *Endpoint* value specifies the URL where the Hub will attempt to contact you
 
 Once this step is complete, you essentially have a complete response to any /discover call arriving from a Hub.
 
-## Step 3 - Define the ActivityTemplate
+## Step 4 - Define the ActivityTemplate
 In folder **Activities**, rename the file and its class to 'Get_Weather_v1'. In Fr8,  Activities are named using snake_case notation with '_v%number%' at the end.
 
 Activities are responsible for generating an ActivityTemplate that will be handed to the Hub as part of the /discover Response, and used by the Client to display the Activity as a choice to the user. Update the Activity as shown below:
@@ -93,7 +93,7 @@ Activities are responsible for generating an ActivityTemplate that will be hande
 *Category*  is deprecated. <br/>
 
 
-## Step 4 - Specify the UI that the User Should See
+## Step 5 - Specify the UI that the User Should See
 
 [UI controls](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/ConfigurationControls.md) are specified using JSON. However, in this tutorial, we'll take advantage of helper tools in the .NET Fr8 SDK that allow us to use POCO to specify our UI. To do this, we create an ActivityUI class:
 
@@ -138,7 +138,7 @@ Activities are responsible for generating an ActivityTemplate that will be hande
 
 When the user adds this Activity to a Plan, the Client will render this UI in the Activity's panel.  
 
-## Step 5 - Add Support for Configuration
+## Step 6 - Add Support for Configuration
 
 Configuration (also known as Design-Time) is one of the two main modes an Activity needs to support. In our example, the configuration requirements are pretty simple. 
 
@@ -171,7 +171,7 @@ Fr8 supports two types of configuration: [Initial and Follow-Up](https://github.
 
 One thing that *does* happen each time followup /configure calls are received is that the Validate method gets called. (Learn more about [Validation](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/ActivitiesValidation.md)).   
 
-# Step 6 - Implement Support for /run 
+# Step 7 - Implement Support for /run 
 
     public override async Task Run()
     {     
@@ -198,7 +198,7 @@ One thing that *does* happen each time followup /configure calls are received is
  
  We add our data to the PayloadContainer with the last two lines. First we build a Crate with a StandardPayloadDataCM Manifest. This is the lowest common denominator manifest, useful for simple key value pairs. We then add it to Payload, another service of the SDK, and the SDK will handle the return of the modified Payload Container to the Hub for us.  
 
-## Step 7 - Turn on the Activity
+## Step 8 - Turn on the Activity
 To bring this Activity 'live', add it to the Terminal's RegisterActivities method in Startup.cs 
 
     protected override void RegisterActivities()
@@ -206,64 +206,45 @@ To bring this Activity 'live', add it to the Terminal's RegisterActivities metho
         ActivityStore.RegisterActivity<Activities.Get_Weather_v1>(Activities.Get_Weather_v1.ActivityTemplateDTO);
     } 
 
-## Step 8 - Register your terminal in a hub.
+## Step 9 - Run your Terminal 
 
- First, configure our terminal project and solution, be sure that terminal Url is the same as in **web.config**:
+a) Set Project Properties
+In Visual Studio, go to Project Properties and make sure that the Url there matches the Url in terminalOpenWeatherMap.TerminalEndpoint in web.config. This ensures that messages from the Hub will go to the right place. (If you're not running a local Hub, you'll want to set this to a URL that's visible from the public Internet. We use ngrok when we want to facilitate this):
 
 ![Fr8 terminal properties](./Images/4_tdg_terminalProjectConfig.PNG "Fr8 terminal properties")
 
-At the minimum we need **Hub**, *our terminal*, and **terminalSlack** being started. Set multiple startup projects in solution properties, and select this projects, then run the solution. 
-After you register account and sign in, choose *Manage Terminals List* in *Developer* swction of navbar menu.
+b) Set Solution Properties
+Go to Solution Properties and configure Startup Project to start Multiple startup projects. Make sure that your Terminal project is set to Start. If you're running the Hub locally, set it to start as well. Finally, set any other Terminals you want to run locally. In this example, we'll use Slack as a publication channel for our weather data, so we'll start the Slack Terminal. 
+
+
+c) Run the Solution 
+Your Terminal should now be live and listening for requests.
+
+d) Register your Terminal with your local Hub
+After you register an account with your local Fr8 Hub and sign in, choose *Manage Terminals List* in *Developer* swction of navbar menu. (You may need to toggle the Developer menu on from the Tools menu).
 
 ![Fr8 terminals list](./Images/5_tdg_ManageTerminals.png "Fr8 terminals list")
 
-Here you can add Url of newly created terminal
+Add the URL of your Terminal.
 
 ![Fr8 terminals list](./Images/6_tdg_Terminals.PNG "Fr8 terminals list")
 
-## Step 6 - Build a plan 
-After we registered new terminal we can see it inside plan builder. Let's create a new plan using our Activity.
+
+## Step 10 - Build a plan 
+You should now be able to select your Activity from inside the Plan Builder. Let's create a new plan using our Activity.
 
 ![Create a plan](./Images/7_tdg_Plan.png "Create a plan")
 
-Add Get_Weather Activity and Publish_to_Slack (from *Forwarders*) next to it. In Slack configuration we can select incoming value for Message. In upstream field we should see data which will be posted by our Activity.
+Add Get_Weather Activity and Publish_to_Slack (from *Forwarders*) next to it. (We like using Slack in examples because it's free and provides instantaneous responses. However, feel free to use the Send Email or Send SMS Activities). 
+
+Configure Get Weather Activity by entering the name of a city in *City* field.
+
+Configure the Publish to Slack Activity to source it's message text from the upstream "Weather" property that is being generated by the Get Weather Activity. 
  
 ![Fr8 plan configuration](./Images/8_tdg_SlackConfiguration.PNG "Fr8 plan configuration")
 
-## Step 7 - Run the plan
-Try to enter name of well known city in *City* field of Get_Weather activity and then run the plan.
-You will see mesasges in *Activity Stream* bar at right side of your screen, and finally message in Slack.
+## Step 11 - Run the plan
+
+You should see updates in the Activity Stream bar at right side of your screen as the Hub processes your Plan, and you should finally see a message in Slack.
  
 ![Fr8 plan result](./Images/9_tdg_SlackResult.PNG "Fr8 plan result")
-
-### Ok, if you feel yourself warmed up enough, do the second attempt. 
-## Second terminal: Asana.com - helps you organize your todo list into projects.
-If external service has SDK (and NuGet packages) it will be much easier to create Activities and handle authentication. But if not, you should do all work by yourself.
-This terminal is little bit complicated, so most work will be done inside services using interfaces. You can mimic the codebase but always free to implement all the steps in way you like.
-
-## Step 1 - Same as in first terminal, create new terminal project
-
-## Step 2 - Fill terminal information
-Here we will have one difference - *AuthenticationType* property is set to *External*. That means hub will handle authentication callbacks and going to interact with our terminal during that process.
- 
-    namespace terminalAsana
-    {
-        public static class TerminalData
-        {
-            public static WebServiceDTO WebServiceDTO = new WebServiceDTO
-            {
-                Name = "Asana",
-                IconPath = "https://asana.com/favicon.ico"
-            };
-
-            public static TerminalDTO TerminalDTO = new TerminalDTO
-            {
-                Endpoint = CloudConfigurationManager.GetSetting("terminalAsana.TerminalEndpoint"),
-                TerminalStatus = TerminalStatus.Active,
-                AuthenticationType = AuthenticationType.External,
-                Name = "terminalAsana",
-                Label = "Asana",
-                Version = "1"
-            };
-        }
-    }
