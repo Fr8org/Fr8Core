@@ -73,7 +73,7 @@ namespace HubWeb.Controllers
         [HttpPost]
         public IHttpActionResult Polling([FromUri] string terminalId, [FromBody]PollingDataDTO pollingData)
         {
-            Logger.Info($"Polling: requested for {pollingData.ExternalAccountId} from a terminal {terminalId}");
+            Logger.Info($"Polling: requested for {pollingData.ExternalAccountId} from a terminal {terminalId} and addition to jobId {pollingData.AdditionToJobId}");
             pollingData.JobId = terminalId + "|" + pollingData.ExternalAccountId + pollingData.AdditionToJobId;
             RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalId), "*/" + pollingData.PollingIntervalInMinutes + " * * * *");
             if (pollingData.TriggerImmediately)
