@@ -21,9 +21,7 @@ namespace PlanDirectory.Infrastructure
                 For<IHubCommunicator>().Use(
                     x => new DefaultHubCommunicator(
                         ObjectFactory.GetInstance<IRestfulServiceClient>(),
-                        ObjectFactory.GetInstance<IHMACService>(),
                         CloudConfigurationManager.GetSetting("HubApiBaseUrl"),
-                        "PlanDirectory",
                         CloudConfigurationManager.GetSetting("PlanDirectorySecret")
                     )
                 );

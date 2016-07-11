@@ -250,6 +250,16 @@ namespace Hub.Services
             }
             return solutionPages;
         }
-       
+
+        public async Task<TerminalDO> GetByToken(string token)
+        {
+            Initialize();
+
+            lock (_terminals)
+            {
+                return _terminals.Values.FirstOrDefault(t => t.Secret == token);
+            }
+        }
+
     }
 }

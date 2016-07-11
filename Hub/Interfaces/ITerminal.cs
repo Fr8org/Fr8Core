@@ -17,6 +17,7 @@ namespace Hub.Interfaces
         Dictionary<string, string> GetRequestHeaders(TerminalDO terminal);
       
         Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId);
+        Task<TerminalDO> GetByToken(string token);
         Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId);
         Task<List<DocumentationResponseDTO>> GetSolutionDocumentations(string terminalName);
     }

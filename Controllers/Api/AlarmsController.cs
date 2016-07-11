@@ -28,7 +28,7 @@ namespace HubWeb.Controllers
         /// <param name="alarmDTO">Alarm to schedule at its startTime property</param>
         /// <response code="200">Alarm was succesfully scheduled</response>
         [HttpPost]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         public async Task<IHttpActionResult> Post(AlarmDTO alarmDTO)
         {

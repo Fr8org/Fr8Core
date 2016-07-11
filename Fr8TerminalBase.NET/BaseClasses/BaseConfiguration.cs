@@ -97,7 +97,7 @@ namespace Fr8.TerminalBase.BaseClasses
                 var secret = request.Headers.GetValues("Fr8HubCallbackSecret").First();
 
                 _hubDiscovery.SetHubSecret(apiUrl, secret);
-                hubCommunicatorFactoryExpression = c => new DefaultHubCommunicator(c.GetInstance<IRestfulServiceClient>(), c.GetInstance<IHMACService>(), apiUrl, _activityStore.Terminal.PublicIdentifier, secret);
+                hubCommunicatorFactoryExpression = c => new DefaultHubCommunicator(c.GetInstance<IRestfulServiceClient>(), apiUrl, secret);
             }
             else
             {

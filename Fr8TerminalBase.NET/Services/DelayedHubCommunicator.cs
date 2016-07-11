@@ -265,11 +265,5 @@ namespace Fr8.TerminalBase.Services
             await InitializeUnderlyingCommunicator();
             return await _underlyingHubCommunicator.GetTokens();
         }
-
-        public async Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri)
-        {
-            await InitializeUnderlyingCommunicator();
-            return await _underlyingHubCommunicator.GetHMACHeader(requestUri);
-        }
     }
 }

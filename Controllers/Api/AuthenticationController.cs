@@ -160,7 +160,7 @@ namespace HubWeb.Controllers
         /// <response code="403">Unauthorized request</response>
         //[HttpGet]
         //[Fr8ApiAuthorize]
-        //[Fr8HubWebHMACAuthenticate]
+        //[Fr8TerminalAuthentication]
         //public async Task<IHttpActionResult> GetAuthToken(
         //    [FromUri]string externalAccountId,
         //    [FromUri]string terminalId)
@@ -187,7 +187,7 @@ namespace HubWeb.Controllers
         /// <response code="403">Unauthorized request</response>
         [HttpPost]
         [Fr8ApiAuthorize]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [ResponseType(typeof(TokenWrapper))]
         public async Task<IHttpActionResult> AuthenticatePlanDirectory()
         {
@@ -214,7 +214,7 @@ namespace HubWeb.Controllers
         /// <response code="403">Unauthorized request</response>
         [HttpPost]
         [Fr8ApiAuthorize]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         public IHttpActionResult RenewToken([FromBody]AuthorizationTokenDTO token)
         {
             _authorization.RenewToken(Guid.Parse(token.Id), token.ExternalAccountId, token.Token, token.ExpiresAt);
@@ -229,7 +229,7 @@ namespace HubWeb.Controllers
         /// <response code="403">Unauthorized request</response>
         [HttpGet]
         [Fr8ApiAuthorize]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [ActionName("tokens")]
         [ResponseType(typeof(List<AuthenticationTokenTerminalDTO>))]
         public IHttpActionResult UserTokens()
@@ -272,7 +272,7 @@ namespace HubWeb.Controllers
         /// <response code="403">Unauthorized request</response>
         [HttpPost]
         [Fr8ApiAuthorize]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         public IHttpActionResult RevokeToken(Guid id)
         {
             var accountId = User.Identity.GetUserId();
@@ -289,7 +289,7 @@ namespace HubWeb.Controllers
         /// <response code="403">Unauthorized request</response>
         [HttpPost]
         [Fr8ApiAuthorize]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         public IHttpActionResult SetDefaultToken(Guid id)
         {
             var userId = User.Identity.GetUserId();
@@ -306,7 +306,7 @@ namespace HubWeb.Controllers
         /// <response code="403">Unauthorized request</response>
         [HttpPost]
         [Fr8ApiAuthorize]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         public IHttpActionResult GrantTokens(IEnumerable<AuthenticationTokenGrantDTO> authTokenList)
         {
             var userId = User.Identity.GetUserId();

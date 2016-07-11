@@ -28,7 +28,7 @@ namespace HubWeb.Controllers
         /// <response code="200">Message was successfully posted</response>
         /// <response code="403">Unauthorized request</response>
         [HttpPost]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         public IHttpActionResult Post(TerminalNotificationDTO notificationMessage)
         {

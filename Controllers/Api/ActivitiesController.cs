@@ -47,7 +47,7 @@ namespace HubWeb.Controllers
         /// <response code="403">Unauthorized request</response>
         /// <response code="423">Specified plan is in running state and activity can't be added to it</response>
         [HttpPost]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         public async Task<IHttpActionResult> Create(Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, Guid? authorizationTokenId = null)
         {
             using (var uow = _uowFactory.Create())
@@ -75,7 +75,7 @@ namespace HubWeb.Controllers
         /// <response code="403">Unauthorized request</response>
         /// <response code="423">Owning plan is in running state and activity can't be changed and force flag is not overriden</response>
         [HttpPost]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [ResponseType(typeof(ActivityDTO))]
         public async Task<IHttpActionResult> Configure(ActivityDTO curActionDesignDTO, [FromUri]bool force = false)
         {
@@ -124,7 +124,7 @@ namespace HubWeb.Controllers
         /// <response code="403">Unauthorized request</response>
         /// <response code="423">Owning plan is in running state and activity can't be changed</response>
         [HttpDelete]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         public async Task<IHttpActionResult> Delete([FromUri] Guid id, [FromUri(Name = "delete_child_nodes")] bool deleteChildNodes = false)
         {
             using (var uow = _uowFactory.Create())
@@ -156,7 +156,7 @@ namespace HubWeb.Controllers
         /// <response code="403">Unauthorized request</response>
         /// <response code="423">Owning plan is in running state and activity can't be changed and force flag is not overriden</response>
         [HttpPost]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [ResponseType(typeof(ActivityDTO))]
         public async Task<IHttpActionResult> Save(ActivityDTO curActionDTO, [FromUri]bool force = false)
         {

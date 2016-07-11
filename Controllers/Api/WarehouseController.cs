@@ -22,7 +22,7 @@ namespace HubWeb.Controllers
         /// <param name="query">Query filter</param>
         /// <response code="200">Collection of queries objects</response>
         /// <response code="403">Unauthorized request</response>
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [HttpPost]
         [ResponseType(typeof(object[]))]
         public IHttpActionResult Query(QueryDTO query)
@@ -48,7 +48,7 @@ namespace HubWeb.Controllers
         /// <param name="query">Query filter</param>
         /// <response code="200">Objects were succesfully deleted</response>
         /// <response code="403">Unauthorized request</response>
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [HttpPost]
         public IHttpActionResult Delete(QueryDTO query)
         {
@@ -74,7 +74,7 @@ namespace HubWeb.Controllers
         /// <param name="crateStorageDto">Crates to store in Fr8 warehouse</param>
         /// <response code="200">Objects were succesfully saved</response>
         /// <response code="403">Unauthorized request</response>
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [HttpPost]
         public IHttpActionResult Post(CrateStorageDTO crateStorageDto)
         {

@@ -229,6 +229,11 @@ namespace Hub.StructureMap
                 return Task.FromResult(new TerminalDO());
             }
 
+            public Task<TerminalDO> GetByToken(string token)
+            {
+                return _terminal.GetByToken(token);
+            }
+
             public IEnumerable<TerminalDO> GetAll()
             {
                 return _terminal.GetAll();

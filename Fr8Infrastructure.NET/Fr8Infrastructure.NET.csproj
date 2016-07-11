@@ -306,6 +306,7 @@
     <Compile Include="Data\States\TerminalStatus.cs" />
     <Compile Include="Interfaces\IHMACAuthenticator.cs" />
     <Compile Include="Interfaces\IHMACService.cs" />
+    <Compile Include="Interfaces\IRequestSignature.cs" />
     <Compile Include="Interfaces\IRestfulServiceClient.cs" />
     <Compile Include="PhoneNumberVerificationDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

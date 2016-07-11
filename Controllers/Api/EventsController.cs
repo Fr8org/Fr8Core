@@ -39,7 +39,7 @@ namespace HubWeb.Controllers
         /// <response code="400">Crate is not specified or its content is invalid</response>
         /// <response code="403">Unauthorized request</response>
         [HttpPost]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         public async Task<IHttpActionResult> Post(CrateDTO raw)
         {
             if (raw == null)

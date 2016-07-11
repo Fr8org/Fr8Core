@@ -39,7 +39,7 @@ namespace HubWeb.Controllers
         /// <remarks>Fr8 authentication headers must be provided</remarks>
         /// <response code="200">Returns the description of file that was succesfully uploaded</response>
         /// <response code="403">Unauthorized request</response>
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         [ResponseType(typeof(FileDO))]
         public async Task<IHttpActionResult> Post()
@@ -109,7 +109,7 @@ namespace HubWeb.Controllers
         /// <response code="200">Contents of specified file as byte array</response>
         /// <response code="403">Unauthorized request</response>
         /// <response code="404">File with specified Id doesn't exist</response>
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         [ResponseType(typeof(byte[]))]
         public IHttpActionResult Get(int id)
@@ -142,7 +142,7 @@ namespace HubWeb.Controllers
         /// <response code="200">Contents of specified file as byte array</response>
         /// <response code="403">Unauthorized request</response>
         /// <response code="404">File with specified Id doesn't exist</response>
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         [ActionName("byPath")]
         [ResponseType(typeof(byte[]))]
@@ -176,7 +176,7 @@ namespace HubWeb.Controllers
         /// <response code="200">Contents of specified file as byte array</response>
         /// <response code="403">Unauthorized request</response>
         [HttpGet]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         [ResponseType(typeof(IList<FileDTO>))]
         public IHttpActionResult Get()
@@ -228,7 +228,7 @@ namespace HubWeb.Controllers
         /// </summary>
         /// <param name="id">Id of the file specified</param>
         /// <response code="204">File was succesfully deleted</response>
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         public void Delete(int id)
         {

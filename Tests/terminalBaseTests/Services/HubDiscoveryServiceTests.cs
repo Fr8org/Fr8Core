@@ -128,6 +128,11 @@ namespace terminaBaselTests.Services
             {
                 throw new NotImplementedException();
             }
+
+            public void AddRequestSignature(IRequestSignature signature)
+            {
+                throw new NotImplementedException();
+            }
         }
 
 
@@ -145,7 +150,7 @@ namespace terminaBaselTests.Services
             });
 
             _restfullServiceClient = new RestfulClientStub();
-            _hubDiscoveryService = new HubDiscoveryService(_restfullServiceClient, new Fr8HMACService(new JsonMediaTypeFormatter()), activityStore, new SingleRunRetryPolicy());
+            _hubDiscoveryService = new HubDiscoveryService(_restfullServiceClient, activityStore, new SingleRunRetryPolicy());
         }
 
         [Test]

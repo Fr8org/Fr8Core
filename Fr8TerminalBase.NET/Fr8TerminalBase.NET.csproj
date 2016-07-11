@@ -102,6 +102,7 @@
     <Compile Include="Helpers\ActivityHelper.cs" />
     <Compile Include="Helpers\ControlHelper.cs" />
     <Compile Include="Helpers\ApiIntegrationHelper.cs" />
+    <Compile Include="Infrastructure\HubAuthenticationHeaderSignature.cs" />
     <Compile Include="Interfaces\IOAuthApiIntegration.cs" />
     <Compile Include="BaseClasses\OAuthApiIntegrationBase.cs" />
     <Compile Include="Services\PlanService.cs" />

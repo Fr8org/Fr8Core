@@ -52,6 +52,5 @@ namespace Fr8.TerminalBase.Interfaces
         Task<List<TManifest>> QueryWarehouse<TManifest>(List<FilterConditionDTO> query) where TManifest : Manifest;
         Task AddOrUpdateWarehouse(params Manifest[] manifests);
         Task DeleteFromWarehouse<TManifest>(List<FilterConditionDTO> query) where TManifest : Manifest;
-        Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri);
     }
 }

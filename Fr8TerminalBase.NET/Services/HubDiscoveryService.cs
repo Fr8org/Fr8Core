@@ -9,6 +9,7 @@ using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Interfaces;
 using log4net;
+using StructureMap;
 
 namespace Fr8.TerminalBase.Services
 {
@@ -20,7 +21,6 @@ namespace Fr8.TerminalBase.Services
 
         private static readonly ILog Logger = Fr8.Infrastructure.Utilities.Logging.Logger.GetCurrentClassLogger();
         private readonly IRestfulServiceClient _restfulServiceClient;
-        private readonly IHMACService _hmacService;
         private readonly IActivityStore _activityStore;
         private readonly IRetryPolicy _hubDiscoveryRetryPolicy;
         private readonly Dictionary<string, TaskCompletionSource<string>> _hubSecrets = new Dictionary<string, TaskCompletionSource<string>>(StringComparer.InvariantCultureIgnoreCase);
@@ -34,10 +34,9 @@ namespace Fr8.TerminalBase.Services
         // Functions
         /**********************************************************************************/
 
-        public HubDiscoveryService(IRestfulServiceClient restfulServiceClient, IHMACService hmacService, IActivityStore activityStore, IRetryPolicy hubDiscoveryRetryPolicy)
+        public HubDiscoveryService(IRestfulServiceClient restfulServiceClient, IActivityStore activityStore, IRetryPolicy hubDiscoveryRetryPolicy)
         {
             _restfulServiceClient = restfulServiceClient;
-            _hmacService = hmacService;
             _activityStore = activityStore;
             _hubDiscoveryRetryPolicy = hubDiscoveryRetryPolicy;
             _apiSuffix = $"/api/{CloudConfigurationManager.GetSetting("HubApiVersion")}";
@@ -72,8 +71,12 @@ namespace Fr8.TerminalBase.Services
             }
             
             var secret = await setSecretTask.Task;
-
-            return new DefaultHubCommunicator(_restfulServiceClient, _hmacService, string.Concat(hubUrl, _apiSuffix), _activityStore.Terminal.PublicIdentifier, secret);
+            //for now i am using object factory
+            //we should create a IRestfulServiceFactory to get rid of structuremap here
+            //TODO Fix this before merge
+            var restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
+            
+            return new DefaultHubCommunicator(restfulServiceClient, string.Concat(hubUrl, _apiSuffix), secret);
         }
 
         /**********************************************************************************/
