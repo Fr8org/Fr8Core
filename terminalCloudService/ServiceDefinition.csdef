@@ -274,6 +274,7 @@
       <Setting name="terminalBox.TerminalEndpoint"/>
 	    <Setting name="terminalStatX.TerminalEndpoint"/>
       <Setting name="terminalFacebook.TerminalEndpoint"/>
+      <Setting name="terminalInstagram.TerminalEndpoint"/>
       <Setting name="terminalTelegram.TerminalEndpoint"/>
       <Setting name="OutboundUserName"/>
       <Setting name="OutboundUserPassword"/>
