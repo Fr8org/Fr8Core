@@ -200,6 +200,9 @@
     <Content Include="Config\terminalTelegram\Settings.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Config\terminalStatX\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Config\terminalSlack\Settings.Release.config" />
   </ItemGroup>
   <ItemGroup>
@@ -231,6 +234,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Config\terminalPapertrail\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalInstagram\Settings.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Config\terminalGoogle\Settings.config" />
