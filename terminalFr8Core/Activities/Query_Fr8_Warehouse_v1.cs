@@ -31,11 +31,16 @@ namespace terminalFr8Core.Activities
         {
             Name = "Query_Fr8_Warehouse",
             Label = "Query Fr8 Warehouse",
-            Category = ActivityCategory.Processors,
+            Category = Fr8.Infrastructure.Data.States.ActivityCategory.Processors,
             Version = "1",
             MinPaneWidth = 550,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Process,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

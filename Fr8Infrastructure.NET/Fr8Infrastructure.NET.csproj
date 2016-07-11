@@ -148,6 +148,8 @@
     <Compile Include="Data\Crates\ManifestDiscovery.cs" />
     <Compile Include="Data\Crates\ManifestTypeCache.cs" />
     <Compile Include="Data\DataTransferObjects\ActivateActivitiesDTO.cs" />
+    <Compile Include="Data\DataTransferObjects\ActivityCategories.cs" />
+    <Compile Include="Data\DataTransferObjects\ActivityCategoryDTO.cs" />
     <Compile Include="Data\DataTransferObjects\ActivityDataPackageDTO.cs" />
     <Compile Include="Data\DataTransferObjects\ActivityDTO.cs" />
     <Compile Include="Data\DataTransferObjects\ActivityNameDTO.cs" />
