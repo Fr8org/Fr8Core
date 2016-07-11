@@ -118,22 +118,22 @@
 
         <!-- UpstreamDataChooser -->
         <div ng-if='field.type == "UpstreamDataChooser"'>
-            <upstream-data-chooser field="field" current-action='currentAction' change="onChange"></upstream-data-chooser>
+            <upstream-data-chooser field="field" current-action='currentAction' change="onChange" is-disabled="plan.planState==2 || isDisabled"></upstream-data-chooser>
         </div>
 
         <!-- UpstreamFieldChooser -->
         <div ng-if='field.type === "UpstreamFieldChooser"'>
-            <upstream-field-chooser field="field" current-action="currentAction" change="onChange"></upstream-field-chooser>
+            <upstream-field-chooser field="field" current-action="currentAction" change="onChange" is-disabled="plan.planState==2 || isDisabled"></upstream-field-chooser>
         </div>
 
         <!-- UpstreamCrateChooser -->
         <div ng-if='field.type === "UpstreamCrateChooser"'>
-            <upstream-crate-chooser field="field" current-action="currentAction" change="onChange"></upstream-crate-chooser>
+            <upstream-crate-chooser field="field" current-action="currentAction" change="onChange" is-disabled="plan.planState==2 || isDisabled"></upstream-crate-chooser>
         </div>
 
         <!-- SourceableCriteria template -->
         <div ng-if='field.type == "SourceableCriteria"'>
-            <sourceable-criteria change="onChange" data-field-name='{{::field.name}}' field="field"></sourceable-criteria>
+            <sourceable-criteria change="onChange" data-field-name='{{::field.name}}' field="field" is-disabled="plan.planState==2 || isDisabled"></sourceable-criteria>
         </div>
 
         <!-- DatePicker -->
@@ -149,7 +149,7 @@
 
         <!-- ContainerTransition -->
         <div ng-if='field.type == "ContainerTransition"'>
-            <container-transition field="field" current-action="currentAction" change="onChange" plan="plan" sub-plan="subPlan"></container-transition>
+            <container-transition field="field" current-action="currentAction" change="onChange" plan="plan" sub-plan="subPlan" is-disabled="plan.planState==2 || isDisabled"></container-transition>
         </div>
 
 
@@ -175,7 +175,7 @@
 
         <!-- Build Message Appender -->
         <div ng-if='field.type == "BuildMessageAppender"'>
-            <build-message-appender current-action="currentAction" field='field' click='onClick' change='onChange' data-field-name='{{::field.name}}'></build-message-appender>
+            <build-message-appender current-action="currentAction" field='field' click='onClick' change='onChange' data-field-name='{{::field.name}}' is-disabled="plan.planState==2 || isDisabled"></build-message-appender>
         </div>
 
         <!-- Add more configuration field templates below -->
