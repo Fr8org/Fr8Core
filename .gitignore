@@ -7,6 +7,16 @@
 *.sln.docstates
 .vs
 
+# Fr8 settings file
+[Ss]ettings.config
+[Ss]ettings.Dev.config
+[Ss]ettings.Release.config
+[Ss]ettings.Demo.config
+[Ss]ettings.config.src
+
+# Nuget packages
+.nupkg
+
 # Build results
 
 [Dd]ebug/

@@ -10,7 +10,7 @@
 <!--<![endif]-->
 <script>
     var segmentKey = "@(Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey"))";
-    if (segmentKey != "") {
+    if (segmentKey !== "") {
         window.analytics = window.analytics || [], window.analytics.methods = ["identify", "group", "track", "page", "pageview", "alias", "ready", "on", "once", "off", "trackLink", "trackForm", "trackClick", "trackSubmit"], window.analytics.factory = function(t) {
             return function() {
                 var a = Array.prototype.slice.call(arguments);
@@ -154,9 +154,3 @@
     @Scripts.Render("~/bundles/js/main")
 </body>
 </html>
-<script type="text/javascript">
-    if (window.analytics != null) {
-        var solutions = document.getElementsByClassName('seg-solution');
-        window.analytics.trackLink(solutions, "Loaded Solution");
-    }
-</script>

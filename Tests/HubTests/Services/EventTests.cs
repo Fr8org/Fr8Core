@@ -123,6 +123,11 @@ namespace HubTests.Services
         {
             return _activity.DeleteChildNodes(id);
         }
+
+        public bool Exists(Guid id)
+        {
+            return _activity.Exists(id);
+        }
     }
 
     public class PlanNodeMock : IPlanNode

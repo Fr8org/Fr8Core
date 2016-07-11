@@ -1,5 +1,5 @@
 <div style="padding-bottom: 51px;"></div>
-<div data-ng-controller="HeaderController" class="page-header" style="position:fixed;z-index: 1025;top: 0px;right:0;left:0">
+<div data-ng-controller="HeaderController" class="page-header" style="position: fixed; z-index: 1025; top: 0px; right: 0; left: 0">
 
     <!-- BEGIN HEADER MENU -->
     <div class="page-header-menu">
@@ -13,7 +13,7 @@
                     <!-- BEGIN LOGO -->
                     <li>
                         <a class="menu-logo" href="/">
-                            <img style="height:33px" src="/Content/img/dockyard_logo.png" alt="logo" class="logo-default">
+                            <img style="height: 33px" src="/Content/img/dockyard_logo.png" alt="logo" class="logo-default">
                         </a>
                     </li>
                     <!-- END LOGO -->
@@ -58,7 +58,7 @@
                         <a data-toggle="dropdown" href="#" class="dropdown-toggle">Plans <i class="fa fa-angle-down"></i></a>
                         <ul class="dropdown-menu">
                             <li><a ui-sref="planList">Show All</a></li>
-                            <li event-add><a ui-sref="planForm" >Add</a></li>
+                            <li event-add><a ui-sref="planForm">Add</a></li>
                             <li><a ng-click="goToPlanDirectory('@System.Configuration.ConfigurationManager.AppSettings["PlanDirectoryUrl"]')">Plan Directory</a></li>
                             <li ng-controller="PlanUploadController"><a ng-click="showModal()">Load from JSON file</a></li>
                         </ul>
@@ -89,30 +89,49 @@
                             <li><a href="https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md">Developer Home</a></li>
                             <li><a href="/Documentation/RestAPIGuide.html">Fr8 Development Resources - DocuSign</a></li>
                             <li><a ui-sref="manifestregistry">Manage Manifest Registry</a></li>
+                            <li class="dropdown-submenu">
+                                <a class="dropdown-toggle">API</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="/swagger">Hub API</a></li>
+                                    <li class="dropdown-submenu">
+                                        <a class="dropdown-toggle">Terminals API</a>
+                                        <ul class="dropdown-menu">
+                                            <li ng-repeat="terminal in terminals">
+                                                <a href="{{terminal.endpoint}}/swagger">{{terminal.name}}</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
                         </ul>
                     </li>
 
-                    <li class="menu-dropdown classic-menu-dropdown pull-right" style="position: absolute;right:100px" flex>
+                    <li class="menu-dropdown classic-menu-dropdown pull-right" style="position: absolute; right: 100px" flex>
                         <div class="top-menu">
                             <ul class="nav navbar-nav pull-right">
                                 <!-- BEGIN USER LOGIN DROPDOWN -->
                                 @using Data.States
                                 @using HubWeb.Infrastructure_HubWeb
                                 @using Microsoft.AspNet.Identity
-                                @if (Request.IsAuthenticated) {
+                                @if (Request.IsAuthenticated)
+                                {
                                     <li class="dropdown dropdown-user dropdown-dark">
                                         <a data-toggle="dropdown" href="#" class="dropdown-toggle" data-close-others="true">
                                             <span class="username username-hide-mobile">
                                                 Hello
-                                                @if (User.IsInRole("Guest")) {
+                                                @if (User.IsInRole("Guest"))
+                                                {
                                                     <text>Guest User</text>
-                                                } else {
+                                                }
+                                                else
+                                                {
                                                     <text>@User.Identity.GetUserName()</text>
                                                 }!
                                             </span>
                                         </a>
 
-                                        @if (!User.IsInRole("Guest")) {
+                                        @if (!User.IsInRole("Guest"))
+                                        {
                                             <ul class="dropdown-menu dropdown-menu-default">
                                                 <li>
                                                     <a ui-sref="myaccount">
@@ -133,7 +152,8 @@
                                         }
                                     </li>
                                     <!-- END USER LOGIN DROPDOWN -->
-                                    if (@User.IsInRole("Guest")) {
+                                    if (@User.IsInRole("Guest"))
+                                    {
                                         <li class="have-account-login-guest visible-lg visible-md visible-sm">
                                             <a href="/DockyardAccount/Logoff">
                                                 <span>Have an Account? Login</span>
@@ -146,8 +166,9 @@
                     </li>
 
                     <!-- ADMIN DROPDOWN -->
-                    @if (Html.HasManageUsersPermission(PermissionType.ManageInternalUsers)) {
-                        <li class="menu-dropdown classic-menu-dropdown pull-right" style="position: absolute; right:0;">
+                    @if (Html.HasManageUsersPermission(PermissionType.ManageInternalUsers))
+                    {
+                        <li class="menu-dropdown classic-menu-dropdown pull-right" style="position: absolute; right: 0;">
                             <a data-toggle="dropdown" href="#" class="dropdown-toggle">Admin <i class="fa fa-angle-down"></i></a>
                             <ul class="dropdown-menu">
                                 <li><a ui-sref="accounts">Manage Users</a></li>
@@ -157,8 +178,9 @@
                         </li>
                     }
 
-                    @if (Html.HasManageUsersPermission(PermissionType.ManageFr8Users)) {
-                        <li class="menu-dropdown classic-menu-dropdown pull-right" style="position: absolute; right:0;">
+                    @if (Html.HasManageUsersPermission(PermissionType.ManageFr8Users))
+                    {
+                        <li class="menu-dropdown classic-menu-dropdown pull-right" style="position: absolute; right: 0;">
                             <a data-toggle="dropdown" href="#" class="dropdown-toggle">Admin <i class="fa fa-angle-down"></i></a>
                             <ul class="dropdown-menu">
                                 <li><a ui-sref="accounts">Manage Users</a></li>
@@ -172,7 +194,8 @@
                             </ul>
                         </li>
                     }
-                    @if (User.IsInRole("Guest")) {
+                    @if (User.IsInRole("Guest"))
+                    {
                         <li class="visible-xs">
                             <a href="/DockyardAccount/Logoff"> Have an Account? Login </a>
                         </li>
@@ -180,7 +203,8 @@
                 </ul>
                 <!-- END NAVIGATION BAR -->
             </div>
-            @if (User.IsInRole("Guest")) {
+            @if (User.IsInRole("Guest"))
+            {
                 <ul class="nav navbar-nav navbar-right pull-right">
                     <li class="pull-right register-guest-user" style="background-color: crimson;">@Html.ActionLink("Register!", "RegisterGuestUser", "DockyardAccount")</li>
                 </ul>

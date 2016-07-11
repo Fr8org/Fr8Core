@@ -27,6 +27,9 @@ If (Test-Path $outputArchiveFile){
 New-Item -ItemType Directory -Force -Path $archiveFolderName | Out-Null
 # Create SQL folder
 New-Item -ItemType Directory -Force -Path $archiveFolderName\SQL | Out-Null
+# Create Config\HealthMonitor folder
+New-Item -ItemType Directory -Force -Path $archiveFolderName\Config | Out-Null
+New-Item -ItemType Directory -Force -Path $archiveFolderName\Config\HealthMonitor | Out-Null
 
 # Copy HealthMonitor DLLs to archive folder.
 $srcFiles = "$rootDir\..\Tests\HealthMonitor\bin\$($buildConfiguration)\*"
@@ -48,6 +51,11 @@ $srcRunFile = "$rootDir\..\Tests\HealthMonitor\SQL\*"
 $dstRunFile = "$archiveFolderName\SQL\"
 Copy-Item $srcRunFile -Destination $dstRunFile -Force
 
+# Copy Config
+$srcRunFile = "$rootDir\..\Tests\HealthMonitor\Config\HealthMonitor\*"
+$dstRunFile = "$archiveFolderName\Config\HealthMonitor\"
+Copy-Item $srcRunFile -Destination $dstRunFile -Force
+
 # Copy PowerShell script
 $srcRunFile = "$rootDir\CleanUpAfterTests.ps1"
 $dstRunFile = "$archiveFolderName\"
@@ -63,7 +71,7 @@ $site = Get-AzureWebsite -Name "fr8" -Slot $slot
 # $site = Get-AzureWebsite -Name "fr8dev"
 
 New-AzureWebsiteJob -Name $site[0].Name `
-  -JobName "HealthMonitor-$($buildConfiguration.ToUpper())" `
+  -JobName "HealthMonitor" `
   -JobType Triggered `
   -JobFile $outputArchiveFile `
   -Slot $slot;

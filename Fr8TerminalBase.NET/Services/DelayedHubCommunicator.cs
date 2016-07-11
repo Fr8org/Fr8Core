@@ -103,28 +103,22 @@ namespace Fr8.TerminalBase.Services
         //    return await _underlyingHubCommunicator.ValidateFields(fields);
         //}
 
-        public async Task<AuthorizationToken> GetAuthToken(string authTokenId)
-        {
-            await InitializeUnderlyingCommunicator();
-            return await _underlyingHubCommunicator.GetAuthToken(authTokenId);
-        }
-
         public async Task ScheduleEvent(string externalAccountId, string minutes, bool triggerImmediately = false, string additionalConfigAttributes = null)
         {
             await InitializeUnderlyingCommunicator();
             await _underlyingHubCommunicator.ScheduleEvent(externalAccountId, minutes, triggerImmediately, additionalConfigAttributes);
         }
 
-        public async Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload)
+        public async Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload, bool force)
         {
             await InitializeUnderlyingCommunicator();
-            return await _underlyingHubCommunicator.ConfigureActivity(activityPayload);
+            return await _underlyingHubCommunicator.ConfigureActivity(activityPayload, force);
         }
 
-        public async Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload)
+        public async Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload, bool force)
         {
             await InitializeUnderlyingCommunicator();
-            return await _underlyingHubCommunicator.SaveActivity(activityPayload);
+            return await _underlyingHubCommunicator.SaveActivity(activityPayload, force);
         }
 
         public async Task<ActivityPayload> CreateAndConfigureActivity(Guid templateId, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
