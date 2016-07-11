@@ -1,6 +1,6 @@
 # Terminal Developer's Guide
 ## General Information
-[Back](https://github.com/Fr8org/Fr8Core/edit/FR-3375/Docs/ForDevelopers/DevelopmentGuides/TerminalDevelopmentGuide.md)
+[Back](https://github.com/Fr8org/Fr8Core/blob/FR-3375/Docs/ForDevelopers/DevelopmentGuides/TerminalDevelopmentGuide.md)
 
 This is platform-independent data. For platform-specific information, see the SDK section at the bottom.
 
