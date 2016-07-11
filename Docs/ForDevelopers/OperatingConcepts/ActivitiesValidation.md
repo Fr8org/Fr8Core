@@ -19,3 +19,8 @@ Below is the sample contents of `ValidationResultCM` manifest
          }
       ]
    }
+   
+   
+## Validate Method in Activity Classes
+   The Validate method in Activity classes gets called upon every followup /configure call
+   unless *DisableValidationOnFollowup* variable setted up to *true* inside Activity constructor.
