@@ -9,4 +9,4 @@ Fr8 should be able to handle such cases gracefully in runtime and do not present
 The Hub has the logic to report authentication and authorization problems in terminals. You only need to add minimum amount of code to enable that for your terminal action. 
 
 More Information:
---[from the .NET SDK]()
+--[from the .NET SDK](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/SDK/.NET/Services/Authorization.md)
