@@ -1,19 +1,20 @@
 
-## Step 0 - Decide which service you want to wire up to Fr8
 
-It would be nice to understand how 3rd-party service works and which pieces of business logic we want to use.
-In this guide we will try to build two terminals, first will be easy and simple, second will be closer to real life complexity.  
+Before doing this tutorial, you may want to try [this one](https://github.com/Fr8org/Fr8Core/blob/FR-3375/Docs/ForDevelopers/DevelopmentGuides/TerminalTutorial-Part%201.md).
 
-### First: OpenWeatherMap.org  service whch will tell us (as it mentioned in it's name) weather
-We should get ApiKey in order to use this service, register an account for this and obtain a key:
+
+We'll build a Terminal that communicates with OpenWeatherMap.org and provides the Activity "Get Weather".
+
+### Before Starting
+Get an ApiKey from OpenWeatherMap.org. To do this, register an account for this and obtain a key:
 
 ![ApiKey](./Images/0_tdg_openweathermap.PNG "ApiKey")
 
 
-## Step 1 - Create terminal project 
+## Step 1 - Create Terminal Project 
 
 We have two options here:
-* using local hub for testing
+* using local hub for testing (currently only available for .NET terminals)
 * using one of public hubs, for example fr8.co
 
 For our first terminal we will use local hub.
