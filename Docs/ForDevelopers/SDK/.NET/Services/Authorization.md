@@ -9,9 +9,9 @@ This message should be fine for most cases, and if reauthorizing of the 3rd part
 
  The action inherits from EnhancedTerminalActivity<T>
 
-1) Determine how your 3rd party service SDK reports authorization token issues. 
-2) When such case is detected (usually, in a Service class, not directly in the Activity class), throw TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException
-3) Make sure that exceptions in the calling code are not suppressed and the exception, when raised, can be bubbled up to EnhancedTerminalActivity<T>.
+1. Determine how your 3rd party service SDK reports authorization token issues.
+2. When such case is detected (usually, in a Service class, not directly in the Activity class), throw TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException
+3. Make sure that exceptions in the calling code are not suppressed and the exception, when raised, can be bubbled up to EnhancedTerminalActivity<T>.
 
 The action inherits from BaseTerminalActivity
 
