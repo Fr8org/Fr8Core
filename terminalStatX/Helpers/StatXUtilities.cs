@@ -55,6 +55,10 @@ namespace terminalStatX.Helpers
             return oldStat.Value != newStat.Value;
         }
 
+        public static StatXAuthDTO GetStatXAuthToken(string token)
+        {
+            return JsonConvert.DeserializeObject<StatXAuthDTO>(token);
+        }
         public static void AddAdvisoryMessage(ICrateStorage storage)
         {
             var advisoryCrate = storage.CratesOfType<AdvisoryMessagesCM>().FirstOrDefault();

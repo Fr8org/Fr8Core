@@ -471,12 +471,17 @@
     <Content Include="Content\css\homecss\main.css" />
     <Content Include="Content\css\shared\main.css" />
     <Content Include="Content\css\shared\navbar.css" />
+    <Content Include="Content\icons\forward-icon-64x64.png" />
+    <Content Include="Content\icons\get-icon-64x64.png" />
+    <Content Include="Content\icons\monitor-icon-64x64.png" />
+    <Content Include="Content\icons\process-icon-64x64.png" />
     <Content Include="Content\icons\web_services\basecamp2-icon-64x64.png" />
     <Content Include="Content\icons\web_services\Box-logo_64x64.png" />
     <Content Include="Content\icons\web_services\facebook-icon-64x64.png" />
     <Content Include="Content\icons\web_services\fr8-demo-icon-64x64.png" />
     <Content Include="Content\icons\web_services\gmail-icon-64x64.png" />
     <Content Include="Content\icons\web_services\statX-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\twitter-icon-64x64.png" />
     <Content Include="Content\icons\web_services\telegram-icon-64x64.png" />
     <Content Include="Content\img\background-7.png" />
     <Content Include="Content\img\background-cta-3.jpg" />
@@ -960,6 +965,7 @@
     <Content Include="Config\PlanDirectory\Settings.config" />
     <Content Include="Config\HubWeb\Settings.config" />
     <Content Include="Config\HealthMonitor\Settings.config.src" />
+    <Content Include="Views\AngularTemplate\ActionPickerPanel.cshtml" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="_PowerShellScripts\HM-job-run.cmd" />
@@ -1000,6 +1006,7 @@
     <Content Include="_PowerShellScripts\Create-SDKNuget.ps1" />
     <Content Include="Views\AngularTemplate\PageDefinitionList.cshtml" />
     <Content Include="_PowerShellScripts\Reboot-CloudService.ps1" />
+    <Content Include="_PowerShellScripts\Remove-HMAsWebJob.ps1" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\KioskModeOrganizationHeaderController.ts" />

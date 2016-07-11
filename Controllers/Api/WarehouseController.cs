@@ -8,14 +8,23 @@ using Fr8.Infrastructure.Data.Manifests;
 using Hub.Infrastructure;
 using Hub.Services;
 using HubWeb.Infrastructure_HubWeb;
+using System.Web.Http.Description;
 
 namespace HubWeb.Controllers
 {
     [Fr8ApiAuthorize]
     public class WarehouseController : ApiController
     {
+        /// <summary>
+        /// Retrieves objects from Fr8 warehouse based on filter specified
+        /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <param name="query">Query filter</param>
+        /// <response code="200">Collection of queries objects</response>
+        /// <response code="403">Unauthorized request</response>
         [Fr8HubWebHMACAuthenticate]
         [HttpPost]
+        [ResponseType(typeof(object[]))]
         public IHttpActionResult Query(QueryDTO query)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -32,8 +41,13 @@ namespace HubWeb.Controllers
                 return Ok(foundObjects);
             }
         }
-
-
+        /// <summary>
+        /// Deletes objects from Fr8 warehouse based on filter specified
+        /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <param name="query">Query filter</param>
+        /// <response code="200">Objects were succesfully deleted</response>
+        /// <response code="403">Unauthorized request</response>
         [Fr8HubWebHMACAuthenticate]
         [HttpPost]
         public IHttpActionResult Delete(QueryDTO query)
@@ -53,7 +67,13 @@ namespace HubWeb.Controllers
                 return Ok();
             }
         }
-
+        /// <summary>
+        /// Saves specified crates into Fr8 warehouse
+        /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <param name="crateStorageDto">Crates to store in Fr8 warehouse</param>
+        /// <response code="200">Objects were succesfully saved</response>
+        /// <response code="403">Unauthorized request</response>
         [Fr8HubWebHMACAuthenticate]
         [HttpPost]
         public IHttpActionResult Post(CrateStorageDTO crateStorageDto)

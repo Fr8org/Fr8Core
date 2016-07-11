@@ -120,8 +120,8 @@ module dockyard.directives.dropDownListBox {
                 $scope.toggle = false;
 
                 $scope.toggleDropDown = $select => {
-                   
-                    // added by Tony
+
+                        // added by Tony
                     if ($scope.isDisabled) {
                         return false;
                     }

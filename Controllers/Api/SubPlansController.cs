@@ -21,7 +21,12 @@ namespace HubWeb.Controllers
         {
             _subplan = ObjectFactory.GetInstance<ISubplan>();
         }
-
+        /// <summary>
+        /// Creates new subplan using specified values
+        /// </summary>
+        /// <param name="subplanDto">Subplan data to create subplan from</param>
+        /// <response code="200">Subplan was successfully created</response>
+        /// <response code="400">Specified data is not valid</response>
         [ResponseType(typeof(SubplanDTO))]
         public IHttpActionResult Post(SubplanDTO subplanDto)
         {
@@ -55,7 +60,12 @@ namespace HubWeb.Controllers
                 return Ok(Mapper.Map<SubplanDO, SubplanDTO>(curSubPlanDO));
             }
         }
-
+        /// <summary>
+        /// Updates subplan with specified values
+        /// </summary>
+        /// <param name="subplanDto">Values used to updates subplan</param>
+        /// <response code="200">Subplan was successfully updated</response>
+        /// <response code="400">Specified data is not valid</response>
         [ResponseType(typeof(SubplanDTO))]
         public IHttpActionResult Put(SubplanDTO subplanDto)
         {
@@ -85,7 +95,12 @@ namespace HubWeb.Controllers
                 return Ok(Mapper.Map<SubplanDO, SubplanDTO>(curSubPlanDO));
             }
         }
-
+        /// <summary>
+        /// Deletes subplan with specified Id
+        /// </summary>
+        /// <param name="id">Id of subplan to delete</param>
+        /// <response code="200">Subplan was successfully deleted</response>
+        /// <response code="400">Subplan with specified Id doesn't exist</response>
         [HttpDelete]
         public async Task<IHttpActionResult> Delete(Guid id)
         {
@@ -108,12 +123,21 @@ namespace HubWeb.Controllers
                 return Ok();
             }
         }
-
+        /// <summary>
+        /// Retrieves the first activity of the subplan with specified Id
+        /// </summary>
+        /// <remarks>
+        /// At this point value of 'filter' parameter should be set to 'first'
+        /// </remarks>
+        /// <param name="id">Id of subplan</param>
+        /// <param name="filter">Only accepts value of 'first', otherwise no data is returned</param>
+        /// <response code="200">First activity of the subplan with specified Id. Can be empty</response>
         [ActionName("activities")]
         [ResponseType(typeof(ActivityDTO))]
         [HttpPost]
         public async Task<IHttpActionResult> FirstActivity(Guid id, string filter)
         {
+            filter = (filter ?? string.Empty).Trim().ToLower();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 if (filter == "first")

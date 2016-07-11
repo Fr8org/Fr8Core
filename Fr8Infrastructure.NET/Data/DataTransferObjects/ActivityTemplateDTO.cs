@@ -1,7 +1,8 @@
 ﻿using System;
-using Fr8.Infrastructure.Data.States;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Fr8.Infrastructure.Data.States;
 
 namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
@@ -32,6 +33,9 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 
         [JsonProperty("tags")]
         public string Tags { get; set; }
+
+        [JsonProperty("categories")]
+        public ActivityCategoryDTO[] Categories { get; set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
         public ActivityCategory Category { get; set; }
