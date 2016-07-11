@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
@@ -101,7 +102,12 @@ namespace terminalStatX.Activities
                 if (string.IsNullOrEmpty(previousGroup) || !string.Equals(previousGroup, ActivityUI.ExistingGroupsList.Value))
                 {
                     var stats = await _statXIntegration.GetStatsForGroup(StatXUtilities.GetStatXAuthToken(AuthorizationToken), ActivityUI.ExistingGroupsList.Value);
-                    
+
+                    if (stats.Any(x => string.IsNullOrEmpty(x.Title)))
+                    {
+                        StatXUtilities.AddAdvisoryMessage(Storage);
+                    }
+
                     ActivityUI.ExistingGroupStats.ListItems = stats
                         .Select(x => new ListItem { Key = string.IsNullOrEmpty(x.Title) ? x.Id : x.Title, Value = x.Id }).ToList();
 
@@ -139,6 +145,11 @@ namespace terminalStatX.Activities
                 if (string.IsNullOrEmpty(previousStat) || !string.Equals(previousStat, ActivityUI.ExistingGroupStats.Value))
                 {
                     var stats = await _statXIntegration.GetStatsForGroup(StatXUtilities.GetStatXAuthToken(AuthorizationToken), ActivityUI.ExistingGroupsList.Value);
+
+                    if (stats.Any(x => string.IsNullOrEmpty(x.Title)))
+                    {
+                        StatXUtilities.AddAdvisoryMessage(Storage);
+                    }
 
                     var currentStat = stats.FirstOrDefault(x => x.Id == ActivityUI.ExistingGroupStats.Value);
                     if (currentStat != null)

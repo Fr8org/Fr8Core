@@ -100,6 +100,11 @@ namespace terminalStatX.Activities
                 {
                     var stats = await _statXIntegration.GetStatsForGroup(StatXUtilities.GetStatXAuthToken(AuthorizationToken), ActivityUI.ExistingGroupsList.Value);
 
+                    if (stats.Any(x => string.IsNullOrEmpty(x.Title)))
+                    {
+                        StatXUtilities.AddAdvisoryMessage(Storage);
+                    }
+
                     ActivityUI.ExistingGroupStats.ListItems = stats
                         .Select(x => new ListItem { Key = string.IsNullOrEmpty(x.Title) ? x.Id : x.Title, Value = x.Id }).ToList();
 
@@ -129,6 +134,10 @@ namespace terminalStatX.Activities
                 if (string.IsNullOrEmpty(previousStat) || !string.Equals(previousStat, ActivityUI.ExistingGroupStats.Value))
                 {
                     var stats = await _statXIntegration.GetStatsForGroup(StatXUtilities.GetStatXAuthToken(AuthorizationToken), ActivityUI.ExistingGroupsList.Value);
+                    if (stats.Any(x => string.IsNullOrEmpty(x.Title)))
+                    {
+                        StatXUtilities.AddAdvisoryMessage(Storage);
+                    }
 
                     var currentStat = stats.FirstOrDefault(x => x.Id == ActivityUI.ExistingGroupStats.Value);
                     if (currentStat != null)
