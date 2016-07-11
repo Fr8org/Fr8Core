@@ -116,6 +116,11 @@ namespace Hub.Services
 
         }
 
+        public int UserPlansCount(IUnitOfWork uow,string userId)
+        {
+            return uow.PlanRepository.GetPlanQueryUncached().Where(p => p.Fr8AccountId == userId && p.Visibility == PlanVisibility.Standard).Count();
+        }
+
         public int? GetPlanState(IUnitOfWork uow, Guid planNodeId)
         {
             var existingNode = uow.PlanRepository.GetById<PlanNodeDO>(planNodeId);
@@ -178,7 +183,7 @@ namespace Hub.Services
                 submittedPlan.Id = Guid.NewGuid();
                 submittedPlan.PlanState = PlanState.Inactive;
                 submittedPlan.Fr8Account = _security.GetCurrentAccount(uow);
-
+                submittedPlan.Name = "Untitled Plan " + (UserPlansCount(uow,_security.GetCurrentUser()) + 1);
                 submittedPlan.ChildNodes.Add(new SubplanDO(true)
                 {
                     Id = Guid.NewGuid(),
