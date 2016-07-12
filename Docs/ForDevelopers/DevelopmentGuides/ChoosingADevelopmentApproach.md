@@ -4,7 +4,9 @@
 
 There are two ways you can develop a Fr8 Terminal:
 
-### 1) Build and run a local Hub and a set of local Terminals on your own Development machine. Test your new Terminal in conjunction with those local resources.
+### 1) The "Local Hub" Approach
+
+Build and run a local Hub and a set of local Terminals on your own Development machine. Test your new Terminal in conjunction with those local resources.
 
 Pros:
 Maximum debug visibility into the Terminal <--> Hub Conversation
@@ -14,7 +16,9 @@ Cons:
 Hub code is currently only available in C#/.NET
 Building and running a Hub is non-trivial
 
-### 2) Test your development Terminal against the public fr8.co Hub by registering it for discovery
+### 2) The "Public Hub" Approach
+
+Test your development Terminal against the public fr8.co Hub by registering it for discovery
 
 Pros: 
 Lightest local footprint
