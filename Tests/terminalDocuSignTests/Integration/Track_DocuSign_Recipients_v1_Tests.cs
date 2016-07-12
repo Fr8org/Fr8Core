@@ -66,6 +66,7 @@ namespace terminalDocuSignTests.Integration
                 Name = "Monitor_DocuSign_Envelope_Activity",
                 Label = "Monitor DocuSign Envelope Activity",
                 Category = ActivityCategory.Monitors,
+                Categories = new[] { ActivityCategories.Monitor },
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 MinPaneWidth = 330
@@ -77,6 +78,7 @@ namespace terminalDocuSignTests.Integration
                 Name = "Set_Delay",
                 Label = "Delay Action Processing",
                 Category = ActivityCategory.Processors,
+                Categories = new[] { ActivityCategories.Process },
                 Terminal = terminalCoreDO,
                 NeedsAuthentication = false,
                 MinPaneWidth = 330
@@ -88,6 +90,7 @@ namespace terminalDocuSignTests.Integration
                 Name = "Test_Incoming_Data",
                 Label = "Test Incoming Data",
                 Category = ActivityCategory.Processors,
+                Categories = new[] { ActivityCategories.Process },
                 Terminal = terminalCoreDO,
                 NeedsAuthentication = false
             };
@@ -108,6 +111,7 @@ namespace terminalDocuSignTests.Integration
                 Name = "Query_Fr8_Warehouse",
                 Label = "Query Fr8 Warehouse",
                 Category = ActivityCategory.Processors,
+                Categories = new[] { ActivityCategories.Process },
                 Terminal = terminalCoreDO,
                 NeedsAuthentication = false,
                 MinPaneWidth = 330

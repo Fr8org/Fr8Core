@@ -29,7 +29,7 @@ namespace Fr8.TerminalBase.Interfaces
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category, bool getLatestsVersionsOnly = false);
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, bool getLatestsVersionsOnly = false);
         //Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields);
-        Task ScheduleEvent(string externalAccountId, string minutes, bool triggerImmediately = false, string additionalConfigAttributes = null);
+        Task ScheduleEvent(string externalAccountId, string minutes, bool triggerImmediately = false, string additionalConfigAttributes = null, string additionToJobId = null);
         Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload, bool force = false); // force flag is used to save or configure activity even if plan is in Running state. 
         Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload, bool force = false);  // force flag is used to save or configure activity even if plan is in Running state. 
         Task<ActivityPayload> CreateAndConfigureActivity(Guid templateId, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null);

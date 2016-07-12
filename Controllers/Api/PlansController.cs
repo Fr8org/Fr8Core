@@ -131,10 +131,6 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (string.IsNullOrEmpty(planDto.Name))
-                {
-                    ModelState.AddModelError("Name", "Name cannot be null");
-                }
 
                 if (!ModelState.IsValid)
                 {

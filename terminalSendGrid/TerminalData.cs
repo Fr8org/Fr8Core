@@ -8,7 +8,8 @@ namespace terminalSendGrid
     {
         public static WebServiceDTO WebServiceDTO = new WebServiceDTO
         {
-            Name = "SendGrid"
+            Name = "SendGrid",
+            IconPath = "/Content/icons/web_services/sendgrid-icon-64x64.png"
         };
 
         public static TerminalDTO TerminalDTO = new TerminalDTO

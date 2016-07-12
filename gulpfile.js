@@ -145,7 +145,6 @@ gulp.task('compile_js', function () {
         'Scripts/app/filters/DateTimeFormatter.js',
         'Scripts/app/controllers/PlanBuilderController.js',
         'Scripts/app/controllers/SandboxController.js',
-        'Scripts/app/controllers/PlanFormController.js',
         'Scripts/app/controllers/PlanListController.js',
         'Scripts/app/controllers/ReportFactController.js',
         'Scripts/app/controllers/ReportIncidentController.js',
