@@ -4,7 +4,7 @@ NOTE: This is only necessary if you choose, as your [development approach](./Cho
 
 To work with the Hubs at [dev.fr8.co](http://dev.fr8.co) or [fr8.co](http://fr8.co) you must provide publically accessible HTTP endpoint. Ideally, DNS address of this endpoint should not change through the time, otherwise you'll have to register your terminal everytime endpoint is changed. Fr8 doesn't restrict terminal endpoint to be HTTPS.
 
-So here is few options to go with:
+So here are a few options to go with:
 
 * Hosting providers
 * Dynamic DNS services
