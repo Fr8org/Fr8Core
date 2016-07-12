@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Fr8.Infrastructure.Data.DataTransferObjects
+﻿namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
     public class PollingDataDTO
     {
@@ -20,5 +14,9 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         public string AdditionalConfigAttributes { get; set; }
         public int RetryCounter { get; set; }
         public string AuthToken { get; set; }
+        /// <summary>
+        /// When this value is provided, it need to be included to the jobId when Scheduling events
+        /// </summary>
+        public string AdditionToJobId { get; set; }
     }
 }
