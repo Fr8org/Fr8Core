@@ -15,6 +15,9 @@ module dockyard.controllers {
         sharePlan: () => void;
         unpublishPlan: () => void;
         download: ($event: Event) => void;
+        descriptionEditing: boolean;
+        nameEditing: boolean;
+        onTitleChange(): void;
     }
 
     class PlanDetailsController {
@@ -36,7 +39,9 @@ module dockyard.controllers {
             private PlanService: services.IPlanService,
             private $stateParams: any,
             private $filter: ng.IFilterService ) {
-            
+
+            $scope.descriptionEditing = false;
+            $scope.nameEditing = false;
             //Load detailed information
             $scope.id = $stateParams.id;
             if (this.isValidGUID($scope.id)) {
@@ -52,6 +57,13 @@ module dockyard.controllers {
                         console.log('sharePlan: Failure');
                     });
             };
+            $scope.onTitleChange = () => {
+                $scope.descriptionEditing = false;
+                $scope.nameEditing = false;
+                var result = PlanService.update({ id: $scope.ptvm.plan.id, name: $scope.ptvm.plan.name, description: $scope.ptvm.plan.description });
+                result.$promise.then(() => { });
+            };
+
 
             $scope.unpublishPlan = () => {
                 PlanService.unpublish($stateParams.id)

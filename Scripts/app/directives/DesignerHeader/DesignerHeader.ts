@@ -80,7 +80,7 @@ module dockyard.directives.designerHeader {
 
                 $scope.onTitleChange = () => {
                     $scope.editing = false;
-                    var result = PlanService.update({ id: $scope.plan.id, name: $scope.plan.name });
+                    var result = PlanService.update({ id: $scope.plan.id, name: $scope.plan.name, description: null });
                     result.$promise.then(() => { });
                 };
 

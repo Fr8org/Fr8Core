@@ -1,13 +1,15 @@
 ﻿<div class="page-head designer-header container row">
     <div class="designer-header-title page-title" ng-class="{'design-header-title-editing': editing}">
         <h1 ng-if="!kioskMode">
-            <div class="route-name" ng-click="editTitle()">{{plan.name}}</div><input class="design-header-title-editField" type="text" ng-model="plan.name" ng-blur="onTitleChange()" input-focus="editing"/>
-            <span class="glyphicon glyphicon-pencil designer-header-glyphicon" aria-hidden="true" ng-click="editTitle()"></span>
+            <div class="route-name" ng-click="editTitle()">{{plan.name}}</div>
+            <input class="design-header-title-editField" type="text" ng-model="plan.name" ng-blur="onTitleChange()" input-focus="editing" />
         </h1>
         <h1 ng-if="kioskMode">
             <div class="route-name">{{plan.name}}</div>
         </h1>
+
     </div>
+
     <div class="designer-header-status" ng-if="!kioskMode">
         <span class="h4">
             <strong> 
@@ -20,6 +22,14 @@
             </md-button>
             <md-button class="md-icon-button" ng-click="deactivatePlan()" ng-show="plan.planState === 2">
                 <md-icon md-font-icon="fa fa-power-off" class="fa fa-2x"></md-icon>
+            </md-button>
+            <md-button class="md-icon-button" aria-label="More" ng-click="goToPlanDetailsPage(plan.id)">
+                <a ui-sref="planDetails({id:plan.id})">
+                    <md-icon md-font-icon="fa fa-cog" class="fa fa-2x"></md-icon>
+                    <md-tooltip md-direction="down">
+                        Settings
+                    </md-tooltip>
+                </a>
             </md-button>
         </span>
     </div>

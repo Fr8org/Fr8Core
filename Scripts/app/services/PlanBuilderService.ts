@@ -13,7 +13,7 @@ module dockyard.services {
         create: (args: { activityTemplateId: number, name: string, label: string, parentNodeId: number }) => ng.resource.IResource<model.PlanDTO>;
         createSolution: (args: { solutionName: string }) => ng.resource.IResource<model.PlanFullDTO>;
         deactivate: (data: { planId: string }) => ng.resource.IResource<string>;
-        update: (data: { id: string, name: string }) => interfaces.IPlanVM;
+        update: (data: { id: string, name: string, description: string }) => interfaces.IPlanVM;
         run: (id: string) => ng.IPromise<model.ContainerDTO>;
         runAndProcessClientAction: (id: string) => ng.IPromise<model.ContainerDTO>;
         share: (id: string) => ng.IPromise<any>;

@@ -1,24 +1,47 @@
 ﻿<div ng-controller="PlanDetailsController">
-    <h2 class="clearfix">{{ptvm.plan.name}}
-        <md-button class="md-icon-button" ui-sref="^.planBuilder({ id: id })">
-            <md-icon md-font-icon="fa-edit" class="fa fa-lg" style="margin-top: 15px"></md-icon>
+
+    <div class="page-head designer-header row">
+        <div class="designer-header-title page-title" ng-class="{'design-header-title-editing': nameEditing}">
+            <h2>
+                <div class="route-name" ng-click="nameEditing = !nameEditing">{{ptvm.plan.name}}</div>
+                <input layout="row" layout-align="center center" class="design-header-title-editField" type="text" ng-model="ptvm.plan.name" ng-blur="onTitleChange()" input-focus="nameEditing" />
+            </h2>
+        </div>
+        <md-button class="md-icon-button" ui-sref="^.planBuilder({ id: id })" style="margin-top: 20px">
+            <md-icon md-font-icon="fa-edit" class="fa fa-lg"></md-icon>
             <md-tooltip md-direction="top">
-                Edit
+                Edit Plan
             </md-tooltip>
         </md-button>
-        <a class="md-raised md-button" ng-click="sharePlan()"   style="float: right">
-            Share plan
-        </a>
+    </div>
+    <div class="page-head designer-header row">
+        <div class="designer-header-title page-title" ng-class="{'design-header-title-editing': descriptionEditing}">
+            <h4>
+                <b>Description:  </b>
+                <div class="route-name" ng-click="descriptionEditing = !descriptionEditing">{{ptvm.plan.description}}</div>
+                <input style="width:initial" class="design-header-title-editField" type="text" ng-model="ptvm.plan.description" ng-blur="onTitleChange()" input-focus="descriptionEditing" />
+            </h4>
+        </div>
+        <md-button class="md-icon-button" ng-click="descriptionEditing = !descriptionEditing" style="margin-top: 8px">
+            <md-icon md-font-icon="glyphicon-pencil" class="glyphicon glyphicon-pencil"></md-icon>
+            <md-tooltip md-direction="top">
+                Edit Description
+            </md-tooltip>
+        </md-button>
+    </div>
 
-        <a class="md-raised md-button" ng-click="unpublishPlan()" style="float: right">
-            Unpublish plan
-        </a>
+    <h4>
+        <md-radio-group layout="row">
+            <b style="padding-right:10px">Publish to Public Directory</b>
+            <md-radio-button ng-click="sharePlan()" value="Share" class="md-primary">Yes</md-radio-button>
+            <md-radio-button ng-click="unpublishPlan()" value="Unpublish"> No </md-radio-button>
+        </md-radio-group>
+    </h4>
 
-        <a class="md-raised md-button" ng-click="download($event)"  download='{{ptvm.plan.name}}.json'  type='application/json' style="float: right">
-            Download template as JSON file
-        </a>
-    </h2>
-    
-    
+    <h4><b><a ng-click="download($event)" download='{{ptvm.plan.name}}.json' type='application/json'>[Download]</a></b></h4>
+    <br />
+
+    <h4><b>Plan JSON</b></h4>
     <pre>{{ptvm | json}}</pre>
+
 </div>
