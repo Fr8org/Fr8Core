@@ -2,20 +2,11 @@
 [Return to Terminal Development Guide Home](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/TerminalDevelopmentGuide.md)
 
 [Choosing a Development Approach](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/ChoosingADevelopmentApproach.md)
--------------------------------
-
-
-
 
 Terminal can be written using virtually any platfrom that supports proccessing of HTTP requests. Fr8 communication protocol is JSON based, so your platfrom must be capable of working with JSON. 
-To work with Hub at [dev.fr8.co](http://dev.fr8.co) and [fr8.co](http://fr8.co) you must provide publically accessible HTTP endpoint. Ideally, DNS address of this endpoint should not change through the time, otherwise you'll have to register your terminal everytime endpoint is changed. Fr8 doesn't restrict terminal endpoint to be HTTPS.
 
-So here is few options to go with:
+[Making Your Terminal Visible on the Public Web](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/PublicVisibility.md)
 
-* Hosting providers
-* Dynamic DNS services
-* ngrok
-* Fr8 doesn't restrict terminal endpoints to have DNS name. So just publically accessible static IP will work too.
 	
 For the rest of this document we will assume that you've published the terminal using endpoint: 
 
