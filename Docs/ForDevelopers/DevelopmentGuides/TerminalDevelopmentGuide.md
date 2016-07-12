@@ -22,9 +22,11 @@ Sections
 
 [Implementing oAuth2 authentication](dotNet/TerminalDeveloping-Authentication.md)
 
-[Connecting your Terminal to a WebService ](dotNet/TerminalDeveloping-AddingAWebService.md)
+Additional Articles
+------------------
+[Connecting your Terminal to a WebService ](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/TerminalDeveloping-AddingAWebService.md)
 
-[Deployment](dotNet/TerminalDeveloping-DeployingToAzure.md)
+
 
 
 ## Platform-Specific SDK
