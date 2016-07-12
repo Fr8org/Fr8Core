@@ -7,6 +7,7 @@ namespace HubWeb.Documentation.Swagger.SampleData
     public class ActivityTemplateSampleFactory : ISwaggerSampleFactory<ActivityTemplateDTO>
     {
         private readonly ISwaggerSampleFactory<TerminalDTO> _terminalSampleFactory;
+
         private readonly ISwaggerSampleFactory<WebServiceDTO> _webServiceSampleFactory;
         public ActivityTemplateSampleFactory(ISwaggerSampleFactory<TerminalDTO> terminalSampleFactory, ISwaggerSampleFactory<WebServiceDTO> webServiceSampleFactory)
         {
@@ -14,10 +15,9 @@ namespace HubWeb.Documentation.Swagger.SampleData
             _webServiceSampleFactory = webServiceSampleFactory;
         }
 
-        private ActivityTemplateDTO _sample;
         public ActivityTemplateDTO GetSampleData()
         {
-            return _sample ?? (_sample = new ActivityTemplateDTO
+            return new ActivityTemplateDTO
             {
                 Id = Guid.Parse("D64F823D-E127-41E5-A3E5-0D48BA2750DB"),
                 Name = "Build_Message",
@@ -28,7 +28,7 @@ namespace HubWeb.Documentation.Swagger.SampleData
                 WebService = _webServiceSampleFactory.GetSampleData(),
                 Terminal = _terminalSampleFactory.GetSampleData(),
                 Tags = string.Empty
-            });
+            };
         }
 
         object ISwaggerSampleFactory.GetSampleData()

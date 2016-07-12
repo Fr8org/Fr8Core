@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -9,6 +10,7 @@ using Data.Interfaces;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Interfaces;
+using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
 {
@@ -99,9 +101,10 @@ namespace HubWeb.Controllers
         /// Deletes subplan with specified Id
         /// </summary>
         /// <param name="id">Id of subplan to delete</param>
-        /// <response code="200">Subplan was successfully deleted</response>
-        /// <response code="400">Subplan with specified Id doesn't exist</response>
         [HttpDelete]
+        [SwaggerResponse(HttpStatusCode.OK, "Subplan was successfully deleted")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "Subplan with specified Id doesn't exist")]
+        [SwaggerResponseRemoveDefaults]
         public async Task<IHttpActionResult> Delete(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -126,34 +129,27 @@ namespace HubWeb.Controllers
         /// <summary>
         /// Retrieves the first activity of the subplan with specified Id
         /// </summary>
-        /// <remarks>
-        /// At this point value of 'filter' parameter should be set to 'first'
-        /// </remarks>
         /// <param name="id">Id of subplan</param>
-        /// <param name="filter">Only accepts value of 'first', otherwise no data is returned</param>
+        /// <param name="filter">Deprecated</param>
         /// <response code="200">First activity of the subplan with specified Id. Can be empty</response>
         [ActionName("activities")]
         [ResponseType(typeof(ActivityDTO))]
         [HttpPost]
-        public async Task<IHttpActionResult> FirstActivity(Guid id, string filter)
+        public async Task<IHttpActionResult> FirstActivity(Guid id, string filter = null)
         {
             filter = (filter ?? string.Empty).Trim().ToLower();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (filter == "first")
+                try
                 {
-                    try
-                    {
-                        var activity = _subplan.GetFirstActivity(uow, id);
-                        return Ok(Mapper.Map<ActivityDTO>(activity));
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError(ex.Message);
-                        return InternalServerError(ex);
-                    }
+                    var activity = _subplan.GetFirstActivity(uow, id);
+                    return Ok(Mapper.Map<ActivityDTO>(activity));
                 }
-                return Ok();
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex.Message);
+                    return InternalServerError(ex);
+                }
             }
         }
     }

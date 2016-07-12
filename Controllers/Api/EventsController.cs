@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Fr8.Infrastructure.Data.DataTransferObjects;
@@ -9,6 +10,7 @@ using StructureMap;
 using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;
 using System.Web.Http.Description;
+using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
 {
@@ -35,11 +37,12 @@ namespace HubWeb.Controllers
         /// Dispatches event received from external services to respective terminal
         /// </summary>
         /// <param name="raw">Crates with data related to external event</param>
-        /// <response code="200">Event was successfully dispatched to respective terminal</response>
-        /// <response code="400">Crate is not specified or its content is invalid</response>
-        /// <response code="403">Unauthorized request</response>
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
+        [SwaggerResponse(HttpStatusCode.OK, "Event was successfully dispatched to respective terminal")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "Crate is not specified or its content is invalid")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponseRemoveDefaults]
         public async Task<IHttpActionResult> Post(CrateDTO raw)
         {
             if (raw == null)

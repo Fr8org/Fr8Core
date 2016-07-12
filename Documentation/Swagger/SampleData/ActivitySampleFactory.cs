@@ -7,12 +7,14 @@ namespace HubWeb.Documentation.Swagger.SampleData
     {
         private readonly ISwaggerSampleFactory<ActivityTemplateDTO> _activityTemplateFactory;
 
-        private readonly Lazy<ActivityDTO> _factory;
-
         public ActivitySampleFactory(ISwaggerSampleFactory<ActivityTemplateDTO> activityTemplateFactory)
         {
             _activityTemplateFactory = activityTemplateFactory;
-            _factory = new Lazy<ActivityDTO>(() => new ActivityDTO
+        }
+
+        public ActivityDTO GetSampleData()
+        {
+            return new ActivityDTO
             {
                 Name = "Send_Message_v1",
                 Label = "Send Message",
@@ -26,12 +28,8 @@ namespace HubWeb.Documentation.Swagger.SampleData
                 Fr8AccountId = "2BCD3978-38CE-43EB-8721-BC81B644B6ED",
                 Ordering = 1,
                 RootPlanNodeId = Guid.Parse("6D3FFCE0-2FE1-48D9-B046-73D078186E2E"),
-            });
-        }
-
-        public ActivityDTO GetSampleData()
-        {
-            return _factory.Value;
+                Documentation = "MainPage"
+            };
         }
 
         object ISwaggerSampleFactory.GetSampleData()

@@ -5,11 +5,9 @@ namespace HubWeb.Documentation.Swagger
 {
     public class TerminalSampleFactory : ISwaggerSampleFactory<TerminalDTO>
     {
-        private TerminalDTO _sample;
-
         public TerminalDTO GetSampleData()
         {
-            return _sample ?? (_sample = new TerminalDTO
+            return new TerminalDTO
             {
                 Endpoint = "https://terminalfr8core.fr8.co",
                 TerminalStatus = TerminalStatus.Active,
@@ -17,7 +15,7 @@ namespace HubWeb.Documentation.Swagger
                 Label = "Fr8Core",
                 Version = "1",
                 PublicIdentifier = "2DB48191-CDA3-4922-9CC2-A636E828063F"
-            });
+            };
         }
 
         object ISwaggerSampleFactory.GetSampleData()

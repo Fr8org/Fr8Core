@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web.Http;
 using AutoMapper;
 using Data.Entities;
@@ -12,6 +13,7 @@ using Hub.Interfaces;
 using StructureMap;
 using Hub.Services;
 using System.Web.Http.Description;
+using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
 {
@@ -30,9 +32,8 @@ namespace HubWeb.Controllers
         /// Retrieves collection of web services which contain activities of specified category. If category is not specified returns list of web servies only
         /// </summary>
         /// <param name="id">Id of activity category. 1 - Monitors, 2 - Receivers, 3 - Processors, 4 - Forwarders, 5 - Solutions</param>
-        /// <response code="200">Collection of web services</response>
         [HttpGet]
-        [ResponseType(typeof(List<WebServiceDTO>))]
+        [SwaggerResponse(HttpStatusCode.OK, "Collection of web services including activity templates", typeof(List<WebServiceActivitySetDTO>))]
         public IHttpActionResult Get(int id = -1)
         {
             if (id >= 0)

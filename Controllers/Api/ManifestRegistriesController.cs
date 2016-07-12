@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
 using AutoMapper;
 using Data.Interfaces;
 using StructureMap;
@@ -13,6 +14,8 @@ using Hub.Interfaces;
 using Hub.Managers;
 using System.Web.Http.Description;
 using System.Collections.Generic;
+using System.Net;
+using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers.Api
 {
@@ -22,27 +25,20 @@ namespace HubWeb.Controllers.Api
 
         private readonly string _systemUserAccountId;
 
-        //TODO: uncomment this constructor once constructor injection is enabled for HubWeb controllers
-        //public ManifestRegistriesController(IManifestRegistryMonitor manifestRegistryMonitor, IConfigRepository configRepository)
-        //{
-        //    if (manifestRegistryMonitor == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(manifestRegistryMonitor));
-        //    }
-        //    if (configRepository == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(configRepository));
-        //    }
-        //    _systemUserAccountId = configRepository.Get("SystemUserEmail");
-        //    _manifestRegistryMonitor = manifestRegistryMonitor;
-        //}
-
-        //TODO: remove this construcotr once constructor injection is enabled for HubWeb controllers
-        public ManifestRegistriesController()
+        public ManifestRegistriesController(IManifestRegistryMonitor manifestRegistryMonitor, IConfigRepository configRepository)
         {
-            _systemUserAccountId = ObjectFactory.GetInstance<IConfigRepository>().Get("SystemUserEmail");
-            _manifestRegistryMonitor = ObjectFactory.GetInstance<IManifestRegistryMonitor>();
+            if (manifestRegistryMonitor == null)
+            {
+                throw new ArgumentNullException(nameof(manifestRegistryMonitor));
+            }
+            if (configRepository == null)
+            {
+                throw new ArgumentNullException(nameof(configRepository));
+            }
+            _systemUserAccountId = configRepository.Get("SystemUserEmail");
+            _manifestRegistryMonitor = manifestRegistryMonitor;
         }
+
         /// <summary>
         /// Retrieves the collection of manifests registered in the hub
         /// </summary>
@@ -105,9 +101,10 @@ namespace HubWeb.Controllers.Api
         /// <summary>
         /// Starts internal plan that monitors new manifest submissions and creates a JIRA for them
         /// </summary>
-        /// <response code="200">Manifest monitoring plan was successfully launched</response>
         [HttpPost]
         [DockyardAuthorize(Roles = Roles.Admin)]
+        [SwaggerResponse(HttpStatusCode.OK, "Manifest monitoring plan was successfully launched")]
+        [SwaggerResponseRemoveDefaults]
         public async Task<IHttpActionResult> RunMonitoring()
         {
             //We don't need to wait for the result as the purpose of this method is just to initiate a start (as a double-check measure)

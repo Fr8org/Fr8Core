@@ -19,7 +19,6 @@ using Swashbuckle.Swagger.Annotations;
 namespace HubWeb.Controllers
 {
     [Fr8ApiAuthorize]
-    [SwaggerResponseRemoveDefaults]
     public class ActivitiesController : ApiController
     {
         private readonly IActivity _activityService;
@@ -71,10 +70,11 @@ namespace HubWeb.Controllers
         /// </remarks>
         /// <param name="curActionDesignDTO">Activity to configure</param>
         /// <param name="force">True (1) to force updting activity that belong to plan that is currently in running state. Otherwise activity belong or being added to running plan won't be saved</param>
-      
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
-        [ResponseType(typeof(ActivityDTO))]
+        [SwaggerResponse(HttpStatusCode.OK, "Activity was successfully configured", typeof(ActivityDTO))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponse((HttpStatusCode)423, "Specified plan is in running state and 'force' flag is not set so activity can't be configured")]
         public async Task<IHttpActionResult> Configure(ActivityDTO curActionDesignDTO, [FromUri]bool force = false)
         {
             curActionDesignDTO.CurrentView = null;
@@ -97,9 +97,9 @@ namespace HubWeb.Controllers
         /// Returns an activity with the specified Id
         /// </summary>
         /// <remarks>Fr8 authentication headers must be provided</remarks>
-      
         [HttpGet]
-        [ResponseType(typeof(ActivityDTO))]
+        [SwaggerResponse(HttpStatusCode.OK, "Activity with specified Id", typeof(ActivityDTO))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "Activity with specified Id doesn't exist")]
         public IHttpActionResult Get(Guid id)
         {
             if (!_activityService.Exists(id))
@@ -118,8 +118,10 @@ namespace HubWeb.Controllers
         /// <remarks>Fr8 authentication headers must be provided</remarks>
         [HttpDelete]
         [Fr8HubWebHMACAuthenticate]
-        [SwaggerResponse(HttpStatusCode.NoContent, "Activity was successfully deleted")]
+        [SwaggerResponse(HttpStatusCode.OK, "Activity was successfully deleted")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
         [SwaggerResponse((HttpStatusCode)423, "Owning plan is in running state so activity can\'t be deleted")]
+        [SwaggerResponseRemoveDefaults]
         public async Task<IHttpActionResult> Delete([FromUri] Guid id, [FromUri(Name = "delete_child_nodes")] bool deleteChildNodes = false)
         {
             using (var uow = _uowFactory.Create())
@@ -137,7 +139,7 @@ namespace HubWeb.Controllers
             {
                 await _activityService.Delete(id);
             }
-            return new StatusCodeResult(HttpStatusCode.NoContent, Request);
+            return Ok();
         }
         /// <summary>
         /// Updates activity if one with specified Id exists. Otherwise creates a new activity
@@ -145,10 +147,11 @@ namespace HubWeb.Controllers
         /// <remarks>Fr8 authentication headers must be provided</remarks>
         /// <param name="curActionDTO">Activity data to save</param>
         /// <param name="force">True (1) to force updting activity that belong to plan that is currently in running state. Otherwise activity belong or being added to running plan won't be saved</param>
-      
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
-        [ResponseType(typeof(ActivityDTO))]
+        [SwaggerResponse(HttpStatusCode.OK, "Activity was successfully created or updated")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponse((HttpStatusCode)423, "Owning plan is in running state and 'force' flag is not set so activity can\'t be changed or added to plan")]
         public async Task<IHttpActionResult> Save(ActivityDTO curActionDTO, [FromUri]bool force = false)
         {
             using (var uow = _uowFactory.Create())
