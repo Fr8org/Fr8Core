@@ -315,6 +315,11 @@ div.action {
     border-radius: 10px !important;
 }
 
+.kiosk-editing-mode {
+    border-bottom: 1px solid;
+    margin-bottom: 10px;
+}
+
 @-moz-keyframes updatingFadeIn { 
   from   { opacity:0; }
   to { opacity:0.8; }

@@ -21,7 +21,7 @@
                         <div ng-show="group.arrowOffsetLeft != 0" class="action-arrow-bottom" ng-style="{top: -group.arrowLength - 60, height: group.arrowLength + 35, left: group.arrowOffsetLeft}"></div>
                         <div dnd-list="group.envelopes" dnd-external-sources="true" dnd-drop="onActionDrop(group, item, index)" style="display: inline-block;">
                             <div ng-repeat="envelope in group.envelopes track by $index">
-                                <div class="action" ng-class="{'solution-action': envelope.activity.activityTemplate.category === 'Solution'  && mode !== 'solution'}" 
+                                <div class="action" ng-class="{'solution-action': envelope.activity.activityTemplate.category === 'Solution' && mode !== 'solution'}" 
                                      layout-action popover-toggle="envelope.activity.showAdvisoryPopup" popover-template="'/AngularTemplate/AdvisoryMessagesPopup'" popover-placement="right-top">
                                     <div class="ap-resize" activity-resize min-width="{{envelope.activity.activityTemplate.minPaneWidth}}">
                                         <!-- Activity Header-->
@@ -92,7 +92,7 @@
                                         </md-toolbar>
                                         <!-- Activity Body-->                                            
                                         <pane-configure-action view="{{view}}" plan="current.plan" sub-plan="pSubPlan.subPlan" id="paneConfigureAction"
-                                                                   current-action="envelope.activity" mode="mode" processing="isReConfiguring"></pane-configure-action>
+                                            current-action="envelope.activity" mode="mode" processing="isReConfiguring"></pane-configure-action>
                                     </div>
                                 </div>
                                 <div class="jumptarget-wrapper" ng-if="envelope.jumpTargets.length > 0" style="display: inline-block; height: 50px; margin: 84px 10px 0 7px; width: 55px;">

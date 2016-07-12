@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using StructureMap;
 using Data.Entities;
@@ -84,7 +85,7 @@ namespace Hub.Services
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    var categoryNameUpper = activityCategory.Name.ToUpper();
+                    var categoryNameUpper = activityCategory.Name.ToUpper(CultureInfo.InvariantCulture);
                     var category = uow.ActivityCategoryRepository
                         .GetQuery()
                         .Where(x => x.Name.ToUpper() == categoryNameUpper)

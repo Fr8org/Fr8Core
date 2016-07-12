@@ -1,39 +1,36 @@
-﻿<!-- BEGIN MAIN CONTENT -->
+﻿<!-- MAIN CONTENT -->
 <div ng-controller="PlanBuilderController" style="margin-top:1px; margin-left: -15px;" block-if="isBusy()" event-planbuilder>
-    <div ng-if="editingMode=='advanced'" class="col-md-12" style="border-bottom: 1px solid; margin-bottom: 10px;"></div>
+    <div ng-if="editingMode=='advanced'" class="col-md-12 kiosk-editing-mode"></div>
     <div class="plan-loading-message" block-if="current.plan"></div>
     <div ng-repeat="pSubPlan in processedSubPlans | filter: hasAnyActivity">
+        <!-- SUB-PLAN BODY -->
         <div class="route-builder-container" layout-container>
             <div ng-repeat="group in pSubPlan.actionGroups" layout-action-group class="action-group" ng-style="{left: group.offsetLeft, top: group.offsetTop}">
                 <div ng-if="mode !== 'solution' || $index === 0">
-                    <div class="action-arrow-bottom" ng-style="{top: -group.arrowLength - 60, height: group.arrowLength + 35, left: group.arrowOffsetLeft}"></div>
-                    <div style="display: inline-block;">
-                        <div ng-repeat="envelope in group.envelopes track by $index">
-                            <div class="action" ng-class="{'solution-action': envelope.activity.activityTemplate.category==='Solution'  && mode !== 'solution'}" layout-action>
-                                <div class="ap-resize" activity-resize minwidth="{{envelope.activity.activityTemplate.minPaneWidth}}" >
-                                    <md-toolbar class="action-header solution-action-header" dropdown transfer-click-configure-pane>
-                                        <div class="md-toolbar-tools">
-                                            <!-- Icon -->
-                                            <div class="action-header-icon" style="display:flex">
-                                                <img ng-src="{{envelope.activity.activityTemplate.webService.iconPath}}" ng-if="envelope.activity.activityTemplate.webService.iconPath" />
-                                            </div>
-                                            <!-- Main Title -->
-                                            <div class="col-sm-10 ellipsis">
-                                                <h2>
-                                                    {{envelope.activity.label}}
-                                                    <md-tooltip>{{envelope.activity.label}}</md-tooltip>
-                                                </h2>
-                                            </div>
+                    <div ng-repeat="envelope in group.envelopes track by $index" style="display: inline-block;">
+                        <div class="action" ng-class="{'solution-action': envelope.activity.activityTemplate.category === 'Solution' && mode !== 'solution'}" layout-action>
+                            <div class="ap-resize" activity-resize min-width="{{envelope.activity.activityTemplate.minPaneWidth}}">
+                                <!-- Activity Header-->
+                                <md-toolbar class="action-header solution-action-header" dropdown transfer-click-configure-pane>
+                                    <div class="md-toolbar-tools">
+                                        <!-- Icon -->
+                                        <div class="action-header-icon" style="display: flex">
+                                            <img ng-src="{{envelope.activity.activityTemplate.webService.iconPath}}" ng-if="envelope.activity.activityTemplate.webService.iconPath"/>
                                         </div>
-                                    </md-toolbar>
-                                    <pane-configure-action view="{{view}}" plan="current.plan" id="paneConfigureAction" current-action="envelope.activity" mode="mode" processing="isReConfiguring"></pane-configure-action>
-                                </div>
+                                        <!-- Main Title -->
+                                        <div class="col-sm-10 ellipsis">
+                                            <h2> {{envelope.activity.label}} <md-tooltip>{{envelope.activity.label}}</md-tooltip> </h2>
+                                        </div>
+                                    </div>
+                                </md-toolbar>
+                                <!-- Activity Body-->
+                                <pane-configure-action view="{{view}}" plan="current.plan" id="paneConfigureAction"
+                                    current-action="envelope.activity" mode="mode" processing="isReConfiguring"></pane-configure-action>
                             </div>
-                            <div ng-if="!$last" class="action-arrow-right"></div>
-                            <div ng-if="$last" style="display: inline-block; height: 50px; margin: 84px 10px 0 7px; width: 1px;"></div>
                         </div>
+                        <div ng-if="!$last" class="action-arrow-right"></div>
+                        <div ng-if="$last" style="display: inline-block; height: 50px; margin: 84px 10px 0 7px; width: 1px;"></div>
                     </div>
-
                 </div>
             </div>
         </div>
