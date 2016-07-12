@@ -255,6 +255,7 @@
     <Compile Include="Data\Manifests\DocuSignEnvelopeCM.cs" />
     <Compile Include="Data\Manifests\DocuSignEnvelopeCM_v2.cs" />
     <Compile Include="Data\Manifests\DocuSignEnvelopeCM_v3.cs" />
+    <Compile Include="Data\Manifests\InstagramUserEventCM.cs" />
     <Compile Include="Data\Manifests\FacebookUserEventCM.cs" />
     <Compile Include="Data\Manifests\DocuSignEventCM.cs" />
     <Compile Include="Data\Manifests\DocuSignRecipientCM.cs" />

@@ -103,10 +103,10 @@ namespace Fr8.TerminalBase.Services
         //    return await _underlyingHubCommunicator.ValidateFields(fields);
         //}
 
-        public async Task ScheduleEvent(string externalAccountId, string minutes, bool triggerImmediately = false, string additionalConfigAttributes = null)
+        public async Task ScheduleEvent(string externalAccountId, string minutes, bool triggerImmediately = false, string additionalConfigAttributes = null, string additionToJobId = null)
         {
             await InitializeUnderlyingCommunicator();
-            await _underlyingHubCommunicator.ScheduleEvent(externalAccountId, minutes, triggerImmediately, additionalConfigAttributes);
+            await _underlyingHubCommunicator.ScheduleEvent(externalAccountId, minutes, triggerImmediately, additionalConfigAttributes, additionToJobId);
         }
 
         public async Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload, bool force)

@@ -73,8 +73,8 @@ namespace HubWeb.Controllers
         [HttpPost]
         public IHttpActionResult Polling([FromUri] string terminalToken, [FromBody]PollingDataDTO pollingData)
         {
-            Logger.Info($"Polling: requested for {pollingData.ExternalAccountId} from a terminal {terminalToken}");
-            pollingData.JobId = terminalToken + "|" + pollingData.ExternalAccountId;
+            Logger.Info($"Polling: requested for {pollingData.ExternalAccountId} from a terminal {terminalToken} and addition to jobId {pollingData.AdditionToJobId}");
+            pollingData.JobId = terminalToken + "|" + pollingData.ExternalAccountId + pollingData.AdditionToJobId;
             RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalToken), "*/" + pollingData.PollingIntervalInMinutes + " * * * *");
             if (pollingData.TriggerImmediately)
             {
@@ -197,15 +197,17 @@ namespace HubWeb.Controllers
 
                             return response;
                         }
-                        catch
+                        catch(Exception exception)
                         {
+                            Logger.Info($"Polling: problem with terminal polling request for {pollingData?.ExternalAccountId} from {Server.ServerUrl} to a terminal {terminal?.Name}. Exception: {exception.Message}");
                             return null;
                         }
                     }
                 }
             }
-            catch
+            catch(Exception exception)
             {
+                Logger.Info($"Polling: problem with terminal polling request for {pollingData?.ExternalAccountId} from {Server.ServerUrl} to a terminal. Exception: {exception.Message}");
                 return null;
             }
         }
