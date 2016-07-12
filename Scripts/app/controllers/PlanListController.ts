@@ -14,6 +14,7 @@ module dockyard.controllers {
         goToPlanDetailsPage: (plan: interfaces.IPlanVM) => void;
         deletePlan: (plan: interfaces.IPlanVM) => void;
         deactivatePlan: (plan: interfaces.IPlanVM) => void;
+        addPlan: () => void;
 
         reArrangePlans: (plan: interfaces.IPlanVM) => void;
         runningStatus: any;
@@ -132,6 +133,20 @@ module dockyard.controllers {
                     this.getInactivePlans();
                 }
             });
+
+            $scope.addPlan = function () {
+               var plan = new dockyard.model.PlanDTO();
+               plan.planState = dockyard.model.PlanState.Inactive;
+               plan.visibility = dockyard.model.PlanVisibility.Standard;
+               var result = PlanService.save(plan);
+
+                    result.$promise
+                        .then(() => {
+                            $state.go('planBuilder', { id: result.plan.id });
+                            //window.location.href = 'plans/' + result.plan.id + '/builder';
+                        });
+
+            };
 
             $scope.$watch('activeQuery.filter', (newValue, oldValue) => {
                 var bookmark: number = 1;
