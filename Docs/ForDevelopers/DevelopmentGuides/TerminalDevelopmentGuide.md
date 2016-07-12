@@ -16,9 +16,8 @@ Before proceeding, make sure you're familiar with the following basic topics:
 Sections
 --------
 
-[General Guidelines](https://github.com/Fr8org/Fr8Core/blob/FR-3375/Docs/ForDevelopers/DevelopmentGuides/TerminalGeneralGuidelines.md)
-
-[Step-By-Step Walkthrough](https://github.com/Fr8org/Fr8Core/blob/FR-3375/Docs/ForDevelopers/DevelopmentGuides/.NET%20Step-by-step%20Terminal%20Builders%20Guide.md)
+[General Guidelines](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/PlatformIdependentTerminalDeveloperGuide.md)
+[.NET Step-By-Step Walkthrough](https://github.com/Fr8org/Fr8Core/blob/FR-3375/Docs/ForDevelopers/DevelopmentGuides/.NET%20Step-by-step%20Terminal%20Builders%20Guide.md)
 
 ## Platform-Specific SDK
 =====
