@@ -148,6 +148,18 @@
 
 .sub-plan-container {
     padding-top:50px;
+    overflow: auto;
+    width: 100%;
+}
+
+.sub-plan-options-content md-icon {
+    padding-top: 3px;
+}
+
+.btn .btn-primary .add-subplan {
+    margin-left: 25px;
+    cursor: pointer;
+    background-color: #98AFC7;
 }
 
 .route-name {
@@ -291,14 +303,21 @@
     cursor: default;
 }
 
-.action .ap-resize {
-    min-height: 380px;
-    overflow: hidden;
-    overflow: auto;
+.ap-resize .ui-resizable-se {
+    cursor: e-resize !important;
+}
+
+.ap-resize .ui-resizable-s {
+    cursor: default !important;
 }
 
 div.action {
     border-radius: 10px !important;
+}
+
+.kiosk-editing-mode {
+    border-bottom: 1px solid;
+    margin-bottom: 10px;
 }
 
 @-moz-keyframes updatingFadeIn { 
