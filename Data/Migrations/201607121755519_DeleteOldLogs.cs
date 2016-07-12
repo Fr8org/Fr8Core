@@ -7,7 +7,7 @@ namespace Data.Migrations
     {
         public override void Up()
         {
-            Sql("DELETE FROM [DockyardDB2].[dbo].[History]  WHERE [CreateDate] < DATEADD(day, -14, GETDATE())");
+            Sql("DELETE FROM History  WHERE CreateDate < DATEADD(day, -14, GETDATE())");
         }
         
         public override void Down()
