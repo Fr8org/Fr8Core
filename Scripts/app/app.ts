@@ -26,7 +26,8 @@ var app = angular.module("app", [
     "angularResizable",
     "mdColorPicker",
     "md.data.table",
-    "popoverToggle"
+    "popoverToggle",
+    'jsonFormatter'
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */
