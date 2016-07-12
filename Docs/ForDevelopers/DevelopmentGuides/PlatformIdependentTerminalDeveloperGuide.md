@@ -1,5 +1,9 @@
-### Generic requirements
-We'll assume here that you are already familiar with general Fr8 architecture and basic concepts. 
+### Before Starting
+Review these topics:
+
+[Fr8 Basic Concepts]()
+
+[Fr8 Architecture]()
 
 Terminal can be written using virtually any platfrom that supports proccessing of HTTP requests. Fr8 communication protocol is JSON based, so your platfrom must be capable of working with JSON. 
 To work with Hub at [dev.fr8.co](http://dev.fr8.co) and [fr8.co](http://fr8.co) you must provide publically accessible HTTP endpoint. Ideally, DNS address of this endpoint should not change through the time, otherwise you'll have to register your terminal everytime endpoint is changed. Fr8 doesn't restrict terminal endpoint to be HTTPS.
