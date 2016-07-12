@@ -88,8 +88,7 @@ namespace Hub.Services
                     var categoryNameUpper = activityCategory.Name.ToUpper(CultureInfo.InvariantCulture);
                     var category = uow.ActivityCategoryRepository
                         .GetQuery()
-                        .Where(x => x.Name.ToUpper() == categoryNameUpper)
-                        .FirstOrDefault();
+                        .FirstOrDefault(x => x.Name.ToUpper() == categoryNameUpper);
 
                     if (category == null)
                     {
