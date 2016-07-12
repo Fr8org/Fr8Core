@@ -20,8 +20,15 @@ Sections
 
 [Step-By-Step Walkthrough](https://github.com/Fr8org/Fr8Core/blob/FR-3375/Docs/ForDevelopers/DevelopmentGuides/.NET%20Step-by-step%20Terminal%20Builders%20Guide.md)
 
+[Implementing oAuth2 authentication](dotNet/TerminalDeveloping-Authentication.md)
+
+[Connecting your Terminal to a WebService ](dotNet/TerminalDeveloping-AddingAWebService.md)
+
+[Deployment](dotNet/TerminalDeveloping-DeployingToAzure.md)
+
+
 ## Platform-Specific SDK
 =====
-*  [.NET](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Terminals/DevGuide_DotNet.md)
+*  [.NET](https://github.com/Fr8org/Fr8Core/blob/FR-3375/Docs/ForDevelopers/SDK/.NET/Home.md)
 *  Java
 *  Ruby
