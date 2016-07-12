@@ -1,6 +1,10 @@
 
 [Return to Terminal Development Guide Home](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/TerminalDevelopmentGuide.md)
 
+[Choosing a Development Approach](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/ChoosingADevelopmentApproach.md)
+-------------------------------
+
+
 
 
 Terminal can be written using virtually any platfrom that supports proccessing of HTTP requests. Fr8 communication protocol is JSON based, so your platfrom must be capable of working with JSON. 
