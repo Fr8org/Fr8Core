@@ -23,9 +23,9 @@ namespace Fr8.TerminalBase.Services
 {
     public class DefaultHubCommunicator : IHubCommunicator
     {
-        private readonly IRestfulServiceClient _restfulServiceClient;
-        private readonly string _apiUrl;
-        private string _userId;
+        protected readonly IRestfulServiceClient _restfulServiceClient;
+        protected readonly string _apiUrl;
+        protected string _userId;
         protected string TerminalToken { get; set; }
         public string UserId => _userId;
 
@@ -36,7 +36,7 @@ namespace Fr8.TerminalBase.Services
             _apiUrl = apiUrl?.TrimEnd('/', '\\');
         }
 
-        public void Authorize(string userId = null)
+        public virtual void Authorize(string userId = null)
         {
             _userId = userId;
             _restfulServiceClient.AddRequestSignature(new HubAuthenticationHeaderSignature(TerminalToken, userId));
@@ -364,7 +364,7 @@ namespace Fr8.TerminalBase.Services
 
         public async Task ScheduleEvent(string externalAccountId, string minutes, bool triggerImmediately = false, string additionalConfigAttributes = null)
         {
-            var hubAlarmsUrl = GetHubUrlWithApiVersion() + $"/alarms/polling";
+            var hubAlarmsUrl = GetHubUrlWithApiVersion() + $"/alarms/polling?terminalToken={TerminalToken}";
             var uri = new Uri(hubAlarmsUrl);
             var data = new PollingDataDTO() { Fr8AccountId = _userId, ExternalAccountId = externalAccountId, PollingIntervalInMinutes = minutes, TriggerImmediately = triggerImmediately, AdditionalConfigAttributes = additionalConfigAttributes };
 

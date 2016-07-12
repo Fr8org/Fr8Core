@@ -487,6 +487,7 @@ namespace HubWeb.Controllers
         /// <response code="403">Unauthorized request</response>
         [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
         [Fr8TerminalAuthentication]
+        [Fr8PlanDirectoryAuthentication]
         [HttpPost]
         [ResponseType(typeof(PlanEmptyDTO))]
         public IHttpActionResult Load(PlanTemplateDTO dto)

@@ -19,7 +19,7 @@ namespace PlanDirectory.Infrastructure
                 For<ISearchProvider>().Use<SearchProvider>();
                 For<ITagGenerator>().Use<TagGenerator>();
                 For<IHubCommunicator>().Use(
-                    x => new DefaultHubCommunicator(
+                    x => new PlanDirectoryHubCommunicator(
                         ObjectFactory.GetInstance<IRestfulServiceClient>(),
                         CloudConfigurationManager.GetSetting("HubApiBaseUrl"),
                         CloudConfigurationManager.GetSetting("PlanDirectorySecret")

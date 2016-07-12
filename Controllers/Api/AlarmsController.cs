@@ -71,11 +71,11 @@ namespace HubWeb.Controllers
         /// <param name="pollingData">Parameters of polling requests</param>
         /// <response code="200">Polling was successfully initiated</response>
         [HttpPost]
-        public IHttpActionResult Polling([FromUri] string terminalId, [FromBody]PollingDataDTO pollingData)
+        public IHttpActionResult Polling([FromUri] string terminalToken, [FromBody]PollingDataDTO pollingData)
         {
-            Logger.Info($"Polling: requested for {pollingData.ExternalAccountId} from a terminal {terminalId}");
-            pollingData.JobId = terminalId + "|" + pollingData.ExternalAccountId;
-            RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalId), "*/" + pollingData.PollingIntervalInMinutes + " * * * *");
+            Logger.Info($"Polling: requested for {pollingData.ExternalAccountId} from a terminal {terminalToken}");
+            pollingData.JobId = terminalToken + "|" + pollingData.ExternalAccountId;
+            RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalToken), "*/" + pollingData.PollingIntervalInMinutes + " * * * *");
             if (pollingData.TriggerImmediately)
             {
                 RecurringJob.Trigger(pollingData.JobId);
@@ -87,11 +87,11 @@ namespace HubWeb.Controllers
 
     public static class SchedullerHelper
     {
-        private static async Task<bool> RenewAuthToken(PollingDataDTO pollingData, string terminalId)
+        private static async Task<bool> RenewAuthToken(PollingDataDTO pollingData, string terminalToken)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var terminalDO = await ObjectFactory.GetInstance<ITerminal>().GetTerminalByPublicIdentifier(terminalId);
+                var terminalDO = await ObjectFactory.GetInstance<ITerminal>().GetByToken(terminalToken);
                 var token = uow.AuthorizationTokenRepository.FindTokenByExternalAccount(pollingData.ExternalAccountId, terminalDO.Id, pollingData.Fr8AccountId);
                 if (token != null)
                 {
@@ -104,75 +104,75 @@ namespace HubWeb.Controllers
 
         private static readonly ILog Logger = Fr8.Infrastructure.Utilities.Logging.Logger.GetCurrentClassLogger();
 
-        public static void ExecuteSchedulledJob(PollingDataDTO pollingData, string terminalId)
+        public static void ExecuteSchedulledJob(PollingDataDTO pollingData, string terminalToken)
         {
             IRestfulServiceClient _client = new RestfulServiceClient();
 
             //renewing token
-            if (!(RenewAuthToken(pollingData, terminalId)).Result)
+            if (!(RenewAuthToken(pollingData, terminalToken)).Result)
             {
                 RecurringJob.RemoveIfExists(pollingData.JobId);
                 Logger.Info($"Polling: token is missing, removing the job for {pollingData.ExternalAccountId}");
             }
 
-            var request = RequestPolling(pollingData, terminalId, _client);
+            var request = RequestPolling(pollingData, terminalToken, _client);
             var result = request.Result;
 
             if (result != null)
             {
                 if (!result.Result)
                 {
-                    Logger.Info($"Polling: got result for {pollingData.ExternalAccountId} from a terminal {terminalId}. Deschedulling the job");
+                    Logger.Info($"Polling: got result for {pollingData.ExternalAccountId} from a terminal {terminalToken}. Deschedulling the job");
                     if (pollingData.RetryCounter > 3)
                     {
-                        Logger.Info($"Polling: for {pollingData.ExternalAccountId} from a terminal {terminalId}. Deschedulling the job");
+                        Logger.Info($"Polling: for {pollingData.ExternalAccountId} from a terminal {terminalToken}. Deschedulling the job");
                         RecurringJob.RemoveIfExists(pollingData.JobId);
                     }
                     else
                     {
                         pollingData.RetryCounter++;
-                        Logger.Info($"Polling: got result for {pollingData.ExternalAccountId} from a terminal {terminalId}. Starting Retry {pollingData.RetryCounter}");
-                        RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(result, terminalId), "*/" + result.PollingIntervalInMinutes + " * * * *");
+                        Logger.Info($"Polling: got result for {pollingData.ExternalAccountId} from a terminal {terminalToken}. Starting Retry {pollingData.RetryCounter}");
+                        RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(result, terminalToken), "*/" + result.PollingIntervalInMinutes + " * * * *");
                     }
                 }
                 else
                 {
-                    Logger.Info($"Polling: got result for {pollingData.ExternalAccountId} from a terminal {terminalId}. Success");
-                    RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(result, terminalId), "*/" + result.PollingIntervalInMinutes + " * * * *");
+                    Logger.Info($"Polling: got result for {pollingData.ExternalAccountId} from a terminal {terminalToken}. Success");
+                    RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(result, terminalToken), "*/" + result.PollingIntervalInMinutes + " * * * *");
                 }
             }
             else
             {
-                Logger.Info($"Polling: no result for {pollingData.ExternalAccountId} from a terminal {terminalId}. Terminal didn't answer");
+                Logger.Info($"Polling: no result for {pollingData.ExternalAccountId} from a terminal {terminalToken}. Terminal didn't answer");
                 //we didn't get any response from the terminal (it might have not started yet, for example) Let's give it one more chance, and if it will fail - the job will be descheduled cause of Result set to false;
                 if (pollingData.Result) //was the job successfull last time we polled?
                 {
-                    Logger.Info($"Polling: no result for {pollingData.ExternalAccountId} from a terminal {terminalId}. Last polling was successfull");
+                    Logger.Info($"Polling: no result for {pollingData.ExternalAccountId} from a terminal {terminalToken}. Last polling was successfull");
 
                     //in case of ongoing deployment when we have a minimal polling interval, could happen to remove the job. Add default polling interval of 10 minutes in this case as retry
                     pollingData.Result = false;
-                    RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalId), "*/" + pollingData.PollingIntervalInMinutes + " * * * *");
+                    RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalToken), "*/" + pollingData.PollingIntervalInMinutes + " * * * *");
                 }
                 else
                 {
                     if (pollingData.RetryCounter > 20)
                     {
-                        Logger.Info($"Polling: no result for {pollingData.ExternalAccountId} from a terminal {terminalId}. Remove Job");
+                        Logger.Info($"Polling: no result for {pollingData.ExternalAccountId} from a terminal {terminalToken}. Remove Job");
                         //last polling was unsuccessfull, so let's deschedulle it
                         RecurringJob.RemoveIfExists(pollingData.JobId);
                     }
                     else
                     {
-                        Logger.Info($"Polling: no result for {pollingData.ExternalAccountId} from a terminal {terminalId}. Retry Counter {pollingData.RetryCounter}");
+                        Logger.Info($"Polling: no result for {pollingData.ExternalAccountId} from a terminal {terminalToken}. Retry Counter {pollingData.RetryCounter}");
                         pollingData.RetryCounter++;
-                        RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalId), "*/" + pollingData.PollingIntervalInMinutes + " * * * *");
+                        RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalToken), "*/" + pollingData.PollingIntervalInMinutes + " * * * *");
                     }
 
                 }
             }
         }
 
-        private static async Task<PollingDataDTO> RequestPolling(PollingDataDTO pollingData, string terminalId, IRestfulServiceClient _client)
+        private static async Task<PollingDataDTO> RequestPolling(PollingDataDTO pollingData, string terminalToken, IRestfulServiceClient _client)
         {
             try
             {
@@ -180,7 +180,7 @@ namespace HubWeb.Controllers
 
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    var terminal = uow.TerminalRepository.GetQuery().FirstOrDefault(a => a.PublicIdentifier == terminalId);
+                    var terminal = uow.TerminalRepository.GetQuery().FirstOrDefault(a => a.Secret == terminalToken);
                     string url = terminal.Endpoint + "/terminals/" + terminal.Name + "/polling_notifications";
                     Logger.Info($"Polling: executing request for {pollingData?.ExternalAccountId} from {Server.ServerUrl} to a terminal {terminal?.Name} at {terminal?.Endpoint}");
 
