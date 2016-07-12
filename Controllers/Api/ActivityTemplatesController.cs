@@ -48,12 +48,20 @@ namespace HubWeb.Controllers
             return Ok(categoriesWithActivities);
         }
 
+        [AllowAnonymous]
+        [HttpGet]
+        [ActionName("by_categories")]
+        public IHttpActionResult GetByCategories()
+        {
+            var categoriesWithActivities = _activity.GetActivityTemplatesGroupedByCategories();
+            return Ok(categoriesWithActivities);
+        }
+
         /// <summary>
         /// Retreives all activity templates that are tagged with specified value
         /// </summary>
         /// <param name="tag">Value of tag to filter activities by</param>
-        /// <response code="200">Collection of activity templates</response>
-        [ResponseType(typeof(IEnumerable<ActivityTemplateDTO>))]
+        /// <response code="200">Collection of activity templates</response>        [ResponseType(typeof(IEnumerable<ActivityTemplateDTO>))]
         [AllowAnonymous]
         [HttpGet]
         public IHttpActionResult Get(string tag)

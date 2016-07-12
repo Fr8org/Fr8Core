@@ -1,17 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web.WebSockets;
+﻿using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Interfaces;
-using Fr8.TerminalBase.Models;
 using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using terminalStatX.DataTransferObjects;
 using terminalStatX.Helpers;
 using terminalStatX.Interfaces;
 
@@ -39,7 +34,7 @@ namespace terminalStatX.Services
                     StatId = statId
                 });
 
-            await hubCommunicator.ScheduleEvent(externalAccountId, pollingInterval, triggerImmediately, additionalAttributes);
+            await hubCommunicator.ScheduleEvent(externalAccountId, pollingInterval, triggerImmediately, additionalAttributes, statId.Substring(0, 18));
         }
 
         public async Task<PollingDataDTO> Poll(IHubCommunicator hubCommunicator, PollingDataDTO pollingData)
@@ -60,8 +55,6 @@ namespace terminalStatX.Services
                 pollingData.Result = false;
                 return pollingData;
             }
-
-            var currentExternalAccountId = pollingData.ExternalAccountId.Split('_').First();
 
             if (string.IsNullOrEmpty(pollingData.Payload))
             {
@@ -102,6 +95,5 @@ namespace terminalStatX.Services
 
             return StatXUtilities.MapToStatItemCrateManifest(latestStat);
         }
-
     }
 }
