@@ -1,3 +1,5 @@
+[Back](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/PlatformIdependentTerminalDeveloperGuide.md)
+
 ## Making Your Terminal Visible on the Public Web
 
 NOTE: This is only necessary if you choose, as your [development approach](./ChoosingADevelopmentApproach.md), to test against the public Fr8 Hub, or if you want to go into production and host your own production Terminal.
