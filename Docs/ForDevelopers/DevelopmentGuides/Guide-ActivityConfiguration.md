@@ -210,13 +210,15 @@ And here is the complete JSON that your terminal should return in respose to int
 }
 ```
 
-Note that generally your activtiy should not change **id**, **ordering** **RootPlanNodeId**, **ParentPlanNodeId**. You should preserve the values that were passed to your terminal. These properties are defining the location of your activity inside the plan, that user has created:
+Note that your activtiy should not change **id**, **ordering** **RootPlanNodeId**, **ParentPlanNodeId**. You should preserve the values that were passed to your terminal. These properties are defining the location of your activity inside the plan, that user has created:
 * **id** - unique identifier of the activity. This id is assigned by the Hub when user creates new activity in the fr8.
-* **ParentPlanNodeId** - Actually plan has tree-like structure. Activities can be placed as children of other activities. This property points to the parent node for your activity.
+* **ParentPlanNodeId** - This property points to the parent node for your activity. Plans are hierarchical. Activities can be children of other activities. 
 * **ordering** - each activity can have more that one child. Order of activities within the parent node is very important, because it affects the ordering of exectution. This property controls ordering within the parent node. 
 * **RootPlanNodeId** - this is the identifier of the plan that your activity is belong to. 
 
-After completing this step you can try to add your activity to the plan. You should see the UI with two labeled TextBoxes.
+Note that the SDK's being developed for different languages all seek to provide helper methods that eliminate the need for your code to directly manipulate JSON. This is more developed in some SDK's than others, but it's always getting better. For more information, look at the docs for your particular platform. 
+
+After completing this step, restart your Terminal and add your activity to the plan. You should see the UI with two labeled TextBoxes.
 
 
 ### Followup configuration
