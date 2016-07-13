@@ -30,7 +30,6 @@ using Hub.Infrastructure;
 using HubWeb.Infrastructure_HubWeb;
 using HubWeb.ViewModels.RequestParameters;
 using Newtonsoft.Json.Linq;
-using Segment;
 using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
@@ -65,7 +64,8 @@ namespace HubWeb.Controllers
         /// </summary>
         /// <remarks>Fr8 authentication headers must be provided</remarks>
         /// <param name="planDto">Description of plan to create or update</param>
-        /// <param name="parameters">Parameters of plan creation. If solution name is specified then solution will be created</param>
+        /// <param name="solution_name">Name of solution to create if specified</param>
+        /// <param name="update_registrations">Deprecated</param>
         /// <response code="200">Created or updated plan</response>
         /// <response code="403">Unauthorized request</response>
         [Fr8HubWebHMACAuthenticate]
@@ -81,7 +81,7 @@ namespace HubWeb.Controllers
                 return await CreateSolution(parameters.solution_name);
             }
 
-            return await Post(planDto, parameters.update_registrations);
+            return await Post(planDto);
         }
 
         [HttpPost]
@@ -127,7 +127,7 @@ namespace HubWeb.Controllers
         [Fr8HubWebHMACAuthenticate]
         [ResponseType(typeof(PlanDTO))]
         [NonAction]
-        private async Task<IHttpActionResult> Post(PlanEmptyDTO planDto, bool updateRegistrations = false)
+        private async Task<IHttpActionResult> Post(PlanEmptyDTO planDto)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -149,7 +149,7 @@ namespace HubWeb.Controllers
         /// Retrieves collections of plans filtered by specified parameters
         /// </summary>
         /// <remarks>Fr8 authentication headers must be provided</remarks>
-        /// <param name="planQuery">Filter parameters</param>
+        /// <param name="planQuery">Query parameters</param>
         /// <response code="200">Filtered collection of plans</response>
         /// <response code="403">Unauthorized request</response>
         [Fr8ApiAuthorize]

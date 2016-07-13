@@ -77,6 +77,8 @@ namespace HubWeb.Controllers.Api
         /// <summary>
         /// Submits new manifest to manifest registry
         /// </summary>
+        /// <remarks>
+        /// if ManifestRegistryParams.version is empty gets the manifest description with given name and greatest version. Otherwise checks if there is any manifest description with given name and given version</remarks>
         /// <param name="description">Description of new manifest</param>
         /// <response code="200">Description of the submitted manifest</response>
         [HttpPost]
