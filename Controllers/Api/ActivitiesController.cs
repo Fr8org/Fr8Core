@@ -32,16 +32,16 @@ namespace HubWeb.Controllers
             _activityService = activityService;
         }
         /// <summary>
-        /// Creates new activity with specified parameters
+        /// Creates an instance of activity from activity template optionally providing necessary authorization
         /// </summary>
         /// <remarks>
         /// Fr8 authentication headers must be provided
         /// </remarks>
-        /// <param name="activityTemplateId">Activity template Id</param>
-        /// <param name="label">Label to use in activity header</param>
+        /// <param name="activityTemplateId">Id of the activity template of the activity instance that will be created</param>
+        /// <param name="label">Label that will be shown in activity header</param>
         /// <param name="name">Name of the plan being created. If parentNodeId parameter is specified then this parameter is ignored</param>
         /// <param name="order">Position inside parent plan. If not specified then newly created activity is placed at the end of plan</param>
-        /// <param name="parentNodeId">Id of plan to add activity to. If not specified then new plan will be created and set as parent</param>
+        /// <param name="parentNodeId">Id of plan or parent activity to add new activity to. If not specified then new plan will be created and set as parent</param>
         /// <param name="authorizationTokenId">Id of authorization token to grant to the new activity. Can be empty</param>
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
@@ -69,7 +69,7 @@ namespace HubWeb.Controllers
         /// Callers to this endpoint expect to receive back what they need to know to encode user configuration data into the Action. The typical scenario involves a front-end client calling this and receiving back the same Action they passed, but with an attached Configuration Crate. The client renders UI based on the Configuration Crate, collects user inputs, and saves them as values in the Configuration Crate JSON. The updated Configuration Crate is then saved to the server so it will be available to the processing Terminal at run-time.
         /// </remarks>
         /// <param name="curActionDesignDTO">Activity to configure</param>
-        /// <param name="force">True (1) to force updting activity that belong to plan that is currently in running state. Otherwise activity belong or being added to running plan won't be saved</param>
+        /// <param name="force">True (1) to force updating activity that belong to plan that is currently in running state. Otherwise activity that belongs to or being added to running plan won't be saved</param>
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
         [SwaggerResponse(HttpStatusCode.OK, "Activity was successfully configured", typeof(ActivityDTO))]
@@ -96,6 +96,7 @@ namespace HubWeb.Controllers
         /// <summary>
         /// Returns an activity with the specified Id
         /// </summary>
+        /// <param name="id">Id of activity to retrieve</param>
         /// <remarks>Fr8 authentication headers must be provided</remarks>
         [HttpGet]
         [SwaggerResponse(HttpStatusCode.OK, "Activity with specified Id", typeof(ActivityDTO))]
@@ -115,7 +116,12 @@ namespace HubWeb.Controllers
         /// <summary>
         /// Deletes activity with specified Id. If 'deleteChildNodes' flag is specified, only deletes child activities of specified activity
         /// </summary>
-        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <remarks>
+        /// Fr8 authentication headers must be provided. <br />
+        /// Deleting of activity will make downstream activities to reconfigure which may leave them in an invalid state if they had dependency on results produced by activity being deleted
+        /// </remarks>
+        /// <param name="id">Id of activity to delete</param>
+        /// <param name="delete_child_nodes">True to delete child activities only. Otherwise false</param>
         [HttpDelete]
         [Fr8HubWebHMACAuthenticate]
         [SwaggerResponse(HttpStatusCode.OK, "Activity was successfully deleted")]

@@ -452,6 +452,7 @@
     <Compile Include="Documentation\Swagger\SampleData\PlanResultSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanTemplateSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\PollingDataSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\ProfileSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\QuerySampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\ResponseMessageSampleFactory.cs" />

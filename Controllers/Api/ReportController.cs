@@ -24,7 +24,11 @@ namespace HubWeb.Controllers
         /// Retrieves collection of log records based on query parameters specified
         /// </summary>
         /// <param name="type">Type of log records to return. Supports values of 'incidents' and 'facts'</param>
-        /// <param name="historyQueryDTO">Query filter</param>
+        /// <param name="page">Ordinal number of subset of log records to retrieve</param>
+        /// <param name="isDescending">Whether to perform sort of results in descending order</param>
+        /// <param name="isCurrentUser">Whether to show log records of current user only</param>
+        /// <param name="itemPerPage">Max number of log records to retrieve in single response</param>
+        /// <param name="filter">Part of textual field of log record to filter by</param>
         /// <remarks>
         /// Fr8 authentication headers must be provided
         /// </remarks>

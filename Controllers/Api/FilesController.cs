@@ -76,7 +76,7 @@ namespace HubWeb.Controllers
         /// <summary>
         /// Retrieves file description by specified Id of file and owned by current user
         /// </summary>
-        /// <param name="id">Id of file</param>
+        /// <param name="id">Id of file to retrieve description for</param>
         /// <reponse code="200">Return the description of file</reponse>
         [HttpGet]
         [ActionName("details")]
@@ -108,12 +108,13 @@ namespace HubWeb.Controllers
         /// Downloads file with specified Id and owned by current user
         /// </summary>
         /// <param name="id">Id of requested file</param>
-        /// <response code="200">Contents of specified file as byte array</response>
-        /// <response code="403">Unauthorized request</response>
-        /// <response code="404">File with specified Id doesn't exist</response>
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
         [ResponseType(typeof(byte[]))]
+        [SwaggerResponse(HttpStatusCode.OK, "Contents of specified file as byte array")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unathorized request")]
+        [SwaggerResponse(HttpStatusCode.NotFound, "File with specified Id doesn't exist")]
+        [SwaggerResponseRemoveDefaults]
         public IHttpActionResult Get(int id)
         {
             FileDO fileDO = null;
@@ -141,13 +142,13 @@ namespace HubWeb.Controllers
         /// Downloads file with specified path and owned by current user
         /// </summary>
         /// <param name="path">Path of the requested file</param>
-        /// <response code="200">Contents of specified file as byte array</response>
-        /// <response code="403">Unauthorized request</response>
-        /// <response code="404">File with specified Id doesn't exist</response>
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
         [ActionName("byPath")]
-        [ResponseType(typeof(byte[]))]
+        [SwaggerResponse(HttpStatusCode.OK, "Contents of specified file as byte array")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unathorized request")]
+        [SwaggerResponse(HttpStatusCode.NotFound, "File at specified path doesn't exist")]
+        [SwaggerResponseRemoveDefaults]
         public IHttpActionResult DownloadFileByPath(string path)
         {
             FileDO fileDO = null;

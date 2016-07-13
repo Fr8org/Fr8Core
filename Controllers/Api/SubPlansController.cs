@@ -137,7 +137,6 @@ namespace HubWeb.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> FirstActivity(Guid id, string filter = null)
         {
-            filter = (filter ?? string.Empty).Trim().ToLower();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 try
