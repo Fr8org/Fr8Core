@@ -63,7 +63,7 @@ Function UpdateGitHubBuildStatus($message)
         exit 1;
 	}
 	else
-	{
+	{ 
         Write-Host "Latest commit for branch $branchName is $sourceVersion"
 		[uri]$githubRequestUri = "https://api.github.com/repos/alexed1/fr8company/statuses/" + $sourceVersion
 
