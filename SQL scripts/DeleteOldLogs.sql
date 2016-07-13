@@ -6,5 +6,5 @@ GO
 DELETE FROM Containers  WHERE CreateDate < DATEADD(day, -14, GETDATE())
 GO
 
-DELETE FROM MtData  WHERE CreateDate < DATEADD(day, -14, GETDATE())
+DELETE FROM MtData  WHERE CreatedAt < DATEADD(day, -14, GETDATE())
 GO
