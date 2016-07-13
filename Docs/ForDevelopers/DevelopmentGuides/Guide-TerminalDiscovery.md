@@ -3,6 +3,10 @@
 
 ## Terminal Discovery
 
+(For the rest of this document we will assume that you've published the terminal using endpoint: 
+
+	http://terminal.com)
+	
 Hubs maintain a list of Terminals that they know about and periodically send GET /discover requests to them to get updated information on the Terminals and their Activities.
 
 If you are using the ["Public Hub" Development Approach](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/ChoosingADevelopmentApproach.md), you will register your Terminal and ask the Hub to make a /discover call to you. If you are using the "Local Hub" Development Approach, you'll generally trigger /discover calls to your Terminal each time you startup your local Hub.
