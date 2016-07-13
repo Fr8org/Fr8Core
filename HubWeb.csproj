@@ -1127,7 +1127,6 @@
     <Content Include="Views\AngularTemplate\PlanBuilder.cshtml" />
     <Content Include="Views\AngularTemplate\RadioButtonOption.cshtml" />
     <Content Include="Views\AngularTemplate\PlanDetails.cshtml" />
-    <Content Include="Views\AngularTemplate\PlanForm.cshtml" />
     <Content Include="Views\AngularTemplate\PlanList.cshtml" />
     <Content Include="Views\AngularTemplate\ShowFacts.cshtml" />
     <Content Include="Views\AngularTemplate\ShowIncidents.cshtml" />
@@ -1308,7 +1307,6 @@
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\PaneConfigureAction.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\Messages.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\PaneWorkflowDesigner.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\PlanFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\directives.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IAppRootScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\ICriteria.ts" />

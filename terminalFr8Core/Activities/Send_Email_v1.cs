@@ -20,7 +20,7 @@ namespace terminalFr8Core.Activities
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "Send_Email",
-            Label = "Send Email using Fr8 core account",
+            Label = "Send Email",
             Version = "1",
             Category = ActivityCategory.Forwarders,
             NeedsAuthentication = false,

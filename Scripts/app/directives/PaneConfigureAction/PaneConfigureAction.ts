@@ -364,7 +364,6 @@ module dockyard.directives.paneConfigureAction {
 
                 // the save request is sent, so we can run the plan
                 if (this.$scope.plan.planState === 3) {
-                    debugger;
                     this.$scope.plan.planState = 1;
                 }
             }
