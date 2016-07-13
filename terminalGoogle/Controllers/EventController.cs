@@ -16,13 +16,15 @@ namespace terminalGoogle.Controllers
         private readonly IEvent _event;
         private readonly IGoogleGmailPolling _gmailPolling;
         private readonly IContainer _container;
+        private readonly IHubCommunicator _hubCommunicator;
 
-        public EventController(IHubEventReporter eventReporter, IGoogleGmailPolling gmailPolling, IContainer container)
+        public EventController(IHubEventReporter eventReporter, IGoogleGmailPolling gmailPolling, IContainer container, IHubCommunicator hubCommunicator)
         {
             _eventReporter = eventReporter;
             _event = new Event();
             _gmailPolling = gmailPolling;
             _container = container;
+            _hubCommunicator = hubCommunicator;
         }
 
         [HttpPost]
@@ -38,14 +40,7 @@ namespace terminalGoogle.Controllers
         [Route("polling_notifications")]
         public async Task<PollingDataDTO> ProcessPollingRequest([FromBody]PollingDataDTO pollingData)
         {
-            var hubCommunicator = _container.GetInstance<IHubCommunicator>();
-            hubCommunicator.Authorize(pollingData.Fr8AccountId);
-            try
-            {
-                pollingData = await _gmailPolling.Poll(hubCommunicator, pollingData);
-                return pollingData;
-            }
-            catch { return null; }
+            return await _gmailPolling.Poll(_hubCommunicator, pollingData);
         }
     }
 }

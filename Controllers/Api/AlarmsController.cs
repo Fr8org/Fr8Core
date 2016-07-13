@@ -174,6 +174,7 @@ namespace HubWeb.Controllers
 
         private static async Task<PollingDataDTO> RequestPolling(PollingDataDTO pollingData, string terminalToken, IRestfulServiceClient _client)
         {
+            
             try
             {
                 var terminalService = ObjectFactory.GetInstance<ITerminal>();
@@ -186,7 +187,7 @@ namespace HubWeb.Controllers
 
                     using (var client = new HttpClient())
                     {
-                        foreach (var header in terminalService.GetRequestHeaders(terminal))
+                        foreach (var header in terminalService.GetRequestHeaders(terminal, pollingData?.Fr8AccountId))
                         {
                             client.DefaultRequestHeaders.Add(header.Key, header.Value);
                         }

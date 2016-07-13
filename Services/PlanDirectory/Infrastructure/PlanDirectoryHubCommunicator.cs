@@ -9,14 +9,15 @@ namespace PlanDirectory.Infrastructure
 {
     public class PlanDirectoryHubCommunicator : DefaultHubCommunicator
     {
-        public PlanDirectoryHubCommunicator(IRestfulServiceClient restfulServiceClient, string apiUrl, string token) : base(restfulServiceClient, apiUrl, token)
+        public PlanDirectoryHubCommunicator(IRestfulServiceClient restfulServiceClient, string apiUrl, string token, string userId) : base(restfulServiceClient, apiUrl, token, userId)
         {
         }
 
+        /*
         public override void Authorize(string userId = null)
         {
             _userId = userId;
             _restfulServiceClient.AddRequestSignature(new HubAuthenticationPDHeaderSignature(TerminalToken, userId));
-        }
+        }*/
     }
 }

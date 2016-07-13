@@ -160,7 +160,7 @@ namespace Hub.Services
             }
         }
 
-        public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal)
+        public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal, string userId)
         {
             Initialize();
 
@@ -168,14 +168,15 @@ namespace Hub.Services
             {
                 if (!_terminals.TryGetValue(terminal.Id, out terminal))
                 {
-                    throw new KeyNotFoundException(string.Format("Unable to find terminal with id {0}", terminal.Id));
+                    throw new KeyNotFoundException($"Unable to find terminal with id {terminal.Id}");
                 }
             }
 
             return new Dictionary<string, string>
             {
                 {"Fr8HubCallbackSecret", terminal.Secret},
-                {"Fr8HubCallBackUrl", _serverUrl}
+                {"Fr8HubCallBackUrl", _serverUrl},
+                {"Fr8UserId", userId }
             };
         }
 

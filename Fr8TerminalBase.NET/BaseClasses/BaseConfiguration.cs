@@ -95,9 +95,9 @@ namespace Fr8.TerminalBase.BaseClasses
             {
                 var apiUrl = request.Headers.GetValues("Fr8HubCallBackUrl").First().TrimEnd('\\', '/') + $"/api/{CloudConfigurationManager.GetSetting("HubApiVersion")}";
                 var secret = request.Headers.GetValues("Fr8HubCallbackSecret").First();
-
+                var fr8UserId = request.Headers.Contains("Fr8UserId") ? request.Headers.GetValues("Fr8UserId").First() : null;
                 _hubDiscovery.SetHubSecret(apiUrl, secret);
-                hubCommunicatorFactoryExpression = c => new DefaultHubCommunicator(c.GetInstance<IRestfulServiceClient>(), apiUrl, secret);
+                hubCommunicatorFactoryExpression = c => new DefaultHubCommunicator(c.GetInstance<IRestfulServiceClient>(), apiUrl, secret, fr8UserId);
             }
             else
             {

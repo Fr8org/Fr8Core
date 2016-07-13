@@ -19,13 +19,15 @@ namespace terminalDocuSign.Controllers
         private readonly IHubEventReporter _reporter;
         private readonly DocuSignPolling _polling;
         private readonly IContainer _container;
+        private readonly IHubCommunicator _hubCommunicator;
 
-        public EventController(IEvent @event, IHubEventReporter reporter, DocuSignPolling polling, IContainer container)
+        public EventController(IEvent @event, IHubEventReporter reporter, DocuSignPolling polling, IContainer container, IHubCommunicator hubCommunicator)
         {
             _event = @event;
             _reporter = reporter;
             _polling = polling;
             _container = container;
+            _hubCommunicator = hubCommunicator;
         }
 
         [HttpPost]
@@ -44,12 +46,7 @@ namespace terminalDocuSign.Controllers
         [Route("polling_notifications")]
         public async Task<PollingDataDTO> ProcessPollingRequest(PollingDataDTO pollingData)
         {
-            var hubCommunicator = _container.GetInstance<IHubCommunicator>();
-
-            hubCommunicator.Authorize(pollingData.Fr8AccountId);
-
-            pollingData = await _polling.Poll(hubCommunicator, pollingData);
-            return pollingData;
+            return await _polling.Poll(_hubCommunicator, pollingData);
         }
     }
 }

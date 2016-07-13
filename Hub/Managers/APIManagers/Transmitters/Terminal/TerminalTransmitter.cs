@@ -7,8 +7,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Communication;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using Fr8.Infrastructure.Interfaces;
-using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Logging;
 using StructureMap;
 using Hub.Interfaces;
@@ -55,7 +53,6 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
             var terminalDTO = dataDTO.ActivityDTO.ActivityTemplate.Terminal;
             var terminal = ObjectFactory.GetInstance<ITerminal>().GetByNameAndVersion(terminalDTO.Name, terminalDTO.Version);
 
-
             var actionName = Regex.Replace(curActionType, @"[^-_\w\d]", "_");
             string queryString = string.Empty;
             if (parameters != null && parameters.Any())
@@ -86,8 +83,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
             }
 
             requestUri = new Uri(new Uri(terminal.Endpoint), requestUri);
-            
-            return await PostAsync<Fr8DataDTO, TResponse>(requestUri, dataDTO, correlationId, _terminalService.GetRequestHeaders(terminal));
+            return await PostAsync<Fr8DataDTO, TResponse>(requestUri, dataDTO, correlationId, _terminalService.GetRequestHeaders(terminal, dataDTO.ActivityDTO.Fr8AccountId));
         }
     }
 }

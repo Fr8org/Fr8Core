@@ -219,7 +219,7 @@ namespace Hub.StructureMap
                 _terminal = new Terminal(configRepository);
             }
 
-            public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal)
+            public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal, string userId)
             {
                 return new Dictionary<string, string>();
             }

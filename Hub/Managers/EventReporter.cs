@@ -901,7 +901,7 @@ namespace Hub.Managers
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
             var terminalService = ObjectFactory.GetInstance<ITerminal>();
 
-            var headers = terminalService.GetRequestHeaders(authenticatedTerminal);
+            var headers = terminalService.GetRequestHeaders(authenticatedTerminal, userId);
 
             await
                 restClient.PostAsync<object>(

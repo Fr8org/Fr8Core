@@ -29,18 +29,20 @@ namespace Fr8.TerminalBase.Services
         protected string TerminalToken { get; set; }
         public string UserId => _userId;
 
-        public DefaultHubCommunicator(IRestfulServiceClient restfulServiceClient, string apiUrl, string token)
+        public DefaultHubCommunicator(IRestfulServiceClient restfulServiceClient, string apiUrl, string token, string userId)
         {
             TerminalToken = token;
             _restfulServiceClient = restfulServiceClient;
             _apiUrl = apiUrl?.TrimEnd('/', '\\');
-        }
-
-        public virtual void Authorize(string userId = null)
-        {
             _userId = userId;
             _restfulServiceClient.AddRequestSignature(new HubAuthenticationHeaderSignature(TerminalToken, userId));
         }
+
+        //public virtual void Authorize(string userId = null)
+        //{
+        //    _userId = userId;
+        //    _restfulServiceClient.AddRequestSignature(new HubAuthenticationHeaderSignature(TerminalToken, userId));
+        //}
 
         public async Task<PlanEmptyDTO> LoadPlan(JToken planContents)
         {

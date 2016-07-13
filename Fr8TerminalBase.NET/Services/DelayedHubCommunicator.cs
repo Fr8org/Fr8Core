@@ -28,15 +28,6 @@ namespace Fr8.TerminalBase.Services
             _resolveHubCommunicatorTask = resolveHubCommunicatorTask;
         }
 
-        public void Authorize(string userId)
-        {
-            lock (_sync)
-            {
-                _userId = userId;
-                _underlyingHubCommunicator?.Authorize(userId);
-            }
-        }
-
         public async Task<PlanEmptyDTO> LoadPlan(JToken planContents)
         {
             await InitializeUnderlyingCommunicator();
@@ -254,7 +245,6 @@ namespace Fr8.TerminalBase.Services
                     lock (_sync)
                     {
                         _underlyingHubCommunicator = result;
-                        _underlyingHubCommunicator.Authorize(UserId);
                     }
                 }
             }

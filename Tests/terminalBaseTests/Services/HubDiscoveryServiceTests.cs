@@ -135,6 +135,14 @@ namespace terminaBaselTests.Services
             }
         }
 
+        public class FakeRestfulServiceClientFactory : IRestfulServiceClientFactory
+        {
+            public IRestfulServiceClient Create()
+            {
+                return new RestfulClientStub();
+            }
+        }
+
 
         private HubDiscoveryService _hubDiscoveryService;
         private RestfulClientStub _restfullServiceClient;
@@ -148,9 +156,8 @@ namespace terminaBaselTests.Services
                 Endpoint = "http://test",
                 Name = "test"
             });
-
             _restfullServiceClient = new RestfulClientStub();
-            _hubDiscoveryService = new HubDiscoveryService(_restfullServiceClient, activityStore, new SingleRunRetryPolicy());
+            _hubDiscoveryService = new HubDiscoveryService(new FakeRestfulServiceClientFactory(), activityStore, new SingleRunRetryPolicy());
         }
 
         [Test]
