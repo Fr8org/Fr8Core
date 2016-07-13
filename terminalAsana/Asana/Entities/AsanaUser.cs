@@ -5,7 +5,7 @@ using terminalAsana.Interfaces;
 namespace terminalAsana.Asana.Entities
 {
 
-    public class AsanaUser : IAsanaEntity
+    public class AsanaUser 
     {
         [JsonProperty("id")]
         public string Id { get; set; }

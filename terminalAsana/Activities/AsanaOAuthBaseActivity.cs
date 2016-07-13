@@ -33,10 +33,7 @@ namespace terminalAsana.Activities
         protected override void InitializeInternalState()
         {
             base.InitializeInternalState();
-            // ↓ not good :( , maybe change this method signature to Task?        
-            //AsanaOAuth = Task.Run(() => AsanaOAuth.InitializeAsync(this.AuthorizationToken)).Result;
-            //OAuthCommunicator = new AsanaCommunicatorService(AsanaOAuth, RestClient);
-
+                   
             AClient.OAuth.RefreshTokenEvent += RefreshHubToken;
 
             var tokenData = JObject.Parse(this.AuthorizationToken.Token);
@@ -46,10 +43,15 @@ namespace terminalAsana.Activities
                 RefreshToken = tokenData.Value<string>("refresh_token"),
                 ExpirationDate = this.AuthorizationToken.ExpiresAt ?? DateTime.MinValue
             };
-
+            // ↓ not good :( , maybe change this method signature to Task? 
             AClient.OAuth = Task.Run(() => AClient.OAuth.InitializeAsync(token)).Result;   
         }
 
+        /// <summary>
+        /// method for event callback 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
         protected void RefreshHubToken(object sender, AsanaRefreshTokenEventArgs eventArgs)
         {
             var originalTokenData = JObject.Parse(this.AuthorizationToken.Token);
@@ -62,7 +64,6 @@ namespace terminalAsana.Activities
             {
                 var authDTO = Mapper.Map<AuthorizationTokenDTO>(this.AuthorizationToken);
                 Task.Run(() => HubCommunicator.RenewToken(authDTO));
-                //HubCommunicator.RenewToken(authDTO).ConfigureAwait(false);
             }
             catch (Exception exp)
             {

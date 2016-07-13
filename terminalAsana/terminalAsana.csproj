@@ -203,7 +203,6 @@
     <Compile Include="Asana\Entities\AsanaUser.cs" />
     <Compile Include="Asana\Entities\AsanaWorkspace.cs" />
     <Compile Include="Interfaces\IAsanaCommunicator.cs" />
-    <Compile Include="Interfaces\IAsanaEntity.cs" />
     <Compile Include="Interfaces\IAsanaParameters.cs" />
     <Compile Include="Interfaces\IAsanaOAuth.cs" />
     <Compile Include="Interfaces\IAsanaProjects.cs" />
@@ -230,6 +229,12 @@
       <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Demo.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
   </ItemGroup>

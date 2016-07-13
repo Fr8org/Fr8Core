@@ -46,7 +46,6 @@ namespace terminalAsana.Activities
 
         private const string RunTimeCrateLabel = "Asana Tasks";
         private const string RunTimeCrateLabelCustomCM = "Asana Tasks List";
-        private const string ResultFieldLabel = "ActivityResult";
 
 
         public class ActivityUi : StandardConfigurationControlsCM
@@ -78,7 +77,7 @@ namespace terminalAsana.Activities
                 Information = new TextBlock()
                 {
                     Name = nameof(Information),
-                    Label = "If you specify a project, username won`t be taken in account."
+                    Label = "If you specify a project, username and workspace won`t be taken in account."
                 };
 
                 UsersList = new DropDownList()

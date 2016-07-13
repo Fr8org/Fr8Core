@@ -35,13 +35,13 @@ namespace terminalAsana
             Mapper.CreateMap<AuthorizationToken, AuthorizationTokenDTO>();
 
             Mapper.CreateMap<AsanaTask, AsanaTaskCM>()
-                .ForMember(a => a.Assignee, opt => opt.ResolveUsing(cm => cm.Assignee.Id))
-                .ForMember(a => a.Followers, opt => opt.ResolveUsing(cm => cm.Followers.Select(f => f.Id)))
-                .ForMember(a => a.Parent, opt => opt.ResolveUsing(cm => cm.Parent.Id))
-                .ForMember(a => a.Hearts, opt => opt.ResolveUsing(cm => cm.Hearts.Select(h => h.Id)))
-                .ForMember(a => a.Projects, opt => opt.ResolveUsing(cm => cm.Projects.Select(p => p.Id)))
-                .ForMember(a => a.Tags, opt => opt.ResolveUsing(cm => cm.Tags.Select(t => t.Id)))
-                .ForMember(a => a.Workspace, opt => opt.ResolveUsing(cm => cm.Workspace.Id));
+                .ForMember(cm=>cm.Assignee, opt => opt.ResolveUsing(at => at.Assignee?.Id))
+                .ForMember(cm=>cm.Followers, opt => opt.ResolveUsing(at => at.Followers?.Select(f => f.Id)))
+                .ForMember(cm=>cm.Parent, opt => opt.ResolveUsing(at => at.Parent?.Id))
+                .ForMember(cm=>cm.Hearts, opt => opt.ResolveUsing(at => at.Hearts?.Select(h => h.Id)))
+                .ForMember(cm=>cm.Projects, opt => opt.ResolveUsing(at => at.Projects?.Select(p => p.Id)))
+                .ForMember(cm=>cm.Tags, opt => opt.ResolveUsing(at => at.Tags?.Select(t => t.Id)))
+                .ForMember(cm=>cm.Workspace, opt => opt.ResolveUsing(at => at.Workspace?.Id));
         }
     }
 }

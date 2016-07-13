@@ -76,13 +76,12 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Fixtures\FixtureData.cs" />
+    <Compile Include="Integration\Terminal_Discover_v1_Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unit\AsanaOAuthServiceTests.cs" />
     <Compile Include="Unit\UsersTests.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Integration\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />

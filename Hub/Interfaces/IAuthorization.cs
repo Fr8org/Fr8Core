@@ -37,21 +37,12 @@ namespace Hub.Interfaces
         void RevokeToken(string accountId, Guid authTokenId);
 
         bool TryAssignAuthToken(IUnitOfWork uow, string userId, int terminalId, ActivityDO activityDO,
-            out AuthorizationTokenDO curAuthToken);
+            out AuthorizationTokenDO curAuthToken);     
 
         /// <summary>
         /// Updates token in database
         /// </summary>
-        /// <param name="authTokenId">Token Id</param>
-        /// <param name="externalAccountId"></param>
-        /// <param name="token">Token content</param>
-        /// <param name="expiresAt"></param>
-        void RenewToken(Guid authTokenId, string externalAccountId, string token, DateTime? expiresAt = null);
-
-        /// <summary>
-        /// Updates token in database
-        /// </summary>
-        /// <param name=""></param>
+        /// <param name="">Be careful, not all fields may be filled</param>
         void RenewToken(AuthorizationTokenDTO token);
 
         /// <summary>

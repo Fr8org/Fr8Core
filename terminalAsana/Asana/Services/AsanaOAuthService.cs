@@ -53,20 +53,7 @@ namespace terminalAsana.Asana.Services
             return DateTime.UtcNow.AddSeconds(secondsToExpiration);
         }
 
-        public bool IsTokenValid()
-        {
-            return !IsTokenExpired(this.OAuthToken);
-        }
-
-        public bool IsTokenValid(OAuthToken token)
-        {
-            return !IsTokenExpired(token);
-        }
-
-        /// <summary>
-        /// Check expiration for internal token
-        /// </summary>
-        /// <returns></returns>
+        
         public bool IsTokenExpired()
         {
             return IsTokenExpired(this.OAuthToken);
@@ -80,7 +67,7 @@ namespace terminalAsana.Asana.Services
 
         public async Task<OAuthToken> RefreshTokenIfExpiredAsync()
         {
-            if (this.IsTokenValid())
+            if (!this.IsTokenExpired())
                 return this.OAuthToken;
             else
                 return await RefreshOAuthTokenAsync().ConfigureAwait(false);
@@ -88,7 +75,7 @@ namespace terminalAsana.Asana.Services
 
         public async Task<OAuthToken> RefreshTokenIfExpiredAsync(OAuthToken token)
         {
-            if (this.IsTokenValid(token))
+            if (!this.IsTokenExpired(token))
                 return token;
             else
                 return await RefreshOAuthTokenAsync(token).ConfigureAwait(false);       
@@ -115,8 +102,8 @@ namespace terminalAsana.Asana.Services
             var contentDic = new Dictionary<string, string>()
             {
                 {"grant_type", "refresh_token" },
-                {"client_id", CloudConfigurationManager.GetSetting("AsanaClientId") },
-                {"client_secret", CloudConfigurationManager.GetSetting("AsanaClientSecret") },
+                {"client_id", _parameters.AsanaClientId },
+                {"client_secret", _parameters.AsanaClientSecret},
                 {"refresh_token",this.OAuthToken.RefreshToken}
             };
 

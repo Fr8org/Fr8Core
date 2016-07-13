@@ -58,7 +58,6 @@ namespace terminalAsana.Asana.Services
 
             try
             {
-                //_intergration.ApiCall()
                 var response = await _restClient.GetAsync<JObject>(uri);
                 var result = response.GetValue("data").ToObject<IEnumerable<AsanaTask>>();
                 return result;

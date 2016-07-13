@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace terminalAsana.Asana
 {
-    //it is not one-to-one binding, this is class for encapsulate meaningful values
+    //it is not one-to-one binding to returned value, this is class for encapsulate meaningful values
     public class OAuthToken
     {
         [JsonProperty("access_token")]
@@ -23,7 +23,6 @@ namespace terminalAsana.Asana
         /// </summary>
         [JsonProperty("expires_in")]
         public int ExpiresIn { get; set; }
-
 
         // oAuth returns seconds till expiration, so we need do calculate absolute DataTime value
         public DateTime ExpirationDate { get; set; }

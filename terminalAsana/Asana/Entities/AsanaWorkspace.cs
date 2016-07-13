@@ -3,7 +3,7 @@ using terminalAsana.Interfaces;
 
 namespace terminalAsana.Asana.Entities
 {
-    public class AsanaWorkspace : IAsanaEntity
+    public class AsanaWorkspace 
     {
         [JsonProperty("id")]
         public string Id { get; set; }

@@ -499,6 +499,11 @@ namespace Hub.Services
             return true;
         }
 
+        public void RenewToken(AuthorizationTokenDTO token)
+        {
+            throw new NotImplementedException();
+        }
+
         public void InvalidateToken(IUnitOfWork uow, string userId, ActivityDTO curActivityDto)
         {
             var activityTemplate = _activityTemplate.GetByNameAndVersion(curActivityDto.ActivityTemplate.Name, curActivityDto.ActivityTemplate.Version);
@@ -577,29 +582,16 @@ namespace Hub.Services
             }
         }
 
-        public void RenewToken(Guid authTokenId, string externalAccountId, string token, DateTime? expiresAt)
+        /// <summary>
+        /// Not all fields of token will be replaced in database!
+        /// </summary>
+        /// <param name="token"></param>
+        public void RenewToken(AuthorizationTokenDO token)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var authToken = uow.AuthorizationTokenRepository
-                    .FindTokenById(authTokenId);
-
-                if (authToken == null)
-                    return;
-                authToken.ExternalAccountId = externalAccountId;
-                authToken.Token = token;
-                authToken.ExpiresAt = expiresAt;
-                uow.SaveChanges();
-            }
-        }
-
-
-        public void RenewToken(AuthorizationTokenDTO token)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var authToken = uow.AuthorizationTokenRepository
-                    .FindTokenById(new Guid(token.Id));
+                    .FindTokenById(token.Id);
 
                 if (authToken == null)
                     return;
@@ -607,7 +599,7 @@ namespace Hub.Services
                 authToken.Token = token.Token;
                 authToken.ExpiresAt = token.ExpiresAt;
                 authToken.AdditionalAttributes = token.AdditionalAttributes;
-                
+
                 uow.SaveChanges();
             }
         }

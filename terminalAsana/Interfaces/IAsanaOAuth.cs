@@ -19,8 +19,6 @@ namespace terminalAsana.Interfaces
 
         bool                IsTokenExpired();
         bool                IsTokenExpired(OAuthToken token);
-        bool                IsTokenValid();
-        bool                IsTokenValid(OAuthToken token);
 
         Task<OAuthToken>    RefreshOAuthTokenAsync();
         Task<OAuthToken>    RefreshOAuthTokenAsync(OAuthToken token);

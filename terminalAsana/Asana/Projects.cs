@@ -34,7 +34,6 @@ namespace terminalAsana.Asana
         public async Task<IEnumerable<AsanaProject>> Get(AsanaProjectQuery query)
         {
             var uri = new Uri(_asanaParams.ProjectsUrl);
-            //_intergration.ApiCall()
             try
             {
                 var response = await _restClient.GetAsync<JObject>(uri);
