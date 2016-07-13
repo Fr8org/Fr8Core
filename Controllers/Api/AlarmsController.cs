@@ -9,12 +9,14 @@ using HubWeb.Infrastructure_HubWeb;
 using log4net;
 using Data.Interfaces;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using Fr8.Infrastructure.Communication;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Interfaces;
 using System.Web.Http.Description;
 using Fr8.Infrastructure.Utilities;
+using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
 {
@@ -26,10 +28,11 @@ namespace HubWeb.Controllers
         /// Schedules specified alarm to be executed at specified time
         /// </summary>
         /// <param name="alarmDTO">Alarm to schedule at its startTime property</param>
-        /// <response code="200">Alarm was succesfully scheduled</response>
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
+        [SwaggerResponse(HttpStatusCode.OK, "Alarm was successfully scheduled")]
+        [SwaggerResponseRemoveDefaults]
         public async Task<IHttpActionResult> Post(AlarmDTO alarmDTO)
         {
             BackgroundJob.Schedule(() => Execute(alarmDTO), alarmDTO.StartTime);
@@ -69,8 +72,9 @@ namespace HubWeb.Controllers
         /// </remarks>
         /// <param name="terminalId">Id of the terminal to perform requests to</param>
         /// <param name="pollingData">Parameters of polling requests</param>
-        /// <response code="200">Polling was successfully initiated</response>
         [HttpPost]
+        [SwaggerResponse(HttpStatusCode.OK, "Polling was successfully initiated")]
+        [SwaggerResponseRemoveDefaults]
         public IHttpActionResult Polling([FromUri] string terminalId, [FromBody]PollingDataDTO pollingData)
         {
             Logger.Info($"Polling: requested for {pollingData.ExternalAccountId} from a terminal {terminalId} and addition to jobId {pollingData.AdditionToJobId}");
