@@ -280,7 +280,6 @@
     <Compile Include="Infrastructure\SalesforceObjectOperations.cs" />
     <Compile Include="Infrastructure\SalesforceObjectType.cs" />
     <Compile Include="Infrastructure\SalesforceObjectProperties.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -481,7 +480,7 @@
       <Name>Fr8TerminalBase.NET</Name>
     </ProjectReference>
   </ItemGroup>
-  <Target Name="BeforeBuild">
+  <Target Name="BeforeCompile">
     <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
   </Target>
   <Import Project="..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets" Condition="Exists('..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" />
