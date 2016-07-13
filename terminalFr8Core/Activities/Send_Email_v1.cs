@@ -20,13 +20,18 @@ namespace terminalFr8Core.Activities
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "Send_Email",
-            Label = "Send Email using Fr8 core account",
+            Label = "Send Email",
             Version = "1",
             Category = ActivityCategory.Forwarders,
             NeedsAuthentication = false,
             MinPaneWidth = 400,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
