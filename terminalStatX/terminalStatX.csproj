@@ -358,4 +358,10 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.*" />
+  </ItemGroup>
+  <Target Name="BeforeBuild">
+    <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
+  </Target>
 </Project>
