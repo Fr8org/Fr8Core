@@ -1,5 +1,5 @@
 
-### Activation and Deactivation
+###  Terminal Development - Activation and Deactivation
 
 The distinct Activation phase allows Plans to carry out Validation checks even if the Plan is going to passively monitor for a trigger event (as opposed to immediately being run).
 
@@ -11,7 +11,7 @@ In either case, the system will call your Terminal's /deactivate endpoint for ea
 
 Delailed infomration about activation and deactivation you can find [here](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/PlansActivationAndRunning.md). 
 
-You have to implement activation and deactivation endpoints in any case. If actvity has no activation and deactivation logic you can end with simple pass-trough implementation. This simple implementation is exactly what we are going to do in our sample. Lets start. 
+If actvity has no activation and deactivation logic you can simply return the Activity JSON without any changes. However, it's highly recommended that you provide Validation support. ([Learn about Fr8's Validation Services](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/ActivitiesValidation.md)). 
 
 #### Activation
 
@@ -19,9 +19,9 @@ When user of our activtiy will trigger related plan exectuion the Hub will send 
 	
 	http://terminal.com/activities/activate
     
-The body and the headers of the request are absolutely identical to the body and headers that Hub sends with **/activities/configure** request. The format of the response is also identical to the response your activity returns to **/activities/configure** request. General rules of processing of this request are the same as for **follow-up configuration** request processing. It means that by the default, you return the same data, that were send to you. You would never return empty response for the *activation* request. 
+The body and the headers of the request are absolutely identical to the body and headers that Hub sends with **/activities/configure** request. The format of the response is also identical to the response your activity returns to **/activities/configure** request. General rules of processing of this request are the same as for **follow-up configuration** request processing. It means that by the default, you return the same data that was send to you. You would never return empty response for the *activation* request. 
 
-You may notice that *activation* is not triggered every time you run the plan. It is normal operation of the Hub. Read more about the reasons of such behavior [here](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/PlansActivationAndRunning.md).
+You may notice that *activation* is not triggered every time you run the plan, in order to save resources. Read more about the reasons of such behavior [here](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/PlansActivationAndRunning.md).
 
 #### Deactivation
 In our sample **/activities/deactivate** is likely to be called only when user run the plan than change our sample activity configuration and then run the plan again. *Deactivation* will be triggered just before the first call to **/activties/configure**. *Deactivation* endpoint signature, corresponding request/response and processing rules are identical to **/activities/activate**. Our activity needs no uninitialization so just implement processing of **/activities/deactivate** in the same way you done it for **/activities/activate**.
