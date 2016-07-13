@@ -135,11 +135,18 @@ namespace terminaBaselTests.Services
             }
         }
 
-        public class FakeRestfulServiceClientFactory : IRestfulServiceClientFactory
+        class FakeRestfulServiceClientFactory : IRestfulServiceClientFactory
         {
+            private readonly RestfulClientStub _clientStub;
+
+            public FakeRestfulServiceClientFactory(RestfulClientStub clientStub)
+            {
+                _clientStub = clientStub;
+            }
+
             public IRestfulServiceClient Create()
             {
-                return new RestfulClientStub();
+                return _clientStub;
             }
         }
 
@@ -157,7 +164,7 @@ namespace terminaBaselTests.Services
                 Name = "test"
             });
             _restfullServiceClient = new RestfulClientStub();
-            _hubDiscoveryService = new HubDiscoveryService(new FakeRestfulServiceClientFactory(), activityStore, new SingleRunRetryPolicy());
+            _hubDiscoveryService = new HubDiscoveryService(new FakeRestfulServiceClientFactory(_restfullServiceClient), activityStore, new SingleRunRetryPolicy());
         }
 
         [Test]
