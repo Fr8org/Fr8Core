@@ -25,13 +25,6 @@ namespace terminalAsana.Activities
 {
     public class Get_Tasks_v1 : AsanaOAuthBaseActivity<Get_Tasks_v1.ActivityUi>
     {
-        private IAsanaWorkspaces _workspaces;
-        private IAsanaUsers _users;
-        private IAsanaTasks _tasks;
-        private IAsanaProjects _projects;
-
-        private IAsanaParameters _parameters;
-
         public static readonly  ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "Get_Tasks",
@@ -41,7 +34,11 @@ namespace terminalAsana.Activities
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
-            NeedsAuthentication = true
+            NeedsAuthentication = true,
+            Categories = new[] {
+                ActivityCategories.Receive,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
         
@@ -96,25 +93,15 @@ namespace terminalAsana.Activities
 
         }
 
-        public Get_Tasks_v1(ICrateManager crateManager, IAsanaOAuth oAuth, IRestfulServiceClient client, IAsanaParameters parameters) : base(crateManager, oAuth, client)
+        public Get_Tasks_v1(ICrateManager crateManager, IRestfulServiceClient client, IAsanaParameters parameters) : base(crateManager, parameters, client)
         {
             DisableValidationOnFollowup = true;
-            _parameters = parameters;
         }
 
-        protected override void InitializeInternalState()
-        {
-            base.InitializeInternalState();
-
-            _workspaces = new Workspaces(OAuthCommunicator, _parameters);
-            _users = new Users(OAuthCommunicator, _parameters);
-            _tasks = new Tasks(OAuthCommunicator, _parameters);
-            _projects = new Projects(OAuthCommunicator, _parameters);
-        }
 
         public override async Task Initialize()
         {
-            var workspaces = await _workspaces.GetAsync();
+            var workspaces = await AClient.Workspaces.GetAsync();
             ActivityUI.WorkspacesList.ListItems = workspaces.Select( w => new ListItem() { Key= w.Name, Value = w.Id} ).ToList();
 
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel).AddFields("Task name", "Task id");
@@ -124,11 +111,11 @@ namespace terminalAsana.Activities
         {           
             if (!ActivityUI.WorkspacesList.Value.IsNullOrWhiteSpace())
             {
-                var users =  await _users.GetUsersAsync(ActivityUI.WorkspacesList.Value);
+                var users =  await AClient.Users.GetUsersAsync(ActivityUI.WorkspacesList.Value);
                 ActivityUI.UsersList.ListItems = users.Select(w => new ListItem() {Key = w.Name, Value = w.Id}).ToList();                
 
                 var projects = 
-                    await _projects.Get(new AsanaProjectQuery() {Workspace = ActivityUI.WorkspacesList.Value });     
+                    await AClient.Projects.Get(new AsanaProjectQuery() {Workspace = ActivityUI.WorkspacesList.Value });     
                 ActivityUI.ProjectsList.ListItems = projects.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();                                         
             }
         }
@@ -150,7 +137,7 @@ namespace terminalAsana.Activities
                 Project = ActivityUI.ProjectsList.Value
             };
 
-            var tasks = await _tasks.GetAsync(query);
+            var tasks = await AClient.Tasks.GetAsync(query);
             
             var dataRows = tasks.Select(t => new TableRowDTO()
             { Row = {
@@ -161,7 +148,5 @@ namespace terminalAsana.Activities
             var payload = new StandardTableDataCM() {Table = dataRows};
             Payload.Add(RunTimeCrateLabel, payload);
         }
-                            
-        
     }
 }

@@ -185,8 +185,10 @@
     <Compile Include="Asana\Entities\AsanaTask.cs" />
     <Compile Include="Asana\Entities\AsanaTaskQuery.cs" />
     <Compile Include="Asana\Projects.cs" />
+    <Compile Include="Asana\Services\AsanaClient.cs" />
     <Compile Include="Asana\Services\AsanaCommunicatorService.cs" />
     <Compile Include="Asana\OAuthToken.cs" />
+    <Compile Include="Asana\Services\AsanaRefreshTokenEventArgs.cs" />
     <Compile Include="Asana\Stories.cs" />
     <Compile Include="Asana\Tasks.cs" />
     <Compile Include="Asana\Users.cs" />
@@ -205,6 +207,7 @@
     <Compile Include="Interfaces\IAsanaParameters.cs" />
     <Compile Include="Interfaces\IAsanaOAuth.cs" />
     <Compile Include="Interfaces\IAsanaProjects.cs" />
+    <Compile Include="Interfaces\IAsanaRestClient.cs" />
     <Compile Include="Interfaces\IAsanaStories.cs" />
     <Compile Include="Interfaces\IAsanaTasks.cs" />
     <Compile Include="Interfaces\IAsanaUsers.cs" />

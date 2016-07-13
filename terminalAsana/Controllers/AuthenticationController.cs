@@ -16,6 +16,7 @@ namespace terminalAsana.Controllers
 
         public AuthenticationController(IAsanaOAuth asanaOAuth, IHubEventReporter eventReporter)
         {
+            //we don`t need whole client here, so i can use only AsanaOAuth service
             _asanaOAuth = asanaOAuth;        
             _eventReporter = eventReporter;
 

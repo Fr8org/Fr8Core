@@ -7,13 +7,15 @@ using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using Newtonsoft.Json.Linq;
 using terminalAsana.Asana;
+using terminalAsana.Asana.Services;
 
 namespace terminalAsana.Interfaces
 {
     public interface IAsanaOAuth
     {
-        AuthorizationToken  AuthorizationToken { get; }
         OAuthToken          OAuthToken { get; set; }
+
+        event               RefreshTokenEventHandler RefreshTokenEvent;
 
         bool                IsTokenExpired();
         bool                IsTokenExpired(OAuthToken token);
@@ -30,6 +32,6 @@ namespace terminalAsana.Interfaces
         Task<JObject>       GetOAuthTokenDataAsync(string code);
 
         bool                IsIntialized { get; }
-        Task<IAsanaOAuth>   InitializeAsync(AuthorizationToken authorizationToken);
+        Task<IAsanaOAuth>   InitializeAsync(OAuthToken authorizationToken);
     }
 }

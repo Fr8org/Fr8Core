@@ -10,8 +10,6 @@ using AutoMapper;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
-using Fr8.Infrastructure.Utilities.Logging;
-using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -21,23 +19,25 @@ namespace terminalAsana.Asana.Services
 {
     public class AsanaOAuthService: IAsanaOAuth
     {
-        
+        #region Refresh token event
+
+        public event RefreshTokenEventHandler RefreshTokenEvent;
+
+        #endregion
+
         private IRestfulServiceClient _restfulClient;
-        private IHubCommunicator _hubCommunicator;
         private IAsanaParameters _parameters;
 
         public OAuthToken OAuthToken { get; set; }
-        public AuthorizationToken AuthorizationToken { get; private set; }
 
         /// <summary>
         /// Indicates whether service object being initialized with AuthorizationToken
         /// </summary>
         public bool IsIntialized { get; private set; } 
 
-        public AsanaOAuthService(IRestfulServiceClient client, IHubCommunicator hubCommunicator, IAsanaParameters parameters)
+        public AsanaOAuthService(IRestfulServiceClient client, IAsanaParameters parameters)
         {
             _restfulClient = client;
-            _hubCommunicator = hubCommunicator;
             _parameters = parameters;
             OAuthToken = new OAuthToken();
             IsIntialized = false;
@@ -103,23 +103,7 @@ namespace terminalAsana.Asana.Services
             this.OAuthToken = refreshedToken;
 
             // replace access_token field on server
-
-            var originalTokenData = JObject.Parse(this.AuthorizationToken.Token);
-            originalTokenData["access_token"] = refreshedToken.AccessToken;
-
-            this.AuthorizationToken.AdditionalAttributes = refreshedToken.ExpirationDate.ToString("O");
-            this.AuthorizationToken.ExpiresAt = refreshedToken.ExpirationDate;
-
-            this.AuthorizationToken.Token = originalTokenData.ToString();
-            try
-            {
-                var authDTO = Mapper.Map<AuthorizationTokenDTO>(this.AuthorizationToken);
-                await _hubCommunicator.RenewToken(authDTO).ConfigureAwait(false);
-            }
-            catch (Exception exp)
-            {
-                Logger.LogError(exp.Message,"Asana terminal");
-            }          
+            RefreshTokenEvent?.Invoke(this, new AsanaRefreshTokenEventArgs(refreshedToken));         
             
             return this.OAuthToken;
         }
@@ -181,17 +165,11 @@ namespace terminalAsana.Asana.Services
         /// </summary>
         /// <param name="authorizationToken"></param>
         /// <returns></returns>
-        public async Task<IAsanaOAuth> InitializeAsync(AuthorizationToken authorizationToken)
+        public async Task<IAsanaOAuth> InitializeAsync(OAuthToken authorizationToken)
         {
             try
             {
-                this.AuthorizationToken = authorizationToken;
-
-                var tokenData = JObject.Parse(authorizationToken.Token);
-                this.OAuthToken.AccessToken = tokenData.Value<string>("access_token");
-                this.OAuthToken.RefreshToken = tokenData.Value<string>("refresh_token");
-
-                this.OAuthToken.ExpirationDate = authorizationToken.ExpiresAt ?? DateTime.MinValue;
+                this.OAuthToken = authorizationToken;
                 this.OAuthToken = await this.RefreshTokenIfExpiredAsync().ConfigureAwait(false);
 
                 this.IsIntialized = true;

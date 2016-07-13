@@ -26,13 +26,6 @@ namespace terminalAsana.Activities
 {
     public class Post_Comment_v1 : AsanaOAuthBaseActivity<Post_Comment_v1.ActivityUi>
     {
-        private IAsanaWorkspaces    _workspaces;
-        private IAsanaProjects      _projects;
-        private IAsanaTasks         _tasks;
-        private IAsanaStories       _stories;
-
-        private IAsanaParameters    _parameters;
-
         public static readonly ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "Post_Comment",
@@ -42,7 +35,11 @@ namespace terminalAsana.Activities
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
-            NeedsAuthentication = true             
+            NeedsAuthentication = true,
+            Categories = new[] {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
         
@@ -101,26 +98,25 @@ namespace terminalAsana.Activities
             }
         }
 
-        public Post_Comment_v1(ICrateManager crateManager, IAsanaOAuth oAuth, IRestfulServiceClient client, IAsanaParameters parameters)
-            : base(crateManager,oAuth, client)
+        public Post_Comment_v1(ICrateManager crateManager,  IAsanaParameters parameters, IRestfulServiceClient client)
+            : base(crateManager, parameters, client)
         {
             DisableValidationOnFollowup = true;
-            _parameters = parameters;
         }
 
         protected override void InitializeInternalState()
         {
             base.InitializeInternalState();
-
-            _workspaces = new Workspaces(OAuthCommunicator, _parameters);
-            _projects = new Projects(OAuthCommunicator, _parameters);
-            _tasks = new Tasks(OAuthCommunicator, _parameters);
-            _stories = new Stories(OAuthCommunicator, _parameters);
+            
+            //_workspaces = new Workspaces(OAuthCommunicator, _parameters);
+            //_projects = new Projects(OAuthCommunicator, _parameters);
+            //_tasks = new Tasks(OAuthCommunicator, _parameters);
+            //_stories = new Stories(OAuthCommunicator, _parameters);
         }
 
         public override async Task Initialize()
         {
-            var workspaces = await _workspaces.GetAsync();
+            var workspaces = await AClient.Workspaces.GetAsync();
             ActivityUI.Workspaces.ListItems = workspaces.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();           
         }
 
@@ -128,17 +124,17 @@ namespace terminalAsana.Activities
         {
             if (!ActivityUI.Workspaces.Value.IsNullOrWhiteSpace())
             {
-                var projects = await _projects.Get(new AsanaProjectQuery() {Workspace = ActivityUI.Workspaces.Value});
+                var projects = await AClient.Projects.Get(new AsanaProjectQuery() {Workspace = ActivityUI.Workspaces.Value});
                 ActivityUI.Projects.ListItems = projects.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();
 
                 IEnumerable<AsanaTask> tasks;
                 if (!ActivityUI.Projects.Value.IsNullOrWhiteSpace())
                 {
-                    tasks = await _tasks.GetAsync(new AsanaTaskQuery() { Project = ActivityUI.Projects.Value });
+                    tasks = await AClient.Tasks.GetAsync(new AsanaTaskQuery() { Project = ActivityUI.Projects.Value });
                 }
                 else
                 {
-                    tasks = await _tasks.GetAsync(new AsanaTaskQuery() { Workspace = ActivityUI.Workspaces.Value });
+                    tasks = await AClient.Tasks.GetAsync(new AsanaTaskQuery() { Workspace = ActivityUI.Workspaces.Value });
                 }
                 
                 ActivityUI.Tasks.ListItems = tasks.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();
@@ -170,7 +166,7 @@ namespace terminalAsana.Activities
             var taskId = ActivityUI.Tasks.Value;
             var payloadMessage = ActivityUI.Comment.GetValue(Payload);
 
-            var comment = await _stories.PostCommentAsync(taskId, payloadMessage);            
+            var comment = await AClient.Stories.PostCommentAsync(taskId, payloadMessage);            
         }
     }
 }
