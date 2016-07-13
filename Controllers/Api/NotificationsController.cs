@@ -20,7 +20,13 @@ namespace HubWeb.Controllers
         {
             _notification = ObjectFactory.GetInstance<IPusherNotifier>();
         }
-
+        /// <summary>
+        /// Post specified notification message to the activity feed of current user
+        /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <param name="notificationMessage">Message to post</param>
+        /// <response code="200">Message was successfully posted</response>
+        /// <response code="403">Unauthorized request</response>
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]

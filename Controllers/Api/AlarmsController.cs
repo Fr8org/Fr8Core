@@ -13,6 +13,7 @@ using System.Net.Http;
 using Fr8.Infrastructure.Communication;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Interfaces;
+using System.Web.Http.Description;
 using Fr8.Infrastructure.Utilities;
 
 namespace HubWeb.Controllers
@@ -21,19 +22,21 @@ namespace HubWeb.Controllers
     {
         private static readonly ILog Logger = Fr8.Infrastructure.Utilities.Logging.Logger.GetCurrentClassLogger();
 
+        /// <summary>
+        /// Schedules specified alarm to be executed at specified time
+        /// </summary>
+        /// <param name="alarmDTO">Alarm to schedule at its startTime property</param>
+        /// <response code="200">Alarm was succesfully scheduled</response>
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
         public async Task<IHttpActionResult> Post(AlarmDTO alarmDTO)
         {
             BackgroundJob.Schedule(() => Execute(alarmDTO), alarmDTO.StartTime);
-
-            //TODO: Commented as part of DO - 1520. Need to rethink about this.
-            //var eventController = new EventController();
-            //return await eventController.ProcessIncomingEvents(alarmDTO.TerminalName, alarmDTO.TerminalVersion);
             return Ok();
         }
-
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [NonAction]
         public void Execute(AlarmDTO alarmDTO)
         {
             try
@@ -58,20 +61,28 @@ namespace HubWeb.Controllers
 
             //TODO report output to somewhere to pusher service maybe
         }
-
+        /// <summary>
+        /// Initiates periodic requests to the terminal with the specified Id configured with specified settings
+        /// </summary>
+        /// <remarks>
+        /// Alarms provide the ability to resend requests with specified data to the terminal until the latter responses with status 200 OK. It works as follows. A terminal calls this endpoint with specified data and sets the time intervals. The Hub then will iteratively call the terminal until the latter replies with status 200 OK
+        /// </remarks>
+        /// <param name="terminalId">Id of the terminal to perform requests to</param>
+        /// <param name="pollingData">Parameters of polling requests</param>
+        /// <response code="200">Polling was successfully initiated</response>
         [HttpPost]
-        public async Task<IHttpActionResult> Polling([FromUri] string terminalId, [FromBody]PollingDataDTO pollingData)
+        public IHttpActionResult Polling([FromUri] string terminalId, [FromBody]PollingDataDTO pollingData)
         {
-            Logger.Info($"Polling: requested for {pollingData.ExternalAccountId} from a terminal {terminalId}");
-            pollingData.JobId = terminalId + "|" + pollingData.ExternalAccountId;
+            Logger.Info($"Polling: requested for {pollingData.ExternalAccountId} from a terminal {terminalId} and addition to jobId {pollingData.AdditionToJobId}");
+            pollingData.JobId = terminalId + "|" + pollingData.ExternalAccountId + pollingData.AdditionToJobId;
             RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalId), "*/" + pollingData.PollingIntervalInMinutes + " * * * *");
             if (pollingData.TriggerImmediately)
+            {
                 RecurringJob.Trigger(pollingData.JobId);
-
+            }
             return Ok();
         }
     }
-
 
 
     public static class SchedullerHelper
@@ -186,15 +197,17 @@ namespace HubWeb.Controllers
 
                             return response;
                         }
-                        catch
+                        catch(Exception exception)
                         {
+                            Logger.Info($"Polling: problem with terminal polling request for {pollingData?.ExternalAccountId} from {Server.ServerUrl} to a terminal {terminal?.Name}. Exception: {exception.Message}");
                             return null;
                         }
                     }
                 }
             }
-            catch
+            catch(Exception exception)
             {
+                Logger.Info($"Polling: problem with terminal polling request for {pollingData?.ExternalAccountId} from {Server.ServerUrl} to a terminal. Exception: {exception.Message}");
                 return null;
             }
         }

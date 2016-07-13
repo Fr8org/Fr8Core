@@ -28,7 +28,8 @@ namespace terminalBasecamp2.Activities
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
-            NeedsAuthentication = true
+            NeedsAuthentication = true,
+            Categories = new[] { ActivityCategories.Forward }
         };
 
         public class ActivityUi : StandardConfigurationControlsCM

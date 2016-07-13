@@ -148,6 +148,8 @@
     <Compile Include="Data\Crates\ManifestDiscovery.cs" />
     <Compile Include="Data\Crates\ManifestTypeCache.cs" />
     <Compile Include="Data\DataTransferObjects\ActivateActivitiesDTO.cs" />
+    <Compile Include="Data\DataTransferObjects\ActivityCategories.cs" />
+    <Compile Include="Data\DataTransferObjects\ActivityCategoryDTO.cs" />
     <Compile Include="Data\DataTransferObjects\ActivityDataPackageDTO.cs" />
     <Compile Include="Data\DataTransferObjects\ActivityDTO.cs" />
     <Compile Include="Data\DataTransferObjects\ActivityNameDTO.cs" />
@@ -224,6 +226,8 @@
     <Compile Include="Data\DataTransferObjects\TerminalDTO.cs" />
     <Compile Include="Data\DataTransferObjects\TerminalNotificationDTO.cs" />
     <Compile Include="Data\DataTransferObjects\TerminalRegistrationDTO.cs" />
+    <Compile Include="Data\DataTransferObjects\TokenResponseDTO.cs" />
+    <Compile Include="Data\DataTransferObjects\UrlResponseDTO.cs" />
     <Compile Include="Data\DataTransferObjects\UserDTO.cs" />
     <Compile Include="Data\DataTransferObjects\ValidationErrorsDTO.cs" />
     <Compile Include="Data\DataTransferObjects\ValidationResultDTO.cs" />
@@ -251,6 +255,7 @@
     <Compile Include="Data\Manifests\DocuSignEnvelopeCM.cs" />
     <Compile Include="Data\Manifests\DocuSignEnvelopeCM_v2.cs" />
     <Compile Include="Data\Manifests\DocuSignEnvelopeCM_v3.cs" />
+    <Compile Include="Data\Manifests\InstagramUserEventCM.cs" />
     <Compile Include="Data\Manifests\FacebookUserEventCM.cs" />
     <Compile Include="Data\Manifests\DocuSignEventCM.cs" />
     <Compile Include="Data\Manifests\DocuSignRecipientCM.cs" />
@@ -303,6 +308,7 @@
     <Compile Include="Interfaces\IHMACAuthenticator.cs" />
     <Compile Include="Interfaces\IHMACService.cs" />
     <Compile Include="Interfaces\IRestfulServiceClient.cs" />
+    <Compile Include="PhoneNumberVerificationDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

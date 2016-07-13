@@ -30,11 +30,16 @@ namespace terminalFr8Core.Actions
         {
             Name = "Get_Data_From_Fr8_Warehouse",
             Label = "Get Data From Fr8 Warehouse",
-            Category = ActivityCategory.Processors,
+            Category = Fr8.Infrastructure.Data.States.ActivityCategory.Processors,
             Version = "1",
             MinPaneWidth = 550,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Process,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

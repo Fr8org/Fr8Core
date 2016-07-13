@@ -6,10 +6,12 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
 using Data.Interfaces;
+using Data.Infrastructure;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Testing.Integration;
+
 namespace terminalIntegrationTests.EndToEnd
 {
     [Explicit]
@@ -28,7 +30,7 @@ namespace terminalIntegrationTests.EndToEnd
                     {
                         Field = "SentDate",
                         Operator = "gte",
-                        Value = "22-04-2021"
+                        Value = "21-04-2021"
                     }
                 }
             };
@@ -51,7 +53,7 @@ namespace terminalIntegrationTests.EndToEnd
             };
         }
 
-        [Test, Ignore("Temporarily disabled, being fixed in FR-4364")]
+        [Test]
         public async Task WarehouseSearch_Query()
         {
             var mtData = MtDataFixture_1();

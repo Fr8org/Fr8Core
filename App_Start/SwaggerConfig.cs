@@ -5,6 +5,7 @@ using Swashbuckle.Application;
 using Swashbuckle.Swagger;
 using System.Web.Http.Description;
 using System.Linq;
+using System;
 
 [assembly: PreApplicationStartMethod(typeof(SwaggerConfig), "Register")]
 
@@ -259,5 +260,4 @@ namespace HubWeb
             }
         }
     }
-
 }
