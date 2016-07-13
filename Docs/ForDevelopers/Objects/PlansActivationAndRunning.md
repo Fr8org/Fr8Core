@@ -11,7 +11,7 @@ When a plan is run, the Hub creates a json structure called a Container (sometim
 
 Activities are expected to process the incoming data and add to the Payload Container any new data. Depending on the situation, an Activity might want to modify an existing Crate of data or create one or more new Crates. Then the modified Payload Contianer is passed back to the Hub. 
 
-## Standard vs. Ongoing Plans
+## Standard vs. Monitor Plans
 
 Plans fall into two groups:
 
