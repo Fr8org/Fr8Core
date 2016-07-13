@@ -14,6 +14,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;
 using Newtonsoft.Json;
+using System.Web.Http.Description;
 
 namespace HubWeb.Controllers
 {
@@ -30,11 +31,18 @@ namespace HubWeb.Controllers
             _containerService = ObjectFactory.GetInstance<IContainerService>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
         }
-
+        /// <summary>
+        /// Retrieves crate storage of the container with specified Id
+        /// </summary>
+        /// <param name="id">Id of the container</param>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <response code="200">Container's crate storage</response>
+        /// <response code="403">Unathorized request</response>
         [HttpGet]
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
         [ActionName("payload")]
+        [ResponseType(typeof(PayloadDTO))]
         public IHttpActionResult GetPayload(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -52,9 +60,15 @@ namespace HubWeb.Controllers
                 return Ok(curPayloadDTO);
             }
         }
-
+        /// <summary>
+        /// Retrieves all containers belong to plans of current user
+        /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <response code="200">Collection of containers. Can be empty</response>
+        /// <response code="403">Unathorized request</response>
         [Fr8ApiAuthorize]
         [HttpGet]
+        [ResponseType(typeof(IEnumerable<ContainerDTO>))]
         public IHttpActionResult Get()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -75,9 +89,14 @@ namespace HubWeb.Controllers
             }
         }
 
-        // Return the Containers accordingly to ID given
+        /// <summary>
+        /// Retrieves container with specified Id
+        /// </summary>
+        /// <param name="id">Id of the container</param>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <response code="200">Container with specified Id. Can be empty</response>
+        /// <response code="403">Unathorized request</response>
         [Fr8ApiAuthorize]
-        //[Route("get/{id:guid?}")]
         [HttpGet]
         public IHttpActionResult Get(Guid id)
         {

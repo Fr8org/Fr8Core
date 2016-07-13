@@ -76,6 +76,7 @@ namespace Data.Migrations
         private void RegisterTerminals(UnitOfWork uow)
         {
             // Example of terminal registration: RegisterTerminal (uow, "localhost:12345");   
+            RegisterTerminal(uow, "localhost:10109");
         }
         
         // ReSharper disable once UnusedMember.Local

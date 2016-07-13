@@ -14,6 +14,7 @@ using HubWeb.Controllers;
 using Fr8.Testing.Unit.Fixtures;
 
 using HubWeb.ViewModels.RequestParameters;
+using System.Text.RegularExpressions;
 
 namespace HubTests.Controllers
 {
@@ -112,19 +113,27 @@ namespace HubTests.Controllers
         }
 
         [Test]
-        public void PlanController_Will_Return_BadResult_If_Name_Is_Empty()
+        public void PlanController_Will_Create_Untitled_Plan_Incrementing_Name()
         {
             //Arrange 
             var PlanDto = FixtureData.CreateTestPlanDTO();
             PlanDto.Name = String.Empty;
 
+            var PlanDto1 = FixtureData.CreateTestPlanDTO();
+            PlanDto1.Name = String.Empty;
+
             //Act
             var ptc = CreatePlanController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address); ;
             var response = ptc.Post(PlanDto).Result;
+            var response1 = ptc.Post(PlanDto1).Result;
 
             //Assert
-            var badResult = response as BadRequestErrorMessageResult;
-            Assert.NotNull(badResult);
+            var okResult = response as OkNegotiatedContentResult<PlanDTO>;
+            var okResult1 = response1 as OkNegotiatedContentResult<PlanDTO>;
+            var result = Int32.Parse(Regex.Match(okResult.Content.Plan.Name, @"\d+").Value);
+            var result1 = Int32.Parse(Regex.Match(okResult1.Content.Plan.Name, @"\d+").Value);
+ 
+            Assert.IsTrue(result1 - result == 1);
 
         }
 
@@ -228,7 +237,7 @@ namespace HubTests.Controllers
 
 
         [Test]
-        public void ProcessController_CannotCreateIfProcessNameIsEmpty()
+        public void PlanController_CreatesUntitledPlanIfNameNotSpecified()
         {
             //Arrange 
             var PlanDto = FixtureData.CreateTestPlanDTO();
@@ -236,10 +245,12 @@ namespace HubTests.Controllers
 
             //Act
             var PlanController = CreatePlanController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
-            PlanController.Post(PlanDto);
+            var response = PlanController.Post(PlanDto).Result;
 
             //Assert
-            Assert.AreEqual(1, PlanController.ModelState.Count()); //must be one error
+            var okResult = response as OkNegotiatedContentResult<PlanDTO>;
+            
+            Assert.IsTrue(okResult.Content.Plan.Name.Contains("Untitled Plan"));
         }
 
         [Test]

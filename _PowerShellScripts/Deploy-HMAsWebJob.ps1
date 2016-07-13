@@ -27,6 +27,9 @@ If (Test-Path $outputArchiveFile){
 New-Item -ItemType Directory -Force -Path $archiveFolderName | Out-Null
 # Create SQL folder
 New-Item -ItemType Directory -Force -Path $archiveFolderName\SQL | Out-Null
+# Create Config\HealthMonitor folder
+New-Item -ItemType Directory -Force -Path $archiveFolderName\Config | Out-Null
+New-Item -ItemType Directory -Force -Path $archiveFolderName\Config\HealthMonitor | Out-Null
 
 # Copy HealthMonitor DLLs to archive folder.
 $srcFiles = "$rootDir\..\Tests\HealthMonitor\bin\$($buildConfiguration)\*"
@@ -46,6 +49,11 @@ Copy-Item $srcRunFile -Destination $dstRunFile -Force
 # Copy SQL folder
 $srcRunFile = "$rootDir\..\Tests\HealthMonitor\SQL\*"
 $dstRunFile = "$archiveFolderName\SQL\"
+Copy-Item $srcRunFile -Destination $dstRunFile -Force
+
+# Copy Config
+$srcRunFile = "$rootDir\..\Tests\HealthMonitor\Config\HealthMonitor\*"
+$dstRunFile = "$archiveFolderName\Config\HealthMonitor\"
 Copy-Item $srcRunFile -Destination $dstRunFile -Force
 
 # Copy PowerShell script

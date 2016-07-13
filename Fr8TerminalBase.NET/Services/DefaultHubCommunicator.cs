@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -14,12 +13,10 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Interfaces;
-using Fr8.Infrastructure.Utilities;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Fr8.Infrastructure.Utilities.Configuration;
 
 namespace Fr8.TerminalBase.Services
 {
@@ -252,7 +249,7 @@ namespace Fr8.TerminalBase.Services
             var postUrl = $"?activityTemplateId={templateId}&createPlan={createPlan}";
             if (name != null)
             {
-                postUrl += "&name=" + name;
+                postUrl += "&name=" + HttpUtility.UrlEncode(name);
             }
             if (parentNodeId != null)
             {
@@ -392,13 +389,6 @@ namespace Fr8.TerminalBase.Services
             return Mapper.Map<AuthorizationToken>(authTokenDTO);
         }
 
-        public async Task RenewToken(string id, string externalAccountId, string token)
-        {
-            var url = $"{GetHubUrlWithApiVersion()}/authentication/renewtoken?id={id}&externalAccountId={externalAccountId}&token={token}";
-            var uri = new Uri(url);
-            await _restfulServiceClient.PostAsync(uri, null, await GetHMACHeader(uri));
-        }
-
         public async Task RenewToken(AuthorizationTokenDTO token)
         {
             var url = $"{GetHubUrlWithApiVersion()}/authentication/renewtoken";
@@ -418,11 +408,11 @@ namespace Fr8.TerminalBase.Services
             }
         }
 
-        public async Task ScheduleEvent(string externalAccountId, string minutes, bool triggerImmediately = false, string additionalConfigAttributes = null)
+        public async Task ScheduleEvent(string externalAccountId, string minutes, bool triggerImmediately = false, string additionalConfigAttributes = null, string additionToJobId = null)
         {
             var hubAlarmsUrl = GetHubUrlWithApiVersion() + $"/alarms/polling?terminalId={TerminalId}";
             var uri = new Uri(hubAlarmsUrl);
-            var data = new PollingDataDTO() { Fr8AccountId = _userId, ExternalAccountId = externalAccountId, PollingIntervalInMinutes = minutes, TriggerImmediately = triggerImmediately, AdditionalConfigAttributes = additionalConfigAttributes};
+            var data = new PollingDataDTO() { Fr8AccountId = _userId, ExternalAccountId = externalAccountId, PollingIntervalInMinutes = minutes, TriggerImmediately = triggerImmediately, AdditionalConfigAttributes = additionalConfigAttributes, AdditionToJobId  = additionToJobId};
 
             await _restfulServiceClient.PostAsync<PollingDataDTO>(uri, data);
         }
