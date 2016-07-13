@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using AutoMapper;
 using Fr8.Infrastructure.Communication;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Control;
@@ -43,7 +44,8 @@ namespace terminalAsana.Activities
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
         
 
-        private const string RunTimeCrateLabel = "GetAsync Tasks";
+        private const string RunTimeCrateLabel = "Asana Tasks";
+        private const string RunTimeCrateLabelCustomCM = "Asana Tasks List";
         private const string ResultFieldLabel = "ActivityResult";
 
 
@@ -105,6 +107,7 @@ namespace terminalAsana.Activities
             ActivityUI.WorkspacesList.ListItems = workspaces.Select( w => new ListItem() { Key= w.Name, Value = w.Id} ).ToList();
 
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel).AddFields("Task name", "Task id");
+            CrateSignaller.MarkAvailableAtRuntime<AsanaTaskListCM>(RunTimeCrateLabelCustomCM);
         }
 
         public override async Task FollowUp()
@@ -143,10 +146,13 @@ namespace terminalAsana.Activities
             { Row = {
                 new TableCellDTO() {Cell = new KeyValueDTO("Task name",t.Name)},
                 new TableCellDTO() {Cell = new KeyValueDTO("Task id",t.Id)}
-            }}).ToList();
+            }}).ToList();      
 
             var payload = new StandardTableDataCM() {Table = dataRows};
+            var customPayload = new AsanaTaskListCM() {Tasks = tasks.Select(t => Mapper.Map<AsanaTaskCM>(t)).ToList()};
+
             Payload.Add(RunTimeCrateLabel, payload);
+            Payload.Add(RunTimeCrateLabelCustomCM, customPayload);
         }
     }
 }

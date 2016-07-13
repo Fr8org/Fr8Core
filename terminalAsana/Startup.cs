@@ -20,7 +20,7 @@ namespace terminalAsana
 
         public void Configuration(IAppBuilder app)
         {
-            Configuration(app, false);
+            Configuration(app, false);  
         }
 
         public void Configuration(IAppBuilder app, bool selfHost)
