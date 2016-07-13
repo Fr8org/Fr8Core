@@ -6,10 +6,6 @@
 
 ### [Making Your Terminal Visible on the Public Web](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/PublicVisibility.md)
 
-	
-For the rest of this document we will assume that you've published the terminal using endpoint: 
-
-	http://terminal.com
     
 ### [Responding to /discover Requests](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Guide-TerminalDiscovery.md)
 
