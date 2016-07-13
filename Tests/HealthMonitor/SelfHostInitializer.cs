@@ -83,7 +83,9 @@ namespace HealthMonitor
                                 app.Endpoint = ConfigurationManager.AppSettings[app.Name+ ".TerminalEndpoint"];
                                 if (app.Endpoint == null)
                                 {
-                                    throw new ApplicationException($"Cannot find terminal {app.Name}, version {CURRENT_TERMINAL_VERSION} in the Terminals table.");
+                                    Console.WriteLine($"Failed to find endpoint settings for terminal {app.Name}");
+                                    continue;
+                                    //throw new ApplicationException($"Cannot find terminal {app.Name}, version {CURRENT_TERMINAL_VERSION} in the Terminals table.");
                                 }
                             }
                         }
@@ -96,13 +98,12 @@ namespace HealthMonitor
                         }
                         catch (Exception ex)
                         {
-
                             throw new Exception($"Failed to initialize terminal '{app.Name}' at '{app.Endpoint}'");
                         }
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 Dispose();
                 throw ;
@@ -122,7 +123,7 @@ namespace HealthMonitor
 #elif RELEASE
             "release";
 #elif DEMO
-            "demo   ";
+            "demo";
 #else
             "debug";
 #endif

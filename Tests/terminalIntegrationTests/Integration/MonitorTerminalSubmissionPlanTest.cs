@@ -44,6 +44,10 @@ namespace terminalIntegrationTests.Integration
 
         private readonly string slackToken = "xoxp-7518126694-28009203829-49624084150-131bd1c65b";
 
+        private const int MaxAwaitPeriod = 30000;
+        private const int SingleAwaitPeriod = 3000;
+        private const int PlanExecutionPeriod = 10000;
+
         [Test]
         public async Task MonitorTerminalSubmissionPlan()
         {
@@ -62,10 +66,14 @@ namespace terminalIntegrationTests.Integration
             var url = $"{GetHubApiBaseUrl()}/plans?name=MonitorSubmissionTerminalForm&visibility=2";
             var response = await RestfulServiceClient.GetAsync(new Uri(url), null, await GetHMACHeader(new Uri(url), userId));
 
-            var plans = JsonConvert.DeserializeObject<IEnumerable<PlanDTO>>(response);
+            var plans = JsonConvert.DeserializeObject<IEnumerable<PlanDTO>>(response).ToArray();
             var plan = plans.FirstOrDefault().Plan.SubPlans.FirstOrDefault();
 
-            if(plan.Activities.Where(a => a.Ordering == 8).FirstOrDefault() != null)
+            // deactivate plan before editing
+            var deactivateUrl = GetHubApiBaseUrl() + "plans/deactivate?planId=" + plans.FirstOrDefault().Plan.Id;
+            await RestfulServiceClient.PostAsync(new Uri(deactivateUrl), new List<CrateDTO>(), null, await GetHMACHeader(new Uri(deactivateUrl), userId));
+
+            if (plan.Activities.Where(a => a.Ordering == 8).FirstOrDefault() != null)
             {
                 var deleteActivityUrl = GetHubApiBaseUrl() + "activities/delete/" + plan.Activities.Where(a => a.Ordering == 8).FirstOrDefault().Id;
                 await RestfulServiceClient.DeleteAsync(new Uri(deleteActivityUrl), null, await GetHMACHeader(new Uri(deleteActivityUrl), userId));
@@ -81,23 +89,45 @@ namespace terminalIntegrationTests.Integration
 
             await SubmitForm(googleEventUrl, guidTestId.ToString());
 
-            //Waiting for Plan execution
-            await Task.Delay(40000);
+            //Waiting 10 seconds for Plan execution
+            await Task.Delay(PlanExecutionPeriod);
 
-            //Searching for created jira issue
+
             Jira jira = CreateRestClient(jiraToken);
-            var issues = jira.GetIssuesFromJql("summary ~ " + guidTestId.ToString());
+            Issue[] issues = new Issue[0];
 
-            //Searching for slack message
-            var slackUrl = "https://slack.com/api/search.messages?token="+ slackToken + "&query=" + guidTestId.ToString() + "%20in%3A%23general";
-            var result = await RestfulServiceClient.GetAsync(new Uri(slackUrl));
+            var slackUrl = "https://slack.com/api/search.messages?token="+ slackToken + "&query=" + guidTestId.ToString();
+            var totalMessagesFound = 0;
 
-            var slackSearchResult = JObject.Parse(result);
-            var total = (int)slackSearchResult.SelectToken("messages.pagination.total_count");
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
 
-            Assert.IsTrue(issues.Count() > 0,"Couldn't find jira issue");
+            while (stopwatch.ElapsedMilliseconds <= MaxAwaitPeriod)
+            {
+                if (issues.Length == 0)
+                {
+                    //Searching for created jira issue
+                    issues = jira.GetIssuesFromJql("summary ~ " + guidTestId.ToString()).ToArray();
+                }
+
+                if(totalMessagesFound == 0)
+                {
+                    //Searching for slack message
+                    var result = await RestfulServiceClient.GetAsync(new Uri(slackUrl));
+                    var searchResult = JObject.Parse(result);
+                    totalMessagesFound = (int)searchResult.SelectToken("messages.pagination.total_count");
+                }
+
+                if (issues.Count() != 0 && totalMessagesFound != 0)
+                {
+                    break;
+                }
+                await Task.Delay(SingleAwaitPeriod);
+            }
+
+            Assert.IsTrue(issues.Length > 0,"Couldn't find jira issue");
             
-            Assert.IsTrue(total != 0,"Couldn't find slack message");
+            Assert.IsTrue(totalMessagesFound != 0,"Couldn't find slack message");
 
             //Deleting test issues
             foreach (var issue in issues)
@@ -195,7 +225,7 @@ namespace terminalIntegrationTests.Integration
 
         private async Task<ActivityPayload> GetPayload(Guid activityId)
         {
-            var activity = await RestfulServiceClient.GetAsync(new Uri(GetHubApiBaseUrl()+ "/activities/get/" + activityId));
+            var activity = await RestfulServiceClient.GetAsync(new Uri(GetHubApiBaseUrl()+ "activities/get/" + activityId));
             var DTO = JsonConvert.DeserializeObject<ActivityDTO>(activity);
             return Mapper.Map<ActivityPayload>(DTO);
         }

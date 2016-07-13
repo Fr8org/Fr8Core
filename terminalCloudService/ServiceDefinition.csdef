@@ -203,6 +203,17 @@
           <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-terminalFacebook.fr8.co" />
         </Bindings>
       </Site>
+      <Site name="terminalInstagram" physicalDirectory="..\..\..\terminalInstagram\azure.publish">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="terminalInstagram" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalInstagram.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="dev-terminalInstagram.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="demo-terminalInstagram.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="terminalInstagram.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="dev-terminalInstagram.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-terminalInstagram.fr8.co" />
+        </Bindings>
+      </Site>
       <Site name="PlanDirectory" physicalDirectory="..\..\..\Services\PlanDirectory\azure.publish">
         <Bindings>
           <Binding name="Endpoint1" endpointName="PlanDirectory" />
@@ -243,6 +254,7 @@
       <Setting name="Fr8.ConnectionString"/>
       <Setting name="CoreWebServerUrl"/>
       <Setting name="HubApiBaseUrl"/>
+      <Setting name="LoggerNamePrefix"/>
       <Setting name="terminalAtlassian.TerminalEndpoint"/>
       <Setting name="terminalAzure.TerminalEndpoint"/>
       <Setting name="terminalBasecamp2.TerminalEndpoint"/>
@@ -262,6 +274,7 @@
       <Setting name="terminalBox.TerminalEndpoint"/>
 	    <Setting name="terminalStatX.TerminalEndpoint"/>
       <Setting name="terminalFacebook.TerminalEndpoint"/>
+      <Setting name="terminalInstagram.TerminalEndpoint"/>
       <Setting name="terminalTelegram.TerminalEndpoint"/>
       <Setting name="OutboundUserName"/>
       <Setting name="OutboundUserPassword"/>
@@ -292,6 +305,7 @@
       <InputEndpoint name="terminalFacebook" protocol="http" port="22666" />
       <InputEndpoint name="terminalBox" protocol="http" port="54642" />
       <InputEndpoint name="terminalTelegram" protocol="http" port="59022" />
+      <InputEndpoint name="terminalInstagram" protocol="http" port="10109" />
       <InputEndpoint name="PlanDirectory" protocol="http" port="64879" />
     </Endpoints>
     <Imports>

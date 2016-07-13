@@ -16,6 +16,7 @@ namespace Hub.Services
     public class ActivityTemplate : IActivityTemplate
     {
         private readonly ITerminal _terminal;
+        private readonly IActivityCategory _activityCategory;
         private readonly Dictionary<Guid, ActivityTemplateDO> _activityTemplates = new Dictionary<Guid, ActivityTemplateDO>();
         private bool _isInitialized;
 
@@ -25,10 +26,11 @@ namespace Hub.Services
             private set;
         }
         
-        public ActivityTemplate(ITerminal terminal)
+        public ActivityTemplate(ITerminal terminal, IActivityCategory activityCategory)
         {
             IsATandTCacheDisabled = string.Equals(CloudConfigurationManager.GetSetting("DisableATandTCache"), "true", StringComparison.InvariantCultureIgnoreCase);
             _terminal = terminal;
+            _activityCategory = activityCategory;
         }
 
         private void Initialize()
@@ -60,7 +62,11 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                foreach (var activityTemplate in uow.ActivityTemplateRepository.GetQuery().Include(x=>x.WebService))
+                var query = uow.ActivityTemplateRepository.GetQuery()
+                    .Include(x => x.WebService)
+                    .Include(x => x.Categories)
+                    .Include("Categories.ActivityCategory");
+                foreach (var activityTemplate in query)
                 {
                     _activityTemplates[activityTemplate.Id] = Clone(activityTemplate);
                 }
@@ -156,18 +162,33 @@ namespace Hub.Services
         private ActivityTemplateDO Clone(ActivityTemplateDO source)
         {
             var newTemplate = new ActivityTemplateDO();
-
             CopyPropertiesHelper.CopyProperties(source, newTemplate, false);
-
             newTemplate.Terminal = _terminal.GetByKey(source.TerminalId);
           
             if (source.WebService != null)
             {
                 var webService = new WebServiceDO();
-                
                 CopyPropertiesHelper.CopyProperties(source.WebService, webService, false);
-                
                 newTemplate.WebService = webService;
+            }
+
+            if (source.Categories != null)
+            {
+                newTemplate.Categories = new List<ActivityCategorySetDO>();
+                foreach (var acs in source.Categories)
+                {
+                    var newActivityCategory = new ActivityCategoryDO();
+                    var activityCategory = _activityCategory.GetById(acs.ActivityCategoryId);
+                    CopyPropertiesHelper.CopyProperties(activityCategory, newActivityCategory, false);
+
+                    newTemplate.Categories.Add(new ActivityCategorySetDO()
+                    {
+                        ActivityTemplateId = newTemplate.Id,
+                        ActivityTemplate = newTemplate,
+                        ActivityCategoryId = newActivityCategory.Id,
+                        ActivityCategory = newActivityCategory
+                    });
+                }
             }
 
             return newTemplate;
@@ -214,11 +235,82 @@ namespace Hub.Services
           
         }
 
+        private List<ActivityCategorySetDO> ApplyActivityCategories(
+            IUnitOfWork uow, 
+            ActivityTemplateDO activityTemplate,
+            List<ActivityCategoryDO> activityCategories)
+        {
+            // Remove previously registered ActivityCategorySets.
+            var existingActivityCategorySets = uow.ActivityCategorySetRepository
+                .GetQuery()
+                .Where(x => x.ActivityTemplateId == activityTemplate.Id)
+                .ToList();
+
+            foreach (var activityCategorySet in existingActivityCategorySets)
+            {
+                uow.ActivityCategorySetRepository.Remove(activityCategorySet);
+            }
+
+            // Add new activityCategorySets.
+            var activityCategorySets = new List<ActivityCategorySetDO>();
+
+            foreach (var activityCategory in activityCategories)
+            {
+                var registeredActivityCategory = _activityCategory.RegisterOrUpdate(activityCategory);
+
+                var activityCategorySet = new ActivityCategorySetDO()
+                {
+                    Id = Guid.NewGuid(),
+                    ActivityTemplateId = activityTemplate.Id,
+                    ActivityCategoryId = registeredActivityCategory.Id
+                };
+
+                activityCategorySets.Add(activityCategorySet);
+                uow.ActivityCategorySetRepository.Add(activityCategorySet);
+            }
+
+            uow.SaveChanges();
+
+            return activityCategorySets;
+        }
+
         public void RegisterOrUpdate(ActivityTemplateDO activityTemplateDo)
         {
             if (activityTemplateDo == null)
             {
                 return;
+            }
+
+            // validate values
+            if (string.IsNullOrWhiteSpace(activityTemplateDo.Name))
+            {
+                throw new ArgumentOutOfRangeException("ActivityTemplate.Name can't be empty");
+            }
+
+            if (string.IsNullOrWhiteSpace(activityTemplateDo.Label))
+            {
+                throw new ArgumentOutOfRangeException("ActivityTemplate.Label can't be empty");
+            }
+
+            if (string.IsNullOrWhiteSpace(activityTemplateDo.Version))
+            {
+                throw new ArgumentOutOfRangeException("ActivityTemplate.Version can't be empty");
+            }
+
+            int tempVersion;
+            if (!int.TryParse(activityTemplateDo.Version, out tempVersion))
+            {
+                throw new ArgumentOutOfRangeException($"ActivityTemplate.Version is not a valid integer value: {activityTemplateDo.Version}");
+            }
+
+            if (activityTemplateDo.WebService == null)
+            {
+                throw new ArgumentOutOfRangeException("ActivityTemplate.WebService is not set");
+            }
+
+            if (string.IsNullOrWhiteSpace(activityTemplateDo.WebService.Name))
+            {
+                throw new ArgumentOutOfRangeException("ActivityTemplate.WebService.Name can't be empty");
             }
 
             // we are going to change activityTemplateDo. It is not good to corrupt method's input parameters.
@@ -229,6 +321,7 @@ namespace Hub.Services
             
             clone.Terminal = activityTemplateDo.Terminal;
 
+            // Make copy of web-service reference and add it to 
             if (activityTemplateDo.WebService != null)
             {
                 var wsClone = new WebServiceDO();
@@ -236,8 +329,17 @@ namespace Hub.Services
                 clone.WebService = wsClone;
             }
 
+            // Create list of activity categories for current ActivityTemplate.
+            var activityCategories = new List<ActivityCategoryDO>();
+            if (activityTemplateDo.Categories != null)
+            {
+                foreach (var acs in activityTemplateDo.Categories)
+                {
+                    activityCategories.Add(acs.ActivityCategory);
+                }
+            }
+
             activityTemplateDo = clone;
-            
             activityTemplateDo.Terminal = null; // otherwise we can add dupliacte terminals into the DB
             
             if (!IsATandTCacheDisabled)
@@ -249,6 +351,7 @@ namespace Hub.Services
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
+                    // Create new WebService entity or update reference to existing WebService entity.
                     if (activityTemplateDo.WebService != null)
                     {
                         var existingWebService = uow.WebServiceRepository.FindOne(x => x.Name == activityTemplateDo.WebService.Name);
@@ -265,16 +368,26 @@ namespace Hub.Services
                         }
                     }
                     
-                    var activity = uow.ActivityTemplateRepository.GetQuery().Include(x => x.WebService).FirstOrDefault(t => t.Name == activityTemplateDo.Name
-                                                                                                                         && t.TerminalId == activityTemplateDo.TerminalId
-                                                                                                                         && t.Version == activityTemplateDo.Version);
+                    // Try to extract existing ActivityTemplate.
+                    var activity = uow.ActivityTemplateRepository.GetQuery()
+                        .Include(x => x.WebService)
+                        .FirstOrDefault(t => t.Name == activityTemplateDo.Name
+                            && t.TerminalId == activityTemplateDo.TerminalId
+                            && t.Version == activityTemplateDo.Version);
 
+                    // We're creating new ActivityTemplate.
                     if (activity == null)
                     {
+                        activity = activityTemplateDo;
                         activityTemplateDo.Id = Guid.NewGuid();
-                        uow.ActivityTemplateRepository.Add(activity = activityTemplateDo);
+                        activityTemplateDo.Categories = null;
+
+                        uow.ActivityTemplateRepository.Add(activityTemplateDo);
                         uow.SaveChanges();
+
+                        activityTemplateDo.Categories = ApplyActivityCategories(uow, activityTemplateDo, activityCategories);
                     }
+                    // We're updating existing ActivityTemplate.
                     else
                     {
                         // This is for updating activity template
@@ -282,6 +395,8 @@ namespace Hub.Services
                         activity.ActivityTemplateState = ActivityTemplateState.Active;
                         activity.WebService = activityTemplateDo.WebService;
                         uow.SaveChanges();
+
+                        activity.Categories = ApplyActivityCategories(uow, activity, activityCategories);
                     }
 
                     _activityTemplates[activity.Id] = Clone(activity);

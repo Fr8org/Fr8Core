@@ -15,6 +15,7 @@ using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Services;
 using terminalUtilities.Excel;
+using Fr8.TerminalBase.Infrastructure;
 
 namespace terminalExcel.Actions
 {
@@ -212,9 +213,20 @@ namespace terminalExcel.Actions
             Category = ActivityCategory.Forwarders,
             Terminal = TerminalData.TerminalDTO,
             MinPaneWidth = 300,
-            WebService = TerminalData.WebServiceDTO
+            WebService = TerminalData.WebServiceDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
+        protected override Task Validate()
+        {
+            ValidationManager.ValidateCrateChooserNotEmpty(ActivityUI.UpstreamCrateChooser, "A selection must be made.");
+            return Task.FromResult(0);
+        }
 
         public override async Task Run()
         {

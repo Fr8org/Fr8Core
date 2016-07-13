@@ -35,13 +35,7 @@ namespace terminalDocuSign.Services
 
         public async Task<PollingDataDTO> Poll(IHubCommunicator hubCommunicator, PollingDataDTO pollingData)
         {
-            var authtoken = await hubCommunicator.GetAuthToken(pollingData.ExternalAccountId);
-            if (authtoken == null)
-            {
-                pollingData.Result = false;
-                return pollingData;
-            }
-            var config = _docuSignManager.SetUp(authtoken);
+            var config = _docuSignManager.SetUp(pollingData.AuthToken);
             EnvelopesApi api = new EnvelopesApi((Configuration)config.Configuration);
             List<DocuSignEnvelopeCM_v2> changed_envelopes = new List<DocuSignEnvelopeCM_v2>();
 
@@ -56,7 +50,7 @@ namespace terminalDocuSign.Services
                     EnvelopeId = envelope.EnvelopeId,
                     Status = envelope.Status,
                     StatusChangedDateTime = DateTime.Parse(envelope.StatusChangedDateTime),
-                    ExternalAccountId = JToken.Parse(authtoken.Token)["Email"].ToString(),
+                    ExternalAccountId = JToken.Parse(pollingData.AuthToken)["Email"].ToString(),
                 };
 
                 changed_envelopes.Add(envelopeCM);

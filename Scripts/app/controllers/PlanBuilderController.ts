@@ -82,8 +82,7 @@ module dockyard.controllers {
             'AuthService',
             'ConfigureTrackerService',
             'SubPlanService',
-            '$stateParams',
-            '$window'
+            '$stateParams'
         ];
 
         private _longRunningActionsCounter: number;
@@ -214,13 +213,17 @@ module dockyard.controllers {
             }
 
 
-            $scope.$watch(function () {
-                return $(".resizable").width();
-            }, function (newVal, oldVal) {
-                if (newVal !== oldVal) {
-                    $(".designer-header-fixed").width(newVal);
+            $scope.$watch(
+                function () {
+                    return $(".resizable").width();
+                },
+                function (newVal, oldVal) {
+                    if (newVal !== oldVal) {
+                        $('.designer-header-fixed').width(newVal);
+                        $('.activity-picker-container').width(newVal);
+                    }
                 }
-            })
+            );
 
             //Group: which group action is dropped to
             //actionId: id of dropped action
@@ -457,12 +460,14 @@ module dockyard.controllers {
 
         private reloadFirstActions() {
             this.$timeout(() => {
-                this.$scope.current.plan.subPlans.forEach(
-                    plan => {
-                        if (plan.activities.length > 0) {
-                            this.$scope.reConfigureAction(plan.activities[0])
-                        }
-                    });
+                if (this.$scope.current.plan.planState != dockyard.model.PlanState.Running) {
+                    this.$scope.current.plan.subPlans.forEach(
+                        plan => {
+                            if (plan.activities.length > 0) {
+                                this.$scope.reConfigureAction(plan.activities[0])
+                            }
+                        });
+                }
             }, 1500);
         }
 

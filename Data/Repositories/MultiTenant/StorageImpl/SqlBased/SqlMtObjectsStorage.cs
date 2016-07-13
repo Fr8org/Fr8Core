@@ -175,8 +175,8 @@ namespace Data.Repositories.MultiTenant.Sql
                         }
                     }
 
-                    command.CommandText = string.Format(MtSelectScalarTemplate, whereTemplate); 
-                    
+                    command.CommandText = string.Format(MtSelectScalarTemplate, whereTemplate);
+
                     return (int)Convert.ChangeType(command.ExecuteScalar(), typeof(int));
                 }
             }
@@ -204,9 +204,9 @@ namespace Data.Repositories.MultiTenant.Sql
                 fields.Add("Value" + (mtPropertyInfo.Index + 1));
             }
 
-            var tableDefintionOuter = string.Join(", ", fields.Select(x=> "tmp." + x));
+            var tableDefintionOuter = string.Join(", ", fields.Select(x => "tmp." + x));
             var tableDefintionInner = string.Join(", ", fields.Select(x => "[md]." + x));
-            
+
             using (var connection = OpenConnection(connectionProvider))
             {
                 using (var command = new SqlCommand())

@@ -22,6 +22,7 @@ namespace terminalTelegram
         public void Configuration(IAppBuilder app, bool selfHost)
         {
             ConfigureProject(selfHost, TerminalTelegramBootstrapper.ConfigureLive);
+            SwaggerConfig.Register(_configuration);
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
             app.UseWebApi(_configuration);

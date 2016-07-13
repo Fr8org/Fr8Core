@@ -164,6 +164,10 @@
       <HintPath>..\packages\structuremap.3.1.6.186\lib\net40\StructureMap.Net4.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Swashbuckle.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cd1bb07a5ac7c7bc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Swashbuckle.Core.5.3.2\lib\net40\Swashbuckle.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
@@ -199,12 +203,17 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Net.Http">
     </Reference>
+    <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebActivatorEx.2.0\lib\net40\WebActivatorEx.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actions\Generate_Table_Activity_v1.cs" />
     <Compile Include="Actions\Save_To_File_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
+    <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="Controllers\ActivityController.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
@@ -248,6 +257,132 @@
       <Name>Fr8TerminalBase.NET</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalBox\Settings.config.readme" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalYammer\Settings.Release.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalYammer\Settings.Dev.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalYammer\Settings.Demo.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalYammer\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalTwilio\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalTelegram\Settings.Release.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalTelegram\Settings.Dev.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalTelegram\Settings.Demo.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalTelegram\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalStatX\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalSlack\Settings.Release.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalSlack\Settings.Dev.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalSlack\Settings.Demo.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalSlack\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalSendGrid\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalSalesforce\Settings.Release.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalSalesforce\Settings.Dev.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalSalesforce\Settings.Demo.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalSalesforce\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalQuickBooks\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalPapertrail\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalInstagram\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalGoogle\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalFr8Core\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalFacebook\Settings.Release.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalFacebook\Settings.Dev.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalFacebook\Settings.Demo.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalFacebook\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalDropbox\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalDocuSign\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalBox\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalBasecamp2\Settings.Release.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalBasecamp2\Settings.Dev.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalBasecamp2\Settings.Demo.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalBasecamp2\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalAzure\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalAtlassian\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\PlanDirectory\Settings.Release.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\PlanDirectory\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\HubWeb\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\HealthMonitor\Settings.config.src" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -289,12 +424,17 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
+    <Error Condition="!Exists('..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets'))" />
   </Target>
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
     <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
     <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
   </Target>
+  <Import Project="..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets" Condition="Exists('..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" />
+  <Target Name="BeforeBuild">
+  </Target>
+  <Import Project="..\targets\Fr8.NugetContentRestore.targets" Condition="Exists('..\targets\Fr8.NugetContentRestore.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

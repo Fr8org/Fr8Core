@@ -201,6 +201,47 @@
       <DependentUpon>ApplicationInsights.config</DependentUpon>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Config\HealthMonitor\Settings.config.src" />
+    <None Include="Config\HubWeb\Settings.config" />
+    <None Include="Config\PlanDirectory\Settings.config" />
+    <None Include="Config\PlanDirectory\Settings.Release.config" />
+    <None Include="Config\terminalAtlassian\Settings.config" />
+    <None Include="Config\terminalAzure\Settings.config" />
+    <None Include="Config\terminalBasecamp2\Settings.config" />
+    <None Include="Config\terminalBasecamp2\Settings.Demo.config" />
+    <None Include="Config\terminalBasecamp2\Settings.Dev.config" />
+    <None Include="Config\terminalBasecamp2\Settings.Release.config" />
+    <None Include="Config\terminalBox\Settings.config" />
+    <None Include="Config\terminalDocuSign\Settings.config" />
+    <None Include="Config\terminalDropbox\Settings.config" />
+    <None Include="Config\terminalFacebook\Settings.config" />
+    <None Include="Config\terminalFacebook\Settings.Demo.config" />
+    <None Include="Config\terminalFacebook\Settings.Dev.config" />
+    <None Include="Config\terminalFacebook\Settings.Release.config" />
+    <None Include="Config\terminalFr8Core\Settings.config" />
+    <None Include="Config\terminalGoogle\Settings.config" />
+    <None Include="Config\terminalInstagram\Settings.config" />
+    <None Include="Config\terminalPapertrail\Settings.config" />
+    <None Include="Config\terminalQuickBooks\Settings.config" />
+    <None Include="Config\terminalSalesforce\Settings.config" />
+    <None Include="Config\terminalSalesforce\Settings.Demo.config" />
+    <None Include="Config\terminalSalesforce\Settings.Dev.config" />
+    <None Include="Config\terminalSalesforce\Settings.Release.config" />
+    <None Include="Config\terminalSendGrid\Settings.config" />
+    <None Include="Config\terminalSlack\Settings.config" />
+    <None Include="Config\terminalSlack\Settings.Demo.config" />
+    <None Include="Config\terminalSlack\Settings.Dev.config" />
+    <None Include="Config\terminalSlack\Settings.Release.config" />
+    <None Include="Config\terminalStatX\Settings.config" />
+    <None Include="Config\terminalTelegram\Settings.config" />
+    <None Include="Config\terminalTelegram\Settings.Demo.config" />
+    <None Include="Config\terminalTelegram\Settings.Dev.config" />
+    <None Include="Config\terminalTelegram\Settings.Release.config" />
+    <None Include="Config\terminalTwilio\Settings.config" />
+    <None Include="Config\terminalYammer\Settings.config" />
+    <None Include="Config\terminalYammer\Settings.Demo.config" />
+    <None Include="Config\terminalYammer\Settings.Dev.config" />
+    <None Include="Config\terminalYammer\Settings.Release.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -209,6 +250,7 @@
       <Name>HubWeb</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">

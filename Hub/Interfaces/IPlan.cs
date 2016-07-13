@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
 using System.Threading.Tasks;
+using Data.States;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
@@ -26,6 +27,7 @@ namespace Hub.Interfaces
         PlanDO GetPlanByActivityId(IUnitOfWork uow, Guid planActivityId);
         List<PlanDO> MatchEvents(List<PlanDO> curPlans, EventReportCM curEventReport);
         bool IsMonitoringPlan(IUnitOfWork uow, PlanDO planDo);
+        int? GetPlanState(IUnitOfWork uow, Guid planNodeId);
 
         void Enqueue(Guid curPlanId, params Crate[] curEventReport);
         Task<ContainerDTO> Run(Guid planId, Crate[] payload, Guid? containerId);

@@ -32,5 +32,6 @@ namespace HubWeb.ViewModels
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 3)]
         [Display(Name = "Organization Name")]
         public string OrganizationName { get; set; }
+        public string AnonimousId { get; set; }
     }
 }

@@ -87,6 +87,8 @@ namespace Fr8.TerminalBase.Services
 
         public void SetHubSecret(string hubUrl, string secret)
         {
+            Logger.Info($"Received the secret for Hub at '{hubUrl}'.");
+
             TaskCompletionSource<string> setSecretTask;
             var originalUrl = hubUrl;
 
