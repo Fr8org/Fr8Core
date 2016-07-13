@@ -216,16 +216,16 @@ Note that your activtiy should not change **id**, **ordering** **RootPlanNodeId*
 * **ordering** - each activity can have more that one child. Order of activities within the parent node is very important, because it affects the ordering of exectution. This property controls ordering within the parent node. 
 * **RootPlanNodeId** - this is the identifier of the plan that your activity is belong to. 
 
-Note that the SDK's being developed for different languages all seek to provide helper methods that eliminate the need for your code to directly manipulate JSON. This is more developed in some SDK's than others, but it's always getting better. For more information, look at the docs for your particular platform. 
+Note that the SDK's being developed for different languages all seek to provide helper methods that eliminate the need for your code to directly manipulate JSON. This is more developed in some SDK's than others, but it's always getting better. For more information, [look at the docs for your particular platform](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/SDKHome.md). 
 
 After completing this step, restart your Terminal and add your activity to the plan. You should see the UI with two labeled TextBoxes.
 
 
 ### Followup configuration
 
-Let's add some [DesignTime](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Fr8Modes.md) logic to our activity. As it was mentioned in the previous section you should implement some simple switching logic: you should check **crateStorage** property value. If it is empty or null you should run Initial Configuration logic. What to do if **crateStorage** is not empty is the subject of this section. 
+Let's add some [Design-Time](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Fr8Modes.md) logic to our activity. As discussed above, your Terminal should inspect the **crateStorage** property value. If it is empty or null you should run Initial Configuration logic. Let's examine a scenario where it's not empty.
 
-So, the user added your activity to the plan. He or she enjoyed the activity UI for a while and than decided to change some configuration value. When this has happend Hub will call **/activities/configure** endpoint again and pass information about the activity with accordingly updated values of configuration controls. Lets immagine that our user filled out his name in the corresponding text box and the name of our user is: **Dave Bowman**. Here is what the Hub will send to our terminal:
+Suppose the user added your activity to the plan. He or she returned the next day, logged in and decided to change a configuration value. When this has happend Hub will call **/activities/configure** endpoint again and pass information about the activity with accordingly updated values of configuration controls. Lets immagine that our user filled out his name in the corresponding text box and the name of our user is: **Dave Bowman**. Here is what the Hub will send to our terminal:
 
 
 ```javascript
@@ -326,9 +326,13 @@ So, the user added your activity to the plan. He or she enjoyed the activity UI 
    "ExplicitData":null
 }
 ```
-Note that the **value** property of the text box with **name** *"UserName"* is containing out user's name. That's how follow-up configuration works. User makes changes and updated controls values are send to your terminal. Your terminal can read updated values and execute some logic, if it is required. For example: user fills connection string to the DB, activity reads this connection string and fills out drop-down list with tables. Sometimes it is not neccessary to perform any specific logic during the follow-up configuration. In this case your terminal should return the same data data, that was passed to the terminal with **/activities/configure** request. So the general rule for the follow-up configuration: 
+Note that the **value** property of the text box with **name** *"UserName"* is populated with the value the User entered. Your treatment of User-provided configuration inputs can be passive or active. In a passive situation, the User might change the value of a text field, and you might never find out about it until run-time, because the Client had no reason to make an additional /configure call to you. 
 
-	You should not re-create crates in acitivty's crate storage. You should only update their contents accordingly to your requirements.  
+Active treatment is used for scenarios where you want to update the UI presented to the UI in response to the user's actions. For example, they start by providing a connection string to a db. You want to force the Client to pass that to you (via another /configure call) so that you can connect to the DB, extract the tables and columns, and make them availble in a query widget. You can specify events that should trigger a /configure call using [Configuration Control Events](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/ConfigurationControlEvents.md).
+
+Just because you receive a /configure call, don't feel that you have to take action. There are a bunch of other factors, outside of your control, that might cause the Client to want to update all activities by calling their /configure endpoints. In this case your terminal should return the same data that was passed to the terminal with **/activities/configure** request.
+
+You should not re-create or duplicate crates in Activity CrateStorage without a good reason. In general, use DRY principles. If you're modifying a Crate of Data, modify it in place.  
     
 In our sample terminal we will update the value of the text box with **"name": "GreetingText"** based on user name.
  
