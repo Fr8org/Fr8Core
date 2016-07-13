@@ -62,7 +62,7 @@ namespace Fr8.TerminalBase.Services
 
             public FieldConfigurator AddField(string name)
             {
-                return AddField(new FieldDTO(name, AvailabilityType.RunTime)
+                return AddField(new FieldDTO(name, _availabilityType)
                 {
                     SourceCrateManifest = _manifestType,
                     SourceCrateLabel = _label,
@@ -145,7 +145,7 @@ namespace Fr8.TerminalBase.Services
 
                 foreach (var memberAccessor in members)
                 {
-                    fields.Add(new FieldDTO(memberAccessor.Name, AvailabilityType.RunTime)
+                    fields.Add(new FieldDTO(memberAccessor.Name, availabilityType)
                     {
                         SourceCrateLabel = label,
                         SourceCrateManifest = manifestType
