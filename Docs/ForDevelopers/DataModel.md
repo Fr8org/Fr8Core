@@ -8,4 +8,6 @@ Fr8 does not use a central database. Instead, data lives in Crates, which are st
 
 The [Manifest](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CratesManifest.md) information refers to a shared registry of Crate specifications. This allows Activity A to store data in a Crate using a particular manifest, and know that unknown Activity B, downstream, will be able to look for that Crate and effectively process it.  
 
+[Crates Home](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Crate.md)
+
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
