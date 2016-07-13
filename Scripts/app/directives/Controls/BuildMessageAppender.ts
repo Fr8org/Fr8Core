@@ -30,8 +30,8 @@ module dockyard.directives.buildMessageAppender {
             };
 
             $scope.insertToTextBox = () => {
-                if (!angular.isUndefined($scope.dropDownListBox.value)){
-                    $scope.field.value += '[' + $scope.dropDownListBox.value + ']';
+                if (!angular.isUndefined($scope.dropDownListBox.selectedKey)) {
+                    $scope.field.value += '[' + $scope.dropDownListBox.selectedKey + ']';
                 }
             };
         }];
