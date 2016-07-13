@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web.Hosting;
 using Data.Entities;
 using Data.Repositories;
 using Fr8.Infrastructure.Data.DataTransferObjects;
@@ -33,7 +34,7 @@ namespace PlanDirectory.Infrastructure
             IList<PageDefinitionDO> pageDefinitions,
             string fr8AccountId)
         {
-            var path = @"D:\\Dev\\fr8company\\Services\\PlanDirectory\\CategoryPages\\";
+            var path = Path.Combine(HostingEnvironment.MapPath("~"), "CategoryPages");
 
             foreach (var tag in storage.WebServiceTemplateTags)
             {
@@ -73,7 +74,7 @@ namespace PlanDirectory.Infrastructure
                 template.Initialize();
 
                 string pageContent = template.TransformText();
-                File.WriteAllText(path + fileName + PageExtension, pageContent);
+                File.WriteAllText(path + "\\" + fileName + PageExtension, pageContent);
             }
             return Task.FromResult(0);
         }
