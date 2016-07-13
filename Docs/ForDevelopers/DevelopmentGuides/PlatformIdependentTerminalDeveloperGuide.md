@@ -35,6 +35,7 @@ Activity execution is a bit more complex than configuration. There are three end
 We've touched on elements of creating a simple Activity. Actual business-oriented activities and terminals wil much more complex.
 
 More Information:
+
 [Authentication](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Authorization/Home.md)
 
 [Validation](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/ActivitiesValidation.md)
