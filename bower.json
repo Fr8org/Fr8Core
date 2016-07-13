@@ -34,7 +34,7 @@
     "jquery-placeholder": "2.0.7",
     "jquery-validation": "1.12.0",
     "jquery.cookie-min": "~1.4.1",
-    "jquery.ui": "~1.11.2",
+    "jquery-ui": "1.11.4",
     "mb-scrollbar": "~2.2.0",
     "modernizr": "~2.8.2",
     "moment": "~2.10.6",
@@ -67,6 +67,6 @@
   },
   "devDependencies": {
     "angular-ivh-treeview": "~1.0.3",
-    "jquery-ui": "^1.11.4"
+    "jquery-ui": "1.11.4"
   }
 }
