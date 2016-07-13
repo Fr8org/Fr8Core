@@ -3,9 +3,9 @@
 
 ## Terminal Discovery
 
-(For the rest of this document we will assume that you've published the terminal using endpoint: 
+For the rest of this document we will assume that you've published the terminal using endpoint: 
 
-	http://terminal.com)
+	http://terminal.com
 	
 Hubs maintain a list of Terminals that they know about and periodically send GET /discover requests to them to get updated information on the Terminals and their Activities.
 
