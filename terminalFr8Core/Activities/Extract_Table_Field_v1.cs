@@ -275,7 +275,7 @@ namespace terminalFr8Core.Activities
         public override async Task FollowUp()
         {
             var tableChooser = GetControl<CrateChooser>("TableChooser");
-            var selectedCrateDescription = tableChooser.CrateDescriptions.FirstOrDefault(c => c.Selected);
+            var selectedCrateDescription = tableChooser.CrateDescriptions?.FirstOrDefault(c => c.Selected);
             if (selectedCrateDescription == null)
             {
                 return;

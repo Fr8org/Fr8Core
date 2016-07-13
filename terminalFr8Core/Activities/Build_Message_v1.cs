@@ -60,7 +60,8 @@ namespace terminalFr8Core.Activities
                         ManifestType = CrateManifestTypes.StandardDesignTimeFields,
                         RequestUpstream = true,
                         AvailabilityType = AvailabilityType.RunTime
-                    }
+                    },
+                    Value = string.Empty
                 };
                 Controls = new List<ControlDefinitionDTO> { Name, Body };
             }
