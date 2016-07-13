@@ -280,7 +280,6 @@
     <Compile Include="Infrastructure\SalesforceObjectOperations.cs" />
     <Compile Include="Infrastructure\SalesforceObjectType.cs" />
     <Compile Include="Infrastructure\SalesforceObjectProperties.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
