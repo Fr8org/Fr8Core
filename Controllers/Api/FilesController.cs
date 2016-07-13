@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -15,10 +16,11 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;
+using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
 {
-    //
+    
     public class FilesController : ApiController
     {
         private readonly IFile _fileService;
@@ -50,9 +52,9 @@ namespace HubWeb.Controllers
             {
                 var currentUserId = _security.GetCurrentUser();
 
-                await Request.Content.ReadAsMultipartAsync<MultipartMemoryStreamProvider>(new MultipartMemoryStreamProvider()).ContinueWith((tsk) =>
+                await Request.Content.ReadAsMultipartAsync(new MultipartMemoryStreamProvider()).ContinueWith(tsk =>
                 {
-                    MultipartMemoryStreamProvider prvdr = tsk.Result;
+                    var prvdr = tsk.Result;
 
                     foreach (HttpContent ctnt in prvdr.Contents)
                     {
@@ -173,7 +175,7 @@ namespace HubWeb.Controllers
         /// <summary>
         /// Retrieves the list of file descriptions owned by current user
         /// </summary>
-        /// <response code="200">Contents of specified file as byte array</response>
+        /// <response code="200">Collection of files</response>
         /// <response code="403">Unauthorized request</response>
         [HttpGet]
         [Fr8HubWebHMACAuthenticate]
@@ -227,9 +229,10 @@ namespace HubWeb.Controllers
         /// Deletes file with specified Id
         /// </summary>
         /// <param name="id">Id of the file specified</param>
-        /// <response code="204">File was succesfully deleted</response>
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
+        [SwaggerResponse(HttpStatusCode.NoContent, "File was successfully delete")]
+        [SwaggerResponseRemoveDefaults]
         public void Delete(int id)
         {
             _fileService.Delete(id);
