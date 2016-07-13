@@ -13,6 +13,7 @@ module dockyard.directives.buildMessageAppender {
         dropDownListBox: model.DropDownList;
         insertToTextBox: (value: string) => void;
         onBlur: (field: model.TextArea) => void;
+
     }
 
     export function BuildMessageAppender(): ng.IDirective {
@@ -43,7 +44,8 @@ module dockyard.directives.buildMessageAppender {
                 plan: '=',
                 field: '=',
                 currentAction: '=',
-                change: '&'
+                change: '&',
+                isDisabled:'='
             }
         };
     }
