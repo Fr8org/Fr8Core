@@ -107,6 +107,11 @@ namespace HubWeb
                         {
                             c.IncludeXmlComments(fileName);
                         }
+                        fileName = $@"{AppDomain.CurrentDomain.BaseDirectory}\bin\Fr8Infrastructure.NET.xml";
+                        if (System.IO.File.Exists(fileName))
+                        {
+                            c.IncludeXmlComments(fileName);
+                        }
 
 
                         // Swashbuckle makes a best attempt at generating Swagger compliant JSON schemas for the various types

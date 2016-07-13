@@ -40,7 +40,7 @@ namespace HubWeb.Controllers
             _authorization = ObjectFactory.GetInstance<IAuthorization>();
         }
         /// <summary>
-        /// Authenticates user with specified credentials within specified terminal
+        /// Authenticates user with specified credentials within specified terminal. Returns authorazition token, terminal id and error message if there is any
         /// </summary>
         /// <param name="credentials">Authentication parameters</param>
         /// <remarks>Fr8 authentication headers must be provided</remarks>
