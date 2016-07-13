@@ -349,7 +349,14 @@
   </Target>
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
   <Import Project="..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets" Condition="Exists('..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" />
-  <Target Name="BeforeBuild">
+  <ItemGroup>
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.config" />
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.Demo.config" />
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.Dev.config" />
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.Release.config" />
+  </ItemGroup>
+  <Target Name="BeforeCompile">
+    <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
   </Target>
   <Import Project="..\targets\Fr8.NugetContentRestore.targets" Condition="Exists('..\targets\Fr8.NugetContentRestore.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

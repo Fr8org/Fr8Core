@@ -154,7 +154,7 @@ namespace terminalSalesforce.Actions
 
             var runtimeCrateLabel = GenerateRuntimeDataLabel();
 
-            var salesforceObjectFields = Storage.FirstCrate<CrateDescriptionCM>().Content.CrateDescriptions.First(x => x.Label == runtimeCrateLabel).Fields.Select(x => x.Name).ToArray();
+            var salesforceObjectFields = Storage.FirstCrate<CrateDescriptionCM>().Content.CrateDescriptions.First(x => x.Label == runtimeCrateLabel).Fields;
 
             //for each Salesforce event notification
             var sfEventsList = Payload.CrateContentsOfType<SalesforceEventCM>().ToList();

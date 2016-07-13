@@ -12,6 +12,7 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using StructureMap;
+using System.Text.RegularExpressions;
 
 namespace Data.Migrations
 {
@@ -78,15 +79,35 @@ namespace Data.Migrations
             // Example of terminal registration: RegisterTerminal (uow, "localhost:12345");   
             RegisterTerminal(uow, "localhost:10109");
         }
-        
+
+        private string ExtractPort(string url)
+        {
+            if (string.IsNullOrEmpty(url))
+            {
+                throw new ArgumentNullException(nameof(url));
+            }
+
+            Regex r = new Regex(@"[^/]+?:(?<port>\d+)",
+                                     RegexOptions.None, TimeSpan.FromMilliseconds(150));
+            Match m = r.Match(url);
+            if (m.Success)
+                return r.Match(url).Result("${port}");
+            else
+                return null;
+        }
+
         // ReSharper disable once UnusedMember.Local
         private void RegisterTerminal(UnitOfWork uow, string terminalEndpoint)
         {
             var terminalRegistration = new TerminalRegistrationDO();
+            string terminalPort = ExtractPort(terminalEndpoint);
 
             terminalEndpoint = ExtractTerminalAuthority(terminalEndpoint);
 
-            if (uow.TerminalRegistrationRepository.GetAll().FirstOrDefault(x => string.Equals(ExtractTerminalAuthority(x.Endpoint), terminalEndpoint, StringComparison.OrdinalIgnoreCase)) != null)
+            if (uow.TerminalRegistrationRepository.GetAll().FirstOrDefault(x =>
+                    string.Equals(ExtractTerminalAuthority(x.Endpoint), terminalEndpoint, StringComparison.OrdinalIgnoreCase) ||
+                    (ExtractPort(x.Endpoint) != null && ExtractPort(terminalEndpoint) !=null && string.Equals(ExtractPort(x.Endpoint), terminalPort, StringComparison.OrdinalIgnoreCase))
+                ) != null)
             {
                 return;
             }

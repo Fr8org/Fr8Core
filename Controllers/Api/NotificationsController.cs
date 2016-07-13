@@ -1,10 +1,12 @@
-﻿using System.Web.Http;
+﻿using System.Net;
+using System.Web.Http;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Interfaces;
 using StructureMap;
 using Hub.Infrastructure;
 using HubWeb.Infrastructure_HubWeb;
 using Data.Infrastructure.StructureMap;
+using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
 {
@@ -25,11 +27,12 @@ namespace HubWeb.Controllers
         /// </summary>
         /// <remarks>Fr8 authentication headers must be provided</remarks>
         /// <param name="notificationMessage">Message to post</param>
-        /// <response code="200">Message was successfully posted</response>
-        /// <response code="403">Unauthorized request</response>
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
+        [SwaggerResponse(HttpStatusCode.OK, "Message was successfully posted")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponseRemoveDefaults]
         public IHttpActionResult Post(TerminalNotificationDTO notificationMessage)
         {
             string userId;
