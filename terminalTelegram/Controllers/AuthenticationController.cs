@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Utilities.Logging;
 using Newtonsoft.Json;
 using terminalTelegram.TelegramIntegration;
 
@@ -38,6 +39,7 @@ namespace terminalTelegram.Controllers
             catch (Exception ex)
             {
                 credentialsDTO.Error = "An error occurred while trying to send login code, please try again later.";
+                Logger.LogError(ex.Message);
                 return credentialsDTO;
             }
         }
@@ -65,6 +67,7 @@ namespace terminalTelegram.Controllers
             }
             catch (Exception ex)
             {
+                Logger.LogError(ex.Message);
                 return new AuthorizationTokenDTO()
                 {
                     Error = "An error occurred while trying to authorize, please try again later."
