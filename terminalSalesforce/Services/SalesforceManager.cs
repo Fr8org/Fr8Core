@@ -36,20 +36,20 @@ namespace terminalSalesforce.Services
             _authentication = authentication;
             _hubCommunicator = hubCommunicator;
         }
-        
+
         public async Task<string> Create(SalesforceObjectType type, IDictionary<string, object> @object, AuthorizationToken authToken)
         {
             var result = await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.CreateAsync(type.ToString(), @object), authToken);
             return result?.Id ?? string.Empty;
         }
 
-        public async Task<StandardTableDataCM> Query(SalesforceObjectType type, IEnumerable<string> propertiesToRetrieve, string filter, AuthorizationToken authToken)
+        public async Task<StandardTableDataCM> Query(SalesforceObjectType type, IEnumerable<FieldDTO> propertiesToRetrieve, string filter, AuthorizationToken authToken)
         {
-            var whatToSelect = (propertiesToRetrieve ?? new string[0]).ToArray();
+            var whatToSelect = propertiesToRetrieve.Select(p => p.Name).ToArray();
             var selectQuery = $"SELECT {(whatToSelect.Length == 0 ? "*" : string.Join(", ", whatToSelect))} FROM {type}";
             if (!string.IsNullOrEmpty(filter))
             {
-                selectQuery += " WHERE " + filter;
+                selectQuery += " WHERE " + NormalizeFilterByFiedType(propertiesToRetrieve, filter);
             }
             var result = await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.QueryAsync<object>(selectQuery), authToken);
             var table = ParseQueryResult(result);
@@ -115,7 +115,9 @@ namespace terminalSalesforce.Services
             {
                 case "picklist":
                     return FieldType.PickList;
-
+                case "date":
+                case "datetime":
+                    return FieldType.Date;
                 default:
                     return FieldType.String;
             }
@@ -272,6 +274,33 @@ namespace terminalSalesforce.Services
         }
 
         #region Implemetation details
+
+        private string NormalizeFilterByFiedType(IEnumerable<FieldDTO> fields, string filter)
+        {
+            //split the filter by " AND "
+            var filterList = filter.Split(new string[] { " AND " }, StringSplitOptions.None).ToList();
+
+            foreach (FieldDTO field in fields)
+            {
+                //if filed exists in the filter list and field type is Date, normalize it to Salesforce expected date.
+                if (filterList.Any(filterItem => filterItem.Contains(field.Name) && field.FieldType.Equals(FieldType.Date)))
+                {
+                    var matchedFilter = filterList.Single(stringToCheck => stringToCheck.Contains(field.Name));
+                    if (!string.IsNullOrEmpty(matchedFilter))
+                    {
+                        var requiredDateFormat = matchedFilter.Substring(matchedFilter.IndexOf("'")).Replace("'", "");
+
+                        var normalizedValue = matchedFilter.Substring(0, matchedFilter.IndexOf("'")) + 
+                                           DateTime.Parse(requiredDateFormat).ToString("yyyy-MM-ddTHH:mm:ssZ");
+
+                        filterList[filterList.IndexOf(matchedFilter)] = normalizedValue;
+                    }
+                }
+            }
+
+            return string.Join(" AND ", filterList.ToArray()); ;
+        }
+
         private StandardTableDataCM ParseQueryResult(QueryResult<object> queryResult)
         {
             var parsedObjects = new List<JObject>();
