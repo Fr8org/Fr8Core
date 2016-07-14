@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Entities;
@@ -68,7 +69,7 @@ namespace terminalSlackTests.Fixtures
         {
             return new AuthorizationTokenDTO
             {
-                Token = @"xoxp-9815816992-9816213634-14997343526-d99a1c9198"
+                Token = ConfigurationManager.AppSettings["SlackAuthToken"]
             };
         }
 
