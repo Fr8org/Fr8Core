@@ -29,7 +29,8 @@ namespace terminalSalesforce.Actions
             MinPaneWidth = 500,
             Tags = Tags.UsesReconfigureList,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[] { ActivityCategories.Solution }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

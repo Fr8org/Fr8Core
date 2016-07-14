@@ -23,7 +23,12 @@ namespace terminalFr8Core.Activities
             Category = ActivityCategory.Processors,
             NeedsAuthentication = false,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Process,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -270,7 +275,7 @@ namespace terminalFr8Core.Activities
         public override async Task FollowUp()
         {
             var tableChooser = GetControl<CrateChooser>("TableChooser");
-            var selectedCrateDescription = tableChooser.CrateDescriptions.FirstOrDefault(c => c.Selected);
+            var selectedCrateDescription = tableChooser.CrateDescriptions?.FirstOrDefault(c => c.Selected);
             if (selectedCrateDescription == null)
             {
                 return;

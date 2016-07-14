@@ -8,7 +8,8 @@ namespace terminalExcel
     {
         public static WebServiceDTO WebServiceDTO = new WebServiceDTO
         {
-            Name = "Excel"
+            Name = "Excel",
+            IconPath = "/Content/icons/web_services/ms-excel-icon-64x64.png"
         };
 
         public static TerminalDTO TerminalDTO = new TerminalDTO

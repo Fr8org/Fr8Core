@@ -134,7 +134,10 @@ namespace Fr8.Infrastructure.Data.Constants
         KeyValueList = 44,
 
         [Display(Name = "StatX Item")]
-        StatXItem = 45
+        StatXItem = 45,
+
+        [Display(Name = "Instagram User Event")]
+        InstagramUserEvent = 46,
     }
 }
 
