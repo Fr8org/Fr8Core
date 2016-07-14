@@ -110,7 +110,7 @@ namespace terminalGoogle.Services
                 {
                     Logger.Info("Plan already exist");
                     var plan = plans.FirstOrDefault();
-                    if(plan.Plan.SubPlans.FirstOrDefault().Activities.Count < 8)
+                    if (plan.Plan.SubPlans.FirstOrDefault().Activities.Count < 8)
                     {
                         Logger.Info("Deleting incomplete Plan");
                         await _hubCommunicator.DeletePlan(plan.Plan.Id);
@@ -122,11 +122,11 @@ namespace terminalGoogle.Services
                     await ReApplyTokens(plans.FirstOrDefault());
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                throw new ApplicationException("Couldn't create MonitorTerminalSubmissionForm Plan  " + e.Message, e);
+                Logger.Error("Couldn't create MonitorTerminalSubmissionForm Plan", e);
+                throw new ApplicationException("Couldn't create MonitorTerminalSubmissionForm Plan", e);
             }
-
         }
 
         public async Task ConfigureAndRunPlan()
