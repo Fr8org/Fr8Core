@@ -120,7 +120,8 @@ namespace terminalGoogle.Services
             }
             catch(Exception e)
             {
-                throw new ApplicationException("Couldn't create MonitorTerminalSubmissionForm Plan " + e.StackTrace, e);
+                Logger.Error("Couldn't create MonitorTerminalSubmissionForm Plan", e);
+                throw new ApplicationException("Couldn't create MonitorTerminalSubmissionForm Plan", e);
             }
 
         }
