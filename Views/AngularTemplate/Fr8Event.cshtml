@@ -1,11 +1,11 @@
 ﻿<!--HEADER -->
 <md-list-item class="md-2-line fr8-collapse-heading" ng-click="toggle()" ng-class="{'fr8-collapse-collapsed': isCollapsed}">
     <md-icon md-font-icon="fa-{{::icon}}" class="fa fa-2x" ng-style="{'color': color}"></md-icon>
-    <div class="md-list-item-text" layout="column">
-        <div style="width: 75%">
-            <h3 ng-if="eventHeader">{{::eventHeader}}</h3>
-            <h4 ng-if="eventSubHeader">{{::eventSubHeader}}</h4>
-        </div>
+    <div class="md-list-item-text" layout="column" style="width: 75%">
+        <h3 ng-if="eventHeader">{{::eventHeader}}</h3>
+        <h4 ng-if="eventSubHeader">{{::eventSubHeader}}</h4>
+    </div>
+
     <!-- Header Footer -->
     <md-divider ng-if="!$last"></md-divider>
     <md-icon md-font-icon="fa-chevron-circle-down" class="fa fa-lg md-secondary fr8-collapse-marker"></md-icon>

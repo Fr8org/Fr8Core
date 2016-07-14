@@ -53,7 +53,7 @@ module dockyard.directives {
                 case NotificationType.GenericInfo:
                     $scope.eventHeader = 'Executing Activity';
                     $scope.eventSubHeader = $scope.event.ActivityName;
-                    $scope.eventMessage = 'For Plan: ' + $scope.event.PlanName + '/nContainer: ' + $scope.event.ContainerId;
+                    $scope.eventMessage = 'For Plan: ' + $scope.event.PlanName + '\nContainer: ' + $scope.event.ContainerId;
                     $scope.icon = 'fa fa-cogs';
                     break;
                 case NotificationType.TerminalEvent:
@@ -70,7 +70,7 @@ module dockyard.directives {
             controller: controller,
             scope: {
                 event: '=',
-                type: '@'
+                type: '='
             }
         };
     }
