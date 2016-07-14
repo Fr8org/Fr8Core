@@ -9,6 +9,7 @@ module dockyard.directives.upstreamCrateChooser {
         removeRow: (rowIndex: number) => void;
         onChange: any;
         currentAction: model.ActivityDTO;
+        isDisabled:boolean;
     }
 
 
@@ -60,7 +61,8 @@ module dockyard.directives.upstreamCrateChooser {
             scope: {
                 field: '=',
                 change: '&',
-                currentAction: '='
+                currentAction: '=',
+                isDisabled:'='
             }
         };
     }

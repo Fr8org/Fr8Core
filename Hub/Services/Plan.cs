@@ -116,6 +116,11 @@ namespace Hub.Services
 
         }
 
+        public int UserPlansCount(IUnitOfWork uow,string userId)
+        {
+            return uow.PlanRepository.GetPlanQueryUncached().Where(p => p.Fr8AccountId == userId && p.Visibility == PlanVisibility.Standard).Count();
+        }
+
         public int? GetPlanState(IUnitOfWork uow, Guid planNodeId)
         {
             var existingNode = uow.PlanRepository.GetById<PlanNodeDO>(planNodeId);
@@ -128,7 +133,7 @@ namespace Hub.Services
         {
             var initialActivity = plan.StartingSubplan.GetDescendantsOrdered()
                 .OfType<ActivityDO>()
-                .FirstOrDefault(x => uow.ActivityTemplateRepository.GetByKey(x.ActivityTemplateId).Category != ActivityCategory.Solution);
+                .FirstOrDefault(x => uow.ActivityTemplateRepository.GetByKey(x.ActivityTemplateId).Category != Fr8.Infrastructure.Data.States.ActivityCategory.Solution);
 
             if (initialActivity == null)
             {
@@ -137,7 +142,7 @@ namespace Hub.Services
 
             var activityTemplate = uow.ActivityTemplateRepository.GetByKey(initialActivity.ActivityTemplateId);
 
-            if (activityTemplate.Category == ActivityCategory.Monitors)
+            if (activityTemplate.Category == Fr8.Infrastructure.Data.States.ActivityCategory.Monitors)
             {
                 return true;
             }
@@ -178,6 +183,10 @@ namespace Hub.Services
                 submittedPlan.Id = Guid.NewGuid();
                 submittedPlan.PlanState = PlanState.Inactive;
                 submittedPlan.Fr8Account = _security.GetCurrentAccount(uow);
+                if (string.IsNullOrEmpty(submittedPlan.Name))
+                {
+                    submittedPlan.Name = "Untitled Plan " + (UserPlansCount(uow, _security.GetCurrentUser()) + 1);
+                }
 
                 submittedPlan.ChildNodes.Add(new SubplanDO(true)
                 {
