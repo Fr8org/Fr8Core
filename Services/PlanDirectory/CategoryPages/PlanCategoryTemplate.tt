@@ -1,7 +1,7 @@
 ﻿<#@ template language="C#" #>
 <#@ parameter name="Name" type="System.String" #>
 <#@ parameter name="Tags" type="System.Collections.Generic.IDictionary<System.String, System.String>" #>
-<#@ parameter name="RelatedPlans" type="System.Collections.Generic.IDictionary<System.String, System.String>" #>
+<#@ parameter name="RelatedPlans" type="System.Collections.Generic.IList<System.Tuple<System.String, System.String, System.String>>" #>
 <!DOCTYPE html>
 <html>
 <head>
@@ -55,9 +55,9 @@
                     {#>
                     <tr>
                         <th scope="row"><#=number++#></th>
-                        <td><#=plan.Key#></td>
-                        <td><#=plan.Value#></td>
-                        <td><a href="http://google.com">Create</a></td>
+                        <td><#=plan.Item1#></td>
+                        <td><#=plan.Item2#></td>
+                        <td><a href="<#=plan.Item3#>">Create</a></td>
                     </tr>                   
                     <# } #>
                     

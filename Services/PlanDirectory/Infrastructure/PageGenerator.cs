@@ -8,6 +8,7 @@ using Data.Entities;
 using Data.Repositories;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
 using PlanDirectory.CategoryPages;
 using StructureMap;
@@ -63,12 +64,23 @@ namespace PlanDirectory.Infrastructure
                 {
                     curRelatedPlans.Add(_planTemplate.Get(fr8AccountId, Guid.Parse(planTemplateId)).Result);
                 }
+
+                var relatedPlans = new List<Tuple<string, string, string>>();
+                foreach (var publishPlanTemplateDTO in curRelatedPlans)
+                {
+                    relatedPlans.Add(new
+                        Tuple<string, string, string>(
+                        publishPlanTemplateDTO.Name,
+                        publishPlanTemplateDTO.Description ?? publishPlanTemplateDTO.Name,
+                        CloudConfigurationManager.GetSetting("HubApiBaseUrl").Replace("/api/v1/", "")
+                        + "/dashboard/plans/" + publishPlanTemplateDTO.ParentPlanId + "/builder?viewMode=plan"));
+                }
                 var template = new PlanCategoryTemplate();
                 template.Session = new Dictionary<string, object>
                 {
                     ["Name"] = fileName,
                     ["Tags"] = tag.TagsWithIcons,
-                    ["RelatedPlans"] = curRelatedPlans.ToDictionary(x => x.Name, x => x.Description ?? x.Name)
+                    ["RelatedPlans"] = relatedPlans
                 };
                 // Must call this to transfer values.
                 template.Initialize();
