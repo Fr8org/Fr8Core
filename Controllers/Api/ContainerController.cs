@@ -97,6 +97,7 @@ namespace HubWeb.Controllers
         /// <response code="200">Container with specified Id. Can be empty</response>
         /// <response code="403">Unathorized request</response>
         [Fr8ApiAuthorize]
+        [ResponseType(typeof(ContainerDTO))]
         [HttpGet]
         public IHttpActionResult Get(Guid id)
         {
