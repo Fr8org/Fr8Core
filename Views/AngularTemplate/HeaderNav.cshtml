@@ -43,13 +43,13 @@
                         </li>
                     </ul>
                 </li>
-                
+
                 <!-- PLANS DROPDOWN -->
                 <li class="menu-dropdown classic-menu-dropdown">
                     <a data-toggle="dropdown" href="#" class="dropdown-toggle">Plans <i class="fa fa-angle-down"></i></a>
                     <ul class="dropdown-menu">
                         <li><a ui-sref="planList">Show All</a></li>
-                        <li event-add><a ui-sref="planForm">Add</a></li>
+                        <li event-add><a ng-click="addPlan()">Add</a></li>
                         <li><a ng-click="goToPlanDirectory('@System.Configuration.ConfigurationManager.AppSettings["PlanDirectoryUrl"]')">Plan Directory</a></li>
                         <li ng-controller="PlanUploadController"><a ng-click="showModal()">Load from JSON file</a></li>
                     </ul>
