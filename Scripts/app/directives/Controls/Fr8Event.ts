@@ -7,7 +7,6 @@ module dockyard.directives {
         GenericFailure = 2,     // fr8pusher_generic_failure
         GenericInfo = 3,        // fr8pusher_activity_execution_info
         TerminalEvent = 4,      // fr8pusher_terminal_event
-        SecurityFailure = 5     // fr8pusher_security_failure
     };
 
     export interface IFr8EventScope extends ng.IScope {
@@ -34,7 +33,7 @@ module dockyard.directives {
                 $scope.isCollapsed = !$scope.isCollapsed;
             }
 
-            // Determines notification type and add necessary attributes (except SecurityFailure)
+            // Determines notification type and add necessary attributes
             switch ($scope.type) {
                 case NotificationType.GenericSuccess:
                     $scope.eventHeader = 'Success';
