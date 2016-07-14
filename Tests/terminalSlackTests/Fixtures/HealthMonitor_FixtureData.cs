@@ -82,7 +82,7 @@ namespace terminalSlackTests.Fixtures
                new KeyValueDTO("team_id", "T07F83QLE"),
                new KeyValueDTO("team_domain", "dockyardteam"),
                new KeyValueDTO("service_id", "16193135954"),
-               new KeyValueDTO("channel_id", "C09Q069KL"),
+               new KeyValueDTO("channel_id", "C07F83S86"),
                new KeyValueDTO("channel_name", "slack - plugin - test"),
                new KeyValueDTO("timestamp", "1449594901.000014"),
                new KeyValueDTO("user_id"," U0BNK9P1N"),
