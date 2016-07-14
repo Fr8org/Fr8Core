@@ -26,6 +26,7 @@ using Fr8.Infrastructure.Data.Control;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.TerminalBase.Infrastructure;
 using System.Web;
+using terminalIntegrationTests.Fixtures;
 
 namespace terminalIntegrationTests.Integration
 {
@@ -42,11 +43,17 @@ namespace terminalIntegrationTests.Integration
 
         private readonly string jiraToken = @"{""Terminal"":null,""Username"":""fr8_atlassian_test@fr8.co"",""Password"":""shoggoth34"",""Domain"":""https://maginot.atlassian.net"",""IsDemoAccount"":false}";
 
-        private readonly string slackToken = "xoxp-7518126694-28009203829-49624084150-131bd1c65b";
-
         private const int MaxAwaitPeriod = 30000;
         private const int SingleAwaitPeriod = 3000;
         private const int PlanExecutionPeriod = 10000;
+
+        public static string SlackAuthToken
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["SlackAuthToken"];
+            }
+        }
 
         [Test]
         public async Task MonitorTerminalSubmissionPlan()
@@ -102,7 +109,7 @@ namespace terminalIntegrationTests.Integration
             Jira jira = CreateRestClient(jiraToken);
             Issue[] issues = new Issue[0];
 
-            var slackUrl = "https://slack.com/api/search.messages?token="+ slackToken + "&query=" + guidTestId.ToString();
+            var slackUrl = "https://slack.com/api/search.messages?token=" + SlackAuthToken + "&query=" + guidTestId.ToString();
             var totalMessagesFound = 0;
 
             var stopwatch = new Stopwatch();
@@ -192,7 +199,7 @@ namespace terminalIntegrationTests.Integration
 
             var tokenSDO = new AuthorizationTokenDO()
             {
-                Token = slackToken,
+                Token = SlackAuthToken,
                 ExternalAccountId = "not_user",
                 ExternalAccountName = "not_user",
                 ExternalDomainId = "T07F83QLE",
