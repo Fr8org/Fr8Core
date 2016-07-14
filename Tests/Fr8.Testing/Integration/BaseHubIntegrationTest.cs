@@ -175,46 +175,5 @@ namespace Fr8.Testing.Integration
                 activity
             );
         }
-
-        public string ParseConditionToText(List<FilterConditionDTO> filterData)
-        {
-            var parsedConditions = new List<string>();
-
-            filterData.ForEach(condition =>
-            {
-                string parsedCondition = condition.Field;
-
-                switch (condition.Operator)
-                {
-                    case "eq":
-                        parsedCondition += " = ";
-                        break;
-                    case "neq":
-                        parsedCondition += " != ";
-                        break;
-                    case "gt":
-                        parsedCondition += " > ";
-                        break;
-                    case "gte":
-                        parsedCondition += " >= ";
-                        break;
-                    case "lt":
-                        parsedCondition += " < ";
-                        break;
-                    case "lte":
-                        parsedCondition += " <= ";
-                        break;
-                    default:
-                        throw new NotSupportedException($"Not supported operator: {condition.Operator}");
-                }
-
-                parsedCondition += $"'{condition.Value}'";
-                parsedConditions.Add(parsedCondition);
-            });
-
-            var finalCondition = string.Join(" AND ", parsedConditions);
-
-            return finalCondition;
-        }
     }
 }

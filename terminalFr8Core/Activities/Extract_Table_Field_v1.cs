@@ -164,7 +164,7 @@ namespace terminalFr8Core.Activities
 
         private async Task<Crate> CreateControlsCrate()
         {
-            var crateChooser = ControlHelper.GenerateCrateChooser("TableChooser", "Select Upstream Data", true, true, true);
+            var crateChooser = UiBuilder.CreateCrateChooser("TableChooser", "Select Upstream Data", true, true);
             //this cell's list items will be filled on followup configuration
             var cellDdTemplate =  new DropDownList()
             {

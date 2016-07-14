@@ -100,10 +100,11 @@
     <Compile Include="Errors\TerminalCodedException.cs" />
     <Compile Include="Errors\TerminalErrorCode.cs" />
     <Compile Include="Helpers\ActivityHelper.cs" />
-    <Compile Include="Helpers\ControlHelper.cs" />
     <Compile Include="Helpers\ApiIntegrationHelper.cs" />
+    <Compile Include="Helpers\FilterConditionHelper.cs" />
     <Compile Include="Interfaces\IOAuthApiIntegration.cs" />
     <Compile Include="BaseClasses\OAuthApiIntegrationBase.cs" />
+    <Compile Include="Helpers\ActivityConfigurator.cs" />
     <Compile Include="Services\PlanService.cs" />
     <Compile Include="Infrastructure\AutoMapperBootstrapper.cs" />
     <Compile Include="Infrastructure\Behaviors\BaseControlMappingBehavior.cs" />
