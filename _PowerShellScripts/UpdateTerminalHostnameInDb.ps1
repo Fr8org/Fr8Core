@@ -29,7 +29,7 @@ $commandText = "UPDATE Terminals SET [Endpoint] =
 		WHERE 
 		
 		"
-Write-Host $commandText
+Write-Host $commandText 
 
 if ([System.String]::IsNullOrEmpty($overrideDbName) -ne $true) {
 	$builder = new-object system.data.SqlClient.SqlConnectionStringBuilder($connectionString)
