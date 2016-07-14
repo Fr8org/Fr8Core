@@ -57,13 +57,14 @@ namespace terminalAtlassian.Services
             }
         }
 
-        public List<KeyValueDTO> GetJiraIssue(string jiraKey, AuthorizationToken authToken)
+        public async Task<List<KeyValueDTO>> GetJiraIssue(string jiraKey, AuthorizationToken authToken)
         {
-            return InterceptJiraExceptions(() =>
+            return await InterceptJiraExceptions(() =>
             {
                 Jira jira = CreateRestClient(authToken.Token);
                 var issue = jira.GetIssue(jiraKey);
-                return CreateKeyValuePairList(issue);
+                
+                return CreateKeyValuePairList(issue, jira);
             });
         }
 
@@ -296,12 +297,16 @@ namespace terminalAtlassian.Services
             return await GetAsync(apiRequest, JsonConvert.DeserializeObject<CredentialsDTO>(token.Token)).ConfigureAwait(false);
         }
         
-        private List<KeyValueDTO> CreateKeyValuePairList(Issue curIssue)
+        private async Task<List<KeyValueDTO>> CreateKeyValuePairList(Issue curIssue, Jira jira)
         {
             List<KeyValueDTO> returnList = new List<KeyValueDTO>();
             returnList.Add(new KeyValueDTO("Key", curIssue.Key.Value));
             returnList.Add(new KeyValueDTO("Summary", curIssue.Summary));
-            returnList.Add(new KeyValueDTO("Reporter", curIssue.Reporter));
+            returnList.Add(new KeyValueDTO("ReporterUserName", curIssue.Reporter));
+
+            var reporterDisplayName = (await jira.GetUserAsync(curIssue.Reporter)).DisplayName;
+
+            returnList.Add(new KeyValueDTO("ReporterDisplayName", reporterDisplayName));
             return returnList;
         }
 
