@@ -12,6 +12,7 @@ module dockyard.directives.upstreamDataChooser {
         openModal: () => void;
         createModal: () => void;
         getGroupValue: (item: model.FieldDTO) => string;
+        isDisabled:boolean;
     }
 
     import pca = dockyard.directives.paneConfigureAction;
@@ -145,7 +146,8 @@ module dockyard.directives.upstreamDataChooser {
         public scope = {
             field: '=',
             currentAction: '=',
-            change: '&'
+            change: '&',
+            isDisabled:'='
         }
 
         private CrateHelper: services.CrateHelper;

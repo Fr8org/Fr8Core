@@ -9,12 +9,14 @@ using HubWeb.Infrastructure_HubWeb;
 using log4net;
 using Data.Interfaces;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using Fr8.Infrastructure.Communication;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Interfaces;
 using System.Web.Http.Description;
 using Fr8.Infrastructure.Utilities;
+using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
 {
@@ -25,11 +27,17 @@ namespace HubWeb.Controllers
         /// <summary>
         /// Schedules specified alarm to be executed at specified time
         /// </summary>
-        /// <param name="alarmDTO">Alarm to schedule at its startTime property</param>
-        /// <response code="200">Alarm was succesfully scheduled</response>
+        /// <remarks>
+        /// Start time of the scheduled alarm is definied by its 'start_time' property. <br />
+        /// This endpoint is generally designed to allow some activities to delay their execution giving external services time to generate some events or some data
+        /// </remarks>
+        /// <param name="alarmDTO">Alarm to schedule at specific time</param>
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
+        [SwaggerResponse(HttpStatusCode.OK, "Alarm was successfully scheduled")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponseRemoveDefaults]
         public async Task<IHttpActionResult> Post(AlarmDTO alarmDTO)
         {
             BackgroundJob.Schedule(() => Execute(alarmDTO), alarmDTO.StartTime);
@@ -65,15 +73,22 @@ namespace HubWeb.Controllers
         /// Initiates periodic requests to the terminal with the specified Id configured with specified settings
         /// </summary>
         /// <remarks>
-        /// Alarms provide the ability to resend requests with specified data to the terminal until the latter responses with status 200 OK. It works as follows. A terminal calls this endpoint with specified data and sets the time intervals. The Hub then will iteratively call the terminal until the latter replies with status 200 OK
+        /// Alarms provide the ability to resend requests with specified data to the terminal until the latter responses with status 200 OK. <br />
+        /// It works as follows.A terminal calls this endpoint with specified data and sets the time intervals. <br />
+        /// The request has the following form: <br />
+        /// <em>/alarms/polling? job_id ={0}&amp;fr8_account_id={1}&amp;minutes={2}&amp;terminal_id={3}</em><br />
+        /// So the Hub will iteratively call the terminal until the latter replies with status 200 OK.Each time it will make a POST request with the specified above data in the URL: <br />
+        /// <em>[terminalEndpoint]/terminals/[terminalName]/polling?job_id={0}&amp;fr8_account_id={1}&amp;polling_interval={2}</em><br />
+        /// <stong>Note:</stong> It should be noted that the terminal is required to have <em>/polling</em> endpoint that accepts data specified above, otherwise the exception will be thrown
         /// </remarks>
         /// <param name="terminalId">Id of the terminal to perform requests to</param>
         /// <param name="pollingData">Parameters of polling requests</param>
-        /// <response code="200">Polling was successfully initiated</response>
         [HttpPost]
+        [SwaggerResponse(HttpStatusCode.OK, "Polling was successfully initiated")]
+        [SwaggerResponseRemoveDefaults]
         public IHttpActionResult Polling([FromUri] string terminalId, [FromBody]PollingDataDTO pollingData)
         {
-            Logger.Info($"Polling: requested for {pollingData.ExternalAccountId} from a terminal {terminalId}");
+            Logger.Info($"Polling: requested for {pollingData.ExternalAccountId} from a terminal {terminalId} and addition to jobId {pollingData.AdditionToJobId}");
             pollingData.JobId = terminalId + "|" + pollingData.ExternalAccountId + pollingData.AdditionToJobId;
             RecurringJob.AddOrUpdate(pollingData.JobId, () => SchedullerHelper.ExecuteSchedulledJob(pollingData, terminalId), "*/" + pollingData.PollingIntervalInMinutes + " * * * *");
             if (pollingData.TriggerImmediately)
@@ -109,7 +124,7 @@ namespace HubWeb.Controllers
             IRestfulServiceClient _client = new RestfulServiceClient();
 
             //renewing token
-            if (!(RenewAuthToken(pollingData, terminalId)).Result)
+            if (!RenewAuthToken(pollingData, terminalId).Result)
             {
                 RecurringJob.RemoveIfExists(pollingData.JobId);
                 Logger.Info($"Polling: token is missing, removing the job for {pollingData.ExternalAccountId}");
@@ -181,7 +196,7 @@ namespace HubWeb.Controllers
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     var terminal = uow.TerminalRepository.GetQuery().FirstOrDefault(a => a.PublicIdentifier == terminalId);
-                    string url = terminal.Endpoint + "/terminals/" + terminal.Name + "/polling_notifications";
+                    var url = terminal.Endpoint + "/terminals/" + terminal.Name + "/polling_notifications";
                     Logger.Info($"Polling: executing request for {pollingData?.ExternalAccountId} from {Server.ServerUrl} to a terminal {terminal?.Name} at {terminal?.Endpoint}");
 
                     using (var client = new HttpClient())

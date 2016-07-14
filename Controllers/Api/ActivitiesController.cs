@@ -1,20 +1,20 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Http;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using Fr8.Infrastructure.Data.States;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using HubWeb.Controllers.Api;
 using HubWeb.Infrastructure_HubWeb;
 using Microsoft.AspNet.Identity;
-using StructureMap;
 using System.Web.Http.Description;
+using System.Web.Http.Results;
+using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
 {
@@ -32,22 +32,22 @@ namespace HubWeb.Controllers
             _activityService = activityService;
         }
         /// <summary>
-        /// Creates new activity with specified parameters
+        /// Creates an instance of activity from activity template optionally providing necessary authorization
         /// </summary>
         /// <remarks>
         /// Fr8 authentication headers must be provided
         /// </remarks>
-        /// <param name="activityTemplateId">Activity template Id</param>
-        /// <param name="label">Label to use in activity header</param>
+        /// <param name="activityTemplateId">Id of the activity template of the activity instance that will be created</param>
+        /// <param name="label">Label that will be shown in activity header</param>
         /// <param name="name">Name of the plan being created. If parentNodeId parameter is specified then this parameter is ignored</param>
         /// <param name="order">Position inside parent plan. If not specified then newly created activity is placed at the end of plan</param>
-        /// <param name="parentNodeId">Id of plan to add activity to. If not specified then new plan will be created and set as parent</param>
+        /// <param name="parentNodeId">Id of plan or parent activity to add new activity to. If not specified then new plan will be created and set as parent</param>
         /// <param name="authorizationTokenId">Id of authorization token to grant to the new activity. Can be empty</param>
-        /// <response code="200">Activity was succesfully created</response>
-        /// <response code="403">Unauthorized request</response>
-        /// <response code="423">Specified plan is in running state and activity can't be added to it</response>
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
+        [SwaggerResponse(HttpStatusCode.OK, "Activity was succesfully created", typeof(ActivityDTO))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponse((HttpStatusCode)423, "Specified plan is in running state and activity can't be added to it")]
         public async Task<IHttpActionResult> Create(Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, Guid? authorizationTokenId = null)
         {
             using (var uow = _uowFactory.Create())
@@ -69,14 +69,12 @@ namespace HubWeb.Controllers
         /// Callers to this endpoint expect to receive back what they need to know to encode user configuration data into the Action. The typical scenario involves a front-end client calling this and receiving back the same Action they passed, but with an attached Configuration Crate. The client renders UI based on the Configuration Crate, collects user inputs, and saves them as values in the Configuration Crate JSON. The updated Configuration Crate is then saved to the server so it will be available to the processing Terminal at run-time.
         /// </remarks>
         /// <param name="curActionDesignDTO">Activity to configure</param>
-        /// <param name="force">True (1) to force updting activity that belong to plan that is currently in running state. Otherwise activity belong or being added to running plan won't be saved</param>
-        /// <response code="200">Configured activity</response>
-        /// <response code="400">Activity is not specified or doesn't exist</response>
-        /// <response code="403">Unauthorized request</response>
-        /// <response code="423">Owning plan is in running state and activity can't be changed and force flag is not overriden</response>
+        /// <param name="force">True (1) to force updating activity that belong to plan that is currently in running state. Otherwise activity that belongs to or being added to running plan won't be saved</param>
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
-        [ResponseType(typeof(ActivityDTO))]
+        [SwaggerResponse(HttpStatusCode.OK, "Activity was successfully configured", typeof(ActivityDTO))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponse((HttpStatusCode)423, "Specified plan is in running state and 'force' flag is not set so activity can't be configured")]
         public async Task<IHttpActionResult> Configure(ActivityDTO curActionDesignDTO, [FromUri]bool force = false)
         {
             curActionDesignDTO.CurrentView = null;
@@ -98,12 +96,11 @@ namespace HubWeb.Controllers
         /// <summary>
         /// Returns an activity with the specified Id
         /// </summary>
+        /// <param name="id">Id of activity to retrieve</param>
         /// <remarks>Fr8 authentication headers must be provided</remarks>
-        /// <response code="200">Retrieved activity</response>
-        /// <response code="400">Activity doesn't exist</response>
-        /// <response code="403">Unauthorized request</response>
         [HttpGet]
-        [ResponseType(typeof(ActivityDTO))]
+        [SwaggerResponse(HttpStatusCode.OK, "Activity with specified Id", typeof(ActivityDTO))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "Activity with specified Id doesn't exist")]
         public IHttpActionResult Get(Guid id)
         {
             if (!_activityService.Exists(id))
@@ -119,12 +116,18 @@ namespace HubWeb.Controllers
         /// <summary>
         /// Deletes activity with specified Id. If 'deleteChildNodes' flag is specified, only deletes child activities of specified activity
         /// </summary>
-        /// <remarks>Fr8 authentication headers must be provided</remarks>
-        /// <response code="200">Activity was successfully deleted</response>
-        /// <response code="403">Unauthorized request</response>
-        /// <response code="423">Owning plan is in running state and activity can't be changed</response>
+        /// <remarks>
+        /// Fr8 authentication headers must be provided. <br />
+        /// Deleting of activity will make downstream activities to reconfigure which may leave them in an invalid state if they had dependency on results produced by activity being deleted
+        /// </remarks>
+        /// <param name="id">Id of activity to delete</param>
+        /// <param name="delete_child_nodes">True to delete child activities only. Otherwise false</param>
         [HttpDelete]
         [Fr8HubWebHMACAuthenticate]
+        [SwaggerResponse(HttpStatusCode.OK, "Activity was successfully deleted")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponse((HttpStatusCode)423, "Owning plan is in running state so activity can\'t be deleted")]
+        [SwaggerResponseRemoveDefaults]
         public async Task<IHttpActionResult> Delete([FromUri] Guid id, [FromUri(Name = "delete_child_nodes")] bool deleteChildNodes = false)
         {
             using (var uow = _uowFactory.Create())
@@ -134,7 +137,6 @@ namespace HubWeb.Controllers
                     return new LockedHttpActionResult();
                 }
             }
-
             if (deleteChildNodes)
             {
                 await _activityService.DeleteChildNodes(id);
@@ -143,7 +145,6 @@ namespace HubWeb.Controllers
             {
                 await _activityService.Delete(id);
             }
-
             return Ok();
         }
         /// <summary>
@@ -152,12 +153,11 @@ namespace HubWeb.Controllers
         /// <remarks>Fr8 authentication headers must be provided</remarks>
         /// <param name="curActionDTO">Activity data to save</param>
         /// <param name="force">True (1) to force updting activity that belong to plan that is currently in running state. Otherwise activity belong or being added to running plan won't be saved</param>
-        /// <response code="200">Newly created or updated activity</response>
-        /// <response code="403">Unauthorized request</response>
-        /// <response code="423">Owning plan is in running state and activity can't be changed and force flag is not overriden</response>
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
-        [ResponseType(typeof(ActivityDTO))]
+        [SwaggerResponse(HttpStatusCode.OK, "Activity was successfully created or updated")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponse((HttpStatusCode)423, "Owning plan is in running state and 'force' flag is not set so activity can\'t be changed or added to plan")]
         public async Task<IHttpActionResult> Save(ActivityDTO curActionDTO, [FromUri]bool force = false)
         {
             using (var uow = _uowFactory.Create())

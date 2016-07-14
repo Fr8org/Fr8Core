@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+﻿using System.Net;
+using System.Web.Http;
 using StructureMap;
 using Microsoft.AspNet.Identity;
 using Data.Interfaces;
@@ -9,6 +10,7 @@ using Hub.Infrastructure;
 using Hub.Services;
 using HubWeb.Infrastructure_HubWeb;
 using System.Web.Http.Description;
+using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
 {
@@ -20,7 +22,7 @@ namespace HubWeb.Controllers
         /// </summary>
         /// <remarks>Fr8 authentication headers must be provided</remarks>
         /// <param name="query">Query filter</param>
-        /// <response code="200">Collection of queries objects</response>
+        /// <response code="200">Collection of queried objects</response>
         /// <response code="403">Unauthorized request</response>
         [Fr8HubWebHMACAuthenticate]
         [HttpPost]
@@ -46,10 +48,11 @@ namespace HubWeb.Controllers
         /// </summary>
         /// <remarks>Fr8 authentication headers must be provided</remarks>
         /// <param name="query">Query filter</param>
-        /// <response code="200">Objects were succesfully deleted</response>
-        /// <response code="403">Unauthorized request</response>
         [Fr8HubWebHMACAuthenticate]
         [HttpPost]
+        [SwaggerResponse(HttpStatusCode.OK, "Objects were succesfully deleted")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponseRemoveDefaults]
         public IHttpActionResult Delete(QueryDTO query)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -61,9 +64,7 @@ namespace HubWeb.Controllers
                     User.Identity.GetUserId(),
                     query.Criteria
                     );
-
                 uow.SaveChanges();
-
                 return Ok();
             }
         }
@@ -72,10 +73,11 @@ namespace HubWeb.Controllers
         /// </summary>
         /// <remarks>Fr8 authentication headers must be provided</remarks>
         /// <param name="crateStorageDto">Crates to store in Fr8 warehouse</param>
-        /// <response code="200">Objects were succesfully saved</response>
-        /// <response code="403">Unauthorized request</response>
         [Fr8HubWebHMACAuthenticate]
         [HttpPost]
+        [SwaggerResponse(HttpStatusCode.OK, "Objects were succesfully saved")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponseRemoveDefaults]
         public IHttpActionResult Post(CrateStorageDTO crateStorageDto)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -93,7 +95,6 @@ namespace HubWeb.Controllers
 
                 uow.SaveChanges();
             }
-
             return Ok();
         }
     }
