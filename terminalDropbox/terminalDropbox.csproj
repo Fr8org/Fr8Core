@@ -295,6 +295,7 @@
     <Content Include="Config\terminalTelegram\Settings.Dev.config" />
     <Content Include="Config\terminalTelegram\Settings.Demo.config" />
     <Content Include="Config\terminalTelegram\Settings.config" />
+    <Content Include="Config\terminalStatX\Settings.config" />
     <Content Include="Config\terminalSlack\Settings.Release.config" />
     <Content Include="Config\terminalSlack\Settings.Dev.config" />
     <Content Include="Config\terminalSlack\Settings.Demo.config" />
@@ -306,6 +307,7 @@
     <Content Include="Config\terminalSalesforce\Settings.config" />
     <Content Include="Config\terminalQuickBooks\Settings.config" />
     <Content Include="Config\terminalPapertrail\Settings.config" />
+    <Content Include="Config\terminalInstagram\Settings.config" />
     <Content Include="Config\terminalGoogle\Settings.config" />
     <Content Include="Config\terminalFr8Core\Settings.config" />
     <Content Include="Config\terminalFacebook\Settings.Release.config" />
@@ -324,7 +326,9 @@
     <Content Include="Config\PlanDirectory\Settings.Release.config" />
     <Content Include="Config\PlanDirectory\Settings.config" />
     <Content Include="Config\HubWeb\Settings.config" />
-    <Content Include="Config\HealthMonitor\Settings.config.src" />
+    <Content Include="Config\HealthMonitor\Settings.config.src">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -420,7 +424,7 @@
       <Name>Fr8TerminalBase.NET</Name>
     </ProjectReference>
   </ItemGroup>
-  <Target Name="BeforeBuild">
+  <Target Name="BeforeCompile">
     <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
   </Target>
   <Import Project="..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets" Condition="Exists('..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" />

@@ -546,6 +546,24 @@ namespace Data.Infrastructure
             }
         }
 
+        private IActivityCategoryRepository _activityCategoryRepository;
+        public IActivityCategoryRepository ActivityCategoryRepository
+        {
+            get
+            {
+                return _activityCategoryRepository ?? (_activityCategoryRepository = new ActivityCategoryRepository(this));
+            }
+        }
+
+        private IActivityCategorySetRepository _activityCategorySetRepository;
+        public IActivityCategorySetRepository ActivityCategorySetRepository
+        {
+            get
+            {
+                return _activityCategorySetRepository ?? (_activityCategorySetRepository = new ActivityCategorySetRepository(this));
+            }
+        }
+
 
         public void Save()
         {

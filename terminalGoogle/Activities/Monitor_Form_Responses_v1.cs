@@ -66,7 +66,12 @@ namespace terminalGoogle.Actions
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             WebService = TerminalData.GooogleWebServiceDTO,
-            MinPaneWidth = 300
+            MinPaneWidth = 300,
+            Categories = new[]
+            {
+                ActivityCategories.Monitor,
+                new ActivityCategoryDTO(TerminalData.GooogleWebServiceDTO.Name, TerminalData.GooogleWebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

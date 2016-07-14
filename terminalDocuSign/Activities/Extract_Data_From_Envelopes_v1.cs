@@ -26,7 +26,8 @@ namespace terminalDocuSign.Activities
             MinPaneWidth = 380,
             NeedsAuthentication = true,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[] { ActivityCategories.Solution }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -102,6 +103,12 @@ namespace terminalDocuSign.Activities
             if (string.IsNullOrEmpty(actionUi.FinalActionsList.Value))
             {
                 return;
+            }
+
+            //Removing children activities when configuring solution after returning to Solution Introduction
+            if(ActivityPayload.ChildrenActivities.Count()> 0)
+            {
+                ActivityPayload.ChildrenActivities.RemoveAll(a => true);
             }
 
             // Always use default template for solution

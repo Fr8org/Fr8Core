@@ -37,7 +37,7 @@ namespace HubWeb.Controllers
             _activity = activity;
         }
         /// <summary>
-        /// Retrieves documentaion for solutions activities depends on parameters passed
+        /// Retrieves documentaion for solutions activities depending on parameters passed
         /// </summary>
         /// <param name="curActivityDTO">Activity to return documentation for</param>
         /// <response code="200">

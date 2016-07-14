@@ -377,6 +377,7 @@
     <Content Include="Config\terminalTelegram\Settings.Dev.config" />
     <Content Include="Config\terminalTelegram\Settings.Demo.config" />
     <Content Include="Config\terminalTelegram\Settings.config" />
+    <Content Include="Config\terminalStatX\Settings.config" />
     <Content Include="Config\terminalSlack\Settings.Release.config" />
     <Content Include="Config\terminalSlack\Settings.Dev.config" />
     <Content Include="Config\terminalSlack\Settings.Demo.config" />
@@ -388,6 +389,7 @@
     <Content Include="Config\terminalSalesforce\Settings.config" />
     <Content Include="Config\terminalQuickBooks\Settings.config" />
     <Content Include="Config\terminalPapertrail\Settings.config" />
+    <Content Include="Config\terminalInstagram\Settings.config" />
     <Content Include="Config\terminalGoogle\Settings.config" />
     <Content Include="Config\terminalFr8Core\Settings.config" />
     <Content Include="Config\terminalFacebook\Settings.Release.config" />
@@ -486,7 +488,7 @@
   <ItemGroup>
     <Log4netConfigFiles Include="..\Config\log4net.terminals.*" />
   </ItemGroup>
-  <Target Name="BeforeBuild">
+  <Target Name="BeforeCompile">
     <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
   </Target>
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />

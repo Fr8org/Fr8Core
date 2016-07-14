@@ -33,7 +33,12 @@ namespace terminalDocuSign.Actions
             NeedsAuthentication = true,
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
         public class ActivityUi : StandardConfigurationControlsCM
@@ -58,10 +63,11 @@ namespace terminalDocuSign.Actions
             public ActivityUi()
             {
                 TemplateSelector = new DropDownList
-                                   {
-                                       Name = nameof(TemplateSelector),
-                                       Events = new List<ControlEvent> { ControlEvent.RequestConfig }
-                                   };
+                {
+                    Name = nameof(TemplateSelector),
+                    Label = "Use DocuSign Template",
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
+                };
                 RolesFields = new List<TextSource>();
                 TextFields = new List<TextSource>();
                 CheckBoxFields = new List<CheckBox>();
@@ -84,7 +90,7 @@ namespace terminalDocuSign.Actions
         private const string AdvisoryName = "DocuSign Template Warning";
         private const string AdvisoryContent = "In your selected template you have fields with default values. Those can be changes inside advanced DocuSign UI to frendlier label.";
 
-        public Send_DocuSign_Envelope_v2(ICrateManager crateManager, IDocuSignManager docuSignManager, IConfigRepository configRepository) 
+        public Send_DocuSign_Envelope_v2(ICrateManager crateManager, IDocuSignManager docuSignManager, IConfigRepository configRepository)
             : base(crateManager, docuSignManager)
         {
             _configRepository = configRepository;

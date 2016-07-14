@@ -1,9 +1,9 @@
 ﻿<div ng-if="manifestList.listItems.length > 0 || labelList.listItems.length > 0 || fieldTypeList.listItems.length > 0"> <!--UpstreamDataChooser main container-->
     <div>Convert which upstream data:</div>
     <div style="margin-left: 20px;">
-        <label>Crate Manifest: </label><drop-down-list-box field="manifestList" change="onChange"></drop-down-list-box>
-        <label>Crate Label: </label><drop-down-list-box field="labelList" change="onChange"></drop-down-list-box>
-        <label>Field Type: </label><drop-down-list-box field="fieldTypeList" change="onChange"></drop-down-list-box>
+        <label>Crate Manifest: </label><drop-down-list-box field="manifestList" change="onChange" is-disabled="isDisabled"></drop-down-list-box>
+        <label>Crate Label: </label><drop-down-list-box field="labelList" change="onChange" is-disabled="isDisabled"></drop-down-list-box>
+        <label>Field Type: </label><drop-down-list-box field="fieldTypeList" change="onChange" is-disabled="isDisabled"></drop-down-list-box>
     </div>
 </div>
 <div ng-if="manifestList.listItems.length === 0 && labelList.listItems.length === 0 && fieldTypeList.listItems.length === 0">
