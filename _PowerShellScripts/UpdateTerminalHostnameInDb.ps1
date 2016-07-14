@@ -27,7 +27,7 @@ $commandText = "UPDATE Terminals SET [Endpoint] =
 		END))
 		
 		WHERE 
-		 
+		
 		"
 Write-Host $commandText
 
