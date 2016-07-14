@@ -727,6 +727,10 @@
     <Compile Include="Migrations\201607041029473_ActivityCategory.Designer.cs">
       <DependentUpon>201607041029473_ActivityCategory.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201607141445182_IsFr8OwnTerminal_Property.cs" />
+    <Compile Include="Migrations\201607141445182_IsFr8OwnTerminal_Property.Designer.cs">
+      <DependentUpon>201607141445182_IsFr8OwnTerminal_Property.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -1385,6 +1389,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201607041029473_ActivityCategory.resx">
       <DependentUpon>201607041029473_ActivityCategory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607141445182_IsFr8OwnTerminal_Property.resx">
+      <DependentUpon>201607141445182_IsFr8OwnTerminal_Property.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
