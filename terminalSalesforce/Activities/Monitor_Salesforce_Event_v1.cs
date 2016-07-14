@@ -24,7 +24,12 @@ namespace terminalSalesforce.Actions
             Category = ActivityCategory.Monitors,
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Monitor,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -149,7 +154,7 @@ namespace terminalSalesforce.Actions
 
             var runtimeCrateLabel = GenerateRuntimeDataLabel();
 
-            var salesforceObjectFields = Storage.FirstCrate<CrateDescriptionCM>().Content.CrateDescriptions.First(x => x.Label == runtimeCrateLabel).Fields.Select(x => x.Name).ToArray();
+            var salesforceObjectFields = Storage.FirstCrate<CrateDescriptionCM>().Content.CrateDescriptions.First(x => x.Label == runtimeCrateLabel).Fields;
 
             //for each Salesforce event notification
             var sfEventsList = Payload.CrateContentsOfType<SalesforceEventCM>().ToList();

@@ -1,12 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Data.Entities;
+using Data.Repositories;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Interfaces;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Hub.Infrastructure;
+using Hub.Interfaces;
 using PlanDirectory.Infrastructure;
 using PlanDirectory.Interfaces;
 
@@ -19,6 +24,8 @@ namespace PlanDirectory.Controllers.Api
         private readonly IPlanTemplate _planTemplate;
         private readonly ISearchProvider _searchProvider;
         private readonly ITagGenerator _tagGenerator;
+        private readonly IPageDefinition _pageDefinition;
+        private readonly IPageGenerator _pageGenerator;
 
         public PlanTemplatesController()
         {
@@ -28,6 +35,8 @@ namespace PlanDirectory.Controllers.Api
             _planTemplate = ObjectFactory.GetInstance<IPlanTemplate>();
             _searchProvider = ObjectFactory.GetInstance<ISearchProvider>();
             _tagGenerator = ObjectFactory.GetInstance<ITagGenerator>();
+            _pageGenerator = ObjectFactory.GetInstance<IPageGenerator>();
+            _pageDefinition = ObjectFactory.GetInstance<IPageDefinition>();
         }
 
         [HttpPost]
@@ -41,11 +50,23 @@ namespace PlanDirectory.Controllers.Api
 
                 var planTemplateCM = await _planTemplate.CreateOrUpdate(fr8AccountId, dto);
 
-                var tags = await _tagGenerator.GetTags(planTemplateCM, fr8AccountId);
+                var storage = await _tagGenerator.GetTags(planTemplateCM, fr8AccountId);
 
                 await _searchProvider.CreateOrUpdate(planTemplateCM);
 
-                //TODO: update page definitions
+                var pageDefinitions = new List<PageDefinitionDO>();
+                foreach (var tag in storage.WebServiceTemplateTags)
+                {
+                    var pd = new PageDefinitionDO()
+                    {
+                        Title = tag.Title,
+                        Tags = tag.TagsWithIcons.Select(x => x.Key),
+                        Type = "WebService"
+                    };
+                    pageDefinitions.Add(pd);
+                }
+
+                await _pageGenerator.Generate(storage, planTemplateCM, pageDefinitions, fr8AccountId);
 
                 return Ok();
             });

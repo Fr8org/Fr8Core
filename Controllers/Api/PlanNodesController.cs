@@ -5,13 +5,10 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
 using StructureMap;
-using Data.Infrastructure.StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.States;
-using Hub.Infrastructure;
 using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;
 
@@ -20,19 +17,13 @@ namespace HubWeb.Controllers
     public class PlanNodesController : ApiController
     {
         private readonly IPlanNode _activity;
-        private readonly ISecurityServices _security;
-        private readonly ICrateManager _crate;
-        private readonly IActivityTemplate _activityTemplate;
 
         public PlanNodesController()
         {
             _activity = ObjectFactory.GetInstance<IPlanNode>();
-            _security = ObjectFactory.GetInstance<ISecurityServices>();
-            _crate = ObjectFactory.GetInstance<ICrateManager>();
-            _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
         }
         /// <summary>
-        /// Retrieves collection of activity that are specifically positioned related to activity with specified Id
+        /// Retrieves collection of activities that are specifically positioned related to activity with specified Id
         /// </summary>
         /// <remarks>Fr8 authentication headers must be provided</remarks>
         /// <param name="id">Id of activity to use as a start point</param>

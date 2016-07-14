@@ -225,5 +225,10 @@ namespace HubTests.Services
         {
             throw new NotImplementedException();
         }
+
+        public IEnumerable<ActivityTemplateCategoryDTO> GetActivityTemplatesGroupedByCategories()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

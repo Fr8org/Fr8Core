@@ -195,6 +195,7 @@
     <Content Include="Config\terminalTelegram\Settings.Dev.config" />
     <Content Include="Config\terminalTelegram\Settings.Demo.config" />
     <Content Include="Config\terminalTelegram\Settings.config" />
+    <Content Include="Config\terminalStatX\Settings.config" />
     <Content Include="Config\terminalSlack\Settings.Release.config" />
     <Content Include="Config\terminalSlack\Settings.Dev.config" />
     <Content Include="Config\terminalSlack\Settings.Demo.config" />
@@ -206,6 +207,7 @@
     <Content Include="Config\terminalSalesforce\Settings.config" />
     <Content Include="Config\terminalQuickBooks\Settings.config" />
     <Content Include="Config\terminalPapertrail\Settings.config" />
+    <Content Include="Config\terminalInstagram\Settings.config" />
     <Content Include="Config\terminalGoogle\Settings.config" />
     <Content Include="Config\terminalFr8Core\Settings.config" />
     <Content Include="Config\terminalFacebook\Settings.Release.config" />
@@ -295,7 +297,14 @@
     <Error Condition="!Exists('..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets'))" />
   </Target>
   <Import Project="..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets" Condition="Exists('..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" />
-  <Target Name="BeforeBuild">
+  <ItemGroup>
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.config" />
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.Demo.config" />
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.Dev.config" />
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.Release.config" />
+  </ItemGroup>
+  <Target Name="BeforeCompile">
+    <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
   </Target>
   <Import Project="..\targets\Fr8.NugetContentRestore.targets" Condition="Exists('..\targets\Fr8.NugetContentRestore.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

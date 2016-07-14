@@ -23,7 +23,12 @@ namespace terminalFr8Core.Activities
             Version = "1",
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Process,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -55,7 +60,8 @@ namespace terminalFr8Core.Activities
                         ManifestType = CrateManifestTypes.StandardDesignTimeFields,
                         RequestUpstream = true,
                         AvailabilityType = AvailabilityType.RunTime
-                    }
+                    },
+                    Value = string.Empty
                 };
                 Controls = new List<ControlDefinitionDTO> { Name, Body };
             }

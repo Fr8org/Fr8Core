@@ -235,16 +235,47 @@
     <Content Include="Content\css\additionalcss\font-awesome\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\css\plan-directory.css" />
     <Content Include="Content\css\shared\main.css" />
+    <Content Include="Content\icons\web_services\basecamp2-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\facebook-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\fr8-core-icon-64x64-lower-case.png" />
+    <Content Include="Content\icons\web_services\fr8-demo-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\gmail-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\statX-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\telegram-icon-64x64.png" />
     <Content Include="Content\img\dockyard_logo.png" />
     <Content Include="Content\img\dockyard_logo_dark.png" />
     <Content Include="Content\img\dockyard_logo_white.png" />
     <Content Include="Content\img\favicon.ico" />
     <Content Include="Content\img\plan-bg.jpg" />
     <Content Include="Content\img\white-bg-overlay.png" />
+    <Content Include="Content\icons\plus.png" />
+    <Content Include="Content\icons\web_services\aws-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\Box-logo_64x64.png" />
+    <Content Include="Content\icons\web_services\docusign-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\DocuSign-Logo.png" />
+    <Content Include="Content\icons\web_services\dropbox-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\fr8-core-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\google-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\jira-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\ms-azure-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\ms-excel-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\papertrail-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\quickbooks-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\salesforce-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\sendgrid-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\slack-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\twilio-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\unknown-service.png" />
+    <Content Include="Content\icons\web_services\yammer-64x64.png" />
     <Content Include="Content\metronic\components.css" />
     <Content Include="Content\metronic\jquery.blockui.min.js" />
     <Content Include="Content\metronic\loading.gif" />
     <Content Include="Content\metronic\ui.js" />
+    <Content Include="Content\css\plan-category.css" />
+    <Content Include="CategoryPages\PlanCategoryTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>PlanCategoryTemplate.cs</LastGenOutput>
+    </Content>
     <Content Include="Global.asax" />
     <Content Include="gulpfile.js" />
     <Content Include="packages.config" />
@@ -270,6 +301,7 @@
     <Content Include="Config\terminalTelegram\Settings.Dev.config" />
     <Content Include="Config\terminalTelegram\Settings.Demo.config" />
     <Content Include="Config\terminalTelegram\Settings.config" />
+    <Content Include="Config\terminalStatX\Settings.config" />
     <Content Include="Config\terminalSlack\Settings.Release.config" />
     <Content Include="Config\terminalSlack\Settings.Dev.config" />
     <Content Include="Config\terminalSlack\Settings.Demo.config" />
@@ -281,6 +313,7 @@
     <Content Include="Config\terminalSalesforce\Settings.config" />
     <Content Include="Config\terminalQuickBooks\Settings.config" />
     <Content Include="Config\terminalPapertrail\Settings.config" />
+    <Content Include="Config\terminalInstagram\Settings.config" />
     <Content Include="Config\terminalGoogle\Settings.config" />
     <Content Include="Config\terminalFr8Core\Settings.config" />
     <Content Include="Config\terminalFacebook\Settings.Release.config" />
@@ -320,6 +353,11 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="CategoryPages\PlanCategoryTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PlanCategoryTemplate.tt</DependentUpon>
+    </Compile>
     <Compile Include="Controllers\AngularTemplateController.cs" />
     <Compile Include="Controllers\Api\AuthenticationController.cs" />
     <Compile Include="Controllers\Api\PlanTemplatesController.cs" />
@@ -327,10 +365,16 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Infrastructure\ActivityTemplateTag.cs" />
     <Compile Include="Infrastructure\AuthTokenManager.cs" />
+    <Compile Include="Infrastructure\IPageGenerator.cs" />
     <Compile Include="Infrastructure\ISearchProvider.cs" />
     <Compile Include="Infrastructure\TagGenerator.cs" />
+    <Compile Include="Infrastructure\TemplateTag.cs" />
+    <Compile Include="Infrastructure\TemplateTagStorage.cs" />
+    <Compile Include="Infrastructure\WebServiceTemplateTag.cs" />
     <Compile Include="Interfaces\ITagGenerator.cs" />
+    <Compile Include="Infrastructure\PageGenerator.cs" />
     <Compile Include="Infrastructure\PlanDirectoryHMACAuthenticateAttribute.cs" />
     <Compile Include="Infrastructure\IAuthTokenManager.cs" />
     <Compile Include="Infrastructure\PlanDirectoryAuthorizeAttribute.cs" />
@@ -369,6 +413,9 @@
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

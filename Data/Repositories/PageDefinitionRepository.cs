@@ -3,7 +3,7 @@ using Data.Interfaces;
 
 namespace Data.Repositories
 {
-    class PageDefinitionRepository : GenericRepository<PageDefinitionDO>, IPageDefinitionRepository
+    public class PageDefinitionRepository : GenericRepository<PageDefinitionDO>, IPageDefinitionRepository
     {
         public PageDefinitionRepository(IUnitOfWork uow) : base(uow) { }
     }
