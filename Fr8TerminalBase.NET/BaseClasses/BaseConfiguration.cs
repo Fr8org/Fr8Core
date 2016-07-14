@@ -101,7 +101,10 @@ namespace Fr8.TerminalBase.BaseClasses
             }
             else
             {
-                hubCommunicatorFactoryExpression = c => new DelayedHubCommunicator(c.GetInstance<IHubDiscoveryService>().GetMasterHubCommunicator());
+                //Terminal can't communicate with a specified hub in this case
+                //it can only communicate with master hub for general purpose queries
+                //or it can get a list of all hubs from discovery service
+                hubCommunicatorFactoryExpression = c => null;
             }
             
             childContainer.Configure(x =>

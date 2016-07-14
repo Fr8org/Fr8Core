@@ -134,7 +134,6 @@
     <Compile Include="Services\ActivityStore.cs" />
     <Compile Include="Services\CrateSignaller.cs" />
     <Compile Include="Services\DataHubCommunicatorBase.cs" />
-    <Compile Include="Services\DelayedHubCommunicator.cs" />
     <Compile Include="Services\DefaultActivityFactory.cs" />
     <Compile Include="Services\DefaultHubCommunicator.cs" />
     <Compile Include="Services\HubCommunicatorExtensions.cs" />
