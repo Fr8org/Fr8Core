@@ -6,6 +6,8 @@ param(
 	[string]$buildConfiguration
 )
 
+$ErrorActionPreference = 'Stop'
+
 $rootDir = Split-Path -parent $PSCommandPath
 
 $archiveFolderName = "$rootDir\HM-WebJob-Archive"
@@ -56,10 +58,24 @@ $srcRunFile = "$rootDir\..\Tests\HealthMonitor\Config\HealthMonitor\*"
 $dstRunFile = "$archiveFolderName\Config\HealthMonitor\"
 Copy-Item $srcRunFile -Destination $dstRunFile -Force
 
+# Fix the file argument 
+$configFile = $archiveFolderName + "\HealthMonitor.exe.config"
+$xml = [xml](Get-Content ($configFile))
+$node = $xml.configuration.appSettings
+if ($node -ne $NULL)
+{
+	$node.file = "Config\HealthMonitor\Settings.config"
+	$xml.Save($configFile)
+}		
+
 # Copy PowerShell script
 $srcRunFile = "$rootDir\CleanUpAfterTests.ps1"
 $dstRunFile = "$archiveFolderName\"
 Copy-Item $srcRunFile -Destination $dstRunFile -Force
+
+# Create zip archive.
+$archiveFiles = "$archiveFolderName\*"
+Compress-Archive -Path $archiveFiles -DestinationPath $outputArchiveFile -Force
 
 # Create zip archive.
 $archiveFiles = "$archiveFolderName\*"
