@@ -11,8 +11,8 @@
     <link href='https://fonts.googleapis.com/css?family=Francois+One' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Didact+Gothic' rel='stylesheet' type='text/css'>
 
-    <link rel="stylesheet" href="../Content/plan-category.css" />
-	<link rel="stylesheet" href="../Content/plan-directory.css" />
+    <link rel="stylesheet" href="../Content/css/plan-category.css" />
+	<link rel="stylesheet" href="../Content/css/plan-directory.css" />
 
     <title></title>
     <meta charset="utf-8"/>

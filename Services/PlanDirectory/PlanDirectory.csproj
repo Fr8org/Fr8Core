@@ -264,8 +264,7 @@
     <Content Include="Content\metronic\jquery.blockui.min.js" />
     <Content Include="Content\metronic\loading.gif" />
     <Content Include="Content\metronic\ui.js" />
-    <Content Include="Content\plan-category.css" />
-    <Content Include="Content\plan-directory.css" />
+    <Content Include="Content\css\plan-category.css" />
     <Content Include="CategoryPages\PlanCategoryTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>PlanCategoryTemplate.cs</LastGenOutput>
