@@ -60,6 +60,7 @@ namespace terminalIntegrationTests.Integration
             var googleEventUrl = ConfigurationManager.AppSettings["GoogleFormEventWebServerUrl"];
 
             //Trigger creating Plan
+            Debug.WriteLine("Trigger creating Plan");
             await RestfulServiceClient.PostAsync(new Uri(googleEventUrl), new { fr8_user_id = userId });
 
             //Reconfiguring plan activities 
@@ -70,8 +71,11 @@ namespace terminalIntegrationTests.Integration
             var plan = plans.FirstOrDefault().Plan.SubPlans.FirstOrDefault();
 
             // deactivate plan before editing
+            Debug.WriteLine("deactivate plan before editing");
             var deactivateUrl = GetHubApiBaseUrl() + "plans/deactivate?planId=" + plans.FirstOrDefault().Plan.Id;
             await RestfulServiceClient.PostAsync(new Uri(deactivateUrl), new List<CrateDTO>(), null, GetFr8AuthorizationHeader(userId));
+
+            Debug.WriteLine("Reconfiguring plan activities");
 
             if (plan.Activities.Where(a => a.Ordering == 8).FirstOrDefault() != null)
             {
@@ -84,12 +88,14 @@ namespace terminalIntegrationTests.Integration
             await ConfigureSlack(plan.Activities.Where(a => a.Ordering == 7).FirstOrDefault().Id, userId);
 
             //Run plan again after reconfigure
+            Debug.WriteLine("Run plan again after reconfigure");
             var runUrl = GetHubApiBaseUrl() + "plans/run?planId=" + plans.FirstOrDefault().Plan.Id;
             await RestfulServiceClient.PostAsync(new Uri(runUrl), new List<CrateDTO>(), null, GetFr8AuthorizationHeader(userId));
 
             await SubmitForm(googleEventUrl, guidTestId.ToString());
 
             //Waiting 10 seconds for Plan execution
+            Debug.WriteLine("Waiting 10 seconds for Plan execution");
             await Task.Delay(PlanExecutionPeriod);
 
 
@@ -108,6 +114,7 @@ namespace terminalIntegrationTests.Integration
                 {
                     //Searching for created jira issue
                     issues = jira.GetIssuesFromJql("summary ~ " + guidTestId.ToString()).ToArray();
+                    Debug.WriteLine("found jira issues " + issues.Length + "after elapsed " + stopwatch.ElapsedMilliseconds + " milliseconds");
                 }
 
                 if(totalMessagesFound == 0)
@@ -116,6 +123,7 @@ namespace terminalIntegrationTests.Integration
                     var result = await RestfulServiceClient.GetAsync(new Uri(slackUrl));
                     var searchResult = JObject.Parse(result);
                     totalMessagesFound = (int)searchResult.SelectToken("messages.pagination.total_count");
+                    Debug.WriteLine("found slack messages " + totalMessagesFound + "after elapsed " + stopwatch.ElapsedMilliseconds + " milliseconds");
                 }
 
                 if (issues.Count() != 0 && totalMessagesFound != 0)
@@ -125,15 +133,15 @@ namespace terminalIntegrationTests.Integration
                 await Task.Delay(SingleAwaitPeriod);
             }
 
-            Assert.IsTrue(issues.Length > 0,"Couldn't find jira issue");
-            
-            Assert.IsTrue(totalMessagesFound != 0,"Couldn't find slack message");
-
             //Deleting test issues
             foreach (var issue in issues)
             {
                 jira.DeleteIssue(issue);
             }
+
+            Assert.IsTrue(issues.Length > 0,"Couldn't find jira issue");
+            
+            Assert.IsTrue(totalMessagesFound != 0,"Couldn't find slack message");
         }
 
         private async Task SubmitForm(string url, string guid)
