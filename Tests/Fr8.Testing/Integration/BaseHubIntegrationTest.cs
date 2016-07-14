@@ -7,6 +7,7 @@ using NUnit.Framework;
 using StructureMap;
 using System.Net.Http;
 using System.Net.Http.Formatting;
+using Data.Interfaces;
 using Fr8.Infrastructure.Communication;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
@@ -65,6 +66,35 @@ namespace Fr8.Testing.Integration
             string password = ConfigurationManager.AppSettings["TestEmail_Password"];
             EmailAssert.InitEmailAssert(TestEmail, hostname, port, useSsl, username, password);
         }
+
+        protected Dictionary<string, string> GetFr8HubAuthorizationHeader(string terminalName,string terminalVersion, string userId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var terminal = uow.TerminalRepository.GetQuery().Single(x => x.Name == terminalName && x.Version == terminalVersion);
+                var fr8Token = $"key={terminal.Secret}" + (string.IsNullOrEmpty(userId) ? "" : $", user={userId}");
+                return new Dictionary<string, string>
+                {
+                    {System.Net.HttpRequestHeader.Authorization.ToString(), $"FR8-TOKEN {fr8Token}"}
+                };
+            }
+        }
+
+        
+        protected Dictionary<string, string> GetFr8TerminalAuthorizationHeader(string terminalName, string terminalVersion, string userId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var terminal = uow.TerminalRepository.GetQuery().Single(x => x.Name == terminalName && x.Version == terminalVersion);
+                return new Dictionary<string, string>
+                {
+                    {"Fr8HubCallbackSecret", terminal.Secret},
+                    {"Fr8HubCallBackUrl", ConfigurationManager.AppSettings["CoreWebServerUrl"]},
+                    {"Fr8UserId", userId }
+                };
+            }
+        }
+
 
         public string GetHubApiBaseUrl()
         {

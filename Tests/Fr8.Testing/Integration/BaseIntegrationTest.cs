@@ -62,14 +62,7 @@ namespace Fr8.Testing.Integration
             Crate = new CrateManager();
         }
 
-        public Dictionary<string, string> GetFr8AuthorizationHeader(string userId)
-        {
-            var _fr8Token = $"key={TerminalSecret}, user={userId}";
-            return new Dictionary<string, string>
-            {
-                {System.Net.HttpRequestHeader.Authorization.ToString(), $"FR8-TOKEN {_fr8Token}" }
-            };
-        }
+        
 
         private string GetTerminalUrlInternally()
         {
