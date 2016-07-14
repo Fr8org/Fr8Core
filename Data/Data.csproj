@@ -846,7 +846,6 @@
     <Compile Include="States\ActivityTemplateState.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
     <Compile Include="States\DefaultProfiles.cs" />
-    <Compile Include="States\NotificationChannel.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
     <Compile Include="Entities\EnvelopeDO.cs" />

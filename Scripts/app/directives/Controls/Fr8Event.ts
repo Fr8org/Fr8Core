@@ -6,8 +6,8 @@ module dockyard.directives {
         GenericSuccess = 1,     // fr8pusher_generic_success
         GenericFailure = 2,     // fr8pusher_generic_failure
         GenericInfo = 3,        // fr8pusher_activity_execution_info
-        SecurityFailure = 4,    // fr8pusher_security_failure
-        TerminalEvent = 5       // fr8pusher_terminal_event
+        TerminalEvent = 4,      // fr8pusher_terminal_event
+        SecurityFailure = 5     // fr8pusher_security_failure
     };
 
     export interface IFr8EventScope extends ng.IScope {

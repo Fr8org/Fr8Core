@@ -16,6 +16,7 @@ using Data.States;
 using Hub.Interfaces;
 using System.Threading.Tasks;
 using System.Web;
+using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates;
@@ -29,7 +30,6 @@ using Hub.Infrastructure;
 using HubWeb.Infrastructure_HubWeb;
 using HubWeb.ViewModels.RequestParameters;
 using Newtonsoft.Json.Linq;
-using Segment;
 
 namespace HubWeb.Controllers
 {
@@ -436,8 +436,11 @@ namespace HubWeb.Controllers
 
             // Notify user with directing him to PlanDirectory with related search query
             var url = CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/#?planSearch=" + HttpUtility.UrlEncode(dto.Name);
-            _pusherNotifier.NotifyUser(new { Message = $"Plan Shared. To view, click on " + url, Collapsed = false },
-                NotificationChannel.GenericSuccess, User.Identity.GetUserId());
+            _pusherNotifier.NotifyUser(new
+            {
+                Message = $"Plan Shared. To view, click on " + url,
+                Collapsed = false
+            }, NotificationType.GenericSuccess, User.Identity.GetUserId());
 
             return Ok();
         }
