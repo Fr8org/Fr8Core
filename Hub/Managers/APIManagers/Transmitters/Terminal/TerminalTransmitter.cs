@@ -83,7 +83,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
             }
 
             requestUri = new Uri(new Uri(terminal.Endpoint), requestUri);
-            return await PostAsync<Fr8DataDTO, TResponse>(requestUri, dataDTO, correlationId, _terminalService.GetRequestHeaders(terminal, dataDTO.ActivityDTO.Fr8AccountId));
+            return await PostAsync<Fr8DataDTO, TResponse>(requestUri, dataDTO, correlationId, _terminalService.GetRequestHeaders(terminal, dataDTO.ActivityDTO.AuthToken.UserId));
         }
     }
 }
