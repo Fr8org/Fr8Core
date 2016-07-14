@@ -24,7 +24,11 @@ $commandText = "UPDATE Terminals SET [Endpoint] =
 		    then ''
 		else 
 			RIGHT ([Endpoint], CHARINDEX (':', REVERSE ([Endpoint])))
-		END))"
+		END))
+		
+		WHERE 
+		 
+		"
 Write-Host $commandText
 
 if ([System.String]::IsNullOrEmpty($overrideDbName) -ne $true) {
