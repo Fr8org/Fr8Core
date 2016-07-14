@@ -311,6 +311,7 @@
     <Compile Include="Infrastructure\Fr8Principle.cs" />
     <Compile Include="Infrastructure\Fr8ApiAuthorizeAttribute.cs" />
     <Compile Include="Infrastructure\OwinInitializer.cs" />
+    <Compile Include="Interfaces\IActivityCategory.cs" />
     <Compile Include="Interfaces\IManifestRegistryMonitor.cs" />
     <Compile Include="Interfaces\IPageDefinition.cs" />
     <Compile Include="Interfaces\IPlanTemplates.cs" />
@@ -382,6 +383,7 @@
     <Compile Include="Security\DockyardUserStore.cs" />
     <Compile Include="Security\ObjectDecorators\PlanSecurityDecorator.cs" />
     <Compile Include="Security\SecurityServices.cs" />
+    <Compile Include="Services\ActivityCategory.cs" />
     <Compile Include="Services\ContainerService.ExecutionSession.cs" />
     <Compile Include="Services\Fact.cs" />
     <Compile Include="Interfaces\ITerminalDiscoveryService.cs" />

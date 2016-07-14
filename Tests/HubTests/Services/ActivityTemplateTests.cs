@@ -148,7 +148,7 @@ namespace HubTests.Services
             {
                 Id = id,
                 ActivityTemplateState = 1,
-                Category = ActivityCategory.Forwarders,
+                Category = Fr8.Infrastructure.Data.States.ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
                 ComponentActivities = prefix + "ca" + id,
                 Description = prefix + "des" + id,
@@ -256,11 +256,14 @@ namespace HubTests.Services
         [Test]
         public void CanRegister()
         {
-            var template = CreateActivityTemplate(Guid.NewGuid(), CreateTerminal(-234, "new"), CreateWebService(234234, "new"));
+            var template = CreateActivityTemplate(
+                Guid.NewGuid(),
+                CreateTerminal(-234, "new"),
+                CreateWebService(234234, "new")
+            );
             template.WebServiceId = -2344;
 
             var terminalService = ObjectFactory.GetInstance<Terminal>();
-
             template.Terminal = terminalService.RegisterOrUpdate(template.Terminal);
             template.TerminalId = template.Terminal.Id;
 
@@ -272,7 +275,7 @@ namespace HubTests.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                AreEqual(CreateWebService(234234, "new"), uow.WebServiceRepository.GetQuery().Single(), true);
+                AreEqual(CreateWebService(234234, "new"), uow.WebServiceRepository.GetQuery().First(), true);
             }
         }
 

@@ -253,6 +253,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\ActivityCategoryDO.cs" />
+    <Compile Include="Entities\ActivityCategorySetDO.cs" />
     <Compile Include="Entities\AspNetUserClaimDO.cs" />
     <Compile Include="Entities\EncryptedAuthorizationData.cs" />
     <Compile Include="Entities\OrganizationDO.cs" />
@@ -721,8 +723,14 @@
     <Compile Include="Migrations\201606300937169_AddPageDefinition.Designer.cs">
       <DependentUpon>201606300937169_AddPageDefinition.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201607041029473_ActivityCategory.cs" />
+    <Compile Include="Migrations\201607041029473_ActivityCategory.Designer.cs">
+      <DependentUpon>201607041029473_ActivityCategory.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
+    <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
+    <Compile Include="Repositories\ActivityCategory\ActivityCategorySetRepository.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenChangeTracker.cs" />
@@ -838,7 +846,6 @@
     <Compile Include="States\ActivityTemplateState.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
     <Compile Include="States\DefaultProfiles.cs" />
-    <Compile Include="States\NotificationChannel.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
     <Compile Include="Entities\EnvelopeDO.cs" />
@@ -1015,6 +1022,7 @@
     <None Include="Config\terminalFacebook\Settings.Release.config" />
     <None Include="Config\terminalFr8Core\Settings.config" />
     <None Include="Config\terminalGoogle\Settings.config" />
+    <None Include="Config\terminalInstagram\Settings.config" />
     <None Include="Config\terminalPapertrail\Settings.config" />
     <None Include="Config\terminalQuickBooks\Settings.config" />
     <None Include="Config\terminalSalesforce\Settings.config" />
@@ -1026,6 +1034,7 @@
     <None Include="Config\terminalSlack\Settings.Demo.config" />
     <None Include="Config\terminalSlack\Settings.Dev.config" />
     <None Include="Config\terminalSlack\Settings.Release.config" />
+    <None Include="Config\terminalStatX\Settings.config" />
     <None Include="Config\terminalTelegram\Settings.config" />
     <None Include="Config\terminalTelegram\Settings.Demo.config" />
     <None Include="Config\terminalTelegram\Settings.Dev.config" />
@@ -1372,6 +1381,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606300937169_AddPageDefinition.resx">
       <DependentUpon>201606300937169_AddPageDefinition.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607041029473_ActivityCategory.resx">
+      <DependentUpon>201607041029473_ActivityCategory.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -719,7 +719,8 @@ namespace Hub.Services
             {
                 var curActivities = uow.ActivityTemplateRepository
                     .GetQuery()
-                    .Where(x => x.Terminal.Name == terminalName && x.Category == ActivityCategory.Solution)
+                    .Where(x => x.Terminal.Name == terminalName
+                        && x.Category == Fr8.Infrastructure.Data.States.ActivityCategory.Solution)
                     .GroupBy(x => x.Name)
                     .AsEnumerable()
                     .Select(x => x.OrderByDescending(y => int.Parse(y.Version)).First())

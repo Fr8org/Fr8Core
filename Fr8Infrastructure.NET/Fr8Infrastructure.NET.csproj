@@ -127,6 +127,7 @@
     <Compile Include="Data\Constants\ActivityResponse.cs" />
     <Compile Include="Data\Constants\FieldValidationResult.cs" />
     <Compile Include="Data\Constants\ManifestIdEnum.cs" />
+    <Compile Include="Data\Constants\NotificationType.cs" />
     <Compile Include="Data\Constants\Tags.cs" />
     <Compile Include="Data\Control\Control.cs" />
     <Compile Include="Data\Control\ControlExtensions.cs" />
@@ -148,6 +149,8 @@
     <Compile Include="Data\Crates\ManifestDiscovery.cs" />
     <Compile Include="Data\Crates\ManifestTypeCache.cs" />
     <Compile Include="Data\DataTransferObjects\ActivateActivitiesDTO.cs" />
+    <Compile Include="Data\DataTransferObjects\ActivityCategories.cs" />
+    <Compile Include="Data\DataTransferObjects\ActivityCategoryDTO.cs" />
     <Compile Include="Data\DataTransferObjects\ActivityDataPackageDTO.cs" />
     <Compile Include="Data\DataTransferObjects\ActivityDTO.cs" />
     <Compile Include="Data\DataTransferObjects\ActivityNameDTO.cs" />
@@ -253,6 +256,7 @@
     <Compile Include="Data\Manifests\DocuSignEnvelopeCM.cs" />
     <Compile Include="Data\Manifests\DocuSignEnvelopeCM_v2.cs" />
     <Compile Include="Data\Manifests\DocuSignEnvelopeCM_v3.cs" />
+    <Compile Include="Data\Manifests\InstagramUserEventCM.cs" />
     <Compile Include="Data\Manifests\FacebookUserEventCM.cs" />
     <Compile Include="Data\Manifests\DocuSignEventCM.cs" />
     <Compile Include="Data\Manifests\DocuSignRecipientCM.cs" />
