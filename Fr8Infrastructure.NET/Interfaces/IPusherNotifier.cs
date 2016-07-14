@@ -4,7 +4,7 @@ namespace Fr8.Infrastructure.Interfaces
 {
     public interface IPusherNotifier
     {
-        void Notify(string channelName, NotificationType eventName, object message);
-        void NotifyUser(object message, NotificationType eventName, string userId);
+        void Notify(string channelName, NotificationType notificationType, object message);
+        void NotifyUser(object message, NotificationType notificationType, string userId);
     }
 }
