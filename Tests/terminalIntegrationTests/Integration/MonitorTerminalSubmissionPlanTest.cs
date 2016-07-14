@@ -58,6 +58,7 @@ namespace terminalIntegrationTests.Integration
         [Test]
         public async Task MonitorTerminalSubmissionPlan()
         {
+            Debug.WriteLine(SlackAuthToken);
             AutoMapperBootstrapper.ConfigureAutoMapper();
 
             var guidTestId = Guid.NewGuid();
