@@ -235,6 +235,13 @@
     <Content Include="Content\css\additionalcss\font-awesome\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\css\plan-directory.css" />
     <Content Include="Content\css\shared\main.css" />
+    <Content Include="Content\icons\web_services\basecamp2-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\facebook-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\fr8-core-icon-64x64-lower-case.png" />
+    <Content Include="Content\icons\web_services\fr8-demo-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\gmail-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\statX-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\telegram-icon-64x64.png" />
     <Content Include="Content\img\dockyard_logo.png" />
     <Content Include="Content\img\dockyard_logo_dark.png" />
     <Content Include="Content\img\dockyard_logo_white.png" />
