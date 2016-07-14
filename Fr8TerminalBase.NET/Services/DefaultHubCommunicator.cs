@@ -24,8 +24,8 @@ namespace Fr8.TerminalBase.Services
     public class DefaultHubCommunicator : IHubCommunicator
     {
         protected readonly IRestfulServiceClient _restfulServiceClient;
-        protected readonly string _apiUrl;
-        protected string _userId;
+        private readonly string _apiUrl;
+        private string _userId;
         protected string TerminalToken { get; set; }
         public string UserId => _userId;
 
@@ -37,12 +37,6 @@ namespace Fr8.TerminalBase.Services
             _userId = userId;
             _restfulServiceClient.AddRequestSignature(new HubAuthenticationHeaderSignature(TerminalToken, userId));
         }
-
-        //public virtual void Authorize(string userId = null)
-        //{
-        //    _userId = userId;
-        //    _restfulServiceClient.AddRequestSignature(new HubAuthenticationHeaderSignature(TerminalToken, userId));
-        //}
 
         public async Task<PlanEmptyDTO> LoadPlan(JToken planContents)
         {

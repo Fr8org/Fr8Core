@@ -80,6 +80,10 @@ namespace HubTests.Services
         {
         }
 
+        public void ClearSignatures()
+        {
+        }
+
         public Task<TResponse> PutAsync<TResponse>(Uri requestUri, HttpContent content, string CorrelationId = null, Dictionary<string, string> headers = null)
         {
             throw new NotImplementedException();

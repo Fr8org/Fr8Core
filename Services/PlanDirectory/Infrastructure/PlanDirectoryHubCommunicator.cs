@@ -11,13 +11,10 @@ namespace PlanDirectory.Infrastructure
     {
         public PlanDirectoryHubCommunicator(IRestfulServiceClient restfulServiceClient, string apiUrl, string token, string userId) : base(restfulServiceClient, apiUrl, token, userId)
         {
-        }
-
-        /*
-        public override void Authorize(string userId = null)
-        {
-            _userId = userId;
+            //nasty hack for now -
+            //we should already change this static authentication mechanism between hub and planDirectory
+            _restfulServiceClient.ClearSignatures();
             _restfulServiceClient.AddRequestSignature(new HubAuthenticationPDHeaderSignature(TerminalToken, userId));
-        }*/
+        }
     }
 }

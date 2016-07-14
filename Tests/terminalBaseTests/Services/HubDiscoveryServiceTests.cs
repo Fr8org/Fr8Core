@@ -133,6 +133,11 @@ namespace terminaBaselTests.Services
             {
                 throw new NotImplementedException();
             }
+
+            public void ClearSignatures()
+            {
+                throw new NotImplementedException();
+            }
         }
 
         class FakeRestfulServiceClientFactory : IRestfulServiceClientFactory

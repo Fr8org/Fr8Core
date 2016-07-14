@@ -20,7 +20,7 @@ namespace PlanDirectory.Infrastructure
         public IHubCommunicator Create(string userId)
         {
             var restfulServiceClient = _factory.Create();
-            return new DefaultHubCommunicator(restfulServiceClient, _apiUrl, _terminalToken, userId);
+            return new PlanDirectoryHubCommunicator(restfulServiceClient, _apiUrl, _terminalToken, userId);
         }
     }
 }
