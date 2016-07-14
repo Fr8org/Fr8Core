@@ -16,6 +16,7 @@ module dockyard.directives.containerTransition {
         currentAction: model.ActivityDTO;
         removeTransition: (index: number) => void;
         PCA: directives.paneConfigureAction.IPaneConfigureActionController;
+        isDisabled:boolean;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -358,7 +359,8 @@ module dockyard.directives.containerTransition {
                 plan: '=',
                 subPlan: '=',
                 field: '=',
-                currentAction: '='
+                currentAction: '=',
+                isDisabled: '='
             }
         };
     }

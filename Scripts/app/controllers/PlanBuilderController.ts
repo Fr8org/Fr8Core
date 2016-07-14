@@ -213,13 +213,17 @@ module dockyard.controllers {
             }
 
 
-            $scope.$watch(function () {
-                return $(".resizable").width();
-            }, function (newVal, oldVal) {
-                if (newVal !== oldVal) {
-                    $(".designer-header-fixed").width(newVal);
+            $scope.$watch(
+                function () {
+                    return $(".resizable").width();
+                },
+                function (newVal, oldVal) {
+                    if (newVal !== oldVal) {
+                        $('.designer-header-fixed').width(newVal);
+                        $('.activity-picker-container').width(newVal);
+                    }
                 }
-            })
+            );
 
             //Group: which group action is dropped to
             //actionId: id of dropped action

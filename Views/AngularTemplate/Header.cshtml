@@ -83,6 +83,150 @@
 <!-- END HEADER TOP -->
 
 <!-- BEGIN HEADER MENU -->
-    @Html.Partial("HeaderNav")
+<div class="page-header-menu">
+    <div class="container">
+        <!-- BEGIN MEGA MENU -->
+        <!-- DOC: Apply "hor-menu-light" class after the "hor-menu" class below to have a horizontal menu with white background -->
+        <!-- DOC: Remove dropdown-menu-hover and data-close-others="true" attributes below to disable the dropdown opening on mouse hover -->
+        <div class="hor-menu">
+            <!-- BEGIN NAVIGATION BAR -->
+            <ul class="nav navbar-nav">
+                <li class="active">
+                    <a ui-sref="myaccount">Home</a>
+                </li>
+
+                <!-- SOLUTIONS DROPDOWN -->
+                <li class="menu-dropdown classic-menu-dropdown">
+                    <a href="#" data-toggle="dropdown" class="dropdown-toggle">Solutions <i class="fa fa-angle-down"></i></a>
+                    <ul class="dropdown-menu pull-left" ng-controller="SolutionListController">
+                        <li class="dropdown-submenu">
+                            <a href="/Services/DocuSign" class="dropdown-toggle">DocuSign</a>
+                            <ul class="dropdown-menu">
+                                <li ng-repeat="activity in (activityCategories | filter: {name: 'Solution'})[0].activities | filter: { terminal: { name: 'terminalDocuSign' } }">
+                                    <a ui-sref="configureSolution({solutionName: activity.name})" ui-sref-opts="{reload: true}">{{activity.label}}</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="dropdown-submenu">
+                            <a href="/Services/Salesforce" class="dropdown-toggle">Salesforce</a>
+                            <ul class="dropdown-menu">
+                                <li ng-repeat="activity in (activityCategories | filter: {name: 'Solution'})[0].activities | filter: { terminal: { name: 'terminalSalesforce' } }">
+                                    <a ui-sref="configureSolution({solutionName: activity.name})" ui-sref-opts="{reload: true}">{{activity.label}}</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="dropdown-submenu">
+                            <a href="/Services/Demo" class="dropdown-toggle">Demo</a>
+                            <ul class="dropdown-menu">
+                                <li ng-repeat="activity in (activityCategories | filter: {name: 'Solution'})[0].activities | filter: { terminal: { name: 'terminalDemo' } }">
+                                    <a ui-sref="configureSolution({solutionName: activity.name})" ui-sref-opts="{reload: true}">{{activity.label}}</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- PLANS DROPDOWN -->
+                <li class="menu-dropdown classic-menu-dropdown">
+                    <a data-toggle="dropdown" href="#" class="dropdown-toggle">Plans <i class="fa fa-angle-down"></i></a>
+                    <ul class="dropdown-menu">
+                        <li><a ui-sref="planList">Show All</a></li>
+                        <li event-add><a ng-click="addPlan()">Add</a></li>
+                        <li><a ng-click="goToPlanDirectory('@System.Configuration.ConfigurationManager.AppSettings["PlanDirectoryUrl"]')">Plan Directory</a></li>
+                        <li ng-controller="PlanUploadController"><a ng-click="showModal()">Load from JSON file</a></li>
+                    </ul>
+                </li>
+
+                <!-- CONTAINERS DROPDOWN -->
+                <li class="menu-dropdown classic-menu-dropdown">
+                    <a data-toggle="dropdown" href="#" class="dropdown-toggle">Containers <i class="fa fa-angle-down"></i></a>
+                    <ul class="dropdown-menu">
+                        <li><a ui-sref="containers">Show All</a></li>
+                    </ul>
+                </li>
+
+                <!-- TOOLS DROPDOWN -->
+                <li class="menu-dropdown classic-menu-dropdown">
+                    <a data-toggle="dropdown" href="#" class="dropdown-toggle">Tools <i class="fa fa-angle-down"></i></a>
+                    <ul class="dropdown-menu">
+                        <!-- <li><a ui-sref="managefiles">Manage Files</a></li> -->
+                        <li><a ui-sref="manageAuthTokens">Manage Auth Tokens</a></li>
+                        <li><a ui-sref="configureSolution({solutionName: 'Search_Fr8_Warehouse'})">Search Fr8 Warehouse</a></li>
+                    </ul>
+                </li>
+
+                    <!-- DEVELOPER DROPDOWN -->
+                    <li class="menu-dropdown classic-menu-dropdown">
+                        <a data-toggle="dropdown" href="javascript:;" class="dropdown-toggle">Developer <i class="fa fa-angle-down"></i></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md">Developer Home</a></li>
+                            <li><a href="/Documentation/RestAPIGuide.html">Fr8 Development Resources - DocuSign</a></li>
+                            <li><a ui-sref="manifestregistry">Manage Manifest Registry</a></li>
+                            <li><a ui-sref="terminals">Manage Terminals List</a></li>
+                            <li class="dropdown-submenu">
+                                <a class="dropdown-toggle">API</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="/swagger">Hub API</a></li>
+                                    <li class="dropdown-submenu">
+                                        <a  class="dropdown-toggle">Terminals API</a>
+                                        <ul class="dropdown-menu">
+                                            <li ng-repeat="terminal in terminals">
+                                                <a href="{{terminal.endpoint}}/swagger">{{terminal.name}}</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+
+                <!-- ADMIN DROPDOWN -->
+                @if (Html.HasManageUsersPermission(PermissionType.ManageInternalUsers))
+                {
+                    <li class="menu-dropdown classic-menu-dropdown pull-right" style="position: absolute; right: 0;">
+                        <a data-toggle="dropdown" href="#" class="dropdown-toggle">Admin <i class="fa fa-angle-down"></i></a>
+                        <ul class="dropdown-menu">
+                            <li><a ui-sref="accounts">Manage Users</a></li>
+                            <li><a onclick="window.parent.document.body.style.zoom = 0.6;">Ipad Mode</a></li>
+                            <li><a onclick="window.parent.document.body.style.zoom = 1;">Normal Mode</a></li>
+                        </ul>
+                    </li>
+                }
+
+                @if (Html.HasManageUsersPermission(PermissionType.ManageFr8Users))
+                {
+                    <li class="menu-dropdown classic-menu-dropdown pull-right" style="position: absolute; right: 0;">
+                        <a data-toggle="dropdown" href="#" class="dropdown-toggle">Admin <i class="fa fa-angle-down"></i></a>
+                        <ul class="dropdown-menu">
+                            <li><a ui-sref="accounts">Manage Users</a></li>
+                            <li><a ui-sref="pageDefinitions">Page Definitions</a></li>
+                            <li><a ui-sref="webservices">Show Web Services</a></li>
+                            <li><a ui-sref="showFacts">Show Facts</a></li>
+                            <li><a ui-sref="showIncidents">Show Incidents</a></li>
+                            <li><a ng-click="runManifestRegistryMonitoring()">Run Manifest Registry Monitoring</a></li>
+                            <li><a onclick="window.parent.document.body.style.zoom = 0.6;">Ipad Mode</a></li>
+                            <li><a onclick="window.parent.document.body.style.zoom = 1;">Normal Mode</a></li>
+                        </ul>
+                    </li>
+                }
+
+                @if (User.IsInRole("Guest"))
+                {
+                    <li class="visible-xs">
+                        <a href="/DockyardAccount/Logoff"> Have an Account? Login </a>
+                    </li>
+                }
+            </ul>
+            <!-- END NAVIGATION BAR -->
+        </div>
+        @if (User.IsInRole("Guest"))
+        {
+            <ul class="nav navbar-nav navbar-right pull-right">
+                <li class="pull-right register-guest-user" style="background-color: crimson;">@Html.ActionLink("Register!", "RegisterGuestUser", "DockyardAccount")</li>
+            </ul>
+        }
+        <!-- END MEGA MENU -->
+    </div>
+</div>
 <!-- END HEADER MENU -->
 </div>
