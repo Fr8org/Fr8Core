@@ -2,11 +2,6 @@
 
 module dockyard.services {
 
-    export const pusherNotifierSuccessEvent = 'fr8pusher_generic_success';
-    export const pusherNotifierFailureEvent = 'fr8pusher_generic_failure';
-    export const pusherNotifierExecutionEvent = 'fr8pusher_activity_execution_info';
-    export const pusherNotifierTerminalEvent = 'fr8pusher_terminal_event';
-
     export interface IPusherNotifierService {
         bindEventToChannel(channel: string, event: string, callback: Function, context?: any): void;
         bindEventToClient(event: string, callback: Function, context?: any): void;

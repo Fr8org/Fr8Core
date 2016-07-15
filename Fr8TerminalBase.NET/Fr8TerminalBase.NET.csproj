@@ -102,8 +102,10 @@
     <Compile Include="Helpers\ActivityHelper.cs" />
     <Compile Include="Helpers\ControlHelper.cs" />
     <Compile Include="Helpers\ApiIntegrationHelper.cs" />
+    <Compile Include="Infrastructure\HubAuthenticationHeaderSignature.cs" />
     <Compile Include="Interfaces\IOAuthApiIntegration.cs" />
     <Compile Include="BaseClasses\OAuthApiIntegrationBase.cs" />
+    <Compile Include="Services\DummyHubCommunicator.cs" />
     <Compile Include="Services\PlanService.cs" />
     <Compile Include="Infrastructure\AutoMapperBootstrapper.cs" />
     <Compile Include="Infrastructure\Behaviors\BaseControlMappingBehavior.cs" />
@@ -133,7 +135,6 @@
     <Compile Include="Services\ActivityStore.cs" />
     <Compile Include="Services\CrateSignaller.cs" />
     <Compile Include="Services\DataHubCommunicatorBase.cs" />
-    <Compile Include="Services\DelayedHubCommunicator.cs" />
     <Compile Include="Services\DefaultActivityFactory.cs" />
     <Compile Include="Services\DefaultHubCommunicator.cs" />
     <Compile Include="Services\HubCommunicatorExtensions.cs" />
