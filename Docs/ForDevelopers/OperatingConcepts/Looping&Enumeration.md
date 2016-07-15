@@ -15,7 +15,11 @@ When Loop executes, it reads the current value of the index, extracts that eleme
 To represent the processing of each element of data, the Plan designer adds child Activities to the Loop and points their controls at the "Current Element...." crate.
 
 
-\Loop Processing Details
+Loop Processing Details
 ----------------------
 
 When Loop runs it determines whether it's done with its iterations. If so, it returns aa normal "Success" ActivityResponse, and the Hub proceeds downstream to the next Activity. If not, the Loop increments the index in the OperationalState Crate and returns an ActivityResponse of "ReProcessChildren". Note that Child Activities are always run by default. The natural order of activity processing is depth-first tree traveral.
+
+If an Activity has children it is always called two times. The first time is before processing children (the Hub calls simple /run).
+After returning, the Hub will start processing the child activities. After they are all processed, the Hub will make a second call to the parent Activity, calling /run with ​*scope*​  parameter set to "childActivities". This gives the activity a chance to do final processing of the Payload Container. 
+
