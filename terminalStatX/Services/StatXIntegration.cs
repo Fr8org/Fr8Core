@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Formatting;
+using System.Text;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Communication;
 using Fr8.Infrastructure.Interfaces;
@@ -10,6 +13,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PhoneNumbers;
 using terminalStatX.DataTransferObjects;
+using terminalStatX.Infrastructure;
 using terminalStatX.Interfaces;
 
 namespace terminalStatX.Services
@@ -111,8 +115,7 @@ namespace terminalStatX.Services
                 };
 
                 var uri = new Uri(StatXBaseApiUrl + AuthVerifyCodeRelativeUrl);
-                var response = await _restfulServiceClient.PostAsync<StatXAuthVerifyDTO>(
-                    uri, statXAutVerifyDTO);
+                var response = await _restfulServiceClient.PostAsync<StatXAuthVerifyDTO>(uri, statXAutVerifyDTO);
 
                 var jObject = JObject.Parse(response);
 
@@ -188,6 +191,44 @@ namespace terminalStatX.Services
                 }
 
                 return new List<StatXGroupDTO>();
+            }
+        }
+
+        public async Task<StatXGroupDTO> CreateGroup(StatXAuthDTO statXAuthDTO, string groupName)
+        {
+            try
+            {
+                var uri = new Uri(StatXBaseApiUrl + "/groups");
+
+                var statGroup = new StatXGroupDTO()
+                {
+                    Id = $"grp_{Guid.NewGuid()}",
+                    Name = groupName,
+                };
+               
+                var response = await _restfulServiceClient.PostAsync<StatXGroupDTO>(uri, statGroup, null, GetStatxAPIHeaders(statXAuthDTO));
+
+                var jObject = JObject.Parse(response);
+
+                CheckForExistingErrors(jObject);
+
+                return JsonConvert.DeserializeObject<StatXGroupDTO>(response);
+            }
+            catch (RestfulServiceException exception)
+            {
+                var jObject = JObject.Parse(exception.ResponseMessage);
+                JToken errorsToken;
+                if (jObject.TryGetValue("errors", out errorsToken))
+                {
+                    if (errorsToken is JArray)
+                    {
+                        var firstError = (JObject)errorsToken.First;
+
+                        throw new ApplicationException($"StatX request error: {firstError["message"]?.ToString()}");
+                    }
+                }
+
+                return new StatXGroupDTO();
             }
         }
 
@@ -339,7 +380,37 @@ namespace terminalStatX.Services
             }
         }
 
-        public async Task UpdateStatValue(StatXAuthDTO statXAuthDTO, string groupId, string statId, Dictionary<string, string> statValues)
+        public async Task CreateStat(StatXAuthDTO statXAuthDTO, string groupId, BaseStatDTO statDTO)
+        {
+            try
+            {
+                var uri = new Uri(StatXBaseApiUrl + $"/groups/{groupId}/stats");
+
+                string json = JsonConvert.SerializeObject(statDTO, Formatting.Indented, new JsonSerializerSettings { ContractResolver = new DynamicContractResolver(statDTO.DynamicJsonIgnoreProperties) });
+
+                var response = await _restfulServiceClient.PostAsync(uri, (HttpContent)new StringContent(json), null, GetStatxAPIHeaders(statXAuthDTO));
+
+                var jObject = JObject.Parse(response);
+
+                CheckForExistingErrors(jObject);
+            }
+            catch (RestfulServiceException exception)
+            {
+                var jObject = JObject.Parse(exception.ResponseMessage);
+                JToken errorsToken;
+                if (jObject.TryGetValue("errors", out errorsToken))
+                {
+                    if (errorsToken is JArray)
+                    {
+                        var firstError = (JObject)errorsToken.First;
+
+                        throw new ApplicationException($"StatX request error: {firstError["message"]?.ToString()}");
+                    }
+                }
+            }
+        }
+
+        public async Task UpdateStatValue(StatXAuthDTO statXAuthDTO, string groupId, string statId, Dictionary<string, string> statValues, string title, string notes)
         {
             try
             { 
@@ -349,10 +420,21 @@ namespace terminalStatX.Services
                 var currentStat = await GetStat(statXAuthDTO, groupId, statId);
                 if (currentStat != null)
                 {
+                    if (string.IsNullOrEmpty(title))
+                    {
+                        title = currentStat.Title;
+                    }
+
                     string response;
                     if (string.IsNullOrEmpty(currentStat.Value) && currentStat.StatItems.Any())
                     {
-                        var updateStatContent = new UpdateStatWithItemsDTO() { LastUpdatedDateTime = DateTime.UtcNow };
+                        var updateStatContent = new UpdateStatWithItemsDTO()
+                        {
+                            LastUpdatedDateTime = DateTime.UtcNow,
+                            NotesLastUpdatedDateTime = DateTime.UtcNow,
+                            Title = title,
+                            Notes = notes
+                        };
 
                         updateStatContent.Items.AddRange(statValues.Select(x=>new StatItemValueDTO()
                         {
@@ -366,7 +448,10 @@ namespace terminalStatX.Services
                     {
                         var updateStatContent = new UpdateStatDTO
                         {
+                            Title = title,
+                            Notes = notes,
                             LastUpdatedDateTime = DateTime.UtcNow,
+                            NotesLastUpdatedDateTime = DateTime.UtcNow,
                             Value = statValues.First().Value
                         };
 

@@ -285,7 +285,13 @@
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
+    <Compile Include="DataTransferObjects\BaseStatDTO.cs" />
     <Compile Include="DataTransferObjects\StatDTO.cs" />
+    <Compile Include="DataTransferObjects\StatTypesModels\CheckListStatDTO.cs" />
+    <Compile Include="DataTransferObjects\StatTypesModels\HorizontalBarsStatDTO.cs" />
+    <Compile Include="DataTransferObjects\StatTypesModels\NumbetStatDTO.cs" />
+    <Compile Include="DataTransferObjects\StatTypesModels\PicklistStatDTO.cs" />
+    <Compile Include="DataTransferObjects\StatTypesModels\RangeStatDTO.cs" />
     <Compile Include="DataTransferObjects\StatXAuthDTO.cs" />
     <Compile Include="DataTransferObjects\StatXAuthLoginDTO.cs" />
     <Compile Include="DataTransferObjects\StatXAuthResponseDTO.cs" />
@@ -295,7 +301,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\StatTypes.cs" />
     <Compile Include="Helpers\StatXUtilities.cs" />
+    <Compile Include="Infrastructure\DynamicContractResolver.cs" />
     <Compile Include="Interfaces\IStatXIntegration.cs" />
     <Compile Include="Interfaces\IStatXPolling.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -305,6 +313,7 @@
     <Compile Include="Startup.cs" />
     <Compile Include="TerminalData.cs" />
     <Compile Include="TerminalStatXBootstrapper.cs" />
+    <Compile Include="Infrastructure\RenderUiPropertyAttribute.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

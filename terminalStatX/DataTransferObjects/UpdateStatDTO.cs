@@ -1,26 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using terminalStatX.Helpers;
+using terminalStatX.Infrastructure;
 
 namespace terminalStatX.DataTransferObjects
 {
-    public class UpdateStatDTO
+    public class UpdateStatDTO : BaseStatDTO
     {
-        [JsonProperty("lastUpdatedDateTime")]
-        public DateTime LastUpdatedDateTime { get; set; }
         [JsonProperty("value")]
         public string Value { get; set; }
     }
 
-    public class UpdateStatWithItemsDTO
+    public class UpdateStatWithItemsDTO : BaseStatDTO
     {
         public UpdateStatWithItemsDTO()
         {
             Items = new List<StatItemValueDTO>();
         }
-
-        [JsonProperty("lastUpdatedDateTime")]
-        public DateTime LastUpdatedDateTime { get; set; }
 
         [JsonProperty("items")]
         public List<StatItemValueDTO> Items { get; set; }
