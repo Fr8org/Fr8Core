@@ -11,6 +11,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Infrastructure.Behaviors;
 using Fr8.TerminalBase.Infrastructure.States;
 using Fr8.TerminalBase.Models;
@@ -323,8 +324,7 @@ namespace terminalDocuSign.Actions
             {
                 var loopAT = await HubCommunicator.GetActivityTemplate("terminalFr8Core", "Loop");
                 var loopActivity = await HubCommunicator.AddAndConfigureChildActivity(context.SolutionActivity, loopAT, "Loop", "Loop", 2);
-                var loopConfigControls = ControlHelper.GetConfigurationControls(loopActivity.CrateStorage);
-                var crateChooser = ControlHelper.GetControl<CrateChooser>(loopConfigControls, "Available_Crates");
+                var crateChooser = ActivityConfigurator.GetControl<CrateChooser>(loopActivity, "Available_Crates");
                 var firstActivity = context.SolutionActivity.ChildrenActivities.OrderBy(x => x.Ordering).First();
                 var firstActivityCrates = firstActivity.CrateStorage.CrateContentsOfType<CrateDescriptionCM>().FirstOrDefault();
 
@@ -348,7 +348,7 @@ namespace terminalDocuSign.Actions
             var sendDocusignEnvelopeAT = await HubCommunicator.GetActivityTemplate("terminalDocuSign", "Send_DocuSign_Envelope", activityTemplateVersion: "2");
             var sendDocuSignActivity = await HubCommunicator.AddAndConfigureChildActivity(parentActivity, sendDocusignEnvelopeAT, order: activityIndex);
             // Set docusign template
-            ControlHelper.SetControlValue(sendDocuSignActivity, "TemplateSelector",
+            ActivityConfigurator.SetControlValue(sendDocuSignActivity, "TemplateSelector",
                 _docuSignTemplate.ListItems.FirstOrDefault(a => a.Key == _docuSignTemplate.selectedKey)
             );
 
@@ -378,8 +378,7 @@ namespace terminalDocuSign.Actions
 
                 loopActivity = await HubCommunicator.ConfigureChildActivity(context.SolutionActivity, loopActivity);
 
-                var loopConfigControls = ControlHelper.GetConfigurationControls(loopActivity.CrateStorage);
-                var crateChooser = ControlHelper.GetControl<CrateChooser>(loopConfigControls, "Available_Crates");
+                var crateChooser = ActivityConfigurator.GetControl<CrateChooser>(loopActivity, "Available_Crates");
                     var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(c => c.ManifestId == (int)MT.StandardTableData);
                     if (tableDescription != null)
                     {
@@ -403,7 +402,7 @@ namespace terminalDocuSign.Actions
             sendDocuSignEnvelope.CrateStorage = new CrateStorage();
             sendDocuSignEnvelope = await HubCommunicator.ConfigureChildActivity(parentActivity, sendDocuSignEnvelope);
 
-            ControlHelper.SetControlValue(
+            ActivityConfigurator.SetControlValue(
                 sendDocuSignEnvelope,
                 "target_docusign_template",
                 _docuSignTemplate.ListItems

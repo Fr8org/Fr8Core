@@ -15,10 +15,14 @@ namespace terminalStatX.Interfaces
 
         Task<List<StatXGroupDTO>> GetGroups(StatXAuthDTO statXAuthDTO);
 
-        Task<List<StatDTO>> GetStatsForGroup(StatXAuthDTO statXAuthDTO, string groupId);
+        Task<StatXGroupDTO> CreateGroup(StatXAuthDTO statXAuthDTO, string groupName);
 
-        Task<StatDTO> GetStat(StatXAuthDTO statXAuthDTO, string groupId, string statId);
+        Task<List<BaseStatDTO>> GetStatsForGroup(StatXAuthDTO statXAuthDTO, string groupId);
 
-        Task UpdateStatValue(StatXAuthDTO statXAuthDTO, string groupId, string statId, Dictionary<string, string> statValues);
+        Task<BaseStatDTO> GetStat(StatXAuthDTO statXAuthDTO, string groupId, string statId);
+
+        Task CreateStat(StatXAuthDTO statXAuthDTO, string groupId, BaseStatDTO statDTO);
+
+        Task UpdateStatValue(StatXAuthDTO statXAuthDTO, string groupId, string statId, Dictionary<string, string> statValues, string title, string notes);
     }
 }

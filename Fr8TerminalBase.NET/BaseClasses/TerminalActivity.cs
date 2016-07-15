@@ -19,9 +19,7 @@ namespace Fr8.TerminalBase.BaseClasses
         /**********************************************************************************/
 
         public T ActivityUI { get; private set; }
-
-        protected UiBuilder UiBuilder { get; }
-
+        
         /**********************************************************************************/
         // Functions
         /**********************************************************************************/
@@ -29,7 +27,6 @@ namespace Fr8.TerminalBase.BaseClasses
         protected TerminalActivity(ICrateManager crateManager) 
             : base(crateManager)
         {
-            UiBuilder = new UiBuilder();
         }
 
         /**********************************************************************************/
