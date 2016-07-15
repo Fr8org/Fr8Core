@@ -22,9 +22,8 @@ namespace PlanDirectory.Controllers.Api
 
         public PlanTemplatesController()
         {
-            _hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
-            _hubCommunicator.Authorize(User.Identity.GetUserId());
-
+            var factory = ObjectFactory.GetInstance<IHubCommunicatorFactory>();
+            _hubCommunicator = factory.Create(User.Identity.GetUserId());
             _planTemplate = ObjectFactory.GetInstance<IPlanTemplate>();
             _searchProvider = ObjectFactory.GetInstance<ISearchProvider>();
             _tagGenerator = ObjectFactory.GetInstance<ITagGenerator>();

@@ -89,21 +89,38 @@ namespace Fr8.TerminalBase.BaseClasses
         public IHttpController Create(HttpRequestMessage request, HttpControllerDescriptor controllerDescriptor, Type controllerType)
         {
             var childContainer = _container.CreateChildContainer();
+
             Expression<Func<IContext, IHubCommunicator>> hubCommunicatorFactoryExpression;
-            
+            //Terminal can't communicate with a specified hub when a request doesn't have necessary headers
+            //it can only communicate with master hub for general purpose queries
+            //or it can get a list of all hubs from discovery service
+
             if (request.Headers.Contains("Fr8HubCallBackUrl") && request.Headers.Contains("Fr8HubCallbackSecret"))
             {
-                var apiUrl = request.Headers.GetValues("Fr8HubCallBackUrl").First().TrimEnd('\\', '/') + $"/api/{CloudConfigurationManager.GetSetting("HubApiVersion")}";
+                var apiUrl = request.Headers.GetValues("Fr8HubCallBackUrl").First().TrimEnd('\\', '/') +
+                             $"/api/{CloudConfigurationManager.GetSetting("HubApiVersion")}";
                 var secret = request.Headers.GetValues("Fr8HubCallbackSecret").First();
-
+                var fr8UserId = request.Headers.Contains("Fr8UserId")
+                    ? request.Headers.GetValues("Fr8UserId").First()
+                    : null;
                 _hubDiscovery.SetHubSecret(apiUrl, secret);
-                hubCommunicatorFactoryExpression = c => new DefaultHubCommunicator(c.GetInstance<IRestfulServiceClient>(), c.GetInstance<IHMACService>(), apiUrl, _activityStore.Terminal.PublicIdentifier, secret);
+                hubCommunicatorFactoryExpression =
+                    c =>
+                        new DefaultHubCommunicator(
+                            c.GetInstance<IRestfulServiceClientFactory>()
+                                .Create(new HubAuthenticationHeaderSignature(secret, fr8UserId)), apiUrl, secret,
+                            fr8UserId);
             }
             else
             {
-                hubCommunicatorFactoryExpression = c => new DelayedHubCommunicator(c.GetInstance<IHubDiscoveryService>().GetMasterHubCommunicator());
+                //lots of integration tests make calls without necessary headers
+                //because we inject TestHubCommunicator on ActivityExecutor no problem arises
+                //to be able to run integration tests - until we find a better solution
+                //i am injecting a dummy HubCommunicator here
+                hubCommunicatorFactoryExpression = c => new DummyHubCommunicator();
             }
-            
+
+
             childContainer.Configure(x =>
             {
                 x.For<IHubCommunicator>().Use(hubCommunicatorFactoryExpression).Singleton();
@@ -111,9 +128,7 @@ namespace Fr8.TerminalBase.BaseClasses
                 x.For<IPushNotificationService>().Use<PushNotificationService>().Singleton();
                 x.For<PlanService>().Use<PlanService>().Singleton();
             });
-
             request.RegisterForDispose(childContainer);
-
             return childContainer.GetInstance(controllerType) as IHttpController;
         }
     }

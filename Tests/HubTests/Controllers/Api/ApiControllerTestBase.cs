@@ -37,7 +37,7 @@ namespace HubTests.Controllers.Api
 
         protected void ShouldHaveFr8HMACAuthorize(Type controllerType)
         {
-            var authAttribute = controllerType.GetCustomAttributes(typeof(Fr8HubWebHMACAuthenticateAttribute), true);
+            var authAttribute = controllerType.GetCustomAttributes(typeof(Fr8TerminalAuthenticationAttribute), true);
             Assert.IsTrue(authAttribute.Any());
         }
 
@@ -49,7 +49,7 @@ namespace HubTests.Controllers.Api
 
         protected void ShouldHaveFr8HMACAuthorizeOnFunction(MethodInfo method)
         {
-            var authAttribute = method.GetCustomAttributes(typeof(Fr8HubWebHMACAuthenticateAttribute), true);
+            var authAttribute = method.GetCustomAttributes(typeof(Fr8TerminalAuthenticationAttribute), true);
             Assert.IsTrue(authAttribute.Any());
         }
     }

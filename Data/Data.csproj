@@ -846,7 +846,6 @@
     <Compile Include="States\ActivityTemplateState.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
     <Compile Include="States\DefaultProfiles.cs" />
-    <Compile Include="States\NotificationChannel.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
     <Compile Include="Entities\EnvelopeDO.cs" />
@@ -1015,6 +1014,10 @@
     <None Include="Config\terminalBasecamp2\Settings.Dev.config" />
     <None Include="Config\terminalBasecamp2\Settings.Release.config" />
     <None Include="Config\terminalBox\Settings.config" />
+    <None Include="Config\terminalCloudService\ServiceConfiguration.Cloud.cscfg" />
+    <None Include="Config\terminalCloudService\ServiceConfiguration.Demo.cscfg" />
+    <None Include="Config\terminalCloudService\ServiceConfiguration.Dev.cscfg" />
+    <None Include="Config\terminalCloudService\ServiceConfiguration.Release.cscfg" />
     <None Include="Config\terminalDocuSign\Settings.config" />
     <None Include="Config\terminalDropbox\Settings.config" />
     <None Include="Config\terminalFacebook\Settings.config" />

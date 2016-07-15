@@ -305,7 +305,7 @@ namespace terminalFr8Core.Activities
             var tempChosenCellList = GetControl<ControlList>("extractor_list");
             //TODO do this with a more efficient way
             //all dropdowns should use same data
-            var listItems = tableFields.Select(c => new ListItem { Key = c.Key, Value = c.Value }).ToList();
+            var listItems = tableFields.Where(c => c.Key.Equals(c.Value)).Select(c => new ListItem { Key = c.Key, Value = c.Value }).ToList();
             foreach (var cGroup in tempChosenCellList.ControlGroups)
             {
                 var chosenCellDd = (DropDownList)cGroup.First();

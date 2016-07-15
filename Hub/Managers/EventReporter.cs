@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -18,8 +17,6 @@ using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Logging;
 
 //NOTES: Do NOT put Incidents here. Put them in IncidentReporter
-
-
 namespace Hub.Managers
 {
     public class EventReporter
@@ -173,9 +170,8 @@ namespace Hub.Managers
                 }
 
                 //create user notifications
-                var pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
-
-                pusherNotifier.NotifyUser(new
+                var _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
+                _pusherNotifier.NotifyUser(new
                     {
                         ActivityName = activityDo.Name,
                         PlanName = containerDO.Name,
@@ -183,7 +179,7 @@ namespace Hub.Managers
                         ContainerId = containerDO.Id.ToString(),
                         PlanId = planId,
                         PlanLastUpdated = planLastUpdated,
-                    }, "fr8pusher_activity_execution_info", activityDo.Fr8Account.Id);
+                    }, NotificationType.GenericInfo, activityDo.Fr8Account.Id);
             }
             catch (Exception exception)
             {
@@ -901,7 +897,7 @@ namespace Hub.Managers
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
             var terminalService = ObjectFactory.GetInstance<ITerminal>();
 
-            var headers = terminalService.GetRequestHeaders(authenticatedTerminal);
+            var headers = terminalService.GetRequestHeaders(authenticatedTerminal, userId);
 
             await
                 restClient.PostAsync<object>(
