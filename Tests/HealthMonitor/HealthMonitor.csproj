@@ -356,10 +356,6 @@
     <None Include="Config\terminalBasecamp2\Settings.Dev.config" />
     <None Include="Config\terminalBasecamp2\Settings.Release.config" />
     <None Include="Config\terminalBox\Settings.config" />
-    <None Include="Config\terminalCloudService\ServiceConfiguration.Cloud.cscfg" />
-    <None Include="Config\terminalCloudService\ServiceConfiguration.Demo.cscfg" />
-    <None Include="Config\terminalCloudService\ServiceConfiguration.Dev.cscfg" />
-    <None Include="Config\terminalCloudService\ServiceConfiguration.Release.cscfg" />
     <None Include="Config\terminalDocuSign\Settings.config" />
     <None Include="Config\terminalDropbox\Settings.config" />
     <None Include="Config\terminalFacebook\Settings.config" />
