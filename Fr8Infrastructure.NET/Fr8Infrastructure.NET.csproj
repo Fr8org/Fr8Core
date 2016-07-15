@@ -176,6 +176,7 @@
     <Compile Include="Data\DataTransferObjects\CrateDTO.cs" />
     <Compile Include="Data\DataTransferObjects\CrateStorageDTO.cs" />
     <Compile Include="Data\DataTransferObjects\CredentialsDTO.cs" />
+    <Compile Include="Data\DataTransferObjects\DetailedMessageDTO.cs" />
     <Compile Include="Data\DataTransferObjects\DocumentationResponseDTO.cs" />
     <Compile Include="Data\DataTransferObjects\DocuSignEnvelopeDTO.cs" />
     <Compile Include="Data\DataTransferObjects\EmailAddressDTO.cs" />
@@ -308,6 +309,7 @@
     <Compile Include="Data\States\PlanTemplateStatus.cs" />
     <Compile Include="Data\States\PlanVisibility.cs" />
     <Compile Include="Data\States\TerminalStatus.cs" />
+    <Compile Include="Exceptions\MissingObjectException.cs" />
     <Compile Include="Interfaces\IHMACAuthenticator.cs" />
     <Compile Include="Interfaces\IHMACService.cs" />
     <Compile Include="Interfaces\IRequestSignature.cs" />

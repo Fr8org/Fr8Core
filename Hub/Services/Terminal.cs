@@ -7,6 +7,7 @@ using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Utility;
+using Fr8.Infrastructure;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Interfaces;
@@ -87,12 +88,10 @@ namespace Hub.Services
             lock (_terminals)
             {
                 TerminalDO terminal;
-
                 if (!_terminals.TryGetValue(terminalId, out terminal))
                 {
-                    throw new KeyNotFoundException(string.Format("Unable to find terminal with id {0}", terminalId));
+                    throw new MissingObjectException($"Terminal with Id {terminalId} doesn't exist");
                 }
-
                 return terminal;
             }
         }
@@ -106,7 +105,7 @@ namespace Hub.Services
                 TerminalDO terminal =_terminals.FirstOrDefault(t => t.Value.Name == name && t.Value.Version == version).Value;
                 if (terminal == null)
                 {
-                    throw new KeyNotFoundException($"Unable to find terminal with name {name} and version {version}");
+                    throw new MissingObjectException($"Terminal with name '{name}' and version '{version}'");
                 }
 
                 return terminal;

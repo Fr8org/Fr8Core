@@ -38,7 +38,7 @@ namespace HubWeb.Controllers
         [ResponseType(typeof(HistoryResultDTO<IncidentDTO>))]
         [SwaggerResponse(HttpStatusCode.OK, "Collection of log records", typeof(HistoryResultDTO<IncidentDTO>))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "Incorrect type is specified")]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request", typeof(ErrorDTO))]
         public IHttpActionResult Get([FromUri] string type, [FromUri] HistoryQueryDTO historyQueryDTO)
         {
             type = (type ?? string.Empty).Trim().ToLower();

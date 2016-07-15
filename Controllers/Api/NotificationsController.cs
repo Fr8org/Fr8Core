@@ -2,7 +2,6 @@
 using System.Web.Http;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Interfaces;
-using StructureMap;
 using Hub.Infrastructure;
 using HubWeb.Infrastructure_HubWeb;
 using Data.Infrastructure.StructureMap;
@@ -14,11 +13,10 @@ namespace HubWeb.Controllers
     public class NotificationsController : Fr8BaseApiController
     {
         private IPusherNotifier _pusherNotifier;
-        private readonly ISecurityServices _security;
 
-        public NotificationsController()
+        public NotificationsController(IPusherNotifier pusherNotifier, ISecurityServices security) : base(security)
         {
-            _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
+            _pusherNotifier = pusherNotifier;
         }
         /// <summary>
         /// Post specified notification message to the activity feed of current user
@@ -29,7 +27,7 @@ namespace HubWeb.Controllers
         [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         [SwaggerResponse(HttpStatusCode.OK, "Message was successfully posted")]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request", typeof(ErrorDTO))]
         [SwaggerResponseRemoveDefaults]
         public IHttpActionResult Post(TerminalNotificationDTO notificationMessage)
         {

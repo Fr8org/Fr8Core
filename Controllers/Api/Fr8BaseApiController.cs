@@ -10,9 +10,9 @@ namespace HubWeb.Controllers
     {
         protected readonly ISecurityServices _security;
 
-        public Fr8BaseApiController()
+        public Fr8BaseApiController(ISecurityServices security)
         {
-            _security = ObjectFactory.GetInstance<ISecurityServices>();
+            _security = security;
         }
 
         protected bool IsThisTerminalCall()

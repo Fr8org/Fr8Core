@@ -14,6 +14,7 @@ using InternalInterface = Hub.Interfaces;
 using System.Threading.Tasks;
 using Data.Infrastructure;
 using Data.Repositories.Plan;
+using Fr8.Infrastructure;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
@@ -361,7 +362,10 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = uow.PlanRepository.GetById<PlanDO>(planId);
-
+                if (plan == null)
+                {
+                    throw new MissingObjectException($"Plan with Id {planId} doesn't exist");
+                }
                 plan.PlanState = PlanState.Inactive;
                 uow.SaveChanges();
 
@@ -568,6 +572,10 @@ namespace Hub.Services
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     var plan = uow.PlanRepository.GetById<PlanDO>(planId);
+                    if (plan == null)
+                    {
+                        throw new MissingObjectException($"Plan with Id {planId} doesn't exist");
+                    }
                     var failedActivities = new List<string>();
 
                     foreach (var key in activationResults.ValidationErrors.Keys)

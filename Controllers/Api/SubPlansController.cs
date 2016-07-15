@@ -7,6 +7,7 @@ using AutoMapper;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
+using Fr8.Infrastructure;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Interfaces;
@@ -27,9 +28,9 @@ namespace HubWeb.Controllers
         /// Creates new subplan using specified values
         /// </summary>
         /// <param name="subplanDto">Subplan data to create subplan from</param>
-        /// <response code="200">Subplan was successfully created</response>
-        /// <response code="400">Specified data is not valid</response>
-        [ResponseType(typeof(SubplanDTO))]
+        [SwaggerResponse(HttpStatusCode.OK, "Subplan was successfully created", typeof(SubplanDTO))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "Parent plan doesn't exist", typeof(ErrorDTO))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request", typeof(ErrorDTO))]
         public IHttpActionResult Post(SubplanDTO subplanDto)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -66,9 +67,9 @@ namespace HubWeb.Controllers
         /// Updates subplan with specified values
         /// </summary>
         /// <param name="subplanDto">Values used to updates subplan</param>
-        /// <response code="200">Subplan was successfully updated</response>
-        /// <response code="400">Specified data is not valid</response>
-        [ResponseType(typeof(SubplanDTO))]
+        [SwaggerResponse(HttpStatusCode.OK, "Subplan was successfully updated", typeof(SubplanDTO))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "Parent plan doesn't exist or subplan data is invalid", typeof(ErrorDTO))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request", typeof(ErrorDTO))]
         public IHttpActionResult Put(SubplanDTO subplanDto)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -87,7 +88,7 @@ namespace HubWeb.Controllers
                 //var curSubPlanDO = Mapper.Map<SubrouteDTO, SubrouteDO>(SubplanDTO);
                 var curSubPlanDO = new SubplanDO(false)
                 {
-                    Id = subplanDto.SubPlanId.Value,
+                    Id = (Guid)subplanDto?.SubPlanId.Value,
                     ParentPlanNodeId = subplanDto.PlanId,
                     RootPlanNodeId = subplanDto.PlanId,
                     Name = subplanDto.Name
@@ -112,7 +113,7 @@ namespace HubWeb.Controllers
                 var subPlan = uow.PlanRepository.GetById<SubplanDO>(id);
                 if (subPlan == null)
                 {
-                    return BadRequest();
+                    throw new MissingObjectException($"Subplan with Id {id} doesn't exist");
                 }
                 try
                 {

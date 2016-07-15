@@ -7,6 +7,7 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
+using Fr8.Infrastructure;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
@@ -124,9 +125,8 @@ namespace Hub.Services
         {
             if (terminal.AuthenticationType == AuthenticationType.None)
             {
-                throw new ApplicationException("Terminal does not require authentication.");
+                throw new WrongAuthenticationTypeException();
             }
-
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
             var credentialsDTO = new CredentialsDTO
@@ -234,7 +234,7 @@ namespace Hub.Services
 
             if (!hasAuthentication)
             {
-                throw new ApplicationException("Terminal does not require authentication.");
+                throw new WrongAuthenticationTypeException();
             }
 
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
@@ -258,7 +258,7 @@ namespace Hub.Services
 
                 if (authTokenByExternalState == null)
                 {
-                    throw new ApplicationException("No AuthToken found with specified ExternalStateToken.");
+                    throw new MissingObjectException($"Authorization token with external state '{authTokenDTO.ExternalStateToken}' doesn't exist");
                 }
 
                 var authTokenByExternalAccountId = uow.AuthorizationTokenRepository
@@ -313,7 +313,7 @@ namespace Hub.Services
         {
             if (terminal.AuthenticationType == AuthenticationType.None)
             {
-                throw new ApplicationException("Terminal does not require authentication.");
+                throw new WrongAuthenticationTypeException();
             }
 
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
@@ -421,13 +421,13 @@ namespace Hub.Services
 
             if (activityTemplate == null)
             {
-                throw new ArgumentException("ActivityTemplate was not found.");
+                throw new MissingObjectException($"Activity template with name '{activityDTO.ActivityTemplate.Name}' and version '{activityDTO.ActivityTemplate.Version}' doesn't exist");
             }
 
             var activityDO = uow.PlanRepository.GetById<ActivityDO>(activityDTO.Id);
             if (activityDO == null)
             {
-                throw new ArgumentException("Current activity was not found.");
+                throw new MissingObjectException($"Activity with Id {activityDTO.Id} doesn't exist");
             }
 
             if (activityTemplate.Terminal.AuthenticationType != AuthenticationType.None
@@ -475,7 +475,7 @@ namespace Hub.Services
                     .GetPublicDataQuery()
                     .Where(x => x.UserID == userId
                                 && x.TerminalID == terminalId
-                                && x.IsMain == true)
+                                && x.IsMain)
                     .Select(x => (Guid?)x.Id)
                     .FirstOrDefault();
 
@@ -504,7 +504,7 @@ namespace Hub.Services
 
             if (activityTemplate == null)
             {
-                throw new NullReferenceException("ActivityTemplate was not found.");
+                throw new MissingObjectException($"Activity template with name '{curActivityDto.ActivityTemplate.Name}' and version '{curActivityDto.ActivityTemplate.Version}' doesn't exist");
             }
 
             if (activityTemplate.Terminal.AuthenticationType != AuthenticationType.None
@@ -513,7 +513,7 @@ namespace Hub.Services
                 var activityDO = uow.PlanRepository.GetById<ActivityDO>(curActivityDto.Id);
                 if (activityDO == null)
                 {
-                    throw new NullReferenceException("Current activity was not found.");
+                    throw new MissingObjectException($"Activity with Id {curActivityDto.Id} doesn't exist");
                 }
 
                 var token = uow.AuthorizationTokenRepository.FindTokenById(activityDO.AuthorizationTokenId);
@@ -546,13 +546,13 @@ namespace Hub.Services
                 var activity = uow.PlanRepository.GetById<ActivityDO>(actionId);
                 if (activity == null)
                 {
-                    throw new ApplicationException("Could not find specified Action.");
+                    throw new MissingObjectException($"Activity with Id {actionId} doesn't exist");
                 }
 
                 var authToken = uow.AuthorizationTokenRepository.FindTokenById(authTokenId);
                 if (authToken == null)
                 {
-                    throw new ApplicationException("Could not find specified AuthToken.");
+                    throw new MissingObjectException($"Authorization token with Id {authTokenId} doesn't exist");
                 }
 
                 activity.AuthorizationTokenId = authToken.Id;
@@ -580,11 +580,11 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var authToken = uow.AuthorizationTokenRepository
-                    .FindTokenById(authTokenId);
-
+                var authToken = uow.AuthorizationTokenRepository.FindTokenById(authTokenId);
                 if (authToken == null)
+                {
                     return;
+                }
                 authToken.ExternalAccountId = externalAccountId;
                 authToken.Token = token;
                 authToken.ExpiresAt = expiresAt;
@@ -607,7 +607,10 @@ namespace Hub.Services
             }
 
             authToken = uow.AuthorizationTokenRepository.GetPublicDataQuery().FirstOrDefault(x => x.Id == authToken.Id);
-            uow.AuthorizationTokenRepository.Remove(authToken);
+            if (authToken != null)
+            {
+                uow.AuthorizationTokenRepository.Remove(authToken);
+            }
             uow.SaveChanges();
         }
 
@@ -619,7 +622,7 @@ namespace Hub.Services
 
                 if (mainAuthToken == null)
                 {
-                    throw new ApplicationException("Unable to find specified Auth-Token.");
+                    throw new MissingObjectException($"Authorization token with Id {authTokenId} doesn't exist");
                 }
 
                 var siblings = uow.AuthorizationTokenRepository
@@ -648,7 +651,7 @@ namespace Hub.Services
         {
             if (terminal.AuthenticationType == AuthenticationType.None)
             {
-                throw new ApplicationException("Terminal does not require authentication.");
+                throw new WrongAuthenticationTypeException();
             }
 
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
@@ -662,10 +665,7 @@ namespace Hub.Services
                 ClientName = clientName
             };
 
-            var terminalResponse = await restClient.PostAsync<PhoneNumberCredentialsDTO>(
-                new Uri(terminal.Endpoint + "/authentication/token"),
-                credentialsDTO
-            );
+            var terminalResponse = await restClient.PostAsync(new Uri(terminal.Endpoint + "/authentication/token"), credentialsDTO);
 
             var terminalResponseAuthTokenDTO = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(terminalResponse);
             if (!string.IsNullOrEmpty(terminalResponseAuthTokenDTO.Error))
@@ -756,27 +756,24 @@ namespace Hub.Services
         {
             if (terminal.AuthenticationType == AuthenticationType.None)
             {
-                throw new ApplicationException("Terminal does not require authentication.");
+                throw new WrongAuthenticationTypeException();
             }
 
             if (terminal.AuthenticationType != AuthenticationType.PhoneNumberWithCode)
             {
-                throw new ApplicationException("Terminal support only authentication through phone number");
+                throw new WrongAuthenticationTypeException("Terminal support only authentication through phone number");
             }
 
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
-            var credentialsDTO = new PhoneNumberCredentialsDTO()
+            var credentialsDTO = new PhoneNumberCredentialsDTO
             {
                 PhoneNumber = phoneNumber,
-                ClientName = (account != null ? account.UserName : "Fr8 Client Name"),
+                ClientName = account != null ? account.UserName : "Fr8 Client Name",
                 Fr8UserId = account?.Id
             };
 
-            var terminalResponse = await restClient.PostAsync<PhoneNumberCredentialsDTO>(
-                new Uri(terminal.Endpoint + "/authentication/send_code"),
-                credentialsDTO
-            );
+            var terminalResponse = await restClient.PostAsync(new Uri(terminal.Endpoint + "/authentication/send_code"), credentialsDTO);
 
             //response provides terminal 
             var terminalResponseContent = JsonConvert.DeserializeObject<PhoneNumberCredentialsDTO>(terminalResponse);

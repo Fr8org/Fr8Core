@@ -36,7 +36,7 @@ namespace HubWeb.Controllers
         [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         [SwaggerResponse(HttpStatusCode.OK, "Alarm was successfully scheduled")]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request", typeof(ErrorDTO))]
         [SwaggerResponseRemoveDefaults]
         public async Task<IHttpActionResult> Post(AlarmDTO alarmDTO)
         {

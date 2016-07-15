@@ -51,7 +51,7 @@ namespace HubWeb.Controllers
         [Fr8TerminalAuthentication(true)]
         [HttpPost]
         [SwaggerResponse(HttpStatusCode.OK, "Objects were succesfully deleted")]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request", typeof(ErrorDTO))]
         [SwaggerResponseRemoveDefaults]
         public IHttpActionResult Delete(QueryDTO query)
         {
@@ -76,7 +76,7 @@ namespace HubWeb.Controllers
         [Fr8TerminalAuthentication(true)]
         [HttpPost]
         [SwaggerResponse(HttpStatusCode.OK, "Objects were succesfully saved")]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request", typeof(ErrorDTO))]
         [SwaggerResponseRemoveDefaults]
         public IHttpActionResult Post(CrateStorageDTO crateStorageDto)
         {

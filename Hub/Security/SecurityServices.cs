@@ -229,6 +229,10 @@ namespace Hub.Security
                 if (!Guid.TryParse(curObjectId, out id)) return false;
 
                 var planNode = uow.PlanRepository.GetById<PlanNodeDO>(id);
+                if (planNode == null)
+                {
+                    return false;
+                }
                 fr8AccountId = planNode.Fr8AccountId;
                 var mainPlan = uow.PlanRepository.GetById<PlanDO>(planNode.RootPlanNodeId);
                 if (mainPlan.Visibility == PlanVisibility.Internal) return true;

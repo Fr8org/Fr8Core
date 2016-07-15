@@ -5,6 +5,7 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
+using Fr8.Infrastructure;
 using Fr8.Infrastructure.Data.Control;
 using Fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates;
 using Fr8.Infrastructure.Data.Managers;
@@ -30,13 +31,15 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = uow.PlanRepository.GetById<PlanDO>(planId);
+                if (plan == null)
+                {
+                    throw new MissingObjectException($"Plan with Id {planId} doesn't exist");
+                }
             
                 var allActivities = plan.GetDescendants().OfType<ActivityDO>().ToList();
                 var allActivitiesTemplates = string.Join(",", allActivities.Select(a => a.ActivityTemplateId));
                 var relatedTemplates = uow.ActivityTemplateRepository.GetQuery().Where(a => allActivitiesTemplates.Contains(a.Id.ToString())).ToList();
-                var nodesDictionary = new Dictionary<Guid, PlanNodeDescriptionDTO>();
-
-                var planTemplate = new PlanTemplateDTO() { Id = Guid.NewGuid() };
+                var planTemplate = new PlanTemplateDTO { Id = Guid.NewGuid() };
 
                 var name = plan.Name;
                 planTemplate.Name = name;

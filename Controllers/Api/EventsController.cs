@@ -41,7 +41,7 @@ namespace HubWeb.Controllers
         [Fr8TerminalAuthentication]
         [SwaggerResponse(HttpStatusCode.OK, "Event was successfully dispatched to respective terminal")]
         [SwaggerResponse(HttpStatusCode.BadRequest, "Crate is not specified or its content is invalid")]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request", typeof(ErrorDTO))]
         [SwaggerResponseRemoveDefaults]
         public async Task<IHttpActionResult> Post(CrateDTO raw)
         {

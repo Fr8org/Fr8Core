@@ -235,6 +235,14 @@ namespace Hub.Services
           
         }
 
+        public bool Exists(Guid activityTemplateId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return uow.ActivityTemplateRepository.GetQuery().Any(x => x.Id == activityTemplateId);
+            }
+        }
+
         private List<ActivityCategorySetDO> ApplyActivityCategories(
             IUnitOfWork uow, 
             ActivityTemplateDO activityTemplate,

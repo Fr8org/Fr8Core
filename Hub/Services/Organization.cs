@@ -5,6 +5,7 @@ using Data.Interfaces;
 using Hub.Interfaces;
 using StructureMap;
 using AutoMapper;
+using Fr8.Infrastructure;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace Hub.Services
@@ -39,7 +40,7 @@ namespace Hub.Services
                 curOrganization = uow.OrganizationRepository.GetByKey(dto.Id);
                 if (curOrganization == null)
                 {
-                    throw new ApplicationException($"Unable to find criteria by id = {dto.Id}");
+                    throw new MissingObjectException($"There is no organization with Id {dto.Id}");
                 }
                 Mapper.Map(dto, curOrganization);
                 uow.SaveChanges();

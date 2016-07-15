@@ -302,6 +302,7 @@
     <Compile Include="Exceptions\ErrorResponseException.cs" />
     <Compile Include="Exceptions\ActivityExecutionException.cs" />
     <Compile Include="Exceptions\InvalidTokenException.cs" />
+    <Compile Include="Exceptions\WrongAuthenticationTypeException.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
     <Compile Include="Infrastructure\ActivityTemplateInfo.cs" />

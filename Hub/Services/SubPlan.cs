@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using Fr8.Infrastructure;
 using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Interfaces;
 using StructureMap;
@@ -41,13 +42,13 @@ namespace Hub.Services
             var curPlan = uow.PlanRepository.GetById<PlanDO>(subplan.RootPlanNodeId);
             if (curPlan == null)
             {
-                throw new Exception($"Unable to find plan by id = {subplan.RootPlanNodeId}");
+                throw new MissingObjectException($"Plan with Id {subplan.RootPlanNodeId} doesn't exist");
             }
 
             var curPlanNode = uow.PlanRepository.GetById<PlanNodeDO>(subplan.ParentPlanNodeId);
             if (curPlanNode == null)
             {
-                throw new Exception($"Unable to find parent plan-node by id = {subplan.ParentPlanNodeId}");
+                throw new MissingObjectException($"Parent plan-node with Id {subplan.ParentPlanNodeId} doesn't exist");
             }
 
             subplan.RootPlanNode = curPlan;
@@ -70,7 +71,7 @@ namespace Hub.Services
 
             if (curSubPlan == null)
             {
-                throw new Exception(string.Format("Unable to find criteria by id = {0}", subplan.Id));
+                throw new MissingObjectException($"Subplan with Id {subplan.Id} doesn't exist");
             }
 
             curSubPlan.Name = subplan.Name;
@@ -88,7 +89,7 @@ namespace Hub.Services
 
             if (subPlan == null)
             {
-                throw new Exception(string.Format("Unable to find Subplan by id = {0}", id));
+                throw new MissingObjectException($"Subplan with Id {id} doesn't exist");
             }
 
             foreach (var activity in subPlan.ChildNodes.OfType<ActivityDO>())
@@ -120,9 +121,7 @@ namespace Hub.Services
             var plan = uow.PlanRepository.GetById<PlanNodeDO>(subPlanId);
             if (plan == null)
             {
-                var message = "Subplan with given Id not found. Id=" + subPlanId;
-                Logger.LogError(message);
-                throw new ArgumentException(message);
+                throw new MissingObjectException($"Subplan with Id {subPlanId} doesn't exist");
             }
             return plan.ChildNodes.OfType<ActivityDO>().OrderBy(x => x.Ordering).FirstOrDefault();
         }

@@ -5,6 +5,8 @@ using StructureMap;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using System;
+using System.Net;
+using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
 {
@@ -32,9 +34,9 @@ namespace HubWeb.Controllers
         /// Updates specified organization
         /// </summary>
         /// <param name="dto">Organization to update</param>
-        /// <response code="200">Updated organization</response>
         [HttpPut]
-        [ResponseType(typeof(OrganizationDTO))]
+        [SwaggerResponse(HttpStatusCode.OK, "Updated organization", typeof(OrganizationDTO))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "Organization doesn't exist", typeof(ErrorDTO))]
         public IHttpActionResult Put(OrganizationDTO dto)
         {
             return Ok(_organization.UpdateOrganization(dto));

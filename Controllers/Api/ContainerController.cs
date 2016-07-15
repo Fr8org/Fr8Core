@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web.Http;
 using AutoMapper;
 using Hub.Infrastructure;
@@ -15,6 +16,8 @@ using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;
 using Newtonsoft.Json;
 using System.Web.Http.Description;
+using Fr8.Infrastructure;
+using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
 {
@@ -36,28 +39,29 @@ namespace HubWeb.Controllers
         /// </summary>
         /// <param name="id">Id of the container</param>
         /// <remarks>Fr8 authentication headers must be provided</remarks>
-        /// <response code="200">Container's crate storage</response>
-        /// <response code="403">Unathorized request</response>
         [HttpGet]
         [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         [ActionName("payload")]
-        [ResponseType(typeof(PayloadDTO))]
+        [SwaggerResponse(HttpStatusCode.OK, "Container's crate storage", typeof(PayloadDTO))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "Container doesn't exist", typeof(ErrorDTO))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request", typeof(ErrorDTO))]
         public IHttpActionResult GetPayload(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curContainerDO = uow.ContainerRepository.GetByKey(id);
-                var curPayloadDTO = new PayloadDTO(id);
-
-                if (curContainerDO.CrateStorage == null)
+                var container = uow.ContainerRepository.GetByKey(id);
+                if (container == null)
                 {
-                    curContainerDO.CrateStorage = string.Empty;
+                    throw new MissingObjectException($"Container with Id {id} doesn't exist");
                 }
-
-                curPayloadDTO.CrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(curContainerDO.CrateStorage);
-
-                return Ok(curPayloadDTO);
+                var payload = new PayloadDTO(id);
+                if (container.CrateStorage == null)
+                {
+                    container.CrateStorage = string.Empty;
+                }
+                payload.CrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(container.CrateStorage);
+                return Ok(payload);
             }
         }
         /// <summary>
@@ -94,10 +98,10 @@ namespace HubWeb.Controllers
         /// </summary>
         /// <param name="id">Id of the container</param>
         /// <remarks>Fr8 authentication headers must be provided</remarks>
-        /// <response code="200">Container with specified Id. Can be empty</response>
-        /// <response code="403">Unathorized request</response>
         [Fr8ApiAuthorize]
-        [ResponseType(typeof(ContainerDTO))]
+        [SwaggerResponse(HttpStatusCode.OK, "Container with specified Id. Can be empty", typeof(ContainerDTO))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "Container doesn't exist", typeof(ErrorDTO))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request", typeof(ErrorDTO))]
         [HttpGet]
         public IHttpActionResult Get(Guid id)
         {

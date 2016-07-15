@@ -412,6 +412,7 @@
     <Compile Include="DependencyResolution\StructureMapDependencyResolver.cs" />
     <Compile Include="DependencyResolution\StructureMapDependencyScope.cs" />
     <Compile Include="Documentation\Swagger\DocumentFilters\AddDefaultValuesDocumentFilter.cs" />
+    <Compile Include="Documentation\Swagger\DocumentFilters\AddTitleAndDescriptionDocumentFilter.cs" />
     <Compile Include="Documentation\Swagger\DocumentFilters\RemoveDuplicatesDocumentFilter.cs" />
     <Compile Include="Documentation\Swagger\OperationFilters\RemoveParameterModelNameOperationFilter.cs" />
     <Compile Include="Documentation\Swagger\SampleData\ActivityDescriptionSampleFactory.cs" />
@@ -426,7 +427,9 @@
     <Compile Include="Documentation\Swagger\SampleData\CrateSampeFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\CrateStorageSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\CredentialsSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\DetailedMessageSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\DocumentationResponseSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\ErrorSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\FactSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\FieldSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\FileDOSampleFactory.cs" />
@@ -4384,6 +4387,7 @@
     <Folder Include="Content\templates\metronic\assets\global\plugins\angularjs\plugins\angular-file-upload\uploads\" />
     <Folder Include="Content\templates\metronic\demo\" />
     <Folder Include="Controllers\Templates\" />
+    <Folder Include="Exceptions\" />
     <Folder Include="Scripts\app\directives\filters\" />
     <Folder Include="Scripts\tests\templates\" />
     <Folder Include="ViewModelServices\" />

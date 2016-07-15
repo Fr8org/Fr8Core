@@ -67,6 +67,7 @@ namespace HubWeb.Controllers
         /// <response code="403">Unauthorized request</response>
         [HttpGet]
         [Fr8ApiAuthorize]
+        [ResponseType(typeof(List<TerminalDTO>))]
         public IHttpActionResult All()
         {
             var terminals = _terminal.GetAll()

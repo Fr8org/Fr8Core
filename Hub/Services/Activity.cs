@@ -11,6 +11,7 @@ using Data.Infrastructure.Security;
 using Data.Repositories.Plan;
 using Data.Infrastructure.StructureMap;
 using Data.States;
+using Fr8.Infrastructure;
 using Fr8.Infrastructure.Communication;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Crates;
@@ -241,7 +242,7 @@ namespace Hub.Services
             var curAction = uow.PlanRepository.GetById<ActivityDO>(id);
             if (curAction == null)
             {
-                throw new InvalidOperationException("Unknown PlanNode with id: " + id);
+                throw new MissingObjectException($"Activity with Id {id} doesn't exist");
             }
 
             curAction.RemoveFromParent();
@@ -397,6 +398,10 @@ namespace Hub.Services
             if (submittedActiviy.ParentPlanNodeId != null)
             {
                 plan = uow.PlanRepository.Reload<PlanNodeDO>(submittedActiviy.ParentPlanNodeId);
+                if (plan == null)
+                {
+                    throw new MissingObjectException($"Parent plan with Id {submittedActiviy.ParentPlanNodeId} doesn't exist");
+                }
                 originalAction = plan.ChildNodes.FirstOrDefault(x => x.Id == submittedActiviy.Id);
             }
             else
