@@ -16,12 +16,10 @@ namespace terminalStatX.Controllers
     [RoutePrefix("terminals/terminalStatX")]
     public class EventController : ApiController
     {
-        private readonly IHubCommunicator _hubCommunicator;
         private readonly IStatXPolling _polling;
 
-        public EventController(IHubCommunicator hubCommunicator, IStatXPolling polling)
+        public EventController(IStatXPolling polling)
         {
-            _hubCommunicator = hubCommunicator;
             _polling = polling;
         }
 
@@ -29,7 +27,7 @@ namespace terminalStatX.Controllers
         [Route("polling_notifications")]
         public async Task<PollingDataDTO> ProcessPollingRequest([FromBody]PollingDataDTO pollingData)
         {
-            return await _polling.Poll(_hubCommunicator, pollingData);
+            return await _polling.Poll(pollingData);
         }
     }
 }

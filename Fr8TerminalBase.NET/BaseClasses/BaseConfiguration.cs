@@ -94,14 +94,13 @@ namespace Fr8.TerminalBase.BaseClasses
             //it can only communicate with master hub for general purpose queries
             //or it can get a list of all hubs from discovery service
             //therefore we inject hubCommunicator only if we have necessary headers
-
             if (request.Headers.Contains("Fr8HubCallBackUrl") && request.Headers.Contains("Fr8HubCallbackSecret"))
             {
                 var apiUrl = request.Headers.GetValues("Fr8HubCallBackUrl").First().TrimEnd('\\', '/') + $"/api/{CloudConfigurationManager.GetSetting("HubApiVersion")}";
                 var secret = request.Headers.GetValues("Fr8HubCallbackSecret").First();
                 var fr8UserId = request.Headers.Contains("Fr8UserId") ? request.Headers.GetValues("Fr8UserId").First() : null;
                 _hubDiscovery.SetHubSecret(apiUrl, secret);
-                Expression<Func<IContext, IHubCommunicator>> hubCommunicatorFactoryExpression = c => new DefaultHubCommunicator(c.GetInstance<IRestfulServiceClient>(), apiUrl, secret, fr8UserId);
+                Expression<Func<IContext, IHubCommunicator>> hubCommunicatorFactoryExpression = c => new DefaultHubCommunicator(c.GetInstance<IRestfulServiceClientFactory>().Create(new HubAuthenticationHeaderSignature(secret, fr8UserId)), apiUrl, secret, fr8UserId);
                 childContainer.Configure(x =>
                 {
                     x.For<IHubCommunicator>().Use(hubCommunicatorFactoryExpression).Singleton();
