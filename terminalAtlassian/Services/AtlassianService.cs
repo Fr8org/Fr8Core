@@ -306,7 +306,7 @@ namespace terminalAtlassian.Services
 
             var reporterDisplayName = (await jira.GetUserAsync(curIssue.Reporter)).DisplayName;
 
-            returnList.Add(new KeyValueDTO("ReporterDisplayName", reporterDisplayName));
+            returnList.Add(new KeyValueDTO("ReporterFullname", reporterDisplayName));
             return returnList;
         }
 
