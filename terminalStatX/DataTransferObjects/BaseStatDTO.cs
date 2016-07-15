@@ -16,7 +16,7 @@ namespace terminalStatX.DataTransferObjects
         [JsonProperty("title")]
         public string Title { get; set; }
 
-        [JsonIgnore]
+        [JsonProperty("visualType")]
         public string VisualType { get; set; }
 
         [JsonProperty("notes")]

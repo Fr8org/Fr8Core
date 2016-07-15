@@ -418,8 +418,6 @@ namespace terminalStatX.Services
 
             if (jObject.TryGetValue("items", out itemsToken))
             {
-                var jsonSerializerSettings = new JsonSerializerSettings() { DateFormatHandling = DateFormatHandling.IsoDateFormat, DateParseHandling = DateParseHandling.DateTimeOffset, DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind };
-
                 //special case for stats that contains item objects
                 stat = new GeneralStatWithItemsDTO()
                 {
@@ -463,6 +461,8 @@ namespace terminalStatX.Services
                     NotesLastUpdatedDateTime = jObject["notesLastUpdatedDateTime"] != null ? DateTime.Parse(jObject["notesLastUpdatedDateTime"].ToString()) : (DateTime?)null,
                 };
             }
+
+            stat.DynamicJsonIgnoreProperties = new[] {"visualType"};
 
             return stat;
         }
