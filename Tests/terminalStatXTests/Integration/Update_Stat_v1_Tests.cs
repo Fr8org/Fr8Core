@@ -65,14 +65,14 @@ namespace terminalStatXTests.Integration
 
         private void AssertConfigureCrate(ICrateStorage crateStorage)
         {
-            Assert.AreEqual(1, crateStorage.Count, "Crate storage count is not equal to 1");
+            Assert.AreEqual(2, crateStorage.Count, "Crate storage count is not equal to 2");
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(), "StandardConfigurationControlsCM count is not 1");
             AssertConfigureControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
         }
 
         private void AssertConfigureControls(StandardConfigurationControlsCM control)
         {
-            Assert.AreEqual(1, control.Controls.Count, "Control count is not 1");
+            Assert.AreEqual(4, control.Controls.Count, "Control count is not 4");
             Assert.IsTrue(control.Controls[0] is TextSource, "First control isn't a TextSource");
             Assert.AreEqual("Message", control.Controls[0].Label, "Invalid Label on control");
             Assert.AreEqual("Message", control.Controls[0].Name, "Invalid Name on control");
