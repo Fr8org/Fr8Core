@@ -107,6 +107,8 @@
     <Compile Include="BaseClasses\OAuthApiIntegrationBase.cs" />
     <Compile Include="Helpers\ActivityConfigurator.cs" />
     <Compile Include="Services\DummyHubCommunicator.cs" />
+    <Compile Include="Services\HubLoggerService.cs" />
+    <Compile Include="Services\IHubLoggerService.cs" />
     <Compile Include="Services\PlanService.cs" />
     <Compile Include="Infrastructure\AutoMapperBootstrapper.cs" />
     <Compile Include="Infrastructure\Behaviors\BaseControlMappingBehavior.cs" />
@@ -141,7 +143,7 @@
     <Compile Include="Services\HubCommunicatorExtensions.cs" />
     <Compile Include="Services\HubDiscoveryService.cs" />
     <Compile Include="Services\HubEventReporter.cs" />
-    <Compile Include="Services\HubEventReporterExtensions.cs" />
+    <Compile Include="Services\HubLoggerExtensions.cs" />
     <Compile Include="Services\IActivityExecutor.cs" />
     <Compile Include="Services\IActivityStore.cs" />
     <Compile Include="Services\IHubDiscoveryService.cs" />
