@@ -33,7 +33,7 @@ namespace terminalStatXTests.Integration
             Assert.AreEqual(1, crateStorage.Count, "Crate storage count is not equal to 1");
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(), "StandardConfigurationControlsCM count is not 1");
 
-            Assert.AreEqual(2, crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls.Count, "Control count is not 2");
+            Assert.AreEqual(4, crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls.Count, "Control count is not 4");
             Assert.IsTrue(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0] is DropDownList, "First control isn't a DropDownList");
             Assert.AreEqual("StatTypesList", crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0].Name, "Invalid Name on control");
         }
@@ -56,7 +56,7 @@ namespace terminalStatXTests.Integration
             Assert.AreEqual(2, crateStorage.Count, "Crate storage count is not equal to 1");
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(), "StandardConfigurationControlsCM count is not 1");
 
-            Assert.AreEqual(2, crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls.Count, "Control count is not 2");
+            Assert.AreEqual(4, crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls.Count, "Control count is not 4");
             Assert.IsTrue(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0] is DropDownList, "First control isn't a DropDownList");
             Assert.AreEqual("StatTypesList", crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0].Name, "Invalid Name on control");
         }

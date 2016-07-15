@@ -26,14 +26,14 @@ namespace terminalStatXTests.Integration
         public override string TerminalName => "terminalStatX";
 
         [Test]
-        public async Task Update_Stat_Initial_Configuration_Check_Crate_Structure()
+        public async Task Monitor_Stat_Initial_Configuration_Check_Crate_Structure()
         {
             var responseDTO = await CompleteInitialConfiguration();
 
             Assert.NotNull(responseDTO, "Response is null on initial configuration");
             Assert.NotNull(responseDTO.CrateStorage, "Crate storage is null on initial configuration");
             var crateStorage = Crate.FromDto(responseDTO.CrateStorage);
-            Assert.AreEqual(2, crateStorage.Count, "Crate storage count is not equal to 2");
+            Assert.AreEqual(1, crateStorage.Count, "Crate storage count is not equal to 1");
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(), "StandardConfigurationControlsCM count is not 1");
 
             Assert.AreEqual(2, crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls.Count, "Control count is not 4");
@@ -41,7 +41,7 @@ namespace terminalStatXTests.Integration
         }
 
         [Test]
-        public async Task Update_Stat_FollowUp_Configuration_Check_Crate_Structure()
+        public async Task Monitor_Stat_FollowUp_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
             var responseDTO = await CompleteInitialConfiguration();
@@ -54,7 +54,7 @@ namespace terminalStatXTests.Integration
             Assert.NotNull(responseDTO, "Response is null on initial configuration");
             Assert.NotNull(responseDTO.CrateStorage, "Crate storage is null on initial configuration");
             var crateStorage = Crate.FromDto(responseDTO.CrateStorage);
-            Assert.AreEqual(3, crateStorage.Count, "Crate storage count is not equal to 3");
+            Assert.AreEqual(1, crateStorage.Count, "Crate storage count is not equal to 1");
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(), "StandardConfigurationControlsCM count is not 1");
 
             Assert.AreEqual(2, crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls.Count, "Control count is not 4");
