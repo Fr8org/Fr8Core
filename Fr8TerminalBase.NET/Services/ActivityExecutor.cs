@@ -83,9 +83,6 @@ namespace Fr8.TerminalBase.Services
             });
 
             var activity = factory.Create(_container);
-
-            _hubCommunicator.Authorize(activityContext.UserId);
-
             activityContext.HubCommunicator = _hubCommunicator;
 
             var scope = parameters != null && parameters.Any(x => x.Key == "scope")

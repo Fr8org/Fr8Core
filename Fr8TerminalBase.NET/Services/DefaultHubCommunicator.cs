@@ -13,6 +13,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Interfaces;
+using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
@@ -22,95 +23,44 @@ namespace Fr8.TerminalBase.Services
 {
     public class DefaultHubCommunicator : IHubCommunicator
     {
-        private readonly IRestfulServiceClient _restfulServiceClient;
-        private readonly IHMACService _hmacService;
+        protected readonly IRestfulServiceClient _restfulServiceClient;
         private readonly string _apiUrl;
         private string _userId;
-
-        protected string TerminalSecret { get; set; }
-        protected string TerminalId { get; set; }
-
+        protected string TerminalToken { get; set; }
         public string UserId => _userId;
 
-        public DefaultHubCommunicator(IRestfulServiceClient restfulServiceClient, IHMACService hmacService, string apiUrl, string terminalId, string apiSecret)
+        public DefaultHubCommunicator(IRestfulServiceClient restfulServiceClient, string apiUrl, string token, string userId)
         {
-            TerminalSecret = apiSecret;
-            TerminalId = terminalId;
+            TerminalToken = token;
             _restfulServiceClient = restfulServiceClient;
-            _hmacService = hmacService;
             _apiUrl = apiUrl?.TrimEnd('/', '\\');
-        }
-
-        public void Authorize(string userId)
-        {
             _userId = userId;
         }
 
-        #region HMAC
-
-        public async Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri)
-        {
-            /*if (!IsConfigured)
-                throw new InvalidOperationException("Please call Configure() before using the class.");*/
-
-            return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, _userId);
-        }
-
-        private async Task<Dictionary<string, string>> GetHMACHeader<T>(Uri requestUri, T content)
-        {
-            /*if (!IsConfigured)
-                throw new InvalidOperationException("Please call Configure() before using the class.");*/
-
-            return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, _userId, content);
-        }
-
-        private async Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri, HttpContent content)
-        {
-            /*if (!IsConfigured)
-                throw new InvalidOperationException("Please call Configure() before using the class.");*/
-
-            return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, _userId, content);
-        }
-
-        #endregion
-
         public async Task<PlanEmptyDTO> LoadPlan(JToken planContents)
         {
-            // var hmacService = ObjectFactory.GetInstance<IHMACService>();
-            // var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
-
             var uri = new Uri($"{GetHubUrlWithApiVersion()}/plans/load");
-
-            var headers = await _hmacService.GenerateHMACHeader(
-                uri, TerminalId, TerminalSecret, _userId, planContents);
-
-            var plan = await _restfulServiceClient.PostAsync<JToken, PlanEmptyDTO>(
-                uri,
-                planContents,
-                headers: headers
-            );
-
-            return plan;
+            return await _restfulServiceClient.PostAsync<JToken, PlanEmptyDTO>(uri, planContents);
         }
 
         public async Task<PayloadDTO> GetPayload(Guid containerId)
         {
             var uri = new Uri($"{GetHubUrlWithApiVersion()}/containers/payload?id={containerId.ToString("D")}", UriKind.Absolute);
-            var payloadDTOTask = await _restfulServiceClient.GetAsync<PayloadDTO>(uri, containerId.ToString(), await GetHMACHeader(uri));
+            var payloadDTOTask = await _restfulServiceClient.GetAsync<PayloadDTO>(uri, containerId.ToString());
             return payloadDTOTask;
         }
 
         public async Task<UserDTO> GetCurrentUser()
         {
             var uri = new Uri($"{GetHubUrlWithApiVersion()}/users/userdata?id={_userId}", UriKind.Absolute);
-            var curUser = await _restfulServiceClient.GetAsync<UserDTO>(uri, null, await GetHMACHeader(uri));
+            var curUser = await _restfulServiceClient.GetAsync<UserDTO>(uri, null);
             return curUser;
         }
 
         public async Task<List<AuthenticationTokenTerminalDTO>> GetTokens()
         {
             var uri = new Uri($"{GetHubUrlWithApiVersion()}/authentication/tokens", UriKind.Absolute);
-            var tokens = await _restfulServiceClient.GetAsync<List<AuthenticationTokenTerminalDTO>>(uri, null, await GetHMACHeader(uri));
+            var tokens = await _restfulServiceClient.GetAsync<List<AuthenticationTokenTerminalDTO>>(uri, null);
             return tokens;
         }
 
@@ -120,7 +70,7 @@ namespace Fr8.TerminalBase.Services
                 ? "upstream"
                 : "downstream";
             var uri = new Uri($"{GetHubUrlWithApiVersion()}/plan_nodes?id={activityId}&direction={directionSuffix}", UriKind.Absolute);
-            var curActivities = await _restfulServiceClient.GetAsync<List<ActivityDTO>>(uri, null, await GetHMACHeader(uri));
+            var curActivities = await _restfulServiceClient.GetAsync<List<ActivityDTO>>(uri, null);
             var curCrates = new List<Crate<TManifest>>();
 
             foreach (var curAction in curActivities)
@@ -140,7 +90,7 @@ namespace Fr8.TerminalBase.Services
                 : "downstream";
 
             var uri = new Uri($"{GetHubUrlWithApiVersion()}/plan_nodes?id={activityId}&direction={directionSuffix}", UriKind.Absolute);
-            var curActivities = await _restfulServiceClient.GetAsync<List<ActivityDTO>>(uri, null, await GetHMACHeader(uri));
+            var curActivities = await _restfulServiceClient.GetAsync<List<ActivityDTO>>(uri, null);
             var curCrates = new List<Crate>();
 
             foreach (var curAction in curActivities)
@@ -156,7 +106,7 @@ namespace Fr8.TerminalBase.Services
         {
             var url = $"{GetHubUrlWithApiVersion()}/plan_nodes/signals?id={activityId}&direction={(int)direction}&availability={(int)availability}";
             var uri = new Uri(url, UriKind.Absolute);
-            var availableData = await _restfulServiceClient.GetAsync<IncomingCratesDTO>(uri, null, await GetHMACHeader(uri));
+            var availableData = await _restfulServiceClient.GetAsync<IncomingCratesDTO>(uri, null);
             return availableData;
         }
 
@@ -164,13 +114,13 @@ namespace Fr8.TerminalBase.Services
         {
             var hubAlarmsUrl = $"{GetHubUrlWithApiVersion()}/alarms";
             var uri = new Uri(hubAlarmsUrl);
-            await _restfulServiceClient.PostAsync(uri, alarmDTO, null, await GetHMACHeader(uri, alarmDTO));
+            await _restfulServiceClient.PostAsync(uri, alarmDTO, null);
         }
 
         public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(bool getLatestsVersionsOnly = false)
         {
             var hubUri = new Uri($"{GetHubUrlWithApiVersion()}/activity_templates");
-            var allCategories = await _restfulServiceClient.GetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(hubUri, null, await GetHMACHeader(hubUri));
+            var allCategories = await _restfulServiceClient.GetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(hubUri);
             var templates = allCategories.SelectMany(x => x.Activities);
             return getLatestsVersionsOnly ? GetLatestsVersionsOnly(templates) : templates.ToList();
         }
@@ -186,7 +136,7 @@ namespace Fr8.TerminalBase.Services
         {
             var hubUrl = $"{GetHubUrlWithApiVersion()}/activity_templates?tag={(string.IsNullOrEmpty(tag) ? "[all]" : tag)}";
             var uri = new Uri(hubUrl);
-            var templates = await _restfulServiceClient.GetAsync<List<ActivityTemplateDTO>>(uri, null, await GetHMACHeader(uri));
+            var templates = await _restfulServiceClient.GetAsync<List<ActivityTemplateDTO>>(uri);
             return getLatestsVersionsOnly ? GetLatestsVersionsOnly(templates) : templates;
         }
 
@@ -206,7 +156,7 @@ namespace Fr8.TerminalBase.Services
         {
             var url = $"{GetHubUrlWithApiVersion()}/field/exists";
             var uri = new Uri(url);
-            return await _restfulServiceClient.PostAsync<List<FieldValidationDTO>, List<FieldValidationResult>>(uri, fields, null, await GetHMACHeader(uri, fields));
+            return await _restfulServiceClient.PostAsync<List<FieldValidationDTO>, List<FieldValidationResult>>(uri, fields);
         }
 
         public async Task ApplyNewToken(Guid activityId, Guid authTokenId)
@@ -222,15 +172,15 @@ namespace Fr8.TerminalBase.Services
 
             var url = $"{GetHubUrlWithApiVersion()}/authentication/granttokens";
             var uri = new Uri(url);
-            await _restfulServiceClient.PostAsync(uri, token, null, await GetHMACHeader(uri, token));
+            await _restfulServiceClient.PostAsync(uri, token);
         }
 
         public async Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload, bool force)
         {
-            var url = $"{GetHubUrlWithApiVersion()}/activities/configure?force="+force;
+            var url = $"{GetHubUrlWithApiVersion()}/activities/configure?force=" + force;
             var uri = new Uri(url);
             var activityDTO = Mapper.Map<ActivityDTO>(activityPayload);
-            var resultActivityDTO = await _restfulServiceClient.PostAsync<ActivityDTO, ActivityDTO>(uri, activityDTO, null, await GetHMACHeader(uri, activityDTO));
+            var resultActivityDTO = await _restfulServiceClient.PostAsync<ActivityDTO, ActivityDTO>(uri, activityDTO);
             return Mapper.Map<ActivityPayload>(resultActivityDTO);
         }
 
@@ -239,7 +189,7 @@ namespace Fr8.TerminalBase.Services
             var url = $"{GetHubUrlWithApiVersion()}/activities/save?force=" + force;
             var uri = new Uri(url);
             var activityDTO = Mapper.Map<ActivityDTO>(activityPayload);
-            var resultActivityDTO = await _restfulServiceClient.PostAsync<ActivityDTO, ActivityDTO>(uri, activityDTO, null, await GetHMACHeader(uri, activityDTO));
+            var resultActivityDTO = await _restfulServiceClient.PostAsync<ActivityDTO, ActivityDTO>(uri, activityDTO);
             return Mapper.Map<ActivityPayload>(resultActivityDTO);
         }
 
@@ -265,7 +215,7 @@ namespace Fr8.TerminalBase.Services
             }
 
             var uri = new Uri(url + postUrl);
-            var resultActivityDTO = await _restfulServiceClient.PostAsync<ActivityDTO>(uri, null, await GetHMACHeader(uri));
+            var resultActivityDTO = await _restfulServiceClient.PostAsync<ActivityDTO>(uri);
             return Mapper.Map<ActivityPayload>(resultActivityDTO);
         }
 
@@ -273,28 +223,28 @@ namespace Fr8.TerminalBase.Services
         {
             var url = $"{GetHubUrlWithApiVersion()}/plans";
             var uri = new Uri(url);
-            return await _restfulServiceClient.PostAsync<PlanEmptyDTO, PlanDTO>(uri, planDTO, null, await GetHMACHeader(uri, planDTO));
+            return await _restfulServiceClient.PostAsync<PlanEmptyDTO, PlanDTO>(uri, planDTO);
         }
 
         public async Task RunPlan(Guid planId, List<CrateDTO> payload)
         {
             var url = $"{GetHubUrlWithApiVersion()}/plans/run?planId=" + planId;
             var uri = new Uri(url);
-            await _restfulServiceClient.PostAsync<List<CrateDTO>>(uri, payload, null, await GetHMACHeader(uri, payload));
+            await _restfulServiceClient.PostAsync<List<CrateDTO>>(uri, payload);
         }
 
         public async Task<IEnumerable<PlanDTO>> GetPlansByName(string name, PlanVisibility visibility = PlanVisibility.Standard)
         {
             var url = $"{GetHubUrlWithApiVersion()}/plans?name={name}&visibility={visibility}";
             var uri = new Uri(url);
-            return await _restfulServiceClient.GetAsync<IEnumerable<PlanDTO>>(uri, null, await GetHMACHeader(uri));
+            return await _restfulServiceClient.GetAsync<IEnumerable<PlanDTO>>(uri);
         }
 
         public async Task<PlanDTO> GetPlansByActivity(string activityId)
         {
             var url = $"{GetHubUrlWithApiVersion()}/plans?id={activityId}";
             var uri = new Uri(url);
-            return await _restfulServiceClient.GetAsync<PlanDTO>(uri, null, await GetHMACHeader(uri));
+            return await _restfulServiceClient.GetAsync<PlanDTO>(uri);
         }
 
         public async Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan)
@@ -304,36 +254,35 @@ namespace Fr8.TerminalBase.Services
 
             var hubUrl = $"{GetHubUrlWithApiVersion()}/plans/";
             var uri = new Uri(hubUrl);
-            return await _restfulServiceClient.PostAsync<PlanDTO>(uri, jsonContent, null, await GetHMACHeader(uri, jsonContent));
+            return await _restfulServiceClient.PostAsync<PlanDTO>(uri, jsonContent);
         }
 
         public async Task NotifyUser(TerminalNotificationDTO notificationMessage)
         {
             var hubUrl = $"{GetHubUrlWithApiVersion()}/notifications";
             var uri = new Uri(hubUrl);
-            await _restfulServiceClient.PostAsync(uri, notificationMessage, null, await GetHMACHeader(uri, notificationMessage));
+            await _restfulServiceClient.PostAsync(uri, notificationMessage);
         }
 
         public async Task DeletePlan(Guid planId)
         {
             var hubUrl = $"{GetHubUrlWithApiVersion()}/plans?id={planId}";
             var uri = new Uri(hubUrl);
-            await _restfulServiceClient.DeleteAsync(uri, null, await GetHMACHeader(uri));
+            await _restfulServiceClient.DeleteAsync(uri);
         }
 
         public async Task DeleteExistingChildNodesFromActivity(Guid curActivityId)
         {
             var hubAlarmsUrl = $"{GetHubUrlWithApiVersion()}/activities?id={curActivityId}&delete_child_nodes=true";
             var uri = new Uri(hubAlarmsUrl);
-            await _restfulServiceClient.DeleteAsync(uri, null, await GetHMACHeader(uri));
+            await _restfulServiceClient.DeleteAsync(uri);
         }
 
         public async Task DeleteActivity(Guid curActivityId)
         {
             var hubDeleteUrl = $"{GetHubUrlWithApiVersion()}/activities?id={curActivityId}";
             var uri = new Uri(hubDeleteUrl);
-            var headers = await GetHMACHeader(uri);
-            await _restfulServiceClient.DeleteAsync(uri, null, headers);
+            await _restfulServiceClient.DeleteAsync(uri);
         }
 
         public static byte[] ReadFully(Stream input)
@@ -357,35 +306,35 @@ namespace Fr8.TerminalBase.Services
             var byteData = ReadFully(stream);
             multiPartData.Add(new ByteArrayContent(byteData), name, name);
             var uri = new Uri(hubUrl);
-            return await _restfulServiceClient.PostAsync<FileDTO>(uri, multiPartData, null, await GetHMACHeader(uri, (HttpContent)multiPartData));
+            return await _restfulServiceClient.PostAsync<FileDTO>(uri, multiPartData);
         }
 
         public async Task<IEnumerable<FileDTO>> GetFiles()
         {
             var hubUrl = $"{GetHubUrlWithApiVersion()}/files";
             var uri = new Uri(hubUrl);
-            return await _restfulServiceClient.GetAsync<IEnumerable<FileDTO>>(uri, null, await GetHMACHeader(uri));
+            return await _restfulServiceClient.GetAsync<IEnumerable<FileDTO>>(uri);
         }
 
         public async Task<Stream> DownloadFile(int fileId)
         {
             var hubUrl = $"{GetHubUrlWithApiVersion()}/files/{fileId}";
             var uri = new Uri(hubUrl);
-            return await _restfulServiceClient.DownloadAsync(uri, null, await GetHMACHeader(uri));
+            return await _restfulServiceClient.DownloadAsync(uri);
         }
 
         public async Task<List<CrateDTO>> GetStoredManifests(List<CrateDTO> cratesForMTRequest)
         {
             var hubUrl = $"{GetHubUrlWithApiVersion()}/warehouse?userId={_userId}";
             var uri = new Uri(hubUrl);
-            return await _restfulServiceClient.PostAsync<List<CrateDTO>, List<CrateDTO>>(uri, cratesForMTRequest, null, await GetHMACHeader(uri, cratesForMTRequest));
+            return await _restfulServiceClient.PostAsync<List<CrateDTO>, List<CrateDTO>>(uri, cratesForMTRequest);
         }
 
         public async Task<AuthorizationToken> GetAuthToken(string externalAccountId)
         {
-            var url = $"{GetHubUrlWithApiVersion()}/authentication/GetAuthToken?curFr8UserId={_userId}&externalAccountId={HttpUtility.UrlEncode(externalAccountId)}&terminalId={TerminalId}";
+            var url = $"{GetHubUrlWithApiVersion()}/authentication/GetAuthToken?curFr8UserId={_userId}&externalAccountId={HttpUtility.UrlEncode(externalAccountId)}";
             var uri = new Uri(url);
-            var authTokenDTO = await _restfulServiceClient.GetAsync<AuthorizationTokenDTO>(uri, null, await GetHMACHeader(uri));
+            var authTokenDTO = await _restfulServiceClient.GetAsync<AuthorizationTokenDTO>(uri);
             return Mapper.Map<AuthorizationToken>(authTokenDTO);
         }
 
@@ -393,7 +342,7 @@ namespace Fr8.TerminalBase.Services
         {
             var url = $"{GetHubUrlWithApiVersion()}/authentication/renewtoken";
             var uri = new Uri(url);
-            await _restfulServiceClient.PostAsync(uri, token, null, await GetHMACHeader(uri, token));
+            await _restfulServiceClient.PostAsync(uri, token);
         }
 
         public async Task SendEvent(Crate eventPayload)
@@ -404,30 +353,18 @@ namespace Fr8.TerminalBase.Services
             {
                 var url = $"{GetHubUrlWithApiVersion()}/events";
                 var uri = new Uri(url);
-                await _restfulServiceClient.PostAsync(uri, eventReportCrateDTO, null, await GetHMACHeader(uri, eventReportCrateDTO));
+                await _restfulServiceClient.PostAsync(uri, eventReportCrateDTO);
             }
         }
 
         public async Task ScheduleEvent(string externalAccountId, string minutes, bool triggerImmediately = false, string additionalConfigAttributes = null, string additionToJobId = null)
         {
-            var hubAlarmsUrl = GetHubUrlWithApiVersion() + $"/alarms/polling?terminalId={TerminalId}";
+            var hubAlarmsUrl = GetHubUrlWithApiVersion() + $"/alarms/polling?terminalToken={TerminalToken}";
             var uri = new Uri(hubAlarmsUrl);
             var data = new PollingDataDTO() { Fr8AccountId = _userId, ExternalAccountId = externalAccountId, PollingIntervalInMinutes = minutes, TriggerImmediately = triggerImmediately, AdditionalConfigAttributes = additionalConfigAttributes, AdditionToJobId  = additionToJobId};
 
             await _restfulServiceClient.PostAsync<PollingDataDTO>(uri, data);
         }
-
-        //public async Task ScheduleEvent(string externalAccountId, string minutes)
-        //{
-
-
-
-        //    var hubAlarmsUrl = GetHubUrlWithApiVersion()
-        //       + string.Format("/alarms/polling?job_id={0}&fr8_account_id={1}&minutes={2}&terminal_id={3}",
-        //       externalAccountId, _userId, minutes, TerminalId);
-        //    var uri = new Uri(hubAlarmsUrl);
-        //    await _restfulServiceClient.PostAsync(uri, null, await GetHMACHeader(uri));
-        //}
 
         public async Task<List<TManifest>> QueryWarehouse<TManifest>(List<FilterConditionDTO> query)
             where TManifest : Manifest
@@ -437,7 +374,7 @@ namespace Fr8.TerminalBase.Services
 
             var payload = new QueryDTO(ManifestDiscovery.Default.GetManifestType<TManifest>().Type, query);
 
-            return await _restfulServiceClient.PostAsync<QueryDTO, List<TManifest>>(uri, payload, null, await GetHMACHeader(uri, payload));
+            return await _restfulServiceClient.PostAsync<QueryDTO, List<TManifest>>(uri, payload);
         }
 
         public async Task AddOrUpdateWarehouse(params Manifest[] manifests)
@@ -448,7 +385,7 @@ namespace Fr8.TerminalBase.Services
             var crateStorage = new CrateStorage(manifests.Select(x => Crate.FromContent(null, x)));
             var payload = CrateStorageSerializer.Default.ConvertToDto(crateStorage);
 
-            await _restfulServiceClient.PostAsync(uri, payload, null, await GetHMACHeader(uri, payload));
+            await _restfulServiceClient.PostAsync(uri, payload);
         }
 
         public async Task DeleteFromWarehouse<TManifest>(List<FilterConditionDTO> query)
@@ -458,7 +395,7 @@ namespace Fr8.TerminalBase.Services
             var uri = new Uri(url);
             var payload = new QueryDTO(ManifestDiscovery.Default.GetManifestType<TManifest>().Type, query);
 
-            await _restfulServiceClient.PostAsync(uri, payload, null, await GetHMACHeader(uri, payload));
+            await _restfulServiceClient.PostAsync(uri, payload);
         }
 
         private string GetHubUrlWithApiVersion()

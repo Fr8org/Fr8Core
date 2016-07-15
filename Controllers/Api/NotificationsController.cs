@@ -26,7 +26,7 @@ namespace HubWeb.Controllers
         /// <remarks>Fr8 authentication headers must be provided</remarks>
         /// <param name="notificationMessage">Message to post</param>
         [HttpPost]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         [SwaggerResponse(HttpStatusCode.OK, "Message was successfully posted")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
