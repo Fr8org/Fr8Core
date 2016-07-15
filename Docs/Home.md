@@ -12,6 +12,7 @@
         * [Apps](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Apps.md)
         * [Data](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/TypesOfFr8.md)   
         * [Events](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Events.md)  
+        * [Looping & Enumeration](ForDevelopers/OperatingConcepts/Looping&Enumeration.md)
         * [Execution](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/PlanExecution.md)
         * [Manifests](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CratesManifest.md)
         * [Security/Authorization](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Authorization.md)
