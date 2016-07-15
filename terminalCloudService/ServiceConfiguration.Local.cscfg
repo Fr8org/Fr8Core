@@ -35,7 +35,7 @@
       <Setting name="terminalTelegram.TerminalEndpoint" value="" />
       <Setting name="terminalInstagram.TerminalEndpoint" value="" />
       <Setting name="OutboundUserName" value="" />
-      <Setting name="OutboundUserPassword" value="" />
+      <Setting name="OutboundUserPassword" value="" /> 
     </ConfigurationSettings>
     <Certificates>
       <Certificate name="Microsoft.WindowsAzure.Plugins.RemoteAccess.PasswordEncryption" thumbprint="CF67E4C8E985509FB9E7FBF8F61A615D34D8CEC6" thumbprintAlgorithm="sha1" />
