@@ -486,7 +486,8 @@
     <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="Infrastructure_HubWeb\AngularTemplateCacheAttribute.cs" />
     <Compile Include="Infrastructure_HubWeb\FileActionResult.cs" />
-    <Compile Include="Infrastructure_HubWeb\Fr8HubWebHMACAuthenticateAttribute.cs" />
+    <Compile Include="Infrastructure_HubWeb\Fr8PlanDirectoryAuthenticationAttribute.cs" />
+    <Compile Include="Infrastructure_HubWeb\Fr8TerminalAuthenticationAttribute.cs" />
     <Compile Include="Infrastructure_HubWeb\Fr8Identity.cs" />
     <Compile Include="Infrastructure_HubWeb\HtmlHelpers.cs" />
     <Compile Include="SelfHostFactory.cs" />
