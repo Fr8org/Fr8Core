@@ -4,14 +4,14 @@
     <Instances count="1" />
     <ConfigurationSettings>
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
-      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.Enabled" value="true" />
-      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountUsername" value="fr8.co" />
-      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountEncryptedPassword" value="MIIBnQYJKoZIhvcNAQcDoIIBjjCCAYoCAQAxggFOMIIBSgIBADAyMB4xHDAaBgNVBAMME1dpbmRvd3MgQXp1cmUgVG9vbHMCEHN1nyXs7ouAS4GezvOfLUkwDQYJKoZIhvcNAQEBBQAEggEAKZxdFFUL7CB5MFxbLOe1Nd2lO2SQXbQl7E6mjZE9aFQxgobFNBx4gN5byw4dki+ZajQGI6whOz4GpA82rG8nz0V4DjZC6WE6wS+vEfWKMPb6Sq4TkLh75RHzvoNvt5CJshRGVcpoY6bZDY3rEMe71VXTDMwUEPA84GNakcdRQA0UjTZ8OWhkIKS+gvxY2l8yXNvHrhmPNd2W7tPd18pcNgckbROl5T1xPi89UacXEEzyK3LHRPlAS7eijpcy+B2gs7Gmj/jLqVOnDyHsO3CxI6/W9xF2GaBHGqYWpmRJhV3C8HSaJ50iIRLYDDPQXaZNG91DHdxegywIilua9JOyBjAzBgkqhkiG9w0BBwEwFAYIKoZIhvcNAwcECOTk+EDaxnEtgBAgdS6uTa/jh5UDZakCjRCY" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.Enabled" value="false" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountUsername" value="" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountEncryptedPassword" value="" />
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountExpiration" value="2016-12-31T23:59:59.0000000+01:00" />
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteForwarder.Enabled" value="true" />
       <Setting name="Fr8.ConnectionString" value="" />
       <Setting name="CoreWebServerUrl" value="" />
-      <Setting name="HubApiBaseUrl" value="" />
+      <Setting name="HubApiBaseUrl" value="" /> 
       <Setting name="LoggerNamePrefix" value="" />
       <Setting name="terminalAtlassian.TerminalEndpoint" value="" />
       <Setting name="terminalAzure.TerminalEndpoint" value="" />
@@ -28,18 +28,18 @@
       <Setting name="terminalSlack.TerminalEndpoint" value="" />
       <Setting name="terminalTwilio.TerminalEndpoint" value="" />
       <Setting name="terminalYammer.TerminalEndpoint" value="" />
-      <Setting name="terminalDemo.TerminalEndpoint" value="" />
-	    <Setting name="terminalStatX.TerminalEndpoint" value="" />
-	    <Setting name="terminalBox.TerminalEndpoint" value="" />
+      <Setting name="terminalDemo.TerminalEndpoint" value="" /> 
+      <Setting name="terminalStatX.TerminalEndpoint" value="" />
+      <Setting name="terminalBox.TerminalEndpoint" value="" />
       <Setting name="terminalFacebook.TerminalEndpoint" value="" />
       <Setting name="terminalTelegram.TerminalEndpoint" value="" />
       <Setting name="terminalInstagram.TerminalEndpoint" value="" />
-   	  <Setting name="OutboundUserName" value="" />
-      <Setting name="OutboundUserPassword" value="" />
+      <Setting name="OutboundUserName" value="" />
+      <Setting name="OutboundUserPassword" value="" /> 
     </ConfigurationSettings>
     <Certificates>
       <Certificate name="Microsoft.WindowsAzure.Plugins.RemoteAccess.PasswordEncryption" thumbprint="CF67E4C8E984409FB9E7FBF8F61A615D64D4CEC6" thumbprintAlgorithm="sha1" />
       <Certificate name="fr8Certificate" thumbprint="8588F9C9DA346691E9806A5D0E25EDA32FBE724F" thumbprintAlgorithm="sha1" />
     </Certificates>
-  </Role> 
+  </Role>
 </ServiceConfiguration>
