@@ -186,7 +186,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\terminalTelegram\Settings.config.readme" />
-    <Content Include="Config\HealthMonitor\Settings.config.src" />
     <Content Include="Config\terminalYammer\Settings.Release.config" />
     <Content Include="Config\terminalYammer\Settings.Dev.config" />
     <Content Include="Config\terminalYammer\Settings.Demo.config" />
@@ -217,10 +216,6 @@
     <Content Include="Config\terminalFacebook\Settings.config" />
     <Content Include="Config\terminalDropbox\Settings.config" />
     <Content Include="Config\terminalDocuSign\Settings.config" />
-    <Content Include="Config\terminalCloudService\ServiceConfiguration.Release.cscfg" />
-    <Content Include="Config\terminalCloudService\ServiceConfiguration.Dev.cscfg" />
-    <Content Include="Config\terminalCloudService\ServiceConfiguration.Demo.cscfg" />
-    <Content Include="Config\terminalCloudService\ServiceConfiguration.Cloud.cscfg" />
     <Content Include="Config\terminalBox\Settings.config" />
     <Content Include="Config\terminalBasecamp2\Settings.Release.config" />
     <Content Include="Config\terminalBasecamp2\Settings.Dev.config" />
@@ -231,6 +226,7 @@
     <Content Include="Config\PlanDirectory\Settings.Release.config" />
     <Content Include="Config\PlanDirectory\Settings.config" />
     <Content Include="Config\HubWeb\Settings.config" />
+    <Content Include="Config\HealthMonitor\Settings.config.src" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
