@@ -121,7 +121,7 @@ namespace terminalIntegrationTests.Integration
                 {
                     //Searching for created jira issue
                     issues = jira.GetIssuesFromJql("summary ~ " + guidTestId.ToString()).ToArray();
-                    Debug.WriteLine("found jira issues " + issues.Length + "after elapsed " + stopwatch.ElapsedMilliseconds + " milliseconds");
+                    Debug.WriteLine("found jira issues " + issues.Length + " after elapsed " + stopwatch.ElapsedMilliseconds + " milliseconds");
                 }
 
                 if(totalMessagesFound == 0)
@@ -130,7 +130,7 @@ namespace terminalIntegrationTests.Integration
                     var result = await RestfulServiceClient.GetAsync(new Uri(slackUrl));
                     var searchResult = JObject.Parse(result);
                     totalMessagesFound = (int)searchResult.SelectToken("messages.pagination.total_count");
-                    Debug.WriteLine("found slack messages " + totalMessagesFound + "after elapsed " + stopwatch.ElapsedMilliseconds + " milliseconds");
+                    Debug.WriteLine("found slack messages " + totalMessagesFound + " after elapsed " + stopwatch.ElapsedMilliseconds + " milliseconds");
                 }
 
                 if (issues.Count() != 0 && totalMessagesFound != 0)
@@ -217,12 +217,26 @@ namespace terminalIntegrationTests.Integration
                 tokenADO.TerminalID = uow.TerminalRepository.FindOne(t => t.Name == "terminalAtlassian").Id;
                 tokenGDO.TerminalID = uow.TerminalRepository.FindOne(t => t.Name == "terminalGoogle").Id;
                 tokenSDO.TerminalID = uow.TerminalRepository.FindOne(t => t.Name == "terminalSlack").Id;
-                uow.AuthorizationTokenRepository.Add(tokenADO);
-                uow.SaveChanges();
-                uow.AuthorizationTokenRepository.Add(tokenGDO);
-                uow.SaveChanges();
-                uow.AuthorizationTokenRepository.Add(tokenSDO);
-                uow.SaveChanges();
+                var tokenA = uow.AuthorizationTokenRepository.FindTokenByExternalAccount(tokenADO.ExternalAccountId, tokenADO.TerminalID, userId);
+                if (tokenA == null)
+                {
+                    uow.AuthorizationTokenRepository.Add(tokenADO);
+                    uow.SaveChanges();
+                }
+
+                var tokenG = uow.AuthorizationTokenRepository.FindTokenByExternalAccount(tokenGDO.ExternalAccountId, tokenGDO.TerminalID, userId);
+                if (tokenG == null)
+                {
+                    uow.AuthorizationTokenRepository.Add(tokenGDO);
+                    uow.SaveChanges();
+                }
+
+                var tokenS = uow.AuthorizationTokenRepository.FindTokenByExternalAccount(tokenSDO.ExternalAccountId, tokenSDO.TerminalID, userId);
+                if (tokenS == null)
+                {
+                    uow.AuthorizationTokenRepository.Add(tokenSDO);
+                    uow.SaveChanges();
+                }
             }
             return userId;
         }
