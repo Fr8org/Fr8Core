@@ -10,12 +10,19 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Testing.Integration;
 using NUnit.Framework;
 using terminalStatXTests.Fixtures;
+using terminalStatXTests.TestTools;
 
 namespace terminalStatXTests.Integration
 {
     [Explicit]
     public class Update_Stat_v1_Tests : BaseTerminalIntegrationTest
     {
+        private readonly AuthorizationTokenHelpers _authorizationTokenHelper;
+        public Update_Stat_v1_Tests()
+        {
+            _authorizationTokenHelper = new AuthorizationTokenHelpers(this);
+        }
+
         public override string TerminalName => "terminalStatX";
 
         [Test]
@@ -30,7 +37,7 @@ namespace terminalStatXTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
             var responseDTO = await CompleteInitialConfiguration();
-            responseDTO.AuthToken = FixtureData.StatX_AuthToken();
+            responseDTO.AuthToken = await _authorizationTokenHelper.GetStatXAuthToken();
             var dataDTO = new Fr8DataDTO
             {
                 ActivityDTO = responseDTO
@@ -44,6 +51,7 @@ namespace terminalStatXTests.Integration
         {
             var configureUrl = GetTerminalConfigureUrl();
             var requestDataDTO = FixtureData.Update_Stat_InitialConfiguration_Fr8DataDTO();
+            requestDataDTO.ActivityDTO.AuthToken = await _authorizationTokenHelper.GetStatXAuthToken();
             return await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, requestDataDTO);
         }
 

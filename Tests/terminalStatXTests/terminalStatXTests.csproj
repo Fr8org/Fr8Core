@@ -9,10 +9,11 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>terminalStatXTests</RootNamespace>
     <AssemblyName>terminalStatXTests</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -67,12 +68,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activities\Monitor_Stat_Changes_v1_Tests.cs" />
-    <Compile Include="Activities\Update_Stat_v1_Tests.cs" />
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
     <Compile Include="Integration\Monitor_Stat_Changes_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Discover_v1_Tests.cs" />
     <Compile Include="Integration\Update_Stat_v1_Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestTools\AuthorizationTokenHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
