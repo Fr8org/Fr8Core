@@ -18,7 +18,7 @@ namespace terminalInstagram.Actions
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "Monitor_For_New_Media_Posted",
-            Label = "Monitor For New Media Posted v1",
+            Label = "Monitor For New Media Posted",
             Category = ActivityCategory.Monitors,
             NeedsAuthentication = true,
             Version = "1",

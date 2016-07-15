@@ -10,7 +10,6 @@ namespace terminalInstagram.Interfaces
     public interface IInstagramEventManager : IDisposable
     {
         Task Subscribe();
-        void Unsubscribe(Guid planId);
         Task<Crate> ProcessUserEvents(IContainer container, string curExternalEventPayload);
     }
 }
