@@ -12,12 +12,12 @@ namespace terminalYammer.Controllers
     public class AuthenticationController : ApiController
     {
         private readonly IYammer _yammerIntegration;
-        private readonly IHubEventReporter _eventReporter;
+        private readonly IHubLoggerService _loggerService;
 
-        public AuthenticationController(Yammer yammer, IHubEventReporter eventReporter)
+        public AuthenticationController(Yammer yammer, IHubLoggerService loggerService)
         {
             _yammerIntegration = yammer;
-            _eventReporter = eventReporter;
+            _loggerService = loggerService;
         }
 
         [HttpPost]
@@ -65,7 +65,7 @@ namespace terminalYammer.Controllers
             }
             catch (Exception ex)
             {
-                await _eventReporter.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
+                await _loggerService.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {

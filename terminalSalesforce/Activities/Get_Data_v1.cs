@@ -9,6 +9,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Helpers;
 using Newtonsoft.Json;
 using ServiceStack;
 using terminalSalesforce.Infrastructure;
@@ -150,7 +151,7 @@ namespace terminalSalesforce.Actions
             var parsedCondition = string.Empty;
             if (filterDataDTO.Count > 0)
             {
-                parsedCondition = ControlHelper.ParseConditionToText(filterDataDTO);
+                parsedCondition = FilterConditionHelper.ParseConditionToText(filterDataDTO);
             }
 
             var resultObjects = await _salesforceManager

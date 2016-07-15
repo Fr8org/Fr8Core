@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Crates;
-using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.TerminalBase.Interfaces;
 using log4net;
 
@@ -14,8 +13,6 @@ namespace Fr8.TerminalBase.Services
 
         private readonly IHubDiscoveryService _hubDiscovery;
         private readonly IActivityStore _activityStore;
-
-        public TerminalDTO Terminal => _activityStore.Terminal;
 
         public HubEventReporter(IHubDiscoveryService hubDiscovery, IActivityStore activityStore)
         {
@@ -40,7 +37,7 @@ namespace Fr8.TerminalBase.Services
         {
             try
             {
-                Logger.Info($"Terminal at '{Terminal?.Endpoint}' is sedning event to Hub at '{hubUrl}'.");
+                Logger.Info($"Terminal at '{_activityStore.Terminal?.Endpoint}' is sedning event to Hub at '{hubUrl}'.");
                 var hubCommunicator = await _hubDiscovery.GetHubCommunicator(hubUrl);
                 await hubCommunicator.SendEvent(eventPayload);
             }

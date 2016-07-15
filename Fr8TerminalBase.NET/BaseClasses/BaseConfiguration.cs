@@ -40,7 +40,7 @@ namespace Fr8.TerminalBase.BaseClasses
         protected virtual void ConfigureProject(bool selfHost, Action<ConfigurationExpression> terminalStructureMapRegistryConfigExpression)
         {
             _container = new Container(StructureMapBootStrapper.LiveConfiguration);
-            _activityStore = new ActivityStore(_terminal, _container);
+            _activityStore = new ActivityStore(_terminal);
             
             _container.Configure(x => x.AddRegistry<TerminalBootstrapper.LiveMode>());
             _container.Configure(x => x.For<IActivityStore>().Use(_activityStore));
