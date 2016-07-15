@@ -10,6 +10,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using StructureMap;
+using System;
 
 namespace terminalFr8Core.Activities
 {
@@ -19,6 +20,7 @@ namespace terminalFr8Core.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("005e5050-91f9-489a-ae9f-c1a182b6cffa"),
             Name = "Save_To_Fr8_Warehouse",
             Label = "Save To Fr8 Warehouse",
             Category = ActivityCategory.Processors,

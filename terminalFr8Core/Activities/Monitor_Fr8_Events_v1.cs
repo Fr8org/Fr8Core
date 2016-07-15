@@ -16,6 +16,7 @@ namespace terminalFr8Core.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new System.Guid("e75112ed-e17d-4b90-a337-50a5d59b1866"),
             Name = "Monitor_Fr8_Events",
             Label = "Monitor Fr8 Events",
             Version = "1",

@@ -19,6 +19,7 @@ namespace terminalDocuSign.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new System.Guid("ba1424f9-a540-4b3e-b206-695857011a0a"),
             Name = "Prepare_DocuSign_Events_For_Storage",
             Label = "Prepare DocuSign Events For Storage",
             Version = "1",

@@ -25,6 +25,7 @@ namespace terminalDocuSign.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("4202F427-CD6F-497A-B852-4223B7F109E6"),
             Name = "Track_DocuSign_Recipients",
             Label = "Track DocuSign Recipients",
             Version = "1",

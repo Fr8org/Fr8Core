@@ -378,8 +378,11 @@ namespace Hub.Services
                     // We're creating new ActivityTemplate.
                     if (activity == null)
                     {
+                        if(activityTemplateDo.Id == null)
+                        {
+                            throw new ApplicationException("ActivityTemplate Id not specified");
+                        }
                         activity = activityTemplateDo;
-                        activityTemplateDo.Id = Guid.NewGuid();
                         activityTemplateDo.Categories = null;
 
                         uow.ActivityTemplateRepository.Add(activityTemplateDo);

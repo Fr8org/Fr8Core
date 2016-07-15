@@ -21,6 +21,7 @@ namespace terminalDemo.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("6C35502C-BA09-4B1E-81EA-5041251CA884"),
             Name = "Do_Math",
             Label = "Do Math",
             Category = ActivityCategory.Processors,

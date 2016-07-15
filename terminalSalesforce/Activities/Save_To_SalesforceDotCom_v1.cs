@@ -24,6 +24,7 @@ namespace terminalSalesforce.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("802bfcb5-f778-4187-82d3-b941a738a464"),
             Version = "1",
             Name = "Save_To_SalesforceDotCom",
             Label = "Save to Salesforce.Com",

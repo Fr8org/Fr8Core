@@ -17,6 +17,7 @@ namespace terminalSalesforce.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new System.Guid("3cb9d14e-6756-410f-b19a-1b365eff267d"),
             Version = "1",
             Name = "Monitor_Salesforce_Event",
             Label = "Monitor Salesforce Events",

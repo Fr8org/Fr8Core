@@ -24,6 +24,7 @@ namespace terminalDocuSign.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("ccdf8156-39fb-4082-99a4-629ec5cf1b23"),
             Name = "Mail_Merge_Into_DocuSign",
             Label = "Mail Merge Into DocuSign",
             Version = "1",

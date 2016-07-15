@@ -11,6 +11,7 @@ using Fr8.Infrastructure.Utilities;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Services;
+using System;
 
 namespace terminalDemo.Activities
 {
@@ -18,6 +19,7 @@ namespace terminalDemo.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("3FE3F514-8927-420B-BB1A-41E06E446165"),
             Name = "Math_Machine",
             Label = "Math Machine",
             Category = ActivityCategory.Solution,

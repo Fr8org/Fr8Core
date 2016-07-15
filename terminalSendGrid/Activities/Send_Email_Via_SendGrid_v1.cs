@@ -12,6 +12,7 @@ using Fr8.TerminalBase.Infrastructure;
 using terminalUtilities.Infrastructure;
 using terminalUtilities.Interfaces;
 using terminalUtilities.Models;
+using System;
 
 namespace terminalSendGrid.Activities
 {
@@ -22,6 +23,7 @@ namespace terminalSendGrid.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("f827af1c-3348-4981-bebd-cf81c8ab27ae"),
             Name = "Send_Email_Via_SendGrid",
             Label = "Send Email",
             Version = "1",
