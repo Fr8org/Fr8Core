@@ -81,7 +81,7 @@ namespace HubWeb.Controllers
         /// <em>[terminalEndpoint]/terminals/[terminalName]/polling?job_id={0}&amp;fr8_account_id={1}&amp;polling_interval={2}</em><br />
         /// <stong>Note:</stong> It should be noted that the terminal is required to have <em>/polling</em> endpoint that accepts data specified above, otherwise the exception will be thrown
         /// </remarks>
-        /// <param name="terminalId">Id of the terminal to perform requests to</param>
+        /// <param name="terminalToken">token of the terminal to perform requests to</param>
         /// <param name="pollingData">Parameters of polling requests</param>
         [HttpPost]
         [SwaggerResponse(HttpStatusCode.OK, "Polling was successfully initiated")]

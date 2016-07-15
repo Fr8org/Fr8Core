@@ -20,7 +20,6 @@ namespace Fr8.Testing.Unit.Fixtures
                     Name = "testTerminal",
                     Label = "test",
                     Version = "v1",
-                    PublicIdentifier = "test",
                     Secret = "test",
                     TerminalStatus = 1
                 });

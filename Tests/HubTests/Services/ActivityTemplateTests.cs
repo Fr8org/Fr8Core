@@ -68,7 +68,6 @@ namespace HubTests.Services
                    (skipId || a.Id == b.Id) &&
                    a.Name == b.Name &&
                    a.Label == b.Label &&
-                   a.PublicIdentifier == b.PublicIdentifier &&
                    a.Secret == b.Secret &&
                    a.TerminalStatus == b.TerminalStatus &&
                    a.Version == b.Version;

@@ -25,11 +25,8 @@ namespace Fr8.Infrastructure.Security
         {
             string url = WebUtility.UrlEncode(requestUri.ToString().ToLowerInvariant());
             //Formulate the keys used in plain format as a concatenated string.
-            string authenticationKeyString = string.Format("{0}{1}{2}{3}{4}{5}", terminalId, url, timeStamp, nonce, contentBase64String, userId);
-
-
-            var secretKeyBase64ByteArray = Encoding.ASCII.GetBytes(terminalSecret);//Convert.FromBase64String(terminalSecret);
-
+            string authenticationKeyString = $"{terminalId}{url}{timeStamp}{nonce}{contentBase64String}{userId}";
+            var secretKeyBase64ByteArray = Encoding.ASCII.GetBytes(terminalSecret);
             using (var hmac = new HMACSHA512(secretKeyBase64ByteArray))
             {
                 byte[] authenticationKeyBytes = Encoding.UTF8.GetBytes(authenticationKeyString);
