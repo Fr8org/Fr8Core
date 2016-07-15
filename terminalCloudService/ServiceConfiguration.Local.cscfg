@@ -28,7 +28,7 @@
       <Setting name="terminalSlack.TerminalEndpoint" value="" />
       <Setting name="terminalTwilio.TerminalEndpoint" value="" />
       <Setting name="terminalYammer.TerminalEndpoint" value="" />
-      <Setting name="terminalDemo.TerminalEndpoint" value="" />
+      <Setting name="terminalDemo.TerminalEndpoint" value="" /> 
       <Setting name="terminalStatX.TerminalEndpoint" value="" />
       <Setting name="terminalBox.TerminalEndpoint" value="" />
       <Setting name="terminalFacebook.TerminalEndpoint" value="" />
