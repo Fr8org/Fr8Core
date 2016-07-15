@@ -6,6 +6,7 @@ using StructureMap;
 using Hub.Infrastructure;
 using HubWeb.Infrastructure_HubWeb;
 using Data.Infrastructure.StructureMap;
+using Fr8.Infrastructure.Data.Constants;
 using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
