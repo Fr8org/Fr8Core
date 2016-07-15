@@ -60,6 +60,9 @@
     <ServiceConfiguration Include="Config\terminalCloudService\ServiceConfiguration.Cloud.cscfg" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="packages.config"/>
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="Config\" />
     <Folder Include="Config\terminalCloudService\" />
     <Folder Include="Profiles" />
