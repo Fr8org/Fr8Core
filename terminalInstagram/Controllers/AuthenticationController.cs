@@ -4,9 +4,7 @@ using System.Web.Http;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.TerminalBase.Services;
 using terminalInstagram.Interfaces;
-using InstaSharp;
 using terminalInstagram.Infrastructure;
-using InstaSharp.Endpoints;
 
 namespace terminalInstagram.Controllers
 {

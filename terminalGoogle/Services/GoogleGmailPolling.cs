@@ -44,7 +44,7 @@ namespace terminalGoogle.Services
             await hubCommunicator.ScheduleEvent(externalAccountId, pollingInterval, trigger_immediately);
         }
 
-        public async Task<PollingDataDTO> Poll(IHubCommunicator hubCommunicator, PollingDataDTO pollingData)
+        public async Task<PollingDataDTO> Poll(PollingDataDTO pollingData)
         {
 
             Logger.Info($"Polling for Gmail was launched {pollingData.ExternalAccountId}");

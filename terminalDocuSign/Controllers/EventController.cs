@@ -44,12 +44,7 @@ namespace terminalDocuSign.Controllers
         [Route("polling_notifications")]
         public async Task<PollingDataDTO> ProcessPollingRequest(PollingDataDTO pollingData)
         {
-            var hubCommunicator = _container.GetInstance<IHubCommunicator>();
-
-            hubCommunicator.Authorize(pollingData.Fr8AccountId);
-
-            pollingData = await _polling.Poll(hubCommunicator, pollingData);
-            return pollingData;
+            return await _polling.Poll(pollingData);
         }
     }
 }
