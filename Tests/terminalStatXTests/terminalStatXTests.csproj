@@ -74,7 +74,7 @@
   <ItemGroup>
     <Compile Include="Activities\Monitor_Stat_Changes_v1_Tests.cs" />
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
-    <Compile Include="Integration\Creata_Stat_v1_Tests.cs" />
+    <Compile Include="Integration\Create_Stat_v1_Tests.cs" />
     <Compile Include="Integration\Monitor_Stat_Changes_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Discover_v1_Tests.cs" />
     <Compile Include="Integration\Update_Stat_v1_Tests.cs" />
