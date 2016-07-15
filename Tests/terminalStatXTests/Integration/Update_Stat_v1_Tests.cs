@@ -15,7 +15,7 @@ using terminalStatXTests.TestTools;
 namespace terminalStatXTests.Integration
 {
     [Explicit]
-    public class Update_Stat_v1_Tests : BaseTerminalIntegrationTest
+    public class Update_Stat_v1_Tests : BaseHubIntegrationTest
     {
         private readonly AuthorizationTokenHelpers _authorizationTokenHelper;
         public Update_Stat_v1_Tests()

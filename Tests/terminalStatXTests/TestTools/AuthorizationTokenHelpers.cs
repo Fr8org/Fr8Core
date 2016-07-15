@@ -17,19 +17,17 @@ namespace terminalStatXTests.TestTools
 {
     public class AuthorizationTokenHelpers
     {
-        private readonly BaseTerminalIntegrationTest _baseHubTest;
+        private readonly BaseHubIntegrationTest _baseHubTest;
 
-        public string HubApiBaseUrl { get; set; }
-        public AuthorizationTokenHelpers(BaseTerminalIntegrationTest baseHubTest)
+        public AuthorizationTokenHelpers(BaseHubIntegrationTest baseHubTest)
         {
             _baseHubTest = baseHubTest;
-            HubApiBaseUrl = ConfigurationManager.AppSettings["HubApiBaseUrl"];
         }
 
         public async Task<AuthorizationTokenDTO> GetStatXAuthToken()
         {
             var tokens = await _baseHubTest.HttpGetAsync<IEnumerable<AuthenticationTokenTerminalDTO>>(
-                HubApiBaseUrl + "authentication/tokens"
+                _baseHubTest.GetHubApiBaseUrl() + "authentication/tokens"
             );
 
             Assert.NotNull(tokens, "No authorization tokens were found for the integration testing user.");
