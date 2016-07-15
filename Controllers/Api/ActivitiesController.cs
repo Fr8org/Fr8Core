@@ -44,7 +44,7 @@ namespace HubWeb.Controllers
         /// <param name="parentNodeId">Id of plan or parent activity to add new activity to. If not specified then new plan will be created and set as parent</param>
         /// <param name="authorizationTokenId">Id of authorization token to grant to the new activity. Can be empty</param>
         [HttpPost]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [SwaggerResponse(HttpStatusCode.OK, "Activity was succesfully created", typeof(ActivityDTO))]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
         [SwaggerResponse((HttpStatusCode)423, "Specified plan is in running state and activity can't be added to it")]
@@ -71,7 +71,7 @@ namespace HubWeb.Controllers
         /// <param name="curActionDesignDTO">Activity to configure</param>
         /// <param name="force">True (1) to force updating activity that belong to plan that is currently in running state. Otherwise activity that belongs to or being added to running plan won't be saved</param>
         [HttpPost]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [SwaggerResponse(HttpStatusCode.OK, "Activity was successfully configured", typeof(ActivityDTO))]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
         [SwaggerResponse((HttpStatusCode)423, "Specified plan is in running state and 'force' flag is not set so activity can't be configured")]
@@ -123,7 +123,7 @@ namespace HubWeb.Controllers
         /// <param name="id">Id of activity to delete</param>
         /// <param name="delete_child_nodes">True to delete child activities only. Otherwise false</param>
         [HttpDelete]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [SwaggerResponse(HttpStatusCode.OK, "Activity was successfully deleted")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
         [SwaggerResponse((HttpStatusCode)423, "Owning plan is in running state so activity can\'t be deleted")]
@@ -154,7 +154,7 @@ namespace HubWeb.Controllers
         /// <param name="curActionDTO">Activity data to save</param>
         /// <param name="force">True (1) to force updting activity that belong to plan that is currently in running state. Otherwise activity belong or being added to running plan won't be saved</param>
         [HttpPost]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [SwaggerResponse(HttpStatusCode.OK, "Activity was successfully created or updated")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
         [SwaggerResponse((HttpStatusCode)423, "Owning plan is in running state and 'force' flag is not set so activity can\'t be changed or added to plan")]
