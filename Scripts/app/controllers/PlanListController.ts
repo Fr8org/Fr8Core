@@ -6,7 +6,6 @@
 module dockyard.controllers {
     'use strict';
 
-    import notificationType = dockyard.directives.NotificationType;
     import designHeaderEvents = dockyard.Fr8Events.DesignerHeader;
 
     export interface IPlanListScope extends ng.IScope {
@@ -166,7 +165,7 @@ module dockyard.controllers {
             });      
 
             UserService.getCurrentUser().$promise.then(data => {
-                PusherNotifierService.bindEventToChannel(data.emailAddress, notificationType[notificationType.GenericInfo], (data: any) => {
+                PusherNotifierService.bindEventToChannel(data.emailAddress, dockyard.directives.NotificationType[dockyard.directives.NotificationType.GenericInfo], (data: any) => {
                     this.updatePlanLastUpdated(data.PlanId, data.PlanLastUpdated);
                 });
 

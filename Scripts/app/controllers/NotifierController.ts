@@ -2,18 +2,17 @@
 
 module dockyard.controllers.NotifierController {
     'use strict';
-
-    import notificationType = dockyard.directives.NotificationType;
-    import designHeaderEvents = dockyard.Fr8Events.DesignerHeader;
-
+    
     export class Fr8InternalEvent {
         data: any;
-        type: notificationType;
+        type: dockyard.directives.NotificationType;
     }
     export interface INotifierControllerScope extends ng.IScope {
         eventList: Array<Fr8InternalEvent>;
         planIsRunning: Boolean;
     }
+
+    import designHeaderEvents = dockyard.Fr8Events.DesignerHeader;
 
     class NotifierController {
         // $inject annotation.
@@ -53,30 +52,30 @@ module dockyard.controllers.NotifierController {
 
                 var channel: string = data.id;
 
-                PusherNotifierService.bindEventToChannel(channel, notificationType[notificationType.GenericSuccess], (data: any) => {
+                PusherNotifierService.bindEventToChannel(channel, dockyard.directives.NotificationType[dockyard.directives.NotificationType.GenericSuccess], (data: any) => {
                     var event = new Fr8InternalEvent();
-                    event.type = notificationType.GenericSuccess;
+                    event.type = dockyard.directives.NotificationType.GenericSuccess;
                     event.data = data;
                     this.$scope.eventList.splice(0,0,event);
                 });
 
-                PusherNotifierService.bindEventToChannel(channel, notificationType[notificationType.GenericFailure], (data: any) => {
+                PusherNotifierService.bindEventToChannel(channel, dockyard.directives.NotificationType[dockyard.directives.NotificationType.GenericFailure], (data: any) => {
                     var event = new Fr8InternalEvent();
-                    event.type = notificationType.GenericFailure;
+                    event.type = dockyard.directives.NotificationType.GenericFailure;
                     event.data = data;
                     this.$scope.eventList.splice(0, 0, event);
                 });
 
-                PusherNotifierService.bindEventToChannel(channel, notificationType[notificationType.GenericInfo], (data: any) => {
+                PusherNotifierService.bindEventToChannel(channel, dockyard.directives.NotificationType[dockyard.directives.NotificationType.GenericInfo], (data: any) => {
                     var event = new Fr8InternalEvent();
-                    event.type = notificationType.GenericInfo;
+                    event.type = dockyard.directives.NotificationType.GenericInfo;
                     event.data = data;
                     this.$scope.eventList.splice(0, 0, event);
                 });
 
-                PusherNotifierService.bindEventToChannel(channel, notificationType[notificationType.TerminalEvent], (data: any) => {
+                PusherNotifierService.bindEventToChannel(channel, dockyard.directives.NotificationType[dockyard.directives.NotificationType.TerminalEvent], (data: any) => {
                     var event = new Fr8InternalEvent();
-                    event.type = notificationType.TerminalEvent;
+                    event.type = dockyard.directives.NotificationType.TerminalEvent;
                     event.data = data;
                     this.$scope.eventList.splice(0, 0, event);
                 });
