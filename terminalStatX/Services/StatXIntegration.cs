@@ -356,13 +356,14 @@ namespace terminalStatX.Services
 
                     string response;
                     var statDTO = currentStat as GeneralStatWithItemsDTO;
+                    
                     if (statDTO != null)
                     {
                         statDTO.LastUpdatedDateTime = DateTime.UtcNow;
                         statDTO.NotesLastUpdatedDateTime = DateTime.UtcNow;
                         statDTO.Title = title;
                         statDTO.Notes = notes;
-
+                        statDTO.DynamicJsonIgnoreProperties = new string[] {"visualType"};
                         var tempItems = statDTO.Items;
                         statDTO.Items.Clear();
                         statDTO.Items.AddRange(statValues.Select(x => new StatItemValueDTO()
@@ -371,8 +372,9 @@ namespace terminalStatX.Services
                             Value = string.IsNullOrEmpty(x.Value) ? tempItems.FirstOrDefault(l => l.Name == x.Key).Value : x.Value
                         }).ToList());
 
-                        response = await _restfulServiceClient.PutAsync<GeneralStatWithItemsDTO>(uri, statDTO, null, GetStatxAPIHeaders(statXAuthDTO));
-                    }
+                        string json = JsonConvert.SerializeObject(statDTO, Formatting.Indented, new JsonSerializerSettings { ContractResolver = new DynamicContractResolver(statDTO.DynamicJsonIgnoreProperties) });
+                        response = await _restfulServiceClient.PutAsync(uri, (HttpContent)new StringContent(json), null, GetStatxAPIHeaders(statXAuthDTO));
+                     }
                     else
                     {
                         var updateStatContent = new GeneralStatDTO
@@ -381,10 +383,12 @@ namespace terminalStatX.Services
                             Notes = notes,
                             LastUpdatedDateTime = DateTime.UtcNow,
                             NotesLastUpdatedDateTime = DateTime.UtcNow,
-                            Value = statValues.First().Value
+                            Value = statValues.First().Value,
+                            DynamicJsonIgnoreProperties = new string[] {"visualType"}
                         };
 
-                        response = await _restfulServiceClient.PutAsync<GeneralStatDTO>(uri, updateStatContent, null, GetStatxAPIHeaders(statXAuthDTO));
+                        string json = JsonConvert.SerializeObject(updateStatContent, Formatting.Indented, new JsonSerializerSettings { ContractResolver = new DynamicContractResolver(updateStatContent.DynamicJsonIgnoreProperties) });
+                        response = await _restfulServiceClient.PutAsync(uri, (HttpContent)new StringContent(json), null, GetStatxAPIHeaders(statXAuthDTO));
                     }
 
                     var jObject = JObject.Parse(response);
@@ -418,8 +422,6 @@ namespace terminalStatX.Services
 
             if (jObject.TryGetValue("items", out itemsToken))
             {
-                var jsonSerializerSettings = new JsonSerializerSettings() { DateFormatHandling = DateFormatHandling.IsoDateFormat, DateParseHandling = DateParseHandling.DateTimeOffset, DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind };
-
                 //special case for stats that contains item objects
                 stat = new GeneralStatWithItemsDTO()
                 {
@@ -463,6 +465,8 @@ namespace terminalStatX.Services
                     NotesLastUpdatedDateTime = jObject["notesLastUpdatedDateTime"] != null ? DateTime.Parse(jObject["notesLastUpdatedDateTime"].ToString()) : (DateTime?)null,
                 };
             }
+
+            stat.DynamicJsonIgnoreProperties = new[] {"visualType"};
 
             return stat;
         }
