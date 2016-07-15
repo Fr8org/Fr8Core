@@ -35,7 +35,6 @@ namespace Fr8.TerminalBase.Services
             _restfulServiceClient = restfulServiceClient;
             _apiUrl = apiUrl?.TrimEnd('/', '\\');
             _userId = userId;
-            _restfulServiceClient.AddRequestSignature(new HubAuthenticationHeaderSignature(TerminalToken, userId));
         }
 
         public async Task<PlanEmptyDTO> LoadPlan(JToken planContents)

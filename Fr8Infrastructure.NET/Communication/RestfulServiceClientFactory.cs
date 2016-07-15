@@ -2,11 +2,19 @@
 
 namespace Fr8.Infrastructure.Communication
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class RestfulServiceClientFactory : IRestfulServiceClientFactory
     {
-        public IRestfulServiceClient Create()
+        public IRestfulServiceClient Create(IRequestSignature signature)
         {
-            return new RestfulServiceClient();
+            var rsc = new RestfulServiceClient();
+            if(signature != null)
+            { 
+                rsc.AddRequestSignature(signature);
+            }
+            return rsc;
         }
     }
 }

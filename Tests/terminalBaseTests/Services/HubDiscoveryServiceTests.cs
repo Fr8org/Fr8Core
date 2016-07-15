@@ -149,7 +149,7 @@ namespace terminaBaselTests.Services
                 _clientStub = clientStub;
             }
 
-            public IRestfulServiceClient Create()
+            public IRestfulServiceClient Create(IRequestSignature signature)
             {
                 return _clientStub;
             }

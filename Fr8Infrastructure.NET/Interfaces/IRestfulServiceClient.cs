@@ -23,8 +23,5 @@ namespace Fr8.Infrastructure.Interfaces
         Task<TResponse> PutAsync<TResponse>(Uri requestUri, HttpContent content, string CorrelationId = null, Dictionary<string, string> headers = null);
         Task<string> PutAsync(Uri requestUri, HttpContent content, string CorrelationId = null, Dictionary<string, string> headers = null);
         void AddRequestSignature(IRequestSignature signature);
-        
-        //just a workaround for PlanDirectory for now
-        void ClearSignatures();
     }
 }

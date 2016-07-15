@@ -7,6 +7,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Interfaces;
 using log4net;
 using StructureMap;
@@ -38,7 +39,7 @@ namespace Fr8.TerminalBase.Services
         public HubDiscoveryService(IRestfulServiceClientFactory restfulServiceClientFactory, IActivityStore activityStore, IRetryPolicy hubDiscoveryRetryPolicy)
         {
             _restfulServiceClientFactory = restfulServiceClientFactory;
-            _restfulServiceClient = _restfulServiceClientFactory.Create();
+            _restfulServiceClient = _restfulServiceClientFactory.Create(null);
             _activityStore = activityStore;
             _hubDiscoveryRetryPolicy = hubDiscoveryRetryPolicy;
             _apiSuffix = $"/api/{CloudConfigurationManager.GetSetting("HubApiVersion")}";
@@ -73,7 +74,7 @@ namespace Fr8.TerminalBase.Services
             }
             
             var secret = await setSecretTask.Task;
-            var restfulServiceClient = _restfulServiceClientFactory.Create();
+            var restfulServiceClient = _restfulServiceClientFactory.Create(new HubAuthenticationHeaderSignature(secret, null));
             return new DefaultHubCommunicator(restfulServiceClient, string.Concat(hubUrl, _apiSuffix), secret, null);
         }
 

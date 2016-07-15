@@ -74,11 +74,6 @@ namespace Fr8.Infrastructure.Communication
             Signatures.Add(signature);
         }
 
-        public void ClearSignatures()
-        {
-            Signatures.Clear();
-        }
-
         protected virtual async Task<HttpResponseMessage> SendInternalAsync(HttpRequestMessage request, string CorrelationId)
         {
             HttpResponseMessage response;

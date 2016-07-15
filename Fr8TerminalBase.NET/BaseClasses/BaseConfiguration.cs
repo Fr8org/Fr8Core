@@ -89,36 +89,31 @@ namespace Fr8.TerminalBase.BaseClasses
         public IHttpController Create(HttpRequestMessage request, HttpControllerDescriptor controllerDescriptor, Type controllerType)
         {
             var childContainer = _container.CreateChildContainer();
-            Expression<Func<IContext, IHubCommunicator>> hubCommunicatorFactoryExpression;
-            
+
+            //Terminal can't communicate with a specified hub when a request doesn't have necessary headers
+            //it can only communicate with master hub for general purpose queries
+            //or it can get a list of all hubs from discovery service
+            //therefore we inject hubCommunicator only if we have necessary headers
+
             if (request.Headers.Contains("Fr8HubCallBackUrl") && request.Headers.Contains("Fr8HubCallbackSecret"))
             {
                 var apiUrl = request.Headers.GetValues("Fr8HubCallBackUrl").First().TrimEnd('\\', '/') + $"/api/{CloudConfigurationManager.GetSetting("HubApiVersion")}";
                 var secret = request.Headers.GetValues("Fr8HubCallbackSecret").First();
-                //this might be a discover call
-                //discover calls don't include a user id
                 var fr8UserId = request.Headers.Contains("Fr8UserId") ? request.Headers.GetValues("Fr8UserId").First() : null;
                 _hubDiscovery.SetHubSecret(apiUrl, secret);
-                hubCommunicatorFactoryExpression = c => new DefaultHubCommunicator(c.GetInstance<IRestfulServiceClient>(), apiUrl, secret, fr8UserId);
+                Expression<Func<IContext, IHubCommunicator>> hubCommunicatorFactoryExpression = c => new DefaultHubCommunicator(c.GetInstance<IRestfulServiceClient>(), apiUrl, secret, fr8UserId);
+                childContainer.Configure(x =>
+                {
+                    x.For<IHubCommunicator>().Use(hubCommunicatorFactoryExpression).Singleton();
+                });
             }
-            else
-            {
-                //Terminal can't communicate with a specified hub in this case
-                //it can only communicate with master hub for general purpose queries
-                //or it can get a list of all hubs from discovery service
-                hubCommunicatorFactoryExpression = c => null;
-            }
-            
             childContainer.Configure(x =>
             {
-                x.For<IHubCommunicator>().Use(hubCommunicatorFactoryExpression).Singleton();
                 x.For<IContainer>().Use(childContainer);
                 x.For<IPushNotificationService>().Use<PushNotificationService>().Singleton();
                 x.For<PlanService>().Use<PlanService>().Singleton();
             });
-
             request.RegisterForDispose(childContainer);
-
             return childContainer.GetInstance(controllerType) as IHttpController;
         }
     }
