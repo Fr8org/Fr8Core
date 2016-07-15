@@ -378,7 +378,13 @@ namespace Hub.Services
                     // We're creating new ActivityTemplate.
                     if (activity == null)
                     {
-                        if(activityTemplateDo.Id == null)
+                        if (activity.Id != activityTemplateDo.Id)
+                        {
+                            throw new InvalidOperationException("Existent activity with same Name and Version that we passed "
+                            + "has different Id. Changing of activity template Id is not possible. If you need to have another Id please update the version number or create new activity template");
+                        }
+
+                        if (activityTemplateDo.Id == null)
                         {
                             throw new ApplicationException("ActivityTemplate Id not specified");
                         }
