@@ -38,8 +38,8 @@
       <Setting name="OutboundUserPassword" value="" /> 
     </ConfigurationSettings>
     <Certificates>
-      <Certificate name="Microsoft.WindowsAzure.Plugins.RemoteAccess.PasswordEncryption" thumbprint="CF67E4C8E985509FB9E7FBF8F61A615D34D8CEC6" thumbprintAlgorithm="sha1" />
-      <Certificate name="MyCertificate" thumbprint="7335F9C8DA346691E9806A5D0E33EDA32FBE777F" thumbprintAlgorithm="sha1" />
+      <Certificate name="Microsoft.WindowsAzure.Plugins.RemoteAccess.PasswordEncryption" thumbprint="CF67E4C8E984409FB9E7FBF8F61A615D64D4CEC6" thumbprintAlgorithm="sha1" />
+      <Certificate name="fr8Certificate" thumbprint="8588F9C9DA346691E9806A5D0E25EDA32FBE724F" thumbprintAlgorithm="sha1" />
     </Certificates>
   </Role>
 </ServiceConfiguration>
