@@ -44,6 +44,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Owin.Hosting, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.Hosting.3.0.1\lib\net45\Microsoft.Owin.Hosting.dll</HintPath>
@@ -206,6 +210,10 @@
     <Content Include="Config\terminalFacebook\Settings.config" />
     <Content Include="Config\terminalDropbox\Settings.config" />
     <Content Include="Config\terminalDocuSign\Settings.config" />
+    <Content Include="Config\terminalCloudService\ServiceConfiguration.Release.cscfg" />
+    <Content Include="Config\terminalCloudService\ServiceConfiguration.Dev.cscfg" />
+    <Content Include="Config\terminalCloudService\ServiceConfiguration.Demo.cscfg" />
+    <Content Include="Config\terminalCloudService\ServiceConfiguration.Cloud.cscfg" />
     <Content Include="Config\terminalBox\Settings.config" />
     <Content Include="Config\terminalBasecamp2\Settings.Release.config" />
     <Content Include="Config\terminalBasecamp2\Settings.Dev.config" />
@@ -267,7 +275,14 @@
     <Error Condition="!Exists('..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets'))" />
   </Target>
   <Import Project="..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets" Condition="Exists('..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" />
-  <Target Name="BeforeBuild">
+  <ItemGroup>
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.config" />
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.Demo.config" />
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.Dev.config" />
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.Release.config" />
+  </ItemGroup>
+  <Target Name="BeforeCompile">
+    <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
   </Target>
   <Import Project="..\targets\Fr8.NugetContentRestore.targets" Condition="Exists('..\targets\Fr8.NugetContentRestore.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

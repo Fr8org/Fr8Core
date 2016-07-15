@@ -22,8 +22,14 @@ namespace HubWeb.ViewModels.RequestParameters
         /// Id of Activity in Plan
         /// </summary>
         public Guid? activity_id { get; set; }
-
-        public bool include_children { get; set; } = false;        
+        /// <summary>
+        /// Whether to include plan's activities in the response
+        /// </summary>
+        public bool include_children { get; set; } = false;     
+        
+        /// <summary>
+        /// Level of visibility (Standard, Internal) to filter plans by
+        /// </summary>   
         public PlanVisibility visibility { get; set; } = PlanVisibility.Standard;
     }
 }

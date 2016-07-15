@@ -1,7 +1,7 @@
 ﻿<tr>
     <td>
         <div class="configuration-control-form-group">
-            <ui-select ng-model="condition.field" theme="bootstrap" search-enabled="false" on-select="fieldSelected(condition)" stop-click-propagation ng-click="toggleDropDown($select)">
+            <ui-select ng-model="condition.field" theme="bootstrap" search-enabled="false" on-select="fieldSelected(condition)" ng-disabled="isDisabled" ng-click="toggleDropDown($select)">
                 <ui-select-match placeholder="Select value from the list...">{{$select.selected.key}}</ui-select-match>
                 <ui-select-choices repeat="f in fields">
                     <span ng-bind-html="f.key"></span>

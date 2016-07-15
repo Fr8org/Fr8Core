@@ -316,6 +316,10 @@
     <Content Include="Config\terminalFacebook\Settings.config" />
     <Content Include="Config\terminalDropbox\Settings.config" />
     <Content Include="Config\terminalDocuSign\Settings.config" />
+    <Content Include="Config\terminalCloudService\ServiceConfiguration.Release.cscfg" />
+    <Content Include="Config\terminalCloudService\ServiceConfiguration.Dev.cscfg" />
+    <Content Include="Config\terminalCloudService\ServiceConfiguration.Demo.cscfg" />
+    <Content Include="Config\terminalCloudService\ServiceConfiguration.Cloud.cscfg" />
     <Content Include="Config\terminalBox\Settings.config" />
     <Content Include="Config\terminalBasecamp2\Settings.Release.config" />
     <Content Include="Config\terminalBasecamp2\Settings.Dev.config" />
@@ -326,9 +330,7 @@
     <Content Include="Config\PlanDirectory\Settings.Release.config" />
     <Content Include="Config\PlanDirectory\Settings.config" />
     <Content Include="Config\HubWeb\Settings.config" />
-    <Content Include="Config\HealthMonitor\Settings.config.src">
-      <SubType>Designer</SubType>
-    </Content>
+    <Content Include="Config\HealthMonitor\Settings.config.src" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -424,7 +426,7 @@
       <Name>Fr8TerminalBase.NET</Name>
     </ProjectReference>
   </ItemGroup>
-  <Target Name="BeforeBuild">
+  <Target Name="BeforeCompile">
     <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
   </Target>
   <Import Project="..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets" Condition="Exists('..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" />

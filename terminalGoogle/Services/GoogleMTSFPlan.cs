@@ -6,6 +6,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
+using log4net;
 using StructureMap;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,7 @@ namespace terminalGoogle.Services
         private PlanDTO monitorTerminalSubmissions;
         private ActivityTemplateDTO monitorFormResponsesTmpl, buildMessageTmpl, saveJiraIssueTmpl, publishToSlackTmpl;
         private AuthenticationTokenTerminalDTO googleTokens, atlassianTokens, slackTokens;
+        private static readonly ILog Logger = LogManager.GetLogger("terminalGoogle");
 
         public GoogleMTSFPlan(string userId,IHubCommunicator hubCommunicator, params string[] slackChannels)
         {
@@ -91,55 +93,95 @@ namespace terminalGoogle.Services
 
         public async Task CreateAndActivateNewMTSFPlan()
         {
-            var plans = await _hubCommunicator.GetPlansByName("MonitorSubmissionTerminalForm", PlanVisibility.Internal);
-            var tokens = await _hubCommunicator.GetTokens();
+            try
+            {
+                Logger.Info("Star Creating Plan");
+                var plans = await _hubCommunicator.GetPlansByName("MonitorSubmissionTerminalForm", PlanVisibility.Internal);
+                var tokens = await _hubCommunicator.GetTokens();
 
-            googleTokens = tokens.Where(t => t.Name == "terminalGoogle").FirstOrDefault();
-            atlassianTokens = tokens.Where(t => t.Name == "terminalAtlassian").FirstOrDefault();
-            slackTokens = tokens.Where(t => t.Name == "terminalSlack").FirstOrDefault();
-            if (plans.Count() == 0)
-            {
-                await PlanConfiguration();
-                await RunPlan();
+                googleTokens = tokens.Where(t => t.Name == "terminalGoogle").FirstOrDefault();
+                atlassianTokens = tokens.Where(t => t.Name == "terminalAtlassian").FirstOrDefault();
+                slackTokens = tokens.Where(t => t.Name == "terminalSlack").FirstOrDefault();
+                if (plans.Count() == 0)
+                {
+                    await ConfigureAndRunPlan();
+                }
+                else
+                {
+                    Logger.Info("Plan already exist");
+                    var plan = plans.FirstOrDefault();
+                    if (plan.Plan.SubPlans.FirstOrDefault().Activities.Count < 8)
+                    {
+                        Logger.Info("Deleting incomplete Plan");
+                        await _hubCommunicator.DeletePlan(plan.Plan.Id);
+
+                        await ConfigureAndRunPlan();
+                    }
+                    Logger.Info("trying to reapply tokens");
+                    //Reapllying tokens if they were revoked previously
+                    await ReApplyTokens(plans.FirstOrDefault());
+                }
             }
-            else
+            catch (Exception e)
             {
-                //Reapllying tokens if they were revoked previously
-                await ReApplyTokens(plans.FirstOrDefault());
+                Logger.Error("Couldn't create MonitorTerminalSubmissionForm Plan", e);
+                throw new ApplicationException("Couldn't create MonitorTerminalSubmissionForm Plan", e);
             }
+        }
+
+        public async Task ConfigureAndRunPlan()
+        {
+            await PlanConfiguration();
+            Logger.Info("new MonitorTerminalSubmissionPlan created");
+
+            Logger.Info("Run MonitorTerminalSubmissionPlan Plan");
+            await RunPlan();
+            Logger.Info("MonitorTerminalSubmissionPlan Plan activeted");
         }
 
         public async Task ReApplyTokens(PlanDTO plan)
         {
-            var curentGToken = googleTokens.AuthTokens.Where(t => t.Id == plan.Plan.SubPlans.FirstOrDefault().Activities.FirstOrDefault().AuthTokenId).FirstOrDefault();
-            if (curentGToken == null)
+            var planMTSF = plan.Plan.SubPlans.FirstOrDefault();
+            if (planMTSF !=null)
             {
-                var gToken = googleTokens.AuthTokens.Where(t => t.ExternalAccountName == "ga_admin@fr8.co").FirstOrDefault();
-                if (gToken != null)
+                var googleActivity = planMTSF.Activities.FirstOrDefault();
+                if(googleActivity != null)
                 {
-                    await _hubCommunicator.ApplyNewToken(plan.Plan.SubPlans.FirstOrDefault().Activities.FirstOrDefault().Id, gToken.Id);
-                }
-            }
-
-            var curentAToken = atlassianTokens.AuthTokens.Where(t => t.Id == plan.Plan.SubPlans.FirstOrDefault().Activities[4].AuthTokenId).FirstOrDefault();
-            if (curentAToken == null)
-            {
-                var aToken = atlassianTokens.AuthTokens.FirstOrDefault();
-                if (aToken != null)
-                {
-                    await _hubCommunicator.ApplyNewToken(plan.Plan.SubPlans.FirstOrDefault().Activities[4].Id, aToken.Id);
-                }
-            }
-
-            foreach (var slack in plan.Plan.SubPlans.FirstOrDefault().Activities.Where(term => term.ActivityTemplate.Terminal.Name == "terminalSlack"))
-            {
-                var curentSToken = slackTokens.AuthTokens.Where(t => t.Id == slack.AuthTokenId).FirstOrDefault();
-                if (curentAToken == null)
-                {
-                    var sToken = slackTokens.AuthTokens.FirstOrDefault();
-                    if (sToken != null)
+                    var curentGToken = googleTokens.AuthTokens.Where(t => t.Id == googleActivity.AuthTokenId).FirstOrDefault();
+                    if (curentGToken == null)
                     {
-                        await _hubCommunicator.ApplyNewToken(slack.Id, sToken.Id);
+                        var gToken = googleTokens.AuthTokens.Where(t => t.ExternalAccountName == "ga_admin@fr8.co").FirstOrDefault();
+                        if (gToken != null)
+                        {
+                            await _hubCommunicator.ApplyNewToken(googleActivity.Id, gToken.Id);
+                        }
+                    }
+                }
+
+                var atlassianActivity = planMTSF.Activities[4];
+                if(atlassianActivity != null)
+                {
+                    var curentAToken = atlassianTokens.AuthTokens.Where(t => t.Id == atlassianActivity.AuthTokenId).FirstOrDefault();
+                    if (curentAToken == null)
+                    {
+                        var aToken = atlassianTokens.AuthTokens.FirstOrDefault();
+                        if (aToken != null)
+                        {
+                            await _hubCommunicator.ApplyNewToken(atlassianActivity.Id, aToken.Id);
+                        }
+                    }
+                }
+
+                foreach (var slack in planMTSF.Activities.Where(term => term.ActivityTemplate.Terminal.Name == "terminalSlack"))
+                {
+                    var curentSToken = slackTokens.AuthTokens.Where(t => t.Id == slack.AuthTokenId).FirstOrDefault();
+                    if (curentSToken == null)
+                    {
+                        var sToken = slackTokens.AuthTokens.FirstOrDefault();
+                        if (sToken != null)
+                        {
+                            await _hubCommunicator.ApplyNewToken(slack.Id, sToken.Id);
+                        }
                     }
                 }
             }
