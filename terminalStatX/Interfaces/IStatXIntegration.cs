@@ -17,9 +17,9 @@ namespace terminalStatX.Interfaces
 
         Task<StatXGroupDTO> CreateGroup(StatXAuthDTO statXAuthDTO, string groupName);
 
-        Task<List<StatDTO>> GetStatsForGroup(StatXAuthDTO statXAuthDTO, string groupId);
+        Task<List<BaseStatDTO>> GetStatsForGroup(StatXAuthDTO statXAuthDTO, string groupId);
 
-        Task<StatDTO> GetStat(StatXAuthDTO statXAuthDTO, string groupId, string statId);
+        Task<BaseStatDTO> GetStat(StatXAuthDTO statXAuthDTO, string groupId, string statId);
 
         Task CreateStat(StatXAuthDTO statXAuthDTO, string groupId, BaseStatDTO statDTO);
 

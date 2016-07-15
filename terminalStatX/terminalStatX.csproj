@@ -290,7 +290,6 @@
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
     <Compile Include="DataTransferObjects\BaseStatDTO.cs" />
-    <Compile Include="DataTransferObjects\StatDTO.cs" />
     <Compile Include="DataTransferObjects\StatTypesModels\CheckListStatDTO.cs" />
     <Compile Include="DataTransferObjects\StatTypesModels\HorizontalBarsStatDTO.cs" />
     <Compile Include="DataTransferObjects\StatTypesModels\NumbetStatDTO.cs" />
@@ -301,7 +300,7 @@
     <Compile Include="DataTransferObjects\StatXAuthResponseDTO.cs" />
     <Compile Include="DataTransferObjects\StatXAuthVerifyDTO.cs" />
     <Compile Include="DataTransferObjects\StatXGroupDTO.cs" />
-    <Compile Include="DataTransferObjects\UpdateStatDTO.cs" />
+    <Compile Include="DataTransferObjects\GeneralStatDTO.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

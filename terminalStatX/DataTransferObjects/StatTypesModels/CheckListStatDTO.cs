@@ -13,9 +13,6 @@ namespace terminalStatX.DataTransferObjects.StatTypesModels
             Items = new List<CheckListItemDTO>();
         }
 
-        [JsonProperty("visualType")]
-        public string VisualType { get; set; }
-
         [RenderUiProperty]
         [JsonProperty("items")]
         public List<CheckListItemDTO> Items { get; set; }

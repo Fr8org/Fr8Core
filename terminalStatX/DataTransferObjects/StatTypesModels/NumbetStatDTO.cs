@@ -26,8 +26,5 @@ namespace terminalStatX.DataTransferObjects.StatTypesModels
         [RenderUiProperty]
         [JsonProperty("unit")]
         public string Unit { get; set; }
-
-        [JsonProperty("visualType")]
-        public string VisualType { get; set; }
     }
 }

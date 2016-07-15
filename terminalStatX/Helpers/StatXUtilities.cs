@@ -129,20 +129,28 @@ namespace terminalStatX.Helpers
         /// </summary>
         /// <param name="stat"></param>
         /// <returns></returns>
-        public static StatXItemCM MapToStatItemCrateManifest(StatDTO stat)
+        public static StatXItemCM MapToStatItemCrateManifest(BaseStatDTO stat)
         {
             var result = new StatXItemCM()
             {
                 Id = stat.Id,
                 Title = stat.Title,
-                Value = stat.Value,
-                LastUpdatedDateTime = stat.LastUpdatedDateTime,
-                StatValueItems = stat.StatItems.Select(x => new StatValueItemDTO()
+                LastUpdatedDateTime = stat.LastUpdatedDateTime.ToString(),
+            };
+
+            var statDTO = stat as GeneralStatDTO;
+            if (statDTO != null)
+            {
+                result.Value = statDTO.Value;
+            }
+            else
+            {
+                result.StatValueItems = ((GeneralStatWithItemsDTO)stat).Items.Select(x => new StatValueItemDTO()
                 {
                     Name = x.Name,
                     Value = x.Value
-                }).ToList()
-            };
+                }).ToList();
+            }
 
             return result;
         }

@@ -138,9 +138,10 @@ namespace terminalStatX.Activities
                         ActivityUI.ExistingGroupStats.SelectByValue(firstStat.Id);
                         ActivityUI.StatTitle.Value = firstStat.Title;
                         ActivityUI.StatNotes.Value = firstStat.Notes;
-                        if (firstStat.StatItems.Any())
+                        var statDTO = firstStat as GeneralStatWithItemsDTO;
+                        if (statDTO != null)
                         {
-                            foreach (var item in firstStat.StatItems)
+                            foreach (var item in statDTO.Items)
                             {
                                 ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(item.Name, item.Name, requestUpstream: true, groupLabelText: "Available Stat Properties"));
                             }
@@ -189,10 +190,10 @@ namespace terminalStatX.Activities
                         ActivityUI.ClearDynamicFields();
                         ActivityUI.StatTitle.Value = currentStat.Title;
                         ActivityUI.StatNotes.Value = currentStat.Notes;
-
-                        if (currentStat.StatItems.Any())
+                        var statDTO = currentStat as GeneralStatWithItemsDTO;
+                        if (statDTO != null && statDTO.Items.Any())
                         {
-                            foreach (var item in currentStat.StatItems)
+                            foreach (var item in statDTO.Items)
                             {
                                 ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(item.Name, item.Name, requestUpstream: true, groupLabelText: "Available Stat Properties"));
                             }

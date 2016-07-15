@@ -16,12 +16,15 @@ namespace terminalStatX.DataTransferObjects
         [JsonProperty("title")]
         public string Title { get; set; }
 
+        [JsonIgnore]
+        public string VisualType { get; set; }
+
         [JsonProperty("notes")]
         [RenderUiProperty]
         public string Notes { get; set; }
 
         [JsonProperty("lastUpdatedDateTime")]
-        public DateTime LastUpdatedDateTime { get; set; }
+        public DateTime? LastUpdatedDateTime { get; set; }
 
         [JsonProperty("notesLastUpdatedDateTime")]
         public DateTime? NotesLastUpdatedDateTime { get; set; }

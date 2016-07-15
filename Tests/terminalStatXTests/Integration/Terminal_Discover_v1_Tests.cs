@@ -40,7 +40,6 @@ namespace terminalStatXTests.Integration
             Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == Monitor_Stat_Changes_Activity_Name), true, "Activity " + Monitor_Stat_Changes_Activity_Name + " was not loaded");
             Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == Update_Stat_Activity_Name), true, "Activity " + Update_Stat_Activity_Name + " was not loaded");
             Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == Create_Stat_Activity_Name), true, "Activity " + Create_Stat_Activity_Name + " was not loaded");
-
         }
     }
 }

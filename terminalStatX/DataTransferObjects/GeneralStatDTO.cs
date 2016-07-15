@@ -6,15 +6,15 @@ using terminalStatX.Infrastructure;
 
 namespace terminalStatX.DataTransferObjects
 {
-    public class UpdateStatDTO : BaseStatDTO
+    public class GeneralStatDTO : BaseStatDTO
     {
         [JsonProperty("value")]
         public string Value { get; set; }
     }
 
-    public class UpdateStatWithItemsDTO : BaseStatDTO
+    public class GeneralStatWithItemsDTO : BaseStatDTO
     {
-        public UpdateStatWithItemsDTO()
+        public GeneralStatWithItemsDTO()
         {
             Items = new List<StatItemValueDTO>();
         }

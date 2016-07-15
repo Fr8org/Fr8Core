@@ -15,9 +15,6 @@ namespace terminalStatX.DataTransferObjects.StatTypesModels
                 "notesLastUpdatedDateTime", "notes"};
         }
 
-        [JsonProperty("visualType")]
-        public string VisualType { get; set; }
-
         [RenderUiProperty]
         [JsonProperty("label")]
         public string Label { get; set; }

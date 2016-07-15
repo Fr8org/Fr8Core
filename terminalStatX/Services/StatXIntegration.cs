@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Formatting;
@@ -10,6 +11,7 @@ using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Errors;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using PhoneNumbers;
 using terminalStatX.DataTransferObjects;
@@ -232,7 +234,7 @@ namespace terminalStatX.Services
             }
         }
 
-        public async Task<List<StatDTO>> GetStatsForGroup(StatXAuthDTO statXAuthDTO, string groupId)
+        public async Task<List<BaseStatDTO>> GetStatsForGroup(StatXAuthDTO statXAuthDTO, string groupId)
         {
             try
             {
@@ -241,55 +243,18 @@ namespace terminalStatX.Services
 
                 var jObject = JObject.Parse(response);
 
-                var resultSet = new List<StatDTO>();
+                var resultSet = new List<BaseStatDTO>();
 
                 CheckForExistingErrors(jObject);
 
                 JToken dataToken;
                 if (jObject.TryGetValue("data", out dataToken))
                 {
-                    if (dataToken is JArray)
+                    if (!(dataToken is JArray)) return resultSet;
+
+                    foreach (var item in dataToken)
                     {
-                        foreach (var item in dataToken)
-                        {
-                            var stat = new StatDTO()
-                            {
-                                Id = item["id"]?.ToString(),
-                                Title = item["title"]?.ToString(),
-                                VisualType = item["visualType"]?.ToString(),
-                                Value = item["value"]?.ToString(),
-                                LastUpdatedDateTime = item["lastUpdatedDateTime"]?.ToString()
-                            };
-
-                            //check for items 
-                            JToken itemsToken;
-
-                            var items = JObject.Parse(item.ToString());
-                            if (items.TryGetValue("items", out itemsToken))
-                            {
-                                foreach (var valueItem in itemsToken)
-                                {
-                                    if (valueItem is JValue)
-                                    {
-                                        stat.StatItems.Add(new StatItemDTO()
-                                        {
-                                            Name = valueItem.ToString(),
-                                            Value = valueItem.ToString()
-                                        });
-                                    }
-                                    else
-                                    {
-                                        stat.StatItems.Add(new StatItemDTO()
-                                        {
-                                            Name = valueItem["name"]?.ToString(),
-                                            Value = valueItem["value"]?.ToString()
-                                        });
-                                    }
-                                }
-                            }
-
-                            resultSet.Add(stat);
-                        }
+                        resultSet.Add(ExtractSingleStatFromResponse((JObject)item));
                     }
                 }
 
@@ -309,11 +274,11 @@ namespace terminalStatX.Services
                     }
                 }
 
-                return new List<StatDTO>();
+                return new List<BaseStatDTO>();
             }
         }
 
-        public async Task<StatDTO> GetStat(StatXAuthDTO statXAuthDTO, string groupId, string statId)
+        public async Task<BaseStatDTO> GetStat(StatXAuthDTO statXAuthDTO, string groupId, string statId)
         {
             try
             {
@@ -324,43 +289,7 @@ namespace terminalStatX.Services
 
                 CheckForExistingErrors(jObject);
 
-                var stat = new StatDTO()
-                {
-                    Id = jObject["id"]?.ToString(),
-                    Title = jObject["title"]?.ToString(),
-                    VisualType = jObject["visualType"]?.ToString(),
-                    Value = jObject["value"]?.ToString(),
-                    LastUpdatedDateTime = jObject["lastUpdatedDateTime"]?.ToString()
-                };
-
-                //check for items 
-                JToken itemsToken;
-
-                var items = JObject.Parse(jObject.ToString());
-                if (items.TryGetValue("items", out itemsToken))
-                {
-                    foreach (var valueItem in itemsToken)
-                    {
-                        if (valueItem is JValue)
-                        {
-                            stat.StatItems.Add(new StatItemDTO()
-                            {
-                                Name = valueItem.ToString(),
-                                Value = valueItem.ToString()
-                            });
-                        }
-                        else
-                        {
-                            stat.StatItems.Add(new StatItemDTO()
-                            {
-                                Name = valueItem["name"]?.ToString(),
-                                Value = valueItem["value"]?.ToString()
-                            });
-                        }
-                    }
-                }
-
-                return stat;
+                return ExtractSingleStatFromResponse(jObject);
             }
             catch (RestfulServiceException exception)
             {
@@ -376,7 +305,7 @@ namespace terminalStatX.Services
                     }
                 }
 
-                return new StatDTO();
+                return new BaseStatDTO();
             }
         }
 
@@ -426,27 +355,27 @@ namespace terminalStatX.Services
                     }
 
                     string response;
-                    if (string.IsNullOrEmpty(currentStat.Value) && currentStat.StatItems.Any())
+                    var statDTO = currentStat as GeneralStatWithItemsDTO;
+                    if (statDTO != null)
                     {
-                        var updateStatContent = new UpdateStatWithItemsDTO()
-                        {
-                            LastUpdatedDateTime = DateTime.UtcNow,
-                            NotesLastUpdatedDateTime = DateTime.UtcNow,
-                            Title = title,
-                            Notes = notes
-                        };
+                        statDTO.LastUpdatedDateTime = DateTime.UtcNow;
+                        statDTO.NotesLastUpdatedDateTime = DateTime.UtcNow;
+                        statDTO.Title = title;
+                        statDTO.Notes = notes;
 
-                        updateStatContent.Items.AddRange(statValues.Select(x=>new StatItemValueDTO()
+                        var tempItems = statDTO.Items;
+                        statDTO.Items.Clear();
+                        statDTO.Items.AddRange(statValues.Select(x => new StatItemValueDTO()
                         {
                             Name = x.Key,
-                            Value = string.IsNullOrEmpty(x.Value) ? currentStat.StatItems.FirstOrDefault(l => l.Name == x.Key).Value : x.Value
+                            Value = string.IsNullOrEmpty(x.Value) ? tempItems.FirstOrDefault(l => l.Name == x.Key).Value : x.Value
                         }).ToList());
 
-                        response = await _restfulServiceClient.PutAsync<UpdateStatWithItemsDTO>(uri, updateStatContent, null, GetStatxAPIHeaders(statXAuthDTO));
+                        response = await _restfulServiceClient.PutAsync<GeneralStatWithItemsDTO>(uri, statDTO, null, GetStatxAPIHeaders(statXAuthDTO));
                     }
                     else
                     {
-                        var updateStatContent = new UpdateStatDTO
+                        var updateStatContent = new GeneralStatDTO
                         {
                             Title = title,
                             Notes = notes,
@@ -455,7 +384,7 @@ namespace terminalStatX.Services
                             Value = statValues.First().Value
                         };
 
-                        response = await _restfulServiceClient.PutAsync<UpdateStatDTO>(uri, updateStatContent, null, GetStatxAPIHeaders(statXAuthDTO));
+                        response = await _restfulServiceClient.PutAsync<GeneralStatDTO>(uri, updateStatContent, null, GetStatxAPIHeaders(statXAuthDTO));
                     }
 
                     var jObject = JObject.Parse(response);
@@ -480,6 +409,63 @@ namespace terminalStatX.Services
         }
 
         #region Helper Methods
+
+        private static BaseStatDTO ExtractSingleStatFromResponse(JObject jObject)
+        {
+            //check for items 
+            JToken itemsToken;
+            BaseStatDTO stat = null;
+
+            if (jObject.TryGetValue("items", out itemsToken))
+            {
+                var jsonSerializerSettings = new JsonSerializerSettings() { DateFormatHandling = DateFormatHandling.IsoDateFormat, DateParseHandling = DateParseHandling.DateTimeOffset, DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind };
+
+                //special case for stats that contains item objects
+                stat = new GeneralStatWithItemsDTO()
+                {
+                    Id = jObject["id"]?.ToString(),
+                    Title = jObject["title"]?.ToString(),
+                    VisualType = jObject["visualType"]?.ToString(),
+                    Notes = jObject["notes"]?.ToString(),
+                    LastUpdatedDateTime = jObject["lastUpdatedDateTime"] != null ? DateTime.Parse(jObject["lastUpdatedDateTime"].ToString()) : (DateTime?)null,
+                    NotesLastUpdatedDateTime = jObject["notesLastUpdatedDateTime"] != null ? DateTime.Parse(jObject["notesLastUpdatedDateTime"].ToString()) : (DateTime?)null,
+                };
+                foreach (var valueItem in itemsToken)
+                {
+                    if (valueItem is JValue)
+                    {
+                        ((GeneralStatWithItemsDTO)stat).Items.Add(new StatItemValueDTO()
+                        {
+                            Name = valueItem.ToString(),
+                            Value = valueItem.ToString()
+                        });
+                    }
+                    else
+                    {
+                        ((GeneralStatWithItemsDTO)stat).Items.Add(new StatItemValueDTO()
+                        {
+                            Name = valueItem["name"]?.ToString(),
+                            Value = valueItem["value"]?.ToString()
+                        });
+                    }
+                }
+            }
+            else
+            {
+                stat = new GeneralStatDTO()
+                {
+                    Id = jObject["id"]?.ToString(),
+                    Title = jObject["title"]?.ToString(),
+                    VisualType = jObject["visualType"]?.ToString(),
+                    Value = jObject["value"]?.ToString(),
+                    Notes = jObject["notes"]?.ToString(),
+                    LastUpdatedDateTime = jObject["lastUpdatedDateTime"] != null ? DateTime.Parse(jObject["lastUpdatedDateTime"].ToString()) : (DateTime?)null,
+                    NotesLastUpdatedDateTime = jObject["notesLastUpdatedDateTime"] != null ? DateTime.Parse(jObject["notesLastUpdatedDateTime"].ToString()) : (DateTime?)null,
+                };
+            }
+
+            return stat;
+        }
 
         private static Dictionary<string, string> GetStatxAPIHeaders(StatXAuthDTO statXAuthDTO)
         {
