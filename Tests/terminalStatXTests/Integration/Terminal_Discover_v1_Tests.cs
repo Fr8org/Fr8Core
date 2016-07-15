@@ -17,9 +17,10 @@ namespace terminalStatXTests.Integration
     [Explicit]
     public class Terminal_Discover_v1_Tests : BaseTerminalIntegrationTest
     {
-        private const int ActivityCount = 2;
+        private const int ActivityCount = 3;
         private const string Monitor_Stat_Changes_Activity_Name = "Monitor_Stat_Changes";
         private const string Update_Stat_Activity_Name = "Update_Stat";
+        private const string Create_Stat_Activity_Name = "Create_Stat";
 
         public override string TerminalName => "terminalStatX";
 
@@ -38,6 +39,7 @@ namespace terminalStatXTests.Integration
             Assert.AreEqual(ActivityCount, terminalDiscoverResponse.Activities.Count, "Not all terminal statX activities were loaded");
             Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == Monitor_Stat_Changes_Activity_Name), true, "Activity " + Monitor_Stat_Changes_Activity_Name + " was not loaded");
             Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == Update_Stat_Activity_Name), true, "Activity " + Update_Stat_Activity_Name + " was not loaded");
+            Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == Create_Stat_Activity_Name), true, "Activity " + Create_Stat_Activity_Name + " was not loaded");
         }
     }
 }
