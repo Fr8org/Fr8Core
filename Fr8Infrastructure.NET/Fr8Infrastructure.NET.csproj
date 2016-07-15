@@ -128,6 +128,7 @@
     <Compile Include="Data\Constants\ActivityResponse.cs" />
     <Compile Include="Data\Constants\FieldValidationResult.cs" />
     <Compile Include="Data\Constants\ManifestIdEnum.cs" />
+    <Compile Include="Data\Constants\NotificationType.cs" />
     <Compile Include="Data\Constants\Tags.cs" />
     <Compile Include="Data\Control\Control.cs" />
     <Compile Include="Data\Control\ControlExtensions.cs" />
