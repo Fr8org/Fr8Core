@@ -46,6 +46,10 @@
       <HintPath>..\..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
@@ -58,6 +62,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -69,6 +74,7 @@
   <ItemGroup>
     <Compile Include="Activities\Monitor_Stat_Changes_v1_Tests.cs" />
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
+    <Compile Include="Integration\Creata_Stat_v1_Tests.cs" />
     <Compile Include="Integration\Monitor_Stat_Changes_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Discover_v1_Tests.cs" />
     <Compile Include="Integration\Update_Stat_v1_Tests.cs" />
@@ -80,6 +86,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Data\Data.csproj">
+      <Project>{990241EA-6CF0-4026-B57C-A9031463C7C0}</Project>
+      <Name>Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj">
       <Project>{BBA91AF2-7636-41B6-87C4-C1575AE8B04B}</Project>
       <Name>Fr8Infrastructure.NET</Name>

@@ -201,7 +201,7 @@ namespace terminalStatX.Activities
                 statItemsList.AddRange(JsonConvert.DeserializeObject<List<KeyValueDTO>>(ActivityUI.AvailableStatItemsList.FirstOrDefault().Value));
             }
 
-            var statDTO = StatXUtilities.PopulateStatDTOFromPayload(ActivityUI.StatTypesList.Value, statProperties, statItemsList);
+            var statDTO = StatXUtilities.CreateStatFromDynamicStatProperties(ActivityUI.StatTypesList.Value, statProperties, statItemsList);
             await _statXIntegration.CreateStat(StatXUtilities.GetStatXAuthToken(AuthorizationToken), groupId, statDTO);
             
             Success();
