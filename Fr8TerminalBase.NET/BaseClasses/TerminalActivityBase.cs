@@ -33,7 +33,6 @@ namespace Fr8.TerminalBase.BaseClasses
         private OperationalStateCM _operationalState;
         private ActivityContext _activityContext;
         private ContainerExecutionContext _containerExecutionContext;
-        private ControlHelper _controlHelper;
         
         /**********************************************************************************/
 
@@ -74,10 +73,10 @@ namespace Fr8.TerminalBase.BaseClasses
         protected bool DisableValidationOnFollowup { get; set; }
         protected ICrateManager CrateManager { get; private set;}
         protected int LoopIndex => GetLoopIndex();
-        protected ControlHelper ControlHelper => _controlHelper ?? (_controlHelper = new ControlHelper(ActivityContext));
         protected ValidationManager ValidationManager { get; private set; }
         protected Guid ActivityId => ActivityContext.ActivityPayload.Id;
         protected string CurrentUserId => ActivityContext.UserId;
+        protected UiBuilder UiBuilder { get; }
 
         protected abstract ActivityTemplateDTO MyTemplate { get; }
 
@@ -131,6 +130,7 @@ namespace Fr8.TerminalBase.BaseClasses
         protected TerminalActivityBase(ICrateManager crateManager)
         {
             CrateManager = crateManager;
+            UiBuilder = new UiBuilder();
         }
 
         /**********************************************************************************/

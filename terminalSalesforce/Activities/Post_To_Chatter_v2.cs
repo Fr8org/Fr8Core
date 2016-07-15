@@ -13,6 +13,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Services;
 using log4net;
@@ -195,7 +196,7 @@ namespace terminalSalesforce.Actions
                 {
                     var chatters = await _salesforceManager.Query(SelectedChatter.ToEnum<SalesforceObjectType>(),
                                                               new[] { new FieldDTO("Id") },
-                                                              ControlHelper.ParseConditionToText(JsonConvert.DeserializeObject<List<FilterConditionDTO>>(ChatterFilter)),
+                                                              FilterConditionHelper.ParseConditionToText(JsonConvert.DeserializeObject<List<FilterConditionDTO>>(ChatterFilter)),
                                                               AuthorizationToken);
                     var tasks = new List<Task<string>>(chatters.Table.Count);
                     foreach (var chatterId in chatters.DataRows.Select(x => x.Row[0].Cell.Value))

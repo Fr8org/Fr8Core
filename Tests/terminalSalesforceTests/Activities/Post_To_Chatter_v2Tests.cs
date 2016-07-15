@@ -69,9 +69,8 @@ namespace terminalSalesforceTests.Activities
             };
             await activity.Configure(activityContext);
             
-            var helper = new ControlHelper(activityContext);
 
-            helper.GetControl<ControlDefinitionDTO>(helper.GetConfigurationControls(activityContext.ActivityPayload.CrateStorage), "FeedTextSource").Value = null;
+            ActivityConfigurator.GetControl<ControlDefinitionDTO>(activityContext.ActivityPayload, "FeedTextSource").Value = null;
             
             activity = New<Post_To_Chatter_v2>();
             
