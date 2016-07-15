@@ -15,12 +15,12 @@ namespace terminalGoogle.Controllers
     public class AuthenticationController : ApiController
     {
         private readonly IGoogleIntegration _googleIntegration;
-        private readonly IHubEventReporter _eventReporter;
+        private readonly IHubLoggerService _loggerService;
 
-        public AuthenticationController(IHubEventReporter eventReporter, IRestfulServiceClient restfulServiceClient)
+        public AuthenticationController(IHubLoggerService loggerService, IRestfulServiceClient restfulServiceClient)
         {
+            _loggerService = loggerService;
             _googleIntegration = new GoogleIntegration(restfulServiceClient);
-            _eventReporter = eventReporter;
         }
 
         [HttpPost]
@@ -66,7 +66,7 @@ namespace terminalGoogle.Controllers
             }
             catch (Exception ex)
             {
-                await _eventReporter.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
+                await _loggerService.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {
