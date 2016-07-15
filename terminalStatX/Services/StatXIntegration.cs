@@ -372,8 +372,9 @@ namespace terminalStatX.Services
                             Value = string.IsNullOrEmpty(x.Value) ? tempItems.FirstOrDefault(l => l.Name == x.Key).Value : x.Value
                         }).ToList());
 
-                        response = await _restfulServiceClient.PutAsync<GeneralStatWithItemsDTO>(uri, statDTO, null, GetStatxAPIHeaders(statXAuthDTO));
-                    }
+                        string json = JsonConvert.SerializeObject(statDTO, Formatting.Indented, new JsonSerializerSettings { ContractResolver = new DynamicContractResolver(statDTO.DynamicJsonIgnoreProperties) });
+                        response = await _restfulServiceClient.PutAsync(uri, (HttpContent)new StringContent(json), null, GetStatxAPIHeaders(statXAuthDTO));
+                     }
                     else
                     {
                         var updateStatContent = new GeneralStatDTO
@@ -386,7 +387,8 @@ namespace terminalStatX.Services
                             DynamicJsonIgnoreProperties = new string[] {"visualType"}
                         };
 
-                        response = await _restfulServiceClient.PutAsync<GeneralStatDTO>(uri, updateStatContent, null, GetStatxAPIHeaders(statXAuthDTO));
+                        string json = JsonConvert.SerializeObject(updateStatContent, Formatting.Indented, new JsonSerializerSettings { ContractResolver = new DynamicContractResolver(updateStatContent.DynamicJsonIgnoreProperties) });
+                        response = await _restfulServiceClient.PutAsync(uri, (HttpContent)new StringContent(json), null, GetStatxAPIHeaders(statXAuthDTO));
                     }
 
                     var jObject = JObject.Parse(response);
