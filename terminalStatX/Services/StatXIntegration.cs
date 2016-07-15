@@ -356,13 +356,14 @@ namespace terminalStatX.Services
 
                     string response;
                     var statDTO = currentStat as GeneralStatWithItemsDTO;
+                    
                     if (statDTO != null)
                     {
                         statDTO.LastUpdatedDateTime = DateTime.UtcNow;
                         statDTO.NotesLastUpdatedDateTime = DateTime.UtcNow;
                         statDTO.Title = title;
                         statDTO.Notes = notes;
-
+                        statDTO.DynamicJsonIgnoreProperties = new string[] {"visualType"};
                         var tempItems = statDTO.Items;
                         statDTO.Items.Clear();
                         statDTO.Items.AddRange(statValues.Select(x => new StatItemValueDTO()
@@ -381,7 +382,8 @@ namespace terminalStatX.Services
                             Notes = notes,
                             LastUpdatedDateTime = DateTime.UtcNow,
                             NotesLastUpdatedDateTime = DateTime.UtcNow,
-                            Value = statValues.First().Value
+                            Value = statValues.First().Value,
+                            DynamicJsonIgnoreProperties = new string[] {"visualType"}
                         };
 
                         response = await _restfulServiceClient.PutAsync<GeneralStatDTO>(uri, updateStatContent, null, GetStatxAPIHeaders(statXAuthDTO));
