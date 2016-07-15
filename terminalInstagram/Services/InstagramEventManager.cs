@@ -14,7 +14,6 @@ using System.Web.Http;
 using Fr8.Infrastructure.Data.Crates;
 using StructureMap;
 using Newtonsoft.Json;
-using InstaSharp.Models;
 using terminalInstagram.Models;
 using Fr8.Infrastructure.Data.Manifests;
 
