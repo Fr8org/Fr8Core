@@ -105,6 +105,7 @@
     <Compile Include="Infrastructure\HubAuthenticationHeaderSignature.cs" />
     <Compile Include="Interfaces\IOAuthApiIntegration.cs" />
     <Compile Include="BaseClasses\OAuthApiIntegrationBase.cs" />
+    <Compile Include="Services\DummyHubCommunicator.cs" />
     <Compile Include="Services\PlanService.cs" />
     <Compile Include="Infrastructure\AutoMapperBootstrapper.cs" />
     <Compile Include="Infrastructure\Behaviors\BaseControlMappingBehavior.cs" />
