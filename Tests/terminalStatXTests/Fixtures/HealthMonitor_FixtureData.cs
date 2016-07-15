@@ -61,7 +61,7 @@ namespace terminalStatXTests.Fixtures
 
         public static Fr8DataDTO Create_Stat_InitialConfiguration_Fr8DataDTO()
         {
-            var activityTemplate = Update_Stat_ActivityTemplate();
+            var activityTemplate = Create_Stat_ActivityTemplate();
 
             var activityDTO = new ActivityDTO()
             {
@@ -75,7 +75,7 @@ namespace terminalStatXTests.Fixtures
 
         public static Fr8DataDTO Monitor_Stat_Changes_InitialConfiguration_Fr8DataData()
         {
-            var activityTemplate = Update_Stat_ActivityTemplate();
+            var activityTemplate = MonitorStatChanges_ActivityTemplate();
 
             var activityDTO = new ActivityDTO()
             {

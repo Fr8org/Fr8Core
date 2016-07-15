@@ -33,7 +33,7 @@ namespace terminalStatXTests.Integration
             Assert.NotNull(responseDTO, "Response is null on initial configuration");
             Assert.NotNull(responseDTO.CrateStorage, "Crate storage is null on initial configuration");
             var crateStorage = Crate.FromDto(responseDTO.CrateStorage);
-            Assert.AreEqual(1, crateStorage.Count, "Crate storage count is not equal to 1");
+            Assert.AreEqual(2, crateStorage.Count, "Crate storage count is not equal to 2");
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(), "StandardConfigurationControlsCM count is not 1");
 
             Assert.AreEqual(2, crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls.Count, "Control count is not 4");
@@ -54,7 +54,7 @@ namespace terminalStatXTests.Integration
             Assert.NotNull(responseDTO, "Response is null on initial configuration");
             Assert.NotNull(responseDTO.CrateStorage, "Crate storage is null on initial configuration");
             var crateStorage = Crate.FromDto(responseDTO.CrateStorage);
-            Assert.AreEqual(1, crateStorage.Count, "Crate storage count is not equal to 1");
+            Assert.AreEqual(3, crateStorage.Count, "Crate storage count is not equal to 3");
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(), "StandardConfigurationControlsCM count is not 1");
 
             Assert.AreEqual(2, crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls.Count, "Control count is not 4");
@@ -64,7 +64,7 @@ namespace terminalStatXTests.Integration
         private async Task<ActivityDTO> CompleteInitialConfiguration()
         {
             var configureUrl = GetTerminalConfigureUrl();
-            var requestDataDTO = FixtureData.Update_Stat_InitialConfiguration_Fr8DataDTO();
+            var requestDataDTO = FixtureData.Monitor_Stat_Changes_InitialConfiguration_Fr8DataData();
             requestDataDTO.ActivityDTO.AuthToken = await _authorizationTokenHelper.GetStatXAuthToken();
             return await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, requestDataDTO);
         }
