@@ -17,3 +17,18 @@ __hours__: unsigned integer that represents the number of hours to include in th
 __innerLabel__: String property that holds the label to be displayed in the UI. Has a getter and a setter.
 
 <img src="images/duration.PNG" width="200" alt="Duration UI"/>
+
+##Example Control Payload
+```javascript
+{
+         "days": 0,
+         "hours": 1,
+         "minutes": 59,
+         "innerLabel":"Wait this long",
+         "name": "TimePeriod",
+         "required": false,
+         "value": "00:00:00",
+         "label": "After you send a Tracked Envelope, Fr8 will wait.",
+         "type": "Duration"
+}
+```
