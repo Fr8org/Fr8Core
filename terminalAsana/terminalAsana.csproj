@@ -43,6 +43,22 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Dev|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Demo|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr3.Runtime, Version=3.4.1.9004, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
       <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
@@ -242,7 +258,9 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config" />
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj">
@@ -302,6 +320,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props'))" />
+    <Error Condition="!Exists('..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets'))" />
   </Target>
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
@@ -310,6 +329,9 @@
   </Target>
   <ItemGroup>
     <Log4netConfigFiles Include="..\Config\log4net.terminals.*" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\PlanDirectory\Settings.Debug.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Config\terminalYammer\Settings.Release.config" />
@@ -357,6 +379,24 @@
     <Content Include="Config\terminalSendGrid\Settings.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Config\terminalSalesforce\Settings.Release.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalSalesforce\Settings.Dev.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalSalesforce\Settings.Demo.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalSalesforce\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalQuickBooks\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalPapertrail\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Config\terminalInstagram\Settings.config" />
   </ItemGroup>
   <ItemGroup>
@@ -384,45 +424,6 @@
     <Content Include="Config\terminalDocuSign\Settings.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Config\terminalBox\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalAzure\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\PlanDirectory\Settings.Release.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\PlanDirectory\Settings.Debug.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\PlanDirectory\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\HubWeb\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\HealthMonitor\Settings.config.src" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalSalesforce\Settings.Release.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalSalesforce\Settings.Dev.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalSalesforce\Settings.Demo.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalSalesforce\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalQuickBooks\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalPapertrail\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Config\terminalCloudService\ServiceConfiguration.Release.cscfg" />
   </ItemGroup>
   <ItemGroup>
@@ -433,6 +434,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Config\terminalCloudService\ServiceConfiguration.Cloud.cscfg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalBox\Settings.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Config\terminalBasecamp2\Settings.Release.config" />
@@ -447,12 +451,49 @@
     <Content Include="Config\terminalBasecamp2\Settings.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Config\terminalAzure\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Config\terminalAtlassian\Settings.config" />
   </ItemGroup>
-  <Target Name="BeforeBuild">
+  <ItemGroup>
+    <Content Include="Config\PlanDirectory\Settings.Release.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\PlanDirectory\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\HubWeb\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\HealthMonitor\Settings.config.src" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ApplicationInsights.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ApplicationInsights.Debug.config">
+      <DependentUpon>ApplicationInsights.config</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ApplicationInsights.Dev.config">
+      <DependentUpon>ApplicationInsights.config</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ApplicationInsights.Release.config">
+      <DependentUpon>ApplicationInsights.config</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Target Name="BeforeCompile">
     <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
+    <NugetContentRestoreTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)" />
   </Target>
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
+  <Import Project="..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets" Condition="Exists('..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" />
+  <Import Project="..\targets\Fr8.NugetContentRestore.targets" Condition="Exists('..\targets\Fr8.NugetContentRestore.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
