@@ -83,3 +83,4 @@ It's a Best Practice to provide rich support for documentation requests.
 [Solutions](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Solutions) are Activities that generally generate 1 or more child and sibling activities programmatically. They're designed to simplify the process of building Plans.
 
 
+[Platform SDKs (.NET, Java, Ruby, Python](https://github.com/Fr8org/Fr8Core/blob/docs5/Docs/ForDevelopers/SDKHome.md)
