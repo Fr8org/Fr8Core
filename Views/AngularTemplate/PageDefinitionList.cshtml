@@ -22,16 +22,16 @@
                                 <th>Title</th>
                                 <th>Tags</th>
                                 <th>Page Name</th>
-                                <th>Url</th>
+                                <th>Link</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="pageDefinition in pageDefinitions" ng-click="showModalWithPopulatedValues(pageDefinition)" style="cursor: pointer;">
-                                <td>{{pageDefinition.id }}</td>
-                                <td>{{pageDefinition.title }}</td>
-                                <td>{{pageDefinition.tags }}</td>
-                                <td>{{pageDefinition.pageName }}</td>
-                                <td>{{pageDefinition.url }}</td>
+                            <tr ng-repeat="pageDefinition in pageDefinitions">
+                                <td ng-click="showModalWithPopulatedValues(pageDefinition)" style="cursor: pointer;">{{pageDefinition.id }}</td>
+                                <td ng-click="showModalWithPopulatedValues(pageDefinition)" style="cursor: pointer;">{{pageDefinition.title }}</td>
+                                <td ng-click="showModalWithPopulatedValues(pageDefinition)" style="cursor: pointer;">{{pageDefinition.tags }}</td>
+                                <td ng-click="showModalWithPopulatedValues(pageDefinition)" style="cursor: pointer;">{{pageDefinition.pageName }}</td>
+                                <td><a ng-href="{{pageDefinition.url}}" target="_blank">Show</a></td>
                             </tr>
                             </tbody>
                         </table>
@@ -71,10 +71,10 @@
                     <label class="control-label">Page Name</label>
                     <input type="text" name="pageName" placeholder="" disabled="disabled" maxlength="100" class="form-control" ng-model="pageDefinition.pageName" />
                 </div>
-                <div class="form-group">
-                    <label class="control-label">Url</label>
+                @*<div class="form-group">
+                    <label class="control-label">Url</label>                    
                     <input type="text" name="url" placeholder="" maxlength="100" class="form-control" ng-model="pageDefinition.url" required />
-                </div>
+                </div>*@
             </div>
 
             <div class="modal-footer">
