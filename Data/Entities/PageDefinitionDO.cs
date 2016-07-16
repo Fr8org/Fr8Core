@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Data.Utility;
+using Newtonsoft.Json;
 
 namespace Data.Entities
 {
@@ -21,12 +22,10 @@ namespace Data.Entities
         [Required]
         public string TagsString
         {
-            get { return Tags.Any() ? string.Join(", ", Tags) : string.Empty; }
+            get { return JsonConvert.SerializeObject(Tags.Distinct()); }
             set
             {
-                Tags = value == null
-                    ? null
-                    : new List<string>(value.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                Tags = JsonConvert.DeserializeObject<IEnumerable<string>>(value));
             }
         }
 
@@ -51,8 +50,8 @@ namespace Data.Entities
         [Column("PlanTemplatesIds")]
         public string PlanTemplatesString
         {
-            get { return PlanTemplatesIds != null && PlanTemplatesIds.Any() ? string.Join(",", PlanTemplatesIds.Distinct()) : string.Empty; }
-            set { PlanTemplatesIds = value?.Split(',').ToList(); }
+            get { return JsonConvert.SerializeObject(PlanTemplatesIds.Distinct()); }
+            set { PlanTemplatesIds = JsonConvert.DeserializeObject<List<string>>(value); }
         }
     }
 }
