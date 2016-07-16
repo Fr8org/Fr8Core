@@ -23,10 +23,7 @@ namespace Data.Entities
         public string TagsString
         {
             get { return JsonConvert.SerializeObject(Tags.Distinct()); }
-            set
-            {
-                Tags = JsonConvert.DeserializeObject<IEnumerable<string>>(value));
-            }
+            set { Tags = JsonConvert.DeserializeObject<IEnumerable<string>>(value); }
         }
 
         [NotMapped]
