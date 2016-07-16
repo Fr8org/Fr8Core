@@ -230,7 +230,7 @@ namespace terminalStatX.Activities
             if (stat.StatValueItems.Any())
             {
                 fields.AddRange(stat.VisualType == StatTypes.CheckList
-                    ? stat.StatValueItems.Select(item => new KeyValueDTO(item.Name, item.Value))
+                    ? stat.StatValueItems.Select(item => new KeyValueDTO(item.Name, item.Checked.ToString()))
                     : stat.StatValueItems.Select(item => new KeyValueDTO(item.Name, item.Value)));
             }
             else
