@@ -13,6 +13,7 @@ namespace terminalIntegrationTests.Unit
     public class PageGeneratorTests
     {
         [Test]
+        [Ignore]
         public void ShouldGeneratePagesFromTags()
         {
             // Fixture setup
