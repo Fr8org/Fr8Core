@@ -56,6 +56,10 @@ namespace terminalStatX.Activities
 
             public DropDownList ExistingGroupStats { get; set; }
 
+            public TextSource StatTitle { get; set; }
+
+            public TextSource StatNotes { get; set; }
+                
             [DynamicControls]
             public List<TextSource> StatValues { get; set; }
 
@@ -75,9 +79,13 @@ namespace terminalStatX.Activities
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
 
+                StatTitle = new TextSource("Title", CrateManifestTypes.StandardDesignTimeFields, nameof(StatTitle), "Available Stat Properties");
+
+                StatNotes = new TextSource("Notes", CrateManifestTypes.StandardDesignTimeFields, nameof(StatNotes), "Available Stat Properties");
+
                 StatValues = new List<TextSource>();
 
-                Controls = new List<ControlDefinitionDTO>() {ExistingGroupsList, ExistingGroupStats};
+                Controls = new List<ControlDefinitionDTO>() {ExistingGroupsList, ExistingGroupStats, StatTitle, StatNotes};
             }
 
             public void ClearDynamicFields()
@@ -128,10 +136,12 @@ namespace terminalStatX.Activities
                     if (firstStat != null)
                     {
                         ActivityUI.ExistingGroupStats.SelectByValue(firstStat.Id);
-
-                        if (firstStat.StatItems.Any())
+                        ActivityUI.StatTitle.Value = firstStat.Title;
+                        ActivityUI.StatNotes.Value = firstStat.Notes;
+                        var statDTO = firstStat as GeneralStatWithItemsDTO;
+                        if (statDTO != null)
                         {
-                            foreach (var item in firstStat.StatItems)
+                            foreach (var item in statDTO.Items)
                             {
                                 ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(item.Name, item.Name, requestUpstream: true, groupLabelText: "Available Stat Properties"));
                             }
@@ -146,6 +156,8 @@ namespace terminalStatX.Activities
             }
             else
             {
+                ActivityUI.StatTitle.Value = string.Empty;
+                ActivityUI.StatNotes.Value = string.Empty;
                 ActivityUI.ExistingGroupStats.ListItems.Clear();
                 ActivityUI.ExistingGroupStats.selectedKey = string.Empty;
                 ActivityUI.ExistingGroupStats.Value = string.Empty;
@@ -176,9 +188,12 @@ namespace terminalStatX.Activities
                     if (currentStat != null)
                     {
                         ActivityUI.ClearDynamicFields();
-                        if (currentStat.StatItems.Any())
+                        ActivityUI.StatTitle.Value = currentStat.Title;
+                        ActivityUI.StatNotes.Value = currentStat.Notes;
+                        var statDTO = currentStat as GeneralStatWithItemsDTO;
+                        if (statDTO != null && statDTO.Items.Any())
                         {
-                            foreach (var item in currentStat.StatItems)
+                            foreach (var item in statDTO.Items)
                             {
                                 ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(item.Name, item.Name, requestUpstream: true, groupLabelText: "Available Stat Properties"));
                             }
@@ -193,6 +208,8 @@ namespace terminalStatX.Activities
             }
             else
             {
+                ActivityUI.StatTitle.Value = string.Empty;
+                ActivityUI.StatNotes.Value = string.Empty;
                 ActivityUI.ClearDynamicFields();
                 ActivityUI.ExistingGroupStats.ListItems.Clear();
                 ActivityUI.ExistingGroupStats.selectedKey = string.Empty;
@@ -216,7 +233,7 @@ namespace terminalStatX.Activities
             }
 
             await _statXIntegration.UpdateStatValue(StatXUtilities.GetStatXAuthToken(AuthorizationToken), ActivityUI.ExistingGroupsList.Value,
-                ActivityUI.ExistingGroupStats.Value, statValues);
+                ActivityUI.ExistingGroupStats.Value, statValues, ActivityUI.StatTitle.GetValue(Payload), ActivityUI.StatNotes.GetValue(Payload));
             
             Success();
         }

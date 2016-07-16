@@ -7,21 +7,18 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
-using StructureMap;
 
 namespace Fr8.TerminalBase.Services
 {
     public class ActivityStore : IActivityStore
     {
         private readonly ConcurrentDictionary<ActivityRegistrationKey, IActivityFactory> _activityRegistrations = new ConcurrentDictionary<ActivityRegistrationKey, IActivityFactory>();
-        private readonly IContainer _container;
 
         public TerminalDTO Terminal { get; }
 
-        public ActivityStore(TerminalDTO terminal, IContainer container)
+        public ActivityStore(TerminalDTO terminal)
         {
             Terminal = terminal;
-            _container = container;
 
             Terminal.PublicIdentifier = CloudConfigurationManager.GetSetting("TerminalId") ?? ConfigurationManager.AppSettings[terminal.Name + "TerminalId"];
         }
