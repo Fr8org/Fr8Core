@@ -38,10 +38,8 @@
         * [Configuration Controls](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/ConfigurationControls.md)    
         * [Terminal Submission Form](https://docs.google.com/forms/d/1hDWlcdoQO0nBLsBcyiywxpMldFDpXHAqXHWc3fT8C4Y/viewform)
     - [Roadmap](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Roadmap)
-    - Platform SDKs
-        * [.NET] (https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Terminals/DevGuide_DotNet.md)
-        * [Python] (https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Terminals/SDK/Python.md)
-        * [Ruby] (https://github.com/Fr8org/Fr8.Ruby)
+    - [Platform SDKs (.NET, Java, Ruby, Python](https://github.com/Fr8org/Fr8Core/blob/docs5/Docs/ForDevelopers/SDKHome.md)
+        
     - Tutorials  
         * [Tutorial: A Basic Twilio Terminal That Can Send an SMS Message](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Tutorials/TwilioTutorial.md)    
         * [Tutorial: Create a Fr8 Plan, Import Spreadsheet Data, and Distribute the Data by an Email Activity](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Tutorials/CreateImportDistributeTutorial.md)    
