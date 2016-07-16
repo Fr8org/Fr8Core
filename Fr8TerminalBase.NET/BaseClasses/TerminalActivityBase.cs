@@ -348,11 +348,11 @@ namespace Fr8.TerminalBase.BaseClasses
             {
                 if (string.IsNullOrWhiteSpace(AuthorizationToken?.Token))
                 {
-                    ErrorInvalidToken("No AuthToken provided.");
+                    RaiseInvalidTokenError("No AuthToken provided.");
                 }
                 else
                 {
-                    ErrorInvalidToken("Authorization token is invalid");
+                    RaiseInvalidTokenError("Authorization token is invalid");
                 }
                 
                 return;
@@ -391,7 +391,7 @@ namespace Fr8.TerminalBase.BaseClasses
                     await AfterRun(ex);
                 }
 
-                ErrorInvalidToken(ex.Message);
+                RaiseInvalidTokenError(ex.Message);
             }
             catch (ActivityExecutionException ex)
             {
@@ -400,7 +400,7 @@ namespace Fr8.TerminalBase.BaseClasses
                     await AfterRun(ex);
                 }
 
-                Error(ex.Message, ex.ErrorCode);
+                RaiseError(ex.Message, ex.ErrorCode);
             }
             catch (AggregateException ex)
             {
@@ -413,12 +413,12 @@ namespace Fr8.TerminalBase.BaseClasses
                 {
                     if (IsInvalidTokenException(innerException))
                     {
-                        ErrorInvalidToken(ex.Message);
+                        RaiseInvalidTokenError(ex.Message);
                         return;
                     }
                 }
 
-                Error(ex.Flatten().Message);
+                RaiseError(ex.Flatten().Message);
             }
             catch (Exception ex)
             {
@@ -429,11 +429,11 @@ namespace Fr8.TerminalBase.BaseClasses
 
                 if (IsInvalidTokenException(ex))
                 {
-                    ErrorInvalidToken(ex.Message);
+                    RaiseInvalidTokenError(ex.Message);
                 }
                 else
                 {
-                    Error(ex.Message);
+                    RaiseError(ex.Message);
                 }
             }
         }
@@ -738,44 +738,7 @@ namespace Fr8.TerminalBase.BaseClasses
                 OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Message = message, Details = details });
             }
         }
-
-        /**********************************************************************************/
-        /// <summary>
-        /// returns error to hub
-        /// </summary>
-        protected void Error(string errorMessage = null, ActivityErrorCode? errorCode = null)
-        {
-            SetResponse(ActivityResponse.Error);
-            OperationalState.CurrentActivityErrorCode = errorCode;
-            OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, ErrorType.Generic, errorCode.ToString(), null, null, null));
-        }
-
-        /**********************************************************************************/
-        /// <summary>
-        /// returns error to hub
-        /// </summary>
-        protected void ErrorInvalidToken(string instructionsToUser = null)
-        {
-            SetResponse(ActivityResponse.Error);
-            var errorCode = ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID;
-            OperationalState.CurrentActivityErrorCode = errorCode;
-            OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(instructionsToUser, ErrorType.Authentication, errorCode.ToString(), null, null, null));
-        }
-
-        /**********************************************************************************/
-        /// <summary>
-        /// returns error to hub
-        /// </summary>
-        /// <param name="errorMessage"></param>
-        /// <param name="errorCode"></param>
-        /// <param name="currentActivity">Activity where the error occured</param>
-        /// <param name="currentTerminal">Terminal where the error occured</param>
-        /// <returns></returns>
-        protected void RaiseError(string errorMessage = null, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
-        {
-            RaiseError(errorMessage, ErrorType.Generic, errorCode, currentActivity, currentTerminal);
-        }
-
+        
         /**********************************************************************************/
         /// <summary>
         /// returns error to hub
@@ -786,23 +749,13 @@ namespace Fr8.TerminalBase.BaseClasses
         /// <param name="errorMessage"></param>
         /// <param name="errorType"></param>
         /// <returns></returns>
-        protected void RaiseError(string errorMessage, ErrorType errorType, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
+        protected void RaiseError(string errorMessage, ActivityErrorCode? errorCode = null, ErrorType errorType = ErrorType.Generic)
         {
+            SetResponse(ActivityResponse.Error);
             OperationalState.CurrentActivityErrorCode = errorCode;
-            OperationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Error);
-            OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, errorType, errorCode.ToString(), null, currentActivity, currentTerminal));
+            OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, errorType, errorCode.ToString(), null, MyTemplate.Name, MyTemplate.Terminal.Name));
         }
-
-        /**********************************************************************************/
-        /// <summary>
-        /// Returns Needs authentication error to hub
-        /// </summary>
-        /// <returns></returns>
-        protected void RaiseNeedsAuthenticationError()
-        {
-            RaiseError("No AuthToken provided.", ErrorType.Authentication, ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID);
-        }
-
+        
         /**********************************************************************************/
         /// <summary>
         /// Returns authentication error to hub
@@ -810,7 +763,7 @@ namespace Fr8.TerminalBase.BaseClasses
         /// <returns></returns>
         protected void RaiseInvalidTokenError(string instructionsToUser = null)
         {
-            RaiseError(instructionsToUser, ErrorType.Authentication, ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID);
+            RaiseError(instructionsToUser, ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID, ErrorType.Authentication);
         }
 
         /**********************************************************************************/
