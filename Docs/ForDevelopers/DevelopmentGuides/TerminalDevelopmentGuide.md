@@ -27,9 +27,5 @@ Additional Articles
 
 
 
-
-## Platform-Specific SDK
-=====
-*  [.NET](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/SDK/.NET/Home.md)
-*  Java
-*  Ruby
+[Platform SDKs (.NET, Java, Ruby, Python](https://github.com/Fr8org/Fr8Core/blob/docs5/Docs/ForDevelopers/SDKHome.md)
+--------------------------
