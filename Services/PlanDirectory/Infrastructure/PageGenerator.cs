@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Hosting;
 using Data.Entities;
@@ -35,7 +36,14 @@ namespace PlanDirectory.Infrastructure
             IList<PageDefinitionDO> pageDefinitions,
             string fr8AccountId)
         {
-            var path = Path.Combine(HostingEnvironment.MapPath("~"), "CategoryPages");
+            var serverPath = HostingEnvironment.MapPath("~");
+            string path = null;
+            if (serverPath == null)
+            {
+                var uriPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase);
+                serverPath = new Uri(uriPath).LocalPath;
+            }
+            path = Path.Combine(serverPath, "CategoryPages");
 
             foreach (var tag in storage.WebServiceTemplateTags)
             {
