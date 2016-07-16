@@ -8,6 +8,8 @@
 
 $ErrorActionPreference = 'Stop'
 
+Add-Type -Path "C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Xml.Linq.dll"
+
 $template = "
 ` <html xmlns='http://www.w3.org/1999/xhtml'>
 ` <head>
@@ -18,6 +20,7 @@ $template = "
 ` </body>
 ` </html>
 ` "
+
 
 $rootDir = Split-Path -parent (Split-Path -parent $myInvocation.MyCommand.Path)
 $fileName = "ver.html"
