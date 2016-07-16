@@ -632,7 +632,7 @@ namespace Fr8.TerminalBase.BaseClasses
         /// <summary>
         /// Creates a suspend request for hub execution
         /// </summary>
-        protected void SuspendHubExecution(string message = null)
+        protected void RequestPlanExecutionSuspension(string message = null)
         {
             SetResponse(ActivityResponse.RequestSuspend, message);
         }
@@ -642,21 +642,11 @@ namespace Fr8.TerminalBase.BaseClasses
         /// Creates a terminate request for hub execution
         /// after that we could stop throwing exceptions on actions
         /// </summary>
-        protected void TerminateHubExecution(string message = null)
+        protected void RequestPlanExecutionTermination(string message = null)
         {
             SetResponse(ActivityResponse.RequestTerminate, message);
         }
-
-        /**********************************************************************************/
-        /// <summary>
-        /// Creates a terminate request for hub execution
-        /// after that we could stop throwing exceptions on actions
-        /// </summary>
-        protected void RequestHubExecutionTermination(string message = null)
-        {
-            TerminateHubExecution(message);
-        }
-
+        
         /**********************************************************************************/
         /// <summary>
         /// returns success to hub
@@ -668,7 +658,7 @@ namespace Fr8.TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        protected void ExecuteClientActivity(string clientActionName)
+        protected void RequestClientActivityExecution(string clientActionName)
         {
             SetResponse(ActivityResponse.ExecuteClientActivity);
             OperationalState.CurrentClientActivityName = clientActionName;
@@ -721,7 +711,7 @@ namespace Fr8.TerminalBase.BaseClasses
         /// Jumps to another plan
         /// </summary>
         /// <returns></returns>
-        protected void LaunchPlan(Guid targetPlanId)
+        protected void RequestLaunchPlan(Guid targetPlanId)
         {
             SetResponse(ActivityResponse.LaunchAdditionalPlan);
             OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetPlanId });
@@ -753,7 +743,7 @@ namespace Fr8.TerminalBase.BaseClasses
         {
             SetResponse(ActivityResponse.Error);
             OperationalState.CurrentActivityErrorCode = errorCode;
-            OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, errorType, errorCode.ToString(), null, MyTemplate.Name, MyTemplate.Terminal.Name));
+            OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, errorType, errorCode.ToString(), null, MyTemplate.Name, MyTemplate.Terminal?.Name));
         }
         
         /**********************************************************************************/

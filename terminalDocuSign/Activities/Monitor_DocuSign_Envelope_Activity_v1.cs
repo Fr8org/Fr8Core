@@ -141,7 +141,7 @@ namespace terminalDocuSign.Actions
 
             if (envelopeStatus == null)
             {
-                TerminateHubExecution("Evelope was not found in the payload.");
+                RequestPlanExecutionTermination("Evelope was not found in the payload.");
                 return;
             }
 
@@ -181,7 +181,7 @@ namespace terminalDocuSign.Actions
                         else
                         {
                             //this event isn't about us let's stop execution
-                            TerminateHubExecution();
+                            RequestPlanExecutionTermination();
                             return;
                         }
 
@@ -200,7 +200,7 @@ namespace terminalDocuSign.Actions
                             else
                             {
                                 //this event isn't about us let's stop execution
-                                TerminateHubExecution();
+                                RequestPlanExecutionTermination();
                                 return;
                             }
                         }

@@ -226,7 +226,7 @@ namespace terminalDocuSign.Activities
             // Update report crate.
             Payload.Add(Crate.FromContent("Sql Query Result", searchResult));
 
-            ExecuteClientActivity("ShowTableReport");
+            RequestClientActivityExecution("ShowTableReport");
 
         }
 

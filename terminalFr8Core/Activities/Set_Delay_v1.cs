@@ -90,7 +90,7 @@ namespace terminalFr8Core.Activities
 
             OperationalState.CallStack.StoreLocalData("Delay", "suspended");
 
-            SuspendHubExecution();
+            RequestPlanExecutionSuspension();
             }
 
         public override Task Initialize()

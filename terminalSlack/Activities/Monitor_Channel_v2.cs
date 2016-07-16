@@ -150,7 +150,7 @@ namespace terminalSlack.Activities
 
             if (!hasIncomingMessage)
             {
-                TerminateHubExecution("Incoming message is missing.");
+                RequestPlanExecutionTermination("Incoming message is missing.");
                 return Task.FromResult(0);
             }
 
@@ -159,7 +159,7 @@ namespace terminalSlack.Activities
 
             if (string.IsNullOrEmpty(incomingChannelId))
             {
-                TerminateHubExecution("Incoming message doesn't contain information about source channel");
+                RequestPlanExecutionTermination("Incoming message doesn't contain information about source channel");
             }
             else
             {
@@ -176,7 +176,7 @@ namespace terminalSlack.Activities
                 }
                 else
                 {
-                    TerminateHubExecution("Incoming message doesn't pass filter criteria. No downstream activities are executed");
+                    RequestPlanExecutionTermination("Incoming message doesn't pass filter criteria. No downstream activities are executed");
                 }
             }
 
