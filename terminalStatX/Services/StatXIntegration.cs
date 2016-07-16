@@ -365,7 +365,8 @@ namespace terminalStatX.Services
                         statDTO.Title = title;
                         statDTO.Notes = notes;
 
-                        var tempItems = statDTO.Items;
+                        var tempItems = new List<StatItemValueDTO>();
+                        tempItems.AddRange(statDTO.Items);
                         statDTO.Items.Clear();
                         if (currentStat.VisualType == StatTypes.CheckList)
                         {
