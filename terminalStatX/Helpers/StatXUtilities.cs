@@ -83,7 +83,10 @@ namespace terminalStatX.Helpers
                 case StatTypes.CheckList:
                     stat = new CheckListStatDTO();
                     PopulateStatObject(stat, statProperties);
-                    ((CheckListStatDTO)stat).Items = statItems.Select(x=> new CheckListItemDTO() { Name = x.Key}).ToList();
+                    foreach (var statItem in statItems)
+                    {
+                        ((CheckListStatDTO)stat).Items.Add(new CheckListItemDTO() { Name = statItem.Key, Checked = ConvertChecklistItemValue(statItem.Value)});
+                    }
                     break;
                 case StatTypes.HorizontalBars:
                     stat = new HorizontalBarsStatDTO();
@@ -93,7 +96,7 @@ namespace terminalStatX.Helpers
                 case StatTypes.PickList:
                     stat = new PicklistStatDTO();
                     PopulateStatObject(stat, statProperties);
-                    ((PicklistStatDTO)stat).Items = statItems.Select(x => new PicklistItemDTO() { Name = x.Key}).ToList();
+                    ((PicklistStatDTO)stat).Items = statItems.Select(x => new PicklistItemDTO() { Name = x.Key, Color = x.Value.ToUpper()}).ToList();
                     break;
                 default:
                     return new BaseStatDTO();
@@ -135,6 +138,7 @@ namespace terminalStatX.Helpers
             {
                 Id = stat.Id,
                 Title = stat.Title,
+                VisualType = stat.VisualType,
                 LastUpdatedDateTime = stat.LastUpdatedDateTime.ToString(),
             };
 
@@ -148,7 +152,8 @@ namespace terminalStatX.Helpers
                 result.StatValueItems = ((GeneralStatWithItemsDTO)stat).Items.Select(x => new StatValueItemDTO()
                 {
                     Name = x.Name,
-                    Value = x.Value
+                    Value = x.Value,
+                    Checked = x.Checked,
                 }).ToList();
             }
 
@@ -171,13 +176,26 @@ namespace terminalStatX.Helpers
                 foreach (var item in newStat.StatValueItems)
                 {
                     var oldStatItem = oldStat.StatValueItems.FirstOrDefault(x => x.Name == item.Name);
-                    if (oldStatItem != null && item.Value != oldStatItem.Value)
+
+                    //case for checklist
+                    if (oldStatItem == null) continue;
+                    if (newStat.VisualType == StatTypes.CheckList)
                     {
-                        return true;
+                        if (item.Checked != oldStatItem.Checked)
+                        {
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        if (item.Value != oldStatItem.Value)
+                        {
+                            return true;
+                        }
                     }
                 }
 
-                return true;
+                return false;
             }
 
             return oldStat.Value != newStat.Value;
@@ -204,6 +222,11 @@ namespace terminalStatX.Helpers
             }
 
             storage.Add(Crate.FromContent("Advisories", currentAdvisoryResults));
+        }
+
+        public static bool ConvertChecklistItemValue(string value)
+        {
+            return value.Trim() == "1" || value.Trim().ToLower() == "true";
         }
 
         public static StatXAuthDTO GetStatXAuthToken(string token)

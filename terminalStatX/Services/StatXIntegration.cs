@@ -15,6 +15,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using PhoneNumbers;
 using terminalStatX.DataTransferObjects;
+using terminalStatX.Helpers;
 using terminalStatX.Infrastructure;
 using terminalStatX.Interfaces;
 
@@ -363,14 +364,29 @@ namespace terminalStatX.Services
                         statDTO.NotesLastUpdatedDateTime = DateTime.UtcNow;
                         statDTO.Title = title;
                         statDTO.Notes = notes;
-                        statDTO.DynamicJsonIgnoreProperties = new string[] {"visualType"};
+
                         var tempItems = statDTO.Items;
                         statDTO.Items.Clear();
-                        statDTO.Items.AddRange(statValues.Select(x => new StatItemValueDTO()
+                        if (currentStat.VisualType == StatTypes.CheckList)
                         {
-                            Name = x.Key,
-                            Value = string.IsNullOrEmpty(x.Value) ? tempItems.FirstOrDefault(l => l.Name == x.Key).Value : x.Value
-                        }).ToList());
+                            statDTO.DynamicJsonIgnoreProperties = new string[] {"visualType", "value"};
+
+                            statDTO.Items.AddRange(statValues.Select(x => new StatItemValueDTO()
+                            {
+                                Name = x.Key,
+                                Checked = string.IsNullOrEmpty(x.Value) ? tempItems.FirstOrDefault(l => l.Name == x.Key).Checked : StatXUtilities.ConvertChecklistItemValue(x.Value)
+                            }).ToList());
+                        }
+                        else
+                        {
+                            statDTO.DynamicJsonIgnoreProperties = new string[] { "visualType", "checked" };
+   
+                            statDTO.Items.AddRange(statValues.Select(x => new StatItemValueDTO()
+                            {
+                                Name = x.Key, 
+                                Value = string.IsNullOrEmpty(x.Value) ? tempItems.FirstOrDefault(l => l.Name == x.Key).Value: x.Value
+                            }).ToList());
+                        }
 
                         string json = JsonConvert.SerializeObject(statDTO, Formatting.Indented, new JsonSerializerSettings { ContractResolver = new DynamicContractResolver(statDTO.DynamicJsonIgnoreProperties) });
                         response = await _restfulServiceClient.PutAsync(uri, (HttpContent)new StringContent(json), null, GetStatxAPIHeaders(statXAuthDTO));
@@ -447,7 +463,8 @@ namespace terminalStatX.Services
                         ((GeneralStatWithItemsDTO)stat).Items.Add(new StatItemValueDTO()
                         {
                             Name = valueItem["name"]?.ToString(),
-                            Value = valueItem["value"]?.ToString()
+                            Value = valueItem["value"]?.ToString(),
+                            Checked = valueItem["checked"] != null && bool.Parse(valueItem["checked"].ToString()) 
                         });
                     }
                 }

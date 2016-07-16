@@ -34,7 +34,7 @@ namespace terminalStatXTests.Integration
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(), "StandardConfigurationControlsCM count is not 1");
 
             Assert.AreEqual(2, crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls.Count, "Control count is not 2");
-            Assert.IsTrue(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0] is DropDownList, "First control isn't a DropDownList");
+            Assert.IsTrue(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0] is RadioButtonGroup, "First control isn't a RadioButtonGroup");
             Assert.AreEqual("StatTypesList", crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0].Name, "Invalid Name on control");
         }
 
@@ -57,7 +57,7 @@ namespace terminalStatXTests.Integration
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(), "StandardConfigurationControlsCM count is not 1");
 
             Assert.AreEqual(2, crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls.Count, "Control count is not 2");
-            Assert.IsTrue(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0] is DropDownList, "First control isn't a DropDownList");
+            Assert.IsTrue(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0] is RadioButtonGroup, "First control isn't a RadioButtonGroup");
             Assert.AreEqual("StatTypesList", crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0].Name, "Invalid Name on control");
         }
 

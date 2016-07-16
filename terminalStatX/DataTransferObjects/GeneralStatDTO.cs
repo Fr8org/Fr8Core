@@ -29,5 +29,8 @@ namespace terminalStatX.DataTransferObjects
         public string Name { get; set; }
         [JsonProperty("value")]
         public string Value { get; set; }
+
+        [JsonProperty("checked")]
+        public bool Checked {get;set;}
     }
 }
