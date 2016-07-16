@@ -71,7 +71,7 @@ namespace terminalFr8Core.Activities
         {
             //build a controls crate to render the pane
             var eventSubscription = PackCrate_EventSubscriptions();
-            var textBlock = ControlHelper.GenerateTextBlock("Monitor Fr8 Events",
+            var textBlock = UiBuilder.GenerateTextBlock("Monitor Fr8 Events",
                 "This Activity doesn't require any configuration.", "well well-lg");
             var curControlsCrate = PackControlsCrate(textBlock);
 
