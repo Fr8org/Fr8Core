@@ -31,7 +31,7 @@ namespace HubWeb.Controllers
         /// <response code="200">Collection of activities preceeding or following the specified one. Can be empty</response>
         /// <response code="403">Unauthorized request</response>
         [ResponseType(typeof(List<ActivityDTO>))]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         public IHttpActionResult Get(Guid id, string direction)
         {
             direction = (direction ?? string.Empty).ToLower();
@@ -62,7 +62,7 @@ namespace HubWeb.Controllers
         /// <response code="403">Unauthorized request</response>
         [HttpGet]
         [ActionName("signals")]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [ResponseType(typeof(IncomingCratesDTO))]
         public IHttpActionResult GetAvailableData(Guid id, CrateDirection direction = CrateDirection.Upstream, AvailabilityType availability = AvailabilityType.RunTime)
         {

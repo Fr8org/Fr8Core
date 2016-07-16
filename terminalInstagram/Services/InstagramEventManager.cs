@@ -50,14 +50,6 @@ namespace terminalInstagram.Services
             var subscription = await _client.PostAsync<JObject>(url, formContent);
         }
 
-        public void Unsubscribe(Guid planId)
-        {
-            throw new NotImplementedException();
-        }
-
-        private async void OnMessageReceived(object sender)
-        {
-        }
         public async Task<Crate> ProcessUserEvents(IContainer container, string curExternalEventPayload)
         {
             var media = JsonConvert.DeserializeObject<InstagramMedia>(curExternalEventPayload.Substring(1, curExternalEventPayload.Length - 2));

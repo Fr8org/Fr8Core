@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
+using Data.Entities;
 using Fr8.Infrastructure.Interfaces;
 using Hub.Infrastructure;
 using Hub.Interfaces;
@@ -18,8 +19,8 @@ using HubWeb.Infrastructure_HubWeb;
 namespace HubWeb.Infrastructure
 {
     [TestFixture]
-    [Category("Fr8HubWebHMACAuthenticateAttribute")]
-    public class Fr8HubWebHMACAuthenticateAttributeTests : BaseTest
+    [Category("Fr8TerminalAuthenticationAttribute")]
+    public class Fr8TerminalAuthenticationAttributeTests : BaseTest
     {
         private HttpAuthenticationContext _authenticationContext;
 
@@ -28,17 +29,18 @@ namespace HubWeb.Infrastructure
         {
             base.SetUp();
             HttpRequestMessage request = new HttpRequestMessage();
-            HttpControllerContext controllerContext = new HttpControllerContext {Request = request};
-            HttpActionContext context = new HttpActionContext {ControllerContext = controllerContext};
+            HttpControllerContext controllerContext = new HttpControllerContext { Request = request };
+            HttpActionContext context = new HttpActionContext { ControllerContext = controllerContext };
             _authenticationContext = new HttpAuthenticationContext(context, null);
+
             HttpRequestHeaders headers = request.Headers;
-            AuthenticationHeaderValue authorization = new AuthenticationHeaderValue("scheme");
+            AuthenticationHeaderValue authorization = new AuthenticationHeaderValue("FR8-TOKEN", "key=test, user=test");
             headers.Authorization = authorization;
         }
 
-        private Fr8HubWebHMACAuthenticateAttribute CreateFilter()
+        private Fr8TerminalAuthenticationAttribute CreateFilter()
         {
-            return new Fr8HubWebHMACAuthenticateAttribute();
+            return new Fr8TerminalAuthenticationAttribute();
         }
 
         /// <summary>
@@ -48,6 +50,10 @@ namespace HubWeb.Infrastructure
         [Test]
         public async Task ShouldSetCurrentUser_WithCorrectAuthentication()
         {
+            var terminalService = new Mock<ITerminal>();
+            terminalService.Setup(x => x.GetByToken(It.IsAny<string>())).ReturnsAsync(new TerminalDO());
+            ObjectFactory.Configure(o => o.For<ITerminal>().Use(terminalService.Object));
+
             await CreateFilter().AuthenticateAsync(_authenticationContext, CancellationToken.None);
             Assert.AreEqual(true, _authenticationContext.Principal is Fr8Principle);
             Assert.AreEqual(true, _authenticationContext.Principal.Identity is Fr8Identity);
@@ -56,38 +62,20 @@ namespace HubWeb.Infrastructure
         [Test]
         public async Task ShouldntSetCurrentUser_WithInCorrectAuthentication()
         {
-            var fr8HMACAuthenticator = new Mock<IHMACAuthenticator>();
-            fr8HMACAuthenticator.Setup(x => x.IsValidRequest(It.IsAny<HttpRequestMessage>(), It.IsAny<string>())).ReturnsAsync(false);
-            var outTerminalId = "testTerminal";
-            var outUserId = "testUser";
-            fr8HMACAuthenticator.Setup(s => s.ExtractTokenParts(It.IsAny<HttpRequestMessage>(), out outTerminalId, out outUserId));
-            ObjectFactory.Configure(o => o.For<IHMACAuthenticator>().Use(fr8HMACAuthenticator.Object));
+            HttpRequestHeaders headers = _authenticationContext.Request.Headers;
+            AuthenticationHeaderValue authorization = new AuthenticationHeaderValue("FR8-TOKEN", "sdasdasd");
+            headers.Authorization = authorization;
 
             await CreateFilter().AuthenticateAsync(_authenticationContext, CancellationToken.None);
             Assert.AreEqual(null, _authenticationContext.Principal);
         }
 
         [Test]
-        public async Task ShouldntSetCurrentUser_WithNullUserId()
-        {
-            var fr8HMACAuthenticator = new Mock<IHMACAuthenticator>();
-            fr8HMACAuthenticator.Setup(x => x.IsValidRequest(It.IsAny<HttpRequestMessage>(), It.IsAny<string>())).ReturnsAsync(true);
-            var outTerminalId = "testTerminal";
-            string outUserId = null;
-            fr8HMACAuthenticator.Setup(s => s.ExtractTokenParts(It.IsAny<HttpRequestMessage>(), out outTerminalId, out outUserId));
-            ObjectFactory.Configure(o => o.For<IHMACAuthenticator>().Use(fr8HMACAuthenticator.Object));
-
-            await CreateFilter().AuthenticateAsync(_authenticationContext, CancellationToken.None);
-            Assert.AreEqual(null, _authenticationContext.Principal);
-        }
-
-        [Test]
-        public async Task ShouldntSetCurrentUser_WithInvalidTerminalId()
+        public async Task ShouldntSetCurrentUser_WithInvalidTerminalToken()
         {
             var terminalService = new Mock<ITerminal>();
-            terminalService.Setup(x => x.GetTerminalByPublicIdentifier(It.IsAny<string>())).ReturnsAsync(null);
+            terminalService.Setup(x => x.GetByToken(It.IsAny<string>())).ReturnsAsync(null);
             ObjectFactory.Configure(o => o.For<ITerminal>().Use(terminalService.Object));
-
             await CreateFilter().AuthenticateAsync(_authenticationContext, CancellationToken.None);
             Assert.AreEqual(null, _authenticationContext.Principal);
         }

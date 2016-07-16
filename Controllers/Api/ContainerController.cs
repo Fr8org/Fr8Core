@@ -39,7 +39,7 @@ namespace HubWeb.Controllers
         /// <response code="200">Container's crate storage</response>
         /// <response code="403">Unathorized request</response>
         [HttpGet]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         [ActionName("payload")]
         [ResponseType(typeof(PayloadDTO))]

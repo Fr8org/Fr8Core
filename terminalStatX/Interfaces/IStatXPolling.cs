@@ -7,6 +7,6 @@ namespace terminalStatX.Interfaces
     public interface IStatXPolling
     {
         Task SchedulePolling(IHubCommunicator hubCommunicator, string externalAccountId, bool triggerImmediatly, string groupId, string statId);
-        Task<PollingDataDTO> Poll(IHubCommunicator hubCommunicator, PollingDataDTO pollingData);
+        Task<PollingDataDTO> Poll(PollingDataDTO pollingData);
     }
 }
