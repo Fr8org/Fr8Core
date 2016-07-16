@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.TerminalBase.Services;
@@ -12,14 +13,13 @@ namespace terminalAsana.Controllers
     public class AuthenticationController : ApiController
     {
         private readonly IAsanaOAuth _asanaOAuth;
-        private readonly IHubEventReporter _eventReporter;
+        private readonly IHubLoggerService _loggerService;
 
-        public AuthenticationController(IAsanaOAuth asanaOAuth, IHubEventReporter eventReporter)
+        public AuthenticationController(IAsanaOAuth asanaOAuth, IHubLoggerService loggerService)
         {
             //we don`t need whole client here, so i can use only AsanaOAuth service
-            _asanaOAuth = asanaOAuth;        
-            _eventReporter = eventReporter;
-
+            _asanaOAuth = asanaOAuth;
+            _loggerService = loggerService;
         }
 
         [HttpPost]
@@ -44,10 +44,10 @@ namespace terminalAsana.Controllers
         {
             try
             {
-                string code;
-                string state;
 
-                ParseCodeAndState(externalAuthDTO.RequestQueryString, out code, out state);
+                var query = HttpUtility.ParseQueryString(externalAuthDTO.RequestQueryString);
+                string code = query["code"];
+                string state = query["state"];
 
                 if (string.IsNullOrEmpty(code) || string.IsNullOrEmpty(state))
                 {
@@ -71,42 +71,12 @@ namespace terminalAsana.Controllers
             }
             catch (Exception ex)
             {
-                await _eventReporter.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
+                await _loggerService.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {
                     Error = "An error occurred while trying to authorize, please try again later."
                 };
-            }
-        }
-
-        private void ParseCodeAndState(string queryString, out string code, out string state)
-        {
-            if (string.IsNullOrEmpty(queryString))
-            {
-                throw new ApplicationException("QueryString is empty.");
-            }
-
-            code = null;
-            state = null;
-
-            var tokens = queryString.Split(new[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (var token in tokens)
-            {
-                var nameValueTokens = token.Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
-                if (nameValueTokens.Length < 2)
-                {
-                    continue;
-                }
-
-                if (nameValueTokens[0] == "code")
-                {
-                    code = nameValueTokens[1];
-                }
-                else if (nameValueTokens[0] == "state")
-                {
-                    state = nameValueTokens[1];
-                }
             }
         }
     }

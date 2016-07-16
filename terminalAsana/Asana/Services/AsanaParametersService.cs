@@ -9,31 +9,50 @@ namespace terminalAsana.Asana.Services
 {
     public class AsanaParametersService : IAsanaParameters
     {
-        public string ApiVersion => CloudConfigurationManager.GetSetting("AsanaApiVersion");
-        public string DomainName => CloudConfigurationManager.GetSetting("AsanaApiDomainName");
+        public string AsanaClientSecret { get; set; }
+        public string AsanaClientId { get; set; }
+
+        public string ApiVersion  { get; set; }
+        public string DomainName  { get; set; }
         public string ApiEndpoint => this.DomainName + this.ApiVersion;
 
-        public string AsanaClientSecret => CloudConfigurationManager.GetSetting("AsanaClientSecret");
-        public string AsanaClientId => CloudConfigurationManager.GetSetting("AsanaClientId");
-
-        public string Limit => CloudConfigurationManager.GetSetting("AsanaNumberOfObjectsLimit");
+        public string Limit { get; set; }
         public string Offset { get; }
-        public string MinutesBeforeTokenRenewal => CloudConfigurationManager.GetSetting("MinutesBeforeTokenRenewal");
-        public string AsanaOriginalRedirectUrl => CloudConfigurationManager.GetSetting("AsanaOriginalRedirectUrl");
-        public string AsanaOAuthCodeUrl => CloudConfigurationManager.GetSetting("AsanaOAuthCodeUrl");
-        public string AsanaOAuthTokenUrl => CloudConfigurationManager.GetSetting("AsanaOAuthTokenUrl");
 
+        //<!--OAuth section-->
+        public string MinutesBeforeTokenRenewal { get; set; }
+        public string AsanaOriginalRedirectUrl { get; set; }
+        public string AsanaOAuthCodeUrl { get; set; }
+        public string AsanaOAuthTokenUrl { get; set; }
 
-        public string WorkspacesUrl => this.ApiEndpoint + CloudConfigurationManager.GetSetting("WorlspacesUrl");
-        public string TasksUrl => this.ApiEndpoint + CloudConfigurationManager.GetSetting("TasksUrl");
-        public string UsersUrl => this.ApiEndpoint + CloudConfigurationManager.GetSetting("UsersUrl");
-        public string UsersInWorkspaceUrl => this.ApiEndpoint + CloudConfigurationManager.GetSetting("UsersInWorkspaceUrl");
-        public string UsersMeUrl => this.ApiEndpoint + CloudConfigurationManager.GetSetting("UsersMeUrl");
-        public string StoriesUrl => this.ApiEndpoint + CloudConfigurationManager.GetSetting("StoriesUrl");
-        public string StoryUrl => this.ApiEndpoint + CloudConfigurationManager.GetSetting("StoryUrl");
-        public string ProjectsUrl => this.ApiEndpoint + CloudConfigurationManager.GetSetting("ProjectsUrl");
-        public string ProjectUrl => this.ApiEndpoint + CloudConfigurationManager.GetSetting("ProjectUrl");
-        public string ProjectTasksUrl => this.ApiEndpoint + CloudConfigurationManager.GetSetting("ProjectTasksUrl");
-        public string ProjectSectionsUrl => this.ApiEndpoint + CloudConfigurationManager.GetSetting("ProjectSectionsUrl");
+        //<!--API URL`s-->
+        public string WorkspacesUrl => this.ApiEndpoint + "/workspaces";
+        public string TasksUrl => this.ApiEndpoint + "/tasks";
+        public string UsersUrl => this.ApiEndpoint + "/users/{user-id}";
+        public string UsersInWorkspaceUrl => this.ApiEndpoint + "/workspaces/{workspace-id}/users";
+        public string UsersMeUrl => this.ApiEndpoint + "/users/me";
+        public string StoriesUrl => this.ApiEndpoint + "/tasks/{task-id}/stories";
+        public string StoryUrl => this.ApiEndpoint + "/stories/{story-id}";
+        public string ProjectsUrl => this.ApiEndpoint + "/projects";
+        public string ProjectUrl => this.ApiEndpoint + "/projects/{project-id}";
+        public string ProjectTasksUrl => this.ApiEndpoint + "/projects/{project-id}/tasks";
+        public string ProjectSectionsUrl => this.ApiEndpoint + "/projects/{project-id}/sections";
+
+        public AsanaParametersService()
+        {
+            ApiVersion = "1.0";
+            DomainName = "https://app.asana.com/api/";
+
+            Limit = CloudConfigurationManager.GetSetting("AsanaNumberOfObjectsLimit");
+
+            AsanaClientSecret = CloudConfigurationManager.GetSetting("AsanaClientSecret");
+            AsanaClientId = CloudConfigurationManager.GetSetting("AsanaClientId");
+
+            MinutesBeforeTokenRenewal = CloudConfigurationManager.GetSetting("MinutesBeforeTokenRenewal");
+            AsanaOriginalRedirectUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") + CloudConfigurationManager.GetSetting("AsanaOriginalRedirectUrl");
+            AsanaOAuthCodeUrl = CloudConfigurationManager.GetSetting("AsanaOAuthCodeUrl").Replace("%ASANA_CLIENT_ID%",AsanaClientId);
+            AsanaOAuthTokenUrl = CloudConfigurationManager.GetSetting("AsanaOAuthTokenUrl");
+
+        }
     }
 }

@@ -125,7 +125,10 @@ namespace terminalAsana.Activities
         protected override Task Validate()
         {
             ValidationManager.ValidateDropDownListNotEmpty(ActivityUI.WorkspacesList, "Workspace should not be empty");
-            ValidationManager.ValidateDropDownListNotEmpty(ActivityUI.UsersList, "User should not be empty");
+            if (ActivityUI.WorkspacesList.selectedKey.IsNullOrWhiteSpace())
+            {
+                ValidationManager.ValidateDropDownListNotEmpty(ActivityUI.UsersList, "User should not be empty");
+            }
  
             return Task.FromResult(0);
         }

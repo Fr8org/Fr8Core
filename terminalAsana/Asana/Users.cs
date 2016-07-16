@@ -13,10 +13,10 @@ namespace terminalAsana.Asana
 {
     public class Users : IAsanaUsers
     {
-        private readonly IRestfulServiceClient _restfulClient;
+        private readonly IAsanaOAuthCommunicator _restfulClient;
         private readonly IAsanaParameters _asanaParams;
 
-        public Users(IRestfulServiceClient client, IAsanaParameters asanaParams)
+        public Users(IAsanaOAuthCommunicator client, IAsanaParameters asanaParams)
         {
             _restfulClient = client;
             _asanaParams = asanaParams;
