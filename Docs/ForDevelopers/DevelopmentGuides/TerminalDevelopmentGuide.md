@@ -30,6 +30,6 @@ Additional Articles
 
 ## Platform-Specific SDK
 =====
-*  [.NET](https://github.com/Fr8org/Fr8Core/blob/FR-3375/Docs/ForDevelopers/SDK/.NET/Home.md)
+*  [.NET](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/SDK/.NET/Home.md)
 *  Java
 *  Ruby
