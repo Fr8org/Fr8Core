@@ -1,5 +1,4 @@
 ﻿<div ng-controller="PlanDetailsController">
-
     <div class="page-head designer-header row">
         <div class="designer-header-title page-title" ng-class="{'design-header-title-editing': nameEditing}">
             <h2>
@@ -7,10 +6,10 @@
                 <input layout="row" layout-align="center center" class="design-header-title-editField" type="text" ng-model="ptvm.plan.name" ng-blur="onTitleChange()" input-focus="nameEditing" />
             </h2>
         </div>
-        <md-button class="md-icon-button" ui-sref="^.planBuilder({ id: id })" style="margin-top: 20px">
-            <md-icon md-font-icon="fa-edit" class="fa fa-lg"></md-icon>
+        <md-button class="md-icon-button"  ng-click="nameEditing = !nameEditing" style="margin-top: 25px">
+            <md-icon md-font-icon="glyphicon-pencil" class="glyphicon glyphicon-pencil"></md-icon>
             <md-tooltip md-direction="top">
-                Edit Plan
+                Edit Name
             </md-tooltip>
         </md-button>
     </div>
@@ -38,10 +37,12 @@
         </md-radio-group>
     </h4>
 
-    <h4><b><a ng-click="download($event)" download='{{ptvm.plan.name}}.json' type='application/json'>[Download]</a></b></h4>
-    <br />
-
-    <h4><b>Plan JSON</b></h4>
-    <pre>{{ptvm | json}}</pre>
+    <div layout="row">
+        <h4><b>Plan JSON</b></h4>
+        <a class="md-raised md-button" ng-click="download($event)" download='{{ptvm.plan.name}}.json' type='application/json' style="margin-top:2px">
+            Download
+        </a>
+    </div>
+    <pre><json-formatter json=ptvm.plan open="1"></json-formatter></pre>
 
 </div>

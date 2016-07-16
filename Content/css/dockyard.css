@@ -1475,6 +1475,18 @@ footer p {
     padding:7px 15px 0 0;
 }
 
+md-radio-button{
+    outline:none;
+}
+
+md-radio-button .md-off{
+    border-radius:50% !important;
+}
+
+md-radio-button .md-on{
+    border-radius:50% !important;
+}
+
 md-checkbox.md-checked.green .md-icon {
  background-color: rgb(38, 166, 154);
 }
