@@ -17,6 +17,7 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("f52a0f0f-571c-4530-a49f-c2ff2e18eafd"),
             Name = "Make_A_Decision",
             Label = "Make a Decision",
             Version = "1",

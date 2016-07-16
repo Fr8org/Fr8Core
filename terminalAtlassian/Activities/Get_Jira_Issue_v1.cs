@@ -18,6 +18,7 @@ namespace terminalAtlassian.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("e51bd483-bc63-49a1-a7c4-36e0a14a6235"),
             Version = "1",
             Name = "Get_Jira_Issue",
             Label = "Get Jira Issue",

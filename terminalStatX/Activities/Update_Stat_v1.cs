@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using terminalStatX.DataTransferObjects;
 using terminalStatX.Helpers;
 using terminalStatX.Interfaces;
+using System;
 
 namespace terminalStatX.Activities
 {
@@ -21,6 +22,7 @@ namespace terminalStatX.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("c8a29957-972d-447d-ad08-e8c66f5b62dc"),
             Name = "Update_Stat",
             Label = "Update Stat",
             Version = "1",

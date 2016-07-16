@@ -29,6 +29,7 @@ namespace terminalDocuSign.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("582A519E-7B1F-4424-B67B-EAA526C6953C"),
             Version = "1",
             Name = "Generate_DocuSign_Report",
             Label = "Generate DocuSign Report",

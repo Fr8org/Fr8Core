@@ -727,6 +727,10 @@
     <Compile Include="Migrations\201607041029473_ActivityCategory.Designer.cs">
       <DependentUpon>201607041029473_ActivityCategory.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201607151938218_UpdateActivityTemplateIds.cs" />
+    <Compile Include="Migrations\201607151938218_UpdateActivityTemplateIds.Designer.cs">
+      <DependentUpon>201607151938218_UpdateActivityTemplateIds.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -1388,6 +1392,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201607041029473_ActivityCategory.resx">
       <DependentUpon>201607041029473_ActivityCategory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607151938218_UpdateActivityTemplateIds.resx">
+      <DependentUpon>201607151938218_UpdateActivityTemplateIds.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

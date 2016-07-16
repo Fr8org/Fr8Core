@@ -23,6 +23,7 @@ namespace terminalExcel.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("d6089960-a33d-4e8c-be60-8734e5f3d2fc"),
             Name = "Set_Excel_Template",
             Label = "Set Excel Template",
             Version = "1",

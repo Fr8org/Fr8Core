@@ -9,6 +9,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
+using System;
 
 namespace terminalFr8Core.Activities
 {
@@ -16,6 +17,7 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("1c4f979d-bc1c-4a4a-b370-049dbacd3678"),
             Name = "Store_File",
             Label = "Store File",
             Category = ActivityCategory.Processors,

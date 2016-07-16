@@ -23,6 +23,7 @@ namespace terminalPapertrail.Actions
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("82689803-f577-47cd-9a7a-dd728f72acfe"),
             Version = "1",
             Name = "Write_To_Log",
             Label = "Write To Log",

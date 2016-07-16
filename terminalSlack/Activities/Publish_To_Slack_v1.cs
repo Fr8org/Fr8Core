@@ -22,6 +22,7 @@ namespace terminalSlack.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("4698C675-CA2C-4BE7-82F9-2421F3608E13"),
             Name = "Publish_To_Slack",
             Label = "Publish To Slack",
             Tags = "Notifier",

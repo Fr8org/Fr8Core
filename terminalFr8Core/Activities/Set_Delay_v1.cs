@@ -14,6 +14,7 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("4059e018-d8a5-4927-9712-8430ffba0b73"),
             Name = "Set_Delay",
             Label = "Delay Action Processing",
             Category = ActivityCategory.Processors,

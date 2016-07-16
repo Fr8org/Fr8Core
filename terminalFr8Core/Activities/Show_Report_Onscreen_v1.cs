@@ -16,6 +16,7 @@
 //    {
 //        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
 //        {
+//            Id = new System.Guid("7fbefa24-44cf-4220-8a3b-04f4e49bbcc8"),
 //            Name = "Show_Report_Onscreen",
 //            Label = "Show Report Onscreen",
 //            Version = "2",
@@ -46,7 +47,7 @@
 //                Controls.Add(new RunPlanButton());
 //            }
 //        }
-        
+
 //        public Show_Report_Onscreen_v1(ICrateManager crateManager)
 //            : base(crateManager)
 //        {
@@ -77,12 +78,12 @@
 //        public override async Task Initialize()
 //        {
 //            Storage.Add(PackControls(new ActivityUi()));
-            
+
 //        }
 
 //        public override async Task FollowUp()
 //        {
-          
+
 //        }
 //    }
 //}

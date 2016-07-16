@@ -18,6 +18,7 @@ namespace terminalSlack.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("af0c038c-3adc-4372-b07e-e04b71102aa7"),
             Name = "Monitor_Channel",
             Label = "Monitor Slack Messages",
             Category = ActivityCategory.Monitors,
