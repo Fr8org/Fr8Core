@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Data.Interfaces;
-using StructureMap;
 using Data.Repositories.MultiTenant;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Control;
@@ -14,6 +13,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities;
+using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Models;
 using Fr8.TerminalBase.Services;
@@ -228,19 +228,18 @@ namespace terminalDocuSign.Activities
             var activity = await HubCommunicator.AddAndConfigureChildActivity(ActivityPayload.RootPlanNodeId.Value, template, order: previousNotifierOrdering);
             if (activity.ActivityTemplate.Name == "SendEmailViaSendGrid" && activity.ActivityTemplate.Version == "1")
             {
-                var configControls = ControlHelper.GetConfigurationControls(activity.CrateStorage);
-                var emailBodyField = ControlHelper.GetControl<TextSource>(configControls, "EmailBody", ControlTypes.TextSource);
+                //var configControls = ControlHelper.GetConfigurationControls(activity.CrateStorage);
+                var emailBodyField = ActivityConfigurator.GetControl<TextSource>(activity, "EmailBody", ControlTypes.TextSource);
                 emailBodyField.ValueSource = "upstream";
                 emailBodyField.Value = NotificationMessageLabel;
                 emailBodyField.selectedKey = NotificationMessageLabel;
-                var emailSubjectField = ControlHelper.GetControl<TextSource>(configControls, "EmailSubject", ControlTypes.TextSource);
+                var emailSubjectField = ActivityConfigurator.GetControl<TextSource>(activity, "EmailSubject", ControlTypes.TextSource);
                 emailSubjectField.ValueSource = "specific";
                 emailSubjectField.TextValue = "Fr8 Notification Message";
             }
             else if (activity.ActivityTemplate.Name == "Send_Via_Twilio" && activity.ActivityTemplate.Version == "1")
             {
-                var configControls = ControlHelper.GetConfigurationControls(activity.CrateStorage);
-                var emailBodyField = ControlHelper.GetControl<TextSource>(configControls, "SMS_Body", ControlTypes.TextSource);
+                var emailBodyField = ActivityConfigurator.GetControl<TextSource>(activity, "SMS_Body", ControlTypes.TextSource);
                 emailBodyField.ValueSource = "upstream";
                 emailBodyField.Value = NotificationMessageLabel;
                 emailBodyField.selectedKey = NotificationMessageLabel;
@@ -249,8 +248,7 @@ namespace terminalDocuSign.Activities
             {
                 if (activity.CrateStorage.FirstCrateOrDefault<StandardAuthenticationCM>() == null)
                 {
-                    var configControls = ControlHelper.GetConfigurationControls(activity.CrateStorage);
-                    var messageField = ControlHelper.GetControl<TextSource>(configControls, "MessageSource", ControlTypes.TextSource);
+                    var messageField = ActivityConfigurator.GetControl<TextSource>(activity, "MessageSource", ControlTypes.TextSource);
                     messageField.ValueSource = "upstream";
                     messageField.Value = NotificationMessageLabel;
                     messageField.selectedKey = NotificationMessageLabel;
@@ -265,8 +263,8 @@ namespace terminalDocuSign.Activities
         {
             var template = activityTemplates.Single(x => x.Terminal.Name == "terminalFr8Core" && x.Name == "Build_Message" && x.Version == "1");
             var activity = await HubCommunicator.AddAndConfigureChildActivity(ActivityPayload.RootPlanNodeId.Value, template, order: 2);
-            ControlHelper.SetControlValue(activity, "Body", MessageBody);
-            ControlHelper.SetControlValue(activity, "Name", "NotificationMessage");
+            ActivityConfigurator.SetControlValue(activity, "Body", MessageBody);
+            ActivityConfigurator.SetControlValue(activity, "Name", "NotificationMessage");
             await HubCommunicator.ConfigureActivity(activity);
         }
 
@@ -305,7 +303,7 @@ namespace terminalDocuSign.Activities
             var template = activityTemplates.Single(x => x.Terminal.Name == "terminalFr8Core" && x.Name == "Query_Fr8_Warehouse" && x.Version == "1");
             var activity = await HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, template, order: 3);
             var crateStorage = activity.CrateStorage;
-            var configControlCM = ControlHelper.GetConfigurationControls(crateStorage);
+            var configControlCM = ActivityConfigurator.GetConfigurationControls(activity);
             var radioButtonGroup = (RadioButtonGroup)configControlCM.Controls.First();
             radioButtonGroup.Radios[0].Selected = false;
             radioButtonGroup.Radios[1].Selected = true;
@@ -352,21 +350,21 @@ namespace terminalDocuSign.Activities
         {
             var template = activityTemplates.Single(x => x.Terminal.Name == "terminalFr8Core" && x.Name == "Set_Delay" && x.Version == "1");
             var activity = await HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, template, order: 2);
-            ControlHelper.SetControlValue(activity, "Delay_Duration", ActivityUI.TimePeriod.Value);
+            ActivityConfigurator.SetControlValue(activity, "Delay_Duration", ActivityUI.TimePeriod.Value);
         }
 
         private async Task<ActivityPayload> ConfigureMonitorActivity(List<ActivityTemplateDTO> activityTemplates)
         {
             var template = activityTemplates.Single(x => x.Terminal.Name == "terminalDocuSign" && x.Name == "Monitor_DocuSign_Envelope_Activity" && x.Version == "1");
             var activity = await HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, template, order: 1);
-            ControlHelper.SetControlValue(activity, "EnvelopeSent", "true");
+            ActivityConfigurator.SetControlValue(activity, "EnvelopeSent", "true");
             if (ActivityUI.SentToSpecificRecipientOption.Selected)
             {
-                ControlHelper.SetControlValue(activity, "TemplateRecipientPicker.recipient.RecipientValue", ActivityUI.SpecificRecipientEmailText.Value);
+                ActivityConfigurator.SetControlValue(activity, "TemplateRecipientPicker.recipient.RecipientValue", ActivityUI.SpecificRecipientEmailText.Value);
             }
             else if (ActivityUI.BasedOnTemplateOption.Selected)
             {
-                ControlHelper.SetControlValue(activity, "TemplateRecipientPicker.template.UpstreamCrate", ActivityUI.TemplateSelector.ListItems.Single(x => x.Key == ActivityUI.TemplateSelector.selectedKey));
+                ActivityConfigurator.SetControlValue(activity, "TemplateRecipientPicker.template.UpstreamCrate", ActivityUI.TemplateSelector.ListItems.Single(x => x.Key == ActivityUI.TemplateSelector.selectedKey));
             }
             return await HubCommunicator.ConfigureActivity(activity);
         }

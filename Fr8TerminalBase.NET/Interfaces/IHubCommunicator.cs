@@ -13,10 +13,6 @@ namespace Fr8.TerminalBase.Interfaces
 {
     public interface IHubCommunicator
     {
-        string UserId { get; }
-
-        void Authorize(string userId);
-
         Task<PlanEmptyDTO> LoadPlan(JToken planContents);
         Task<PayloadDTO> GetPayload(Guid containerId);
         Task<List<AuthenticationTokenTerminalDTO>> GetTokens();
@@ -52,6 +48,5 @@ namespace Fr8.TerminalBase.Interfaces
         Task<List<TManifest>> QueryWarehouse<TManifest>(List<FilterConditionDTO> query) where TManifest : Manifest;
         Task AddOrUpdateWarehouse(params Manifest[] manifests);
         Task DeleteFromWarehouse<TManifest>(List<FilterConditionDTO> query) where TManifest : Manifest;
-        Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri);
     }
 }

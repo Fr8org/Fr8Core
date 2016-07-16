@@ -14,9 +14,10 @@ namespace Hub.Interfaces
         TerminalDO GetByKey(int terminalId);
         TerminalDO GetByNameAndVersion(string name, string version);
         TerminalDO RegisterOrUpdate(TerminalDO terminalDo);
-        Dictionary<string, string> GetRequestHeaders(TerminalDO terminal);
+        Dictionary<string, string> GetRequestHeaders(TerminalDO terminal, string userId);
       
         Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId);
+        Task<TerminalDO> GetByToken(string token);
         Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId);
         Task<List<DocumentationResponseDTO>> GetSolutionDocumentations(string terminalName);
     }

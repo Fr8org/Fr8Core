@@ -486,7 +486,8 @@
     <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="Infrastructure_HubWeb\AngularTemplateCacheAttribute.cs" />
     <Compile Include="Infrastructure_HubWeb\FileActionResult.cs" />
-    <Compile Include="Infrastructure_HubWeb\Fr8HubWebHMACAuthenticateAttribute.cs" />
+    <Compile Include="Infrastructure_HubWeb\Fr8PlanDirectoryAuthenticationAttribute.cs" />
+    <Compile Include="Infrastructure_HubWeb\Fr8TerminalAuthenticationAttribute.cs" />
     <Compile Include="Infrastructure_HubWeb\Fr8Identity.cs" />
     <Compile Include="Infrastructure_HubWeb\HtmlHelpers.cs" />
     <Compile Include="SelfHostFactory.cs" />
@@ -894,6 +895,7 @@
     <Content Include="Views\AngularTemplate\PageDefinitionList.cshtml" />
     <Content Include="_PowerShellScripts\Reboot-CloudService.ps1" />
     <Content Include="_PowerShellScripts\Remove-HMAsWebJob.ps1" />
+    <Content Include="_PowerShellScripts\Create-VersionFile.ps1" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\KioskModeOrganizationHeaderController.ts" />

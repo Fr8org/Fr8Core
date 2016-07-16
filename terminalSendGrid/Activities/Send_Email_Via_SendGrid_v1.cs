@@ -61,7 +61,7 @@ namespace terminalSendGrid.Activities
         /// <returns></returns>
         private ControlDefinitionDTO CreateEmailAddressTextSourceControl()
         {
-            var control = ControlHelper.CreateSpecificOrUpstreamValueChooser(
+            var control = UiBuilder.CreateSpecificOrUpstreamValueChooser(
                 "Email Address",
                 "EmailAddress",
                 addRequestConfigEvent: true,
@@ -77,7 +77,7 @@ namespace terminalSendGrid.Activities
         /// <returns></returns>
         private ControlDefinitionDTO CreateEmailSubjectTextSourceControl()
         {
-            var control = ControlHelper.CreateSpecificOrUpstreamValueChooser(
+            var control = UiBuilder.CreateSpecificOrUpstreamValueChooser(
                 "Email Subject",
                 "EmailSubject",
                 addRequestConfigEvent: true,
@@ -93,7 +93,7 @@ namespace terminalSendGrid.Activities
         /// <returns></returns>
         private ControlDefinitionDTO CreateEmailBodyTextSourceControl()
         {
-            var control = ControlHelper.CreateSpecificOrUpstreamValueChooser(
+            var control = UiBuilder.CreateSpecificOrUpstreamValueChooser(
                 "Email Body",
                 "EmailBody",
                 addRequestConfigEvent: true,

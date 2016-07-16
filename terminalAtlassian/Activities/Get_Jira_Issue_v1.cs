@@ -80,7 +80,8 @@ namespace terminalAtlassian.Actions
             var issueKey = ActivityUI.IssueNumber.GetValue(Storage);
             if (!string.IsNullOrEmpty(issueKey))
             {
-                var issueFields = _atlassianService.GetJiraIssue(issueKey, AuthorizationToken).Select(x => new FieldDTO(x.Key));
+                var curJiraIssue = await _atlassianService.GetJiraIssue(issueKey, AuthorizationToken);
+                var issueFields = curJiraIssue.Select(x => new FieldDTO(x.Key));
                 CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel).AddFields(issueFields);
             }
             await Task.Yield();
@@ -91,7 +92,7 @@ namespace terminalAtlassian.Actions
             var issueKey = ActivityUI.IssueNumber.GetValue(Storage);
             if (!string.IsNullOrEmpty(issueKey))
             {
-                var issueFields = _atlassianService.GetJiraIssue(issueKey, AuthorizationToken);
+                var issueFields = await _atlassianService.GetJiraIssue(issueKey, AuthorizationToken);
                 Payload.Add(CrateJiraIssueDetailsPayloadCrate(issueFields));
             }
 
