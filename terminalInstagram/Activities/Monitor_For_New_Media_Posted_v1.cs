@@ -18,13 +18,18 @@ namespace terminalInstagram.Actions
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "Monitor_For_New_Media_Posted",
-            Label = "Monitor For New Media Posted v1",
+            Label = "Monitor For New Media Posted",
             Category = ActivityCategory.Monitors,
             NeedsAuthentication = true,
             Version = "1",
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Monitor,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
 
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

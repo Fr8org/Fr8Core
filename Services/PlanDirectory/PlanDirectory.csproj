@@ -291,6 +291,10 @@
     <Content Include="Config\terminalFacebook\Settings.config" />
     <Content Include="Config\terminalDropbox\Settings.config" />
     <Content Include="Config\terminalDocuSign\Settings.config" />
+    <Content Include="Config\terminalCloudService\ServiceConfiguration.Release.cscfg" />
+    <Content Include="Config\terminalCloudService\ServiceConfiguration.Dev.cscfg" />
+    <Content Include="Config\terminalCloudService\ServiceConfiguration.Demo.cscfg" />
+    <Content Include="Config\terminalCloudService\ServiceConfiguration.Cloud.cscfg" />
     <Content Include="Config\terminalBox\Settings.config" />
     <Content Include="Config\terminalBasecamp2\Settings.Release.config" />
     <Content Include="Config\terminalBasecamp2\Settings.Dev.config" />
@@ -330,8 +334,11 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\AuthTokenManager.cs" />
+    <Compile Include="Infrastructure\PlanDirectoryHubCommunicatorFactory.cs" />
+    <Compile Include="Infrastructure\HubAuthenticationPDHeaderSignature.cs" />
     <Compile Include="Infrastructure\ISearchProvider.cs" />
     <Compile Include="Infrastructure\TagGenerator.cs" />
+    <Compile Include="Interfaces\IHubCommunicatorFactory.cs" />
     <Compile Include="Interfaces\ITagGenerator.cs" />
     <Compile Include="Infrastructure\PlanDirectoryHMACAuthenticateAttribute.cs" />
     <Compile Include="Infrastructure\IAuthTokenManager.cs" />

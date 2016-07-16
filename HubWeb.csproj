@@ -486,7 +486,8 @@
     <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="Infrastructure_HubWeb\AngularTemplateCacheAttribute.cs" />
     <Compile Include="Infrastructure_HubWeb\FileActionResult.cs" />
-    <Compile Include="Infrastructure_HubWeb\Fr8HubWebHMACAuthenticateAttribute.cs" />
+    <Compile Include="Infrastructure_HubWeb\Fr8PlanDirectoryAuthenticationAttribute.cs" />
+    <Compile Include="Infrastructure_HubWeb\Fr8TerminalAuthenticationAttribute.cs" />
     <Compile Include="Infrastructure_HubWeb\Fr8Identity.cs" />
     <Compile Include="Infrastructure_HubWeb\HtmlHelpers.cs" />
     <Compile Include="SelfHostFactory.cs" />
@@ -536,6 +537,7 @@
     <Content Include="Content\icons\web_services\Box-logo_64x64.png" />
     <Content Include="Content\icons\web_services\fr8-demo-icon-64x64.png" />
     <Content Include="Content\icons\web_services\gmail-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\instagram-icon-64x64.png" />
     <Content Include="Content\icons\web_services\statX-icon-64x64.png" />
     <Content Include="Content\icons\web_services\twitter-icon-64x64.png" />
     <Content Include="Content\icons\web_services\telegram-icon-64x64.png" />
@@ -836,6 +838,10 @@
     <Content Include="Config\terminalFacebook\Settings.config" />
     <Content Include="Config\terminalDropbox\Settings.config" />
     <Content Include="Config\terminalDocuSign\Settings.config" />
+    <Content Include="Config\terminalCloudService\ServiceConfiguration.Release.cscfg" />
+    <Content Include="Config\terminalCloudService\ServiceConfiguration.Dev.cscfg" />
+    <Content Include="Config\terminalCloudService\ServiceConfiguration.Demo.cscfg" />
+    <Content Include="Config\terminalCloudService\ServiceConfiguration.Cloud.cscfg" />
     <Content Include="Config\terminalBox\Settings.config" />
     <Content Include="Config\terminalBasecamp2\Settings.Release.config" />
     <Content Include="Config\terminalBasecamp2\Settings.Dev.config" />
@@ -888,6 +894,7 @@
     <Content Include="Views\AngularTemplate\PageDefinitionList.cshtml" />
     <Content Include="_PowerShellScripts\Reboot-CloudService.ps1" />
     <Content Include="_PowerShellScripts\Remove-HMAsWebJob.ps1" />
+    <Content Include="_PowerShellScripts\Create-VersionFile.ps1" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\KioskModeOrganizationHeaderController.ts" />

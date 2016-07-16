@@ -10,7 +10,7 @@ namespace terminalAtlassian.Interfaces
     {
         Task<bool> CheckAuthenticationAsync(CredentialsDTO credentials);
         Task<bool> CheckDomain(string domain);
-        List<KeyValueDTO> GetJiraIssue(string jiraKey, AuthorizationToken authToken);
+        Task<List<KeyValueDTO>> GetJiraIssue(string jiraKey, AuthorizationToken authToken);
         List<KeyValueDTO> GetProjects(AuthorizationToken authToken);
         List<KeyValueDTO> GetIssueTypes(string projectKey, AuthorizationToken authToken);
         List<KeyValueDTO> GetPriorities(AuthorizationToken authToken);

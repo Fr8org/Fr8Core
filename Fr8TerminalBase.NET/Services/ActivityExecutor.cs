@@ -82,11 +82,8 @@ namespace Fr8.TerminalBase.Services
                 x.For<UpstreamQueryManager>().Use<UpstreamQueryManager>().Singleton();
             });
 
-            _hubCommunicator.Authorize(activityContext.UserId);
-            activityContext.HubCommunicator = _hubCommunicator;
-
             var activity = factory.Create(_container);
-            
+            activityContext.HubCommunicator = _hubCommunicator;
 
             var scope = parameters != null && parameters.Any(x => x.Key == "scope")
                 ? parameters.First(x => x.Key == "scope").Value
