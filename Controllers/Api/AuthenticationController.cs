@@ -163,7 +163,7 @@ namespace HubWeb.Controllers
         /// <response code="403">Unauthorized request</response>
         [HttpPost]
         [Fr8ApiAuthorize]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [ResponseType(typeof(TokenWrapper))]
         public async Task<IHttpActionResult> AuthenticatePlanDirectory()
         {
@@ -188,7 +188,7 @@ namespace HubWeb.Controllers
         /// <param name="token">Authorization token containing Id of existing token and new values to apply</param>
         [HttpPost]
         [Fr8ApiAuthorize]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [SwaggerResponse(HttpStatusCode.OK, "Token was successfully renewed")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
         [SwaggerResponseRemoveDefaults]
@@ -206,7 +206,7 @@ namespace HubWeb.Controllers
         /// <response code="403">Unauthorized request</response>
         [HttpGet]
         [Fr8ApiAuthorize]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [ActionName("tokens")]
         [ResponseType(typeof(List<AuthenticationTokenTerminalDTO>))]
         public IHttpActionResult UserTokens()
@@ -247,7 +247,7 @@ namespace HubWeb.Controllers
         /// <param name="id">Id of authorization token</param>
         [HttpPost]
         [Fr8ApiAuthorize]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [SwaggerResponse(HttpStatusCode.OK, "Token was successfully revoked")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
         [SwaggerResponseRemoveDefaults]
@@ -265,7 +265,7 @@ namespace HubWeb.Controllers
         /// <param name="id">Id of authorization token</param>
         [HttpPost]
         [Fr8ApiAuthorize]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [SwaggerResponse(HttpStatusCode.OK, "Token was successfully marked as default")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
         [SwaggerResponseRemoveDefaults]
@@ -283,7 +283,7 @@ namespace HubWeb.Controllers
         /// <param name="authTokenList">List of authorization token Id/activity Id pairs</param>
         [HttpPost]
         [Fr8ApiAuthorize]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [SwaggerResponse(HttpStatusCode.OK, "All tokens were successfully granted")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
         [SwaggerResponseRemoveDefaults]

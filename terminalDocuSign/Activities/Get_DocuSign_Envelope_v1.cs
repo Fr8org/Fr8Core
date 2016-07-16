@@ -42,7 +42,7 @@ namespace terminalDocuSign.Activities
 
         public override Task Initialize()
         {
-            var control = ControlHelper.CreateSpecificOrUpstreamValueChooser(
+            var control = UiBuilder.CreateSpecificOrUpstreamValueChooser(
                "EnvelopeId",
                "EnvelopeIdSelector",
                "Upstream Design-Time Fields"

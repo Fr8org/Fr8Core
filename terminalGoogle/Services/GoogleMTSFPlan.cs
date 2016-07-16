@@ -31,7 +31,6 @@ namespace terminalGoogle.Services
         {
             _userId = userId;
             _hubCommunicator = hubCommunicator;
-            _hubCommunicator.Authorize( _userId);
             _slackChannels = slackChannels;
 
         }

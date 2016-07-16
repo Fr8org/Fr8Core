@@ -10,6 +10,7 @@ namespace Fr8.TerminalBase.BaseClasses
     public abstract class ExplicitTerminalActivity : TerminalActivityBase
     {
         private StandardConfigurationControlsCM _configurationControls;
+
         protected StandardConfigurationControlsCM ConfigurationControls => _configurationControls ?? (_configurationControls = GetConfigurationControls());
 
         protected ExplicitTerminalActivity(ICrateManager crateManager)
@@ -17,9 +18,9 @@ namespace Fr8.TerminalBase.BaseClasses
         {
         }
         
-        protected StandardConfigurationControlsCM GetConfigurationControls()
+        private StandardConfigurationControlsCM GetConfigurationControls()
         {
-            return ControlHelper.GetConfigurationControls(Storage);
+            return Storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => c.Label == ConfigurationControlsLabel).FirstOrDefault();
         }
 
         protected T GetControl<T>(string name) where T : ControlDefinitionDTO
@@ -29,12 +30,17 @@ namespace Fr8.TerminalBase.BaseClasses
 
         protected void RemoveControl<T>(string name) where T : ControlDefinitionDTO
         {
-            ControlHelper.RemoveControl<T>(ConfigurationControls, name);
+            var control = ConfigurationControls?.Controls?.FirstOrDefault(x => x.Name == name);
+
+            if (control != null)
+            {
+                ConfigurationControls.Controls.Remove(control);
+            }
         }
 
         protected void AddLabelControl(string name, string label, string text)
         {
-            AddControl(ControlHelper.GenerateTextBlock(label, text, "well well-lg", name));
+            AddControl(UiBuilder.GenerateTextBlock(label, text, "well well-lg", name));
         }
 
         protected void AddControl(ControlDefinitionDTO control)

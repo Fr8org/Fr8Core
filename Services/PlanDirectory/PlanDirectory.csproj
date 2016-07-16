@@ -371,9 +371,12 @@
     </Compile>
     <Compile Include="Infrastructure\ActivityTemplateTag.cs" />
     <Compile Include="Infrastructure\AuthTokenManager.cs" />
+    <Compile Include="Infrastructure\PlanDirectoryHubCommunicatorFactory.cs" />
+    <Compile Include="Infrastructure\HubAuthenticationPDHeaderSignature.cs" />
     <Compile Include="Infrastructure\IPageGenerator.cs" />
     <Compile Include="Infrastructure\ISearchProvider.cs" />
     <Compile Include="Infrastructure\TagGenerator.cs" />
+    <Compile Include="Interfaces\IHubCommunicatorFactory.cs" />
     <Compile Include="Infrastructure\TemplateTag.cs" />
     <Compile Include="Infrastructure\TemplateTagStorage.cs" />
     <Compile Include="Infrastructure\WebServiceTemplateTag.cs" />

@@ -11,7 +11,7 @@ namespace terminalGoogle.Interfaces
 {
     public interface IGoogleGmailPolling
     {
-        Task<PollingDataDTO> Poll(IHubCommunicator hubCommunicator, PollingDataDTO pollingData);
+        Task<PollingDataDTO> Poll(PollingDataDTO pollingData);
 
         Task SchedulePolling(IHubCommunicator hubCommunicator, string externalAccountId, bool trigger_immediatly);
     }
