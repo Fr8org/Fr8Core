@@ -6,6 +6,8 @@
 	[string]$commitId
 )
 
+$ErrorActionPreference = 'Stop'
+
 $template = "
 ` <html xmlns='http://www.w3.org/1999/xhtml'>
 ` <head>
@@ -18,14 +20,40 @@ $template = "
 ` "
 
 $rootDir = Split-Path -parent (Split-Path -parent $myInvocation.MyCommand.Path)
+$fileName = "ver.html"
 
 ls $rootDir "*.csproj" -Recurse -File -Name | ? { $_ -inotmatch 'Tests' } | ForEach-Object {
-    $path = 
-    $path = $rootDir + "\" + (Split-Path $_ -Parent) + "\ver.html"
-    Echo ($path)
+    $path = $rootDir + "\" + (Split-Path $_ -Parent) + "\" + "$fileName"
+    $projectPath = $rootDir + "\" + $_
     if (-not (Test-Path $path)) {
         New-Item $path -ItemType file 
     }
 
+    Echo "Processing project $projectPath"
+    Echo "Writing file: $path"
     Set-Content $path -Value ("$template" -f $buildId, $commitId)
-}
+
+    # Update project file to get version files deployed
+    # $project = [xml] (Get-Content $projectPath)
+    [System.Xml.Linq.XNamespace] $ns = "http://schemas.microsoft.com/developer/msbuild/2003";
+
+    $project = [System.Xml.Linq.XDocument]::Load($projectPath);
+    $itemGroupNode = $project.Descendants($ns + "Project")[0].Descendants($ns + "ItemGroup")[0]
+
+
+    # See if already added
+    $exists = ($itemGroupNode.Descendants($ns + "Content") | Where-Object  { ($_.Name.LocalName -eq "Content") -and ($_.FirstAttribute.Value -eq $fileName ) } | Select Name) -ne $null
+    if (-not $exists) {
+        Echo "Adding reference to $fileName"
+        $contentNode = new-object System.Xml.Linq.XElement(($ns + "Content"), 
+        `  (new-object System.Xml.Linq.XAttribute("Include", $fileName)))
+        $itemGroupNode.Add($contentNode)
+        $project.Save($projectPath) 
+    }    
+    else
+    {
+        Echo "Reference to $fileName already exsiting in the project file, skipping"
+    }
+
+    Echo ""
+} 
