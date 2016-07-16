@@ -25,6 +25,7 @@ namespace terminalFr8Core.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("04390199-7cfd-4217-bf40-7671e130dc28"),
             Name = "App_Builder",
             Label = "App Builder",
             Version = "1",

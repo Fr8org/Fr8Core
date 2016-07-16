@@ -21,6 +21,7 @@ namespace terminalTwilio.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("ddd5be71-a23c-41e3-baf0-501e34f0517b"),
             Name = "Send_Via_Twilio",
             Label = "Send SMS",
             Tags = "Twillio,Notifier",
@@ -57,8 +58,8 @@ namespace terminalTwilio.Activities
         {
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
-                ControlHelper.CreateSpecificOrUpstreamValueChooser("SMS Number", "SMS_Number", "Upstream Terminal-Provided Fields", "", true),
-                ControlHelper.CreateSpecificOrUpstreamValueChooser("SMS Body", "SMS_Body", "Upstream Terminal-Provided Fields", "", true)
+                UiBuilder.CreateSpecificOrUpstreamValueChooser("SMS Number", "SMS_Number", "Upstream Terminal-Provided Fields", "", addRequestConfigEvent: true),
+                UiBuilder.CreateSpecificOrUpstreamValueChooser("SMS Body", "SMS_Body", "Upstream Terminal-Provided Fields", "", addRequestConfigEvent: true)
             };
 
             return CrateManager.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
@@ -200,7 +201,7 @@ namespace terminalTwilio.Activities
 
         private void PackCrate_WarningMessage(string warningMessage, string warningLabel)
             {
-            var textBlock = ControlHelper.GenerateTextBlock(warningLabel, warningMessage, "alert alert-warning");
+            var textBlock = UiBuilder.GenerateTextBlock(warningLabel, warningMessage, "alert alert-warning");
             Storage.Clear();
             Storage.Add(PackControlsCrate(textBlock));
         }

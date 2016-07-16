@@ -10,12 +10,12 @@ namespace terminalFacebook.Controllers
     [RoutePrefix("authentication")]
     public class AuthenticationController : ApiController
     {
-        private readonly IHubEventReporter _eventReporter;
         private readonly IFacebookIntegration _fbIntegration;
+        private readonly IHubLoggerService _loggerService;
 
-        public AuthenticationController(IFacebookIntegration fbIntegration, IHubEventReporter eventReporter)
+        public AuthenticationController(IFacebookIntegration fbIntegration, IHubLoggerService loggerService)
         {
-            _eventReporter = eventReporter;
+            _loggerService = loggerService;
             _fbIntegration = fbIntegration;
         }
 
@@ -64,7 +64,7 @@ namespace terminalFacebook.Controllers
             }
             catch (Exception ex)
             {
-                await _eventReporter.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
+                await _loggerService.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {

@@ -59,6 +59,7 @@ namespace terminalGoogle.Actions
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("f7619e79-112e-43aa-ba43-118c1ffc98f3"),
             Name = "Monitor_Form_Responses",
             Label = "Monitor Form Responses",
             Version = "1",

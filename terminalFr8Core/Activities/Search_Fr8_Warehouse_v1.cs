@@ -27,6 +27,7 @@ namespace terminalFr8Core.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("33f353a1-65cc-4065-9517-71ddc0a7f4e2"),
             Name = "Search_Fr8_Warehouse",
             Label = "Search Fr8 Warehouse",
             Version = "1",

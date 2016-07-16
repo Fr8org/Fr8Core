@@ -14,6 +14,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities;
 using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Models;
 using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
@@ -28,6 +29,7 @@ namespace terminalDocuSign.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("582A519E-7B1F-4424-B67B-EAA526C6953C"),
             Version = "1",
             Name = "Generate_DocuSign_Report",
             Label = "Generate DocuSign Report",
@@ -511,7 +513,7 @@ namespace terminalDocuSign.Activities
 
                 if (criteria.Count > 0)
                 {
-                    return await _planService.UpdatePlanName(ActivityId, "Generate a DocuSign Report", ControlHelper.ParseConditionToText(criteria));
+                    return await _planService.UpdatePlanName(ActivityId, "Generate a DocuSign Report", FilterConditionHelper.ParseConditionToText(criteria));
                 }
             }
 

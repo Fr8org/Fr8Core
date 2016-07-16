@@ -121,6 +121,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Communication\RestfulServiceClient.cs" />
+    <Compile Include="Communication\RestfulServiceClientFactory.cs" />
     <Compile Include="Communication\RestfulServiceException.cs" />
     <Compile Include="Data\Constants\ActivityDirection.cs" />
     <Compile Include="Data\Constants\ActivityErrorCode.cs" />
@@ -128,6 +129,7 @@
     <Compile Include="Data\Constants\ActivityResponse.cs" />
     <Compile Include="Data\Constants\FieldValidationResult.cs" />
     <Compile Include="Data\Constants\ManifestIdEnum.cs" />
+    <Compile Include="Data\Constants\NotificationType.cs" />
     <Compile Include="Data\Constants\Tags.cs" />
     <Compile Include="Data\Control\Control.cs" />
     <Compile Include="Data\Control\ControlExtensions.cs" />
@@ -308,7 +310,9 @@
     <Compile Include="Data\States\TerminalStatus.cs" />
     <Compile Include="Interfaces\IHMACAuthenticator.cs" />
     <Compile Include="Interfaces\IHMACService.cs" />
+    <Compile Include="Interfaces\IRequestSignature.cs" />
     <Compile Include="Interfaces\IRestfulServiceClient.cs" />
+    <Compile Include="Interfaces\IRestfulServiceClientFactory.cs" />
     <Compile Include="PhoneNumberVerificationDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

@@ -11,12 +11,12 @@ namespace terminalSlack.Controllers
     public class AuthenticationController : ApiController
     {
         private readonly ISlackIntegration _slackIntegration;
-        private readonly IHubEventReporter _eventReporter;
+        private readonly IHubLoggerService _loggerService;
 
-        public AuthenticationController(ISlackIntegration slackIntegration, IHubEventReporter eventReporter)
+        public AuthenticationController(ISlackIntegration slackIntegration, IHubLoggerService loggerService)
         {
             _slackIntegration = slackIntegration;
-            _eventReporter = eventReporter;
+            _loggerService = loggerService;
         }
 
         [HttpPost]
@@ -66,7 +66,7 @@ namespace terminalSlack.Controllers
             }
             catch (Exception ex)
             {
-                await _eventReporter.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
+                await _loggerService.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {

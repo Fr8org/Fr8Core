@@ -12,7 +12,6 @@ using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Errors;
 using terminalSlack.Interfaces;
-using terminalSlack.Services;
 
 namespace terminalSlack.Activities
 {
@@ -23,6 +22,7 @@ namespace terminalSlack.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("4698C675-CA2C-4BE7-82F9-2421F3608E13"),
             Name = "Publish_To_Slack",
             Label = "Publish To Slack",
             Tags = "Notifier",
@@ -122,7 +122,7 @@ namespace terminalSlack.Activities
                 Source = null
             };
 
-            var fieldSelect = ControlHelper.CreateSpecificOrUpstreamValueChooser(
+            var fieldSelect = UiBuilder.CreateSpecificOrUpstreamValueChooser(
                 "Select Message Field",
                 "Select_Message_Field",
                 addRequestConfigEvent: true,

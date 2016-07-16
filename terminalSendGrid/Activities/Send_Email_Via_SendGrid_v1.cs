@@ -12,6 +12,7 @@ using Fr8.TerminalBase.Infrastructure;
 using terminalUtilities.Infrastructure;
 using terminalUtilities.Interfaces;
 using terminalUtilities.Models;
+using System;
 
 namespace terminalSendGrid.Activities
 {
@@ -22,6 +23,7 @@ namespace terminalSendGrid.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("f827af1c-3348-4981-bebd-cf81c8ab27ae"),
             Name = "Send_Email_Via_SendGrid",
             Label = "Send Email",
             Version = "1",
@@ -59,7 +61,7 @@ namespace terminalSendGrid.Activities
         /// <returns></returns>
         private ControlDefinitionDTO CreateEmailAddressTextSourceControl()
         {
-            var control = ControlHelper.CreateSpecificOrUpstreamValueChooser(
+            var control = UiBuilder.CreateSpecificOrUpstreamValueChooser(
                 "Email Address",
                 "EmailAddress",
                 addRequestConfigEvent: true,
@@ -75,7 +77,7 @@ namespace terminalSendGrid.Activities
         /// <returns></returns>
         private ControlDefinitionDTO CreateEmailSubjectTextSourceControl()
         {
-            var control = ControlHelper.CreateSpecificOrUpstreamValueChooser(
+            var control = UiBuilder.CreateSpecificOrUpstreamValueChooser(
                 "Email Subject",
                 "EmailSubject",
                 addRequestConfigEvent: true,
@@ -91,7 +93,7 @@ namespace terminalSendGrid.Activities
         /// <returns></returns>
         private ControlDefinitionDTO CreateEmailBodyTextSourceControl()
         {
-            var control = ControlHelper.CreateSpecificOrUpstreamValueChooser(
+            var control = UiBuilder.CreateSpecificOrUpstreamValueChooser(
                 "Email Body",
                 "EmailBody",
                 addRequestConfigEvent: true,

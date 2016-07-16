@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Constants;
@@ -20,6 +19,7 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("3d5dd0c5-6702-4b59-8c18-b8e2c5955c40"),
             Name = "Loop",
             Label = "Loop",
             Category = ActivityCategory.Processors,
@@ -204,13 +204,12 @@ namespace terminalFr8Core.Activities
 
         private async Task<Crate> CreateControlsCrate()
         {
-            var crateChooser = ControlHelper.GenerateCrateChooser(
+            var crateChooser = UiBuilder.CreateCrateChooser(
                 "Available_Crates",
                 "This Loop will process the data inside of",
                 true,
-                requestUpstream: true,
-                requestConfig: true
-            );
+                true
+                );
             return PackControlsCrate(crateChooser);
         }
 

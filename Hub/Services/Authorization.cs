@@ -142,7 +142,7 @@ namespace Hub.Services
                 new Uri(terminal.Endpoint + "/authentication/token"),
                 credentialsDTO, 
                 null, 
-                _terminalService.GetRequestHeaders(terminal));
+                _terminalService.GetRequestHeaders(terminal, account?.Id));
 
             var terminalResponseAuthTokenDTO = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(terminalResponse);
             if (!string.IsNullOrEmpty(terminalResponseAuthTokenDTO.Error))
@@ -238,10 +238,9 @@ namespace Hub.Services
             }
 
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
-
             var response = await restClient.PostAsync(
                 new Uri(terminal.Endpoint + "/authentication/token"),
-                externalAuthDTO, null, _terminalService.GetRequestHeaders(terminal));
+                externalAuthDTO, null, _terminalService.GetRequestHeaders(terminal, null));
 
             var authTokenDTO = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(response);
             if (!string.IsNullOrEmpty(authTokenDTO.Error))
@@ -322,7 +321,7 @@ namespace Hub.Services
             var response = await restClient.PostAsync(
                 new Uri(terminal.Endpoint + "/authentication/request_url"),
                 null,
-                _terminalService.GetRequestHeaders(terminal));
+                _terminalService.GetRequestHeaders(terminal, user.Id));
 
             var externalAuthUrlDTO = JsonConvert.DeserializeObject<ExternalAuthUrlDTO>(response);
 

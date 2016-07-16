@@ -11,6 +11,7 @@ using Fr8.Infrastructure.Data.States;
 using terminalGoogle.Actions;
 using terminalGoogle.Interfaces;
 using terminalUtilities;
+using System;
 
 namespace terminalGoogle.Activities
 {
@@ -18,6 +19,7 @@ namespace terminalGoogle.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("f389bea8-164c-42c8-bdc5-121d7fb93d73"),
             Name = "Get_Google_Sheet_Data",
             Label = "Get Google Sheet Data",
             Version = "1",
