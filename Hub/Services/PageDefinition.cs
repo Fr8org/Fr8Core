@@ -15,9 +15,6 @@ namespace Hub.Services
 {
     public class PageDefinition : IPageDefinition
     {
-        private const string TagsSeparator = "-";
-        private const string PageExtension = ".html";
-
         public IEnumerable<PageDefinitionDO> GetAll()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -36,7 +33,6 @@ namespace Hub.Services
 
         public void CreateOrUpdate(PageDefinitionDO pageDefinitionDO)
         {
-            pageDefinitionDO.PageName = GeneratePageNameFromTags(pageDefinitionDO);
             if (pageDefinitionDO.Id > 0)
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -87,18 +83,6 @@ namespace Hub.Services
                 var pageDefinitionToRemove = uow.PageDefinitionRepository.GetByKey(id);
                 uow.PageDefinitionRepository.Remove(pageDefinitionToRemove);
             }
-        }
-
-        /// <summary>
-        /// Generates pageName from tags
-        /// </summary>
-        /// <param name="pageDefinitionDO"></param>
-        /// <returns></returns>
-        private string GeneratePageNameFromTags(PageDefinitionDO pageDefinitionDO)
-        {
-            return string.Join(
-                TagsSeparator,
-                pageDefinitionDO.Tags.Select(x => x.ToLower()).OrderBy(x => x)) + PageExtension;
         }
     }
 }

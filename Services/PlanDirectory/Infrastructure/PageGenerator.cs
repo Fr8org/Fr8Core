@@ -20,6 +20,7 @@ namespace PlanDirectory.Infrastructure
     {
         private const string TagsSeparator = "-";
         private const string PageExtension = ".html";
+        private const string CategoryPagesDir = "categorypages";
 
         private readonly IPageDefinition _pageDefinition;
         private readonly IPlanTemplate _planTemplate;
@@ -37,16 +38,16 @@ namespace PlanDirectory.Infrastructure
             string fr8AccountId)
         {
             var serverPath = HostingEnvironment.MapPath("~");
-            string path = null;
             if (serverPath == null)
             {
                 var uriPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase);
                 serverPath = new Uri(uriPath).LocalPath;
             }
-            path = Path.Combine(serverPath, "CategoryPages");
+            var path = Path.Combine(serverPath, CategoryPagesDir);
 
             foreach (var tag in storage.WebServiceTemplateTags)
             {
+                
                 foreach (var pageDefinitionDO in pageDefinitions)
                 {
 
@@ -59,14 +60,19 @@ namespace PlanDirectory.Infrastructure
                         if (!pageDefinitionDO.PlanTemplatesIds.Contains(planTemplate.ParentPlanId))
                             pageDefinitionDO.PlanTemplatesIds.Add(planTemplate.ParentPlanId);
                     }
+                    var pdFileName = GeneratePageNameFromTags(pageDefinitionDO.Tags);
+                    pageDefinitionDO.PageName = pdFileName;
+                    pageDefinitionDO.Url = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") 
+                        + "/" + CategoryPagesDir 
+                        + "/" + pdFileName);
                     _pageDefinition.CreateOrUpdate(pageDefinitionDO);
                 }
-
+                var fileName = GeneratePageNameFromTags(tag.TagsWithIcons.Select(x => x.Key));
                 var relatedPageDefinitions =
                     _pageDefinition.GetAll().Where(x => x.PlanTemplatesIds.Contains(planTemplate.ParentPlanId));
 
-                var fileName = GeneratePageNameFromTags(tag.TagsWithIcons.Select(x => x.Key));
-                var curPageDefinition = relatedPageDefinitions.FirstOrDefault(x => x.PageName == fileName + PageExtension);
+
+                var curPageDefinition = relatedPageDefinitions.FirstOrDefault(x => x.PageName == fileName);
                 var curRelatedPlans = new List<PublishPlanTemplateDTO>();
                 foreach (var planTemplateId in curPageDefinition.PlanTemplatesIds)
                 {
@@ -94,7 +100,7 @@ namespace PlanDirectory.Infrastructure
                 template.Initialize();
 
                 string pageContent = template.TransformText();
-                File.WriteAllText(path + "\\" + fileName + PageExtension, pageContent);
+                File.WriteAllText(path + "\\" + fileName, pageContent);
             }
             return Task.FromResult(0);
         }
@@ -108,7 +114,7 @@ namespace PlanDirectory.Infrastructure
         {
             return string.Join(
                 TagsSeparator,
-                tagsTitles.Select(x => x.ToLower()).OrderBy(x => x));
+                tagsTitles.Select(x => x.ToLower()).OrderBy(x => x)) + PageExtension;
         }
     }
 }

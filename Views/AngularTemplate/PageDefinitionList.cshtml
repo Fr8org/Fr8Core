@@ -20,18 +20,18 @@
                             <tr>
                                 <th>Id</th>
                                 <th>Title</th>
-                                <th>Url</th>
                                 <th>Tags</th>
                                 <th>Page Name</th>
+                                <th>Url</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr ng-repeat="pageDefinition in pageDefinitions" ng-click="showModalWithPopulatedValues(pageDefinition)" style="cursor: pointer;">
                                 <td>{{pageDefinition.id }}</td>
                                 <td>{{pageDefinition.title }}</td>
-                                <td>{{pageDefinition.url }}</td>
                                 <td>{{pageDefinition.tags }}</td>
                                 <td>{{pageDefinition.pageName }}</td>
+                                <td>{{pageDefinition.url }}</td>
                             </tr>
                             </tbody>
                         </table>
@@ -61,12 +61,8 @@
                 </div>
                 <div class="form-group">
                     <label class="control-label">Tags</label>
-                    <input type="text" name="url" placeholder="" maxlength="100" class="form-control" ng-model="pageDefinition.tags" required />
-                </div>
-                <div class="form-group">
-                    <label class="control-label">Type</label>
-                    <input type="text" name="type" placeholder="" maxlength="100" class="form-control" ng-model="pageDefinition.type" required />
-                </div>
+                    <input type="text" name="tags" placeholder="" maxlength="100" class="form-control" ng-model="pageDefinition.tags" required />
+                </div>                
                 <div class="form-group">
                     <label class="control-label">Description</label>
                     <input type="text" name="description" placeholder="" maxlength="100" class="form-control" ng-model="pageDefinition.description"/>
@@ -74,8 +70,11 @@
                 <div class="form-group">
                     <label class="control-label">Page Name</label>
                     <input type="text" name="pageName" placeholder="" disabled="disabled" maxlength="100" class="form-control" ng-model="pageDefinition.pageName" />
-                </div>               
-
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Url</label>
+                    <input type="text" name="url" placeholder="" maxlength="100" class="form-control" ng-model="pageDefinition.url" required />
+                </div>
             </div>
 
             <div class="modal-footer">
