@@ -111,7 +111,7 @@
   </PropertyGroup>
   <!-- These SecondarySite items represent the collection of sites (other than the web application associated with the role) that need special packaging. -->
   <ItemGroup>
-	<SecondarySite Include="..\terminalAzure\terminalAsana.csproj" />
+	<SecondarySite Include="..\terminalAsana\terminalAsana.csproj" />
     <SecondarySite Include="..\terminalAzure\terminalAzure.csproj" />
     <SecondarySite Include="..\terminalBasecamp2\terminalBasecamp2.csproj" />
     <SecondarySite Include="..\terminalFr8Core\terminalFr8Core.csproj" />
