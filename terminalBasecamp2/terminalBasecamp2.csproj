@@ -330,9 +330,6 @@
     <Content Include="Config\terminalCloudService\ServiceConfiguration.Demo.cscfg" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Config\terminalCloudService\ServiceConfiguration.Cloud.cscfg" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Config\terminalBox\Settings.config" />
   </ItemGroup>
   <ItemGroup>
@@ -354,7 +351,19 @@
     <Content Include="Config\terminalAtlassian\Settings.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Config\terminalAsana\Settings.Release.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalAsana\Settings.Dev.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalAsana\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Config\PlanDirectory\Settings.Release.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\PlanDirectory\Settings.Debug.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Config\PlanDirectory\Settings.config" />
