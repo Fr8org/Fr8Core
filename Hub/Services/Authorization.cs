@@ -576,18 +576,24 @@ namespace Hub.Services
             }
         }
 
-        public void RenewToken(Guid authTokenId, string externalAccountId, string token, DateTime? expiresAt)
+        /// <summary>
+        /// Not all fields of token will be replaced in database!
+        /// </summary>
+        /// <param name="token"></param>
+        public void RenewToken(AuthorizationTokenDTO token)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var authToken = uow.AuthorizationTokenRepository
-                    .FindTokenById(authTokenId);
+                    .FindTokenById(Guid.Parse(token.Id));
 
                 if (authToken == null)
                     return;
-                authToken.ExternalAccountId = externalAccountId;
-                authToken.Token = token;
-                authToken.ExpiresAt = expiresAt;
+                authToken.ExternalAccountId = token.ExternalAccountId;
+                authToken.Token = token.Token;
+                authToken.ExpiresAt = token.ExpiresAt;
+                authToken.AdditionalAttributes = token.AdditionalAttributes;
+
                 uow.SaveChanges();
             }
         }
