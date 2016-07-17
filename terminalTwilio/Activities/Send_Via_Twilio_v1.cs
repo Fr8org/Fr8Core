@@ -73,12 +73,7 @@ namespace terminalTwilio.Activities
         public override async Task Run()
         {
             Message curMessage;
-            if (ConfigurationControls == null)
-            {
-                PackCrate_WarningMessage("No StandardConfigurationControlsCM crate provided", "No Controls");
-                RaiseError("No StandardConfigurationControlsCM crate provided");
-                return;
-            }
+
             try
             {
                 var smsFieldDTO = ParseSMSNumberAndMsg();
@@ -125,10 +120,11 @@ namespace terminalTwilio.Activities
         protected override Task Validate()
         {
             ValidationManager.Reset();
-            if (ConfigurationControls != null)
+
+            if (ConfigurationControls?.Controls?.Count > 0)
             {
-                var numberControl = (TextSource)ConfigurationControls.Controls[0];
-                var bodyControl = (TextSource)ConfigurationControls.Controls[1];
+                var numberControl = (TextSource) ConfigurationControls.Controls[0];
+                var bodyControl = (TextSource) ConfigurationControls.Controls[1];
 
                 if (numberControl != null)
                 {
@@ -149,6 +145,11 @@ namespace terminalTwilio.Activities
                     }
                 }
             }
+            else
+            {
+                ValidationManager.SetError("Configuration controls are missing.");
+            }
+
             return Task.FromResult(0);
         }
 
