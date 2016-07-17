@@ -27,6 +27,7 @@ namespace terminalStatXTests.Integration
         {
             var responseDTO = await CompleteInitialConfiguration();
 
+
             Assert.NotNull(responseDTO, "Response is null on initial configuration");
             Assert.NotNull(responseDTO.CrateStorage, "Crate storage is null on initial configuration");
             var crateStorage = Crate.FromDto(responseDTO.CrateStorage);
