@@ -266,6 +266,7 @@
       <Setting name="CoreWebServerUrl"/>
       <Setting name="HubApiBaseUrl"/>
       <Setting name="LoggerNamePrefix"/>
+      <Setting name="terminalAsana.TerminalEndpoint"/>
       <Setting name="terminalAtlassian.TerminalEndpoint"/>
       <Setting name="terminalAzure.TerminalEndpoint"/>
       <Setting name="terminalBasecamp2.TerminalEndpoint"/>
