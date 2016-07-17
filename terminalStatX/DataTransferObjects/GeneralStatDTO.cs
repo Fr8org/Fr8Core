@@ -20,6 +20,9 @@ namespace terminalStatX.DataTransferObjects
 
         [JsonProperty("items")]
         public List<StatItemValueDTO> Items { get; set; }
+
+        [JsonProperty("currentIndex")]
+        public int CurrentIndex { get; set; }
     }
 
     public class StatItemValueDTO

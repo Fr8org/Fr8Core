@@ -362,7 +362,6 @@ namespace terminalStatX.Services
                         currentStat.VisualType == StatTypes.HorizontalBars)
                     {
                         var statDTO = currentStat as GeneralStatWithItemsDTO;
-
                         if (statDTO != null)
                         {
                             statDTO.LastUpdatedDateTime = DateTime.UtcNow;
@@ -375,7 +374,7 @@ namespace terminalStatX.Services
                             statDTO.Items.Clear();
                             if (currentStat.VisualType == StatTypes.CheckList)
                             {
-                                statDTO.DynamicJsonIgnoreProperties = new string[] { "visualType", "value" };
+                                statDTO.DynamicJsonIgnoreProperties = new string[] { "visualType", "value", "currentIndex" };
 
                                 statDTO.Items.AddRange(statValues.Select(x => new StatItemValueDTO()
                                 {
@@ -385,7 +384,7 @@ namespace terminalStatX.Services
                             }
                             else
                             {
-                                statDTO.DynamicJsonIgnoreProperties = new string[] { "visualType", "checked" };
+                                statDTO.DynamicJsonIgnoreProperties = new string[] { "visualType", "checked", "currentIndex" };
 
                                 statDTO.Items.AddRange(statValues.Select(x => new StatItemValueDTO()
                                 {
@@ -463,6 +462,7 @@ namespace terminalStatX.Services
                     Title = jObject["title"]?.ToString(),
                     VisualType = jObject["visualType"]?.ToString(),
                     Notes = jObject["notes"]?.ToString(),
+                    CurrentIndex = jObject["currentIndex"] != null ? int.Parse(jObject["currentIndex"].ToString()) : 0,
                     LastUpdatedDateTime = jObject["lastUpdatedDateTime"] != null ? DateTime.Parse(jObject["lastUpdatedDateTime"].ToString()) : (DateTime?)null,
                     NotesLastUpdatedDateTime = jObject["notesLastUpdatedDateTime"] != null ? DateTime.Parse(jObject["notesLastUpdatedDateTime"].ToString()) : (DateTime?)null,
                 };

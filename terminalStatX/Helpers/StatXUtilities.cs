@@ -150,6 +150,7 @@ namespace terminalStatX.Helpers
             }
             else
             {
+                result.CurrentIndex = ((GeneralStatWithItemsDTO) stat).CurrentIndex;
                 result.StatValueItems = ((GeneralStatWithItemsDTO)stat).Items.Select(x => new StatValueItemDTO()
                 {
                     Name = x.Name,
