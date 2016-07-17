@@ -12,34 +12,11 @@
 Write-Host "Update terminal URLs to $newHostname"
 
 $commandText = "
-IF (EXISTS (SELECT * 
-                 FROM INFORMATION_SCHEMA.TABLES 
-                 WHERE TABLE_SCHEMA = 'dbo' 
-                 AND  TABLE_NAME = 'TerminalRegistration'))
-BEGIN
-
-WITH cte
-    AS (SELECT ROW_NUMBER() OVER (PARTITION BY 
-     ('$newHostname' +
-        (CASE when CHARINDEX (':', REVERSE ([Endpoint])) = 0
-            then ''
-        else 
-            RIGHT ([Endpoint], CHARINDEX (':', REVERSE ([Endpoint])))end ))
-     ORDER BY ( SELECT 0)) RN
-        FROM   TerminalRegistration)
-	delete FROM cte
-	WHERE  RN > 1
-
-	 UPDATE TerminalRegistration SET [Endpoint] = 
-			( '$newHostname' +
-		(CASE when CHARINDEX (':', REVERSE ([Endpoint])) = 0
-		    then ''
-		else 
-			RIGHT ([Endpoint], CHARINDEX (':', REVERSE ([Endpoint])))
-		END))
-		where UserId is null
-END";
-
+	-- Update hostname only if port value is present in endpoint URL and terminal belongs to Fr8
+    UPDATE TerminalRegistration SET [Endpoint] = 
+			('$newHostname' + RIGHT ([Endpoint], CHARINDEX (':', REVERSE ([Endpoint]))))
+	WHERE CHARINDEX (':', REVERSE ([Endpoint])) <= 6 AND IsFr8OwnTerminal = 1
+";
 
 Write-Host $commandText
 
