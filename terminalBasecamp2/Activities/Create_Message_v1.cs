@@ -21,6 +21,7 @@ namespace terminalBasecamp2.Activities
 
         public static ActivityTemplateDTO ActivityTemplate = new ActivityTemplateDTO
         {
+            Id = new Guid("BCAA6CCF-47E4-4853-9EBD-B50276B3016E"),
             Name = "Create_Message",
             Label = "Create Message",
             Category = ActivityCategory.Forwarders,

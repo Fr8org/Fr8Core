@@ -10,6 +10,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
+using System;
 
 namespace terminalSlack.Actions
 {
@@ -79,6 +80,7 @@ namespace terminalSlack.Actions
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("246DF538-3B7E-4D1B-B045-72021BAA0D2D"),
             Name = "Monitor_Channel",
             Label = "Monitor Channel",
             Category = ActivityCategory.Monitors,
@@ -125,12 +127,12 @@ namespace terminalSlack.Actions
                 }
                 else
                 {
-                    TerminateHubExecution("Incoming message doesn't belong to specified channel. No downstream activities are executed");
+                    RequestPlanExecutionTermination("Incoming message doesn't belong to specified channel. No downstream activities are executed");
                 }                
             }
             else
             {
-                TerminateHubExecution("Plan successfully activated. It will wait and respond to specified Slack postings");
+                RequestPlanExecutionTermination("Plan successfully activated. It will wait and respond to specified Slack postings");
             }
 
             return Task.FromResult(0);

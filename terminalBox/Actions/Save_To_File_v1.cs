@@ -12,6 +12,7 @@ using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
 using terminalBox.Infrastructure;
+using System;
 
 namespace terminalBox.Actions
 {
@@ -21,6 +22,7 @@ namespace terminalBox.Actions
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("774277C1-E26D-405E-AC5B-9415F90369BF"),
             Name = "Save_To_File",
             Label = "Save To File",
             Version = "1",

@@ -22,6 +22,7 @@ namespace terminalSalesforce.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("81c02e05-6561-4e3e-ab10-e327a5c601e9"),
             Version = "1",
             Name = "Mail_Merge_From_Salesforce",
             Label = "Mail Merge from Salesforce",

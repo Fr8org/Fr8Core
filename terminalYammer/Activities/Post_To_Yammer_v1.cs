@@ -20,6 +20,7 @@ namespace terminalYammer.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("fa163960-901f-4105-8731-234aeb38f11d"),
             Name = "Post_To_Yammer",
             Label = "Post To Yammer",
             Tags = "Notifier",

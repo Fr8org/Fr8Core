@@ -20,6 +20,7 @@ namespace terminalSalesforce.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("E2250022-FA40-4FCF-9CDD-130DF6DD1984"),
             Version = "1",
             Name = "Post_To_Chatter",
             Label = "Post To Salesforce Chatter",

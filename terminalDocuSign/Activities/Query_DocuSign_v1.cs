@@ -14,6 +14,7 @@ using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
 using FolderItem = DocuSign.eSign.Model.FolderItem;
+using System;
 
 namespace terminalDocuSign.Activities
 {
@@ -21,6 +22,7 @@ namespace terminalDocuSign.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("62CB1D64-1A94-483C-A577-DA514F5D0CB0"),
             Name = "Query_DocuSign",
             Label = "Query DocuSign",
             Version = "1",
