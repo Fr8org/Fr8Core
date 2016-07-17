@@ -67,13 +67,8 @@ namespace terminalFr8Core.Activities
 
         public override async Task Initialize()
         {
-            var configControls = new StandardConfigurationControlsCM();
-            configControls.Controls.Add(UiBuilder.CreateUpstreamCrateChooser("UpstreamCrateChooser", "Store which crates?"));
-            var curConfigurationControlsCrate = PackControls(configControls);
-            
             Storage.Clear();
-            Storage.Add(curConfigurationControlsCrate);
-           
+            AddControls(UiBuilder.CreateUpstreamCrateChooser("UpstreamCrateChooser", "Store which crates?"));
         }
 
         public override Task FollowUp()

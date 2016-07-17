@@ -48,7 +48,8 @@ namespace terminalDocuSign.Activities
              * So we create a text block which informs the user that this particular aciton does not require any configuration.
              */
             var textBlock = UiBuilder.GenerateTextBlock("Monitor All DocuSign events", "This Action doesn't require any configuration.", "well well-lg");
-            var curControlsCrate = PackControlsCrate(textBlock);
+            
+            AddControl(textBlock);
 
             //create a Standard Event Subscription crate
             var curEventSubscriptionsCrate = CrateManager.CreateStandardEventSubscriptionsCrate("Standard Event Subscription", "DocuSign", DocuSignEventNames.GetAllEventNames());
@@ -56,7 +57,7 @@ namespace terminalDocuSign.Activities
             var authToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(AuthorizationToken.Token);
             var docuSignUserCrate = Crate.FromContent("DocuSignUserCrate", new StandardPayloadDataCM(new KeyValueDTO("DocuSignUserEmail", authToken.Email)));
             Storage.Clear();
-            Storage.Add(curControlsCrate, curEventSubscriptionsCrate, docuSignUserCrate);
+            Storage.Add(curEventSubscriptionsCrate, docuSignUserCrate);
 
             CrateSignaller.MarkAvailableAtRuntime<DocuSignEnvelopeCM_v2>("DocuSign Envelope");
 

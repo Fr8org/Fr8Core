@@ -32,10 +32,9 @@ namespace terminalSalesforce.Actions
             
         }
 
-        public static void GetAvailableFields(Crate configurationCrate, string controlName)
+        public static void GetAvailableFields(StandardConfigurationControlsCM configurationControls, string controlName)
         {
-            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
-            GetAvailableFields(configurationControl.FindByNameNested<DropDownList>(controlName));
+            GetAvailableFields(configurationControls.FindByNameNested<DropDownList>(controlName));
         }
 
         public static void GetAvailableFields(DropDownList dropDownControl)

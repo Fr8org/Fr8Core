@@ -50,11 +50,11 @@ namespace terminalTwilio.Activities
         public override async Task Initialize()
         {
             Storage.Clear();
-            Storage.Add(PackCrate_ConfigurationControls());
+            PackCrate_ConfigurationControls();
         }
         
 
-        private Crate PackCrate_ConfigurationControls()
+        private void PackCrate_ConfigurationControls()
         {
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
@@ -62,7 +62,7 @@ namespace terminalTwilio.Activities
                 UiBuilder.CreateSpecificOrUpstreamValueChooser("SMS Body", "SMS_Body", "Upstream Terminal-Provided Fields", "", addRequestConfigEvent: true)
             };
 
-            return CrateManager.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
+            AddControls(fieldsDTO);
         }
 
         public override async Task FollowUp()
@@ -200,10 +200,12 @@ namespace terminalTwilio.Activities
         }
 
         private void PackCrate_WarningMessage(string warningMessage, string warningLabel)
-            {
-            var textBlock = UiBuilder.GenerateTextBlock(warningLabel, warningMessage, "alert alert-warning");
+        {
             Storage.Clear();
-            Storage.Add(PackControlsCrate(textBlock));
+
+            var textBlock = UiBuilder.GenerateTextBlock(warningLabel, warningMessage, "alert alert-warning");
+
+            AddControls(textBlock);
         }
 
         private string GeneralisePhoneNumber(string smsNumber)

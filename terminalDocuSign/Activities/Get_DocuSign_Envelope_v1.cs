@@ -52,7 +52,9 @@ namespace terminalDocuSign.Activities
 
             control.Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") };
             Storage.Clear();
-            Storage.Add(PackControlsCrate(control));
+
+            AddControls(control);
+
             return Task.FromResult(0);
         }
 

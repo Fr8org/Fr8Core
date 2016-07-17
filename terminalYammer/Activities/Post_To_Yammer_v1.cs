@@ -98,7 +98,7 @@ namespace terminalYammer.Actions
             var groups = await _yammer.GetGroupsList(oauthToken);
             var crateAvailableGroups = CreateAvailableGroupsCrate(groups);
             Storage.Clear();
-            Storage.Add(PackControls(new ActivityUi()));
+            AddControls(new ActivityUi().Controls);
             Storage.Add(crateAvailableGroups);
         }
 
