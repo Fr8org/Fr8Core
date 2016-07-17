@@ -8,6 +8,7 @@ using terminalDocuSign.Services.New_Api;
 using terminalDocuSign.Infrastructure;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Interfaces;
@@ -32,18 +33,16 @@ namespace terminalDocuSign.Services
             hubCommunicator.ScheduleEvent(externalAccountId, pollingInterval);
         }
 
-        public async Task<bool> Poll(IHubCommunicator hubCommunicator, string externalAccountId, string pollingInterval)
+        public async Task<PollingDataDTO> Poll(PollingDataDTO pollingData)
         {
-            var authtoken = await hubCommunicator.GetAuthToken(externalAccountId);
-            if (authtoken == null) return false;
-            var config = _docuSignManager.SetUp(authtoken);
+            var config = _docuSignManager.SetUp(pollingData.AuthToken);
             EnvelopesApi api = new EnvelopesApi((Configuration)config.Configuration);
             List<DocuSignEnvelopeCM_v2> changed_envelopes = new List<DocuSignEnvelopeCM_v2>();
 
             // 1. Poll changes
 
             var changed_envelopes_info = api.ListStatusChanges(config.AccountId, new EnvelopesApi.ListStatusChangesOptions()
-            { fromDate = DateTime.UtcNow.AddMinutes(-Convert.ToInt32(pollingInterval)).ToString("o") });
+            { fromDate = DateTime.UtcNow.AddMinutes(-Convert.ToInt32(pollingData.PollingIntervalInMinutes)).ToString("o") });
             foreach (var envelope in changed_envelopes_info.Envelopes)
             {
                 var envelopeCM = new DocuSignEnvelopeCM_v2()
@@ -51,7 +50,7 @@ namespace terminalDocuSign.Services
                     EnvelopeId = envelope.EnvelopeId,
                     Status = envelope.Status,
                     StatusChangedDateTime = DateTime.Parse(envelope.StatusChangedDateTime),
-                    ExternalAccountId = JToken.Parse(authtoken.Token)["Email"].ToString(),
+                    ExternalAccountId = JToken.Parse(pollingData.AuthToken)["Email"].ToString(),
                 };
 
                 changed_envelopes.Add(envelopeCM);
@@ -69,7 +68,8 @@ namespace terminalDocuSign.Services
             // 5. Push envelopes to event controller
             await PushEnvelopesToTerminalEndpoint(envelopesToNotify);
 
-            return true;
+            pollingData.Result = true;
+            return pollingData;
         }
         
         private async Task PushEnvelopesToTerminalEndpoint(IEnumerable<DocuSignEnvelopeCM_v2> envelopesToNotify)

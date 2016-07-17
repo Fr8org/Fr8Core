@@ -124,8 +124,8 @@ namespace terminalAzureTests.Integration
 
             AssertConfigureControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
 
-            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Sql Table Columns"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count());
+            Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count(x => x.Label == "Sql Table Columns"));
         }
 
         /// <summary>
@@ -197,16 +197,16 @@ namespace terminalAzureTests.Integration
 
             AddPayloadCrate(fr8DataDTO,
                new StandardPayloadDataCM(
-                    new FieldDTO("Field1", "[Customer].[Physician]"),
-                    new FieldDTO("Field2", "[Customer].[CurrentMedicalCondition]")
+                    new KeyValueDTO("Field1", "[Customer].[Physician]"),
+                    new KeyValueDTO("Field2", "[Customer].[CurrentMedicalCondition]")
                ),
                "MappedFields"
             );
 
             AddPayloadCrate(fr8DataDTO,
                 new StandardPayloadDataCM(
-                    new FieldDTO("Field1", "test physician"),
-                    new FieldDTO("Field2", "teststring")
+                    new KeyValueDTO("Field1", "test physician"),
+                    new KeyValueDTO("Field2", "teststring")
                 ),
                "TableData"
             );

@@ -1,4 +1,5 @@
 ﻿using System;
+using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using PusherServer;
@@ -31,27 +32,27 @@ namespace Fr8.Infrastructure.Utilities
             }
         }
 
-        public void Notify(string channelName, string eventName, object message)
+        public void Notify(string channelName, NotificationType notificationType, object message)
         {
-            _pusher?.Trigger(channelName, eventName, message);
+            _pusher?.Trigger(channelName, notificationType.ToString(), message);
         }
 
-        public void NotifyUser(object message, string eventName, string userName)
+        public void NotifyUser(object message, NotificationType notificationType, string userId)
         {
-            if (string.IsNullOrWhiteSpace(userName))
+            if (string.IsNullOrWhiteSpace(userId))
             {
                 return;
             }
 
-            var pusherChannel = BuildChannelName(userName);
-            Notify(pusherChannel, eventName, message);
+            var pusherChannel = BuildChannelName(userId);
+            Notify(pusherChannel, notificationType, message);
         }
 
-        private string BuildChannelName(string email)
+        private string BuildChannelName(string userId)
         {
             // If you change the way how channel name is constructed, be sure to change it also
             // in the client-side code (NotifierController.ts). 
-            return "fr8pusher_" + Uri.EscapeUriString(email).Replace("%", "=");
+            return "fr8pusher_" + Uri.EscapeUriString(userId).Replace("%", "=");
         }
     }
 }

@@ -8,6 +8,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
 using terminalDocuSign.Services.New_Api;
 
@@ -18,6 +19,7 @@ namespace terminalDocuSign.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("9676dd67-519d-4492-ad25-b5f55f9b4804"),
             Name = "Extract_Data_From_Envelopes",
             Label = "Extract Data From Envelopes",
             Version = "1",
@@ -25,7 +27,8 @@ namespace terminalDocuSign.Activities
             MinPaneWidth = 380,
             NeedsAuthentication = true,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[] { ActivityCategories.Solution }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -71,7 +74,7 @@ namespace terminalDocuSign.Activities
         {
         }
 
-        protected override async Task InitializeDS()
+        public override async Task Initialize()
         {
             var configurationCrate = PackControls(new ActivityUi());
             await FillFinalActionsListSource(configurationCrate, "FinalActionsList");
@@ -92,7 +95,7 @@ namespace terminalDocuSign.Activities
             return foundActivity;
         }
 
-        protected override async Task FollowUpDS()
+        public override async Task FollowUp()
         {
             var actionUi = new ActivityUi();
             actionUi.ClonePropertiesFrom(ConfigurationControls);
@@ -103,29 +106,35 @@ namespace terminalDocuSign.Activities
                 return;
             }
 
+            //Removing children activities when configuring solution after returning to Solution Introduction
+            if(ActivityPayload.ChildrenActivities.Count()> 0)
+            {
+                ActivityPayload.ChildrenActivities.RemoveAll(a => true);
+            }
+
             // Always use default template for solution
             const string firstTemplateName = "Monitor_DocuSign_Envelope_Activity";
-            var monitorDocusignTemplate = await GetActivityTemplate("terminalDocuSign", firstTemplateName);
+            var monitorDocusignTemplate = await HubCommunicator.GetActivityTemplate("terminalDocuSign", firstTemplateName);
             Guid secondActivityTemplateGuid;
             ActivityTemplateDTO secondActivityTemplate;
             if (Guid.TryParse(actionUi.FinalActionsList.Value, out secondActivityTemplateGuid))
             {
-                secondActivityTemplate = await GetActivityTemplate(Guid.Parse(actionUi.FinalActionsList.Value));
+                secondActivityTemplate = await HubCommunicator.GetActivityTemplate(Guid.Parse(actionUi.FinalActionsList.Value));
             }
             else
             {
                 secondActivityTemplate = await GetActivityTemplateByName(actionUi.FinalActionsList.Value);
             }
 
-            var firstActivity = await AddAndConfigureChildActivity(ActivityPayload, monitorDocusignTemplate);
-            var secondActivity = await AddAndConfigureChildActivity(ActivityPayload, secondActivityTemplate, "Final activity");
+            var firstActivity = await HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, monitorDocusignTemplate);
+            var secondActivity = await HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, secondActivityTemplate, "Final activity");
 
             return;
         }
 
         protected override string ActivityUserFriendlyName => SolutionName;
 
-        protected override async Task RunDS()
+        public override async Task Run()
         {
             Success();
             await Task.Yield();
@@ -143,24 +152,24 @@ namespace terminalDocuSign.Activities
         {
             if (curDocumentation.Contains("MainPage"))
             {
-                var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
+                var curSolutionPage = new DocumentationResponseDTO(SolutionName, SolutionVersion, TerminalName, SolutionBody);
                 return Task.FromResult(curSolutionPage);
             }
             if (curDocumentation.Contains("HelpMenu"))
             {
                 if (curDocumentation.Contains("ExplainExtractData"))
                 {
-                    return Task.FromResult(GenerateDocumentationResponse(@"This solution work with DocuSign envelops"));
+                    return Task.FromResult(new DocumentationResponseDTO(@"This solution work with DocuSign envelops"));
                 }
                 if (curDocumentation.Contains("ExplainService"))
                 {
-                    return Task.FromResult(GenerateDocumentationResponse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                    return Task.FromResult(new DocumentationResponseDTO(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
                 }
-                return Task.FromResult(GenerateErrorResponse("Unknown contentPath"));
+                return Task.FromResult(new DocumentationResponseDTO("Unknown contentPath"));
             }
             return
                 Task.FromResult(
-                    GenerateErrorResponse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
+                    new DocumentationResponseDTO("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
 
         #region Private Methods

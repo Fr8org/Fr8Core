@@ -167,6 +167,10 @@
       <HintPath>..\packages\structuremap.3.1.6.186\lib\net40\StructureMap.Net4.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Swashbuckle.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cd1bb07a5ac7c7bc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Swashbuckle.Core.5.3.2\lib\net40\Swashbuckle.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Extensions.dll</HintPath>
@@ -237,6 +241,10 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebActivatorEx.2.0\lib\net40\WebActivatorEx.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Documentation\Monitor_DocuSign_Envelope_Activity_SampleHelp1.html" />
@@ -249,7 +257,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activities\BaseDocuSignActivity.cs" />
-    <Compile Include="Activities\EnhancedDocuSignActivity.cs" />
+    <Compile Include="Activities\DocuSignActivity.cs" />
     <Compile Include="Activities\Extract_Data_From_Envelopes_v1.cs" />
     <Compile Include="Activities\Generate_DocuSign_Report_v1.cs">
       <SubType>Code</SubType>
@@ -264,10 +272,12 @@
     <Compile Include="Activities\Monitor_DocuSign_Envelope_Activity_v1.cs" />
     <Compile Include="Activities\Prepare_DocuSign_Events_For_Storage_v1.cs" />
     <Compile Include="Activities\Send_DocuSign_Envelope_v2.cs" />
+    <Compile Include="Activities\Track_DocuSign_Recipients_v2.cs" />
     <Compile Include="Activities\Track_DocuSign_Recipients_v1.cs" />
     <Compile Include="Activities\Send_DocuSign_Envelope_v1.cs" />
     <Compile Include="Activities\Use_DocuSign_Template_With_New_Document_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
+    <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\ActivityController.cs" />
@@ -308,12 +318,6 @@
     <Compile Include="Startup.cs" />
     <Compile Include="StructureMapConfigurationcs.cs" />
     <Compile Include="TerminalData.cs" />
-    <Compile Include="Tests\Activities\Generate_DocuSign_Report_Tests.cs" />
-    <Compile Include="Tests\Activities\Monitor_DocuSignTests.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Tests\Activities\Query_DocuSign_Tests.cs" />
-    <Compile Include="Tests\Activities\Search_DocuSign_Tests.cs" />
     <Compile Include="Tests\Fixtures\TerminalFixtureData - DocuSignReport.cs" />
     <Compile Include="Tests\Fixtures\TerminalFixtureData - Folders.cs" />
     <Compile Include="Tests\Infrastructure\DocuSignTemplateTests.cs" />
@@ -362,6 +366,52 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
+    <Content Include="Config\terminalDocuSign\Settings.config.readme" />
+    <Content Include="Config\terminalYammer\Settings.Release.config" />
+    <Content Include="Config\terminalYammer\Settings.Dev.config" />
+    <Content Include="Config\terminalYammer\Settings.Demo.config" />
+    <Content Include="Config\terminalYammer\Settings.config" />
+    <Content Include="Config\terminalTwilio\Settings.config" />
+    <Content Include="Config\terminalTelegram\Settings.Release.config" />
+    <Content Include="Config\terminalTelegram\Settings.Dev.config" />
+    <Content Include="Config\terminalTelegram\Settings.Demo.config" />
+    <Content Include="Config\terminalTelegram\Settings.config" />
+    <Content Include="Config\terminalStatX\Settings.config" />
+    <Content Include="Config\terminalSlack\Settings.Release.config" />
+    <Content Include="Config\terminalSlack\Settings.Dev.config" />
+    <Content Include="Config\terminalSlack\Settings.Demo.config" />
+    <Content Include="Config\terminalSlack\Settings.config" />
+    <Content Include="Config\terminalSendGrid\Settings.config" />
+    <Content Include="Config\terminalSalesforce\Settings.Release.config" />
+    <Content Include="Config\terminalSalesforce\Settings.Dev.config" />
+    <Content Include="Config\terminalSalesforce\Settings.Demo.config" />
+    <Content Include="Config\terminalSalesforce\Settings.config" />
+    <Content Include="Config\terminalQuickBooks\Settings.config" />
+    <Content Include="Config\terminalPapertrail\Settings.config" />
+    <Content Include="Config\terminalInstagram\Settings.config" />
+    <Content Include="Config\terminalGoogle\Settings.config" />
+    <Content Include="Config\terminalFr8Core\Settings.config" />
+    <Content Include="Config\terminalFacebook\Settings.Release.config" />
+    <Content Include="Config\terminalFacebook\Settings.Dev.config" />
+    <Content Include="Config\terminalFacebook\Settings.Demo.config" />
+    <Content Include="Config\terminalFacebook\Settings.config" />
+    <Content Include="Config\terminalDropbox\Settings.config" />
+    <Content Include="Config\terminalDocuSign\Settings.config" />
+    <Content Include="Config\terminalCloudService\ServiceConfiguration.Release.cscfg" />
+    <Content Include="Config\terminalCloudService\ServiceConfiguration.Dev.cscfg" />
+    <Content Include="Config\terminalCloudService\ServiceConfiguration.Demo.cscfg" />
+    <Content Include="Config\terminalCloudService\ServiceConfiguration.Cloud.cscfg" />
+    <Content Include="Config\terminalBox\Settings.config" />
+    <Content Include="Config\terminalBasecamp2\Settings.Release.config" />
+    <Content Include="Config\terminalBasecamp2\Settings.Dev.config" />
+    <Content Include="Config\terminalBasecamp2\Settings.Demo.config" />
+    <Content Include="Config\terminalBasecamp2\Settings.config" />
+    <Content Include="Config\terminalAzure\Settings.config" />
+    <Content Include="Config\terminalAtlassian\Settings.config" />
+    <Content Include="Config\PlanDirectory\Settings.Release.config" />
+    <Content Include="Config\PlanDirectory\Settings.config" />
+    <Content Include="Config\HubWeb\Settings.config" />
+    <Content Include="Config\HealthMonitor\Settings.config.src" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -453,6 +503,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+    <Error Condition="!Exists('..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets'))" />
   </Target>
   <PropertyGroup>
     <PostBuildEvent>if exist $(TargetDir)pluginDocuSign.dll del /Q $(TargetDir)pluginDocuSign.dll
@@ -476,7 +527,7 @@
   <ItemGroup>
     <Log4netConfigFiles Include="..\Config\log4net.terminals.*" />
   </ItemGroup>
-  <Target Name="BeforeBuild">
+  <Target Name="BeforeCompile">
     <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
   </Target>
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
@@ -484,4 +535,6 @@
     <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
     <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
   </Target>
+  <Import Project="..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets" Condition="Exists('..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" />
+  <Import Project="..\targets\Fr8.NugetContentRestore.targets" Condition="Exists('..\targets\Fr8.NugetContentRestore.targets')" />
 </Project>

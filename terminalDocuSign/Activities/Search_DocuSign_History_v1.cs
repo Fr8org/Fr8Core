@@ -20,6 +20,7 @@ namespace terminalDocuSign.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("c64f4378-f259-4006-b4f1-f7e90709829e"),
             Name = "Search_DocuSign_History",
             Label = "Search DocuSign History",
             Version = "1",
@@ -28,7 +29,12 @@ namespace terminalDocuSign.Activities
             MinPaneWidth = 380,
             Tags = Tags.Internal,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Receive,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -89,12 +95,12 @@ namespace terminalDocuSign.Activities
         {
         }
 
-        protected override async Task RunDS()
+        public override async Task Run()
         {
             Success();
         }
-        
-        protected override async Task InitializeDS()
+
+        public override async Task Initialize()
         {
             var actionUi = new ActivityUi();
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(AuthorizationToken.Token);           
@@ -106,7 +112,7 @@ namespace terminalDocuSign.Activities
             await ConfigureNestedActivities(actionUi);
         }
 
-        protected override async Task FollowUpDS()
+        public override async Task FollowUp()
         {
             if (ConfigurationControls == null)
             {

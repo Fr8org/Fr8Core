@@ -18,15 +18,7 @@ namespace Fr8.TerminalBase.Services
         void RegisterActivity<T>(ActivityTemplateDTO activityTemplate) where T : IActivity;
 
         IActivityFactory GetFactory(ActivityTemplateDTO activityTemplate);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="terminal">
-        /// Terminals on integrations tests share same environment
-        /// so we are providing terminal information to seperate terminal activities
-        /// </param>
-        /// <returns></returns>
+        
         List<ActivityTemplateDTO> GetAllTemplates();
     }
 }

@@ -543,17 +543,7 @@ namespace Fr8.Infrastructure.Utilities.Logging
 		/// </summary>
 		private LevelMapping m_levelMapping = new LevelMapping();
 
-		/// <summary>
-		/// Initial buffer size
-		/// </summary>
-		private const int c_renderBufferSize = 256;
-
-		/// <summary>
-		/// Maximum buffer size before it is recycled
-		/// </summary>
-		private const int c_renderBufferMaxCapacity = 1024;
-
-		#endregion Private Instances Fields
+	    #endregion Private Instances Fields
 
 		#region LevelSeverity LevelMapping Entry
 		/// <summary>

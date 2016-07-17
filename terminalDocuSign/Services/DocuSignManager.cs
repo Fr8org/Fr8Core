@@ -31,15 +31,23 @@ namespace terminalDocuSign.Services.New_Api
     public class DocuSignManager : IDocuSignManager
     {
         public const string DocusignTerminalName = "terminalDocuSign";
-        private static readonly string[] DefaultControlNames = new[] { "Text","Checkbox", "Check Box", "Radio Group", "List", "Drop Down", "Note", "Number", "Data Field" };
+        private static readonly string[] DefaultControlNames = new[] { "Text", "Checkbox", "Check Box", "Radio Group", "List", "Drop Down", "Note", "Number", "Data Field" };
         const string DefaultTemplateNameRegex = @"\s*\d+$";
+
+        public DocuSignApiConfiguration SetUp(string authToken)
+        {
+            return SetUp(JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authToken));
+        }
 
         public DocuSignApiConfiguration SetUp(AuthorizationToken authToken)
         {
+            return SetUp(JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authToken.Token));
+        }
+
+        public DocuSignApiConfiguration SetUp(DocuSignAuthTokenDTO docuSignAuthDTO)
+        {
             string baseUrl = string.Empty;
             string integratorKey = string.Empty;
-
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authToken.Token);
             //create configuration for future api calls
             if (docuSignAuthDTO.IsDemoAccount)
             {
@@ -62,9 +70,9 @@ namespace terminalDocuSign.Services.New_Api
                 AuthenticationApi authApi = new AuthenticationApi(conf);
                 try
                 {
-                LoginInformation loginInfo = authApi.Login();
-                result.AccountId = loginInfo.LoginAccounts[0].AccountId; //it seems that althought one DocuSign account can have multiple users - only one is returned, the one that oAuth token was created for
-            }
+                    LoginInformation loginInfo = authApi.Login();
+                    result.AccountId = loginInfo.LoginAccounts[0].AccountId; //it seems that althought one DocuSign account can have multiple users - only one is returned, the one that oAuth token was created for
+                }
                 catch (Exception ex)
                 {
                     throw new AuthorizationTokenExpiredOrInvalidException();
@@ -74,22 +82,17 @@ namespace terminalDocuSign.Services.New_Api
             return result;
         }
 
-        public List<FieldDTO> GetTemplatesList(DocuSignApiConfiguration conf)
+        public List<KeyValueDTO> GetTemplatesList(DocuSignApiConfiguration conf)
         {
-            try
+            var tmpApi = new TemplatesApi(conf.Configuration);
+            var result = tmpApi.ListTemplates(conf.AccountId);
+            if (result.EnvelopeTemplates != null && result.EnvelopeTemplates.Count > 0)
             {
-                var tmpApi = new TemplatesApi(conf.Configuration);
-                var result = tmpApi.ListTemplates(conf.AccountId);
-                if (result.EnvelopeTemplates != null && result.EnvelopeTemplates.Count > 0)
-                    return result.EnvelopeTemplates.Where(a => !string.IsNullOrEmpty(a.Name))
-                        .Select(a => new FieldDTO(a.Name, a.TemplateId) { Availability = AvailabilityType.Configuration }).ToList();
-                else
-                    return new List<FieldDTO>();
+                return result.EnvelopeTemplates.Where(a => !string.IsNullOrEmpty(a.Name))
+                    .Select(a => new KeyValueDTO(a.Name, a.TemplateId)).ToList();
             }
-            catch (Exception ex)
-            {
-                throw;
-            }
+
+            return new List<KeyValueDTO>();
         }
 
         public JObject DownloadDocuSignTemplate(DocuSignApiConfiguration config, string selectedDocusignTemplateId)
@@ -100,13 +103,13 @@ namespace terminalDocuSign.Services.New_Api
             throw new NotImplementedException();
         }
 
-        public IEnumerable<FieldDTO> GetEnvelopeRecipientsAndTabs(DocuSignApiConfiguration conf, string envelopeId)
+        public IEnumerable<KeyValueDTO> GetEnvelopeRecipientsAndTabs(DocuSignApiConfiguration conf, string envelopeId)
         {
             var envApi = new EnvelopesApi(conf.Configuration);
             return GetRecipientsAndTabs(conf, envApi, envelopeId);
         }
 
-        public IEnumerable<FieldDTO> GetTemplateRecipientsAndTabs(DocuSignApiConfiguration conf, string templateId)
+        public IEnumerable<KeyValueDTO> GetTemplateRecipientsAndTabs(DocuSignApiConfiguration conf, string templateId)
         {
             var tmpApi = new TemplatesApi(conf.Configuration);
             return GetRecipientsAndTabs(conf, tmpApi, templateId);
@@ -115,10 +118,10 @@ namespace terminalDocuSign.Services.New_Api
         #region Send DocuSign Envelope methods
 
         //this is purely for Send_DocuSign_Envelope activity
-        public Tuple<IEnumerable<FieldDTO>, IEnumerable<DocuSignTabDTO>> GetTemplateRecipientsTabsAndDocuSignTabs(DocuSignApiConfiguration conf, string templateId)
+        public Tuple<IEnumerable<KeyValueDTO>, IEnumerable<DocuSignTabDTO>> GetTemplateRecipientsTabsAndDocuSignTabs(DocuSignApiConfiguration conf, string templateId)
         {
             var tmpApi = new TemplatesApi(conf.Configuration);
-            var recipientsAndTabs = new List<FieldDTO>();
+            var recipientsAndTabs = new List<KeyValueDTO>();
             var docuTabs = new List<DocuSignTabDTO>();
 
             var recipients = GetRecipients(conf, tmpApi, templateId);
@@ -132,12 +135,10 @@ namespace terminalDocuSign.Services.New_Api
                 recipientsAndTabs.AddRange(DocuSignTab.MapTabsToFieldDTO(signersdocutabs));
             }
 
-            recipientsAndTabs.ForEach(a => a.Availability = AvailabilityType.RunTime);
-
-            return new Tuple<IEnumerable<FieldDTO>, IEnumerable<DocuSignTabDTO>>(recipientsAndTabs, docuTabs);
+            return new Tuple<IEnumerable<KeyValueDTO>, IEnumerable<DocuSignTabDTO>>(recipientsAndTabs, docuTabs);
         }
 
-        public void SendAnEnvelopeFromTemplate(DocuSignApiConfiguration loginInfo, List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId, StandardFileDescriptionCM fileHandler = null)
+        public void SendAnEnvelopeFromTemplate(DocuSignApiConfiguration loginInfo, List<KeyValueDTO> rolesList, List<KeyValueDTO> fieldList, string curTemplateId, StandardFileDescriptionCM fileHandler = null)
         {
             EnvelopesApi envelopesApi = new EnvelopesApi(loginInfo.Configuration);
             TemplatesApi templatesApi = new TemplatesApi(loginInfo.Configuration);
@@ -262,7 +263,7 @@ namespace terminalDocuSign.Services.New_Api
                 }
             }
 
-            var percentOfTemplateNames = ((double) defaultTemplateNamesCount/ (double) totalTemplateNamesCount * 100);
+            var percentOfTemplateNames = ((double)defaultTemplateNamesCount / (double)totalTemplateNamesCount * 100);
             return percentOfTemplateNames >= 80;
         }
 
@@ -271,20 +272,20 @@ namespace terminalDocuSign.Services.New_Api
 
         #region private methods
 
-        private static IEnumerable<FieldDTO> GetRecipientsAndTabs(DocuSignApiConfiguration conf, object api, string id)
+        private static IEnumerable<KeyValueDTO> GetRecipientsAndTabs(DocuSignApiConfiguration conf, object api, string id)
         {
             try
             {
-            var result = new List<FieldDTO>();
-            var recipients = GetRecipients(conf, api, id);
-            result.AddRange(MapRecipientsToFieldDTO(recipients));
-            foreach (var recipient in recipients.Signers)
-            {
-                result.AddRange(GetTabs(conf, api, id, recipient));
-            }
+                var result = new List<KeyValueDTO>();
+                var recipients = GetRecipients(conf, api, id);
+                result.AddRange(MapRecipientsToFieldDTO(recipients));
+                foreach (var recipient in recipients.Signers)
+                {
+                    result.AddRange(GetTabs(conf, api, id, recipient));
+                }
 
-            return result;
-        }
+                return result;
+            }
             catch (Exception ex)
             {
                 throw new AuthorizationTokenExpiredOrInvalidException();
@@ -306,27 +307,27 @@ namespace terminalDocuSign.Services.New_Api
             throw new NotSupportedException($"The api of '{api.GetType()}' is not supported");
         }
 
-        private static IEnumerable<FieldDTO> GetTabs(DocuSignApiConfiguration conf, object api, string id, Signer recipient)
+        private static IEnumerable<KeyValueDTO> GetTabs(DocuSignApiConfiguration conf, object api, string id, Signer recipient)
         {
             var envelopesApi = api as EnvelopesApi;
             var templatesApi = api as TemplatesApi;
-            var docutabs = envelopesApi != null 
+            var docutabs = envelopesApi != null
                             ? envelopesApi.ListTabs(conf.AccountId, id, recipient.RecipientId)
                             : templatesApi.ListTabs(conf.AccountId, id, recipient.RecipientId, new Tabs());
 
             return (DocuSignTab.GetEnvelopeTabsPerSigner(JObject.Parse(docutabs.ToJson()), recipient.RoleName));
         }
 
-        private static IEnumerable<FieldDTO> MapRecipientsToFieldDTO(Recipients recipients)
+        private static IEnumerable<KeyValueDTO> MapRecipientsToFieldDTO(Recipients recipients)
         {
-            var result = new List<FieldDTO>();
+            var result = new List<KeyValueDTO>();
             if (recipients.Signers != null)
                 recipients.Signers.ForEach(
                     a =>
                     {
                         //use RoleName. If unavailable use a Name. If unavaible use email
-                        result.Add(new FieldDTO((a.RoleName ?? a.Name ?? a.Email) + " role name", a.Name) { Tags = "DocuSigner, recipientId:" + a.RecipientId });
-                        result.Add(new FieldDTO((a.RoleName ?? a.Name ?? a.Email) + " role email", a.Email) { Tags = "DocuSigner, recipientId:" + a.RecipientId });
+                        result.Add(new KeyValueDTO((a.RoleName ?? a.Name ?? a.Email) + " role name", a.Name) { Tags = "DocuSigner, recipientId:" + a.RecipientId });
+                        result.Add(new KeyValueDTO((a.RoleName ?? a.Name ?? a.Email) + " role email", a.Email) { Tags = "DocuSigner, recipientId:" + a.RecipientId });
                     });
             return result;
         }

@@ -14,6 +14,7 @@ using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
 using FolderItem = DocuSign.eSign.Model.FolderItem;
+using System;
 
 namespace terminalDocuSign.Activities
 {
@@ -21,6 +22,7 @@ namespace terminalDocuSign.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("62CB1D64-1A94-483C-A577-DA514F5D0CB0"),
             Name = "Query_DocuSign",
             Label = "Query DocuSign",
             Version = "1",
@@ -28,7 +30,12 @@ namespace terminalDocuSign.Activities
             NeedsAuthentication = true,
             MinPaneWidth = 380,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Receive,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -85,7 +92,7 @@ namespace terminalDocuSign.Activities
         {
         }
 
-        protected override async Task RunDS()
+        public override async Task Run()
         {
             var configuration = DocuSignManager.SetUp(AuthorizationToken);
             var settings = GetDocusignQuery();
@@ -97,7 +104,7 @@ namespace terminalDocuSign.Activities
             Success();
         }
 
-        protected override Task InitializeDS()
+        public override Task Initialize()
         {
             var configurationCrate = PackControls(new ActivityUi());
             FillFolderSource(configurationCrate, "Folder");
@@ -108,7 +115,7 @@ namespace terminalDocuSign.Activities
             return Task.FromResult(0);
         }
 
-        protected override async Task FollowUpDS()
+        public override async Task FollowUp()
         {
             Storage.RemoveByLabel("Queryable Criteria");
         }

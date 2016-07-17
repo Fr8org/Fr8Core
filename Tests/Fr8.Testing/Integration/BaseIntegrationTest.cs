@@ -22,7 +22,6 @@ namespace Fr8.Testing.Integration
     {
         public ICrateManager Crate { get; set; }
         public IRestfulServiceClient RestfulServiceClient { get; set; }
-        public IHMACService _hmacService { get; set; }
         private string _terminalSecret;
         private string _terminalId;
         HttpClient _httpClient;
@@ -63,18 +62,29 @@ namespace Fr8.Testing.Integration
             Crate = new CrateManager();
         }
 
+        
+
         private string GetTerminalUrlInternally()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var endPoint = "";
                 var terminal = uow.TerminalRepository.GetQuery()
                     .FirstOrDefault(t => t.Version == currentTerminalVersion.ToString() && t.Name == TerminalName);
                 if (null == terminal)
                 {
-                    throw new Exception(
-                        String.Format("Terminal with name {0} and version {1} not found", TerminalName, currentTerminalVersion));
+                    endPoint = ConfigurationManager.AppSettings[TerminalName + ".TerminalEndpoint"];
+                    if (string.IsNullOrEmpty(endPoint))
+                    { 
+                        throw new Exception($"Terminal with name {TerminalName} and version {currentTerminalVersion} not found");
+                    }
                 }
-                return Utilities.NormalizeSchema(terminal.Endpoint);
+
+                else
+                {
+                    endPoint = terminal.Endpoint;
+                }
+                return Utilities.NormalizeSchema(endPoint);
             }
         }
 
@@ -152,10 +162,6 @@ namespace Fr8.Testing.Integration
             Assert.AreEqual("No AuthToken provided.", errorMessage.Message);
         }
 
-        private async Task<Dictionary<string, string>> GetHMACHeader<T>(Uri requestUri, string userId, T content)
-        {
-            return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId, content);
-        }
         public async Task<TResponse> HttpPostAsync<TRequest, TResponse>(string url, TRequest request)
         {
             var uri = new Uri(url);

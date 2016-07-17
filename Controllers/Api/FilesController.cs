@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -15,10 +16,11 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;
+using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
 {
-    //
+    
     public class FilesController : ApiController
     {
         private readonly IFile _fileService;
@@ -33,9 +35,15 @@ namespace HubWeb.Controllers
             _security = ObjectFactory.GetInstance<ISecurityServices>();
             _tagService = ObjectFactory.GetInstance<ITag>();
         }
-
-        [Fr8HubWebHMACAuthenticate]
+        /// <summary>
+        /// Uploads the file content to Azure Blob storage and then saves the file object to the Fr8 database
+        /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <response code="200">Returns the description of file that was succesfully uploaded</response>
+        /// <response code="403">Unauthorized request</response>
+        [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
+        [ResponseType(typeof(FileDO))]
         public async Task<IHttpActionResult> Post()
         {
             FileDO fileDO = null;
@@ -44,9 +52,9 @@ namespace HubWeb.Controllers
             {
                 var currentUserId = _security.GetCurrentUser();
 
-                await Request.Content.ReadAsMultipartAsync<MultipartMemoryStreamProvider>(new MultipartMemoryStreamProvider()).ContinueWith((tsk) =>
+                await Request.Content.ReadAsMultipartAsync(new MultipartMemoryStreamProvider()).ContinueWith(tsk =>
                 {
-                    MultipartMemoryStreamProvider prvdr = tsk.Result;
+                    var prvdr = tsk.Result;
 
                     foreach (HttpContent ctnt in prvdr.Contents)
                     {
@@ -65,9 +73,12 @@ namespace HubWeb.Controllers
                 return Ok(fileDO);
             }
         }
-
+        /// <summary>
+        /// Retrieves file description by specified Id of file and owned by current user
+        /// </summary>
+        /// <param name="id">Id of file to retrieve description for</param>
+        /// <reponse code="200">Return the description of file</reponse>
         [HttpGet]
-        //[Route("files/details/{id:int}")]
         [ActionName("details")]
         [ResponseType(typeof(FileDTO))]
         public IHttpActionResult Details(int id)
@@ -94,12 +105,19 @@ namespace HubWeb.Controllers
         }
 
         /// <summary>
-        /// Downloads user's given file
+        /// Downloads file with specified Id and owned by current user
         /// </summary>
-        /// <param name="id">id of requested file</param>
-        /// <returns>Filestream</returns>
-        [Fr8HubWebHMACAuthenticate]
+        /// <param name="id">Id of requested file</param>
+        /// <response code="200">Contents of specified file as byte array</response>
+        /// <response code="403">Unauthorized request</response>
+        /// <response code="404">File with specified Id doesn't exist</response>
+        [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
+        [ResponseType(typeof(byte[]))]
+        [SwaggerResponse(HttpStatusCode.OK, "Contents of specified file as byte array")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unathorized request")]
+        [SwaggerResponse(HttpStatusCode.NotFound, "File with specified Id doesn't exist")]
+        [SwaggerResponseRemoveDefaults]
         public IHttpActionResult Get(int id)
         {
             FileDO fileDO = null;
@@ -123,17 +141,20 @@ namespace HubWeb.Controllers
             var file = _fileService.Retrieve(fileDO);
             return new FileActionResult(file);
         }
-
-
-        
         /// <summary>
-        /// Downloads user's given file
+        /// Downloads file with specified path and owned by current user
         /// </summary>
-        /// <param name="id">id of requested file</param>
-        /// <returns>Filestream</returns>
-        [Fr8HubWebHMACAuthenticate]
+        /// <param name="path">Path of the requested file</param>
+        /// <response code="200">Contents of specified file as byte array</response>
+        /// <response code="403">Unauthorized request</response>
+        /// <response code="404">File with specified Id doesn't exist</response>
+        [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         [ActionName("byPath")]
+        [SwaggerResponse(HttpStatusCode.OK, "Contents of specified file as byte array")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unathorized request")]
+        [SwaggerResponse(HttpStatusCode.NotFound, "File at specified path doesn't exist")]
+        [SwaggerResponseRemoveDefaults]
         public IHttpActionResult DownloadFileByPath(string path)
         {
             FileDO fileDO = null;
@@ -159,12 +180,14 @@ namespace HubWeb.Controllers
         }
 
         /// <summary>
-        /// Gets all files current user stored on Fr8
+        /// Retrieves the list of file descriptions owned by current user
         /// </summary>
-        /// <returns>List of FileDTO</returns>
+        /// <response code="200">Collection of files</response>
+        /// <response code="403">Unauthorized request</response>
         [HttpGet]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
+        [ResponseType(typeof(IList<FileDTO>))]
         public IHttpActionResult Get()
         {
             IList<FileDTO> fileList;
@@ -209,7 +232,15 @@ namespace HubWeb.Controllers
 
             return Ok(fileList);
         }
-
+        /// <summary>
+        /// Deletes file with specified Id
+        /// </summary>
+        /// <param name="id">Id of the file specified</param>
+        /// <response code="204">File was succesfully deleted</response>
+        [Fr8TerminalAuthentication]
+        [Fr8ApiAuthorize]
+        [SwaggerResponse(HttpStatusCode.NoContent, "File was successfully delete")]
+        [SwaggerResponseRemoveDefaults]
         public void Delete(int id)
         {
             _fileService.Delete(id);

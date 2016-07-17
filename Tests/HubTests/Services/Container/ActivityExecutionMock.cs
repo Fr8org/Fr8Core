@@ -95,8 +95,12 @@ namespace HubTests.Services.Container
         {
             return _activity.DeleteChildNodes(id);
         }
-    }
 
+        public bool Exists(Guid id)
+        {
+            return _activity.Exists(id);
+        }
+    }
 }
 
 

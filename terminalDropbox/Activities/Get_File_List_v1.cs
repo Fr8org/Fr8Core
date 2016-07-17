@@ -11,10 +11,11 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Errors;
+using System;
 
 namespace terminalDropbox.Actions
 {
-    public class Get_File_List_v1 : EnhancedTerminalActivity<Get_File_List_v1.ActivityUi>
+    public class Get_File_List_v1 : TerminalActivity<Get_File_List_v1.ActivityUi>
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -39,6 +40,7 @@ namespace terminalDropbox.Actions
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("1cbc96d3-7d61-4acc-8cf0-6a3f0987b00d"),
             Version = "1",
             Name = "Get_File_List",
             Label = "Get File List",
@@ -46,7 +48,12 @@ namespace terminalDropbox.Actions
             NeedsAuthentication = true,
             Category = ActivityCategory.Receivers,
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO
+            WebService = TerminalData.WebServiceDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Receive,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
       
@@ -62,7 +69,9 @@ namespace terminalDropbox.Actions
             var fileNames = await _dropboxService.GetFileList(AuthorizationToken);
             ActivityUI.FileList.ListItems = fileNames
                 .Select(filePath => new ListItem { Key = Path.GetFileName(filePath), Value = Path.GetFileName(filePath) }).ToList();
+
             CrateSignaller.MarkAvailableAtRuntime<StandardFileListCM>(RuntimeCrateLabel);
+
             Storage.ReplaceByLabel(PackDropboxFileListCrate(fileNames));
         }
 

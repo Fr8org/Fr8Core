@@ -26,7 +26,6 @@ var app = angular.module("app", [
     "angularResizable",
     "mdColorPicker",
     "md.data.table",
-    "fr8.collapse",
     "popoverToggle"
 ]);
 
@@ -96,17 +95,32 @@ initialization can be disabled and Layout.init() should be called on page load c
 ***/
 
 /* Setup Layout Part - Header */
-app.controller('HeaderController', ['$scope', '$http', '$window', ($scope, $http, $window) => {
+app.controller('HeaderController', ['$scope', '$http', '$window', '$state', 'TerminalService', 'PlanService', ($scope, $http, $window, $state, TerminalService, PlanService) => {
     $scope.$on('$includeContentLoaded', () => {
         Layout.initHeader(); // init header
     });
+
+    $scope.addPlan = function () {
+        var plan = new dockyard.model.PlanDTO();
+        plan.planState = dockyard.model.PlanState.Inactive;
+        plan.visibility = dockyard.model.PlanVisibility.Standard;
+        var result = PlanService.save(plan);
+
+        result.$promise
+            .then(() => {
+                $state.go('planBuilder', { id: result.plan.id });
+                //window.location.href = 'plans/' + result.plan.id + '/builder';
+            });
+    };
+
+    $scope.terminals = TerminalService.getAll();
 
     $scope.goToPlanDirectory = function (planDirectoryUrl) {
         $http.post('/api/authentication/authenticatePlanDirectory', {})
             .then(function (res) {
                 var token = res.data.token;
                 var url = planDirectoryUrl + '/AuthenticateByToken?token=' + token;
-                $window.location.href = url;
+                $window.open(url, '_blank');
             });
     };
 
@@ -304,27 +318,23 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
     $urlRouterProvider.otherwise("/myaccount");
 
     $stateProvider
-        .state('myaccount', {
+        .state('myaccount',
+        {
             url: "/myaccount",
             templateUrl: "/AngularTemplate/MyAccountPage",
             data: { pageTitle: 'My Account', pageSubTitle: '' }
         })
         // Plan list
-        .state('planList', {
+        .state('planList',
+        {
             url: "/plans",
             templateUrl: "/AngularTemplate/PlanList",
             data: { pageTitle: 'Plans', pageSubTitle: 'This page displays all Plans' }
         })
 
-        // Plan form
-        .state('planForm', {
-            url: "/plans/add",
-            templateUrl: "/AngularTemplate/PlanForm",
-            data: { pageTitle: 'Plan', pageSubTitle: 'Add a new Plan' }
-        })
-
         // Plan Builder framework
-        .state('planBuilder', {
+        .state('planBuilder',
+        {
             url: "/plans/{id}/builder?viewMode&view",
             views: {
                 'maincontainer@': {
@@ -355,69 +365,70 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
 
             data: { pageTitle: '' }
         })
-
-        .state('showIncidents', {
+        .state('showIncidents',
+        {
             url: "/showIncidents",
             templateUrl: "/AngularTemplate/ShowIncidents",
             data: { pageTitle: 'Incidents', pageSubTitle: 'This page displays all incidents' }
         })
-
-        .state('showFacts', {
+        .state('showFacts',
+        {
             url: "/showFacts",
             templateUrl: "/AngularTemplate/ShowFacts",
             data: { pageTitle: 'Facts', pageSubTitle: 'This page displays all facts' },
         })
-
-        .state('planDetails', {
+        .state('planDetails',
+        {
             url: "/plans/{id}/details",
             templateUrl: "/AngularTemplate/PlanDetails",
             data: { pageTitle: 'Plan Details', pageSubTitle: '' }
         })
 
         // Manage files
-        .state('managefiles', {
+        .state('managefiles',
+        {
             url: "/managefiles",
             templateUrl: "/AngularTemplate/ManageFileList",
             data: { pageTitle: 'Manage Files', pageSubTitle: '' }
         })
-
-        .state('fileDetail', {
+        .state('fileDetail',
+        {
             url: "/managefiles/{id}",
             templateUrl: "/AngularTemplate/FileDetails",
             data: { pageTitle: 'File details', pageSubTitle: '' }
         })
-
-        .state('accounts', {
+        .state('accounts',
+        {
             url: '/accounts',
             templateUrl: '/AngularTemplate/AccountList',
             data: { pageTitle: 'Manage Accounts', pageSubTitle: '' }
         })
-
-        .state('accountDetails', {
+        .state('accountDetails',
+        {
             url: '/accounts/{id}',
             templateUrl: '/AngularTemplate/AccountDetails',
             data: { pageTitle: 'Account Details', pageSubTitle: '' }
         })
-
-        .state('containerDetails', {
+        .state('containerDetails',
+        {
             url: "/container/{id}/details",
             templateUrl: "/AngularTemplate/containerDetails",
             data: { pageTitle: 'Container  Details', pageSubTitle: '' }
         })
-
-        .state('configureSolution', {
+        .state('configureSolution',
+        {
             url: "/solution/{solutionName}",
             templateUrl: "/AngularTemplate/PlanBuilder",
             data: { pageTitle: 'Create a Solution', pageSubTitle: '' }
         })
-
-        .state('containers', {
+        .state('containers',
+        {
             url: "/containers",
             templateUrl: "/AngularTemplate/ContainerList",
             data: { pageTitle: 'Containers', pageSubTitle: 'This page displays all Containers ' },
         })
-
-        .state('webservices', {
+        .state('webservices',
+        {
             url: "/webservices",
             templateUrl: "/AngularTemplate/WebServiceList",
             data: { pageTitle: 'Web Services', pageSubTitle: '' }
@@ -429,29 +440,35 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             templateUrl: "/AngularTemplate/TerminalList",
             data: { pageTitle: 'Terminals', pageSubTitle: '' }
         })
-
-        .state('manifestregistry', {
+        .state('manifestregistry',
+        {
             url: "/manifest_registries",
             templateUrl: "/AngularTemplate/ManifestRegistryList",
             data: { pageTitle: 'Manifest Registry', pageSubTitle: '' }
         })
-
-        .state('manageAuthTokens', {
+        .state('manageAuthTokens',
+        {
             url: '/manageAuthTokens',
             templateUrl: '/AngularTemplate/ManageAuthTokens',
             data: { pageTitle: 'Manage Auth Tokens', pageSubTitle: '' }
         })
-
-        .state('changePassword', {
+        .state('changePassword',
+        {
             url: '/changePassword',
             templateUrl: '/AngularTemplate/ChangePassword',
             data: { pageTitle: 'Change Password', pageSubTitle: '' }
         })
-
-        .state('reports', {
+        .state('reports',
+        {
             url: "/reports",
             templateUrl: "/AngularTemplate/PlanReportList",
             data: { pageTitle: 'Reports', pageSubTitle: 'This page displays all Reports' }
+        })
+        .state("pageDefinitions",
+        {
+            url: "/page_definitions",
+            templateUrl: "/AngularTemplate/PageDefinitionList",
+            data: { pageTitle: "Manage Page Definitions", pageSubTitle: "" }
         });
 }]);
 

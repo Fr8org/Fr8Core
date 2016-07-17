@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Data.Interfaces;
-using Data.States;
+using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
@@ -60,7 +59,14 @@ namespace Hub.Services
 
         private static void OnUtilizationStateRenewTick(object state)
         {
-            ((ActivityExecutionRateLimitingService) state).RenewUtilizationState();
+            try
+            {
+                ((ActivityExecutionRateLimitingService) state).RenewUtilizationState();
+            }
+            catch(Exception ex)
+            {
+                Logger.Error("Failed to update utilization state", ex);
+            }
         }
 
         // Load blocked users from the DB into local cache.
@@ -128,13 +134,11 @@ namespace Hub.Services
 
         private void NotifyUser(IUnitOfWork uow, string user)
         {
-            var userName = uow.UserRepository.GetQuery().Where(x => x.Id == user).Select(x => x.UserName).FirstOrDefault();
-
-            if (userName != null)
+            if (user != null)
             {
                 _pusherNotifier.NotifyUser("You are running more Activities than your capacity right now. " +
                                            $"This Account will be prevented from processing Activities for the next {Math.Ceiling(_userBanTime.TotalSeconds / 60.0f)} minutes. " +
-                                           "Contact support@fr8.co for assistance", NotificationChannel.GenericFailure, userName);
+                                           "Contact support@fr8.co for assistance", NotificationType.GenericFailure, user);
             }
         }
 
@@ -143,7 +147,6 @@ namespace Hub.Services
             lock (_sync)
             {
                 Initialize();
-
                 return !_overheatingUsers.Contains(fr8AccountId);
             }
         }

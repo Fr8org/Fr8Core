@@ -17,8 +17,6 @@ using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Logging;
 
 //NOTES: Do NOT put Incidents here. Put them in IncidentReporter
-
-
 namespace Hub.Managers
 {
     public class EventReporter
@@ -50,7 +48,6 @@ namespace Hub.Managers
             EventManager.AlertTokenObtained += OnAlertTokenObtained;
             EventManager.AlertTokenRevoked += OnAlertTokenRevoked;
 
-            EventManager.EventDocuSignNotificationReceived += LogDocuSignNotificationReceived;
             EventManager.EventContainerLaunched += LogEventProcessLaunched;
             EventManager.EventCriteriaEvaluationStarted += LogEventCriteriaEvaluationStarted;
             EventManager.EventCriteriaEvaluationFinished += LogEventCriteriaEvaluationFinished;
@@ -91,7 +88,6 @@ namespace Hub.Managers
             EventManager.AlertTokenObtained -= OnAlertTokenObtained;
             EventManager.AlertTokenRevoked -= OnAlertTokenRevoked;
 
-            EventManager.EventDocuSignNotificationReceived -= LogDocuSignNotificationReceived;
             EventManager.EventContainerLaunched -= LogEventProcessLaunched;
             EventManager.EventCriteriaEvaluationStarted -= LogEventCriteriaEvaluationStarted;
             EventManager.EventCriteriaEvaluationFinished -= LogEventCriteriaEvaluationFinished;
@@ -174,16 +170,16 @@ namespace Hub.Managers
                 }
 
                 //create user notifications
-                var pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
-
-                pusherNotifier.NotifyUser(new
+                var _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
+                _pusherNotifier.NotifyUser(new
                     {
                         ActivityName = activityDo.Name,
                         PlanName = containerDO.Name,
+                        Collapsed = true,
                         ContainerId = containerDO.Id.ToString(),
                         PlanId = planId,
                         PlanLastUpdated = planLastUpdated,
-                    }, "fr8pusher_activity_execution_info", activityDo.Fr8Account.UserName);
+                    }, NotificationType.GenericInfo, activityDo.Fr8Account.Id);
             }
             catch (Exception exception)
             {
@@ -454,27 +450,6 @@ namespace Hub.Managers
         }
 
         /// <summary>
-        /// The method logs the fact of receiving a notification from DocuSign.      
-        /// </summary>
-        /// <param name="userId">UserId received from DocuSign.</param>
-        /// <param name="envelopeId">EnvelopeId received from DocuSign.</param>
-        public void DocusignNotificationReceived(string userId, string envelopeId)
-        {
-            FactDO fact = new FactDO
-            {
-                PrimaryCategory = "Notification",
-                SecondaryCategory = null,
-                Activity = "Received",
-                Fr8UserId = userId,
-                ObjectId = null,
-                Data = string.Format("EnvelopeId: {0}.",
-                        envelopeId)
-            };
-            
-            SaveAndLogFact(fact);
-        }
-
-        /// <summary>
         /// The method logs the fact of Process Template creation.      
         /// </summary>
         /// <param name="userId">UserId received from DocuSign.</param>
@@ -493,31 +468,6 @@ namespace Hub.Managers
             };
             
             SaveAndLogFact(fact);
-        }
-
-        /// <summary>
-        /// The method logs the fact of receiving a notification from DocuSign.      
-        /// </summary>
-        /// <param name="userId">UserId received from DocuSign.</param>
-        /// <param name="envelopeId">EnvelopeId received from DocuSign.</param>
-        public void ImproperDocusignNotificationReceived(string message)
-        {
-            var fact = new IncidentDO
-            {
-                Fr8UserId = _security.GetCurrentUser(),
-                PrimaryCategory = "Notification",
-                Activity = "Received",
-                Data = message
-            };
-
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.IncidentRepository.Add(fact);
-                uow.SaveChanges();
-            }
-
-            LogHistoryItem(fact,EventType.Warning);
         }
 
         /// <summary>
@@ -738,21 +688,6 @@ namespace Hub.Managers
             AddFactOnToken(userId, "Revoked");
         }
 
-        private void LogDocuSignNotificationReceived()
-        {
-            var fact = new FactDO
-            {
-                Fr8UserId = null,
-                Data = "DocuSign Notificaiton Received",
-                ObjectId = null,
-                PrimaryCategory = "External Event",
-                SecondaryCategory = "DocuSign",
-                Activity = "Received"
-            };
-
-            SaveAndLogFact(fact);
-        }
-
         private void LogEventProcessLaunched(ContainerDO launchedContainer)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -960,9 +895,13 @@ namespace Hub.Managers
         private static async Task PostToTerminalEventsEndPoint(string userId, TerminalDO authenticatedTerminal, AuthorizationTokenDTO authToken)
         {
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
+            var terminalService = ObjectFactory.GetInstance<ITerminal>();
+
+            var headers = terminalService.GetRequestHeaders(authenticatedTerminal, userId);
+
             await
                 restClient.PostAsync<object>(
-                    new Uri(authenticatedTerminal.Endpoint + "/terminals/" + authenticatedTerminal.Name + "/events"), new { fr8_user_id = userId, auth_token = authToken });
+                    new Uri(authenticatedTerminal.Endpoint + "/terminals/" + authenticatedTerminal.Name + "/events"), new { fr8_user_id = userId, auth_token = authToken }, null, headers);
         }
 
     }

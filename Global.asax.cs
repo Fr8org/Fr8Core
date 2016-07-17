@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Data.Entity;
 using System.Linq;
-using System.Net;
 using System.Security.Claims;
 using System.Threading;
 using System.Web;
@@ -9,23 +7,19 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
-using Data.Interfaces;
 using Fr8.Infrastructure.Utilities;
 using FluentValidation.WebApi;
-using Google.Apis.Util;
 using Hub.Infrastructure;
-using Hub.Interfaces;
-using Hub.Managers;
 using Hub.ModelBinders;
-using Hub.StructureMap;
 using HubWeb.App_Start;
 using HubWeb.ExceptionHandling;
 using LogentriesCore.Net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Segment;
-using StructureMap;
+using Microsoft.ApplicationInsights.Extensibility;
 using Logger = Fr8.Infrastructure.Utilities.Logging.Logger;
+using System.Globalization;
 
 namespace HubWeb
 {
@@ -36,6 +30,10 @@ namespace HubWeb
 
         protected void Application_Start()
         {
+            if (CultureInfo.CurrentCulture.Parent.LCID != 9)
+            {
+                Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo(1033);
+            }
             Init(false);
         }
 
@@ -61,13 +59,6 @@ namespace HubWeb
             //Register global Exception Filter for WebAPI 
             GlobalConfiguration.Configuration.Filters.Add(new WebApiExceptionFilterAttribute());
 
-            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
-            ObjectFactory.Configure(Fr8.Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
-            ObjectFactory.GetInstance<AutoMapperBootStrapper>().ConfigureAutoMapper();
-
-            var db = ObjectFactory.GetInstance<DbContext>();
-            db.Database.Initialize(true);
-
             if (!selfHostMode)
             {
                 Fr8.Infrastructure.Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
@@ -77,29 +68,11 @@ namespace HubWeb
                     Analytics.Initialize(segmentWriteKey);
             }
 
-            EventReporter curReporter = ObjectFactory.GetInstance<EventReporter>();
-            curReporter.SubscribeToAlerts();
-
-            IncidentReporter incidentReporter = ObjectFactory.GetInstance<IncidentReporter>();
-            incidentReporter.SubscribeToAlerts();
-
             ModelBinders.Binders.Add(typeof(DateTimeOffset), new KwasantDateBinder());
 
-            var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                //THIS IS CURRENTLY CAUSING AN EXCEPTION
-                //uow.RemoteServiceProviderRepository.CreateRemoteServiceProviders(configRepository);
-                uow.SaveChanges();
-            }
-
-            SetServerUrl();
-
-            //Logger.GetLogger().Warn("Dockyard  starting...");
             Logger.LogWarning("Dockyard  starting...");
 
             ConfigureValidationEngine();
-            StartupMigration.CreateSystemUser();
         }
 
         private void ConfigureValidationEngine()
@@ -128,15 +101,14 @@ namespace HubWeb
             Logger.LogError($"{exception}");
         }
 
-        private readonly object _initLocker = new object();
-
         //Optimization. Even if running in DEBUG mode, this will only execute once.
         //But on production, there is no need for this call
         protected void Application_BeginRequest(object sender, EventArgs e)
         {
 
 #if DEBUG
-            SetServerUrl(HttpContext.Current);
+            //SetServerUrl(HttpContext.Current);
+            TelemetryConfiguration.Active.DisableTelemetry = true;
 #endif
             NormalizeUrl();
             RewriteAngularRequests();
@@ -187,7 +159,7 @@ namespace HubWeb
             Response.AddHeader("Location", path);
         }
 
-        private void SetServerUrl(HttpContext context = null)
+        /*private void SetServerUrl(HttpContext context = null)
         {
             if (!_IsInitialised)
             {
@@ -237,7 +209,7 @@ namespace HubWeb
                     }
                 }
             }
-        }
+        }*/
 
         public void Application_End()
         {

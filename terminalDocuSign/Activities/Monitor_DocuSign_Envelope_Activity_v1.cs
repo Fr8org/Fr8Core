@@ -22,6 +22,7 @@ namespace terminalDocuSign.Actions
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("68fb036f-c401-4492-a8ae-8f57eb59cc86"),
             Version = "1",
             Name = "Monitor_DocuSign_Envelope_Activity",
             Label = "Monitor DocuSign Envelope Activity",
@@ -29,7 +30,12 @@ namespace terminalDocuSign.Actions
             NeedsAuthentication = true,
             MinPaneWidth = 380,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Monitor,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -124,8 +130,9 @@ namespace terminalDocuSign.Actions
         {
             return activityUi.SentToRecipientOption.Selected || activityUi.BasedOnTemplateOption.Selected;
         }
-        
-        protected override async Task RunDS()
+
+
+        public override async Task Run()
         {
             DocuSignEnvelopeCM_v2 envelopeStatus = null;
             var eventCrate = Payload.CratesOfType<EventReportCM>().FirstOrDefault()?.Get<EventReportCM>()?.EventPayload;
@@ -134,12 +141,12 @@ namespace terminalDocuSign.Actions
 
             if (envelopeStatus == null)
             {
-                TerminateHubExecution("Evelope was not found in the payload.");
+                RequestPlanExecutionTermination("Evelope was not found in the payload.");
                 return;
             }
 
             //Create run-time fields
-            var eventFields = CreateDocuSignEventFields(envelopeStatus);
+            var eventFields = CreateDocuSignEventValues(envelopeStatus);
 
             //get currently selected option and its value
             string curSelectedOption, curSelectedValue, curSelectedTemplate;
@@ -174,7 +181,7 @@ namespace terminalDocuSign.Actions
                         else
                         {
                             //this event isn't about us let's stop execution
-                            TerminateHubExecution();
+                            RequestPlanExecutionTermination();
                             return;
                         }
 
@@ -193,7 +200,7 @@ namespace terminalDocuSign.Actions
                             else
                             {
                                 //this event isn't about us let's stop execution
-                                TerminateHubExecution();
+                                RequestPlanExecutionTermination();
                                 return;
                             }
                         }
@@ -201,7 +208,7 @@ namespace terminalDocuSign.Actions
                 }
             }
             
-            var allFields = new List<FieldDTO>(eventFields);
+            var allFields = new List<KeyValueDTO>(eventFields);
 
             if (curSelectedOption == "template")
             {
@@ -213,7 +220,7 @@ namespace terminalDocuSign.Actions
             Success();
         }
 
-        protected override async Task InitializeDS()
+        public override async Task Initialize()
         {
 
             var controlsCrate = PackControls(CreateActivityUi());
@@ -224,13 +231,15 @@ namespace terminalDocuSign.Actions
             Storage.Add(PackEventSubscriptionsCrate(controlsCrate.Get<StandardConfigurationControlsCM>()));
         }
 
-        protected override Task FollowUpDS()
+        public override Task FollowUp()
         {
             //just update the user selected envelope events in the follow up configuration
-            var allFields = CreateDocuSignEventFields(null, AllFieldsCrateName);
+            var allFields = CreateDocuSignEventFieldsDefinitions();
+
             UpdateSelectedEvents(Storage);
             string selectedOption, selectedValue, selectedTemplate;
             GetTemplateRecipientPickerValue(out selectedOption, out selectedValue, out selectedTemplate);
+
             if (selectedOption == "template")
             {
                 allFields.AddRange(GetTemplateUserDefinedFields(selectedValue, null));
@@ -364,13 +373,6 @@ namespace terminalDocuSign.Actions
             result.SentToRecipientOption.Controls = new List<ControlDefinitionDTO> { result.Recipient };
             result.TemplateRecipientOptionSelector.Radios = new List<RadioButtonOption> { result.SentToRecipientOption, result.BasedOnTemplateOption };
             return result;
-        }
-
-        private struct DocuSignEvents
-        {
-            public bool EnvelopeSent { get; set; }
-            public bool EnvelopRecieved { get; set; }
-            public bool EnvelopeSigned { get; set; }
         }
 
         private class ActivityUi

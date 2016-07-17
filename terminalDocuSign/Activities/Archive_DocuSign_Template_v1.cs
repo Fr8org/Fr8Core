@@ -8,7 +8,9 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities;
+using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Models;
+using Fr8.TerminalBase.Services;
 using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSign.Activities
@@ -50,7 +52,7 @@ namespace terminalDocuSign.Activities
         {
         }
 
-        protected override Task InitializeDS()
+        public override Task Initialize()
         {
             var configurationCrate = PackControls(new ActivityUi());
             FillDocuSignTemplateSource(configurationCrate, "Available_Templates");
@@ -59,7 +61,7 @@ namespace terminalDocuSign.Activities
             return Task.FromResult(0);
         }
 
-        protected override async Task FollowUpDS()
+        public override async Task FollowUp()
         {
             var selectedTemplateField = GetControl<DropDownList>("Available_Templates");
             if (string.IsNullOrEmpty(selectedTemplateField.Value))
@@ -73,9 +75,9 @@ namespace terminalDocuSign.Activities
                 return;
             }
 
-            var getDocusignTemplate = await GetActivityTemplate("terminalDocusign", "Get_DocuSign_Template");
-            var convertCratesTemplate = await GetActivityTemplate("terminalFr8Core", "ConvertCrates");
-            var storeFileTemplate = await GetActivityTemplate("terminalFr8Core", "StoreFile");
+            var getDocusignTemplate = await HubCommunicator.GetActivityTemplate("terminalDocusign", "Get_DocuSign_Template");
+            var convertCratesTemplate = await HubCommunicator.GetActivityTemplate("terminalFr8Core", "Convert_Crates");
+            var storeFileTemplate = await HubCommunicator.GetActivityTemplate("terminalFr8Core", "Store_File");
 
             var getDocuSignTemplateActivity = await CreateGetDocuSignTemplateActivity(getDocusignTemplate, ActivityPayload);
             var convertCratesActivity = await CreateConvertCratesActivity(convertCratesTemplate, ActivityPayload);
@@ -108,9 +110,8 @@ namespace terminalDocuSign.Activities
 
         private void SetFileDetails(ActivityPayload storeFileActivity, string fileName)
         {
-            var confControls = ControlHelper.GetConfigurationControls(storeFileActivity.CrateStorage);
-            var fileNameTextbox = ControlHelper.GetControl<TextBox>(confControls, "File_Name", ControlTypes.TextBox);
-            var fileCrateTextSource = ControlHelper.GetControl<TextSource>(confControls, "File Crate label", ControlTypes.TextSource);
+            var fileNameTextbox = ActivityConfigurator.GetControl<TextBox>(storeFileActivity, "File_Name", ControlTypes.TextBox);
+            var fileCrateTextSource = ActivityConfigurator.GetControl<TextSource>(storeFileActivity, "File Crate label", ControlTypes.TextSource);
             fileNameTextbox.Value = fileName;
             fileCrateTextSource.ValueSource = "specific";
             fileCrateTextSource.TextValue = "From DocuSignTemplate To StandardFileDescription";
@@ -118,31 +119,28 @@ namespace terminalDocuSign.Activities
 
         private void SetFromConversion(ActivityPayload convertCratesActivity)
         {
-            var confControls = ControlHelper.GetConfigurationControls(convertCratesActivity.CrateStorage);
-            var fromDropdown = ControlHelper.GetControl<DropDownList>(confControls, "Available_From_Manifests", ControlTypes.DropDownList);
+            var fromDropdown = ActivityConfigurator.GetControl<DropDownList>(convertCratesActivity, "Available_From_Manifests", ControlTypes.DropDownList);
             fromDropdown.Value = ((int)MT.DocuSignTemplate).ToString(CultureInfo.InvariantCulture);
             fromDropdown.selectedKey = MT.DocuSignTemplate.GetEnumDisplayName();
         }
 
         private void SetToConversion(ActivityPayload convertCratesActivity)
         {
-            var confControls = ControlHelper.GetConfigurationControls(convertCratesActivity.CrateStorage);
-            var toDropdown = ControlHelper.GetControl<DropDownList>(confControls, "Available_To_Manifests", ControlTypes.DropDownList);
+            var toDropdown = ActivityConfigurator.GetControl<DropDownList>(convertCratesActivity, "Available_To_Manifests", ControlTypes.DropDownList);
             toDropdown.Value = ((int)MT.StandardFileHandle).ToString(CultureInfo.InvariantCulture);
             toDropdown.selectedKey = MT.StandardFileHandle.GetEnumDisplayName();
         }
 
         private void SetSelectedTemplate(ActivityPayload docuSignActivity, DropDownList selectedTemplateDd)
         {
-            var confControls = ControlHelper.GetConfigurationControls(docuSignActivity.CrateStorage);
-            var actionDdlb = ControlHelper.GetControl<DropDownList>(confControls, "Available_Templates", ControlTypes.DropDownList);
+            var actionDdlb = ActivityConfigurator.GetControl<DropDownList>(docuSignActivity, "Available_Templates", ControlTypes.DropDownList);
             actionDdlb.selectedKey = selectedTemplateDd.selectedKey;
             actionDdlb.Value = selectedTemplateDd.Value;
         }
 
         protected override string ActivityUserFriendlyName => SolutionName;
 
-        protected override async Task RunDS()
+        public override async Task Run()
         {
             Success();
             await Task.Yield();
@@ -160,24 +158,23 @@ namespace terminalDocuSign.Activities
         {
             if (curDocumentation.Contains("MainPage"))
             {
-                var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
+                var curSolutionPage = new DocumentationResponseDTO(SolutionName, SolutionVersion, TerminalName, SolutionBody);
                 return Task.FromResult(curSolutionPage);
             }
             if (curDocumentation.Contains("HelpMenu"))
             {
                 if (curDocumentation.Contains("ExplainArchiveTemplate"))
                 {
-                    return Task.FromResult(GenerateDocumentationResponse(@"This solution work with DocuSign templates"));
+                    return Task.FromResult(new DocumentationResponseDTO(@"This solution work with DocuSign templates"));
                 }
                 if (curDocumentation.Contains("ExplainService"))
                 {
-                    return Task.FromResult(GenerateDocumentationResponse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                    return Task.FromResult(new DocumentationResponseDTO(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
                 }
-                return Task.FromResult(GenerateErrorResponse("Unknown contentPath"));
+                return Task.FromResult(new DocumentationResponseDTO("Unknown contentPath"));
             }
             return
-                Task.FromResult(
-                    GenerateErrorResponse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
+                Task.FromResult(new DocumentationResponseDTO("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
 
         

@@ -23,6 +23,7 @@ namespace terminalGoogle.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("120110db-b8dd-41ca-b88e-9865db315528"),
             Name = "Save_To_Google_Sheet",
             Label = "Save To Google Sheet",
             Version = "1",
@@ -30,7 +31,12 @@ namespace terminalGoogle.Activities
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             MinPaneWidth = 300,
-            WebService = TerminalData.WebServiceDTO
+            WebService = TerminalData.GooogleWebServiceDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.GooogleWebServiceDTO.Name, TerminalData.GooogleWebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -151,8 +157,8 @@ namespace terminalGoogle.Activities
         {
             get
             {
-                var storedValue = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == SelectedSpreadsheetCrateLabel);
-                return storedValue?.Content.Fields.First().Key;
+                var storedValue = Storage.FirstCrateOrDefault<KeyValueListCM>(x => x.Label == SelectedSpreadsheetCrateLabel);
+                return storedValue?.Content.Values.First().Key;
             }
             set
             {
@@ -161,7 +167,7 @@ namespace terminalGoogle.Activities
                 {
                     return;
                 }
-                Storage.Add(Crate<FieldDescriptionsCM>.FromContent(SelectedSpreadsheetCrateLabel, new FieldDescriptionsCM(new FieldDTO(value)), AvailabilityType.Configuration));
+                Storage.Add(Crate<KeyValueListCM>.FromContent(SelectedSpreadsheetCrateLabel, new KeyValueListCM(new KeyValueDTO(value, value))));
             }
         }
 

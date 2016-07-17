@@ -4,9 +4,11 @@ using System.Web.Http;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
 using System.Net;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Services;
 using StructureMap;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace terminalDocuSign.Controllers
 {
@@ -17,7 +19,7 @@ namespace terminalDocuSign.Controllers
         private readonly IHubEventReporter _reporter;
         private readonly DocuSignPolling _polling;
         private readonly IContainer _container;
-        
+
         public EventController(IEvent @event, IHubEventReporter reporter, DocuSignPolling polling, IContainer container)
         {
             _event = @event;
@@ -40,17 +42,9 @@ namespace terminalDocuSign.Controllers
 
         [HttpPost]
         [Route("polling_notifications")]
-        public async Task<IHttpActionResult> ProcessPollingRequest(string job_id, string fr8_account_id, string polling_interval)
+        public async Task<PollingDataDTO> ProcessPollingRequest(PollingDataDTO pollingData)
         {
-            var hubCommunicator = _container.GetInstance<IHubCommunicator>();
-
-            hubCommunicator.Authorize(fr8_account_id);
-
-            var result = await _polling.Poll(hubCommunicator, job_id, polling_interval);
-            if (result)
-                return Ok();
-            else
-                return Content(HttpStatusCode.Gone, "Polling failed, deschedule it");
+            return await _polling.Poll(pollingData);
         }
     }
 }

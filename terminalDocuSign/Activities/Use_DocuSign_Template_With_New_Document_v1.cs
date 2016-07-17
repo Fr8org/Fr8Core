@@ -19,6 +19,7 @@ namespace terminalDocuSign.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("55693341-6a95-4fc3-8848-2fc3a8101924"),
             Version = "1",
             Name = "Use_DocuSign_Template_With_New_Document",
             Label = "Use DocuSign Template With New Document",
@@ -27,7 +28,12 @@ namespace terminalDocuSign.Activities
             NeedsAuthentication = true,
             MinPaneWidth = 380,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -40,7 +46,7 @@ namespace terminalDocuSign.Activities
 
 
         protected override void SendAnEnvelope(DocuSignApiConfiguration loginInfo,
-            List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId)
+            List<KeyValueDTO> rolesList, List<KeyValueDTO> fieldList, string curTemplateId)
         {
             try
             {
@@ -100,12 +106,12 @@ namespace terminalDocuSign.Activities
             return CrateManager.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
         }
 
-        protected override async Task FollowUpDS()
+        public override async Task FollowUp()
         {
             await HandleFollowUpConfiguration();
         }
-        
-        protected override async Task InitializeDS()
+
+        public override async Task Initialize()
         {
             var configurationCrate = Storage.CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 

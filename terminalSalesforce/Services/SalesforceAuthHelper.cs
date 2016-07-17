@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Fr8.Infrastructure.Utilities;
+using System;
 
 namespace terminalSalesforce.Services
 {
@@ -6,7 +7,7 @@ namespace terminalSalesforce.Services
     {
         public static bool IsTokenInvalidation(Exception ex)
         {
-            return ex.Message == "expired access/refresh token";
+            return ex.Message.Contains("expired access/refresh token", StringComparison.InvariantCulture);
         }
     }
 }

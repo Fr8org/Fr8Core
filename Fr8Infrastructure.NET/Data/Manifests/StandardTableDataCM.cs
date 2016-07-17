@@ -80,16 +80,16 @@ namespace Fr8.Infrastructure.Data.Manifests
     {
         public TableCellDTO()
         {
-            FieldDTO Cell = new FieldDTO();  //name should be the column number, and value is the value of the cell           
+            KeyValueDTO Cell = new KeyValueDTO();  //name should be the column number, and value is the value of the cell           
         }
 
-        public FieldDTO Cell;
+        public KeyValueDTO Cell;
 
         public static TableCellDTO Create(string key, string value)
         {
             return new TableCellDTO()
             {
-                Cell = new FieldDTO()
+                Cell = new KeyValueDTO()
                 {
                     Key = key,
                     Value = value,

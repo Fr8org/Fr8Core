@@ -35,5 +35,11 @@ namespace Data.Interfaces
 
         List<T> Query<T>(string fr8AccountId, Expression<Func<T, bool>> @where)
             where T : Manifest;
+
+        int Count<T>(string fr8AccountId, Expression<Func<T, bool>> where)
+            where T : Manifest;
+
+        int? GetObjectId<T>(string fr8AccountId, Expression<Func<T, bool>> where)
+            where T : Manifest;
     }
 }

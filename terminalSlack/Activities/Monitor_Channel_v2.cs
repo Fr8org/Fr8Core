@@ -14,10 +14,11 @@ using terminalSlack.Interfaces;
 
 namespace terminalSlack.Activities
 {
-    public class Monitor_Channel_v2 : EnhancedTerminalActivity<Monitor_Channel_v2.ActivityUi>
+    public class Monitor_Channel_v2 : TerminalActivity<Monitor_Channel_v2.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("af0c038c-3adc-4372-b07e-e04b71102aa7"),
             Name = "Monitor_Channel",
             Label = "Monitor Slack Messages",
             Category = ActivityCategory.Monitors,
@@ -25,7 +26,12 @@ namespace terminalSlack.Activities
             NeedsAuthentication = true,
             Version = "2",
             WebService = TerminalData.WebServiceDTO,
-            MinPaneWidth = 330
+            MinPaneWidth = 330,
+            Categories = new[]
+            {
+                ActivityCategories.Monitor,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -104,19 +110,16 @@ namespace terminalSlack.Activities
                 .ToList();
             Storage.Add(CreateEventSubscriptionCrate());
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel)
-                               .AddFields(GetChannelProperties());
-        }
-
-        private IEnumerable<FieldDTO> GetChannelProperties()
-        {
-            yield return new FieldDTO { Key = "team_id", Value = "team_id", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Key = "team_domain", Value = "team_domain", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Key = "timestamp", Value = "timestamp", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Key = "channel_id", Value = "channel_id", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Key = "channel_name", Value = "channel_name", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Key = "user_id", Value = "user_id", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Key = "user_name", Value = "user_name", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Key = "text", Value = "text", Availability = AvailabilityType.Always };
+                .AddField("token")
+                .AddField("team_id")
+                .AddField("team_domain")
+                .AddField("service_id")
+                .AddField("timestamp")
+                .AddField("channel_id")
+                .AddField("channel_name")
+                .AddField("user_id")
+                .AddField("user_name")
+                .AddField("text");
         }
 
         private Crate CreateEventSubscriptionCrate()
@@ -143,20 +146,20 @@ namespace terminalSlack.Activities
         public override Task Run()
         {
             var incomingMessageContents = ExtractIncomingMessageContentFromPayload();
-            var hasIncomingMessage = incomingMessageContents?.Fields?.Count > 0;
+            var hasIncomingMessage = incomingMessageContents?.Count > 0;
 
             if (!hasIncomingMessage)
             {
-                TerminateHubExecution("Incoming message is missing.");
+                RequestPlanExecutionTermination("Incoming message is missing.");
                 return Task.FromResult(0);
             }
 
-            var incomingChannelId = incomingMessageContents["channel_id"];
-            var isSentByCurrentUser = incomingMessageContents["user_name"] == AuthorizationToken.ExternalAccountId;
+            var incomingChannelId = incomingMessageContents.FirstOrDefault(x=>x.Key == "channel_id")?.Value;
+            var isSentByCurrentUser = incomingMessageContents.FirstOrDefault(x => x.Key == "user_name")?.Value == AuthorizationToken.ExternalAccountId;
 
             if (string.IsNullOrEmpty(incomingChannelId))
             {
-                TerminateHubExecution("Incoming message doesn't contain information about source channel");
+                RequestPlanExecutionTermination("Incoming message doesn't contain information about source channel");
             }
             else
             {
@@ -169,11 +172,11 @@ namespace terminalSlack.Activities
                 var isTrackedByUser = IsMonitoringDirectMessages && (isDirect || isSentToGroup) && !isSentByCurrentUser;
                 if (isTrackedByUser || isTrackedByChannel)
                 {
-                    Payload.Add(Crate.FromContent(ResultPayloadCrateLabel, new StandardPayloadDataCM(incomingMessageContents.Fields), AvailabilityType.RunTime));
+                    Payload.Add(Crate.FromContent(ResultPayloadCrateLabel, new StandardPayloadDataCM(incomingMessageContents)));
                 }
                 else
                 {
-                    TerminateHubExecution("Incoming message doesn't pass filter criteria. No downstream activities are executed");
+                    RequestPlanExecutionTermination("Incoming message doesn't pass filter criteria. No downstream activities are executed");
                 }
             }
 
@@ -191,14 +194,14 @@ namespace terminalSlack.Activities
             return Task.FromResult(0);
         }
 
-        private FieldDescriptionsCM ExtractIncomingMessageContentFromPayload()
+        private List<KeyValueDTO> ExtractIncomingMessageContentFromPayload()
         {
             var eventReport = Payload.CrateContentsOfType<EventReportCM>().FirstOrDefault();
             if (eventReport == null)
             {
                 return null;
             }
-            return new FieldDescriptionsCM(eventReport.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()));
+            return eventReport.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()).ToList();
         }
 
         #region Control properties wrappers

@@ -7,6 +7,7 @@ using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Services;
 using terminalGoogle.Actions;
 using terminalGoogle.Activities;
+using System.Web.Http;
 
 [assembly: OwinStartup(typeof(terminalGoogle.Startup))]
 
@@ -27,6 +28,8 @@ namespace terminalGoogle
         public void Configuration(IAppBuilder app, bool selfHost)
         {
             ConfigureProject(selfHost, TerminalGoogleBootstrapper.ConfigureLive);
+            Container.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
+            SwaggerConfig.Register(_configuration);
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
             app.UseWebApi(_configuration);
@@ -52,6 +55,7 @@ namespace terminalGoogle
             ActivityStore.RegisterActivity<Get_Google_Sheet_Data_v1>(Get_Google_Sheet_Data_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Monitor_Form_Responses_v1>(Monitor_Form_Responses_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Save_To_Google_Sheet_v1>(Save_To_Google_Sheet_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Monitor_Gmail_Inbox_v1>(Monitor_Gmail_Inbox_v1.ActivityTemplateDTO);
         }
     }
 }

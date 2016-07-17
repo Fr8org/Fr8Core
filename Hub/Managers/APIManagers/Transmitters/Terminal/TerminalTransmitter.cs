@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Communication;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Logging;
 using StructureMap;
 using Hub.Interfaces;
@@ -16,13 +15,11 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
 {
     public class TerminalTransmitter : RestfulServiceClient, ITerminalTransmitter
     {
-        private readonly IHMACService _hmacService;
-        log4net.ILog _logger;
+        private readonly ITerminal _terminalService;
 
-        public TerminalTransmitter()
+        public TerminalTransmitter(ITerminal terminalService)
         {
-            _hmacService = ObjectFactory.GetInstance<IHMACService>();
-            _logger = Logger.GetLogger();
+            _terminalService = terminalService;
         }
 
         /// <summary>
@@ -56,7 +53,6 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
             var terminalDTO = dataDTO.ActivityDTO.ActivityTemplate.Terminal;
             var terminal = ObjectFactory.GetInstance<ITerminal>().GetByNameAndVersion(terminalDTO.Name, terminalDTO.Version);
 
-
             var actionName = Regex.Replace(curActionType, @"[^-_\w\d]", "_");
             string queryString = string.Empty;
             if (parameters != null && parameters.Any())
@@ -85,8 +81,9 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
                 Logger.LogError($"Terminal record not found for activityTemplate: {dataDTO.ActivityDTO.ActivityTemplate.Name} Throwing exception.");
                 throw new Exception("Unknown terminal or terminal endpoint");
             }
+
             requestUri = new Uri(new Uri(terminal.Endpoint), requestUri);
-            return await PostAsync<Fr8DataDTO, TResponse>(requestUri, dataDTO, correlationId);
+            return await PostAsync<Fr8DataDTO, TResponse>(requestUri, dataDTO, correlationId, _terminalService.GetRequestHeaders(terminal, dataDTO.ActivityDTO.AuthToken.UserId));
         }
     }
 }

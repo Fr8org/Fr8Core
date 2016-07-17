@@ -206,7 +206,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseClasses\BaseTerminalActivityTests.cs" />
     <Compile Include="BaseClasses\ActivityExecutorTests.cs" />
     <Compile Include="BaseClasses\EnhancedTerminalActivityTests.cs" />
     <Compile Include="BaseClasses\ExplicitDataHubCommunicator.cs" />
@@ -214,6 +213,7 @@
     <Compile Include="Fixtures\FixtureData - HandleFr8Request.cs" />
     <Compile Include="Fixtures\terminalActivityMock_v1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\HubDiscoveryServiceTests.cs" />
     <Compile Include="Utilities\TabularUtilitiesTests.cs" />
   </ItemGroup>
   <ItemGroup>

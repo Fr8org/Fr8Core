@@ -16,10 +16,11 @@ using terminalYammer.Services;
 
 namespace terminalYammer.Actions
 {
-    public class Post_To_Yammer_v1 : BaseTerminalActivity
+    public class Post_To_Yammer_v1 : ExplicitTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("fa163960-901f-4105-8731-234aeb38f11d"),
             Name = "Post_To_Yammer",
             Label = "Post To Yammer",
             Tags = "Notifier",
@@ -28,7 +29,12 @@ namespace terminalYammer.Actions
             Version = "1",
             MinPaneWidth = 330,
             Terminal = TerminalData.TerminalDTO,
-            WebService = TerminalData.WebServiceDTO
+            WebService = TerminalData.WebServiceDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -117,7 +123,7 @@ namespace terminalYammer.Actions
             }
         }
 
-        private Crate CreateAvailableGroupsCrate(IEnumerable<FieldDTO> groups)
+        private Crate CreateAvailableGroupsCrate(IEnumerable<KeyValueDTO> groups)
         {
             var crate =
                 CrateManager.CreateDesignTimeFieldsCrate(

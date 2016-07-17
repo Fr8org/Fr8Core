@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net.Http;
@@ -26,7 +25,7 @@ namespace Fr8.TerminalBase.BaseClasses
         private IContainer _container;
         private IActivityStore _activityStore;
         private readonly TerminalDTO _terminal;
-
+        private IHubDiscoveryService _hubDiscovery;
         public IContainer Container => _container;
         public IActivityStore ActivityStore => _activityStore;
 
@@ -41,10 +40,12 @@ namespace Fr8.TerminalBase.BaseClasses
         protected virtual void ConfigureProject(bool selfHost, Action<ConfigurationExpression> terminalStructureMapRegistryConfigExpression)
         {
             _container = new Container(StructureMapBootStrapper.LiveConfiguration);
-            _activityStore = new ActivityStore(_terminal, _container);
-
+            _activityStore = new ActivityStore(_terminal);
+            
             _container.Configure(x => x.AddRegistry<TerminalBootstrapper.LiveMode>());
             _container.Configure(x => x.For<IActivityStore>().Use(_activityStore));
+
+            _hubDiscovery = _container.GetInstance<IHubDiscoveryService>();
 
             AutoMapperBootstrapper.ConfigureAutoMapper();
 
@@ -88,26 +89,46 @@ namespace Fr8.TerminalBase.BaseClasses
         public IHttpController Create(HttpRequestMessage request, HttpControllerDescriptor controllerDescriptor, Type controllerType)
         {
             var childContainer = _container.CreateChildContainer();
+
             Expression<Func<IContext, IHubCommunicator>> hubCommunicatorFactoryExpression;
-            
+            //Terminal can't communicate with a specified hub when a request doesn't have necessary headers
+            //it can only communicate with master hub for general purpose queries
+            //or it can get a list of all hubs from discovery service
+
             if (request.Headers.Contains("Fr8HubCallBackUrl") && request.Headers.Contains("Fr8HubCallbackSecret"))
             {
-                var apiUrl = request.Headers.GetValues("Fr8HubCallBackUrl").First();
+                var apiUrl = request.Headers.GetValues("Fr8HubCallBackUrl").First().TrimEnd('\\', '/') +
+                             $"/api/{CloudConfigurationManager.GetSetting("HubApiVersion")}";
                 var secret = request.Headers.GetValues("Fr8HubCallbackSecret").First();
-                var terminalId = CloudConfigurationManager.GetSetting("TerminalId") ?? ConfigurationManager.AppSettings[_activityStore.Terminal.Name + "TerminalId"];
-
-                hubCommunicatorFactoryExpression = c => new DefaultHubCommunicator(c.GetInstance<IRestfulServiceClient>(), c.GetInstance<IHMACService>(), apiUrl, terminalId, secret);
+                var fr8UserId = request.Headers.Contains("Fr8UserId")
+                    ? request.Headers.GetValues("Fr8UserId").First()
+                    : null;
+                _hubDiscovery.SetHubSecret(apiUrl, secret);
+                hubCommunicatorFactoryExpression =
+                    c =>
+                        new DefaultHubCommunicator(
+                            c.GetInstance<IRestfulServiceClientFactory>()
+                                .Create(new HubAuthenticationHeaderSignature(secret, fr8UserId)), apiUrl, secret,
+                            fr8UserId);
             }
             else
             {
-                hubCommunicatorFactoryExpression = c => new DealyedhubCommunicator(c.GetInstance<IHubEventReporter>());
+                //lots of integration tests make calls without necessary headers
+                //because we inject TestHubCommunicator on ActivityExecutor no problem arises
+                //to be able to run integration tests - until we find a better solution
+                //i am injecting a dummy HubCommunicator here
+                hubCommunicatorFactoryExpression = c => new DummyHubCommunicator();
             }
-            
-            childContainer.Configure(x => x.For<IHubCommunicator>().Use(hubCommunicatorFactoryExpression));
-            childContainer.Configure(x => x.For<IContainer>().Use(childContainer));
 
+
+            childContainer.Configure(x =>
+            {
+                x.For<IHubCommunicator>().Use(hubCommunicatorFactoryExpression).Singleton();
+                x.For<IContainer>().Use(childContainer);
+                x.For<IPushNotificationService>().Use<PushNotificationService>().Singleton();
+                x.For<PlanService>().Use<PlanService>().Singleton();
+            });
             request.RegisterForDispose(childContainer);
-
             return childContainer.GetInstance(controllerType) as IHttpController;
         }
     }

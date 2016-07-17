@@ -12,17 +12,17 @@ using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Errors;
 using terminalSlack.Interfaces;
-using terminalSlack.Services;
 
 namespace terminalSlack.Activities
 {
 
-    public class Publish_To_Slack_v1 : BaseTerminalActivity
+    public class Publish_To_Slack_v1 : ExplicitTerminalActivity
     {
         private readonly ISlackIntegration _slackIntegration;
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("4698C675-CA2C-4BE7-82F9-2421F3608E13"),
             Name = "Publish_To_Slack",
             Label = "Publish To Slack",
             Tags = "Notifier",
@@ -31,7 +31,12 @@ namespace terminalSlack.Activities
             NeedsAuthentication = true,
             Version = "1",
             WebService = TerminalData.WebServiceDTO,
-            MinPaneWidth = 330
+            MinPaneWidth = 330,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -57,11 +62,6 @@ namespace terminalSlack.Activities
         public override async Task Run()
         {
             string message;
-
-            if (IsAuthenticationRequired)
-            {
-                RaiseNeedsAuthenticationError();
-            }
 
             var actionChannelId = GetControl<DropDownList>("Selected_Slack_Channel")?.Value;
             if (string.IsNullOrEmpty(actionChannelId))
@@ -112,21 +112,6 @@ namespace terminalSlack.Activities
             return Regex.Replace(input, "<.*?>", String.Empty);
         }
 
-        private List<FieldDTO> ExtractPayloadFields(PayloadDTO payloadCrates)
-        {
-            var payloadDataCrates = CrateManager.FromDto(payloadCrates.CrateStorage).CratesOfType<StandardPayloadDataCM>();
-
-            var result = new List<FieldDTO>();
-            foreach (var payloadDataCrate in payloadDataCrates)
-            {
-                result.AddRange(payloadDataCrate.Content.AllValues());
-            }
-
-            return result;
-        }
-
-
-
         private Crate PackCrate_ConfigurationControls()
         {
             var fieldSelectChannel = new DropDownList()
@@ -137,7 +122,7 @@ namespace terminalSlack.Activities
                 Source = null
             };
 
-            var fieldSelect = ControlHelper.CreateSpecificOrUpstreamValueChooser(
+            var fieldSelect = UiBuilder.CreateSpecificOrUpstreamValueChooser(
                 "Select Message Field",
                 "Select_Message_Field",
                 addRequestConfigEvent: true,

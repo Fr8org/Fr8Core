@@ -11,13 +11,15 @@ namespace terminalDocuSign.Services.New_Api
 {
     public interface IDocuSignManager
     {
+        DocuSignApiConfiguration SetUp(DocuSignAuthTokenDTO authToken);
+        DocuSignApiConfiguration SetUp(string token);
         DocuSignApiConfiguration SetUp(AuthorizationToken authTokenDO);
-        List<FieldDTO> GetTemplatesList(DocuSignApiConfiguration conf);
+        List<KeyValueDTO> GetTemplatesList(DocuSignApiConfiguration conf);
         JObject DownloadDocuSignTemplate(DocuSignApiConfiguration config, string selectedDocusignTemplateId);
-        IEnumerable<FieldDTO> GetEnvelopeRecipientsAndTabs(DocuSignApiConfiguration conf, string envelopeId);
-        IEnumerable<FieldDTO> GetTemplateRecipientsAndTabs(DocuSignApiConfiguration conf, string templateId);
-        Tuple<IEnumerable<FieldDTO>, IEnumerable<DocuSignTabDTO>> GetTemplateRecipientsTabsAndDocuSignTabs(DocuSignApiConfiguration conf, string templateId);
-        void SendAnEnvelopeFromTemplate(DocuSignApiConfiguration loginInfo, List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId, StandardFileDescriptionCM file = null);
+        IEnumerable<KeyValueDTO> GetEnvelopeRecipientsAndTabs(DocuSignApiConfiguration conf, string envelopeId);
+        IEnumerable<KeyValueDTO> GetTemplateRecipientsAndTabs(DocuSignApiConfiguration conf, string templateId);
+        Tuple<IEnumerable<KeyValueDTO>, IEnumerable<DocuSignTabDTO>> GetTemplateRecipientsTabsAndDocuSignTabs(DocuSignApiConfiguration conf, string templateId);
+        void SendAnEnvelopeFromTemplate(DocuSignApiConfiguration loginInfo, List<KeyValueDTO> rolesList, List<KeyValueDTO> fieldList, string curTemplateId, StandardFileDescriptionCM file = null);
         bool DocuSignTemplateDefaultNames(IEnumerable<DocuSignTabDTO> templateDefinedFields);
     }
 }

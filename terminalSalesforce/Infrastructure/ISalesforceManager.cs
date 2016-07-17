@@ -11,7 +11,7 @@ namespace terminalSalesforce.Infrastructure
     {
         Task<string> Create(SalesforceObjectType type, IDictionary<string, object> @object, AuthorizationToken authToken);
 
-        Task<StandardTableDataCM> Query(SalesforceObjectType type, IEnumerable<string> propertiesToRetrieve, string filter, AuthorizationToken authToken);
+        Task<StandardTableDataCM> Query(SalesforceObjectType type, IEnumerable<FieldDTO> propertiesToRetrieve, string filter, AuthorizationToken authToken);
         
         Task<List<FieldDTO>> GetProperties(SalesforceObjectType type, AuthorizationToken authToken, bool updatableOnly = false, string label = null);
 
@@ -24,6 +24,6 @@ namespace terminalSalesforce.Infrastructure
         Task<bool> Delete(SalesforceObjectType objectType, string objectId, AuthorizationToken authToken);
 
         [Obsolete("Use Task<StandardTableDataCM> Query(SalesforceObjectType, IEnumerable<string>, string, AuthorizationTokenDO) instead")]
-        Task<IList<FieldDTO>> GetUsersAndGroups(AuthorizationToken authToken);
+        Task<IList<KeyValueDTO>> GetUsersAndGroups(AuthorizationToken authToken);
     }
 }

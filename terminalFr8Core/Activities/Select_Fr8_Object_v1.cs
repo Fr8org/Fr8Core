@@ -17,12 +17,13 @@ using StructureMap;
 namespace terminalFr8Core.Activities
 {
     // The generic interface inheritance.
-    public class Select_Fr8_Object_v1 : BaseTerminalActivity
+    public class Select_Fr8_Object_v1 : ExplicitTerminalActivity
     {
         private readonly IRestfulServiceClient _restfulServiceClient;
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("6238483f-2cef-418e-bd7e-a52ddb1e01e5"),
             Name = "Select_Fr8_Object",
             Label = "Select Fr8 Object",
             Category = ActivityCategory.Processors,
@@ -30,7 +31,12 @@ namespace terminalFr8Core.Activities
             MinPaneWidth = 330,
             Tags = Tags.Internal,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Process,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -63,12 +69,12 @@ namespace terminalFr8Core.Activities
 
         private Crate PackFr8ObjectCrate()
         {
-            var fields = new List<FieldDTO> {
-                    new FieldDTO(){
+            var fields = new List<KeyValueDTO> {
+                    new KeyValueDTO(){
                        Key = "Plans",
                        Value = "19"
                    },
-                   new FieldDTO(){
+                   new KeyValueDTO(){
                        Key = "Containers",
                        Value = "21"
                    }

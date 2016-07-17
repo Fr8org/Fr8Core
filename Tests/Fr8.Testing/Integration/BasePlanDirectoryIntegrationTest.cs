@@ -15,20 +15,9 @@ namespace Fr8.Testing.Integration
     {
         private HttpClient _httpClient;
 
-        protected virtual string TestUserEmail
-        {
-            get { return "integration_test_runner@fr8.company"; }
-        }
-
-        protected virtual string TestUserPassword
-        {
-            get { return "fr8#s@lt!"; }
-        }
-
-        public override string TerminalName
-        {
-            get { return "PlanDirectory"; }
-        }
+        protected virtual string TestUserEmail => "integration_test_runner@fr8.company";
+        protected virtual string TestUserPassword => "fr8#s@lt!";
+        public override string TerminalName => "PlanDirectory";
 
         public BasePlanDirectoryIntegrationTest()
         {
@@ -43,7 +32,6 @@ namespace Fr8.Testing.Integration
             _httpClient.Timeout = TimeSpan.FromMinutes(2);
 
             Crate = new CrateManager();
-            _hmacService = new Fr8HMACService(ObjectFactory.GetInstance<MediaTypeFormatter>());
             _baseUrl = GetPlanDirectoryBaseApiUrl();
             RestfulServiceClient = new RestfulServiceClient(_httpClient);
 
@@ -63,16 +51,25 @@ namespace Fr8.Testing.Integration
             return hubBaseUrl;
         }
 
-        private async Task AuthenticateWebApi(string email, string password)
+        protected async Task AuthenticateWebApi(string email, string password)
         {
-            var content = await HttpPostAsync<string, object>(
-                _baseUrl + string.Format(
-                    "authentication/login?username={0}&password={1}",
-                    Uri.EscapeDataString(email),
-                    Uri.EscapeDataString(password)
-                ),
-                null
-            );
+            try
+            {
+                var content = await HttpPostAsync<string, object>(
+                    _baseUrl + string.Format(
+                        "authentication/login?username={0}&password={1}",
+                        Uri.EscapeDataString(email),
+                        Uri.EscapeDataString(password)
+                    ),
+                    null
+                );
+                System.Diagnostics.Trace.WriteLine("Authenticated with PlanDirectory successfully.");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.WriteLine("Error during authentication with PlanDirectory: " + ex.Message);
+
+            }
         }
     }
 }

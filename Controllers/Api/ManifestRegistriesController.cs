@@ -12,6 +12,10 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities;
 using Hub.Interfaces;
 using Hub.Managers;
+using System.Web.Http.Description;
+using System.Collections.Generic;
+using System.Net;
+using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers.Api
 {
@@ -21,49 +25,65 @@ namespace HubWeb.Controllers.Api
 
         private readonly string _systemUserAccountId;
 
-        //TODO: uncomment this constructor once constructor injection is enabled for HubWeb controllers
-        //public ManifestRegistriesController(IManifestRegistryMonitor manifestRegistryMonitor, IConfigRepository configRepository)
-        //{
-        //    if (manifestRegistryMonitor == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(manifestRegistryMonitor));
-        //    }
-        //    if (configRepository == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(configRepository));
-        //    }
-        //    _systemUserAccountId = configRepository.Get("SystemUserEmail");
-        //    _manifestRegistryMonitor = manifestRegistryMonitor;
-        //}
-
-        //TODO: remove this construcotr once constructor injection is enabled for HubWeb controllers
-        public ManifestRegistriesController()
+        public ManifestRegistriesController(IManifestRegistryMonitor manifestRegistryMonitor, IConfigRepository configRepository)
         {
-            _systemUserAccountId = ObjectFactory.GetInstance<IConfigRepository>().Get("SystemUserEmail");
-            _manifestRegistryMonitor = ObjectFactory.GetInstance<IManifestRegistryMonitor>();
+            if (manifestRegistryMonitor == null)
+            {
+                throw new ArgumentNullException(nameof(manifestRegistryMonitor));
+            }
+            if (configRepository == null)
+            {
+                throw new ArgumentNullException(nameof(configRepository));
+            }
+            _systemUserAccountId = configRepository.Get("SystemUserEmail");
+            _manifestRegistryMonitor = manifestRegistryMonitor;
         }
 
+        /// <summary>
+        /// Retrieves the collection of manifests registered in the hub
+        /// </summary>
+        /// <response code="200">Collection of registered manifests</response>
         [HttpGet]
+        [ResponseType(typeof(List<ManifestDescriptionDTO>))]
         public IHttpActionResult Get()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 
                 var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(_systemUserAccountId);
-                var list = manifestDescriptions.Select(m => new { m.Id, m.Name, m.Version, m.SampleJSON, m.Description, m.RegisteredBy }).ToList();
+                var list = manifestDescriptions.Select(m => new ManifestDescriptionDTO
+                {
+                    Id = m.Id,
+                    Name = m.Name,
+                    Version = m.Version,
+                    SampleJSON = m.SampleJSON,
+                    Description = m.Description,
+                    RegisteredBy = m.RegisteredBy
+                }).ToList();
 
                 return Ok(list);
             }
         }
-
+        /// <summary>
+        /// Retrieves URL of Google Form that is used to submit new manifests
+        /// </summary>
+        /// <response code="200">URL of Google Form</response>
         [HttpGet]
+        [ResponseType(typeof(string))]
         public IHttpActionResult Submit()
         {
             return Ok(ConfigurationManager.AppSettings["ManifestSubmissionFormUrl"]);
         }
-
-
+        /// <summary>
+        /// Submits new manifest to manifest registry
+        /// </summary>
+        /// <remarks>
+        /// if ManifestRegistryParams.version is empty gets the manifest description with given name and greatest version. Otherwise checks if there is any manifest description with given name and given version</remarks>
+        /// <param name="description">Description of new manifest</param>
+        /// <response code="200">Description of the submitted manifest</response>
         [HttpPost]
+        [ResponseType(typeof(ManifestDescriptionDTO))]
+        [DockyardAuthorize(Roles = Roles.Admin)]
         public IHttpActionResult Post(ManifestDescriptionDTO description)
         {
             ManifestDescriptionCM manifestDescription = Mapper.Map<ManifestDescriptionCM>(description);
@@ -80,59 +100,19 @@ namespace HubWeb.Controllers.Api
 
             return Ok(model);
         }
-
+        /// <summary>
+        /// Starts internal plan that monitors new manifest submissions and creates a JIRA for them
+        /// </summary>
         [HttpPost]
         [DockyardAuthorize(Roles = Roles.Admin)]
+        [SwaggerResponse(HttpStatusCode.OK, "Manifest monitoring plan was successfully launched")]
+        [SwaggerResponseRemoveDefaults]
         public async Task<IHttpActionResult> RunMonitoring()
         {
             //We don't need to wait for the result as the purpose of this method is just to initiate a start (as a double-check measure)
             await _manifestRegistryMonitor.StartMonitoringManifestRegistrySubmissions();
             return Ok();
         }
-
-
-        [HttpPost]
-        [ActionName("query")]
-        public IHttpActionResult Query([FromBody]  ManifestRegistryParams data)
-        {
-            object result = null;
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                if (data.version.IsNullOrEmpty())
-                // getDescriptionWithLastVersion
-                {
-                    var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(_systemUserAccountId);
-                    var descriptions = manifestDescriptions.Where(md => md.Name == data.name).ToArray();
-
-                    result = descriptions.First();
-                    string maxVersion = ((ManifestDescriptionCM)result).Version;
-
-                    foreach (var description in descriptions)
-                    {
-                        if (description.Version.CompareTo(maxVersion) > 0)
-                        {
-                            result = description;
-                            maxVersion = description.Version;
-                        }
-                    }
-
-                    return Ok(result);
-                }
-
-                else
-                // checkVersionAndName
-                {
-                    var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(_systemUserAccountId);
-                    var isInDB = manifestDescriptions.Any(md => md.Name == data.name && md.Version == data.version);
-                    result = new { Value = !isInDB };
-
-                    return Ok(result);
-                }
-                
-            }
-        }
-
 
         private string NextId()
         {
@@ -144,9 +124,8 @@ namespace HubWeb.Controllers.Api
                 {
                     return result.ToString();
                 }
-                result = int.Parse(manifestDescriptions.OrderByDescending(d => d.Id).First().Id) + 1;                
+                result = manifestDescriptions.Select(x => int.Parse(x.Id)).OrderByDescending(x => x).First() + 1;                
             }
-
             return result.ToString();
         }        
     }

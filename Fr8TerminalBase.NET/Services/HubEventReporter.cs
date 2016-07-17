@@ -1,44 +1,55 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Crates;
-using Fr8.Infrastructure.Data.DataTransferObjects;
-using Fr8.Infrastructure.Interfaces;
-using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Interfaces;
+using log4net;
 
 namespace Fr8.TerminalBase.Services
 {
     public class HubEventReporter : IHubEventReporter
     {
-        private readonly IRestfulServiceClient _restfulServiceClient;
+        private static readonly ILog Logger = Fr8.Infrastructure.Utilities.Logging.Logger.GetCurrentClassLogger();
+
+        private readonly IHubDiscoveryService _hubDiscovery;
         private readonly IActivityStore _activityStore;
-        private readonly IHMACService _hmacService;
-        private readonly string _apiUrl;
 
-        public TerminalDTO Terminal => _activityStore.Terminal;
-
-        public HubEventReporter(IRestfulServiceClient restfulServiceClient, IActivityStore activityStore, IHMACService hmacService)
+        public HubEventReporter(IHubDiscoveryService hubDiscovery, IActivityStore activityStore)
         {
-            _restfulServiceClient = restfulServiceClient;
+            _hubDiscovery = hubDiscovery;
             _activityStore = activityStore;
-            _hmacService = hmacService;
-
-            _apiUrl = $"{CloudConfigurationManager.GetSetting("CoreWebServerUrl")}api/{CloudConfigurationManager.GetSetting("HubApiVersion")}";
         }
 
         public async Task Broadcast(Crate eventPayload)
         {
-            var masterCommunicator = await GetMasterHubCommunicator();
+            var hubList = await _hubDiscovery.GetSubscribedHubs();
+            var tasks = new List<Task>();
+            
+            foreach (var hubUrl in hubList)
+            {
+                tasks.Add(NotifyHub(hubUrl, eventPayload));
+            }
 
-            await masterCommunicator.SendEvent(eventPayload);
+            await Task.WhenAll(tasks);
+        }
+
+        private async Task NotifyHub(string hubUrl, Crate eventPayload)
+        {
+            try
+            {
+                Logger.Info($"Terminal at '{_activityStore.Terminal?.Endpoint}' is sedning event to Hub at '{hubUrl}'.");
+                var hubCommunicator = await _hubDiscovery.GetHubCommunicator(hubUrl);
+                await hubCommunicator.SendEvent(eventPayload);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Failed to send event to hub '{hubUrl}'", ex);
+            }
         }
 
         public Task<IHubCommunicator> GetMasterHubCommunicator()
         {
-            var secret = CloudConfigurationManager.GetSetting("TerminalSecret") ?? ConfigurationManager.AppSettings[_activityStore.Terminal.Name + "TerminalSecret"];
-            var terminalId = CloudConfigurationManager.GetSetting("TerminalId") ?? ConfigurationManager.AppSettings[_activityStore.Terminal.Name + "TerminalId"];
-
-            return Task.FromResult<IHubCommunicator>(new DefaultHubCommunicator(_restfulServiceClient, _hmacService, _apiUrl, terminalId, secret));
+            return _hubDiscovery.GetMasterHubCommunicator();
         }
     }
 }

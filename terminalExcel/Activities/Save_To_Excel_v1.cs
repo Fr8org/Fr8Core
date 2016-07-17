@@ -15,12 +15,14 @@ using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Services;
 using terminalUtilities.Excel;
+using Fr8.TerminalBase.Infrastructure;
 
 namespace terminalExcel.Actions
 {
-    public class Save_To_Excel_v1 : EnhancedTerminalActivity<Save_To_Excel_v1.ActivityUi>
+    public class Save_To_Excel_v1 : TerminalActivity<Save_To_Excel_v1.ActivityUi>
     {
         private readonly ExcelUtils _excelUtils;
+        private readonly IPushNotificationService _pushNotificationService;
 
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -50,7 +52,7 @@ namespace terminalExcel.Actions
             {
                 UpstreamCrateChooser = builder.CreateCrateChooser(
                         "Available_Crates",
-                        "This Loop will process the data inside of",
+                        "Save which data:",
                         true,
                         requestConfig: true
                     );
@@ -132,11 +134,11 @@ namespace terminalExcel.Actions
 
         private const string SelectedSpreadsheetCrateLabel = "Selected Spreadsheet";
 
-
-        public Save_To_Excel_v1(ICrateManager crateManager, ExcelUtils excelUtils)
+        public Save_To_Excel_v1(ICrateManager crateManager, ExcelUtils excelUtils, IPushNotificationService pushNotificationService)
             : base(crateManager)
         {
             _excelUtils = excelUtils;
+            _pushNotificationService = pushNotificationService;
         }
 
         public override async Task Initialize()
@@ -176,7 +178,7 @@ namespace terminalExcel.Actions
 
         private async Task<List<ListItem>> GetWorksheets(int fileId, string fileName)
         {
-            //let's download this file
+            // Let's download this file
             Stream file = await HubCommunicator.DownloadFile(fileId);
             var fileBytes = ExcelUtils.StreamToByteArray(file);
 
@@ -189,8 +191,8 @@ namespace terminalExcel.Actions
         {
             get
             {
-                var storedValue = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == SelectedSpreadsheetCrateLabel);
-                return storedValue?.Content.Fields.First().Key;
+                var storedValue = Storage.FirstCrateOrDefault<KeyValueListCM>(x => x.Label == SelectedSpreadsheetCrateLabel);
+                return storedValue?.Content.Values.First().Key;
             }
             set
             {
@@ -199,20 +201,33 @@ namespace terminalExcel.Actions
                 {
                     return;
                 }
-                Storage.Add(Crate<FieldDescriptionsCM>.FromContent(SelectedSpreadsheetCrateLabel, new FieldDescriptionsCM(new FieldDTO(value)), AvailabilityType.Configuration));
+                Storage.Add(Crate<KeyValueListCM>.FromContent(SelectedSpreadsheetCrateLabel, new KeyValueListCM(new KeyValueDTO(value, value)), AvailabilityType.Configuration));
             }
         }
+
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("f3c99f97-e6e2-4343-b592-6674ac5b4c16"),
             Name = "Save_To_Excel",
             Label = "Save to Excel",
             Version = "1",
             Category = ActivityCategory.Forwarders,
             Terminal = TerminalData.TerminalDTO,
             MinPaneWidth = 300,
-            WebService = TerminalData.WebServiceDTO
+            WebService = TerminalData.WebServiceDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
+        protected override Task Validate()
+        {
+            ValidationManager.ValidateCrateChooserNotEmpty(ActivityUI.UpstreamCrateChooser, "A selection must be made.");
+            return Task.FromResult(0);
+        }
 
         public override async Task Run()
         {
@@ -329,7 +344,7 @@ namespace terminalExcel.Actions
 
         private async Task PushLaunchURLNotification(string url)
         {
-            await PushUserNotification("Success", "Excel File", $"The Excel file can be downloaded by navigating to this URL: {new Uri(url).AbsoluteUri}");
+            await _pushNotificationService.PushUserNotification(MyTemplate, "Success", "Excel File", $"The Excel file can be downloaded by navigating to this URL: {new Uri(url).AbsoluteUri}");
         }
     }
 }

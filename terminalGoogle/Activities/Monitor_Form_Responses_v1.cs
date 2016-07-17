@@ -41,13 +41,9 @@ namespace terminalGoogle.Actions
         private const string ConfigurationCrateLabel = "Selected_Google_Form";
         private const string RunTimeCrateLabel = "Google Form Payload Data";
         private const string EventSubscriptionsCrateLabel = "Standard Event Subscriptions";
-        private FieldDTO SelectedForm
+
+        private KeyValueDTO SelectedForm
         {
-            get
-            {
-                var storedValues = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == ConfigurationCrateLabel)?.Content;
-                return storedValues?.Fields.First();
-            }
             set
             {
                 if (value == null)
@@ -55,22 +51,28 @@ namespace terminalGoogle.Actions
                     Storage.RemoveByLabel(ConfigurationCrateLabel);
                     return;
                 }
-                value.Availability = AvailabilityType.Configuration;
-                var newValues = Crate.FromContent(ConfigurationCrateLabel, new FieldDescriptionsCM(value), AvailabilityType.Configuration);
+      
+                var newValues = Crate.FromContent(ConfigurationCrateLabel, new KeyValueListCM(value), AvailabilityType.Configuration);
                 Storage.ReplaceByLabel(newValues);
             }
         }
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("f7619e79-112e-43aa-ba43-118c1ffc98f3"),
             Name = "Monitor_Form_Responses",
             Label = "Monitor Form Responses",
             Version = "1",
             Category = ActivityCategory.Monitors,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
-            WebService = TerminalData.WebServiceDTO,
-            MinPaneWidth = 300
+            WebService = TerminalData.GooogleWebServiceDTO,
+            MinPaneWidth = 300,
+            Categories = new[]
+            {
+                ActivityCategories.Monitor,
+                new ActivityCategoryDTO(TerminalData.GooogleWebServiceDTO.Name, TerminalData.GooogleWebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -115,14 +117,15 @@ namespace terminalGoogle.Actions
             //get form id
             var googleFormControl = ActivityUI.FormsList;
             var formId = googleFormControl.Value;
-            if (string.IsNullOrEmpty(formId))
-                throw new ArgumentNullException("Google Form selected is empty. Please select google form to receive.");
-
-            //need to get all form fields and mark them available for runtime
-            var formFields = await _googleAppsScript.GetGoogleFormFields(googleAuth, formId);
 
             CrateSignaller.ClearAvailableCrates();
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel).AddFields(formFields.Select(x => new FieldDTO() { Key = x.Title, Value = x.Title }).ToList());
+
+            if (!string.IsNullOrEmpty(formId))
+            {
+                //need to get all form fields and mark them available for runtime
+                var formFields = await _googleAppsScript.GetGoogleFormFields(googleAuth, formId);
+                CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel).AddFields(formFields.Select(x => new FieldDTO() {Name = x.Title, Label = x.Title}).ToList());
+            }
         }
 
         public override async Task Activate()
@@ -154,7 +157,7 @@ namespace terminalGoogle.Actions
             // Just return Success as a quick fix to avoid "Plan Failed" message.
             if (payloadFields == null)
             {
-                RequestHubExecutionTermination();
+                RequestPlanExecutionTermination();
                 return Task.FromResult(0);
             }
             var formResponseFields = CreatePayloadFormResponseFields(payloadFields);
@@ -163,7 +166,7 @@ namespace terminalGoogle.Actions
             // Just return Success as a quick fix to avoid "Plan Failed" message.
             if (formResponseFields == null)
             {
-                RequestHubExecutionTermination();
+                RequestPlanExecutionTermination();
                 return Task.FromResult(0); ;
             }
             Payload.Add(Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(formResponseFields)));
@@ -183,9 +186,9 @@ namespace terminalGoogle.Actions
                 );
         }
 
-        private List<FieldDTO> CreatePayloadFormResponseFields(List<FieldDTO> payloadfields)
+        private List<KeyValueDTO> CreatePayloadFormResponseFields(List<KeyValueDTO> payloadfields)
         {
-            var formFieldResponse = new List<FieldDTO>();
+            var formFieldResponse = new List<KeyValueDTO>();
             string[] formresponses = payloadfields.FirstOrDefault(w => w.Key == "response").Value.Split(new char[] { '&' });
 
             if (formresponses.Length > 0)
@@ -195,7 +198,7 @@ namespace terminalGoogle.Actions
                 formFieldResponse.AddRange(from response in formresponses
                                            select response.Split(new char[] {'='}) into itemResponse
                                            where itemResponse.Length >= 2
-                                           select new FieldDTO() {Key = itemResponse[0], Value = itemResponse[1]});
+                                           select new KeyValueDTO() {Key = itemResponse[0], Value = itemResponse[1]});
             }
             else
             {
@@ -205,7 +208,7 @@ namespace terminalGoogle.Actions
             return formFieldResponse;
         }
 
-        private List<FieldDTO> ExtractPayloadFields(ICrateStorage currentPayload)
+        private List<KeyValueDTO> ExtractPayloadFields(ICrateStorage currentPayload)
         {
             var eventReportMS = currentPayload.CrateContentsOfType<EventReportCM>().SingleOrDefault();
 

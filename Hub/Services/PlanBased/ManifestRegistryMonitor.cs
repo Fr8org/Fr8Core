@@ -153,7 +153,7 @@ namespace Hub.Services
 
         private async Task<PlanDO> CreateAndConfigureNewPlan(Fr8AccountDO systemUser)
         {
-            using (var uow = _unitOfWorkFactory.GetNewUnitOfWork())
+            using (var uow = _unitOfWorkFactory.Create())
             {
                 var activityTemplates = uow.ActivityTemplateRepository.GetQuery().ToArray();
                 var result = await CreatePlanWithMonitoringActivity(uow, systemUser, activityTemplates).ConfigureAwait(false);
@@ -341,7 +341,7 @@ namespace Hub.Services
 
         private PlanDO GetExistingPlan(Fr8AccountDO systemUser)
         {
-            using (var uow = _unitOfWorkFactory.GetNewUnitOfWork())
+            using (var uow = _unitOfWorkFactory.Create())
             {
                 return uow.PlanRepository.GetPlanQueryUncached().FirstOrDefault(x => x.Name == MonitoringPlanName
                                                                                      && x.Fr8AccountId == systemUser.Id
@@ -350,3 +350,4 @@ namespace Hub.Services
         }
     }
 }
+

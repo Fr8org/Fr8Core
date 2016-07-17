@@ -1,34 +1,20 @@
-﻿<md-icon md-font-icon="fa-{{::icon}}" class="fa fa-2x" style="color:{{::color}}"></md-icon>
+﻿<!--HEADER -->
+<md-list-item class="md-2-line fr8-collapse-heading" ng-click="toggle()" ng-class="{'fr8-collapse-collapsed': isCollapsed}">
+    <md-icon md-font-icon="fa-{{::icon}}" class="fa fa-2x" ng-style="{'color': color}"></md-icon>
+    <div class="md-list-item-text" layout="column" style="width: 75%">
+        <h3 ng-if="eventHeader">{{::eventHeader}}</h3>
+        <h4 ng-if="eventSubHeader">{{::eventSubHeader}}</h4>
+    </div>
 
-<div class="md-list-item-text" layout="column" ng-if="type=='fr8pusher_generic_success' || type=='fr8pusher_generic_failure'">
-    <div style="width: 75%">
-        <h3>{{::eventType}}</h3>
-    </div>
-    <div fr8-collapse-content>
-        <p>{{event}}</p>
-    </div>
-</div>
+    <!-- Header Footer -->
+    <md-divider ng-if="!$last"></md-divider>
+    <md-icon md-font-icon="fa-chevron-circle-down" class="fa fa-lg md-secondary fr8-collapse-marker"></md-icon>
+</md-list-item>
 
-<div class="md-list-item-text" layout="column" ng-if="type=='fr8pusher_activity_execution_info'">
-    <div style="width: 75%">
-        <h3>Executing Activity</h3>
-        <h4>{{event.ActivityName}}</h4>
+<!-- CONTENT -->
+<md-list-item class="fr8-collapse-content" ng-hide="isCollapsed" ng-class="{'fr8-collapse-collapsed': isCollapsed}">
+    <div style="overflow: auto" class="md-list-item-text" layout="column">
+        <p ng-if="event.Subject">{{event.Subject}}</p>
+        <p ng-bind-html="eventMessage | parseUrl"></p>
     </div>
-    <fr8-collapse-content>
-        <p>For Plan: {{event.PlanName}}</p>
-        <p>Container: {{event.ContainerId}}</p>
-    </fr8-collapse-content>
-</div>
-
-<div class="md-list-item-text" layout="column" ng-if="type=='fr8pusher_terminal_event'">
-    <div style="width: 75%">
-        <h3>{{::eventType}}</h3>
-        <h4>{{event.ActivityName+'-v'+event.ActivityVersion}}</h4>
-    </div>
-    <div fr8-collapse-content>
-        <p>{{event.Subject}}</p>
-        <p ng-bind-html="event.Message | parseUrl"></p>
-    </div>
-</div>
-
-<md-divider ng-if="!$last"></md-divider>
+</md-list-item>

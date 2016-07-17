@@ -25,6 +25,7 @@ namespace terminalSendGrid
         public void Configuration(IAppBuilder app, bool selfHost)
         {
             ConfigureProject(selfHost, TerminalSendGridStructureMapBootstrapper.LiveConfiguration);
+            SwaggerConfig.Register(_configuration);
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
 
@@ -45,7 +46,7 @@ namespace terminalSendGrid
         }
         protected override void RegisterActivities()
         {
-            ActivityStore.RegisterActivity<SendEmailViaSendGrid_v1>(SendEmailViaSendGrid_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Send_Email_Via_SendGrid_v1>(Send_Email_Via_SendGrid_v1.ActivityTemplateDTO);
         }
     }
 }

@@ -122,7 +122,22 @@ namespace Fr8.Infrastructure.Data.Constants
         DocuSignEnvelope_v3 = 40,
 
         [Display(Name = "Advisory Messages")]
-        AdvisoryMessages = 41
+        AdvisoryMessages = 41,
+
+        [Display(Name = "Hub Subscription")]
+        HubSubscription = 42,
+
+        [Display(Name = "Facebook User Event")]
+        FacebookUserEvent = 43,
+       
+        [Display(Name = "Key-Value pairs list")]
+        KeyValueList = 44,
+
+        [Display(Name = "StatX Item")]
+        StatXItem = 45,
+
+        [Display(Name = "Instagram User Event")]
+        InstagramUserEvent = 46,
     }
 }
 

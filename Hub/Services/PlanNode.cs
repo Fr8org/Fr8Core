@@ -124,36 +124,18 @@ namespace Hub.Services
                 //     }
                 // }
 
-                List<FieldDescriptionsCM> fields = new List<FieldDescriptionsCM>();
                 var result = activities
-                    .SelectMany(x =>
-                    {
-                        fields.AddRange(
-                            _crate.GetStorage(x)
-                                .CratesOfType<FieldDescriptionsCM>()
-                                .Where(f => f.Label != ValidationErrorsLabel && f.Availability != AvailabilityType.Configuration)
-                                .Select(y=>y.Content)
-                                .ToList()
-                        );
-                        return _crate.GetStorage(x).CratesOfType<CrateDescriptionCM>().Where(cratePredicate);
-                    })
+                    .SelectMany(x => _crate.GetStorage(x).CratesOfType<CrateDescriptionCM>().Where(cratePredicate))
                     .Select(x =>
                     {
                         if (x.Content.CrateDescriptions.Count > 0)
                         {
-                            x.Content.CrateDescriptions[0].Fields.AddRange(fields.SelectMany(f => f.Fields).Where(f => availability == AvailabilityType.NotSet || (f.Availability & availability) != 0));
                             foreach (var field in x.Content.CrateDescriptions[0].Fields)
                             {
                                 if (field.SourceCrateLabel == null)
                                 {
-                                    if (x.Content.CrateDescriptions[0].Label == null)
-                                    {
-                                        field.SourceCrateLabel = x.Content.CrateDescriptions[0].ProducedBy;
-                                    }
-                                    else
-                                    {
-                                        field.SourceCrateLabel = x.Content.CrateDescriptions[0].Label;
-                                    }
+                                    field.SourceCrateLabel = x.Content.CrateDescriptions[0].Label ?? x.Content.CrateDescriptions[0].ProducedBy;
+                                    field.SourceActivityId = x.SourceActivityId;
                                 }
                             }
                         }
@@ -348,7 +330,7 @@ namespace Hub.Services
             IEnumerable<ActivityTemplateDTO> curActivityTemplates;
             curActivityTemplates = _activityTemplate
                 .GetAll()
-                .Where(at => at.Category == ActivityCategory.Solution
+                .Where(at => at.Category == Fr8.Infrastructure.Data.States.ActivityCategory.Solution
                     && at.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
                 .OrderBy(t => t.Category)
                 .Select(Mapper.Map<ActivityTemplateDTO>)
@@ -376,14 +358,42 @@ namespace Hub.Services
                 .OrderBy(c => c.Key)
                 .Select(c => new ActivityTemplateCategoryDTO
                 {
-                    Activities = c.Select(Mapper.Map<ActivityTemplateDTO>).ToList(),
+                    Activities = c.GroupBy(x => x.Name)
+                                  .Select(x => x.OrderByDescending(y => int.Parse(y.Version)).First())
+                                  .Select(Mapper.Map<ActivityTemplateDTO>).ToList(),
                     Name = c.Key.ToString()
                 })
                 .ToList();
 
-
             return curActivityTemplates;
         }
 
+        public IEnumerable<ActivityTemplateCategoryDTO> GetActivityTemplatesGroupedByCategories()
+        {
+            var categories = _activityTemplate
+                .GetQuery()
+                .Where(x => x.Categories != null)
+                .SelectMany(x => x.Categories)
+                .Select(x => new { x.ActivityCategory.Name, x.ActivityCategory.IconPath })
+                .OrderBy(x => x.Name)
+                .Distinct()
+                .ToList();
+
+            var result = categories
+                .Select(x => new ActivityTemplateCategoryDTO()
+                {
+                    Name = x.Name,
+                    IconPath = x.IconPath,
+                    Activities = _activityTemplate.GetQuery()
+                        .Where(y => y.Categories != null && y.Categories.Any(z => z.ActivityCategory.Name == x.Name))
+                        .GroupBy(y => y.Name)
+                        .Select(y => Mapper.Map<ActivityTemplateDTO>(y.OrderByDescending(z => Int32.Parse(z.Version)).First()))
+                        .OrderBy(y => y.Label)
+                        .ToList()
+                })
+                .ToList();
+
+            return result;
+        }
     }
 }

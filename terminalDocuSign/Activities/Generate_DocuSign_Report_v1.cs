@@ -14,7 +14,9 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities;
 using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Models;
+using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure;
@@ -23,10 +25,11 @@ using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSign.Activities
 {
-    public class Generate_DocuSign_Report_v1 : BaseTerminalActivity
+    public class Generate_DocuSign_Report_v1 : ExplicitTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("582A519E-7B1F-4424-B67B-EAA526C6953C"),
             Version = "1",
             Name = "Generate_DocuSign_Report",
             Label = "Generate DocuSign Report",
@@ -34,7 +37,12 @@ namespace terminalDocuSign.Activities
             NeedsAuthentication = true,
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Receive,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -44,8 +52,6 @@ namespace terminalDocuSign.Activities
         private const double SolutionVersion = 1.0;
         private const string TerminalName = "DocuSign";
         private const string SolutionBody = @"<p>This is Generate DocuSign Report solution action</p>";
-
-        private const int MaxResultSize = 1000;
 
         // Here in this action we have query builder control to build queries against docusign API and out mt database.
         // Docusign and MT DB have different set of fileds and we want to provide ability to search by any field.
@@ -113,7 +119,7 @@ namespace terminalDocuSign.Activities
                     }
                 }));
 
-                Controls.Add(new Button()
+                Controls.Add(new Button
                 {
                     Label = "Generate Report",
                     Name = "Continue",
@@ -125,13 +131,13 @@ namespace terminalDocuSign.Activities
             }
         }
 
-        private IDocuSignManager _docuSignManager;
+        private readonly IDocuSignManager _docuSignManager;
+        private readonly PlanService _planService;
 
         // Mapping between quiery builder control field names and information about how this field is routed to the backed 
         private Dictionary<string, FieldBackedRoutingInfo> _queryBuilderFields;
 
-        private static readonly string[] Statuses = new[]
-        {
+        private static readonly string[] Statuses = {
             "Created",
             "Deleted",
             "Sent",
@@ -147,10 +153,11 @@ namespace terminalDocuSign.Activities
             "Correct"
         };
         
-        public Generate_DocuSign_Report_v1(ICrateManager crateManager, IDocuSignManager docuSignManager)
+        public Generate_DocuSign_Report_v1(ICrateManager crateManager, IDocuSignManager docuSignManager, PlanService planService)
             : base(crateManager)
         {
             _docuSignManager = docuSignManager;
+            _planService = planService;
             InitQueryBuilderFields();
         }
 
@@ -208,11 +215,7 @@ namespace terminalDocuSign.Activities
             // Real-time search.
             var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(actionUi.QueryBuilder.Value);
             var existingEnvelopes = new HashSet<string>();
-            var searchResult = new StandardPayloadDataCM() { Name = "Docusign Report" };
-
-            // Commented out by yakov.gnusin in scope of FR-2462.
-            // var docuSignAuthToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-            // SearchDocusignInRealTime(docuSignAuthToken, criteria, searchResult, existingEnvelopes);
+            var searchResult = new StandardPayloadDataCM{ Name = "Docusign Report" };
 
             // Merge data from QueryMT action.
             var queryMTResult = Payload.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "Found MT Objects")
@@ -223,7 +226,7 @@ namespace terminalDocuSign.Activities
             // Update report crate.
             Payload.Add(Crate.FromContent("Sql Query Result", searchResult));
 
-            ExecuteClientActivity("ShowTableReport");
+            RequestClientActivityExecution("ShowTableReport");
 
         }
 
@@ -269,18 +272,18 @@ namespace terminalDocuSign.Activities
             {
                 if (map.Item2 == null)
                 {
-                    result.PayloadObject.Add(new FieldDTO(map.Item1, ""));
+                    result.PayloadObject.Add(new KeyValueDTO(map.Item1, ""));
                 }
                 else
                 {
                     string temp;
                     if (obj.TryGetValue(map.Item2, false, false, out temp))
                     {
-                        result.PayloadObject.Add(new FieldDTO(map.Item1, temp ?? ""));
+                        result.PayloadObject.Add(new KeyValueDTO(map.Item1, temp ?? ""));
                     }
                     else
                     {
-                        result.PayloadObject.Add(new FieldDTO(map.Item1, ""));
+                        result.PayloadObject.Add(new KeyValueDTO(map.Item1, ""));
                     }
                 }
             }
@@ -374,23 +377,13 @@ namespace terminalDocuSign.Activities
         {
             Storage.Add(PackControls(new ActivityUi()));
             Storage.AddRange(PackDesignTimeData());
-            PlanFullDTO plan = await PlanHelper.UpdatePlanCategory(ActivityId, "report");
-            }
-
-        //private int ExtractDocuSignResultSize(
-        //    DocuSignAuthTokenDTO authToken,
-        //    List<FilterConditionDTO> criteria)
-        //{
-        //    var docusignQuery = BuildDocusignQuery(authToken, criteria);
-        //    var count = _docuSignManager.CountEnvelopes(authToken, docusignQuery);
-
-        //    return count;
-        //}
+            var plan = await _planService.UpdatePlanCategory(ActivityId, "report");
+        }
 
         public override async Task FollowUp()
         {
             var activityTemplates = (await HubCommunicator.GetActivityTemplates(null, true))
-                .Select(x => Mapper.Map<ActivityTemplateDO>(x))
+                .Select(Mapper.Map<ActivityTemplateDO>)
                 .ToList();
 
             try
@@ -402,65 +395,32 @@ namespace terminalDocuSign.Activities
                 Storage.Add(queryCrate);
 
                 var continueButton = GetControl<Button>("Continue");
-                    if (continueButton != null)
+                if (continueButton != null)
+                {
+                    continueClicked = continueButton.Clicked;
+
+                    if (continueButton.Clicked)
                     {
-                        continueClicked = continueButton.Clicked;
-
-                        if (continueButton.Clicked)
-                        {
-                            continueButton.Clicked = false;
-                        }
+                        continueButton.Clicked = false;
                     }
-
-                    // Commented out by yakov.gnusin in scope of FR-2462.
-                    // if (continueClicked)
-                    // {
-                    //     var docuSignAuthToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-                    //     var criteria = queryCrate.Content.Queries.First().Criteria;
-                    //     var resultSize = ExtractDocuSignResultSize(docuSignAuthToken, criteria);
-                    // 
-                    //     if (resultSize > MaxResultSize)
-                    //     {
-                    //         continueClicked = false;
-                    //         InsertControlAfter(
-                    //             crateStorage,
-                    //             new TextBlock()
-                    //             {
-                    //                 Name = "CannotProceedMessage",
-                    //                 Value = "Fr8 can not currently generate this report because the set size is too big.",
-                    //                 CssClass = "well well-lg"
-                    //             },
-                    //             "QueryBuilder"
-                    //         );
-                    //     }
-                    // }
+                }
 
                 if (continueClicked)
                 {
                     ActivityPayload.ChildrenActivities.Clear();
 
                     var queryFr8WarehouseActivityTemplate = activityTemplates
-                        .FirstOrDefault(x => x.Name == "QueryFr8Warehouse");
+                        .FirstOrDefault(x => x.Name == "Query_Fr8_Warehouse");
                     if (queryFr8WarehouseActivityTemplate == null) { return; }
 
-                    var queryFr8WarehouseTemplate = await GetActivityTemplate("terminalFr8Core", "QueryFr8Warehouse");
+                    var queryFr8WarehouseTemplate = await HubCommunicator.GetActivityTemplate("terminalFr8Core", "Query_Fr8_Warehouse");
 
-                    var queryFr8WarehouseAction = await AddAndConfigureChildActivity(
-                        ActivityId,queryFr8WarehouseTemplate
-                    );
+                    var queryFr8WarehouseAction = await HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, queryFr8WarehouseTemplate);
 
                     var crateStorage = queryFr8WarehouseAction.CrateStorage;
-                        crateStorage.RemoveByLabel("Upstream Crate Label List");
-
-                        var fields = new[]
-                        {
-                            new FieldDTO() { Key = QueryCrateLabel, Value = QueryCrateLabel }
-                        };
-                        var upstreamLabelsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
-                        crateStorage.Add(upstreamLabelsCrate);
-
+                       
                         var upstreamManifestTypes = crateStorage
-                            .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Upstream Crate ManifestType List")
+                            .CrateContentsOfType<KeyValueListCM>(x => x.Label == "Upstream Crate ManifestType List")
                             .FirstOrDefault();
 
                         var controls = crateStorage
@@ -482,15 +442,15 @@ namespace terminalDocuSign.Activities
                         {
                             if (upstreamManifestTypes != null)
                             {
-                                upstreamCrateChooser.SelectedCrates[0].ManifestType.selectedKey = upstreamManifestTypes.Fields[0].Key;
-                                upstreamCrateChooser.SelectedCrates[0].ManifestType.Value = upstreamManifestTypes.Fields[0].Value;
+                                upstreamCrateChooser.SelectedCrates[0].ManifestType.selectedKey = upstreamManifestTypes.Values[0].Key;
+                                upstreamCrateChooser.SelectedCrates[0].ManifestType.Value = upstreamManifestTypes.Values[0].Value;
                             }
 
                             upstreamCrateChooser.SelectedCrates[0].Label.selectedKey = QueryCrateLabel;
                             upstreamCrateChooser.SelectedCrates[0].Label.Value = QueryCrateLabel;
                         }
 
-                    queryFr8WarehouseAction = await ConfigureChildActivity(
+                    queryFr8WarehouseAction = await HubCommunicator.ConfigureChildActivity(
                         ActivityPayload,
                         queryFr8WarehouseAction
                     );
@@ -542,20 +502,21 @@ namespace terminalDocuSign.Activities
         }
 
         private async Task<PlanFullDTO> UpdatePlanName()
-            {
+        {
             if (ConfigurationControls != null)
-                {
-                    var actionUi = new ActivityUi();
+            {
+                var actionUi = new ActivityUi();
                 actionUi.ClonePropertiesFrom(ConfigurationControls);
-                    var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(
-                        actionUi.QueryBuilder.Value
+                var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(
+                    actionUi.QueryBuilder.Value
                     );
 
-                    if (criteria.Count > 0)
-                    {
-                    return await PlanHelper.UpdatePlanName(ActivityId, "Generate a DocuSign Report", ControlHelper.ParseConditionToText(criteria));
+                if (criteria.Count > 0)
+                {
+                    return await _planService.UpdatePlanName(ActivityId, "Generate a DocuSign Report", FilterConditionHelper.ParseConditionToText(criteria));
                 }
             }
+
             return null;
         }
 
@@ -565,7 +526,7 @@ namespace terminalDocuSign.Activities
                 .Select(x =>
                     new FieldDTO()
                     {
-                        Key = x.Key,
+                        Name = x.Key,
                         Label = x.Key,
                         FieldType = x.Value.FieldType
                     }
@@ -624,12 +585,11 @@ namespace terminalDocuSign.Activities
 
             yield return Crate.FromContent(
                 "DocuSign Envelope Report",
-                new FieldDescriptionsCM(
-                    new FieldDTO
+                new KeyValueListCM(
+                    new KeyValueDTO
                     {
                         Key = "DocuSign Envelope Report",
                         Value = "Table",
-                        Availability = AvailabilityType.RunTime
                     }
                 )
             );
@@ -648,24 +608,22 @@ namespace terminalDocuSign.Activities
         {
             if (curDocumentation.Contains("MainPage"))
             {
-                var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
+                var curSolutionPage = new DocumentationResponseDTO(SolutionName, SolutionVersion, TerminalName, SolutionBody);
                 return Task.FromResult(curSolutionPage);
             }
             if (curDocumentation.Contains("HelpMenu"))
             {
                 if (curDocumentation.Contains("ExplainMailMerge"))
                 {
-                    return Task.FromResult(GenerateDocumentationResponse(@"This solution work with DocuSign Reports"));
+                    return Task.FromResult(new DocumentationResponseDTO(@"This solution work with DocuSign Reports"));
                 }
                 if (curDocumentation.Contains("ExplainService"))
                 {
-                    return Task.FromResult(GenerateDocumentationResponse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                    return Task.FromResult(new DocumentationResponseDTO(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
                 }
-                return Task.FromResult(GenerateErrorResponse("Unknown contentPath"));
+                return Task.FromResult(new DocumentationResponseDTO("Unknown contentPath"));
             }
-            return
-                Task.FromResult(
-                    GenerateErrorResponse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
+            return Task.FromResult(new DocumentationResponseDTO("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }

@@ -42,7 +42,9 @@ namespace Hub.Security
             {
                 IsPersistent = true
             }, identity);
-            ObjectFactory.GetInstance<ITracker>().Identify(fr8AccountDO);
+            var curUserRoles = GetRoleNames();
+            if (!curUserRoles.Contains(Roles.Guest))
+                ObjectFactory.GetInstance<ITracker>().Identify(fr8AccountDO);
         }
 
         public Fr8AccountDO GetCurrentAccount(IUnitOfWork uow)
@@ -126,6 +128,11 @@ namespace Hub.Security
         /// <param name="dataObjectType"></param>
         public void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType)
         {
+            SetDefaultObjectSecurity(dataObjectId.ToString(), dataObjectType);
+        }
+
+        public void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType)
+        {
             if (!IsAuthenticated()) return;
 
             var currentUserId = GetCurrentUser();
@@ -161,7 +168,7 @@ namespace Hub.Security
         {
             //check if user is authenticated. Unauthenticated users cannot pass security and come up to here, which means this is internal fr8 event, that need to be passed 
             if (!IsAuthenticated())
-                return true; 
+                return true;
 
             //check if request came from terminal 
             if (Thread.CurrentPrincipal is Fr8Principle)
@@ -176,7 +183,7 @@ namespace Hub.Security
             string fr8AccountId = null;
             if (curObjectType == nameof(PlanNodeDO))
             {
-                if (CheckForAppBuilderPlanAndBypassSecurity(curObjectId,out fr8AccountId))
+                if (CheckForAppBuilderPlanAndBypassSecurity(curObjectId, out fr8AccountId))
                 {
                     return true;
                 }
@@ -204,7 +211,7 @@ namespace Hub.Security
             {
                 return evaluator.Value;
             }
-            
+
             //Object Based permission set checks
             var permissionSets = _securityObjectStorageProvider.GetObjectBasedPermissionSetForObject(curObjectId, curObjectType, profileId);
             return EvaluateProfilesPermissionSet(permissionType, permissionSets, fr8AccountId);
@@ -225,7 +232,7 @@ namespace Hub.Security
                 fr8AccountId = planNode.Fr8AccountId;
                 var mainPlan = uow.PlanRepository.GetById<PlanDO>(planNode.RootPlanNodeId);
                 if (mainPlan.Visibility == PlanVisibility.Internal) return true;
-                return mainPlan.ChildNodes.OfType<SubplanDO>().Any(subPlan => subPlan.ChildNodes.OfType<ActivityDO>().Select(activity => activityTemplate.GetByKey(activity.ActivityTemplateId)).Any(template => template.Name == "AppBuilder"));
+                return mainPlan.ChildNodes.OfType<SubplanDO>().Any(subPlan => subPlan.ChildNodes.OfType<ActivityDO>().Select(activity => activityTemplate.GetByKey(activity.ActivityTemplateId)).Any(template => template.Name == "App_Builder"));
             }
         }
 
@@ -247,7 +254,7 @@ namespace Hub.Security
             {
                 return profileId;
             }
-            
+
             //in case nothing found check database for a profile
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -300,7 +307,7 @@ namespace Hub.Security
                     int orgId;
                     if (int.TryParse(claim.Value, out orgId) && organizationId.HasValue)
                     {
-                        if(orgId == organizationId)
+                        if (orgId == organizationId)
                         {
                             var permissionSetOrg = (from x in rolePermissions.Where(x => x.Role.RoleName != Roles.OwnerOfCurrentObject) where roles.Contains(x.Role.RoleName) from i in x.PermissionSet.Permissions.Select(m => m.Id) select i).ToList();
 
@@ -358,9 +365,9 @@ namespace Hub.Security
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     var currentAccount = GetCurrentAccount(uow);
-                    if (!currentAccount.OrganizationId.HasValue && fr8AccountId != currentAccount.Id) 
+                    if (!currentAccount.OrganizationId.HasValue && fr8AccountId != currentAccount.Id)
                     {
-                        if(currentAccount.Profile?.Name != DefaultProfiles.Fr8Administrator)
+                        if (currentAccount.Profile?.Name != DefaultProfiles.Fr8Administrator)
                             return false;
                     }
                 }
@@ -379,7 +386,7 @@ namespace Hub.Security
 
             //double check for profiles
             if (fr8AccountId == GetCurrentUser()) return true;
-            
+
             return false;
         }
     }

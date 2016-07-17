@@ -182,6 +182,30 @@ namespace Data.Repositories.MultiTenant
             return result;
         }
 
+        public int Count<T>(string fr8AccountId, Expression<Func<T, bool>> where)
+            where T : Manifest
+        {
+            var mtType = _typeStorage.ResolveType(_connectionProvider, typeof(T), _typeStorageProvider, false);
+
+            if (mtType == null)
+            {
+                return 0;
+            }
+
+            return _mtObjectsStorage.QueryScalar(_connectionProvider, fr8AccountId, mtType, ConvertToAst(where, mtType));
+        }
+
+        public int? GetObjectId<T>(string fr8AccountId, Expression<Func<T, bool>> where)
+            where T : Manifest
+        {
+            var mtType = _typeStorage.ResolveType(_connectionProvider, typeof(T), _typeStorageProvider, false);
+
+            var result = _mtObjectsStorage
+                .GetObjectId(_connectionProvider, fr8AccountId, mtType, ConvertToAst(where, mtType));
+
+            return result;
+        }
+
         public IMtQueryable<T> AsQueryable<T>(string curFr8AccountId)
            where T : Manifest
         {

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Control;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using NUnit.Framework;
@@ -66,7 +65,8 @@ namespace terminalDocuSignTests.Integration
                    Name = "Get Google Sheet Data",
                    Label = "Get Google Sheet Data",
                    Tags = "Table Data Generator",
-                   Category = ActivityCategory.Receivers
+                   Category = ActivityCategory.Receivers,
+                   Categories = new[] { ActivityCategories.Receive }
                }
            );
         }
@@ -86,46 +86,6 @@ namespace terminalDocuSignTests.Integration
             // Assert that Dropdownlist  source is null.
             var templateDropdown = (DropDownList)controls.Controls[1];
             Assert.AreEqual(null, templateDropdown.Source);
-        }
-
-        private async Task<ActivityDTO> GetActivityDTO_WithDataStorage(string childAction)
-        {
-            var configureUrl = GetTerminalConfigureUrl();
-
-            var requestDataDTO = await HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO(this);
-
-            AddHubActivityTemplate(requestDataDTO);
-            
-            var responseActionDTO =
-                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
-                    configureUrl,
-                    requestDataDTO
-                );
-
-            responseActionDTO.AuthToken = requestDataDTO.ActivityDTO.AuthToken;
-
-            using (var crateStorage = Crate.GetUpdatableStorage(responseActionDTO))
-            {
-                var controls = crateStorage
-                    .CrateContentsOfType<StandardConfigurationControlsCM>()
-                    .Single();
-
-                var dataSourceDropdown = (DropDownList)controls.Controls[0];
-                dataSourceDropdown.Value = childAction;
-
-                var availableTemplatesCM = crateStorage
-                  .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Available Templates")
-                  .Single();
-                Assert.IsTrue(availableTemplatesCM.Fields.Count > 0);
-
-                var templateDropdown = (DropDownList)controls.Controls[1];
-                templateDropdown.Value = availableTemplatesCM.Fields[0].Value;
-
-                var continueButton = (Button)controls.Controls[2];
-                continueButton.Clicked = true;
-            }
-
-            return responseActionDTO;
         }
 
         [Test]
@@ -149,50 +109,6 @@ namespace terminalDocuSignTests.Integration
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             AssertCrateTypes(crateStorage);
             AssertControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
-        }
-
-        [Test]
-        public void Mail_Merge_Into_DocuSign_FollowUp_Configuration_Check_ChildActivity_Load_Excel_File()
-        {
-            //string childAction = "Load Excel File";
-            //var configureUrl = GetTerminalConfigureUrl();
-
-            //var requestActionDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_ActionDTO();
-
-            //var responseActionDTO = await GetActionDTO_WithDataStorage(childAction);
-            // responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
-            //        configureUrl,
-            //        responseActionDTO
-            //    );
-          
-            //Assert.NotNull(responseActionDTO);
-            //Assert.NotNull(responseActionDTO.CrateStorage);
-            //Assert.AreEqual(1, responseActionDTO.ChildrenActions.Length);
-
-            //// Assert that Selected child Action is present
-            //Assert.AreEqual(1, responseActionDTO.ChildrenActions.Count(x=> x.Label == "Load Excel File"));
-        }
-
-        [Test]
-        public void Mail_Merge_Into_DocuSign_FollowUp_Configuration_Check_ChildActivity_Get_Google_Sheet_Data()
-        {
-            //string childAction = "Extract Spreadsheet Data";
-            //var configureUrl = GetTerminalConfigureUrl();
-
-            //var requestActionDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_ActionDTO();
-
-            //var responseActionDTO = await GetActionDTO_WithDataStorage(childAction);
-            //responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
-            //       configureUrl,
-            //       responseActionDTO
-            //   );
-
-            //Assert.NotNull(responseActionDTO);
-            //Assert.NotNull(responseActionDTO.CrateStorage);
-            //Assert.AreEqual(1, responseActionDTO.ChildrenActions.Length);
-
-            //// Assert that Selected child Action is present
-            //Assert.AreEqual(1, responseActionDTO.ChildrenActions.Count(x => x.Label == "Extract Spreadsheet Data"));
         }
 
         [Test]

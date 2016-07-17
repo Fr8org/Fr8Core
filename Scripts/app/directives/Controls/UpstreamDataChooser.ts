@@ -10,6 +10,7 @@ module dockyard.directives.upstreamDataChooser {
         labelList: model.DropDownList,
         fieldTypeList: model.DropDownList,
         currentAction: model.ActivityDTO;
+        isDisabled: boolean;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -23,7 +24,8 @@ module dockyard.directives.upstreamDataChooser {
         public scope = {
             field: '=',
             currentAction: '=',
-            change: '&'
+            change: '&',
+            isDisabled:'='
         }
 
         constructor(CrateHelper: services.CrateHelper) {

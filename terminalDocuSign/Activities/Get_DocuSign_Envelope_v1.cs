@@ -9,6 +9,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities;
 using terminalDocuSign.Services.New_Api;
+using System;
 
 namespace terminalDocuSign.Activities
 {
@@ -16,6 +17,7 @@ namespace terminalDocuSign.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("0DE0F1FC-EBD3-48A6-9DF4-06F396E9F8C3"),
             Version = "1",
             Name = "Get_DocuSign_Envelope",
             Label = "Get DocuSign Envelope",
@@ -23,7 +25,12 @@ namespace terminalDocuSign.Activities
             NeedsAuthentication = true,
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Receive,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -35,9 +42,9 @@ namespace terminalDocuSign.Activities
         {
         }
 
-        protected override Task InitializeDS()
+        public override Task Initialize()
         {
-            var control = ControlHelper.CreateSpecificOrUpstreamValueChooser(
+            var control = UiBuilder.CreateSpecificOrUpstreamValueChooser(
                "EnvelopeId",
                "EnvelopeIdSelector",
                "Upstream Design-Time Fields"
@@ -49,7 +56,7 @@ namespace terminalDocuSign.Activities
             return Task.FromResult(0);
         }
 
-        protected override async Task FollowUpDS()
+        public override async Task FollowUp()
         {
             var control = GetControl<TextSource>("EnvelopeIdSelector");
             string envelopeId = GetEnvelopeId(control);
@@ -72,7 +79,7 @@ namespace terminalDocuSign.Activities
             return Task.FromResult(0);
         }
 
-        protected override async Task RunDS()
+        public override async Task Run()
         {
             //Get envlopeId from configuration
             var control = GetControl<TextSource>("EnvelopeIdSelector");
@@ -87,7 +94,7 @@ namespace terminalDocuSign.Activities
                 return;
             }
 
-            List<FieldDTO> allFields = new List<FieldDTO>();
+            List<KeyValueDTO> allFields = new List<KeyValueDTO>();
             // This has to be re-thinked. TemplateId is neccessary to retrieve fields but is unknown atm
             // Perhaps it can be received by EnvelopeId
             allFields.AddRange(GetEnvelopeData(envelopeId, null));

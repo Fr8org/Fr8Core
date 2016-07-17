@@ -17,19 +17,25 @@ namespace terminalPapertrail.Actions
     /// <summary>
     /// Write To Log action which writes Log Messages to Papertrail at run time
     /// </summary>
-    public class Write_To_Log_v1 : BaseTerminalActivity
+    public class Write_To_Log_v1 : ExplicitTerminalActivity
     {
         private IPapertrailLogger _papertrailLogger;
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("82689803-f577-47cd-9a7a-dd728f72acfe"),
             Version = "1",
             Name = "Write_To_Log",
             Label = "Write To Log",
             Category = ActivityCategory.Forwarders,
             Terminal = TerminalData.TerminalDTO,
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO
+            WebService = TerminalData.WebServiceDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

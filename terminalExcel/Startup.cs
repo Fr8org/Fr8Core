@@ -27,6 +27,7 @@ namespace terminalExcel
         public void Configuration(IAppBuilder app, bool selfHost)
         {
             ConfigureProject(selfHost, TerminalExcelStructureMapRegistries.LiveConfiguration);
+            SwaggerConfig.Register(_configuration);
             RoutesConfig.Register(_configuration);
 
             app.UseWebApi(_configuration);
@@ -49,7 +50,7 @@ namespace terminalExcel
         {
             ActivityStore.RegisterActivity<Load_Excel_File_v1>(Load_Excel_File_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Save_To_Excel_v1>(Save_To_Excel_v1.ActivityTemplateDTO);
-            ActivityStore.RegisterActivity<SetExcelTemplate_v1>(SetExcelTemplate_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Set_Excel_Template_v1>(Set_Excel_Template_v1.ActivityTemplateDTO);
         }
     }
 }
