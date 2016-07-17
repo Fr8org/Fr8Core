@@ -13,7 +13,7 @@ namespace Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201607141445182_IsFr8OwnTerminal_Property"; }
+            get { return "201607170126340_IsFr8OwnTerminal_Property"; }
         }
         
         string IMigrationMetadata.Source
