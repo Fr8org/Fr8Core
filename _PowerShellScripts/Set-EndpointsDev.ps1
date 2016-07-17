@@ -21,7 +21,7 @@ Write-Host "Update terminal URLs to $newHostname"
 # like done in the TerminalRegistration table. 
 $commandText = "
 	-- Update hostname only if port value is present in endpoint URL and terminal belongs to Fr8
-    UPDATE TerminalRegistration SET [Endpoint] = 
+    UPDATE Terminals SET [Endpoint] = 
 			('$newHostname' + RIGHT ([Endpoint], CHARINDEX (':', REVERSE ([Endpoint]))))
 	WHERE CHARINDEX (':', REVERSE ([Endpoint])) <= 6 
 "
