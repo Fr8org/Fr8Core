@@ -331,7 +331,23 @@
     <Log4netConfigFiles Include="..\Config\log4net.terminals.*" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Config\PlanDirectory\Settings.Debug.config" />
+    <Content Include="ApplicationInsights.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ApplicationInsights.Debug.config">
+      <DependentUpon>ApplicationInsights.config</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ApplicationInsights.Dev.config">
+      <DependentUpon>ApplicationInsights.config</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ApplicationInsights.Release.config">
+      <DependentUpon>ApplicationInsights.config</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Config\terminalYammer\Settings.Release.config" />
@@ -457,7 +473,19 @@
     <Content Include="Config\terminalAtlassian\Settings.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Config\terminalAsana\Settings.Release.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalAsana\Settings.Dev.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\terminalAsana\Settings.config" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Config\PlanDirectory\Settings.Release.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\PlanDirectory\Settings.Debug.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Config\PlanDirectory\Settings.config" />
@@ -467,25 +495,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Config\HealthMonitor\Settings.config.src" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ApplicationInsights.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ApplicationInsights.Debug.config">
-      <DependentUpon>ApplicationInsights.config</DependentUpon>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ApplicationInsights.Dev.config">
-      <DependentUpon>ApplicationInsights.config</DependentUpon>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ApplicationInsights.Release.config">
-      <DependentUpon>ApplicationInsights.config</DependentUpon>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Target Name="BeforeCompile">
     <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
