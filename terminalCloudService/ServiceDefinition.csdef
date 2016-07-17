@@ -194,7 +194,7 @@
       </Site>
       <Site name="terminalDemo" physicalDirectory="..\..\..\terminalDemo\azure.publish">
         <Bindings>
-          <Binding name="Endpoint1" endpointName="terminalDemo" />
+          <!--<Binding name="Endpoint1" endpointName="terminalDemo" />-->
           <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalDemo.fr8.co" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="dev-terminalDemo.fr8.co" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="demo-terminalDemo.fr8.co" />
@@ -313,13 +313,17 @@
       <InputEndpoint name="terminalAtlassian" protocol="http" port="39768" />
       <InputEndpoint name="terminalYammer" protocol="http" port="39555" />
       <InputEndpoint name="terminalQuickBooks" protocol="http" port="48317" />
-      <InputEndpoint name="terminalDemo" protocol="http" port="22555" />
 	    <InputEndpoint name="terminalStatX" protocol="http" port="48675" />
       <InputEndpoint name="terminalFacebook" protocol="http" port="22666" />
       <InputEndpoint name="terminalBox" protocol="http" port="54642" />
       <InputEndpoint name="terminalTelegram" protocol="http" port="59022" />
       <InputEndpoint name="terminalInstagram" protocol="http" port="10109" />
       <InputEndpoint name="PlanDirectory" protocol="http" port="64879" />
+      
+      <!-- 
+      Deploy this one on another cloud service 
+      <InputEndpoint name="terminalDemo" protocol="http" port="22555" /> 
+      -->
     </Endpoints>
     <Imports>
       <Import moduleName="RemoteAccess" />
