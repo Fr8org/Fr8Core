@@ -13,6 +13,7 @@ using Fr8.TerminalBase.Helpers;
 using Newtonsoft.Json;
 using ServiceStack;
 using terminalSalesforce.Infrastructure;
+using System;
 
 namespace terminalSalesforce.Actions
 {
@@ -20,6 +21,7 @@ namespace terminalSalesforce.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("d8cf2810-87b9-43e7-a69b-a344823fd092"),
             Version = "1",
             Name = "Get_Data",
             Label = "Get Data from Salesforce",

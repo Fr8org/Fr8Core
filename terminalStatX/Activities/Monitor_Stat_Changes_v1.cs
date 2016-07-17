@@ -21,6 +21,7 @@ namespace terminalStatX.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("47696645-2b77-4dad-9a0f-dd3b53f52063"),
             Name = "Monitor_Stat_Changes",
             Label = "Monitor Stat Changes",
             Version = "1",
@@ -199,7 +200,7 @@ namespace terminalStatX.Activities
 
             if (stat == null)
             {
-                TerminateHubExecution("Stat was not found in the payload.");
+                RequestPlanExecutionTermination("Stat was not found in the payload.");
             }
 
             Payload.Add(Crate.FromContent<StandardPayloadDataCM>(RunTimeCrateLabel, new StandardPayloadDataCM(CreateStatKeyValueItems(stat))));

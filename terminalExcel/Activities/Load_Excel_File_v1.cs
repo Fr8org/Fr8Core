@@ -223,6 +223,7 @@ namespace terminalExcel.Activities
         }
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("df2df85f-9364-48af-aa97-bb8adccc91d7"),
             Name = "Load_Excel_File",
             Label = "Load Excel File",
             Version = "1",

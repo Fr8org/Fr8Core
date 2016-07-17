@@ -9,6 +9,7 @@ using Fr8.TerminalBase.BaseClasses;
 using terminalInstagram.Interfaces;
 using Fr8.Infrastructure.Data.Crates;
 using System.Linq;
+using System;
 
 namespace terminalInstagram.Actions
 {
@@ -17,6 +18,7 @@ namespace terminalInstagram.Actions
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("07FE0129-1B8D-453E-9F80-4E47315A19E8"),
             Name = "Monitor_For_New_Media_Posted",
             Label = "Monitor For New Media Posted",
             Category = ActivityCategory.Monitors,
@@ -101,7 +103,7 @@ namespace terminalInstagram.Actions
             var eventCrate = Payload.CrateContentsOfType<EventReportCM>(x => x.Label == "Instagram user event").FirstOrDefault();
             if (eventCrate == null)
             {
-                TerminateHubExecution("Instagram event payload was not found");
+                RequestPlanExecutionTermination("Instagram event payload was not found");
                 return;
             }
 
@@ -110,14 +112,14 @@ namespace terminalInstagram.Actions
 
             if (instagramEventPayload == null)
             {
-                TerminateHubExecution("Instagram event payload was not found");
+                RequestPlanExecutionTermination("Instagram event payload was not found");
                 return;
             }
             var instagramPost = await _instagramIntegration.GetPostById(instagramEventPayload.MediaId, AuthorizationToken.Token);
 
             if (instagramPost == null)
             {
-                TerminateHubExecution("Deletions are not handled by monitor feed posts");
+                RequestPlanExecutionTermination("Deletions are not handled by monitor feed posts");
                 return;
             }
 
