@@ -12,7 +12,7 @@ module dockyard.services {
         removeAllEvents(channel: string): void;
         disconnect(): void;
 
-        frontendEvent(message: string, eventType: string);
+        frontendEvent(message: string, eventType: dockyard.directives.NotificationType);
         frontendFailure(message: string): void;
         frontendSuccess(message: string): void;
     }
@@ -94,17 +94,17 @@ module dockyard.services {
 
 
 
-        public frontendEvent(message: string, eventType: string) {
+        public frontendEvent(message: string, eventType: dockyard.directives.NotificationType) {
             this.UserService.getCurrentUser().$promise.then(data => {
 
-                let channelName = this.buildChannelName(data.emailAddress);
+                let channelName = this.buildChannelName(data.id);
 
                 // to use this way we must enable client side notifications in Pusher.com 
                 //var channel = this.client.subscribe(channelName);
                 //channel.trigger('client-' + eventType, message);
 
                 // this makes me sick but i can`t see other way now except roundabout call server side notification endpoint to trigger frontend, like loop...
-                let callback = this.client.channels.channels[channelName].callbacks._callbacks["_" + eventType][0];
+                let callback = this.client.channels.channels[channelName].callbacks._callbacks["_" + dockyard.directives.NotificationType[eventType]][0];
 
                 // we don`t want see '$digest already in progress'
                 this.timeout(() => { callback.fn(message);},500,true) ;
@@ -113,11 +113,11 @@ module dockyard.services {
         }
 
         public frontendFailure(message: string) {
-            this.frontendEvent(message, pusherNotifierFailureEvent);
+            this.frontendEvent(message, dockyard.directives.NotificationType.GenericFailure);// pusherNotifierFailureEvent);
         }
 
         public frontendSuccess(message: string) {
-            this.frontendEvent(message, pusherNotifierSuccessEvent);
+            this.frontendEvent(message, dockyard.directives.NotificationType.GenericSuccess);// pusherNotifierSuccessEvent);
         }
 
     }
