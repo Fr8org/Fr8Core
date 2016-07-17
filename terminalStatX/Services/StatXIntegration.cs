@@ -496,6 +496,7 @@ namespace terminalStatX.Services
                     VisualType = jObject["visualType"]?.ToString(),
                     Value = jObject["value"]?.ToString(),
                     Notes = jObject["notes"]?.ToString(),
+                    CurrentIndex = jObject["currentIndex"] != null ? int.Parse(jObject["currentIndex"].ToString()) : 0,
                     LastUpdatedDateTime = jObject["lastUpdatedDateTime"] != null ? DateTime.Parse(jObject["lastUpdatedDateTime"].ToString()) : (DateTime?)null,
                     NotesLastUpdatedDateTime = jObject["notesLastUpdatedDateTime"] != null ? DateTime.Parse(jObject["notesLastUpdatedDateTime"].ToString()) : (DateTime?)null,
                 };
