@@ -57,7 +57,6 @@
     <ServiceConfiguration Include="Config\terminalCloudService\ServiceConfiguration.Demo.cscfg" />
     <ServiceConfiguration Include="Config\terminalCloudService\ServiceConfiguration.Release.cscfg" />
     <ServiceConfiguration Include="ServiceConfiguration.Local.cscfg" />
-    <ServiceConfiguration Include="Config\terminalCloudService\ServiceConfiguration.Cloud.cscfg" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -111,7 +110,7 @@
   </PropertyGroup>
   <!-- These SecondarySite items represent the collection of sites (other than the web application associated with the role) that need special packaging. -->
   <ItemGroup>
-	<SecondarySite Include="..\terminalAsana\terminalAsana.csproj" />
+    <SecondarySite Include="..\terminalAsana\terminalAsana.csproj" />
     <SecondarySite Include="..\terminalAzure\terminalAzure.csproj" />
     <SecondarySite Include="..\terminalBasecamp2\terminalBasecamp2.csproj" />
     <SecondarySite Include="..\terminalFr8Core\terminalFr8Core.csproj" />
