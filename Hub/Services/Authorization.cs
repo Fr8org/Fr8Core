@@ -498,11 +498,6 @@ namespace Hub.Services
             return true;
         }
 
-        public void RenewToken(AuthorizationTokenDTO token)
-        {
-            throw new NotImplementedException();
-        }
-
         public void InvalidateToken(IUnitOfWork uow, string userId, ActivityDTO curActivityDto)
         {
             var activityTemplate = _activityTemplate.GetByNameAndVersion(curActivityDto.ActivityTemplate.Name, curActivityDto.ActivityTemplate.Version);
@@ -585,12 +580,12 @@ namespace Hub.Services
         /// Not all fields of token will be replaced in database!
         /// </summary>
         /// <param name="token"></param>
-        public void RenewToken(AuthorizationTokenDO token)
+        public void RenewToken(AuthorizationTokenDTO token)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var authToken = uow.AuthorizationTokenRepository
-                    .FindTokenById(token.Id);
+                    .FindTokenById(Guid.Parse(token.Id));
 
                 if (authToken == null)
                     return;
