@@ -13,14 +13,16 @@ Add-Type -Path "C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\
 $template = "
 ` <html xmlns='http://www.w3.org/1999/xhtml'>
 ` <head>
-`    <title></title>
+`    <title>Version information</title>
+`    <meta http-equiv='Cache-Control' content='no-cache, no-store, must-revalidate'/>
+`    <meta http-equiv='Pragma' content='no-cache'/>
+`    <meta http-equiv='Expires' content='0'/>
 ` </head>
 ` <body>
 `    This web application was deployed from the <a href='https://fr8.visualstudio.com/DefaultCollection/fr8/_build?_a=summary&buildId={0}'>build #{0}</a>. Commit id is <a href='https://github.com/Fr8org/Fr8Core/commit/{1}'>{1}</a>.
 ` </body>
 ` </html>
 ` "
-
 
 $rootDir = Split-Path -parent (Split-Path -parent $myInvocation.MyCommand.Path)
 $fileName = "ver.html"
@@ -37,12 +39,10 @@ ls $rootDir "*.csproj" -Recurse -File -Name | ? { $_ -inotmatch 'Tests' } | ForE
     Set-Content $path -Value ("$template" -f $buildId, $commitId)
 
     # Update project file to get version files deployed
-    # $project = [xml] (Get-Content $projectPath)
     [System.Xml.Linq.XNamespace] $ns = "http://schemas.microsoft.com/developer/msbuild/2003";
 
     $project = [System.Xml.Linq.XDocument]::Load($projectPath);
     $itemGroupNode = $project.Descendants($ns + "Project")[0].Descendants($ns + "ItemGroup")[0]
-
 
     # See if already added
     $exists = ($itemGroupNode.Descendants($ns + "Content") | Where-Object  { ($_.Name.LocalName -eq "Content") -and ($_.FirstAttribute.Value -eq $fileName ) } | Select Name) -ne $null
