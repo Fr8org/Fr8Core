@@ -7,7 +7,7 @@ namespace Data.Migrations
     {
         public override void Up()
         {
-            AddColumn("dbo.TerminalRegistration", "IsFr8OwnTerminal", c => c.Boolean(nullable: false));
+            AddColumn("dbo.TerminalRegistration", "IsFr8OwnTerminal", c => c.Boolean(nullable: false, defaultValue: true));
         }
         
         public override void Down()
