@@ -97,7 +97,7 @@ namespace terminalFr8Core.Activities
                                 RaiseError("Target Additional Plan for transition is not specified. Please choose it in the Make a Decision activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
                                 return;
                             }
-                            LaunchPlan(containerTransitionField.TargetNodeId.Value);
+                            RequestLaunchPlan(containerTransitionField.TargetNodeId.Value);
                             return;
                         case ContainerTransitions.JumpToSubplan:
                             if (!containerTransitionField.TargetNodeId.HasValue)
@@ -111,7 +111,7 @@ namespace terminalFr8Core.Activities
                             Success();
                             return;
                         case ContainerTransitions.StopProcessing:
-                            TerminateHubExecution();
+                            RequestPlanExecutionTermination();
                             return;
                         case ContainerTransitions.SuspendProcessing:
                             throw new NotImplementedException();

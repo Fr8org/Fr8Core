@@ -71,7 +71,7 @@
 //                }
 //            }
 
-//            ExecuteClientActivity("ShowTableReport");
+//            RequestClientActivityExecution("ShowTableReport");
 //            return Task.FromResult(0);
 //        }
 

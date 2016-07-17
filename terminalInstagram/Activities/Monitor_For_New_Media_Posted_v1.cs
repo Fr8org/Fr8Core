@@ -103,7 +103,7 @@ namespace terminalInstagram.Actions
             var eventCrate = Payload.CrateContentsOfType<EventReportCM>(x => x.Label == "Instagram user event").FirstOrDefault();
             if (eventCrate == null)
             {
-                TerminateHubExecution("Instagram event payload was not found");
+                RequestPlanExecutionTermination("Instagram event payload was not found");
                 return;
             }
 
@@ -112,14 +112,14 @@ namespace terminalInstagram.Actions
 
             if (instagramEventPayload == null)
             {
-                TerminateHubExecution("Instagram event payload was not found");
+                RequestPlanExecutionTermination("Instagram event payload was not found");
                 return;
             }
             var instagramPost = await _instagramIntegration.GetPostById(instagramEventPayload.MediaId, AuthorizationToken.Token);
 
             if (instagramPost == null)
             {
-                TerminateHubExecution("Deletions are not handled by monitor feed posts");
+                RequestPlanExecutionTermination("Deletions are not handled by monitor feed posts");
                 return;
             }
 

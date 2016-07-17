@@ -127,12 +127,12 @@ namespace terminalSlack.Actions
                 }
                 else
                 {
-                    TerminateHubExecution("Incoming message doesn't belong to specified channel. No downstream activities are executed");
+                    RequestPlanExecutionTermination("Incoming message doesn't belong to specified channel. No downstream activities are executed");
                 }                
             }
             else
             {
-                TerminateHubExecution("Plan successfully activated. It will wait and respond to specified Slack postings");
+                RequestPlanExecutionTermination("Plan successfully activated. It will wait and respond to specified Slack postings");
             }
 
             return Task.FromResult(0);

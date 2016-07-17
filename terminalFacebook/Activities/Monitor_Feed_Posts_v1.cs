@@ -112,7 +112,7 @@ namespace terminalFacebook.Activities
             var eventCrate = Payload.CrateContentsOfType<EventReportCM>(x => x.Label == "Facebook user event").FirstOrDefault();
             if (eventCrate == null)
             {
-                TerminateHubExecution("Facebook event payload was not found");
+                RequestPlanExecutionTermination("Facebook event payload was not found");
                 return;
             }
 
@@ -121,7 +121,7 @@ namespace terminalFacebook.Activities
 
             if (facebookEventPayload == null)
             {
-                TerminateHubExecution("Facebook event payload was not found");
+                RequestPlanExecutionTermination("Facebook event payload was not found");
                 return;
             }
             var fbPost = await _fbIntegration.GetPostByTime(AuthorizationToken.Token, facebookEventPayload.Time);
@@ -130,7 +130,7 @@ namespace terminalFacebook.Activities
             {
                 //this probably was a deletion operation
                 //let's stop for now
-                TerminateHubExecution("Deletions are not handled by monitor feed posts");
+                RequestPlanExecutionTermination("Deletions are not handled by monitor feed posts");
                 return;
             }
 

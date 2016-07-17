@@ -281,7 +281,7 @@ namespace terminalFr8Core.Activities
                 //let's just activate and return
                 await UpdateMetaControls();
                 //await PushLaunchURLNotification(curActivityDO);
-                TerminateHubExecution();
+                RequestPlanExecutionTermination();
                 return;
             }
             RemoveFlagCrate();

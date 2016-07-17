@@ -200,7 +200,7 @@ namespace terminalStatX.Activities
 
             if (stat == null)
             {
-                TerminateHubExecution("Stat was not found in the payload.");
+                RequestPlanExecutionTermination("Stat was not found in the payload.");
             }
 
             Payload.Add(Crate.FromContent<StandardPayloadDataCM>(RunTimeCrateLabel, new StandardPayloadDataCM(CreateStatKeyValueItems(stat))));
