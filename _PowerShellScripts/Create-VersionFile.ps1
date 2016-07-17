@@ -28,6 +28,8 @@ $rootDir = Split-Path -parent (Split-Path -parent $myInvocation.MyCommand.Path)
 $fileName = "ver.html"
 
 ls $rootDir "*.csproj" -Recurse -File -Name | ? { $_ -inotmatch 'Tests' } | ForEach-Object {
+
+    # Creating the version file
     $path = $rootDir + "\" + (Split-Path $_ -Parent) + "\" + "$fileName"
     $projectPath = $rootDir + "\" + $_
     if (-not (Test-Path $path)) {
@@ -52,6 +54,18 @@ ls $rootDir "*.csproj" -Recurse -File -Name | ? { $_ -inotmatch 'Tests' } | ForE
         `  (new-object System.Xml.Linq.XAttribute("Include", $fileName)))
         $itemGroupNode.Add($contentNode)
         $project.Save($projectPath) 
+
+        # Disable cache (if web project) 
+        $configPath = $rootDir + "\" + (Split-Path $_ -Parent) + "\web.config"
+        if (Test-Path $configPath) {
+        Echo "Configuration file file found"
+            $xml = [xml](Get-Content $configPath)
+            $location = $xml.CreateElement("location")
+            $location.SetAttribute(“path”,$fileName);
+            $location.InnerXml = "<system.webServer><staticContent><clientCache cacheControlMode='DisableCache'/></staticContent></system.webServer>"
+            $xml.configuration.AppendChild($location)
+            $xml.Save($configPath)
+        }
     }    
     else
     {
