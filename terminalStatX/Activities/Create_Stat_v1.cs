@@ -30,6 +30,7 @@ namespace terminalStatX.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("28ea95d8-7d57-4be3-a2c5-bf6f1c5f4386"),
             Name = "Create_Stat",
             Label = "Create Stat",
             Version = "1",
