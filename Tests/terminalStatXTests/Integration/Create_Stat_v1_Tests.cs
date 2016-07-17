@@ -35,7 +35,7 @@ namespace terminalStatXTests.Integration
 
             Assert.AreEqual(2, crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls.Count, "Control count is not 2");
             Assert.IsTrue(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0] is RadioButtonGroup, "First control isn't a RadioButtonGroup");
-            Assert.AreEqual("StatTypesList", crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0].Name, "Invalid Name on control");
+            Assert.AreEqual("StatXGroupsSelectionGroup", crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0].Name, "Invalid Name on control");
         }
 
         [Test]
@@ -58,7 +58,7 @@ namespace terminalStatXTests.Integration
 
             Assert.AreEqual(2, crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls.Count, "Control count is not 2");
             Assert.IsTrue(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0] is RadioButtonGroup, "First control isn't a RadioButtonGroup");
-            Assert.AreEqual("StatTypesList", crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0].Name, "Invalid Name on control");
+            Assert.AreEqual("StatXGroupsSelectionGroup", crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0].Name, "Invalid Name on control");
         }
 
         private async Task<ActivityDTO> CompleteInitialConfiguration()
