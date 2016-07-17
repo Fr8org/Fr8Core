@@ -123,7 +123,7 @@ namespace terminalSalesforce.Actions
             if (sfEventPayloads.Count == 0 || 
                 !sfEventPayloads.Any(payload => payload.Label.Equals("Salesforce Event Notification Payload")))
             {
-                RequestHubExecutionTermination("External event data is missing");
+                RequestPlanExecutionTermination("External event data is missing");
                 return;
             }
 
