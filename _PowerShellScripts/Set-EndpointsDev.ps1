@@ -1,7 +1,5 @@
 ﻿<#
     .SYNOPSIS
-  	THIS SCRIPT FILE IS OBSOLETE. THE BUILD SYSTEM IS BEING MIGRATED TO THE SCRIPT Update-TerminalHostnameInDb.ps1.
-	Please do any changes in that script. 
 	The script updates terminal hostname in the database to prepare it for integration testing.
 	Called during CI process for non-Dev/Master builds. 
 #>
@@ -18,17 +16,15 @@ param(
 
 Write-Host "Update terminal URLs to $newHostname"
 
-$commandText = "UPDATE Terminals SET [Endpoint] = 
-('$newHostname' +
-		(CASE when CHARINDEX (':', REVERSE ([Endpoint])) = 0
-		    then ''
-		else 
-			RIGHT ([Endpoint], CHARINDEX (':', REVERSE ([Endpoint])))
-		END))
-		
-		WHERE 
-		
-		"
+# Note: this script will incorrectly replace hostanames for a non-Fr8 terminals 
+# if it contains port number. To avoid that we need to add the column IsFr8OwnTerminal 
+# like done in the TerminalRegistration table. 
+$commandText = "
+	-- Update hostname only if port value is present in endpoint URL and terminal belongs to Fr8
+    UPDATE TerminalRegistration SET [Endpoint] = 
+			('$newHostname' + RIGHT ([Endpoint], CHARINDEX (':', REVERSE ([Endpoint]))))
+	WHERE CHARINDEX (':', REVERSE ([Endpoint])) <= 6 
+"
 Write-Host $commandText 
 
 if ([System.String]::IsNullOrEmpty($overrideDbName) -ne $true) {
@@ -46,33 +42,11 @@ $command.ExecuteNonQuery()
 
 
 $commandText = "
-IF (EXISTS (SELECT * 
-                 FROM INFORMATION_SCHEMA.TABLES 
-                 WHERE TABLE_SCHEMA = 'dbo' 
-                 AND  TABLE_NAME = 'TerminalRegistration'))
-BEGIN
-	DELETE from TerminalRegistration where UserId is not null;
-	
-	WITH cte
-    AS (SELECT ROW_NUMBER() OVER (PARTITION BY 
-     ('$newHostname' +
-        (CASE when CHARINDEX (':', REVERSE ([Endpoint])) = 0
-            then ''
-        else 
-            RIGHT ([Endpoint], CHARINDEX (':', REVERSE ([Endpoint])))end ))
-     ORDER BY ( SELECT 0)) RN
-        FROM   TerminalRegistration)
-	delete FROM cte
-	WHERE  RN > 1
-
+	-- Update hostname only if port value is present in endpoint URL and terminal belongs to Fr8
     UPDATE TerminalRegistration SET [Endpoint] = 
-			('$newHostname' +
-		(CASE when CHARINDEX (':', REVERSE ([Endpoint])) = 0
-		    then ''
-		else 
-			RIGHT ([Endpoint], CHARINDEX (':', REVERSE ([Endpoint])))
-		END))
-END";
+			('$newHostname' + RIGHT ([Endpoint], CHARINDEX (':', REVERSE ([Endpoint]))))
+	WHERE CHARINDEX (':', REVERSE ([Endpoint])) <= 6 AND IsFr8OwnTerminal = 1
+";
 
 $command = new-object system.data.sqlclient.sqlcommand($commandText, $connection)
 $command.CommandTimeout = 20 #20 seconds
