@@ -28,6 +28,7 @@ namespace terminalAsana.Activities
     {
         public static readonly ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("0ee8bf8f-941e-4861-beb8-d7d98536eba8"),
             Name = "Post_Comment",
             Label = "Post Comment",
             Category = ActivityCategory.Forwarders,

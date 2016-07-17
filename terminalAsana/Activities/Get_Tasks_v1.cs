@@ -28,6 +28,7 @@ namespace terminalAsana.Activities
     {
         public static readonly  ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("4b21e180-8029-4352-a756-52973cd98717"),
             Name = "Get_Tasks",
             Label = "Get Tasks",
             Category = ActivityCategory.Receivers,
