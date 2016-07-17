@@ -68,7 +68,7 @@ namespace Fr8.TerminalBase.BaseClasses
             AddControls((IEnumerable<ControlDefinitionDTO>) controlsList);
         }
 
-        private Crate<StandardConfigurationControlsCM> EnsureControlsCrate()
+        private void EnsureControlsCrate()
         {
             var controlsCrate = Storage.CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
@@ -79,8 +79,6 @@ namespace Fr8.TerminalBase.BaseClasses
             }
 
             _configurationControls = controlsCrate.Content;
-
-            return controlsCrate;
         }
     }
 }
