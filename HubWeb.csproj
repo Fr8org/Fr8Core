@@ -535,7 +535,6 @@
     <Content Include="Content\icons\process-icon-64x64.png" />
     <Content Include="Content\icons\web_services\basecamp2-icon-64x64.png" />
     <Content Include="Content\icons\web_services\Box-logo_64x64.png" />
-    <Content Include="Content\icons\web_services\facebook-icon-64x64.png" />
     <Content Include="Content\icons\web_services\fr8-demo-icon-64x64.png" />
     <Content Include="Content\icons\web_services\gmail-icon-64x64.png" />
     <Content Include="Content\icons\web_services\instagram-icon-64x64.png" />
@@ -1059,7 +1058,6 @@
     <Content Include="Views\Support\Index.cshtml" />
     <Content Include="Views\AngularTemplate\ChangePassword.cshtml" />
     <Content Include="Views\Company\Index.cshtml" />
-    <Content Include="Views\Shared\CDN\_AngularAppScripts.cshtml" />
     <Content Include="Views\Shared\_AngularAppStyles.cshtml" />
     <Content Include="Views\Shared\CDN\_AngularAppStyles.cshtml" />
     <Content Include="Views\AngularTemplate\SourceableCriteria.cshtml" />

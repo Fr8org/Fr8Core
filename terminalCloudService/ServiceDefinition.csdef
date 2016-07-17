@@ -5,6 +5,17 @@
       <Certificate name="fr8Certificate" storeLocation="LocalMachine" storeName="CA" />
     </Certificates>
     <Sites>
+      <Site name="terminalAsana" physicalDirectory="..\..\..\terminalAsana\azure.publish">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="terminalAsana" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalAsana.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="dev-terminalAsana.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="demo-terminalAsana.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="terminalAsana.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="dev-terminalAsana.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-terminalAsana.fr8.co" />
+        </Bindings>
+      </Site>
       <Site name="terminalAzure" physicalDirectory="..\..\..\terminalAzure\azure.publish">
         <Bindings>
           <Binding name="Endpoint1" endpointName="terminalAzure" />
@@ -255,6 +266,7 @@
       <Setting name="CoreWebServerUrl"/>
       <Setting name="HubApiBaseUrl"/>
       <Setting name="LoggerNamePrefix"/>
+      <Setting name="terminalAsana.TerminalEndpoint"/>
       <Setting name="terminalAtlassian.TerminalEndpoint"/>
       <Setting name="terminalAzure.TerminalEndpoint"/>
       <Setting name="terminalBasecamp2.TerminalEndpoint"/>
@@ -285,6 +297,7 @@
       respected, integration tests will fail while master branch (Production) deployment.-->
       <InputEndpoint name="server80" protocol="http" port="80" />
       <InputEndpoint name="server443" protocol="https" port="443" certificate="fr8Certificate" />
+      <InputEndpoint name="terminalAsana" protocol="http" port="56785" />
       <InputEndpoint name="terminalAzure" protocol="http" port="46281" />
       <InputEndpoint name="terminalSlack" protocol="http" port="39504" />
       <InputEndpoint name="terminalBasecamp2" protocol="http" port="61121" />
