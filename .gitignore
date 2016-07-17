@@ -9,6 +9,7 @@
 
 # Fr8 settings file
 [Ss]ettings.config
+[Ss]ettings.Debug.config
 [Ss]ettings.Dev.config
 [Ss]ettings.Release.config
 [Ss]ettings.Demo.config

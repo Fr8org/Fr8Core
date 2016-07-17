@@ -8,6 +8,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using terminalFr8Core.Infrastructure;
+using System;
 
 namespace terminalFr8Core.Activities
 {
@@ -15,6 +16,7 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("bb019231-435a-49c3-96db-ab4ae9e7fb23"),
             Name = "Connect_To_Sql",
             Label = "Connect To SQL",
             Category = ActivityCategory.Processors,

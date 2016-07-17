@@ -22,6 +22,7 @@ namespace terminalDocuSign.Actions
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("68fb036f-c401-4492-a8ae-8f57eb59cc86"),
             Version = "1",
             Name = "Monitor_DocuSign_Envelope_Activity",
             Label = "Monitor DocuSign Envelope Activity",
@@ -140,7 +141,7 @@ namespace terminalDocuSign.Actions
 
             if (envelopeStatus == null)
             {
-                TerminateHubExecution("Evelope was not found in the payload.");
+                RequestPlanExecutionTermination("Evelope was not found in the payload.");
                 return;
             }
 
@@ -180,7 +181,7 @@ namespace terminalDocuSign.Actions
                         else
                         {
                             //this event isn't about us let's stop execution
-                            TerminateHubExecution();
+                            RequestPlanExecutionTermination();
                             return;
                         }
 
@@ -199,7 +200,7 @@ namespace terminalDocuSign.Actions
                             else
                             {
                                 //this event isn't about us let's stop execution
-                                TerminateHubExecution();
+                                RequestPlanExecutionTermination();
                                 return;
                             }
                         }
