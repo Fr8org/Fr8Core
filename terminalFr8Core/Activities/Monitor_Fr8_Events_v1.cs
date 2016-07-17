@@ -16,6 +16,7 @@ namespace terminalFr8Core.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new System.Guid("e75112ed-e17d-4b90-a337-50a5d59b1866"),
             Name = "Monitor_Fr8_Events",
             Label = "Monitor Fr8 Events",
             Version = "1",
@@ -71,7 +72,7 @@ namespace terminalFr8Core.Activities
         {
             //build a controls crate to render the pane
             var eventSubscription = PackCrate_EventSubscriptions();
-            var textBlock = ControlHelper.GenerateTextBlock("Monitor Fr8 Events",
+            var textBlock = UiBuilder.GenerateTextBlock("Monitor Fr8 Events",
                 "This Activity doesn't require any configuration.", "well well-lg");
             var curControlsCrate = PackControlsCrate(textBlock);
 

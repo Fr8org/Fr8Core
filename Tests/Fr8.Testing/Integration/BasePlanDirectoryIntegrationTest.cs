@@ -15,20 +15,9 @@ namespace Fr8.Testing.Integration
     {
         private HttpClient _httpClient;
 
-        protected virtual string TestUserEmail
-        {
-            get { return "integration_test_runner@fr8.company"; }
-        }
-
-        protected virtual string TestUserPassword
-        {
-            get { return "fr8#s@lt!"; }
-        }
-
-        public override string TerminalName
-        {
-            get { return "PlanDirectory"; }
-        }
+        protected virtual string TestUserEmail => "integration_test_runner@fr8.company";
+        protected virtual string TestUserPassword => "fr8#s@lt!";
+        public override string TerminalName => "PlanDirectory";
 
         public BasePlanDirectoryIntegrationTest()
         {
@@ -43,7 +32,6 @@ namespace Fr8.Testing.Integration
             _httpClient.Timeout = TimeSpan.FromMinutes(2);
 
             Crate = new CrateManager();
-            _hmacService = new Fr8HMACService(ObjectFactory.GetInstance<MediaTypeFormatter>());
             _baseUrl = GetPlanDirectoryBaseApiUrl();
             RestfulServiceClient = new RestfulServiceClient(_httpClient);
 

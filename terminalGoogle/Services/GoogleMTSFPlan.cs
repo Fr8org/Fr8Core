@@ -31,7 +31,6 @@ namespace terminalGoogle.Services
         {
             _userId = userId;
             _hubCommunicator = hubCommunicator;
-            _hubCommunicator.Authorize( _userId);
             _slackChannels = slackChannels;
 
         }
@@ -104,25 +103,39 @@ namespace terminalGoogle.Services
                 slackTokens = tokens.Where(t => t.Name == "terminalSlack").FirstOrDefault();
                 if (plans.Count() == 0)
                 {
-                    await PlanConfiguration();
-                    Logger.Info("new MonitorTerminalSubmissionPlan created");
-
-                    Logger.Info("Run MonitorTerminalSubmissionPlan Plan");
-                    await RunPlan();
-                    Logger.Info("MonitorTerminalSubmissionPlan Plan activeted");
+                    await ConfigureAndRunPlan();
                 }
                 else
                 {
-                    Logger.Info("Plan already exist, trying to reapply tokens");
+                    Logger.Info("Plan already exist");
+                    var plan = plans.FirstOrDefault();
+                    if (plan.Plan.SubPlans.FirstOrDefault().Activities.Count < 8)
+                    {
+                        Logger.Info("Deleting incomplete Plan");
+                        await _hubCommunicator.DeletePlan(plan.Plan.Id);
+
+                        await ConfigureAndRunPlan();
+                    }
+                    Logger.Info("trying to reapply tokens");
                     //Reapllying tokens if they were revoked previously
                     await ReApplyTokens(plans.FirstOrDefault());
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
+                Logger.Error("Couldn't create MonitorTerminalSubmissionForm Plan", e);
                 throw new ApplicationException("Couldn't create MonitorTerminalSubmissionForm Plan", e);
             }
+        }
 
+        public async Task ConfigureAndRunPlan()
+        {
+            await PlanConfiguration();
+            Logger.Info("new MonitorTerminalSubmissionPlan created");
+
+            Logger.Info("Run MonitorTerminalSubmissionPlan Plan");
+            await RunPlan();
+            Logger.Info("MonitorTerminalSubmissionPlan Plan activeted");
         }
 
         public async Task ReApplyTokens(PlanDTO plan)

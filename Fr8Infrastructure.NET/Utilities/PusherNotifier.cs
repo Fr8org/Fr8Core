@@ -1,4 +1,5 @@
 ﻿using System;
+using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using PusherServer;
@@ -31,12 +32,12 @@ namespace Fr8.Infrastructure.Utilities
             }
         }
 
-        public void Notify(string channelName, string eventName, object message)
+        public void Notify(string channelName, NotificationType notificationType, object message)
         {
-            _pusher?.Trigger(channelName, eventName, message);
+            _pusher?.Trigger(channelName, notificationType.ToString(), message);
         }
 
-        public void NotifyUser(object message, string eventName, string userId)
+        public void NotifyUser(object message, NotificationType notificationType, string userId)
         {
             if (string.IsNullOrWhiteSpace(userId))
             {
@@ -44,7 +45,7 @@ namespace Fr8.Infrastructure.Utilities
             }
 
             var pusherChannel = BuildChannelName(userId);
-            Notify(pusherChannel, eventName, message);
+            Notify(pusherChannel, notificationType, message);
         }
 
         private string BuildChannelName(string userId)

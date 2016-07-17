@@ -19,6 +19,7 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("00dc3a6e-3c08-4918-824f-d966d5ebfa91"),
             Name = "Build_Query",
             Label = "Build Query",
             Category = ActivityCategory.Processors,
