@@ -1014,7 +1014,11 @@
     <None Include="Config\HealthMonitor\Settings.config.src" />
     <None Include="Config\HubWeb\Settings.config" />
     <None Include="Config\PlanDirectory\Settings.config" />
+    <None Include="Config\PlanDirectory\Settings.Debug.config" />
     <None Include="Config\PlanDirectory\Settings.Release.config" />
+    <None Include="Config\terminalAsana\Settings.config" />
+    <None Include="Config\terminalAsana\Settings.Dev.config" />
+    <None Include="Config\terminalAsana\Settings.Release.config" />
     <None Include="Config\terminalAtlassian\Settings.config" />
     <None Include="Config\terminalAzure\Settings.config" />
     <None Include="Config\terminalBasecamp2\Settings.config" />
@@ -1022,7 +1026,6 @@
     <None Include="Config\terminalBasecamp2\Settings.Dev.config" />
     <None Include="Config\terminalBasecamp2\Settings.Release.config" />
     <None Include="Config\terminalBox\Settings.config" />
-    <None Include="Config\terminalCloudService\ServiceConfiguration.Cloud.cscfg" />
     <None Include="Config\terminalCloudService\ServiceConfiguration.Demo.cscfg" />
     <None Include="Config\terminalCloudService\ServiceConfiguration.Dev.cscfg" />
     <None Include="Config\terminalCloudService\ServiceConfiguration.Release.cscfg" />

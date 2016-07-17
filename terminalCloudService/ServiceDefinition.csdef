@@ -293,8 +293,8 @@
     </ConfigurationSettings>
     <Endpoints>
       <!-- Endpoint name must strongly match terminal name. This rule is expected 
-      in the deployment script Update-terminalHostnameInDb.ps1. If the rule is not 
-      respected, integration tests will fail while master branch (Production) deployment.-->
+      in the deployment script Set-EndpointsStaging.ps1. If the rule is not 
+      respected, integration tests will fail during the master branch (Production) deployment.-->
       <InputEndpoint name="server80" protocol="http" port="80" />
       <InputEndpoint name="server443" protocol="https" port="443" certificate="fr8Certificate" />
       <InputEndpoint name="terminalAsana" protocol="http" port="56785" />
