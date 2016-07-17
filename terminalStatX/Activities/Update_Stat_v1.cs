@@ -143,9 +143,16 @@ namespace terminalStatX.Activities
                         var statDTO = firstStat as GeneralStatWithItemsDTO;
                         if (statDTO != null)
                         {
-                            foreach (var item in statDTO.Items)
+                            if (statDTO.VisualType == StatTypes.PickList)
                             {
-                                ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(item.Name, item.Name, requestUpstream: true, groupLabelText: "Available Stat Properties"));
+                                ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser("Current Index", "CurrentIndex", requestUpstream: true, groupLabelText: "Available Stat Properties"));
+                            }
+                            else
+                            {
+                                foreach (var item in statDTO.Items)
+                                {
+                                    ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(item.Name, item.Name, requestUpstream: true, groupLabelText: "Available Stat Properties"));
+                                }
                             }
                         }
                         else
@@ -195,9 +202,16 @@ namespace terminalStatX.Activities
                         var statDTO = currentStat as GeneralStatWithItemsDTO;
                         if (statDTO != null && statDTO.Items.Any())
                         {
-                            foreach (var item in statDTO.Items)
+                            if (statDTO.VisualType == StatTypes.PickList)
                             {
-                                ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(item.Name, item.Name, requestUpstream: true, groupLabelText: "Available Stat Properties"));
+                                ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser("Current Index", "CurrentIndex", requestUpstream: true, groupLabelText: "Available Stat Properties"));
+                            }
+                            else
+                            {
+                                foreach (var item in statDTO.Items)
+                                {
+                                    ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(item.Name, item.Name, requestUpstream: true, groupLabelText: "Available Stat Properties"));
+                                }
                             }
                         }
                         else
@@ -227,7 +241,7 @@ namespace terminalStatX.Activities
             if (string.IsNullOrEmpty(ActivityUI.ExistingGroupsList.Value))
             {
                 throw new ActivityExecutionException("Update Stat activity run failed!. Activity doesn't have selected Group.");
-            }
+            }   
 
             if (string.IsNullOrEmpty(ActivityUI.ExistingGroupStats.Value))
             {

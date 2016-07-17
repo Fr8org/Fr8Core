@@ -355,43 +355,49 @@ namespace terminalStatX.Services
                         title = currentStat.Title;
                     }
 
-                    string response;
-                    var statDTO = currentStat as GeneralStatWithItemsDTO;
-                    
-                    if (statDTO != null)
+                    string response = string.Empty;
+
+                    //process stat types that can update multiple items
+                    if (currentStat.VisualType == StatTypes.CheckList ||
+                        currentStat.VisualType == StatTypes.HorizontalBars)
                     {
-                        statDTO.LastUpdatedDateTime = DateTime.UtcNow;
-                        statDTO.NotesLastUpdatedDateTime = DateTime.UtcNow;
-                        statDTO.Title = title;
-                        statDTO.Notes = notes;
+                        var statDTO = currentStat as GeneralStatWithItemsDTO;
 
-                        var tempItems = new List<StatItemValueDTO>();
-                        tempItems.AddRange(statDTO.Items);
-                        statDTO.Items.Clear();
-                        if (currentStat.VisualType == StatTypes.CheckList)
+                        if (statDTO != null)
                         {
-                            statDTO.DynamicJsonIgnoreProperties = new string[] {"visualType", "value"};
+                            statDTO.LastUpdatedDateTime = DateTime.UtcNow;
+                            statDTO.NotesLastUpdatedDateTime = DateTime.UtcNow;
+                            statDTO.Title = title;
+                            statDTO.Notes = notes;
 
-                            statDTO.Items.AddRange(statValues.Select(x => new StatItemValueDTO()
+                            var tempItems = new List<StatItemValueDTO>();
+                            tempItems.AddRange(statDTO.Items);
+                            statDTO.Items.Clear();
+                            if (currentStat.VisualType == StatTypes.CheckList)
                             {
-                                Name = x.Key,
-                                Checked = string.IsNullOrEmpty(x.Value) ? tempItems.FirstOrDefault(l => l.Name == x.Key).Checked : StatXUtilities.ConvertChecklistItemValue(x.Value)
-                            }).ToList());
-                        }
-                        else
-                        {
-                            statDTO.DynamicJsonIgnoreProperties = new string[] { "visualType", "checked" };
-   
-                            statDTO.Items.AddRange(statValues.Select(x => new StatItemValueDTO()
-                            {
-                                Name = x.Key, 
-                                Value = string.IsNullOrEmpty(x.Value) ? tempItems.FirstOrDefault(l => l.Name == x.Key).Value: x.Value
-                            }).ToList());
-                        }
+                                statDTO.DynamicJsonIgnoreProperties = new string[] { "visualType", "value" };
 
-                        string json = JsonConvert.SerializeObject(statDTO, Formatting.Indented, new JsonSerializerSettings { ContractResolver = new DynamicContractResolver(statDTO.DynamicJsonIgnoreProperties) });
-                        response = await _restfulServiceClient.PutAsync(uri, (HttpContent)new StringContent(json), null, GetStatxAPIHeaders(statXAuthDTO));
-                     }
+                                statDTO.Items.AddRange(statValues.Select(x => new StatItemValueDTO()
+                                {
+                                    Name = x.Key,
+                                    Checked = string.IsNullOrEmpty(x.Value) ? tempItems.FirstOrDefault(l => l.Name == x.Key).Checked : StatXUtilities.ConvertChecklistItemValue(x.Value)
+                                }).ToList());
+                            }
+                            else
+                            {
+                                statDTO.DynamicJsonIgnoreProperties = new string[] { "visualType", "checked" };
+
+                                statDTO.Items.AddRange(statValues.Select(x => new StatItemValueDTO()
+                                {
+                                    Name = x.Key,
+                                    Value = string.IsNullOrEmpty(x.Value) ? tempItems.FirstOrDefault(l => l.Name == x.Key).Value : x.Value
+                                }).ToList());
+                            }
+
+                            string json = JsonConvert.SerializeObject(statDTO, Formatting.Indented, new JsonSerializerSettings { ContractResolver = new DynamicContractResolver(statDTO.DynamicJsonIgnoreProperties) });
+                            response = await _restfulServiceClient.PutAsync(uri, (HttpContent)new StringContent(json), null, GetStatxAPIHeaders(statXAuthDTO));
+                        }
+                    }
                     else
                     {
                         var updateStatContent = new GeneralStatDTO
@@ -400,9 +406,20 @@ namespace terminalStatX.Services
                             Notes = notes,
                             LastUpdatedDateTime = DateTime.UtcNow,
                             NotesLastUpdatedDateTime = DateTime.UtcNow,
-                            Value = statValues.First().Value,
-                            DynamicJsonIgnoreProperties = new string[] {"visualType"}
                         };
+
+                        if (currentStat.VisualType == StatTypes.PickList)
+                        {
+                            int currentIndex = 0;
+                            int.TryParse(statValues.First().Value, out currentIndex);
+                            updateStatContent.CurrentIndex = currentIndex;
+                            updateStatContent.DynamicJsonIgnoreProperties = new[] { "visualType", "value"};
+                        }
+                        else
+                        {
+                            updateStatContent.Value = statValues.First().Value;
+                            updateStatContent.DynamicJsonIgnoreProperties = new[] { "visualType", "currentIndex" };
+                        }
 
                         string json = JsonConvert.SerializeObject(updateStatContent, Formatting.Indented, new JsonSerializerSettings { ContractResolver = new DynamicContractResolver(updateStatContent.DynamicJsonIgnoreProperties) });
                         response = await _restfulServiceClient.PutAsync(uri, (HttpContent)new StringContent(json), null, GetStatxAPIHeaders(statXAuthDTO));

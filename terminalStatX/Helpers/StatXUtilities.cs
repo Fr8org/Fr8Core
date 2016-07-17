@@ -89,14 +89,14 @@ namespace terminalStatX.Helpers
                     }
                     break;
                 case StatTypes.HorizontalBars:
-                    stat = new HorizontalBarsStatDTO();
+                    stat = new HorizontalBarsStatDTO { DynamicJsonIgnoreProperties = new[] { "checked" } };
                     PopulateStatObject(stat, statProperties);
                     ((HorizontalBarsStatDTO)stat).Items = statItems.Select(x => new StatItemValueDTO() { Name = x.Key, Value = x.Value}).ToList();
                     break;
                 case StatTypes.PickList:
-                    stat = new PicklistStatDTO();
+                    stat = new PicklistStatDTO {DynamicJsonIgnoreProperties = new[] {"value"}};
                     PopulateStatObject(stat, statProperties);
-                    ((PicklistStatDTO)stat).Items = statItems.Select(x => new PicklistItemDTO() { Name = x.Key, Color = x.Value.ToUpper()}).ToList();
+                    ((PicklistStatDTO)stat).Items = statItems.Select(x => new PicklistItemDTO() { Name = x.Key, Color = string.IsNullOrEmpty(x.Value) ? "UNKNOWN" : x.Value.ToUpper()}).ToList();
                     break;
                 default:
                     return new BaseStatDTO();
@@ -146,6 +146,7 @@ namespace terminalStatX.Helpers
             if (statDTO != null)
             {
                 result.Value = statDTO.Value;
+                result.CurrentIndex = statDTO.CurrentIndex;
             }
             else
             {
@@ -182,6 +183,13 @@ namespace terminalStatX.Helpers
                     if (newStat.VisualType == StatTypes.CheckList)
                     {
                         if (item.Checked != oldStatItem.Checked)
+                        {
+                            return true;
+                        }
+                    }
+                    else if (newStat.VisualType == StatTypes.PickList)
+                    {
+                        if (newStat.CurrentIndex != oldStat.CurrentIndex)
                         {
                             return true;
                         }

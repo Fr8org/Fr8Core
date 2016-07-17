@@ -19,6 +19,8 @@ namespace Fr8.Infrastructure.Data.Manifests
         public string VisualType { get; set; }
         [JsonProperty("value")]
         public string Value { get; set; }
+        [JsonProperty("currentIndex")]
+        public int CurrentIndex { get; set; }
         [JsonProperty("lastUpdatedDateTime ")]
         public string LastUpdatedDateTime { get; set; }
         [JsonProperty("items")]

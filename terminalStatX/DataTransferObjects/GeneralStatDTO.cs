@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
-using terminalStatX.Helpers;
-using terminalStatX.Infrastructure;
 
 namespace terminalStatX.DataTransferObjects
 {
@@ -10,7 +7,9 @@ namespace terminalStatX.DataTransferObjects
     {
         [JsonProperty("value")]
         public string Value { get; set; }
-    }
+        [JsonProperty("currentIndex")]
+        public int CurrentIndex { get; set; }
+    }   
 
     public class GeneralStatWithItemsDTO : BaseStatDTO
     {
