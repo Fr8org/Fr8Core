@@ -76,10 +76,11 @@ namespace terminalDocuSign.Activities
 
         public override async Task Initialize()
         {
-            var configurationCrate = PackControls(new ActivityUi());
-            await FillFinalActionsListSource(configurationCrate, "FinalActionsList");
             Storage.Clear();
-            Storage.Add(configurationCrate);              
+
+            AddControls(new ActivityUi().Controls);
+
+            await FillFinalActionsListSource("FinalActionsList");
         }
 
         protected async Task<ActivityTemplateDTO> GetActivityTemplateByName(string activityTemplateName)
@@ -173,10 +174,10 @@ namespace terminalDocuSign.Activities
         }
 
         #region Private Methods
-        private async Task FillFinalActionsListSource(Crate configurationCrate, string controlName)
+        private async Task FillFinalActionsListSource(string controlName)
         {
-            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
-            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            var control = ConfigurationControls.FindByNameNested<DropDownList>(controlName);
+
             if (control != null)
             {
                 control.ListItems = await GetFinalActionListItems();
