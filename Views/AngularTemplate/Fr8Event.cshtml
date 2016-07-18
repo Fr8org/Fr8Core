@@ -14,7 +14,6 @@
 <!-- CONTENT -->
 <md-list-item class="fr8-collapse-content" ng-hide="isCollapsed" ng-class="{'fr8-collapse-collapsed': isCollapsed}">
     <div style="overflow: auto" class="md-list-item-text" layout="column">
-        <p ng-if="event.Subject">{{event.Subject}}</p>
         <p ng-bind-html="eventMessage | parseUrl"></p>
     </div>
 </md-list-item>
