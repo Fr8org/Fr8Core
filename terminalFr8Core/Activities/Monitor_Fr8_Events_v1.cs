@@ -16,6 +16,7 @@ namespace terminalFr8Core.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new System.Guid("e75112ed-e17d-4b90-a337-50a5d59b1866"),
             Name = "Monitor_Fr8_Events",
             Label = "Monitor Fr8 Events",
             Version = "1",
@@ -73,15 +74,14 @@ namespace terminalFr8Core.Activities
             var eventSubscription = PackCrate_EventSubscriptions();
             var textBlock = UiBuilder.GenerateTextBlock("Monitor Fr8 Events",
                 "This Activity doesn't require any configuration.", "well well-lg");
-            var curControlsCrate = PackControlsCrate(textBlock);
+            AddControls(textBlock);
 
            // var planActivatedCrate = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "RouteActivated", "13", AvailabilityType.RunTime);
            // var planDeactivatedCrate = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "RouteDeactivated", "13", AvailabilityType.RunTime);
           //  var containerLaunched = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "ContainerLaunched", "13", AvailabilityType.RunTime);
            // var containerExecutionComplete = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "ContainerExecutionComplete", "13", AvailabilityType.RunTime);
           //  var actionExecuted = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "ActionExecuted", "13", AvailabilityType.RunTime);
-
-            Storage.Add(curControlsCrate);
+          
           //  Storage.Add(planActivatedCrate);
            // Storage.Add(planDeactivatedCrate);
 //Storage.Add(containerLaunched);

@@ -29,6 +29,7 @@ namespace terminalDocuSign.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("582A519E-7B1F-4424-B67B-EAA526C6953C"),
             Version = "1",
             Name = "Generate_DocuSign_Report",
             Label = "Generate DocuSign Report",
@@ -225,7 +226,7 @@ namespace terminalDocuSign.Activities
             // Update report crate.
             Payload.Add(Crate.FromContent("Sql Query Result", searchResult));
 
-            ExecuteClientActivity("ShowTableReport");
+            RequestClientActivityExecution("ShowTableReport");
 
         }
 
@@ -374,7 +375,7 @@ namespace terminalDocuSign.Activities
 
         public override async Task Initialize()
         {
-            Storage.Add(PackControls(new ActivityUi()));
+            AddControls(new ActivityUi().Controls);
             Storage.AddRange(PackDesignTimeData());
             var plan = await _planService.UpdatePlanCategory(ActivityId, "report");
         }

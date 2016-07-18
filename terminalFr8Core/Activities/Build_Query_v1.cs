@@ -19,6 +19,7 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("00dc3a6e-3c08-4918-824f-d966d5ebfa91"),
             Name = "Build_Query",
             Label = "Build Query",
             Category = ActivityCategory.Processors,
@@ -113,34 +114,7 @@ namespace terminalFr8Core.Activities
             var selectObjectDdl = ConfigurationControls.Controls.FirstOrDefault(x => x.Name == "SelectObjectDdl");
             return selectObjectDdl?.Value;
         }
-
-        /// <summary>
-        /// Exract previously stored valued of selected object type.
-        /// </summary>
-        private string ExtractSelectedObjectFromCrate()
-        {
-            var fields = Storage.CratesOfType<KeyValueListCM>()
-                .FirstOrDefault(x => x.Label == "Selected Object");
-
-            if (fields == null || fields.Content.Values.Count == 0)
-            {
-                return null;
-            }
-
-            return fields.Content.Values[0].Key;
-        }
-
-        /// <summary>
-        /// Update previously stored value of selected object type.
-        /// </summary>
-        private void UpdateSelectedObjectCrate(string selectedObject)
-        {
-            UpdateDesignTimeCrateValue(
-                "Selected Object",
-                new KeyValueDTO { Key = selectedObject, Value = selectedObject }
-            );
-        }
-
+        
         private StandardQueryCM ExtractSelectedQueryFromCrate()
         {
             var queryCM = Storage.CrateContentsOfType<StandardQueryCM>(x => x.Label == "Selected Query")
@@ -154,7 +128,7 @@ namespace terminalFr8Core.Activities
         /// </summary>
         private void UpdateSelectedQueryCrate()
         {
-            var selectedObject = ExtractSelectedObjectFromCrate();
+            var selectedObject = this["Selected Object"];
 
             var queryCrate = Storage
                 .CratesOfType<StandardQueryCM>(x => x.Label == "Selected Query")
@@ -230,8 +204,8 @@ namespace terminalFr8Core.Activities
         {
             var matchedColumns = await MatchColumnsForSelectedObject(selectedObject);
 
-            // TODO: FR-2347, fix here.
-            UpdateDesignTimeCrateValue("Queryable Criteria", matchedColumns.ToArray());
+            Storage.Remove(x => x.Label == "Queryable Criteria");
+            Storage.Add("Queryable Criteria", new KeyValueListCM(matchedColumns.ToArray()));
         }
 
         /// <summary>
@@ -305,18 +279,19 @@ namespace terminalFr8Core.Activities
                 AddLabelControl("SelectObjectError","No object selected", "Please select object from the list above.");
                 return;
             }
-            else
-            {
-                var prevSelectedObject = ExtractSelectedObjectFromCrate();
-                if (prevSelectedObject != selectedObject)
-                {
-                    RemoveControl<QueryBuilder>("SelectedQuery");
-                    AddQueryBuilder();
 
-                    await UpdateQueryableCriteria(selectedObject);
-                }
+            var prevSelectedObject = this["Selected Object"];
+
+            if (prevSelectedObject != selectedObject)
+            {
+                RemoveControl<QueryBuilder>("SelectedQuery");
+                AddQueryBuilder();
+
+                await UpdateQueryableCriteria(selectedObject);
             }
-            UpdateSelectedObjectCrate(selectedObject);
+            
+            this["Selected Object"] = selectedObject;
+
             UpdateSelectedQueryCrate();
         }
     }

@@ -27,6 +27,7 @@ namespace terminalFr8Core.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("33f353a1-65cc-4065-9517-71ddc0a7f4e2"),
             Name = "Search_Fr8_Warehouse",
             Label = "Search Fr8 Warehouse",
             Version = "1",
@@ -119,7 +120,7 @@ namespace terminalFr8Core.Activities
                 .CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "Found MT Objects")
                 .FirstOrDefault();
             Payload.Add(Crate.FromContent("Sql Query Result", queryMTResult));
-            ExecuteClientActivity("ShowTableReport");
+            RequestClientActivityExecution("ShowTableReport");
             return Task.FromResult(0);
         }
 
@@ -302,7 +303,7 @@ namespace terminalFr8Core.Activities
 
         public override Task Initialize()
         {
-            Storage.Add(PackControlsCrate(new ActionUi().Controls.ToArray()));
+            AddControls(new ActionUi().Controls);
             var designTimefieldLists = GetFr8WarehouseTypes(AuthorizationToken);
             var availableMtObjects = CrateManager.CreateDesignTimeFieldsCrate("Queryable Objects", designTimefieldLists.ToArray());
             Storage.Add(availableMtObjects);

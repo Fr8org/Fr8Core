@@ -24,6 +24,7 @@ namespace terminalSalesforce.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("802bfcb5-f778-4187-82d3-b941a738a464"),
             Version = "1",
             Name = "Save_To_SalesforceDotCom",
             Label = "Save to Salesforce.Com",
@@ -51,9 +52,20 @@ namespace terminalSalesforce.Actions
         
         public override async Task Initialize()
         {
-                //In initial config, just create a DDLB 
-                //to let the user select which object they want to save.
-            CreateInitialControls(Storage);
+            //In initial config, just create a DDLB 
+            //to let the user select which object they want to save.
+            var whatKindOfData = new DropDownList
+            {
+                Name = "sfObjectType",
+                Required = true,
+                Label = "Which object do you want to save to Salesforce.com?",
+                Source = null,
+                Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") }
+            };
+
+            AddControls(whatKindOfData);
+            
+            ActivitiesHelper.GetAvailableFields(ConfigurationControls, "sfObjectType");
         }
 
         public override async Task FollowUp()
@@ -164,36 +176,7 @@ namespace terminalSalesforce.Actions
 
             RaiseError("Saving " + chosenObject + " to Salesforce.com is failed.");
         }
-
-        /// <summary>
-        /// Creates Initial config controls
-        /// </summary>
-        private void CreateInitialControls(ICrateStorage crateStorage)
-        {
-            AddSFObjectChooserControl(crateStorage);
-        }
-
-        /// <summary>
-        /// Clears the storage and adds StandardConfigurationControlsCM crate with only DDLB control named sfObjectType
-        /// </summary>
-        private void AddSFObjectChooserControl(ICrateStorage crateStorage)
-        {
-            crateStorage.Clear();
-            //DDLB for What Salesforce Object to be considered
-            var whatKindOfData = new DropDownList
-            {
-                Name = "sfObjectType",
-                Required = true,
-                Label = "Which object do you want to save to Salesforce.com?",
-                Source = null,
-                Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") }
-            };
-
-            var configurationControls = PackControlsCrate(whatKindOfData);
-            ActivitiesHelper.GetAvailableFields(configurationControls, "sfObjectType");
-            crateStorage.ReplaceByLabel(configurationControls);
-        }
-
+        
         /// <summary>
         /// Extracts current selected SF Object by the user
         /// </summary>

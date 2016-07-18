@@ -19,6 +19,7 @@ namespace terminalDocuSign.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("55693341-6a95-4fc3-8848-2fc3a8101924"),
             Version = "1",
             Name = "Use_DocuSign_Template_With_New_Document",
             Label = "Use DocuSign Template With New Document",
@@ -69,7 +70,7 @@ namespace terminalDocuSign.Activities
             Success();
         }
 
-        protected override async Task<Crate> CreateDocusignTemplateConfigurationControls()
+        protected override void CreateDocusignTemplateConfigurationControls()
         {
             var infoBox = new TextBlock() { Value = @"This Activity overlays the tabs from an existing Template onto a new Document and sends out a DocuSign Envelope. 
                                                         When this Activity executes, it will look for and expect to be provided from upstream with one Excel or Word file." };
@@ -97,12 +98,7 @@ namespace terminalDocuSign.Activities
                 Required = true
             };
 
-            var fieldsDTO = new List<ControlDefinitionDTO>
-            {
-                infoBox, documentSelector, fieldSelectDocusignTemplateDTO
-            };
-
-            return CrateManager.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
+            AddControls(infoBox, documentSelector, fieldSelectDocusignTemplateDTO);
         }
 
         public override async Task FollowUp()
@@ -112,15 +108,9 @@ namespace terminalDocuSign.Activities
 
         public override async Task Initialize()
         {
-            var configurationCrate = Storage.CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            CreateDocusignTemplateConfigurationControls();
 
-            if (configurationCrate == null)
-            {
-                configurationCrate = (Crate<StandardConfigurationControlsCM>)(await CreateDocusignTemplateConfigurationControls());
-                Storage.Add(configurationCrate);
-            }
-
-            FillDocuSignTemplateSource(configurationCrate, "target_docusign_template");
+            FillDocuSignTemplateSource("target_docusign_template");
         }
 
         protected override Task Validate()

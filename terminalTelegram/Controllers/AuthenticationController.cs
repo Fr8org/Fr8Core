@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Utilities.Logging;
+using log4net;
 using Newtonsoft.Json;
 using terminalTelegram.TelegramIntegration;
 
@@ -13,6 +15,8 @@ namespace terminalTelegram.Controllers
     [RoutePrefix("authentication")]
     public class AuthenticationController: ApiController
     {
+        private static readonly ILog Logger = LogManager.GetLogger("terminalTelegram");
+
         private readonly ITelegramIntegration _telegramIntegration;
 
         public AuthenticationController(ITelegramIntegration telegramIntegration)
@@ -38,6 +42,7 @@ namespace terminalTelegram.Controllers
             catch (Exception ex)
             {
                 credentialsDTO.Error = "An error occurred while trying to send login code, please try again later.";
+                Logger.Error(ex.Message);
                 return credentialsDTO;
             }
         }
@@ -65,6 +70,7 @@ namespace terminalTelegram.Controllers
             }
             catch (Exception ex)
             {
+                Logger.Error(ex.Message);
                 return new AuthorizationTokenDTO()
                 {
                     Error = "An error occurred while trying to authorize, please try again later."

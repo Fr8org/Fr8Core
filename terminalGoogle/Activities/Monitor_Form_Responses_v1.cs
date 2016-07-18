@@ -59,6 +59,7 @@ namespace terminalGoogle.Actions
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("f7619e79-112e-43aa-ba43-118c1ffc98f3"),
             Name = "Monitor_Form_Responses",
             Label = "Monitor Form Responses",
             Version = "1",
@@ -156,7 +157,7 @@ namespace terminalGoogle.Actions
             // Just return Success as a quick fix to avoid "Plan Failed" message.
             if (payloadFields == null)
             {
-                RequestHubExecutionTermination();
+                RequestPlanExecutionTermination();
                 return Task.FromResult(0);
             }
             var formResponseFields = CreatePayloadFormResponseFields(payloadFields);
@@ -165,7 +166,7 @@ namespace terminalGoogle.Actions
             // Just return Success as a quick fix to avoid "Plan Failed" message.
             if (formResponseFields == null)
             {
-                RequestHubExecutionTermination();
+                RequestPlanExecutionTermination();
                 return Task.FromResult(0); ;
             }
             Payload.Add(Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(formResponseFields)));

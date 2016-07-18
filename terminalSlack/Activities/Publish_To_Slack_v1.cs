@@ -22,6 +22,7 @@ namespace terminalSlack.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("4698C675-CA2C-4BE7-82F9-2421F3608E13"),
             Name = "Publish_To_Slack",
             Label = "Publish To Slack",
             Tags = "Notifier",
@@ -92,12 +93,12 @@ namespace terminalSlack.Activities
 
         public override async Task Initialize()
         {
-            var oauthToken = AuthorizationToken.Token;
-            var configurationCrate = PackCrate_ConfigurationControls();
-            await FillSlackChannelsSource(configurationCrate, "Selected_Slack_Channel", oauthToken);
-
             Storage.Clear();
-            Storage.Add(configurationCrate);
+
+            var oauthToken = AuthorizationToken.Token;
+            PackCrate_ConfigurationControls();
+
+            await FillSlackChannelsSource("Selected_Slack_Channel", oauthToken);
         }
 
         public Publish_To_Slack_v1(ICrateManager crateManager, ISlackIntegration slackIntegration)
@@ -111,7 +112,7 @@ namespace terminalSlack.Activities
             return Regex.Replace(input, "<.*?>", String.Empty);
         }
 
-        private Crate PackCrate_ConfigurationControls()
+        private void PackCrate_ConfigurationControls()
         {
             var fieldSelectChannel = new DropDownList()
             {
@@ -128,13 +129,7 @@ namespace terminalSlack.Activities
                 requestUpstream: true
             );
 
-            var fieldsDTO = new List<ControlDefinitionDTO>()
-            {
-                fieldSelectChannel,
-                fieldSelect
-            };
-
-            return CrateManager.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
+            AddControls(fieldSelectChannel, fieldSelect);
         }
 
         // TODO: finish that later.
@@ -163,10 +158,9 @@ namespace terminalSlack.Activities
         */
 
         #region Fill Source
-        private async Task FillSlackChannelsSource(Crate configurationCrate, string controlName, string oAuthToken)
+        private async Task FillSlackChannelsSource(string controlName, string oAuthToken)
         {
-            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
-            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            var control = ConfigurationControls.FindByNameNested<DropDownList>(controlName);
             if (control != null)
             {
                 control.ListItems = await GetAllChannelList(oAuthToken);

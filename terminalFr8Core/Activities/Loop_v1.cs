@@ -19,6 +19,7 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("3d5dd0c5-6702-4b59-8c18-b8e2c5955c40"),
             Name = "Loop",
             Label = "Loop",
             Category = ActivityCategory.Processors,
@@ -166,9 +167,8 @@ namespace terminalFr8Core.Activities
         public override async Task Initialize()
         {
             //build a controls crate to render the pane
-            var configurationControlsCrate = await CreateControlsCrate();
-            Storage.Add(configurationControlsCrate);
-            SelectTheOnlyCrate(ConfigurationControls);
+            CreateControls();
+            SelectTheOnlyCrate();
         }
 
         public override async Task FollowUp()
@@ -179,29 +179,28 @@ namespace terminalFr8Core.Activities
                 var selected = crateChooser.CrateDescriptions.FirstOrDefault(x => x.Selected);
                 if (selected != null)
                 {
-                    SelectTheOnlyCrate(ConfigurationControls);
+                    SelectTheOnlyCrate();
                 }
                 else
                 {
-                    var configurationControlsCrate = await CreateControlsCrate();
                     Storage.Clear();
-                    Storage.Add(configurationControlsCrate);
-                    SelectTheOnlyCrate(ConfigurationControls);
+                    CreateControls();
+                    SelectTheOnlyCrate();
                 }
             }
         }
         
 
-        private void SelectTheOnlyCrate(StandardConfigurationControlsCM controls)
+        private void SelectTheOnlyCrate()
         {
-            var crateChooser = controls.Controls.OfType<CrateChooser>().Single();
+            var crateChooser = ConfigurationControls.Controls.OfType<CrateChooser>().Single();
             if (crateChooser.CrateDescriptions?.Count == 1)
             {
                 crateChooser.CrateDescriptions[0].Selected = true;
             }
         }
 
-        private async Task<Crate> CreateControlsCrate()
+        private void CreateControls()
         {
             var crateChooser = UiBuilder.CreateCrateChooser(
                 "Available_Crates",
@@ -209,7 +208,8 @@ namespace terminalFr8Core.Activities
                 true,
                 true
                 );
-            return PackControlsCrate(crateChooser);
+
+            AddControls(crateChooser);
         }
 
         public Loop_v1(ICrateManager crateManager)

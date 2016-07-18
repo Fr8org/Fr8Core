@@ -12,6 +12,7 @@ using Fr8.TerminalBase.Infrastructure;
 using terminalUtilities.Infrastructure;
 using terminalUtilities.Interfaces;
 using terminalUtilities.Models;
+using System;
 
 namespace terminalSendGrid.Activities
 {
@@ -22,6 +23,7 @@ namespace terminalSendGrid.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("f827af1c-3348-4981-bebd-cf81c8ab27ae"),
             Name = "Send_Email_Via_SendGrid",
             Label = "Send Email",
             Version = "1",
@@ -49,7 +51,9 @@ namespace terminalSendGrid.Activities
         public override async Task Initialize()
         {
             Storage.Clear();
-            Storage.Add(CreateControlsCrate());
+
+            CreateControls();
+
             await Task.FromResult(0);
         }
 
@@ -101,7 +105,7 @@ namespace terminalSendGrid.Activities
             return control;
         }
 
-        private Crate CreateControlsCrate()
+        private void CreateControls()
         {
             var controls = new List<ControlDefinitionDTO>()
             {
@@ -110,7 +114,7 @@ namespace terminalSendGrid.Activities
                 CreateEmailBodyTextSourceControl()
             };
 
-            return CrateManager.CreateStandardConfigurationControlsCrate(ConfigurationControlsLabel, controls.ToArray());
+            AddControls(controls);
         }
 
         private string CreateEmailHTMLText(string emailBody)

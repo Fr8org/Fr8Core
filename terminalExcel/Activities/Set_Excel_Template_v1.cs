@@ -23,6 +23,7 @@ namespace terminalExcel.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("d6089960-a33d-4e8c-be60-8734e5f3d2fc"),
             Name = "Set_Excel_Template",
             Label = "Set Excel Template",
             Version = "1",
@@ -139,7 +140,9 @@ namespace terminalExcel.Activities
         public override async Task Initialize()
         {
             Storage.Clear();
-            Storage.Add(PackControls(new ActivityUi()));
+
+            AddControls(new ActivityUi().Controls);
+            
             Storage.Add(GetAvailableRunTimeTableCrate(DataTableLabel));
         }
 
@@ -168,7 +171,8 @@ namespace terminalExcel.Activities
             }
 
             Storage.Remove<StandardConfigurationControlsCM>();
-            Storage.Add(PackControls(new ActivityUi(fileName, uploadFilePath)));
+
+            AddControls(new ActivityUi(fileName, uploadFilePath).Controls);
 
             if (!string.IsNullOrEmpty(uploadFilePath))
             {

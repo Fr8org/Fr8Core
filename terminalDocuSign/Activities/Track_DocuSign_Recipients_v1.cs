@@ -26,6 +26,7 @@ namespace terminalDocuSign.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("4202F427-CD6F-497A-B852-4223B7F109E6"),
             Name = "Track_DocuSign_Recipients",
             Label = "Track DocuSign Recipients",
             Version = "1",
@@ -138,7 +139,8 @@ namespace terminalDocuSign.Activities
         public override async Task Initialize()
         {
             Storage.Clear();
-            Storage.Add(PackControls(new ActivityUi()));
+            
+            AddControls(new ActivityUi().Controls);
             Storage.Add(PackAvailableTemplates());
             Storage.Add(await PackAvailableHandlers());
             Storage.Add(PackAvailableRecipientEvents());

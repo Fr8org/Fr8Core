@@ -25,6 +25,7 @@ namespace terminalDocuSign.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("ccdf8156-39fb-4082-99a4-629ec5cf1b23"),
             Name = "Mail_Merge_Into_DocuSign",
             Label = "Mail Merge Into DocuSign",
             Version = "1",
@@ -72,7 +73,7 @@ namespace terminalDocuSign.Actions
         /// <summary>
         /// Create configuration controls crate.
         /// </summary>
-        private async Task<Crate> CreateConfigurationControlsCrate()
+        private async Task CreateConfigurationControlsCrate()
         {
             var controlList = new List<ControlDefinitionDTO>
             {
@@ -95,7 +96,7 @@ namespace terminalDocuSign.Actions
                 }
             };
 
-            return PackControlsCrate(controlList.ToArray());
+            AddControls(controlList);
         }
 
         private async Task<List<ListItem>> GetDataSourceListItems(string tag)
@@ -109,11 +110,10 @@ namespace terminalDocuSign.Actions
         /// </summary>
         public override async Task Initialize()
         {
-                        //build a controls crate to render the pane
-            var configurationCrate = await CreateConfigurationControlsCrate();
-            FillDocuSignTemplateSource(configurationCrate, "DocuSignTemplate");
-            Storage.Add(configurationCrate);
-                    }
+            //build a controls crate to render the pane
+            await CreateConfigurationControlsCrate();
+            FillDocuSignTemplateSource("DocuSignTemplate");
+        }
 
         protected override Task Validate()
         {

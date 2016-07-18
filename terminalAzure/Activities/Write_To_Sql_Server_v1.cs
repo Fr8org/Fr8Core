@@ -24,6 +24,7 @@ namespace terminalAzure.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("7150a1e3-a32a-4a0b-a632-42529e5fd24d"),
             Name = "Write_To_Sql_Server",
             Label = "Write to Azure Sql Server",
             Category = ActivityCategory.Forwarders,
@@ -46,7 +47,7 @@ namespace terminalAzure.Activities
         public override Task Initialize()
         {
             Storage.Clear();
-            Storage.Add(CreateControlsCrate());
+            CreateControls();
             return Task.FromResult(0);
         }
 
@@ -71,29 +72,24 @@ namespace terminalAzure.Activities
             return Task.FromResult(0);
         }
 
-        private Crate CreateControlsCrate()
+        private void CreateControls()
         {
-            var controls = new ControlDefinitionDTO[]{
-                new TextBox
+            AddControls(new TextBox
+            {
+                Label = "SQL Connection String",
+                Name = "connection_string",
+                Required = true
+            },
+            new Button
+            {
+                Label = "Continue",
+                Name = "Continue",
+                Events = new List<ControlEvent>()
                 {
-                    Label = "SQL Connection String",
-                    Name = "connection_string",
-                    Required = true
-                },
-                new Button
-                {
-                    Label = "Continue",
-                    Name = "Continue",
-                    Events = new List<ControlEvent>()
-                    {
-                        new ControlEvent("onClick", "requestConfig")
-                    }
+                    new ControlEvent("onClick", "requestConfig")
                 }
-            };
-            return PackControlsCrate(controls);
+            });
         }
-
-        
 
         //===============================================================================================
         //Specialized Methods (Only found in this Action class)

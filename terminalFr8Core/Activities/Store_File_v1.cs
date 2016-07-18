@@ -9,6 +9,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
+using System;
 
 namespace terminalFr8Core.Activities
 {
@@ -16,6 +17,7 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("1c4f979d-bc1c-4a4a-b370-049dbacd3678"),
             Name = "Store_File",
             Label = "Store File",
             Category = ActivityCategory.Processors,
@@ -41,15 +43,17 @@ namespace terminalFr8Core.Activities
             return stream;
         }
         
-        private Crate CreateControlsCrate()
+        private void CreateControls()
         {
             var fileNameTextBox = new TextBox
             {
                 Label = "Name of file",
                 Name = "File_Name"
             };
+
             var textSource = new TextSource("File Crate Label", null, "File Crate label");
-            return PackControlsCrate(fileNameTextBox, textSource);
+
+            AddControls(fileNameTextBox, textSource);
         }
 
         public Store_File_v1(ICrateManager crateManager)
@@ -97,8 +101,7 @@ namespace terminalFr8Core.Activities
         public override async Task Initialize()
         {
             //build a controls crate to render the pane
-            var configurationControlsCrate = CreateControlsCrate();
-            Storage.Add(configurationControlsCrate);
+            CreateControls();
            // await UpdateUpstreamFileCrates();
         }
 
