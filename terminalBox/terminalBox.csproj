@@ -266,9 +266,6 @@
   <ItemGroup>
     <Content Include="Config\terminalBox\Settings.config.readme" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\HealthMonitor\Settings.config.src" />
-  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -324,151 +321,12 @@
     <Log4netConfigFiles Include="..\Config\log4net.terminals.Dev.config" />
     <Log4netConfigFiles Include="..\Config\log4net.terminals.Release.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalYammer\Settings.Release.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalYammer\Settings.Dev.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalYammer\Settings.Demo.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalYammer\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalTwilio\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalTelegram\Settings.Release.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalTelegram\Settings.Dev.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalTelegram\Settings.Demo.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalTelegram\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalStatX\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalSlack\Settings.Release.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalSlack\Settings.Dev.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalSlack\Settings.Demo.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalSlack\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalSendGrid\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalSalesforce\Settings.Release.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalSalesforce\Settings.Dev.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalSalesforce\Settings.Demo.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalSalesforce\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalQuickBooks\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalPapertrail\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalInstagram\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalGoogle\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalFr8Core\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalFacebook\Settings.Release.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalFacebook\Settings.Dev.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalFacebook\Settings.Demo.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalFacebook\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalDropbox\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalDocuSign\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalCloudService\ServiceConfiguration.Release.cscfg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalCloudService\ServiceConfiguration.Dev.cscfg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalCloudService\ServiceConfiguration.Demo.cscfg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalBox\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalBasecamp2\Settings.Release.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalBasecamp2\Settings.Dev.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalBasecamp2\Settings.Demo.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalBasecamp2\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalAzure\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalAtlassian\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalAsana\Settings.Release.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalAsana\Settings.Dev.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\terminalAsana\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\PlanDirectory\Settings.Release.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\PlanDirectory\Settings.Debug.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\PlanDirectory\Settings.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Config\HubWeb\Settings.config" />
-  </ItemGroup>
   <Target Name="BeforeCompile">
     <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
   </Target>
-  <Import Project="..\targets\Fr8.NugetContentRestore.targets" Condition="Exists('..\targets\Fr8.NugetContentRestore.targets')" />
+  <Target Name="BeforeBuild">
+    <RestoreSettingsTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
