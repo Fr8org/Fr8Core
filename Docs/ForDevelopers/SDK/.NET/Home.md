@@ -9,9 +9,13 @@
 
 [Step by Step Tutorial](/Docs/ForDevelopers/DevelopmentGuides/.NET%20Step-by-step%20Terminal%20Builders%20Guide.md)
 
+[Reference](/Docs/ForDevelopers/SDK/.NET/Reference/.Net%20SDK%20Reference.md)
+
 Additional Topics
 -----------------
 
 [Crate Manager](/Docs/ForDevelopers/SDK/.NET/Services/Crate%20Manager.md)
+
+[DI container configuration] (/Docs/ForDevelopers/SDK/.NET/DI%20container%20configuration.md)
 
 
