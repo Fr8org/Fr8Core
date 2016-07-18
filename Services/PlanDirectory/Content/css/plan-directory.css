@@ -175,3 +175,13 @@ header#site-header:after {
     right: 10px;
     top: 10px;
 }
+
+.result-container .item .create-plan-btn.privileged {
+    right: 90px;
+}
+
+.result-container .item .remove-plan-btn {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}

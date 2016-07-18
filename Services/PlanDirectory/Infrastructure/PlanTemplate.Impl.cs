@@ -60,7 +60,7 @@ namespace PlanDirectory.Infrastructure
             }
         }
 
-        public Task<PublishPlanTemplateDTO> Get(string fr8AccountId, Guid planId)
+        public Task<PublishPlanTemplateDTO> GetPlanTemplateDTO(string fr8AccountId, Guid planId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -76,6 +76,20 @@ namespace PlanDirectory.Infrastructure
                 }
 
                 return Task.FromResult(CreatePlanTemplateDTO(planTemplateCM));
+            }
+        }
+
+        public Task<PlanTemplateCM> Get(string fr8AccountId, Guid planId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var planIdString = planId.ToString();
+
+                var planTemplateCM = uow.MultiTenantObjectRepository
+                    .Query<PlanTemplateCM>(fr8AccountId, x => x.ParentPlanId == planIdString)
+                    .FirstOrDefault();
+
+                return Task.FromResult<PlanTemplateCM>(planTemplateCM);
             }
         }
 
