@@ -252,6 +252,8 @@
     <Compile Include="Data\Managers\CrateMangerExtensions.cs" />
     <Compile Include="Data\Managers\ICrateManager.cs" />
     <Compile Include="Data\Manifests\AdvisoryMessagesCM.cs" />
+    <Compile Include="Data\Manifests\AsanaTaskCM.cs" />
+    <Compile Include="Data\Manifests\AsanaTaskListCM.cs" />
     <Compile Include="Data\Manifests\ChartOfAccountsCM.cs" />
     <Compile Include="Data\Manifests\CrateDescriptionCM.cs" />
     <Compile Include="Data\Manifests\CrateManifestTypes.cs" />

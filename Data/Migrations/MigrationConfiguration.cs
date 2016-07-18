@@ -78,6 +78,7 @@ namespace Data.Migrations
         {
             // Example of terminal registration: RegisterTerminal (uow, "localhost:12345");   
             RegisterTerminal(uow, "localhost:10109");
+            RegisterTerminal(uow, "localhost:56785");
         }
 
         private string ExtractPort(string url)
