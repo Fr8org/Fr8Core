@@ -187,10 +187,12 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                 return config;
             },
             responseError: (config) => {
-                if (config.status === 403) {
-                    $window.location.href = $window.location.origin + '/DockyardAccount'
-                        + '?returnUrl=/dashboard' + encodeURIComponent($window.location.hash);
-                }
+                //Andrei Chaplygin: not applicable as this is a valid response from methods signalling that user is authorized but doesn't have sufficient priviligies
+                //All unauthorized requests are handled (and redirected to login page) by built-in functionality (authorize attributes)
+                //if (config.status === 403) {
+                //    $window.location.href = $window.location.origin + '/DockyardAccount'
+                //        + '?returnUrl=/dashboard' + encodeURIComponent($windoFw.location.hash);
+                //}
                 Metronic.stopPageLoading();
                 return $q.reject(config);
             }

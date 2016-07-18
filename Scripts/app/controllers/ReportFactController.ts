@@ -11,6 +11,8 @@
         expandItem: (historyItem: model.HistoryItemDTO) => void;
         orderBy: string;
         selected: any;
+        canSeeOtherUserIncidents: boolean;
+        isAllowedToSeeResults: boolean;
     }
 
     class ReportFactController {
@@ -21,7 +23,11 @@
         ];
 
         constructor(private $scope: IReportFactListScope, private ReportService: services.IReportService) {
-
+            $scope.canSeeOtherUserIncidents = false;
+            ReportService.canSeeOtherUserHistory()
+                .$promise.then((result) => {
+                    $scope.canSeeOtherUserIncidents = result.hasManageUserPrivilege;
+                });
             $scope.selected = [];
 
             $scope.query = new model.HistoryQueryDTO();
@@ -29,6 +35,8 @@
             $scope.query.page = 1;
             $scope.orderBy = "-createdDate";
             $scope.query.isCurrentUser = true;
+
+            $scope.isAllowedToSeeResults = true;
 
 
             $scope.filter = {
@@ -79,7 +87,12 @@
             }
             this.$scope.promise = this.ReportService.getFactsByQuery(this.$scope.query).$promise;
             this.$scope.promise.then((data: model.HistoryResultDTO<model.FactDTO>) => {
+                this.$scope.isAllowedToSeeResults = true;
                 this.$scope.result = data;
+            }, (reason) => {
+                if (reason.status === 403) {
+                    this.$scope.isAllowedToSeeResults = false;
+                }
             });
         }
     }
