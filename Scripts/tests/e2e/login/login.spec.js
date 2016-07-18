@@ -1,53 +1,54 @@
 ﻿var LoginPage = require('../pages/login.page.js');
+var AccountHelper = require('../shared/accountHelper.js');
+var UIHelpers = require('../shared/uiHelpers.js');
+
+//PROPERTIES
+var uiHelpers = new UIHelpers();
+var loginPage = new LoginPage();
+var accountHelper = new AccountHelper();
 
 describe('login page tests', function () {
-    var loginPage;
 
-    //beforeEach(function () {
-        loginPage = new LoginPage();
+    beforeEach(function () {
         loginPage.get();
+    });
+
+    
+
+    //afterEach(function () {
+    //    accountHelper.logout();
     //});
 
-    /* For browser console error logs*/
-        afterEach(function (done) {
-            browser.manage().logs().get('browser').then(function (browserLog) {
-                var i = 0,
-                severWarnings = false;
-                for (i; i <= browserLog.length - 1; i++) {
-                    if (browserLog[i].level.name === 'SEVERE') {
-                        console.log('\n' + browserLog[i].level.name);
-                        console.log('(Possibly exception) \n' + browserLog[i].message)
-                        severWarnings = true;
-                    }
-                }
-                expect(severWarnings).toBe(true);
-                done();
-            });
-        });
-
-
     it('should login', function () {
-        loginPage.setEmail("integration_test_runner@fr8.company");
-        loginPage.setPassword("fr8#s@lt!");
-        loginPage.login();
-        browser.waitForAngular();
-        expect(browser.getCurrentUrl()).toContain('Welcome');
-    });
-
-    it('should open my plans page', function () {
-        browser.sleep(2000);
-        loginPage.myAccount();
-        browser.waitForAngular();
-        expect(browser.getCurrentUrl()).toContain('/myaccount');
-    });
-
-    it('should be logout', function () {
-        browser.sleep(4000);
-        loginPage.selectDropDownByName();
-        browser.waitForAngular();
-        expect(browser.getCurrentUrl()).toContain('/DockyardAccount');
+       return accountHelper.login().then(function () {
+                expect(browser.getCurrentUrl()).toContain('/Welcome');
+       });
     });
 
 });
- 
+
+describe('logout test', function () {
+
+    afterEach(function () {
+        browser.ignoreSynchronization = true;
+        browser.get(browser.baseUrl + '/dashboard/myaccount');
+        //accountHelper.logout();
+    });
+
+    //it('should logout', function () {
+    //    return uiHelpers.waitForElementToBePresent(loginPage.selectDropDownByName).then(function () {
+    //        expect(browser.getCurrentUrl()).toContain('/DockyardAccount');
+    //        //return loginPage.logo().then(function () {
+    //        //    expect(element(by.className('Connect Your Cloud Services')));
+    //        //});
+    //    }, function () { });
+    //});
+
+    it('should logout', function () {
+        return loginPage.selectDropDownByName().then(function () {
+            expect(browser.getCurrentUrl()).toContain('/DockyardAccount');
+        });
+    });
+
+});
    

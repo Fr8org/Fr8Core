@@ -1,56 +1,38 @@
 ﻿var RegistrationPage = require('../pages/registration.page.js');
+var AccountHelper = require('../shared/accountHelper.js');
+var UIHelpers = require('../shared/uiHelpers.js');
+//var ConsoleLog = require('../shared/consoleLog.js');
 
 describe('registration page tests', function () {
-    var registrationPage;
+    //PROPERTIES
+    var registrationPage = new RegistrationPage();
+    var uiHelpers = new UIHelpers();
+    var accountHelper = new AccountHelper();
+    //var consoleLog = new ConsoleLog();
 
-    registrationPage = new RegistrationPage();
-    registrationPage.get();
-
-    /* For browser console error logs*/
-    afterEach(function (done) {
-        browser.manage().logs().get('browser').then(function (browserLog) {
-            var i = 0,
-            severWarnings = false;
-            for (i; i <= browserLog.length - 1; i++) {
-                if (browserLog[i].level.name === 'SEVERE') {
-                    console.log('\n' + browserLog[i].level.name);
-                    console.log('(Possibly exception) \n' + browserLog[i].message)
-                    severWarnings = true;
-                }
-            }
-            expect(severWarnings).toBe(true);
-            done();
-        });
+    beforeEach(function (done) {
+        registrationPage.get();
     });
 
+    //afterEach(function (done) {
+    //    consoleLog();
+    //});
 
-    it('should set url as /register', function () {
-        element(by.xpath('/html/body/div/div/div/div/div[2]/div[2]/a')).click();
-        browser.waitForAngular();
-        expect(browser.getCurrentUrl()).toContain('/Register');
-    });
-
-    it('should registration complete', function () {
-        registrationPage.setEmail("testuser_00014@fr8.co");
-        registrationPage.setPassword("123qwe");
-        registrationPage.setConfirmPassword("123qwe");
-        registrationPage.register();
-        browser.waitForAngular();
-        expect(browser.getCurrentUrl()).toContain('Welcome');
-    });
-
-    it('should open my plans page', function () {
-        browser.sleep(2000);
-        registrationPage.myAccount();
-        browser.waitForAngular();
-        expect(browser.getCurrentUrl()).toContain('/myaccount');
-    });
-
-    it('should be logout', function () {
-        browser.sleep(4000);
-        registrationPage.selectDropDownByName();
-        browser.waitForAngular();
-        expect(browser.getCurrentUrl()).toContain('/DockyardAccount');
+    it('should registration process to complete', function () {
+        return uiHelpers.waitForElementToBePresent(registrationPage.emailInput).then(function () {
+            //expect(browser.getCurrentUrl()).toContain('/Register');
+            return accountHelper.register().then(function () {
+                expect(browser.getCurrentUrl()).toContain('/Welcome');
+            });
+        }, function () { });
     });
 
 });
+
+//describe('logout test', function () {
+
+//    afterEach(function () {
+//        accountHelper.logout();
+//    });
+
+//});
