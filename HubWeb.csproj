@@ -536,6 +536,7 @@
     <Content Include="Content\icons\web_services\basecamp2-icon-64x64.png" />
     <Content Include="Content\icons\web_services\Box-logo_64x64.png" />
     <Content Include="Content\icons\web_services\fr8-demo-icon-64x64.png" />
+	<Content Include="Content\icons\web_services\facebook-icon-64x64.png" />
     <Content Include="Content\icons\web_services\gmail-icon-64x64.png" />
     <Content Include="Content\icons\web_services\instagram-icon-64x64.png" />
     <Content Include="Content\icons\web_services\statX-icon-64x64.png" />
