@@ -33,6 +33,7 @@
     - Specifications  
         * [Fr8 Hub Specification](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Specifications/Fr8HubSpecification.md)  
         * [Terminal Specification](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Specifications/TerminalSpecification.md)  
+        
 [Development Guides](https://github.com/Fr8org/Fr8Core/blob/docs5/Docs/ForDevelopers/DevGuideHome.md)  
 -----------------------------
 
