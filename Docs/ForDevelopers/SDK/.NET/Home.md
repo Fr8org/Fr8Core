@@ -1,7 +1,7 @@
 .NET SDK for Fr8
 ===================
 
-[General Topics](Docs/ForDevelopers/DevelopmentGuides/TerminalDevelopmentGuide.md)
+[General Topics](/Docs/ForDevelopers/DevelopmentGuides/TerminalDevelopmentGuide.md)
 
 [Overview](./Overview.md)
 
