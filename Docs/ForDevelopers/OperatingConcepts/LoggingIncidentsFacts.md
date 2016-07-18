@@ -24,3 +24,10 @@ both deriving from a base class called HistoryItem. They are distinguished mainl
 took place that might be interesting from an analytics point of view, while Incidents are intended to represent things that went wrong and facilitate debugging.
 
 Both the Facts and Incidents produced a user's account can be viewed from the Developer menu (which is unlocked from the Tools menu).
+
+![](incidentreport.png)
+
+Generating Incidents
+--------------------
+
+Terminal developers are encouraged to Post Incident Reports to the Hub. They will be stored in the Hub's database and integrated into the report of Incidents viewable from the client. In general, the rule of thumb is: if you want end users to see the information, send it in the ActivityResponse as an Error message. If you want developers and admins to see it, post it as an Incident Report. 
