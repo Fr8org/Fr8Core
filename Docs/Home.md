@@ -1,7 +1,7 @@
 #Fr8  
 
 * [Fr8 for Users](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForUsers/Fr8ForUsers.md)  
-*     
+
 * Fr8 For Developers  
     - [Part 1 - Introduction](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Introduction.md)   
     - [Part 2 - Understanding the Fr8 Architectural Model](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/ArchitecturalModel.md)   
@@ -33,10 +33,10 @@
     - Specifications  
         * [Fr8 Hub Specification](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Specifications/Fr8HubSpecification.md)  
         * [Terminal Specification](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Specifications/TerminalSpecification.md)  
-- [Development Guides](https://github.com/Fr8org/Fr8Core/blob/docs5/Docs/ForDevelopers/DevGuideHome.md)  
+[Development Guides](https://github.com/Fr8org/Fr8Core/blob/docs5/Docs/ForDevelopers/DevGuideHome.md)  
 -----------------------------
 
- - [Platform SDKs (.NET, Java, Ruby, Python](https://github.com/Fr8org/Fr8Core/blob/docs5/Docs/ForDevelopers/SDKHome.md)
+[Platform SDKs (.NET, Java, Ruby, Python](https://github.com/Fr8org/Fr8Core/blob/docs5/Docs/ForDevelopers/SDKHome.md)
 ----------------------------------
 
 [Roadmap](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Roadmap)
@@ -44,8 +44,8 @@
    
         
    
-* [Security](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Security/SecurityOverview.md)  
-* ----------------------------------
+[Security](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Security/SecurityOverview.md)  
+----------------------------------
     * [Permissions](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Security/Permissions.md)
     * [Security Internals](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Security/SecurityInternals.md)
     * [Profiles](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Security/Profiles.md)
