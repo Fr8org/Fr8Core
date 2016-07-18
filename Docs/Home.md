@@ -34,7 +34,7 @@
         * [Fr8 Hub Specification](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Specifications/Fr8HubSpecification.md)  
         * [Terminal Specification](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Specifications/TerminalSpecification.md)  
         
-[Development Guides](https://github.com/Fr8org/Fr8Core/blob/docs5/Docs/ForDevelopers/DevGuideHome.md)  
+[Development Guides](https://github.com/Fr8org/Fr8Core/blob/docs6/Docs/ForDevelopers/DevGuideHome.md)  
 -----------------------------
 
 [Platform SDKs (.NET, Java, Ruby, Python](https://github.com/Fr8org/Fr8Core/blob/docs5/Docs/ForDevelopers/SDKHome.md)
