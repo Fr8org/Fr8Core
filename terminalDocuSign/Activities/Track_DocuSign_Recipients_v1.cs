@@ -139,7 +139,8 @@ namespace terminalDocuSign.Activities
         public override async Task Initialize()
         {
             Storage.Clear();
-            Storage.Add(PackControls(new ActivityUi()));
+            
+            AddControls(new ActivityUi().Controls);
             Storage.Add(PackAvailableTemplates());
             Storage.Add(await PackAvailableHandlers());
             Storage.Add(PackAvailableRecipientEvents());

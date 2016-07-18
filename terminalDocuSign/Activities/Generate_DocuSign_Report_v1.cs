@@ -375,7 +375,7 @@ namespace terminalDocuSign.Activities
 
         public override async Task Initialize()
         {
-            Storage.Add(PackControls(new ActivityUi()));
+            AddControls(new ActivityUi().Controls);
             Storage.AddRange(PackDesignTimeData());
             var plan = await _planService.UpdatePlanCategory(ActivityId, "report");
         }

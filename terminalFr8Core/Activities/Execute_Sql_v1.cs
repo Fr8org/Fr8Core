@@ -164,7 +164,6 @@ namespace terminalFr8Core.Activities
 
         public override async Task Initialize()
         {
-            Storage.Add(PackControlsCrate());
             AddLabelControl("NoConfigLabel","No configuration","This activity does not require any configuration.");
         }
 

@@ -75,7 +75,7 @@ namespace terminalTwilioTests.Integration
             operationalCrate.CurrentActivityResponse.TryParseErrorDTO(out errorMessage);
 
             Assert.AreEqual(ActivityResponse.Error.ToString(), operationalCrate.CurrentActivityResponse.Type, "Run method of the Send_Via_Twilio did not set CurentActionResponce to Error");
-            Assert.AreEqual("No StandardConfigurationControlsCM crate provided", errorMessage.Message, "Run method of the Send_Via_Twilio did not set error message");
+            Assert.AreEqual("Activity was incorrectly configured. 1 validation error(s).\r\nGlobal: Configuration controls are missing.\r\n", errorMessage.Message, "Run method of the Send_Via_Twilio did not set error message");
 
         }
         /// <summary>

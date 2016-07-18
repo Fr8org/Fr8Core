@@ -51,7 +51,9 @@ namespace terminalSendGrid.Activities
         public override async Task Initialize()
         {
             Storage.Clear();
-            Storage.Add(CreateControlsCrate());
+
+            CreateControls();
+
             await Task.FromResult(0);
         }
 
@@ -103,7 +105,7 @@ namespace terminalSendGrid.Activities
             return control;
         }
 
-        private Crate CreateControlsCrate()
+        private void CreateControls()
         {
             var controls = new List<ControlDefinitionDTO>()
             {
@@ -112,7 +114,7 @@ namespace terminalSendGrid.Activities
                 CreateEmailBodyTextSourceControl()
             };
 
-            return CrateManager.CreateStandardConfigurationControlsCrate(ConfigurationControlsLabel, controls.ToArray());
+            AddControls(controls);
         }
 
         private string CreateEmailHTMLText(string emailBody)
