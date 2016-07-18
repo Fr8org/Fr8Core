@@ -143,8 +143,7 @@ namespace terminalDemo.Activities
         {
             if (!IsValid())
             {
-                RaiseError("Invalid input was selected/entered", ErrorType.Generic,
-                    ActivityErrorCode.DESIGN_TIME_DATA_INVALID, MyTemplate.Name, MyTemplate.Terminal.Name);
+                RaiseError("Invalid input was selected/entered",  ActivityErrorCode.DESIGN_TIME_DATA_INVALID);
 
             }
             else

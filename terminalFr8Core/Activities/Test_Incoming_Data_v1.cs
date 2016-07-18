@@ -201,7 +201,7 @@ namespace terminalFr8Core.Activities
 
             if (!result)
             {
-                TerminateHubExecution();
+                RequestPlanExecutionTermination();
                 return;
             }
 

@@ -114,7 +114,7 @@ namespace terminalFr8Core.Activities
             var prefixValue = GetRowPrefix();
             if (prefixValue == null)
             {
-                RaiseError(/*, "This action can't run without a selected column prefix"*/);
+                RaiseError("This action can't run without a selected column prefix");
                 return;
             }
 

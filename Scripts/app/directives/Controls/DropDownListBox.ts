@@ -35,6 +35,7 @@ module dockyard.directives.dropDownListBox {
                 };
 
                 $scope.setSelectedItem = (item: model.DropDownListItem) => {
+                  
                     let field = {
                         value: null,
                         key: null

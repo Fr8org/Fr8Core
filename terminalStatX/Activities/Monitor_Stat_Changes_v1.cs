@@ -200,7 +200,7 @@ namespace terminalStatX.Activities
 
             if (stat == null)
             {
-                TerminateHubExecution("Stat was not found in the payload.");
+                RequestPlanExecutionTermination("Stat was not found in the payload.");
             }
 
             Payload.Add(Crate.FromContent<StandardPayloadDataCM>(RunTimeCrateLabel, new StandardPayloadDataCM(CreateStatKeyValueItems(stat))));
@@ -214,7 +214,14 @@ namespace terminalStatX.Activities
 
             if (stat.StatValueItems.Any())
             {
-                fields.AddRange(stat.StatValueItems.Select(item => new FieldDTO(item.Name, AvailabilityType.RunTime)));
+                if (stat.VisualType == StatTypes.PickList)
+                {
+                    fields.Add(new FieldDTO("Current Index", AvailabilityType.RunTime));
+                }
+                else
+                {
+                    fields.AddRange(stat.StatValueItems.Select(item => new FieldDTO(item.Name, AvailabilityType.RunTime)));
+                }
             }
             else
             {
@@ -230,7 +237,16 @@ namespace terminalStatX.Activities
 
             if (stat.StatValueItems.Any())
             {
-                fields.AddRange(stat.StatValueItems.Select(item => new KeyValueDTO(item.Name, item.Value)));
+                if (stat.VisualType == StatTypes.PickList)
+                {
+                    fields.Add(new KeyValueDTO("Current Index", stat.CurrentIndex.ToString()));
+                }
+                else
+                {
+                    fields.AddRange(stat.VisualType == StatTypes.CheckList
+                        ? stat.StatValueItems.Select(item => new KeyValueDTO(item.Name, item.Checked.ToString()))
+                        : stat.StatValueItems.Select(item => new KeyValueDTO(item.Name, item.Value)));
+                }
             }
             else
             {

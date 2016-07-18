@@ -45,6 +45,8 @@ module dockyard.tests.unit.directives.controls {
                 scope.field.listItems = fx.UpstreamFieldChooser.incomingFields;
                 scope.action = $.extend(true, {}, fx.UpstreamDataChooser.sampleAction);
                 scope.currentAction = $.extend(true, {}, fx.UpstreamDataChooser.sampleAction);
+                
+
                 var element = angular.element('<upstream-field-chooser-button field="field" current-action="action" change="onChange"></upstream-field-chooser-button>');
                 elem = $compile(element)(scope);
                 scope = elem.isolateScope();
@@ -57,6 +59,8 @@ module dockyard.tests.unit.directives.controls {
                 });
                 var modalConst = jasmine.createSpy('modal').and.callFake(function () { return modal; });
                 controller = $controller('UpstreamFieldChooserButtonController', { $scope: scope, $element: elem, $attrs: null, $modal: modalConst(), $timeout: $timeout, NgTableParams: NgTableParams });
+
+                
             });
         });
 

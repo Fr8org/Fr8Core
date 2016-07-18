@@ -120,7 +120,7 @@ namespace terminalFr8Core.Activities
                 .CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "Found MT Objects")
                 .FirstOrDefault();
             Payload.Add(Crate.FromContent("Sql Query Result", queryMTResult));
-            ExecuteClientActivity("ShowTableReport");
+            RequestClientActivityExecution("ShowTableReport");
             return Task.FromResult(0);
         }
 

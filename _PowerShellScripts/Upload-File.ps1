@@ -1,3 +1,9 @@
+<#
+.SYNOPSIS
+    This script uploads a file to FTP server.    
+#>
+
+
 param(
 	[Parameter(Mandatory = $true)]
     [string]$localFile,

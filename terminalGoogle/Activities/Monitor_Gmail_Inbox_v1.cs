@@ -80,7 +80,7 @@ namespace terminalGoogle.Activities
 
             if (mail == null)
             {
-                TerminateHubExecution("Letter was not found in the payload.");
+                RequestPlanExecutionTermination("Letter was not found in the payload.");
             }
 
             Payload.Add(Crate.FromContent(RuntimeCrateLabel, mail));
