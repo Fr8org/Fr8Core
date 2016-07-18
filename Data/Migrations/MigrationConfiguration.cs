@@ -114,6 +114,7 @@ namespace Data.Migrations
             }
 
             terminalRegistration.Endpoint = terminalEndpoint;
+            terminalRegistration.IsFr8OwnTerminal = true;
 
             uow.TerminalRegistrationRepository.Add(terminalRegistration);
             uow.SaveChanges();
