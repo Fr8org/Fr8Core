@@ -56,8 +56,12 @@ module dockyard.directives {
                     $scope.icon = 'fa fa-cogs';
                     break;
                 case NotificationType.TerminalEvent:
-                    $scope.eventHeader = $scope.event.TerminalName + '-v' + $scope.event.TerminalVersion;
-                    $scope.eventSubHeader = $scope.event.ActivityName + '-v' + $scope.event.ActivityVersion;
+                    if ($scope.event.Subject) {
+                        $scope.eventHeader = $scope.event.Subject;
+                    } else {
+                        $scope.eventHeader = $scope.event.TerminalName + '-v' + $scope.event.TerminalVersion;
+                        $scope.eventSubHeader = $scope.event.ActivityName + '-v' + $scope.event.ActivityVersion;
+                    }
                     $scope.eventMessage = $scope.event.Message;
                     $scope.icon = 'fa fa-bolt';
                     break;
