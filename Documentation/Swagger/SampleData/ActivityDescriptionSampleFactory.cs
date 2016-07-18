@@ -15,6 +15,7 @@ namespace HubWeb.Documentation.Swagger
 
         public ActivityDescriptionDTO GetSampleData()
         {
+
             return new ActivityDescriptionDTO
             {
                 Id = Guid.Parse("BA7D9D24-E72F-4A4A-8297-1EFA8EA036E5"),
