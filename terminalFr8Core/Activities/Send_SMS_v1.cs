@@ -22,6 +22,7 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("61774e73-9151-4c58-8a56-dd6653bc2e8c"),
             Name = "Send_SMS",
             Label = "Send SMS",
             Version = "1",

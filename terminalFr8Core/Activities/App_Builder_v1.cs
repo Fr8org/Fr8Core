@@ -25,6 +25,7 @@ namespace terminalFr8Core.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("04390199-7cfd-4217-bf40-7671e130dc28"),
             Name = "App_Builder",
             Label = "App Builder",
             Version = "1",
@@ -40,30 +41,27 @@ namespace terminalFr8Core.Activities
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
-
+        public const string CollectionControlsLabel = "Collection";
         private const string RuntimeCrateLabelPrefix = "Standard Data Table";
         private const string RuntimeFieldCrateLabelPrefix = "Run Time Fields From AppBuilder";
         private const string RunFromSubmitButtonLabel = "RunFromSubmitButton";
-        public const string CollectionControlsLabel = "Collection";
+
         /// <summary>
-        /// We don't want false clicked events from submit button
-        /// after we read it's state we reset it to unclicked state
+        /// We don't want false clicked events from submit button after we read it's state we reset it to unclicked state
         /// </summary>
         /// <param name="curActivityDO"></param>
         private void UnClickSubmitButton()
         {
             var collectionControls = Storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => c.Label == CollectionControlsLabel).First();
-                var submitButton = collectionControls.FindByName<Button>("submit_button");
-                submitButton.Clicked = false;
-            }
+            var submitButton = collectionControls.FindByName<Button>("submit_button");
+            submitButton.Clicked = false;
+        }
 
         private async Task PushLaunchURLNotification()
         {
-            var msg = "This Plan can be launched with the following URL: " +
-                                    CloudConfigurationManager.GetSetting("CoreWebServerUrl") +
-                                "redirect/cloneplan?id=" + ActivityId;
-
-            await _pushNotificationService.PushUserNotification(MyTemplate, "Success", "Plan URL", msg);
+            var msg = "This Plan can be launched with the following URL: " + CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "redirect/cloneplan?id=" + ActivityId;
+            await _pushNotificationService.PushUserNotification(MyTemplate, "Success", "App Builder URL Generated", msg);
         }
 
         private async Task UpdateMetaControls()
@@ -85,8 +83,7 @@ namespace terminalFr8Core.Activities
 
         /// <summary>
         /// TODO this part should be modified with 2975
-        /// run logic should be applied here
-        /// currently we will only publish textbox fields
+        /// Run logic should be applied here currently we will only publish textbox fields
         /// </summary>
         /// <param name="storage"></param>
         /// <param name="collectionControls"></param>
@@ -153,7 +150,9 @@ namespace terminalFr8Core.Activities
         }
 
         private string GetFileDescriptionLabel(ControlDefinitionDTO filepicker, int labeless_filepickers)
-        { return filepicker.Label ?? ("File from App Builder #" + ++labeless_filepickers); }
+        {
+            return filepicker.Label ?? ("File from App Builder #" + ++labeless_filepickers);
+        }
 
         private void PublishTextBox(TextBox textBox, CrateSignaller.FieldConfigurator fieldConfigurator)
         {
@@ -220,7 +219,7 @@ namespace terminalFr8Core.Activities
         {
             var controlContainer = GetControl<MetaControlContainer>("control_container");
             var generatedConfigControls = controlContainer.CreateControls();
-            //let's add a submit button here
+            // Let's add a submit button here
             var submitButton = new Button
             {
                 CssClass = "float-right mt30 btn btn-default",
@@ -242,6 +241,7 @@ namespace terminalFr8Core.Activities
                 Name = "AppLabel",
                 Events = new List<ControlEvent> { ControlEvent.RequestConfig }
             };
+
             var infoText = new TextBlock()
             {
                 Value = "This activity, when run, creates an app that you can distribute to other users as a URL. <a href='http://documentation.fr8.co/action-development-building-documentation/' target='_blank'>?</a>",
@@ -275,12 +275,10 @@ namespace terminalFr8Core.Activities
             //did we run from run button upon PlanBuilder or from submit button inside activity?
             if (collectionControls == null || !WasActivityRunFromSubmitButton())
             {
-                //this was triggered by run button on screen
-                //not from submit button
-                //let's just activate and return
+                //this was triggered by run button on screen not from submit button. Let's just activate and return
                 await UpdateMetaControls();
                 //await PushLaunchURLNotification(curActivityDO);
-                TerminateHubExecution();
+                RequestPlanExecutionTermination();
                 return;
             }
             RemoveFlagCrate();
@@ -329,8 +327,9 @@ namespace terminalFr8Core.Activities
                     await HubCommunicator.SaveActivity(ActivityContext.ActivityPayload);
                     HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, payload);
 
+
+                    // We must save ourselves before running activity
                     /*
-                    //we must save ourselves before running activity
                     HubCommunicator.SaveActivity(ActivityContext.ActivityPayload).ConfigureAwait(false);
                     HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, payload);
                     */
@@ -343,8 +342,7 @@ namespace terminalFr8Core.Activities
                     return;
                 }
             }
-            PublishCollectionControls();   
-           
+            PublishCollectionControls();
         }
     }
 }

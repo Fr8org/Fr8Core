@@ -19,6 +19,7 @@ namespace terminalDocuSign.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("55693341-6a95-4fc3-8848-2fc3a8101924"),
             Version = "1",
             Name = "Use_DocuSign_Template_With_New_Document",
             Label = "Use DocuSign Template With New Document",

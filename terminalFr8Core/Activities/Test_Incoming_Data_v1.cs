@@ -21,6 +21,7 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("62087361-da08-44f4-9826-70f5e26a1d5a"),
             Name = "Test_Incoming_Data",
             Label = "Test Incoming Data",
             Category = ActivityCategory.Processors,
@@ -200,7 +201,7 @@ namespace terminalFr8Core.Activities
 
             if (!result)
             {
-                TerminateHubExecution();
+                RequestPlanExecutionTermination();
                 return;
             }
 

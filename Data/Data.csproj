@@ -727,6 +727,14 @@
     <Compile Include="Migrations\201607041029473_ActivityCategory.Designer.cs">
       <DependentUpon>201607041029473_ActivityCategory.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201607151938218_UpdateActivityTemplateIds.cs" />
+    <Compile Include="Migrations\201607151938218_UpdateActivityTemplateIds.Designer.cs">
+      <DependentUpon>201607151938218_UpdateActivityTemplateIds.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607170250191_IsFr8OwnTerminal_Property.cs" />
+    <Compile Include="Migrations\201607170250191_IsFr8OwnTerminal_Property.Designer.cs">
+      <DependentUpon>201607170250191_IsFr8OwnTerminal_Property.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -846,7 +854,6 @@
     <Compile Include="States\ActivityTemplateState.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
     <Compile Include="States\DefaultProfiles.cs" />
-    <Compile Include="States\NotificationChannel.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
     <Compile Include="Entities\EnvelopeDO.cs" />
@@ -1007,7 +1014,11 @@
     <None Include="Config\HealthMonitor\Settings.config.src" />
     <None Include="Config\HubWeb\Settings.config" />
     <None Include="Config\PlanDirectory\Settings.config" />
+    <None Include="Config\PlanDirectory\Settings.Debug.config" />
     <None Include="Config\PlanDirectory\Settings.Release.config" />
+    <None Include="Config\terminalAsana\Settings.config" />
+    <None Include="Config\terminalAsana\Settings.Dev.config" />
+    <None Include="Config\terminalAsana\Settings.Release.config" />
     <None Include="Config\terminalAtlassian\Settings.config" />
     <None Include="Config\terminalAzure\Settings.config" />
     <None Include="Config\terminalBasecamp2\Settings.config" />
@@ -1015,7 +1026,6 @@
     <None Include="Config\terminalBasecamp2\Settings.Dev.config" />
     <None Include="Config\terminalBasecamp2\Settings.Release.config" />
     <None Include="Config\terminalBox\Settings.config" />
-    <None Include="Config\terminalCloudService\ServiceConfiguration.Cloud.cscfg" />
     <None Include="Config\terminalCloudService\ServiceConfiguration.Demo.cscfg" />
     <None Include="Config\terminalCloudService\ServiceConfiguration.Dev.cscfg" />
     <None Include="Config\terminalCloudService\ServiceConfiguration.Release.cscfg" />
@@ -1389,6 +1399,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201607041029473_ActivityCategory.resx">
       <DependentUpon>201607041029473_ActivityCategory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607151938218_UpdateActivityTemplateIds.resx">
+      <DependentUpon>201607151938218_UpdateActivityTemplateIds.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607170250191_IsFr8OwnTerminal_Property.resx">
+      <DependentUpon>201607170250191_IsFr8OwnTerminal_Property.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

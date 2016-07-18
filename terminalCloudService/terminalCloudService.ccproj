@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -57,10 +57,9 @@
     <ServiceConfiguration Include="Config\terminalCloudService\ServiceConfiguration.Demo.cscfg" />
     <ServiceConfiguration Include="Config\terminalCloudService\ServiceConfiguration.Release.cscfg" />
     <ServiceConfiguration Include="ServiceConfiguration.Local.cscfg" />
-    <ServiceConfiguration Include="Config\terminalCloudService\ServiceConfiguration.Cloud.cscfg" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config"/>
+    <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Config\" />
@@ -111,6 +110,7 @@
   </PropertyGroup>
   <!-- These SecondarySite items represent the collection of sites (other than the web application associated with the role) that need special packaging. -->
   <ItemGroup>
+    <SecondarySite Include="..\terminalAsana\terminalAsana.csproj" />
     <SecondarySite Include="..\terminalAzure\terminalAzure.csproj" />
     <SecondarySite Include="..\terminalBasecamp2\terminalBasecamp2.csproj" />
     <SecondarySite Include="..\terminalFr8Core\terminalFr8Core.csproj" />

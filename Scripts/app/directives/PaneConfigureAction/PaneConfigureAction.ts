@@ -356,6 +356,7 @@ module dockyard.directives.paneConfigureAction {
                             }
                         }
                     });
+                
                 // save request will stop running plans, so FE should know that
                 // commented out because of FR-4352, now running plan locks activities configuration
                 //if (this.$scope.plan.planState === 2) {

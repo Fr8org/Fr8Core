@@ -18,6 +18,7 @@ namespace terminalAtlassian.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("e51bd483-bc63-49a1-a7c4-36e0a14a6235"),
             Version = "1",
             Name = "Get_Jira_Issue",
             Label = "Get Jira Issue",
@@ -79,7 +80,8 @@ namespace terminalAtlassian.Actions
             var issueKey = ActivityUI.IssueNumber.GetValue(Storage);
             if (!string.IsNullOrEmpty(issueKey))
             {
-                var issueFields = _atlassianService.GetJiraIssue(issueKey, AuthorizationToken).Select(x => new FieldDTO(x.Key));
+                var curJiraIssue = await _atlassianService.GetJiraIssue(issueKey, AuthorizationToken);
+                var issueFields = curJiraIssue.Select(x => new FieldDTO(x.Key));
                 CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel).AddFields(issueFields);
             }
             await Task.Yield();
@@ -90,7 +92,7 @@ namespace terminalAtlassian.Actions
             var issueKey = ActivityUI.IssueNumber.GetValue(Storage);
             if (!string.IsNullOrEmpty(issueKey))
             {
-                var issueFields = _atlassianService.GetJiraIssue(issueKey, AuthorizationToken);
+                var issueFields = await _atlassianService.GetJiraIssue(issueKey, AuthorizationToken);
                 Payload.Add(CrateJiraIssueDetailsPayloadCrate(issueFields));
             }
 
