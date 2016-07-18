@@ -31,5 +31,5 @@ Fr8 uses EntityFramework 6.1 to interact with data. Fr8 uses CodeFirst Migration
 
 
 
-
+Next: Try building a [Terminal Project](./TerminalProjects.md)
 
