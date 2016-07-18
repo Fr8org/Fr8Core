@@ -21,7 +21,7 @@ namespace terminalDocuSign.Services
         private readonly IDocuSignManager _docuSignManager;
         private readonly IHubEventReporter _reporter;
 
-        public DocuSignPolling(IDocuSignManager docuSignManager,  IHubEventReporter reporter)
+        public DocuSignPolling(IDocuSignManager docuSignManager, IHubEventReporter reporter)
         {
             _docuSignManager = docuSignManager;
             _reporter = reporter;
@@ -71,7 +71,7 @@ namespace terminalDocuSign.Services
             pollingData.Result = true;
             return pollingData;
         }
-        
+
         private async Task PushEnvelopesToTerminalEndpoint(IEnumerable<DocuSignEnvelopeCM_v2> envelopesToNotify)
         {
             foreach (var envelope in envelopesToNotify)
@@ -84,7 +84,7 @@ namespace terminalDocuSign.Services
                     Manufacturer = "DocuSign",
                     ExternalAccountId = envelope.ExternalAccountId
                 };
-                
+
                 await _reporter.Broadcast(Crate.FromContent("Standard Event Report", eventReportContent));
             }
         }
@@ -132,18 +132,10 @@ namespace terminalDocuSign.Services
         private List<DocuSignEnvelopeCM_v2> FillChangedEnvelopesWithData(DocuSignApiConfiguration config, IEnumerable<DocuSignEnvelopeCM_v2> changed_envelopes)
         {
             var result = new List<DocuSignEnvelopeCM_v2>();
-            EnvelopesApi api = new EnvelopesApi(config.Configuration);
+
             foreach (var envelope in changed_envelopes)
             {
-                //Templates
-                var templates = api.ListTemplates(config.AccountId, envelope.EnvelopeId);
-                var recipients = api.ListRecipients(config.AccountId, envelope.EnvelopeId);
-
-                var filled_envelope = DocuSignEventParser.ParseAPIresponsesIntoCM(envelope, templates, recipients);
-
-                var envelopestatus = api.GetEnvelope(config.AccountId, envelope.EnvelopeId);
-                filled_envelope.CreateDate = DateTime.Parse(envelopestatus.CreatedDateTime);
-                filled_envelope.SentDate = DateTime.Parse(envelopestatus.SentDateTime);
+                var filled_envelope = _docuSignManager.GetEnvelope(config, envelope.EnvelopeId);
 
                 result.Add(filled_envelope);
             }

@@ -19,6 +19,7 @@ using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Errors;
 using Fr8.TerminalBase.Models;
+using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Services.New_Api
 {
@@ -80,6 +81,23 @@ namespace terminalDocuSign.Services.New_Api
             }
 
             return result;
+        }
+
+
+        public DocuSignEnvelopeCM_v2 GetEnvelope(DocuSignApiConfiguration config, string envelopeId)
+        {
+            DocuSignEnvelopeCM_v2 envelope;
+            EnvelopesApi api = new EnvelopesApi(config.Configuration);
+            //Templates
+            var templates = api.ListTemplates(config.AccountId, envelopeId);
+            var recipients = api.ListRecipients(config.AccountId, envelopeId);
+
+            var filled_envelope = DocuSignEventParser.ParseAPIresponsesIntoCM(out envelope, templates, recipients);
+
+            var envelopestatus = api.GetEnvelope(config.AccountId, envelopeId);
+            filled_envelope.CreateDate = DateTime.Parse(envelopestatus.CreatedDateTime);
+            filled_envelope.SentDate = DateTime.Parse(envelopestatus.SentDateTime);
+            return filled_envelope;
         }
 
         public List<KeyValueDTO> GetTemplatesList(DocuSignApiConfiguration conf)

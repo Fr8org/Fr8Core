@@ -94,14 +94,14 @@ namespace terminalDocuSign.Activities
             return DocuSignManager.GetTemplateRecipientsAndTabs(conf, templateId).Select(x => new FieldDTO(x.Key) {Tags = x.Tags});
         }
 
-        public IEnumerable<KeyValueDTO> GetEnvelopeData(string templateId, string envelopeId = null)
+        public IEnumerable<KeyValueDTO> GetEnvelopeData(string envelopeId)
         {
-            if (String.IsNullOrEmpty(templateId))
+            if (String.IsNullOrEmpty(envelopeId))
             {
-                throw new ArgumentNullException(nameof(templateId));
+                throw new ArgumentNullException(nameof(envelopeId));
             }
             var conf = DocuSignManager.SetUp(AuthorizationToken);
-            return DocuSignManager.GetEnvelopeRecipientsAndTabs(conf, templateId);
+            return DocuSignManager.GetEnvelopeRecipientsAndTabs(conf, envelopeId);
         }
 
         public void AddOrUpdateUserDefinedFields(string templateId, string envelopeId = null, List<KeyValueDTO> allFields = null)

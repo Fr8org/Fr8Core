@@ -212,7 +212,7 @@ namespace terminalDocuSign.Actions
 
             if (curSelectedOption == "template")
             {
-                allFields.AddRange(GetEnvelopeData(envelopeId, null));
+                allFields.AddRange(GetEnvelopeData(envelopeId));
             }
            
             Payload.Add(AllFieldsCrateName, new StandardPayloadDataCM(allFields));

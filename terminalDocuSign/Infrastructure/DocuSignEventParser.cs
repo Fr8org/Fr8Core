@@ -93,8 +93,9 @@ namespace terminalDocuSign.Infrastructure
             return result;
         }
 
-        public static DocuSignEnvelopeCM_v2 ParseAPIresponsesIntoCM(DocuSignEnvelopeCM_v2 envelope, TemplateInformation templates, Recipients recipients)
+        public static DocuSignEnvelopeCM_v2 ParseAPIresponsesIntoCM(out DocuSignEnvelopeCM_v2 envelope, TemplateInformation templates, Recipients recipients)
         {
+            envelope = new DocuSignEnvelopeCM_v2();
             envelope.CurrentRoutingOrderId = recipients.CurrentRoutingOrder;
 
             if (templates.Templates != null)

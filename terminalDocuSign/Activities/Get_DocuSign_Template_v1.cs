@@ -38,7 +38,7 @@ namespace terminalDocuSign.Activities
         protected override string ActivityUserFriendlyName => "Get DocuSign Template";
 
 
-        public Get_DocuSign_Template_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+        public Get_DocuSign_Template_v1(ICrateManager crateManager, IDocuSignManager docuSignManager)
             : base(crateManager, docuSignManager)
         {
         }
