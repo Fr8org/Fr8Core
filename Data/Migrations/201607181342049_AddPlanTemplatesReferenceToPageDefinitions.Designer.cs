@@ -13,7 +13,7 @@ namespace Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201607130650113_AddPlanTemplatesReferenceToPageDefinitions"; }
+            get { return "201607181342049_AddPlanTemplatesReferenceToPageDefinitions"; }
         }
         
         string IMigrationMetadata.Source
