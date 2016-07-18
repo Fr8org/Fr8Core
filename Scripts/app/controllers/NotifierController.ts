@@ -79,6 +79,13 @@ module dockyard.controllers.NotifierController {
                     event.data = data;
                     this.$scope.eventList.splice(0, 0, event);
                 });
+
+                PusherNotifierService.bindEventToChannel(channel, dockyard.directives.NotificationType[dockyard.directives.NotificationType.ExecutionStopped], (data: any) => {
+                    var event = new Fr8InternalEvent();
+                    event.type = dockyard.directives.NotificationType.ExecutionStopped;
+                    event.data = data;
+                    this.$scope.eventList.splice(0, 0, event);
+                });
             });
         }
     }
