@@ -140,7 +140,9 @@ namespace terminalExcel.Activities
         public override async Task Initialize()
         {
             Storage.Clear();
-            Storage.Add(PackControls(new ActivityUi()));
+
+            AddControls(new ActivityUi().Controls);
+            
             Storage.Add(GetAvailableRunTimeTableCrate(DataTableLabel));
         }
 
@@ -169,7 +171,8 @@ namespace terminalExcel.Activities
             }
 
             Storage.Remove<StandardConfigurationControlsCM>();
-            Storage.Add(PackControls(new ActivityUi(fileName, uploadFilePath)));
+
+            AddControls(new ActivityUi(fileName, uploadFilePath).Controls);
 
             if (!string.IsNullOrEmpty(uploadFilePath))
             {

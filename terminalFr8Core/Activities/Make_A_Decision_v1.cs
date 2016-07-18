@@ -171,7 +171,7 @@ namespace terminalFr8Core.Activities
             return checker;
         }
 
-        protected override Crate CreateControlsCrate()
+        protected override void CreateControls()
         {
             var transition = new ContainerTransition
             {
@@ -184,8 +184,7 @@ namespace terminalFr8Core.Activities
                 }
             };
 
-
-            return PackControlsCrate(transition);
+            AddControls(transition);
         }
     }
 }

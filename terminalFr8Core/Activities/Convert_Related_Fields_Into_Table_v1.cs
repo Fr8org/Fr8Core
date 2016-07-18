@@ -50,7 +50,7 @@ namespace terminalFr8Core.Activities
         }
         
       
-        private Crate PackCrate_ConfigurationControls()
+        private void CreateConfigurationControls()
         {
             var actionExplanation = new TextBlock()
             {
@@ -76,7 +76,7 @@ namespace terminalFr8Core.Activities
             };
 
 
-            return PackControlsCrate(actionExplanation, upstreamDataChooser, fieldSelectPrefix, fieldExplanation);
+            AddControls(actionExplanation, upstreamDataChooser, fieldSelectPrefix, fieldExplanation);
         }
 
 
@@ -151,8 +151,7 @@ namespace terminalFr8Core.Activities
         public override async Task Initialize()
         {
             //build a controls crate to render the pane
-            var configurationControlsCrate = PackCrate_ConfigurationControls();
-            Storage.Add(configurationControlsCrate);
+            CreateConfigurationControls();
         }
 
         public override async Task FollowUp()

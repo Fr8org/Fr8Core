@@ -54,7 +54,7 @@ namespace terminalFr8Core.Activities
             return manifestTypeDropdown.Value;
         }
 
-        private Crate CreateControlsCrate()
+        private void CreateControls()
         {
             var duration = new Duration
             {
@@ -62,7 +62,7 @@ namespace terminalFr8Core.Activities
                 Name = "Delay_Duration"
             };
 
-            return PackControlsCrate(duration);
+            AddControls(duration);
         }
 
         public Set_Delay_v1(ICrateManager crateManager)
@@ -94,11 +94,11 @@ namespace terminalFr8Core.Activities
             }
 
         public override Task Initialize()
-            {
-            var configurationControlsCrate = CreateControlsCrate();
-            Storage.Add(configurationControlsCrate);
+        {
+            CreateControls();
+
             return Task.FromResult(0);
-            }
+        }
 
         public override Task FollowUp()
         {
