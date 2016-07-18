@@ -536,6 +536,7 @@
     <Content Include="Content\icons\web_services\basecamp2-icon-64x64.png" />
     <Content Include="Content\icons\web_services\Box-logo_64x64.png" />
     <Content Include="Content\icons\web_services\fr8-demo-icon-64x64.png" />
+	<Content Include="Content\icons\web_services\facebook-icon-64x64.png" />
     <Content Include="Content\icons\web_services\gmail-icon-64x64.png" />
     <Content Include="Content\icons\web_services\instagram-icon-64x64.png" />
     <Content Include="Content\icons\web_services\statX-icon-64x64.png" />
@@ -899,6 +900,7 @@
     <Content Include="_PowerShellScripts\ClearDbBeforeTests.ps1" />
     <Content Include="_PowerShellScripts\Run-DBMigration.ps1" />
     <Content Include="Views\Shared\CDN\_AngularAppScripts.cshtml" />
+    <Content Include="Views\AngularTemplate\PlanBuilder_SimpleKioskMode.cshtml" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <Content Include="_PowerShellScripts\Update-HostnameInTerminalRegistration.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />

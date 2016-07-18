@@ -89,6 +89,13 @@ namespace Hub.Services
                 terminalRegistration.UserId = Thread.CurrentPrincipal.Identity.GetUserId();
                 terminalRegistration.Endpoint = endpoint.ToLower();
 
+                // Consider terminal to be Fr8's if endpoint is "localhost". 
+                // This assumption may be changed in the future.
+                if (new Uri(terminalRegistration.Endpoint).Host == "localhost")
+                {
+                    terminalRegistration.IsFr8OwnTerminal = true;
+                }
+
                 var normaizedEndpoint = NormalizeTerminalEndpoint(endpoint);
 
                 if (!await DiscoverInternal(normaizedEndpoint))
