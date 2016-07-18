@@ -38,7 +38,10 @@ Start by cloning [Fr8Core](https://github.com/Fr8org/Fr8Core). This will provide
 
 Step 4: Build and Run Fr8
 ========================
+[Build and Run](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/BuildRunFr8.md)
 
 
+
+------------------
 Next: Try building a [Terminal Project](./TerminalProjects.md)
 
