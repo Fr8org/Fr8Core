@@ -115,14 +115,6 @@
                                 </li>
                             </ul>
                         </li>
-                        <li class="dropdown-submenu">
-                            <a href="/Services/Demo" class="dropdown-toggle">Demo</a>
-                            <ul class="dropdown-menu">
-                                <li ng-repeat="activity in (activityCategories | filter: {name: 'Solution'})[0].activities | filter: { terminal: { name: 'terminalDemo' } }">
-                                    <a ui-sref="configureSolution({solutionName: activity.name})" ui-sref-opts="{reload: true}">{{activity.label}}</a>
-                                </li>
-                            </ul>
-                        </li>
                     </ul>
                 </li>
 
