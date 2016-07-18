@@ -6,7 +6,7 @@
 
 ### [Making Your Terminal Visible on the Public Web](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/PublicVisibility.md)
 
-    
+
 ### [Responding to /discover Requests](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Guide-TerminalDiscovery.md)
 
 
@@ -14,13 +14,15 @@
 
 ### [Responding to /configure Requests](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Guide-ActivityConfiguration.md)
 
+### [Communicating with Hub](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Guide-HubCommunication.md)
+
 ### Making the activity runnable
 
 Activity execution is a bit more complex than configuration. There are three endpoints you have to implement to make activity ready for execution:
 1. Activation endpoint: **/activities/activate**
 2. Execution endpoint: **/activities/Run**
 3. Deactivation endpoint: **/activities/deactivate**
-4. 
+4.
 ### [Responding to /activate and /deactivate](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Guide-ActivateDeactivate.md)
 
 
@@ -43,4 +45,3 @@ More Information:
 [Events](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Events.md)
 
 [Activity Signaling](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Signaling.md)
-
