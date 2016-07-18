@@ -14,4 +14,6 @@ Additional Topics
 
 [Crate Manager](/Docs/ForDevelopers/SDK/.NET/Services/Crate%20Manager.md)
 
+[Where to Get Help](./HelpResources.md)
+
 
