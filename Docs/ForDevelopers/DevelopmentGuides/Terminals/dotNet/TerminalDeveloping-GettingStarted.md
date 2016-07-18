@@ -1,6 +1,6 @@
 # Building a .Net Terminal - Getting Started
 
-[.NET SDK Home](https://github.com/Fr8org/Fr8Core/blob/FR-3375/Docs/ForDevelopers/SDK/.NET/Home.md)
+[.NET SDK Home](/Docs/ForDevelopers/SDK/.NET/Home.md)
 
 [.NET Terminal Developer Guide Home](../DevGuide_DotNet.md)
 
