@@ -19,6 +19,7 @@ namespace terminalDocuSign.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("9676dd67-519d-4492-ad25-b5f55f9b4804"),
             Name = "Extract_Data_From_Envelopes",
             Label = "Extract Data From Envelopes",
             Version = "1",

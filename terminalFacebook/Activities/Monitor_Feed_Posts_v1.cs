@@ -23,6 +23,7 @@ namespace terminalFacebook.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("860b8347-0e5a-41c3-9be7-73057eeca676"),
             Name = "Monitor_Feed_Posts",
             Label = "Monitor Feed Posts",
             Category = ActivityCategory.Monitors,
@@ -111,7 +112,7 @@ namespace terminalFacebook.Activities
             var eventCrate = Payload.CrateContentsOfType<EventReportCM>(x => x.Label == "Facebook user event").FirstOrDefault();
             if (eventCrate == null)
             {
-                TerminateHubExecution("Facebook event payload was not found");
+                RequestPlanExecutionTermination("Facebook event payload was not found");
                 return;
             }
 
@@ -120,7 +121,7 @@ namespace terminalFacebook.Activities
 
             if (facebookEventPayload == null)
             {
-                TerminateHubExecution("Facebook event payload was not found");
+                RequestPlanExecutionTermination("Facebook event payload was not found");
                 return;
             }
             var fbPost = await _fbIntegration.GetPostByTime(AuthorizationToken.Token, facebookEventPayload.Time);
@@ -129,7 +130,7 @@ namespace terminalFacebook.Activities
             {
                 //this probably was a deletion operation
                 //let's stop for now
-                TerminateHubExecution("Deletions are not handled by monitor feed posts");
+                RequestPlanExecutionTermination("Deletions are not handled by monitor feed posts");
                 return;
             }
 

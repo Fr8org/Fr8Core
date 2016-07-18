@@ -25,6 +25,7 @@ namespace terminalDocuSign.Actions
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id  = new Guid("2b1b4d98-9eb1-4cba-8baa-a6247cd86dce"),
             Version = "2",
             Name = "Send_DocuSign_Envelope",
             Label = "Send DocuSign Envelope",

@@ -152,6 +152,7 @@ namespace terminalQuickBooks.Actions
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new System.Guid("83313A48-85FD-4EF3-A377-DAA450705C69"),
             Version = "1",
             Name = "Convert_TableData_To_AccountingTransactions",
             Label = "Convert Table Data To Accounting Transactions",

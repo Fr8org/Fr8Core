@@ -207,6 +207,7 @@ namespace terminalExcel.Actions
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("f3c99f97-e6e2-4343-b592-6674ac5b4c16"),
             Name = "Save_To_Excel",
             Label = "Save to Excel",
             Version = "1",

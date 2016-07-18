@@ -11,6 +11,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Errors;
+using System;
 
 namespace terminalDropbox.Actions
 {
@@ -39,6 +40,7 @@ namespace terminalDropbox.Actions
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("1cbc96d3-7d61-4acc-8cf0-6a3f0987b00d"),
             Version = "1",
             Name = "Get_File_List",
             Label = "Get File List",

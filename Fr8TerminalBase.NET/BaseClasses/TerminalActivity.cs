@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Crates;
-using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
@@ -13,15 +12,13 @@ using Fr8.TerminalBase.Services;
 
 namespace Fr8.TerminalBase.BaseClasses
 {
-    public abstract class TerminalActivity<T> : TerminalActivityBase
-       where T : StandardConfigurationControlsCM
+    public abstract class TerminalActivity<TUi> : TerminalActivityBase
+       where TUi : StandardConfigurationControlsCM
     {
         /**********************************************************************************/
 
-        public T ActivityUI { get; private set; }
-
-        protected UiBuilder UiBuilder { get; }
-
+        public TUi ActivityUI { get; private set; }
+        
         /**********************************************************************************/
         // Functions
         /**********************************************************************************/
@@ -29,7 +26,6 @@ namespace Fr8.TerminalBase.BaseClasses
         protected TerminalActivity(ICrateManager crateManager) 
             : base(crateManager)
         {
-            UiBuilder = new UiBuilder();
         }
 
         /**********************************************************************************/
@@ -79,7 +75,7 @@ namespace Fr8.TerminalBase.BaseClasses
         
         /**********************************************************************************/
 
-        protected T AssignNamesForUnnamedControls(T configurationControls)
+        private TUi AssignNamesForUnnamedControls(TUi configurationControls)
         {
             int controlId = 0;
             var controls = configurationControls.EnumerateControlsDefinitions();
@@ -95,30 +91,32 @@ namespace Fr8.TerminalBase.BaseClasses
             return configurationControls;
         }
 
+        /**********************************************************************************/
+
         protected override ValidationManager CreateValidationManager()
         {
-           return new EnhancedValidationManager<T>(this, IsRuntime ? Payload : null);
+           return new EnhancedValidationManager<TUi>(this, IsRuntime ? Payload : null);
         }
 
         /**********************************************************************************/
 
-        protected virtual T CrateActivityUI()
+        private TUi CreateActivityUi()
         {
-            var uiBuilderConstructor = typeof(T).GetConstructor(new[] { typeof(UiBuilder) });
+            var uiBuilderConstructor = typeof(TUi).GetConstructor(new[] { typeof(UiBuilder) });
 
             if (uiBuilderConstructor != null)
             {
-                return AssignNamesForUnnamedControls((T)uiBuilderConstructor.Invoke(new object[] { UiBuilder }));
+                return AssignNamesForUnnamedControls((TUi)uiBuilderConstructor.Invoke(new object[] { UiBuilder }));
             }
 
-            var defaultConstructor = typeof(T).GetConstructor(new Type[0]);
+            var defaultConstructor = typeof(TUi).GetConstructor(new Type[0]);
 
             if (defaultConstructor == null)
             {
-                throw new InvalidOperationException($"Unable to find default constructor or constructor accepting UiBuilder for type {typeof(T).FullName}");
+                throw new InvalidOperationException($"Unable to find default constructor or constructor accepting UiBuilder for type {typeof(TUi).FullName}");
             }
 
-            return AssignNamesForUnnamedControls((T)defaultConstructor.Invoke(null));
+            return AssignNamesForUnnamedControls((TUi)defaultConstructor.Invoke(null));
         }
         
         /**********************************************************************************/
@@ -130,7 +128,7 @@ namespace Fr8.TerminalBase.BaseClasses
         private void SyncConfControls(bool throwException)
         {
             var configurationControls = Storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-            ActivityUI = CrateActivityUI();
+            ActivityUI = CreateActivityUi();
 
             if (configurationControls == null)
             {

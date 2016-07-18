@@ -12,6 +12,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
+using System;
 
 namespace terminalFr8Core.Actions
 {
@@ -19,6 +20,7 @@ namespace terminalFr8Core.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("82a722b5-40a6-42d7-8296-aa5239f10173"),
             Name = "Get_File_From_Fr8_Store",
             Label = "Get File From Fr8 Store",
             Category = ActivityCategory.Receivers,

@@ -9,6 +9,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities;
 using terminalDocuSign.Services.New_Api;
+using System;
 
 namespace terminalDocuSign.Activities
 {
@@ -16,6 +17,7 @@ namespace terminalDocuSign.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("0DE0F1FC-EBD3-48A6-9DF4-06F396E9F8C3"),
             Version = "1",
             Name = "Get_DocuSign_Envelope",
             Label = "Get DocuSign Envelope",
@@ -42,7 +44,7 @@ namespace terminalDocuSign.Activities
 
         public override Task Initialize()
         {
-            var control = ControlHelper.CreateSpecificOrUpstreamValueChooser(
+            var control = UiBuilder.CreateSpecificOrUpstreamValueChooser(
                "EnvelopeId",
                "EnvelopeIdSelector",
                "Upstream Design-Time Fields"

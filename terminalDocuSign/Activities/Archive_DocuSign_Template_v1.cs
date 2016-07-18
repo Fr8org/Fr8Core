@@ -8,6 +8,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities;
+using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Models;
 using Fr8.TerminalBase.Services;
 using terminalDocuSign.Services.New_Api;
@@ -109,9 +110,8 @@ namespace terminalDocuSign.Activities
 
         private void SetFileDetails(ActivityPayload storeFileActivity, string fileName)
         {
-            var confControls = ControlHelper.GetConfigurationControls(storeFileActivity.CrateStorage);
-            var fileNameTextbox = ControlHelper.GetControl<TextBox>(confControls, "File_Name", ControlTypes.TextBox);
-            var fileCrateTextSource = ControlHelper.GetControl<TextSource>(confControls, "File Crate label", ControlTypes.TextSource);
+            var fileNameTextbox = ActivityConfigurator.GetControl<TextBox>(storeFileActivity, "File_Name", ControlTypes.TextBox);
+            var fileCrateTextSource = ActivityConfigurator.GetControl<TextSource>(storeFileActivity, "File Crate label", ControlTypes.TextSource);
             fileNameTextbox.Value = fileName;
             fileCrateTextSource.ValueSource = "specific";
             fileCrateTextSource.TextValue = "From DocuSignTemplate To StandardFileDescription";
@@ -119,24 +119,21 @@ namespace terminalDocuSign.Activities
 
         private void SetFromConversion(ActivityPayload convertCratesActivity)
         {
-            var confControls = ControlHelper.GetConfigurationControls(convertCratesActivity.CrateStorage);
-            var fromDropdown = ControlHelper.GetControl<DropDownList>(confControls, "Available_From_Manifests", ControlTypes.DropDownList);
+            var fromDropdown = ActivityConfigurator.GetControl<DropDownList>(convertCratesActivity, "Available_From_Manifests", ControlTypes.DropDownList);
             fromDropdown.Value = ((int)MT.DocuSignTemplate).ToString(CultureInfo.InvariantCulture);
             fromDropdown.selectedKey = MT.DocuSignTemplate.GetEnumDisplayName();
         }
 
         private void SetToConversion(ActivityPayload convertCratesActivity)
         {
-            var confControls = ControlHelper.GetConfigurationControls(convertCratesActivity.CrateStorage);
-            var toDropdown = ControlHelper.GetControl<DropDownList>(confControls, "Available_To_Manifests", ControlTypes.DropDownList);
+            var toDropdown = ActivityConfigurator.GetControl<DropDownList>(convertCratesActivity, "Available_To_Manifests", ControlTypes.DropDownList);
             toDropdown.Value = ((int)MT.StandardFileHandle).ToString(CultureInfo.InvariantCulture);
             toDropdown.selectedKey = MT.StandardFileHandle.GetEnumDisplayName();
         }
 
         private void SetSelectedTemplate(ActivityPayload docuSignActivity, DropDownList selectedTemplateDd)
         {
-            var confControls = ControlHelper.GetConfigurationControls(docuSignActivity.CrateStorage);
-            var actionDdlb = ControlHelper.GetControl<DropDownList>(confControls, "Available_Templates", ControlTypes.DropDownList);
+            var actionDdlb = ActivityConfigurator.GetControl<DropDownList>(docuSignActivity, "Available_Templates", ControlTypes.DropDownList);
             actionDdlb.selectedKey = selectedTemplateDd.selectedKey;
             actionDdlb.Value = selectedTemplateDd.Value;
         }

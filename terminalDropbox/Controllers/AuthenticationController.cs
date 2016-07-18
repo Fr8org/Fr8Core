@@ -11,11 +11,11 @@ namespace terminalDropbox.Controllers
     public class AuthenticationController : ApiController
     {
         private readonly Authentication _authentication = new Authentication();
-        private readonly IHubEventReporter _eventReporter;
+        private readonly IHubLoggerService _loggerService;
 
-        public AuthenticationController(IHubEventReporter eventReporter)
+        public AuthenticationController(IHubLoggerService loggerService)
         {
-            _eventReporter = eventReporter;
+            _loggerService = loggerService;
         }
 
         [HttpPost]
@@ -35,7 +35,7 @@ namespace terminalDropbox.Controllers
             }
             catch (Exception ex)
             {
-                await _eventReporter.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
+                await _loggerService.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
                 return await Task.FromResult(
                     new AuthorizationTokenDTO()
                     {

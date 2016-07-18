@@ -24,6 +24,7 @@ namespace terminalSalesforce.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("802bfcb5-f778-4187-82d3-b941a738a464"),
             Version = "1",
             Name = "Save_To_SalesforceDotCom",
             Label = "Save to Salesforce.Com",
@@ -78,7 +79,7 @@ namespace terminalSalesforce.Actions
             //clear any existing TextSources. This is required when user changes the object in DDLB
             ConfigurationControls.Controls.RemoveAll(ctl => ctl is TextSource);
             chosenObjectFieldsList.ToList().ForEach(selectedObjectField =>
-                AddControl(ControlHelper.CreateTextSourceControl(selectedObjectField.Label, selectedObjectField.Name, string.Empty, addRequestConfigEvent: true, requestUpstream: true)));
+                AddControl(UiBuilder.CreateSpecificOrUpstreamValueChooser(selectedObjectField.Label, selectedObjectField.Name, string.Empty, addRequestConfigEvent: true, requestUpstream: true)));
 
             Storage.RemoveByLabelPrefix("Salesforce Object Fields - ");
             Storage.Add("Salesforce Object Fields - " + chosenObject, new FieldDescriptionsCM(chosenObjectFieldsList));

@@ -16,6 +16,7 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("315c3603-eb27-4217-a07e-f5c5a52bbfc7"),
             Name = "Add_Payload_Manually",
             Label = "Add Payload Manually",
             Category = ActivityCategory.Processors,

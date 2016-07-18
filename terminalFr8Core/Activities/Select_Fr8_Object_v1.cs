@@ -23,6 +23,7 @@ namespace terminalFr8Core.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("6238483f-2cef-418e-bd7e-a52ddb1e01e5"),
             Name = "Select_Fr8_Object",
             Label = "Select Fr8 Object",
             Category = ActivityCategory.Processors,

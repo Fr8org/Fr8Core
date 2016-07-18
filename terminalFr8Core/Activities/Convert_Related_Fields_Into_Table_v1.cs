@@ -18,6 +18,7 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("51e59b13-b164-4a4a-9a37-f528cb05e0fb"),
             Name = "Convert_Related_Fields_Into_Table",
             Label = "Convert Related Fields Into a Table",
             Category = ActivityCategory.Processors,
@@ -113,7 +114,7 @@ namespace terminalFr8Core.Activities
             var prefixValue = GetRowPrefix();
             if (prefixValue == null)
             {
-                RaiseError(/*, "This action can't run without a selected column prefix"*/);
+                RaiseError("This action can't run without a selected column prefix");
                 return;
             }
 
