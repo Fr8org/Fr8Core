@@ -11,7 +11,7 @@ Building and Running Fr8
 What you should see:
 
 A web page should appear that has been produced by your HubWeb project. Curently this is on port 28672:
-
+![](./dotNet/hubwebpage.png)
 
 For each *terminal* that's running, an additional web page will appear:
 ![](./dotNet/startuppages.png)
