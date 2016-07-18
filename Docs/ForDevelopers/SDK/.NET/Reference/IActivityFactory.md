@@ -1,6 +1,6 @@
 # IActivityFactory
 
-Interface that represents the factory that is generating activity instances for the certain activity template.
+Factory that is generating activity instances for the certain activity template.
 
 **Namespace**: Fr8.TerminalBase.Interfaces  
 **Assembly**: Fr8TerminalBase.NET

@@ -19,6 +19,10 @@ using StructureMap;
 
 namespace Fr8.TerminalBase.BaseClasses
 {
+    /// <summary>
+    /// Base class for building Owin startup class for the terminal. When developing new terminal, you must derive your Owin startup class from BaseConfiguration. 
+    /// See https://github.com/Fr8org/Fr8Core/blob/dev/Docs/ForDevelopers/SDK/.NET/Reference/BaseConfiguration.md
+    /// </summary>
     public abstract class BaseConfiguration : IHttpControllerTypeResolver, IHttpControllerActivator
     {
         protected HttpConfiguration _configuration = new HttpConfiguration();
