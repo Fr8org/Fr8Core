@@ -1,6 +1,8 @@
 .NET SDK for Fr8
 ===================
 
+[General Topics](https://github.com/Fr8org/Fr8Core/blob/FR-3375/Docs/ForDevelopers/DevelopmentGuides/TerminalDevelopmentGuide.md)
+
 [Overview](./Overview.md)
 
 [Getting Started on .NET](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/TerminalDeveloping-GettingStarted.md)
