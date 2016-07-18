@@ -43,6 +43,8 @@ namespace terminalDocuSign.Activities
 
         public override Task Initialize()
         {
+            Storage.Clear();
+
             /*
              * Discussed with Alexei and it is required to have empty Standard UI Control in the crate.
              * So we create a text block which informs the user that this particular aciton does not require any configuration.
@@ -56,7 +58,7 @@ namespace terminalDocuSign.Activities
 
             var authToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(AuthorizationToken.Token);
             var docuSignUserCrate = Crate.FromContent("DocuSignUserCrate", new StandardPayloadDataCM(new KeyValueDTO("DocuSignUserEmail", authToken.Email)));
-            Storage.Clear();
+            
             Storage.Add(curEventSubscriptionsCrate, docuSignUserCrate);
 
             CrateSignaller.MarkAvailableAtRuntime<DocuSignEnvelopeCM_v2>("DocuSign Envelope");
