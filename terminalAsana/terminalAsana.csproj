@@ -449,9 +449,6 @@
     <Content Include="Config\terminalCloudService\ServiceConfiguration.Demo.cscfg" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Config\terminalCloudService\ServiceConfiguration.Cloud.cscfg" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Config\terminalBox\Settings.config" />
   </ItemGroup>
   <ItemGroup>

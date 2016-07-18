@@ -194,7 +194,7 @@
       </Site>
       <Site name="terminalDemo" physicalDirectory="..\..\..\terminalDemo\azure.publish">
         <Bindings>
-          <Binding name="Endpoint1" endpointName="terminalDemo" />
+          <!--<Binding name="Endpoint1" endpointName="terminalDemo" />-->
           <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalDemo.fr8.co" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="dev-terminalDemo.fr8.co" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="demo-terminalDemo.fr8.co" />
@@ -266,6 +266,7 @@
       <Setting name="CoreWebServerUrl"/>
       <Setting name="HubApiBaseUrl"/>
       <Setting name="LoggerNamePrefix"/>
+      <Setting name="terminalAsana.TerminalEndpoint"/>
       <Setting name="terminalAtlassian.TerminalEndpoint"/>
       <Setting name="terminalAzure.TerminalEndpoint"/>
       <Setting name="terminalBasecamp2.TerminalEndpoint"/>
@@ -292,8 +293,8 @@
     </ConfigurationSettings>
     <Endpoints>
       <!-- Endpoint name must strongly match terminal name. This rule is expected 
-      in the deployment script Update-terminalHostnameInDb.ps1. If the rule is not 
-      respected, integration tests will fail while master branch (Production) deployment.-->
+      in the deployment script Set-EndpointsStaging.ps1. If the rule is not 
+      respected, integration tests will fail during the master branch (Production) deployment.-->
       <InputEndpoint name="server80" protocol="http" port="80" />
       <InputEndpoint name="server443" protocol="https" port="443" certificate="fr8Certificate" />
       <InputEndpoint name="terminalAsana" protocol="http" port="56785" />
@@ -312,13 +313,17 @@
       <InputEndpoint name="terminalAtlassian" protocol="http" port="39768" />
       <InputEndpoint name="terminalYammer" protocol="http" port="39555" />
       <InputEndpoint name="terminalQuickBooks" protocol="http" port="48317" />
-      <InputEndpoint name="terminalDemo" protocol="http" port="22555" />
 	    <InputEndpoint name="terminalStatX" protocol="http" port="48675" />
       <InputEndpoint name="terminalFacebook" protocol="http" port="22666" />
       <InputEndpoint name="terminalBox" protocol="http" port="54642" />
       <InputEndpoint name="terminalTelegram" protocol="http" port="59022" />
       <InputEndpoint name="terminalInstagram" protocol="http" port="10109" />
       <InputEndpoint name="PlanDirectory" protocol="http" port="64879" />
+      
+      <!-- 
+      Deploy this one on another cloud service 
+      <InputEndpoint name="terminalDemo" protocol="http" port="22555" /> 
+      -->
     </Endpoints>
     <Imports>
       <Import moduleName="RemoteAccess" />

@@ -396,6 +396,12 @@ namespace Fr8.Infrastructure.Data.Control
 
     public class FieldList : ControlDefinitionDTO
     {
+        [JsonProperty("fieldLabel")]
+        public string FieldLabel { get; set; }
+
+        [JsonProperty("valueLabel")]
+        public string ValueLabel { get; set; }
+
         public FieldList()
         {
             Type = ControlTypes.FieldList;
