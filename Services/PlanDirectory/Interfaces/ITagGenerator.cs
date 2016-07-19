@@ -10,6 +10,6 @@ namespace PlanDirectory.Interfaces
 {
     public interface ITagGenerator
     {
-        Task<List<TemplateTag>> GetTags(PlanTemplateCM planTemplateCM, string fr8AccountId);
+        Task<TemplateTagStorage> GetTags(PlanTemplateCM planTemplateCM, string fr8AccountId);
     }
 }

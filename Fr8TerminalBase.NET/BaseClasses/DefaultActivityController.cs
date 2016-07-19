@@ -7,6 +7,10 @@ using Fr8.TerminalBase.Services;
 
 namespace Fr8.TerminalBase.BaseClasses
 {
+    /// <summary>
+    /// Base class for Web API controller that are intended to process activity related requests from the Hub. 
+    /// See https://github.com/Fr8org/Fr8Core/blob/dev/Docs/ForDevelopers/SDK/.NET/Reference/DefaultActivityController.md
+    /// </summary>
     public abstract class DefaultActivityController : ApiController
     {
         private readonly IActivityExecutor _activityExecutor;
