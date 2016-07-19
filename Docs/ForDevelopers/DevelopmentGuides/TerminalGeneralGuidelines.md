@@ -96,3 +96,6 @@ Crates are the basic packaging unit of data in the Fr8 system. Your terminal sho
 Your terminal first creates a Crate of JSON data when it responds to the /discover call. 
 
 Read about [Crate Best Practices](/Docs/ForDevelopers/DevelopmentGuides/CrateBestPractices.md).
+
+### Incidents, Facts and Logging
+Read about Fr8 support for debug logging [here](/Docs/ForDevelopers/OperatingConcepts/LoggingIncidentsFacts.md). The one really important thing you need to know now is that tons of useful debugging information shows up in your client in the Show Incidents menu item on the Developer menu.
