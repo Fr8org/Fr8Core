@@ -222,13 +222,12 @@ namespace terminalDocuSign.Actions
 
         public override async Task Initialize()
         {
-
-            var controlsCrate = PackControls(CreateActivityUi());
-            FillDocuSignTemplateSource(controlsCrate, "UpstreamCrate");
-            Storage.Add(controlsCrate);
+            AddControls(((StandardConfigurationControlsCM) CreateActivityUi()).Controls);
+            FillDocuSignTemplateSource("UpstreamCrate");
+            
             // Remove previously added crate of "Standard Event Subscriptions" schema
             Storage.Remove<EventSubscriptionCM>();
-            Storage.Add(PackEventSubscriptionsCrate(controlsCrate.Get<StandardConfigurationControlsCM>()));
+            Storage.Add(PackEventSubscriptionsCrate());
         }
 
         public override Task FollowUp()
@@ -285,10 +284,10 @@ namespace terminalDocuSign.Actions
             storage.Add(curEventSubscriptionCrate);
         }
 
-        private Crate PackEventSubscriptionsCrate(StandardConfigurationControlsCM configurationFields)
+        private Crate PackEventSubscriptionsCrate()
         {
             var subscriptions = new List<string>();
-            ActivityUi activityUi = configurationFields;
+            ActivityUi activityUi = ConfigurationControls;
             if (activityUi.EnvelopeSentOption.Selected)
             {
                 subscriptions.Add(EnvelopeSentEventname);
