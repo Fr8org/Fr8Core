@@ -424,7 +424,7 @@ namespace terminalDocuSignTests.Integration
             var requestDataDTO = await HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_Fr8DataDTO(this);
             using (var crateStorage = Crate.GetUpdatableStorage(requestDataDTO.ActivityDTO))
             {
-                crateStorage.Add(Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", new ControlDefinitionDTO[] { }));
+                crateStorage.Add("Configuration_Controls", new StandardConfigurationControlsCM());
             }
 
 
@@ -450,7 +450,7 @@ namespace terminalDocuSignTests.Integration
             var requestDataDTO = await HealthMonitor_FixtureData.Monitor_DocuSign_v1_InitialConfiguration_Fr8DataDTO(this);
             using (var crateStorage = Crate.GetUpdatableStorage(requestDataDTO.ActivityDTO))
             {
-                crateStorage.Add(Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", new ControlDefinitionDTO[] { }));
+                crateStorage.Add("Configuration_Controls", new StandardConfigurationControlsCM());
             }
             //Act
             var responseActionDTO =

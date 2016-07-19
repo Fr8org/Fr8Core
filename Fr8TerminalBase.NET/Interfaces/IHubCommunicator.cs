@@ -30,7 +30,7 @@ namespace Fr8.TerminalBase.Interfaces
         Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload, bool force = false);  // force flag is used to save or configure activity even if plan is in Running state. 
         Task<ActivityPayload> CreateAndConfigureActivity(Guid templateId, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null);
         Task<PlanDTO> CreatePlan(PlanEmptyDTO planDTO);
-        Task RunPlan(Guid planId, List<CrateDTO> payload);
+        Task RunPlan(Guid planId, IEnumerable<Crate> payload);
         Task<List<CrateDTO>> GetStoredManifests(List<CrateDTO> cratesForMTRequest);
         Task<IEnumerable<PlanDTO>> GetPlansByName(string name, PlanVisibility visibility = PlanVisibility.Standard);
         Task<FileDTO> SaveFile(string name, Stream stream);

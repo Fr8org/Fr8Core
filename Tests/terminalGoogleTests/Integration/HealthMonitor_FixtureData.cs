@@ -44,23 +44,7 @@ namespace terminalGoogleTests.Integration
 
         private Crate PackCrate_GoogleForms()
         {
-            var curFields = new List<KeyValueDTO>() { new KeyValueDTO() { Key = "Survey Form", Value = "1z7mIQdHeFIpxBm92sIFB52B7SwyEO3IT5LiUcmojzn8" } }.ToArray();
-            Crate crate = CrateManager.CreateDesignTimeFieldsCrate("Available Forms", curFields);
-
-            return crate;
-        }
-
-        private Crate CreateEventSubscriptionCrate()
-        {
-            var subscriptions = new string[] {
-                "Google Form Response"
-            };
-
-            return CrateManager.CreateStandardEventSubscriptionsCrate(
-                "Standard Event Subscriptions",
-                "Google",
-                subscriptions.ToArray()
-                );
+           return Crate.FromContent("Available Forms", new KeyValueListCM(new KeyValueDTO("Survey Form", "1z7mIQdHeFIpxBm92sIFB52B7SwyEO3IT5LiUcmojzn8" )));
         }
 
         public static ActivityTemplateDTO Monitor_Form_Responses_v1_ActivityTemplate()
@@ -118,13 +102,12 @@ namespace terminalGoogleTests.Integration
         {
             var configurationControlsCrate = curCrate;
             var crateDesignTimeFields = PackCrate_GoogleForms();
-            var eventCrate = CreateEventSubscriptionCrate();
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDTO))
             {
                 crateStorage.Add(configurationControlsCrate);
                 crateStorage.Add(crateDesignTimeFields);
-                crateStorage.Add(eventCrate);
+                crateStorage.Add("Standard Event Subscriptions", new EventSubscriptionCM("Google", "Google Form Response"));
             }
         }
 
@@ -301,8 +284,7 @@ namespace terminalGoogleTests.Integration
         {
             Crate crate;
 
-            var curFields = new List<KeyValueDTO>()
-            {
+            var curFields = new KeyValueListCM(
                 new KeyValueDTO
                 {
                     Key = "Column_Only",
@@ -328,10 +310,9 @@ namespace terminalGoogleTests.Integration
                     Key="OneRow_WithHeader",
                     Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/1XES9LEK6WmSp5adZ8F-_cfoE7EeLMgPr6NhRPyGaSfM"
                 }
-            }.ToArray();
-            crate = CrateManager.CreateDesignTimeFieldsCrate("Select a Google Spreadsheet", curFields);
+            );
 
-            return crate;
+            return Crate.FromContent("Select a Google Spreadsheet", curFields);
         }
 
         private Crate Get_Google_Sheet_Data_v1_PackCrate_ConfigurationControls(Tuple<string, string> spreadsheetTuple)

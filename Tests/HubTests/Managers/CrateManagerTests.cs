@@ -235,29 +235,7 @@ namespace HubTests.Managers
 
             CheckStorageDTOs(newCrateStorageDto, activityDto.CrateStorage);
         }
-
-        [Test]
-        public void TransformStandardTableDataToStandardPayloadData_ShouldProcessFirstRowAndHaveCorrectKeys()
-        {
-            var payload = _crateManager.TransformStandardTableDataToStandardPayloadData("Some type", GetTestTable());
-            Assert.AreEqual("SerbianWord", payload.PayloadObjects[0].PayloadObject[0].Key);
-            Assert.AreEqual("Pouzdan", payload.PayloadObjects[0].PayloadObject[0].Value);
-            Assert.AreEqual("EnglishWord", payload.PayloadObjects[0].PayloadObject[1].Key);
-            Assert.AreEqual("Reliable", payload.PayloadObjects[0].PayloadObject[1].Value);
-            Assert.AreEqual(2, payload.PayloadObjects.Count());
-        }
-
-        [Test]
-        public void TransformStandardTableDataToStandardPayloadData_ShouldNotProcessFirstRow()
-        {
-            var payload = _crateManager.TransformStandardTableDataToStandardPayloadData("Some type", GetTestTableWithHeaders());
-            Assert.AreEqual("SerbianWord", payload.PayloadObjects[0].PayloadObject[0].Key);
-            Assert.AreEqual("Pouzdan", payload.PayloadObjects[0].PayloadObject[0].Value);
-            Assert.AreEqual("EnglishWord", payload.PayloadObjects[0].PayloadObject[1].Key);
-            Assert.AreEqual("Reliable", payload.PayloadObjects[0].PayloadObject[1].Value);
-            Assert.AreEqual(2, payload.PayloadObjects.Count());
-        }
-
+        
         [Test]
         public void UpdateStorageStringRewrite_Works()
         {

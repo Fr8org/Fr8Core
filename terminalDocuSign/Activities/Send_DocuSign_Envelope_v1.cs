@@ -246,13 +246,9 @@ namespace terminalDocuSign.Actions
             var tabsandfields = DocuSignManager.GetTemplateRecipientsTabsAndDocuSignTabs(conf, docusignTemplateId);
 
             var roles = tabsandfields.Item1.Where(a => a.Tags.Contains(DocuSignConstants.DocuSignSignerTag));
-            var crateRolesDTO = CrateManager.CreateDesignTimeFieldsCrate(
-              "DocuSignTemplateRolesFields",
-              roles.ToArray()
-            );
 
             Storage.RemoveByLabel("DocuSignTemplateRolesFields");
-            Storage.Add(crateRolesDTO);
+            Storage.Add("DocuSignTemplateRolesFields", new KeyValueListCM(roles));
 
 
             var envelopeDataDTO = tabsandfields.Item2;
@@ -279,14 +275,9 @@ namespace terminalDocuSign.Actions
 
                 Storage.Add(Crate.FromContent("Advisories", currentAdvisoryResults));
             }
-
-            var crateUserDefinedDTO = CrateManager.CreateDesignTimeFieldsCrate(
-                "DocuSignTemplateUserDefinedFields",
-               userDefinedFields.Concat(roles).ToArray()
-            );
-
+            
             Storage.RemoveByLabel("DocuSignTemplateUserDefinedFields");
-            Storage.Add(crateUserDefinedDTO);
+            Storage.Add("DocuSignTemplateUserDefinedFields", new KeyValueListCM(userDefinedFields.Concat(roles)));
 
             //Create TextSource controls for ROLES
             var rolesMappingBehavior = new TextSourceMappingBehavior(Storage, "RolesMapping", true);

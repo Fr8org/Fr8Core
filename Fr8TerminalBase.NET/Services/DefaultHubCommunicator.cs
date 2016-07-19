@@ -226,11 +226,18 @@ namespace Fr8.TerminalBase.Services
             return await _restfulServiceClient.PostAsync<PlanEmptyDTO, PlanDTO>(uri, planDTO);
         }
 
-        public async Task RunPlan(Guid planId, List<CrateDTO> payload)
+        public async Task RunPlan(Guid planId, IEnumerable<Crate> payload)
         {
             var url = $"{GetHubUrlWithApiVersion()}/plans/run?planId=" + planId;
             var uri = new Uri(url);
-            await _restfulServiceClient.PostAsync<List<CrateDTO>>(uri, payload);
+            var cratesDto = new CrateDTO[0];
+            
+            if (payload != null)
+            {
+                cratesDto = payload.Select(x => CrateStorageSerializer.Default.ConvertToDto(x)).ToArray();
+            }
+
+            await _restfulServiceClient.PostAsync(uri, cratesDto);
         }
 
         public async Task<IEnumerable<PlanDTO>> GetPlansByName(string name, PlanVisibility visibility = PlanVisibility.Standard)
