@@ -1,14 +1,17 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.Compilation;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
-using Fr8.Infrastructure.Data.States;
 
 namespace Fr8.TerminalBase.BaseClasses
 {
+    /// <summary>
+    /// Base class for activities that requires highly dynamic UI that can't be implemented using TerminalActivity&lt;TUi&gt;. 
+    /// This is also a base class for legacy Fr8 activities.
+    /// See https://github.com/Fr8org/Fr8Core/blob/dev/Docs/ForDevelopers/SDK/.NET/Reference/ExplicitTerminalActivity.md
+    /// </summary>
     public abstract class ExplicitTerminalActivity : TerminalActivityBase
     {
         private StandardConfigurationControlsCM _configurationControls;

@@ -149,8 +149,6 @@ namespace Hub.Managers.APIManagers.Packagers.SendGrid
                     Logger.LogError("Error occured while trying to send email. " +
                                     $"From = {email.From.Address}; " +
                                     $"Subject = {email.Subject}; " +
-                                    $"Username = {CloudConfigurationManager.GetSetting("OutboundUserName")}; " +
-                                    $"Password = {CloudConfigurationManager.GetSetting("OutboundPassword")}; " +
                                     $"Exception = {ex.Message}; ");
                     EventManager.Error_EmailSendFailure(email.Id, ex.Message);
                 }
