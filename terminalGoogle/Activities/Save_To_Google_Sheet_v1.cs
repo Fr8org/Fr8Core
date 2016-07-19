@@ -23,6 +23,7 @@ namespace terminalGoogle.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("120110db-b8dd-41ca-b88e-9865db315528"),
             Name = "Save_To_Google_Sheet",
             Label = "Save To Google Sheet",
             Version = "1",

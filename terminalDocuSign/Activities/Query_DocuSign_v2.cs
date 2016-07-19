@@ -21,6 +21,7 @@ namespace terminalDocuSign.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("9e9e6230-727f-456a-b56d-5cfbbd6f551a"),
             Name = "Query_DocuSign",
             Label = "Query DocuSign",
             Version = "2",

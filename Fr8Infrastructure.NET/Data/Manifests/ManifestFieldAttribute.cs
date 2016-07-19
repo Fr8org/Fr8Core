@@ -2,6 +2,10 @@
 
 namespace Fr8.Infrastructure.Data.Manifests
 {
+    /// <summary>
+    /// Allows to specify aspects of how the certain manifest field is being signaled when default setting for available crates signalling are used. 
+    /// https://github.com/Fr8org/Fr8Core/blob/dev/Docs/ForDevelopers/SDK/.NET/Reference/ManifestFieldAttribute.md
+    /// </summary>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public sealed class ManifestFieldAttribute : Attribute
     {

@@ -68,7 +68,6 @@ namespace HubTests.Services
                    (skipId || a.Id == b.Id) &&
                    a.Name == b.Name &&
                    a.Label == b.Label &&
-                   a.PublicIdentifier == b.PublicIdentifier &&
                    a.Secret == b.Secret &&
                    a.TerminalStatus == b.TerminalStatus &&
                    a.Version == b.Version;
@@ -296,7 +295,7 @@ namespace HubTests.Services
             var template = CreateActivityTemplate(FixtureData.GetTestGuidById(1), CreateTerminal(-234), CreateWebService(234234));
 
             template.WebServiceId = -2344;
-            template.Id = Guid.Empty;
+            template.Id  = Guid.NewGuid();
 
             var terminalService = ObjectFactory.GetInstance<Terminal>();
             template.Terminal = terminalService.RegisterOrUpdate(template.Terminal);

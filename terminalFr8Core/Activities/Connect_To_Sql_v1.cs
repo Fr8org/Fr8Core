@@ -8,6 +8,8 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using terminalFr8Core.Infrastructure;
+using System;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace terminalFr8Core.Activities
 {
@@ -15,6 +17,7 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("bb019231-435a-49c3-96db-ab4ae9e7fb23"),
             Name = "Connect_To_Sql",
             Label = "Connect To SQL",
             Category = ActivityCategory.Processors,
@@ -40,7 +43,7 @@ namespace terminalFr8Core.Activities
 
         #region Configuration.
 
-        private Crate CreateControlsCrate()
+        private void CreateControls()
         {
             var control = new TextBox()
             {
@@ -50,7 +53,7 @@ namespace terminalFr8Core.Activities
                 Events = new List<ControlEvent>(){ControlEvent.RequestConfig}
             };
 
-            return PackControlsCrate(control);
+            AddControls(control);
         }
 
         private string ExtractConnectionString()
@@ -70,7 +73,9 @@ namespace terminalFr8Core.Activities
         public override async Task Initialize()
         {
             Storage.Clear();
-            Storage.Add(CreateControlsCrate());
+            
+            CreateControls();
+
             await Task.Yield();
         }
 
@@ -84,32 +89,12 @@ namespace terminalFr8Core.Activities
                 try
                 {
                     var tableDefinitions = FindObjectHelper.RetrieveColumnDefinitions(connectionString);
-                    var tableDefinitionCrate =
-                        CrateManager.CreateDesignTimeFieldsCrate(
-                            "Sql Table Definitions",
-                            tableDefinitions.ToArray()
-                        );
+                    Storage.Add("Sql Table Definitions", new KeyValueListCM(tableDefinitions));
 
                     var columnTypes = FindObjectHelper.RetrieveColumnTypes(connectionString);
-                    var columnTypesCrate =
-                        CrateManager.CreateDesignTimeFieldsCrate(
-                            "Sql Column Types",
-                            columnTypes.ToArray()
-                        );
+                    Storage.Add("Sql Column Types", new KeyValueListCM(columnTypes));
 
-                    var connectionStringFieldList = new List<KeyValueDTO>()
-                    {
-                        new KeyValueDTO() { Key = connectionString, Value = connectionString }
-                    };
-                    var connectionStringCrate =
-                        CrateManager.CreateDesignTimeFieldsCrate(
-                            "Sql Connection String",
-                            connectionStringFieldList.ToArray()
-                        );
-
-                    Storage.Add(tableDefinitionCrate);
-                    Storage.Add(columnTypesCrate);
-                    Storage.Add(connectionStringCrate);
+                    Storage.Add("Sql Connection String", new KeyValueListCM(new KeyValueDTO (connectionString, connectionString)));
                 }
                 catch
                 {

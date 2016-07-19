@@ -10,6 +10,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
+using System;
 
 namespace terminalFr8Core.Activities
 {
@@ -17,6 +18,7 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("36151a2a-baf3-4614-96f7-d147dd1a73cd"),
             Name = "Build_Message",
             Label = "Build a Message",
             Category = ActivityCategory.Processors,

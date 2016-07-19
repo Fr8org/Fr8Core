@@ -83,5 +83,24 @@ namespace Fr8.TerminalBase.Services
 
             return ctrl;
         }
+
+        /// <summary>
+        /// Creates TextBlock control and fills it with label, value and CssClass
+        /// </summary>
+        /// <param name="curLabel">Label</param>
+        /// <param name="curValue">Value</param>
+        /// <param name="curCssClass">Css Class</param>
+        /// <param name="curName">Name</param>
+        /// <returns>TextBlock control</returns>
+        public TextBlock GenerateTextBlock(string curLabel, string curValue, string curCssClass, string curName = "unnamed")
+        {
+            return new TextBlock
+            {
+                Name = curName,
+                Label = curLabel,
+                Value = curValue,
+                CssClass = curCssClass
+            };
+        }
     }
 }

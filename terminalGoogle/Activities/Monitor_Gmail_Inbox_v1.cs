@@ -30,6 +30,7 @@ namespace terminalGoogle.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("d547401f-a4e3-47cd-9851-7fb98e16c94a"),
             Name = "Monitor_Gmail_Inbox",
             Label = "Monitor Gmail Inbox",
             Version = "1",
@@ -53,12 +54,8 @@ namespace terminalGoogle.Activities
 
         public async override Task Initialize()
         {
-            Storage.Remove<EventSubscriptionCM>();
-            Storage.Add
-                (CrateManager.CreateStandardEventSubscriptionsCrate(
-                "Standard Event Subscriptions",
-                "Google",
-                "GmailInbox"));
+            EventSubscriptions.Manufacturer = "Google";
+            EventSubscriptions.Add("GmailInbox");
 
             CrateSignaller.MarkAvailableAtRuntime<StandardEmailMessageCM>(RuntimeCrateLabel);
         }
@@ -79,7 +76,7 @@ namespace terminalGoogle.Activities
 
             if (mail == null)
             {
-                TerminateHubExecution("Letter was not found in the payload.");
+                RequestPlanExecutionTermination("Letter was not found in the payload.");
             }
 
             Payload.Add(Crate.FromContent(RuntimeCrateLabel, mail));

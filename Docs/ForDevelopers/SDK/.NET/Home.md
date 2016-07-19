@@ -1,9 +1,23 @@
 .NET SDK for Fr8
+===================
+
+[General Topics](/Docs/ForDevelopers/DevelopmentGuides/TerminalDevelopmentGuide.md)
 
 [Overview](./Overview.md)
 
-[Getting Started on .NET](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/TerminalDeveloping-GettingStarted.md)
+[Getting Started on .NET](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/TerminalDeveloping-GettingStarted.md)
 
-[Crate Manager](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/SDK/.NET/Services/Crate%20Manager.md)
+[Step by Step Tutorial](/Docs/ForDevelopers/DevelopmentGuides/.NET%20Step-by-step%20Terminal%20Builders%20Guide.md)
 
-[Terminal Developer Guide](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Terminals/DevGuide_DotNet.md)
+[Reference](/Docs/ForDevelopers/SDK/.NET/Reference/.Net%20SDK%20Reference.md)
+
+Additional Topics
+-----------------
+
+[Crate Manager](/Docs/ForDevelopers/SDK/.NET/Services/Crate%20Manager.md)
+
+[DI container configuration] (/Docs/ForDevelopers/SDK/.NET/DI%20container%20configuration.md)
+
+[Where to Get Help](./HelpResources.md)
+
+

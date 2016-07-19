@@ -10,6 +10,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Infrastructure.Behaviors;
 using Fr8.TerminalBase.Models;
 using Fr8.TerminalBase.Services;
@@ -21,6 +22,7 @@ namespace terminalSalesforce.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("81c02e05-6561-4e3e-ab10-e327a5c601e9"),
             Version = "1",
             Name = "Mail_Merge_From_Salesforce",
             Label = "Mail Merge from Salesforce",
@@ -184,8 +186,7 @@ namespace terminalSalesforce.Actions
         private async Task<ActivityPayload> CreateProcessingActivity(ReconfigurationContext context)
         {
             var loopActivity = await HubCommunicator.AddAndConfigureChildActivity(context.SolutionActivity, await HubCommunicator.GetActivityTemplate("terminalFr8Core", "Loop"), "Loop", "Loop", 2);
-            var crateStorage = loopActivity.CrateStorage;
-            var loopConfigControls = ControlHelper.GetConfigurationControls(crateStorage);
+            var loopConfigControls = ActivityConfigurator.GetConfigurationControls(loopActivity);
             var crateChooser = loopConfigControls.Controls.OfType<CrateChooser>().Single();
             var firstActivity = context.SolutionActivity.ChildrenActivities.OrderBy(x => x.Ordering).First();
             var firstActivityCrates = firstActivity.CrateStorage.CrateContentsOfType<CrateDescriptionCM>().FirstOrDefault();

@@ -66,6 +66,22 @@
                 return promise;
             };
 
+            var checkPrivileged = function () {
+                var url = urlPrefix + '/api/authentication/is_privileged';
+
+                var promise = $q(function (resolve, reject) {
+                    $http.get(url)
+                        .then(function (res) {
+                            resolve(res.data.privileged);
+                        })
+                        .catch(function (err) {
+                            reject(err);
+                        });
+                });
+
+                return promise;
+            };
+
             $scope.submitSearch = function (pageStart) {
                 doSearch(pageStart);
             };
@@ -97,6 +113,21 @@
                     });
             };
 
+            $scope.removePlan = function (planTemplate) {
+                Metronic.blockUI({ animate: true });
+
+                var url = urlPrefix + '/api/plan_templates/?id=' + planTemplate.ParentPlanId;
+                $http.delete(url)
+                    .then(function (data) {
+                        Metronic.unblockUI();
+                        doSearch($scope.currentPage);
+                    });
+            };
+
+            checkPrivileged()
+                .then(function (privileged) {
+                    $scope.privileged = privileged;
+                });
             doSearch(1);
         }
     ])
