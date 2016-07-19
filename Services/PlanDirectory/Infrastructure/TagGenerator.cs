@@ -62,7 +62,7 @@ namespace PlanDirectory.Infrastructure
             //2. getting used templates
             var usedActivityTemplates = usedActivityTemplatesIds.Intersect(activityDict.Keys)
                                      .Select(k => activityDict[k])
-                                     .Distinct()
+                                     .Distinct(ActivityTemplateDTO.IdComparer)
                                      .OrderBy(a => a.Name)
                                      .ToList();
 
@@ -73,7 +73,7 @@ namespace PlanDirectory.Infrastructure
             activityTemplatesCombinations.ForEach(a => result.ActivityTemplateTags.Add(new ActivityTemplateTag(a)));
 
             //4. adding tags for webservices
-            var usedWebServices = usedActivityTemplates.Select(a => a.WebService).Distinct().OrderBy(b => b.Name).ToList();
+            var usedWebServices = usedActivityTemplates.Select(a => a.WebService).Distinct(WebServiceDTO.NameComparer).OrderBy(b => b.Name).ToList();
             var webServicesCombination = GetCombinations<WebServiceDTO>(usedWebServices);
             webServicesCombination.ForEach(a => result.WebServiceTemplateTags.Add(new WebServiceTemplateTag(a)));
 
