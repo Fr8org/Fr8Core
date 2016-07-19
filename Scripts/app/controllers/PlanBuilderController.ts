@@ -43,6 +43,7 @@ module dockyard.controllers {
         addSubPlan: () => void;
         openMenu: ($mdOpenMenu: any, ev: any) => void;
         view: string;
+        displayDeveloperMenu: boolean;
         viewMode: string;
         hasAnyActivity: (pSubPlan: any) => boolean;
         hasHelpMenuItem: (activity: model.ActivityDTO) => boolean;
@@ -112,6 +113,7 @@ module dockyard.controllers {
 
             this.LayoutService.resetLayout();
 
+            this.$scope.displayDeveloperMenu = false;
             this.$scope.isPlanBuilderScope = true;
             this.$scope.isReConfiguring = false;
 
