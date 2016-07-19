@@ -7,4 +7,13 @@ The  Warehouse is implemented as a multi-tenant database, patterned after the [S
 implemented as a set of 3 SQL tables, corresponding to Objects, Fields, and Data. However, Terminals will never deal with that level of the Warehouse, instead accessing it
 through the [/warehouse endpoint on the Hub](https://fr8.co/swagger/ui/index#/Warehouse). 
 
-As an example, the Monitor DocuSign 
+Example:
+Track DocuSign Recipients Solution
+
+![](tdr1.png)
+
+In this solution, the Monitor DocuSign Events is configured at Design-Time to care about DocuSign Envelopes based on a specific template. At Activation time, its Terminal registers with DocuSign for notification (or sets up polling if the associated DocuSign account doesn't have access to notification services). 
+
+When a DocuSign event is received, the Terminal receives it in its EventController, which passes the data to the Terminal's Event service. The event data is parsed and packed into an Event Report Crate (a Crate with the manifest Fr8 Event Report) and POSTed to the Hub's /event endpoint. (The .NET SDK facilitates this with a HubEventReporter class that makes use of the HubCommunicator utility).
+
+When the Hub gets the request, it too ends up routing it from an EventsController to an Event service. The Hub's Event Service determines if any active Plans are subscribed to Event Reports of this type, and if so triggers execution of those Plans. One of the Plans that subscribes to these notification is a special Plan programmatically created [CONTINUE]
