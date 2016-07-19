@@ -11,6 +11,7 @@ using Fr8.Infrastructure.Utilities;
 using terminalDocuSign.Services.New_Api;
 using System;
 using Hub.Interfaces;
+using System.Linq;
 
 namespace terminalDocuSign.Activities
 {
@@ -37,11 +38,13 @@ namespace terminalDocuSign.Activities
 
         private const string AllFieldsCrateName = "DocuSign Envelope Fields";
         private IManifest _manifest;
+        private IDocuSignManager _docusihManager;
 
-        public Get_DocuSign_Envelope_v1(ICrateManager crateManager, IDocuSignManager docuSignManager, IManifest _manifest)
+        public Get_DocuSign_Envelope_v1(ICrateManager crateManager, IDocuSignManager docuSignManager, IManifest _manifest, IDocuSignManager _docusignManager)
             : base(crateManager, docuSignManager)
         {
             this._manifest = _manifest;
+            this._docusihManager = _docusignManager;
         }
 
         public override Task Initialize()
@@ -56,28 +59,16 @@ namespace terminalDocuSign.Activities
 
             var infobox = UiBuilder.GenerateTextBlock("This activity will try to get the envelope with the specified Envelope Id. If an envelope id is known at design-time then this activity will signal envelope tabs", "", "");
             Storage.Clear();
-            Storage.Add(PackControlsCrate(control, infobox));
+            Storage.Add(PackControlsCrate(infobox, control));
             return Task.FromResult(0);
         }
 
         public override async Task FollowUp()
         {
             var control = GetControl<TextSource>("EnvelopeIdSelector");
+            var envelope_crate = CrateSignaller.MarkAvailableAtRuntime<DocuSignEnvelopeCM_v2>(AllFieldsCrateName, false);
 
-            if (control.HasValue)
-            {
-                var value = control.GetValue(Storage);
-                Guid envelopeId;
-
-                if (Guid.TryParse(value, out envelopeId))
-
-                {
-                    var properties = ReflectionHelper.GetProperties(typeof(DocuSignEnvelopeCM_v2));
-                    var fields = _manifest.ConvertPropertyToFields(properties);
-                    CrateSignaller.MarkAvailableAtRuntime<DocuSignEnvelopeCM_v2>(AllFieldsCrateName, true).AddFields(fields);
-                    CrateSignaller.MarkAvailableAtRuntime<DocuSignEnvelopeCM_v2>("test");
-                }
-            }
+            var availlable_crates = await HubCommunicator.GetCratesByDirection(this.ActivityId, CrateDirection.Upstream);
 
         }
 
@@ -99,23 +90,21 @@ namespace terminalDocuSign.Activities
         {
             //Get envlopeId from configuration
             var control = GetControl<TextSource>("EnvelopeIdSelector");
-            ////    string envelopeId = GetEnvelopeId(control);
-            //    // if it's not valid, try to search upstream runtime values
-            //    if (!envelopeId.IsGuid())
-            //        envelopeId = control.GetValue(Payload);
+            string envelopeId = control.GetValue(Payload);
 
-            //    if (string.IsNullOrEmpty(envelopeId))
-            //    {
-            //        RaiseError("EnvelopeId is not set", ActivityErrorCode.PAYLOAD_DATA_MISSING);
-            //        return;
-            //    }
-
-            //    List<KeyValueDTO> allFields = new List<KeyValueDTO>();
-            //    // This has to be re-thinked. TemplateId is neccessary to retrieve fields but is unknown atm
-            //    // Perhaps it can be received by EnvelopeId
-            //    allFields.AddRange(GetEnvelopeData(envelopeId, null));
-            //    // Update all fields crate
-            //    Payload.Add(AllFieldsCrateName, new StandardPayloadDataCM(allFields));
+            if (envelopeId.IsGuid())
+            {
+                try
+                {
+                    var conf = _docusihManager.SetUp(AuthorizationToken.Token);
+                    var envelope = _docusihManager.GetEnvelope(conf, envelopeId);
+                    envelope.ExternalAccountId = AuthorizationToken.ExternalAccountId;
+                    Payload.Add<DocuSignEnvelopeCM_v2>(AllFieldsCrateName, envelope);
+                }
+                catch { RaiseError($"Couldn't find an envelope with id={envelopeId}"); return; }
+            }
+            else
+            { RaiseError("EnvelopeId is invalid"); return; }
 
             Success();
         }

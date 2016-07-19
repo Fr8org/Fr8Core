@@ -97,6 +97,11 @@ namespace terminalDocuSign.Services.New_Api
             var envelopestatus = api.GetEnvelope(config.AccountId, envelopeId);
             filled_envelope.CreateDate = DateTime.Parse(envelopestatus.CreatedDateTime);
             filled_envelope.SentDate = DateTime.Parse(envelopestatus.SentDateTime);
+            filled_envelope.StatusChangedDateTime = DateTime.Parse(envelopestatus.StatusChangedDateTime);
+            envelope.Subject = envelopestatus.EmailSubject;
+            envelope.EnvelopeId = envelopestatus.EnvelopeId;
+            envelope.Status = envelopestatus.Status;
+
             return filled_envelope;
         }
 

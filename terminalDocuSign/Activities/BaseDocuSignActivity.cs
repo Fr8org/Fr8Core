@@ -23,7 +23,7 @@ namespace terminalDocuSign.Activities
         }
 
        
-        protected List<KeyValueDTO> CreateDocuSignEventValues(DocuSignEnvelopeCM_v2 envelope, string label = null)
+        protected List<KeyValueDTO> CreateDocuSignEventValues(DocuSignEnvelopeCM_v2 envelope)
         {
             string curRecipientEmail = "";
             string curRecipientUserName = "";
