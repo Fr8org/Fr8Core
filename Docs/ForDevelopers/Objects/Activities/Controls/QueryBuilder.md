@@ -1,7 +1,5 @@
 #QueryBuilder Control
 
-
-
 ##Example Control Payload
 ```json
 {

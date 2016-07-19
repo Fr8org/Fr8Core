@@ -308,19 +308,37 @@ namespace terminalSalesforce.Services
             {
                 parsedObjects = queryResult.Records.Select(record => ((JObject)record)).ToList();
             }
+        
+            var countOfObjectTableCell = new TableCellDTO()
+            {
+                Cell = new KeyValueDTO()
+                {
+                    Key = "Count of Objects",
+                    Value = queryResult.Records.Count.ToString()
+                }
+            };
+
+            List<TableRowDTO> list = new List<TableRowDTO>();
+            foreach (var row in parsedObjects.Select(parsedObject => parsedObject.Properties().Where(y => y.Value.Type == JTokenType.String && !string.IsNullOrEmpty(y.Value.Value<string>())).Select(y => new TableCellDTO
+            {
+                Cell = new KeyValueDTO
+                {
+                    Key = y.Name, Value = y.Value.Value<string>()
+                }
+            }).ToList()))
+            {
+                row.Add(countOfObjectTableCell);
+                list.Add(new TableRowDTO() { Row = row });
+            }
+
+            if (!queryResult.Records.Any())
+            {
+                list.Add(new TableRowDTO() {Row = new List<TableCellDTO>() {countOfObjectTableCell}});
+            }
+
             return new StandardTableDataCM
             {
-                Table = parsedObjects.Select(x => x.Properties()
-                                            .Where(y => y.Value.Type == JTokenType.String && !string.IsNullOrEmpty(y.Value.Value<string>()))
-                                            .Select(y => new TableCellDTO
-                                            { Cell = new KeyValueDTO
-                                                {
-                                                    Key = y.Name,
-                                                    Value = y.Value.Value<string>()
-                                                }
-                                            }))
-                                     .Select(x => new TableRowDTO { Row = x.ToList() })
-                                     .ToList()
+                Table = list
             };
         }
 
