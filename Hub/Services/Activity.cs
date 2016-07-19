@@ -686,14 +686,8 @@ namespace Hub.Services
                     },
                     Documentation = activityDTO.Documentation
                 };
-                activityResponce = await GetDocumentation<T>(curActivityDTO);
-                //Add log to the database
-                if (!isSolution)
-                {
-                    var curActivityDo = Mapper.Map<ActivityDO>(activityDTO);
-                    EventManager.ActivityResponseReceived(curActivityDo, ActivityResponse.ShowDocumentation);
-                }
 
+                activityResponce = await GetDocumentation<T>(curActivityDTO);
             }
             return activityResponce;
         }
