@@ -305,10 +305,18 @@
   </Target>
   <Import Project="..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets" Condition="Exists('..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" />
   <ItemGroup>
-    <Log4netConfigFiles Include="..\Config\log4net.terminals.config" />
-    <Log4netConfigFiles Include="..\Config\log4net.terminals.Demo.config" />
-    <Log4netConfigFiles Include="..\Config\log4net.terminals.Dev.config" />
-    <Log4netConfigFiles Include="..\Config\log4net.terminals.Release.config" />
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Log4netConfigFiles>
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.Demo.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Log4netConfigFiles>
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.Dev.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Log4netConfigFiles>
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.Release.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Log4netConfigFiles>
   </ItemGroup>
   <Target Name="BeforeCompile">
     <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
