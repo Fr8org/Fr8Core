@@ -112,6 +112,7 @@ namespace terminalIntegrationTests.Integration
             }
             finally
             {
+                await AuthenticateWebApi(TestUserEmail, TestUserPassword);
                 await HttpDeleteAsync(_baseUrl + "plan_templates/?id=" + planTemplateDTO.ParentPlanId.ToString());
             }
         }

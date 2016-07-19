@@ -42,7 +42,7 @@ namespace terminalFr8Core.Activities
 
         #region Configuration.
 
-        private Crate CreateControlsCrate()
+        private void CreateControls()
         {
             var control = new TextBox()
             {
@@ -52,7 +52,7 @@ namespace terminalFr8Core.Activities
                 Events = new List<ControlEvent>(){ControlEvent.RequestConfig}
             };
 
-            return PackControlsCrate(control);
+            AddControls(control);
         }
 
         private string ExtractConnectionString()
@@ -72,7 +72,9 @@ namespace terminalFr8Core.Activities
         public override async Task Initialize()
         {
             Storage.Clear();
-            Storage.Add(CreateControlsCrate());
+            
+            CreateControls();
+
             await Task.Yield();
         }
 

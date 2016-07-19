@@ -200,15 +200,16 @@ namespace terminalDocuSign.Actions
 
         public override async Task Initialize()
         {
-                // Only do it if no existing MT.FieldDescription crate is present to avoid loss of existing settings
-                // Two crates are created
-                // One to hold the ui controls
-            if (Storage.All(c => c.ManifestType.Id != (int)MT.FieldDescription))
-                {
-                var configurationCrate = await CreateDocusignTemplateConfigurationControls();
-                FillDocuSignTemplateSource(configurationCrate, "target_docusign_template");
+            // Only do it if no existing MT.FieldDescription crate is present to avoid loss of existing settings
+            // Two crates are created
+            // One to hold the ui controls
+            if (Storage.All(c => c.ManifestType.Id != (int) MT.FieldDescription))
+            {
                 Storage.Clear();
-                Storage.Add(configurationCrate);
+
+                CreateDocusignTemplateConfigurationControls();
+
+                FillDocuSignTemplateSource("target_docusign_template");
             }
         }
 
@@ -224,19 +225,13 @@ namespace terminalDocuSign.Actions
             {
                 return;
             }
-
-            // Try to find Configuration_Controls.
-            var stdCfgControlCrate = Storage.CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-            if (stdCfgControlCrate == null)
-            {
-                return;
-            }
+            
 
             //update docusign templates list to get if new templates were provided by DS
-            FillDocuSignTemplateSource(stdCfgControlCrate, "target_docusign_template");
+            FillDocuSignTemplateSource("target_docusign_template");
             // Try to find DocuSignTemplate drop-down.
-            var stdCfgControlMS = stdCfgControlCrate.Get<StandardConfigurationControlsCM>();
-            var dropdownControlDTO = stdCfgControlMS.FindByName("target_docusign_template");
+            
+            var dropdownControlDTO = ConfigurationControls.FindByName("target_docusign_template");
             if (dropdownControlDTO == null)
             {
                 return;
@@ -383,7 +378,7 @@ namespace terminalDocuSign.Actions
             return Task.FromResult(0);
         }
 
-        protected virtual async Task<Crate> CreateDocusignTemplateConfigurationControls()
+        protected virtual void CreateDocusignTemplateConfigurationControls()
         {
             var fieldSelectDocusignTemplateDTO = new DropDownList
             {
@@ -396,13 +391,8 @@ namespace terminalDocuSign.Actions
                 },
                 Source = null
             };
-
-            var fieldsDTO = new List<ControlDefinitionDTO>
-            {
-                fieldSelectDocusignTemplateDTO
-            };
-
-            return CrateManager.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
+            
+            AddControls(fieldSelectDocusignTemplateDTO);
         }
     }
 }
