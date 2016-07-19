@@ -62,16 +62,14 @@ app.directive('fr8Click', ['$parse', '$timeout',($parse: ng.IParseService, $time
         require: '^paneConfigureAction',
         compile: ($element: ng.IAugmentedJQuery, attr) => {
             var fn = $parse(attr['fr8Click']);
-            return (scope, element, attr, paneConfigureAction) => {
+            return (scope, element, attr, pca) => {
                 element.on('click', (event) => {
 
                     var simulateClick = () => {
                         var x = event.clientX;
                         var y = event.clientY;
-                        console.log('x, y :' + x + ', ' + y);
                         var ev = document.createEvent("MouseEvent");
                         var el = document.elementFromPoint(x, y);
-                        console.log(el);
                         ev.initMouseEvent(
                             "click",
                             true /* bubble */, true /* cancelable */,
@@ -87,20 +85,20 @@ app.directive('fr8Click', ['$parse', '$timeout',($parse: ng.IParseService, $time
                             fn(scope, { $event: event });
                         });
                     };
-                    var checkConfigStatus = (isInitial: boolean) => {
-                        if (paneConfigureAction.isThereOnGoingConfigRequest()) {
+                    var checkConfigStatus = () => {
+                        //normally it would be nice to resolve a promise when
+                        //configuration is completed
+                        //but for now i'll just wait with some delay
+                        //TODO: if more than one logic requires waiting on config request
+                        //implement this solution with promises
+                        if (pca.isThereOnGoingConfigRequest()) {
                             //we need to wait for this to end
-                            $timeout(checkConfigStatus, 500);
+                            pca.notifyOnConfigureEnd(simulateClick);
                         } else {
-                            if (isInitial) {
-                                callCallback();
-                            } else {
-                                $timeout(simulateClick, 500);
-                            }
+                            callCallback();
                         }
                     };
-
-                    checkConfigStatus(true);
+                    checkConfigStatus();
                 });
             };
         }
