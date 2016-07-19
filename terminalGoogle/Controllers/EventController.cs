@@ -38,14 +38,7 @@ namespace terminalGoogle.Controllers
         [Route("polling_notifications")]
         public async Task<PollingDataDTO> ProcessPollingRequest([FromBody]PollingDataDTO pollingData)
         {
-            var hubCommunicator = _container.GetInstance<IHubCommunicator>();
-            hubCommunicator.Authorize(pollingData.Fr8AccountId);
-            try
-            {
-                pollingData = await _gmailPolling.Poll(hubCommunicator, pollingData);
-                return pollingData;
-            }
-            catch { return null; }
+            return await _gmailPolling.Poll(pollingData);
         }
     }
 }

@@ -37,7 +37,7 @@ namespace terminalStatX.Services
             await hubCommunicator.ScheduleEvent(externalAccountId, pollingInterval, triggerImmediately, additionalAttributes, statId.Substring(0, 18));
         }
 
-        public async Task<PollingDataDTO> Poll(IHubCommunicator hubCommunicator, PollingDataDTO pollingData)
+        public async Task<PollingDataDTO> Poll(PollingDataDTO pollingData)
         {
             if (string.IsNullOrEmpty(pollingData.AdditionalConfigAttributes))
             {

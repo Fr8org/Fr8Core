@@ -296,7 +296,7 @@ namespace HubTests.Services
             var template = CreateActivityTemplate(FixtureData.GetTestGuidById(1), CreateTerminal(-234), CreateWebService(234234));
 
             template.WebServiceId = -2344;
-            template.Id = Guid.Empty;
+            template.Id  = Guid.NewGuid();
 
             var terminalService = ObjectFactory.GetInstance<Terminal>();
             template.Terminal = terminalService.RegisterOrUpdate(template.Terminal);

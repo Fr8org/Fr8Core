@@ -9,8 +9,16 @@ using Fr8.Infrastructure.Data.States;
 
 namespace Fr8.TerminalBase.Services
 {
+    /// <summary>
+    /// Service for signalling about the crates that should be seen by other activities.
+    /// See https://github.com/Fr8org/Fr8Core/blob/dev/Docs/ForDevelopers/SDK/.NET/Reference/CrateSignaller.md
+    /// </summary>
     public class CrateSignaller
     {
+        /// <summary>
+        /// Allows to configure list of available fields for a certain manifest during the process of available crate signaling. 
+        /// See https://github.com/Fr8org/Fr8Core/blob/dev/Docs/ForDevelopers/SDK/.NET/Reference/CrateSignaller.FieldConfigurator.md
+        /// </summary>
         public class FieldConfigurator
         {
             private readonly List<FieldDTO> _fields;
@@ -62,7 +70,7 @@ namespace Fr8.TerminalBase.Services
 
             public FieldConfigurator AddField(string name)
             {
-                return AddField(new FieldDTO(name, AvailabilityType.RunTime)
+                return AddField(new FieldDTO(name, _availabilityType)
                 {
                     SourceCrateManifest = _manifestType,
                     SourceCrateLabel = _label,
@@ -145,7 +153,7 @@ namespace Fr8.TerminalBase.Services
 
                 foreach (var memberAccessor in members)
                 {
-                    fields.Add(new FieldDTO(memberAccessor.Name, AvailabilityType.RunTime)
+                    fields.Add(new FieldDTO(memberAccessor.Name, availabilityType)
                     {
                         SourceCrateLabel = label,
                         SourceCrateManifest = manifestType

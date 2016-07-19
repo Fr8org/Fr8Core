@@ -449,7 +449,6 @@ namespace terminaBaselTests.BaseClasses
         {
             var activity = New<ActivityOverrideCheckMock>();
             var executionContext = CreateContainerExecutionContext();
-            ObjectFactory.GetInstance<IHubCommunicator>().Authorize(null);
             await activity.Run(CreateActivityContext(Crate.FromContent(ExplicitTerminalActivity.ConfigurationControlsLabel, new StandardConfigurationControlsCM())), executionContext);
             Assert.IsTrue(activity.CalledMethods == (CalledMethod.Run | CalledMethod.Validate));
         }
@@ -459,7 +458,6 @@ namespace terminaBaselTests.BaseClasses
         {
             var activity = New<ActivityOverrideCheckMock>();
             var executionContext = CreateContainerExecutionContext();
-            ObjectFactory.GetInstance<IHubCommunicator>().Authorize(null);
             await activity.RunChildActivities(CreateActivityContext(Crate.FromContent(ExplicitTerminalActivity.ConfigurationControlsLabel, new StandardConfigurationControlsCM())), executionContext);
             Assert.IsTrue(activity.CalledMethods == (CalledMethod.ChildActivitiesExecuted | CalledMethod.Validate));
         }
@@ -480,8 +478,6 @@ namespace terminaBaselTests.BaseClasses
             activity.ValidationState = false;
 
             var executionContext = CreateContainerExecutionContext();
-
-            ObjectFactory.GetInstance<IHubCommunicator>().Authorize(null);
 
             var activityContext = CreateActivityContext(Crate.FromContent(ExplicitTerminalActivity.ConfigurationControlsLabel, new StandardConfigurationControlsCM()));
 

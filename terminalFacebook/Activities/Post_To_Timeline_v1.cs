@@ -23,6 +23,7 @@ namespace terminalFacebook.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("9710de37-7f5a-471a-9e94-c1ade0f71474"),
             Name = "Post_To_Timeline",
             Label = "Post To Timeline",
             Category = ActivityCategory.Forwarders,

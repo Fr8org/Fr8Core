@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Data.Interfaces;
-using Data.States;
+using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
@@ -139,7 +138,7 @@ namespace Hub.Services
             {
                 _pusherNotifier.NotifyUser("You are running more Activities than your capacity right now. " +
                                            $"This Account will be prevented from processing Activities for the next {Math.Ceiling(_userBanTime.TotalSeconds / 60.0f)} minutes. " +
-                                           "Contact support@fr8.co for assistance", NotificationChannel.GenericFailure, user);
+                                           "Contact support@fr8.co for assistance", NotificationType.GenericFailure, user);
             }
         }
 
@@ -148,7 +147,6 @@ namespace Hub.Services
             lock (_sync)
             {
                 Initialize();
-
                 return !_overheatingUsers.Contains(fr8AccountId);
             }
         }

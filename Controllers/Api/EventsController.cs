@@ -38,7 +38,7 @@ namespace HubWeb.Controllers
         /// </summary>
         /// <param name="raw">Crates with data related to external event</param>
         [HttpPost]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [SwaggerResponse(HttpStatusCode.OK, "Event was successfully dispatched to respective terminal")]
         [SwaggerResponse(HttpStatusCode.BadRequest, "Crate is not specified or its content is invalid")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]

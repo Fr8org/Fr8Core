@@ -186,6 +186,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\terminalTelegram\Settings.config.readme" />
+    <Content Include="Config\HealthMonitor\Settings.config.src" />
     <Content Include="Config\terminalYammer\Settings.Release.config" />
     <Content Include="Config\terminalYammer\Settings.Dev.config" />
     <Content Include="Config\terminalYammer\Settings.Demo.config" />
@@ -216,6 +217,9 @@
     <Content Include="Config\terminalFacebook\Settings.config" />
     <Content Include="Config\terminalDropbox\Settings.config" />
     <Content Include="Config\terminalDocuSign\Settings.config" />
+    <Content Include="Config\terminalCloudService\ServiceConfiguration.Release.cscfg" />
+    <Content Include="Config\terminalCloudService\ServiceConfiguration.Dev.cscfg" />
+    <Content Include="Config\terminalCloudService\ServiceConfiguration.Demo.cscfg" />
     <Content Include="Config\terminalBox\Settings.config" />
     <Content Include="Config\terminalBasecamp2\Settings.Release.config" />
     <Content Include="Config\terminalBasecamp2\Settings.Dev.config" />
@@ -223,10 +227,13 @@
     <Content Include="Config\terminalBasecamp2\Settings.config" />
     <Content Include="Config\terminalAzure\Settings.config" />
     <Content Include="Config\terminalAtlassian\Settings.config" />
+    <Content Include="Config\terminalAsana\Settings.Release.config" />
+    <Content Include="Config\terminalAsana\Settings.Dev.config" />
+    <Content Include="Config\terminalAsana\Settings.config" />
     <Content Include="Config\PlanDirectory\Settings.Release.config" />
+    <Content Include="Config\PlanDirectory\Settings.Debug.config" />
     <Content Include="Config\PlanDirectory\Settings.config" />
     <Content Include="Config\HubWeb\Settings.config" />
-    <Content Include="Config\HealthMonitor\Settings.config.src" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -298,10 +305,18 @@
   </Target>
   <Import Project="..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets" Condition="Exists('..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" />
   <ItemGroup>
-    <Log4netConfigFiles Include="..\Config\log4net.terminals.config" />
-    <Log4netConfigFiles Include="..\Config\log4net.terminals.Demo.config" />
-    <Log4netConfigFiles Include="..\Config\log4net.terminals.Dev.config" />
-    <Log4netConfigFiles Include="..\Config\log4net.terminals.Release.config" />
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Log4netConfigFiles>
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.Demo.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Log4netConfigFiles>
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.Dev.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Log4netConfigFiles>
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.Release.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Log4netConfigFiles>
   </ItemGroup>
   <Target Name="BeforeCompile">
     <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />

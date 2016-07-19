@@ -162,20 +162,15 @@ module dockyard.controllers {
                 if (!!newValue && !!oldValue) {
                     this.getActivePlans();
                 }
-            });
-            
+            });      
 
-                UserService.getCurrentUser().$promise.then(data => {
-                                     PusherNotifierService.bindEventToChannel(data.emailAddress, dockyard.services.pusherNotifierExecutionEvent, (data: any) => {
-                                             this.updatePlanLastUpdated(data.PlanId, data.PlanLastUpdated);
-                                     })
-                    if (angular.isNumber(data.organizationId)) {
-                        $scope.doesOrganizationExists = true;
-                    }
-                    else {
-                        $scope.doesOrganizationExists = false;
-                    }                                         ;
+            UserService.getCurrentUser().$promise.then(data => {
+                PusherNotifierService.bindEventToChannel(data.emailAddress, dockyard.directives.NotificationType[dockyard.directives.NotificationType.GenericInfo], (data: any) => {
+                    this.updatePlanLastUpdated(data.PlanId, data.PlanLastUpdated);
                 });
+
+                $scope.doesOrganizationExists = angular.isNumber(data.organizationId);
+            });
         }
 
         private removeInactiveFilter() {

@@ -6,6 +6,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
+using System;
 
 namespace terminalBox.Actions
 {
@@ -13,6 +14,7 @@ namespace terminalBox.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("CADEAC51-3E10-4FC8-AF5D-5265D9A8EA71"),
             Name = "Generate_Table_Activity",
             Label = "Generate Table Activity",
             Category = ActivityCategory.Receivers,

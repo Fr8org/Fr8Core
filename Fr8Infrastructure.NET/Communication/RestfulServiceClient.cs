@@ -32,6 +32,7 @@ namespace Fr8.Infrastructure.Communication
         private readonly HttpClient _innerClient;
         private readonly MediaTypeFormatter _formatter;
         private readonly FormatterLogger _formatterLogger;
+        private List<IRequestSignature> Signatures { get; set; }
 
         /// <summary>
         /// Creates an instance with JSON formatter for requests and responses
@@ -65,6 +66,12 @@ namespace Fr8.Infrastructure.Communication
             _innerClient = client;
             _formatter = formatter;
             _formatterLogger = new FormatterLogger();
+            Signatures = new List<IRequestSignature>();
+        }
+
+        public void AddRequestSignature(IRequestSignature signature)
+        {
+            Signatures.Add(signature);
         }
 
         protected virtual async Task<HttpResponseMessage> SendInternalAsync(HttpRequestMessage request, string CorrelationId)
@@ -76,6 +83,12 @@ namespace Fr8.Infrastructure.Communication
             var stopWatch = Stopwatch.StartNew();
             Exception raisedException = null;
             string prettyStatusCode = null;
+
+            foreach (var requestSignature in Signatures)
+            {
+                requestSignature.SignRequest(request);
+            }
+
             try
             {
                 response = await _innerClient.SendAsync(request);
@@ -304,7 +317,6 @@ namespace Fr8.Infrastructure.Communication
                 return await response.Content.ReadAsStringAsync();
             }
         }
-
         #endregion
 
     }

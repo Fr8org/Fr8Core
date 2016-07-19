@@ -27,7 +27,8 @@ module dockyard.controllers {
             '$scope',
             'PlanService',
             '$stateParams',
-            "$filter"
+            "$filter",
+            "PusherNotifierService"
         ];
 
         constructor(
@@ -35,7 +36,8 @@ module dockyard.controllers {
             private $scope: IPlanDetailsScope,
             private PlanService: services.IPlanService,
             private $stateParams: any,
-            private $filter: ng.IFilterService ) {
+            private $filter: ng.IFilterService,
+            private PusherNotifierService: dockyard.services.IPusherNotifierService) {
             
             //Load detailed information
             $scope.id = $stateParams.id;
@@ -47,9 +49,12 @@ module dockyard.controllers {
                 PlanService.share($stateParams.id)
                     .then(() => {
                         console.log('sharePlan: Success');
+                        PusherNotifierService.frontendSuccess("Plan " + $scope.ptvm.plan.name + " shared");
                     })
-                    .catch(() => {
+                    .catch((exp) => {
                         console.log('sharePlan: Failure');
+                        exp.data = exp.data ? exp.data : "";
+                        PusherNotifierService.frontendFailure("Plan sharing faliure: "+exp.data);
                     });
             };
 
@@ -57,9 +62,12 @@ module dockyard.controllers {
                 PlanService.unpublish($stateParams.id)
                     .then(() => {
                         console.log('unpublishPlan: Success');
+                        PusherNotifierService.frontendSuccess("Plan " + $scope.ptvm.plan.name + " unpublished");
                     })
-                    .catch(() => {
+                    .catch((exp) => {
                         console.log('unpublishPlan: Failure');
+                        exp.data = exp.data ? exp.data : "";
+                        PusherNotifierService.frontendFailure("Plan unpublished faliure: " + exp.data);
                     });
             };
 

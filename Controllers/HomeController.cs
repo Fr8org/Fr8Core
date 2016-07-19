@@ -143,17 +143,6 @@ namespace HubWeb.Controllers
             return View("~/shared/401.cshtml");
         }
 
-        //Validate emailAddress and meetingInfo then call Generate() parameterized method in BookingRequest controller
-        [HttpPost]
-        public ActionResult ProcessHomePageBookingRequest(string emailAddress, string meetingInfo)
-        {
-            RegexUtilities.ValidateEmailAddress(_configRepository, emailAddress);
-            if (meetingInfo.Trim().Length < 30)
-                return Json(new { Message = "Meeting information must have at least 30 characters" });
-
-            return RedirectToAction("CreateViaHomePage", "BookingRequest", new { emailAddress = emailAddress, meetingInfo = meetingInfo });
-        }
-
         //  EmailAddress  is valid then send mail .    
         // return "success" or  error 
         public async Task<ActionResult> ProcessSubmittedEmail(string name, string emailId, string message)

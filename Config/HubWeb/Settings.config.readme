@@ -77,7 +77,7 @@ exclude them from .gitignore.
 
   <!-- Terminal Secret-Id -->
   <!-- For production use be sure to change the secrets and keep the new secrets confidential. Don't change Ids -->
-  <!-- TerminalId and TerminalSecret MUST match in the Hub and Terminal configuration files -->
+  <!-- TerminalId and TerminalSecret MUST match in the Hub and Terminal configuration files -->  
   <add key="terminalAtlassianTerminalSecret" value="" />
   <add key="terminalAtlassianTerminalId" value="d770ec3c-975b-4ca8-910e-a55ac43af383" />
   <add key="terminalAzureTerminalSecret" value="" />

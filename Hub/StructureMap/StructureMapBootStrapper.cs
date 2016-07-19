@@ -219,7 +219,7 @@ namespace Hub.StructureMap
                 _terminal = new Terminal(configRepository);
             }
 
-            public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal)
+            public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal, string userId)
             {
                 return new Dictionary<string, string>();
             }
@@ -227,6 +227,11 @@ namespace Hub.StructureMap
             public Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId)
             {
                 return Task.FromResult(new TerminalDO());
+            }
+
+            public Task<TerminalDO> GetByToken(string token)
+            {
+                return _terminal.GetByToken(token);
             }
 
             public IEnumerable<TerminalDO> GetAll()
