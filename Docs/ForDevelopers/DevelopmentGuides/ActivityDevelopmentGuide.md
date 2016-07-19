@@ -41,18 +41,25 @@ Keep in mind that you should package all of the data you generate during the con
 
 Best Practices
 
-1) Make use of Followup Configuration. This has two parts. First, insert [Control Configuration Events](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/ConfigurationControlEvents.md) into your UI specifications with "requestConfig" actions, so that the client will know when to kick off a new conifgure call to you. Secondly, build followup configuration logic that leverages initial user inputs to provide them with progressively richer, more specific UI.
+1) Make use of Followup Configuration. 
 
-2) Take advantage of the growing set of [Configuration Controls](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/ConfigurationControls.md)
+This has two parts. First, insert [Control Configuration Events](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/ConfigurationControlEvents.md) into your UI specifications with "requestConfig" actions, so that the client will know when to kick off a new conifgure call to you. Secondly, build followup configuration logic that leverages initial user inputs to provide them with progressively richer, more specific UI.
+
+2) Take advantage of the growing set of [Configuration
+Controls](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/ConfigurationControls.md)
+
 It's pretty obvious how to get benefit by calling for a checkbox or text field. But also be aware of some of the richer compound UI elements that can be invoked with a single line of JSON, such as TextSource, which enables the user to provide a specific input or map an upstream data property.
 
 3) Take advantage of SDK utility functions
+
 The amount of SDK support will always vary from platform to platform, but in many cases, there are helper methods for generating the appropriate JSON for a particular piece of UI, that simplify your code. For example, the .NET Fr8 tools provide POCO objects for invoking UI, and no JSON manipulation is required: http://screencast.com/t/dOjZ7ykXXV
 
 4) Copy, Copy, Copy
+
 Look for existing Activities that carry out similar UI configuration or config data processing, and copy their code. No need to reinvent the wheel. (of course, this is much more practical if you stick to activities coded in your dev language of choice)
 
-
+### Working with Crate Manifests
+You can design your activity to process a single object. We recommend that you try and identify and work with existing manifests, if they meet your needs. Manifests usually are designed to represent 1..N objects. You should process the Manifest if it has a single object and be prepared for users to make use of the Loop activity, which will create a crate with a manifest and a single object. If you're handling a Manifest that can work with multiple objects and your activity can only process a single object, return an error message."
 
 ### Designing your Run functionality.
 
@@ -83,3 +90,4 @@ It's a Best Practice to provide rich support for documentation requests.
 [Solutions](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Solutions) are Activities that generally generate 1 or more child and sibling activities programmatically. They're designed to simplify the process of building Plans.
 
 
+[Platform SDKs (.NET, Java, Ruby, Python](https://github.com/Fr8org/Fr8Core/blob/docs5/Docs/ForDevelopers/SDKHome.md)

@@ -4,6 +4,6 @@
 
 [Ruby](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/SDK/Ruby/Home.md)
 
-Java
+[Python] (https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Terminals/SDK/Python.md)
 
-Python
+Java

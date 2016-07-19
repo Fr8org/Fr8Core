@@ -18,7 +18,10 @@ using Fr8.TerminalBase.Services;
 
 namespace Fr8.TerminalBase.BaseClasses
 {
-    // Almost minimal activity implementation
+    /// <summary>
+    /// The most low level base class for developing activities. 
+    /// See https://github.com/Fr8org/Fr8Core/blob/dev/Docs/ForDevelopers/SDK/.NET/Reference/TerminalActivityBase.md
+    /// </summary>
     public abstract class TerminalActivityBase : IActivity
     {
         /**********************************************************************************/
