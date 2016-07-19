@@ -319,9 +319,7 @@ namespace terminalSalesforce.Services
             };
 
             List<TableRowDTO> list = new List<TableRowDTO>();
-            foreach (var row in parsedObjects.Select(parsedObject => parsedObject.Properties()
-                .Where(y => y.Value.Type == JTokenType.String && !string.IsNullOrEmpty(y.Value.Value<string>()))
-                .Select(y => new TableCellDTO
+            foreach (var row in parsedObjects.Select(parsedObject => parsedObject.Properties().Where(y => y.Value.Type == JTokenType.String && !string.IsNullOrEmpty(y.Value.Value<string>())).Select(y => new TableCellDTO
             {
                 Cell = new KeyValueDTO
                 {
@@ -332,6 +330,12 @@ namespace terminalSalesforce.Services
                 row.Add(countOfObjectTableCell);
                 list.Add(new TableRowDTO() { Row = row });
             }
+
+            if (!queryResult.Records.Any())
+            {
+                list.Add(new TableRowDTO() {Row = new List<TableCellDTO>() {countOfObjectTableCell}});
+            }
+
             return new StandardTableDataCM
             {
                 Table = list
