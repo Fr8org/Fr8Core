@@ -60,6 +60,8 @@ The FilterPane control generates a form for applying conditions which can create
 
 The Gnereic control is a TextBox.
 
+*[ManagerRoute](Controls/ManagerRoute.md)*
+
 *[MappingPane](Controls/MappingPane.md)*
 
 The MappingPane control is a composite control which generates a form with two select dropdown HTML elements. The first select element represents a set of meta data that can be assigned to a set of target metadata in the second select element.
@@ -68,6 +70,10 @@ The MappingPane control is a composite control which generates a form with two s
 
 The QueryBuilder control is a composite control which generates a form to apply conditional operators to a set of data. The form can have many queries using "and" and "or" operators.
 
+*[Routing](Controls/Routing.md)*
+
+This control is used at design time to specify what should happen if a related filter evaluates True or False. This allows the easy creation of branching logic.
+
 *[RadioButtonGroup](Controls/RadioButtonGroup.md)*
 
 The RadioButtonGroup control is a metadata container control which is designed to hold one or more [RadioButtonOption](Controls/RadioButtonOption.md) elements.
@@ -75,6 +81,10 @@ The RadioButtonGroup control is a metadata container control which is designed t
 *[RadioButtonOption](Controls/RadioButtonOption.md)*
 
 The RadioButtonOption control renders an HTML radio button element. This control is generally used in groups and is assigned to a RadioButtonControl object.
+
+*[RunRouteButton](Controls/RunRouteButton.md)*
+
+ This control renders "Run now" button. When the button is clicked route is being executed.
 
 *[SelectData](Controls/SelectData.md)*
 
