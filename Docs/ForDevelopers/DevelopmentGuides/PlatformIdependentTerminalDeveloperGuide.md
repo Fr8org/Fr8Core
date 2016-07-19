@@ -7,7 +7,7 @@
 ### [Making Your Terminal Visible on the Public Web](/Docs/ForDevelopers/DevelopmentGuides/PublicVisibility.md)
 
 
-### [Responding to /discover Requests]/Docs/ForDevelopers/DevelopmentGuides/Guide-TerminalDiscovery.md)
+### [Responding to /discover Requests](/Docs/ForDevelopers/DevelopmentGuides/Guide-TerminalDiscovery.md)
 
 
 ### [Registering your Terminal with a Hub](/Docs/ForDevelopers/DevelopmentGuides/Guide-TerminalRegistration.md)
