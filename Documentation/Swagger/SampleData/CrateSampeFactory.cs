@@ -29,6 +29,7 @@ namespace HubWeb.Documentation.Swagger
                 ParentCrateId = string.Empty,
                 SourceActivityId = "BAF3BCB4-3968-4DFF-983B-736E3C0CB24F"
             };
+
         }
 
         object ISwaggerSampleFactory.GetSampleData()
