@@ -4,7 +4,9 @@ using System.Xml.Serialization;
 namespace terminalSalesforce.Infrastructure
 {
     [XmlRoot(ElementName = "sObject", Namespace = "http://soap.sforce.com/2005/09/outbound")]
-    [XmlType(TypeName = "Lead", Namespace = "urn:sobject.enterprise.soap.sforce.com")]
+    [XmlInclude(typeof(Lead))]
+    [XmlInclude(typeof(Contact))]
+    [XmlInclude(typeof(Opportunity))]
     public class SObject
     {
         [XmlElement(ElementName = "Id", Namespace = "urn:sobject.enterprise.soap.sforce.com")]
@@ -23,6 +25,24 @@ namespace terminalSalesforce.Infrastructure
         public string Type { get; set; }
         [XmlAttribute(AttributeName = "sf", Namespace = "http://www.w3.org/2000/xmlns/")]
         public string Sf { get; set; }
+    }
+
+    [XmlRoot(Namespace = "http://soap.sforce.com/2005/09/outbound")]
+    [XmlType(TypeName = "Lead", Namespace = "urn:sobject.enterprise.soap.sforce.com")]
+    public class Lead : SObject
+    {
+    }
+
+    [XmlRoot(Namespace = "http://soap.sforce.com/2005/09/outbound")]
+    [XmlType(TypeName = "Contact", Namespace = "urn:sobject.enterprise.soap.sforce.com")]
+    public class Contact : SObject
+    {
+    }
+
+    [XmlRoot(Namespace = "http://soap.sforce.com/2005/09/outbound")]
+    [XmlType(TypeName = "Opportunity", Namespace = "urn:sobject.enterprise.soap.sforce.com")]
+    public class Opportunity : SObject
+    {
     }
 
     [XmlRoot(ElementName = "Notification", Namespace = "http://soap.sforce.com/2005/09/outbound")]
