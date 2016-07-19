@@ -13,7 +13,7 @@ namespace Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201607151651132_RemovedTerminalIdentifierFromTerminalTable"; }
+            get { return "201607190941340_RemovedTerminalIdentifierFromTerminalTable"; }
         }
         
         string IMigrationMetadata.Source
