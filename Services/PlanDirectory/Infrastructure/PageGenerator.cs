@@ -76,7 +76,7 @@ namespace PlanDirectory.Infrastructure
                 var curRelatedPlans = new List<PublishPlanTemplateDTO>();
                 foreach (var planTemplateId in curPageDefinition.PlanTemplatesIds)
                 {
-                    curRelatedPlans.Add(_planTemplate.Get(fr8AccountId, Guid.Parse(planTemplateId)).Result);
+                    curRelatedPlans.Add(_planTemplate.GetPlanTemplateDTO(fr8AccountId, Guid.Parse(planTemplateId)).Result);
                 }
 
                 var relatedPlans = new List<Tuple<string, string, string>>();
