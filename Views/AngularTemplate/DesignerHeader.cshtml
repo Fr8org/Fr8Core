@@ -1,16 +1,36 @@
-﻿<div class="page-head designer-header container row">
-    <div class="designer-header-title page-title" ng-class="{'design-header-title-editing': editing}">
-        <h1 ng-if="!kioskMode">
-            <div class="route-name" ng-click="editTitle()">{{plan.name}}</div>
-            <input class="design-header-title-editField" type="text" ng-model="plan.name" ng-blur="onTitleChange()" input-focus="editing" />
-        </h1>
-        <h1 ng-if="kioskMode">
-            <div class="route-name">{{plan.name}}</div>
-        </h1>
+﻿<div class="page-head designer-header container row" layout="row">
+    <div flex="40">
+        <div class="designer-header-title page-title" ng-class="{'design-header-title-editing': editing}" >
+            <h1 ng-if="!kioskMode">
+                <div class="route-name" ng-click="editTitle()">{{plan.name}}</div>
+                <input class="design-header-title-editField" type="text" ng-model="plan.name" ng-blur="onTitleChange()" input-focus="editing" />
 
+            </h1>
+            <h1 ng-if="kioskMode">
+                <div class="route-name">{{plan.name}}</div>
+            </h1>
+
+        </div>
+        <md-button class="md-icon-button" ng-click="editTitle()" style="margin-top: 2px">
+            <md-icon md-font-icon="glyphicon-pencil" class="glyphicon glyphicon-pencil" ></md-icon>
+            <md-tooltip md-direction="top">
+                Edit Name
+            </md-tooltip>
+        </md-button>
     </div>
+    <md-radio-group ng-model="state" layout="row"  layout-align="start center" flex="60" flex-offset="10">
+        <span flex="5">View:</span> 
+        <a ui-sref="plan.planBuilder({id:plan.id})" flex="10" flex-offset="3">
+            <md-radio-button value="plan.planBuilder">Activities</md-radio-button>
+        </a>
+        <a ui-sref="plan.planDetails({id:plan.id})" flex="10" flex-offset="5">
+            <md-radio-button value="plan.planDetails">Settings</md-radio-button>
+        </a>
+    </md-radio-group>
 
-    <div class="designer-header-status" ng-if="!kioskMode">
+
+    <div class="designer-header-status" ng-if="!kioskMode" flex="10" flex-offset="40">
+
         <span class="h4">
             <strong> 
                 <span class="plan-state-text" ng-if="plan.planState === 2">{{plan.planState | PlanState}}</span>   
@@ -22,14 +42,6 @@
             </md-button>
             <md-button class="md-icon-button" ng-click="deactivatePlan()" ng-show="plan.planState === 2">
                 <md-icon md-font-icon="fa fa-power-off" class="fa fa-2x"></md-icon>
-            </md-button>
-            <md-button class="md-icon-button" aria-label="More" ng-click="goToPlanDetailsPage(plan.id)">
-                <a ui-sref="planDetails({id:plan.id})">
-                    <md-icon md-font-icon="fa fa-cog" class="fa fa-2x"></md-icon>
-                    <md-tooltip md-direction="down">
-                        Settings
-                    </md-tooltip>
-                </a>
             </md-button>
         </span>
     </div>

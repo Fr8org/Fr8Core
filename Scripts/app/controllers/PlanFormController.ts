@@ -61,7 +61,7 @@ module dockyard.controllers {
                     result.$promise
                         .then(() => {
 
-                            $state.go('planBuilder', { id: result.plan.id});
+                            $state.go('plan.planBuilder', { id: result.plan.id});
                             //window.location.href = 'plans/' + result.plan.id + '/builder';
                         })
                         .catch(function (e) {

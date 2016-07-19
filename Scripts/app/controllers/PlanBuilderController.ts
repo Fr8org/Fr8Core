@@ -47,6 +47,7 @@ module dockyard.controllers {
         hasAnyActivity: (pSubPlan: any) => boolean;
         hasHelpMenuItem: (activity: model.ActivityDTO) => boolean;
         showActivityHelpDocumentation: (activity: model.ActivityDTO) => void;
+        state: string;
     }
 
 
@@ -274,7 +275,7 @@ module dockyard.controllers {
                 });
 
             };
-
+            $scope.state = $state.current.name;
             this.processState($state);
         }
 
@@ -437,7 +438,7 @@ module dockyard.controllers {
             } else {
                 this.$scope.planId = $state.params.id;
             }
-
+            
 
             this.loadPlan($state.params.viewMode);
         }
@@ -482,7 +483,7 @@ module dockyard.controllers {
                 this.setAdvancedEditingMode();
             }
             this.renderPlan(<interfaces.IPlanVM>curPlan.plan);
-            this.$state.go('planBuilder', { id: curPlan.plan.id, viewMode: mode });
+           // this.$state.go('plan.planBuilder', { id: curPlan.plan.id, viewMode: mode });
         }
 
         /*

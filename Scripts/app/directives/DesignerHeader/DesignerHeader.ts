@@ -16,6 +16,7 @@ module dockyard.directives.designerHeader {
         //sharePlan(): void;
         plan: model.PlanDTO;
         kioskMode: boolean;
+        state: string
     }
 
     //More detail on creating directives in TypeScript: 
@@ -35,7 +36,8 @@ module dockyard.directives.designerHeader {
         public templateUrl = '/AngularTemplate/DesignerHeader';
         public scope = {
             plan: '=',
-            kioskMode: '=?'
+            kioskMode: '=?',
+            state: '='
         };
         public restrict = 'E';
 

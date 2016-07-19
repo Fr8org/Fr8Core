@@ -1,23 +1,11 @@
-﻿<div ng-controller="PlanDetailsController">
-    <div class="page-head designer-header row">
-        <div class="designer-header-title page-title" ng-class="{'design-header-title-editing': nameEditing}">
-            <h2>
-                <div class="route-name" ng-click="nameEditing = !nameEditing">{{ptvm.plan.name}}</div>
-                <input layout="row" layout-align="center center" class="design-header-title-editField" type="text" ng-model="ptvm.plan.name" ng-blur="onTitleChange()" input-focus="nameEditing" />
-            </h2>
-        </div>
-        <md-button class="md-icon-button"  ng-click="nameEditing = !nameEditing" style="margin-top: 25px">
-            <md-icon md-font-icon="glyphicon-pencil" class="glyphicon glyphicon-pencil"></md-icon>
-            <md-tooltip md-direction="top">
-                Edit Name
-            </md-tooltip>
-        </md-button>
-    </div>
+﻿<div style="position=absolute;margin-top:25px"></div>
+<div ng-controller="PlanDetailsController" style="padding-top:20px">
+
     <div class="page-head designer-header row">
         <div class="designer-header-title page-title" ng-class="{'design-header-title-editing': descriptionEditing}">
             <h4>
                 <b>Description:  </b>
-                <div class="route-name" ng-click="descriptionEditing = !descriptionEditing">{{ptvm.plan.description}}</div>
+                <div class="route-name" ng-click="descriptionEditing = !descriptionEditing">{{current.plan.description}}</div>
                 <input style="width:initial" class="design-header-title-editField" type="text" ng-model="ptvm.plan.description" ng-blur="onTitleChange()" input-focus="descriptionEditing" />
             </h4>
         </div>
@@ -39,10 +27,10 @@
 
     <div layout="row">
         <h4><b>Plan JSON</b></h4>
-        <a class="md-raised md-button" ng-click="download($event)" download='{{ptvm.plan.name}}.json' type='application/json' style="margin-top:2px">
+        <a class="md-raised md-button" ng-click="download($event)" download='{{current.plan.name}}.json' type='application/json' style="margin-top:2px">
             Download
         </a>
     </div>
-    <pre><json-formatter json=ptvm.plan open="1"></json-formatter></pre>
+    <pre><json-formatter json=current.plan open="1"></json-formatter></pre>
 
 </div>

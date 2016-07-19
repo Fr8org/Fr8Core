@@ -306,11 +306,11 @@ module dockyard.controllers {
 
 
         private goToPlanPage(planId) {
-            this.$state.go('planBuilder', { id: planId });
+            this.$state.go('plan.planBuilder', { id: planId });
         }
 
         private goToPlanDetailsPage(planId) {
-            this.$state.go('planDetails', { id: planId });
+            this.$state.go('plan.planDetails', { id: planId });
         }
 
         private deletePlan(planId: string, isActive: number) {

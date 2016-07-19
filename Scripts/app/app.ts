@@ -327,34 +327,53 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             templateUrl: "/AngularTemplate/PlanForm",
             data: { pageTitle: 'Plan', pageSubTitle: 'Add a new Plan' }
         })
-
-        // Plan Builder framework
-        .state('planBuilder',
+        .state('plan',
         {
-            url: "/plans/{id}/builder?viewMode&view",
+            abstract: true,
+            url: "/plans/{id}/",
             views: {
-                'maincontainer@': {
-                    templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
-                        if ($stateParams['viewMode'] === 'kiosk') {
-                            return "/AngularTemplate/MainContainer";
-                        }
-                        return "/AngularTemplate/MainContainer_AS";
-                    }
-                },
-                '@planBuilder': {
-                    templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
-                        if ($stateParams['viewMode'] === 'kiosk') {
-                            return "/AngularTemplate/PlanBuilder_KioskMode";
-                        }
-                        return "/AngularTemplate/PlanBuilder";
-                    }
-                },
                 'header@': {
                     templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
                         if ($stateParams['viewMode'] === 'kiosk') {
                             return "/AngularTemplate/KioskModeOrganizationHeader";
                         }
                         return "/AngularTemplate/MiniHeader";
+                    }
+                },
+                'maincontainer@': {
+                    templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
+                        if ($stateParams['viewMode'] === 'kiosk') {
+                            return "/AngularTemplate/MainContainer";
+                        }
+                        return "/AngularTemplate/MainContainer_AS";
+                    },
+                    controller: 'PlanBuilderController',
+                }
+            }
+        })
+
+        .state('plan.planDetails',
+        {
+            url: "details",
+            views: {
+                '@plan': {
+                    templateUrl: "/AngularTemplate/PlanDetails"
+                }
+            },
+            data: { pageTitle: 'Plan Details', pageSubTitle: '' }
+        })
+
+        // Plan Builder framework
+        .state('plan.planBuilder',
+        {
+            url: "builder?viewMode&view",
+            views: {
+                '@plan': {
+                    templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
+                        if ($stateParams['viewMode'] === 'kiosk') {
+                            return "/AngularTemplate/PlanBuilder_KioskMode";
+                        }
+                        return "/AngularTemplate/PlanBuilder";
                     }
                 }
             },
@@ -373,12 +392,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             templateUrl: "/AngularTemplate/ShowFacts",
             data: { pageTitle: 'Facts', pageSubTitle: 'This page displays all facts' },
         })
-        .state('planDetails',
-        {
-            url: "/plans/{id}/details",
-            templateUrl: "/AngularTemplate/PlanDetails",
-            data: { pageTitle: 'Plan Details', pageSubTitle: '' }
-        })
+
 
         // Manage files
         .state('managefiles',
