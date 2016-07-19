@@ -10,7 +10,7 @@
 ### [Responding to /discover Requests](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Guide-TerminalDiscovery.md)
 
 
-### [Terminal registration](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Guide-TerminalRegistration.md)
+### [Registering your Terminal with a Hub](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Guide-TerminalRegistration.md)
 
 ### [Responding to /configure Requests](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Guide-ActivityConfiguration.md)
 
