@@ -1,4 +1,4 @@
-### Terminal Registration
+### Registering your Terminal with a Hub
 
 Registering your Terminal with a Hub causes the Hub to:
 1) send a /discover request to your Terminal immediately, and each time its starts up thereafter
