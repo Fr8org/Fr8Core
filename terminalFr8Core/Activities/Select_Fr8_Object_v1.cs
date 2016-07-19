@@ -112,8 +112,10 @@ namespace terminalFr8Core.Activities
         {
             var crateDesignTimeFields = PackFr8ObjectCrate();
             Storage.Clear();
-            Storage.Add(PackControls(new ActivityUi()));
+
+            AddControls(new ActivityUi().Controls);
             Storage.Add(crateDesignTimeFields);
+
             return Task.FromResult(0);
         }
 

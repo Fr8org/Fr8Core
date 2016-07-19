@@ -50,11 +50,11 @@ namespace terminalTwilio.Activities
         public override async Task Initialize()
         {
             Storage.Clear();
-            Storage.Add(PackCrate_ConfigurationControls());
+            PackCrate_ConfigurationControls();
         }
         
 
-        private Crate PackCrate_ConfigurationControls()
+        private void PackCrate_ConfigurationControls()
         {
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
@@ -62,7 +62,7 @@ namespace terminalTwilio.Activities
                 UiBuilder.CreateSpecificOrUpstreamValueChooser("SMS Body", "SMS_Body", "Upstream Terminal-Provided Fields", "", addRequestConfigEvent: true)
             };
 
-            return CrateManager.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
+            AddControls(fieldsDTO);
         }
 
         public override async Task FollowUp()
@@ -73,12 +73,7 @@ namespace terminalTwilio.Activities
         public override async Task Run()
         {
             Message curMessage;
-            if (ConfigurationControls == null)
-            {
-                PackCrate_WarningMessage("No StandardConfigurationControlsCM crate provided", "No Controls");
-                RaiseError("No StandardConfigurationControlsCM crate provided");
-                return;
-            }
+
             try
             {
                 var smsFieldDTO = ParseSMSNumberAndMsg();
@@ -125,10 +120,11 @@ namespace terminalTwilio.Activities
         protected override Task Validate()
         {
             ValidationManager.Reset();
-            if (ConfigurationControls != null)
+
+            if (ConfigurationControls?.Controls?.Count > 0)
             {
-                var numberControl = (TextSource)ConfigurationControls.Controls[0];
-                var bodyControl = (TextSource)ConfigurationControls.Controls[1];
+                var numberControl = (TextSource) ConfigurationControls.Controls[0];
+                var bodyControl = (TextSource) ConfigurationControls.Controls[1];
 
                 if (numberControl != null)
                 {
@@ -149,6 +145,11 @@ namespace terminalTwilio.Activities
                     }
                 }
             }
+            else
+            {
+                ValidationManager.SetError("Configuration controls are missing.");
+            }
+
             return Task.FromResult(0);
         }
 
@@ -200,10 +201,12 @@ namespace terminalTwilio.Activities
         }
 
         private void PackCrate_WarningMessage(string warningMessage, string warningLabel)
-            {
-            var textBlock = UiBuilder.GenerateTextBlock(warningLabel, warningMessage, "alert alert-warning");
+        {
             Storage.Clear();
-            Storage.Add(PackControlsCrate(textBlock));
+
+            var textBlock = UiBuilder.GenerateTextBlock(warningLabel, warningMessage, "alert alert-warning");
+
+            AddControls(textBlock);
         }
 
         private string GeneralisePhoneNumber(string smsNumber)

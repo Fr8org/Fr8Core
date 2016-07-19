@@ -12,6 +12,11 @@ using Fr8.TerminalBase.Services;
 
 namespace Fr8.TerminalBase.BaseClasses
 {
+    /// <summary>
+    /// Recommended base class for developing new activities.
+    /// See https://github.com/Fr8org/Fr8Core/blob/dev/Docs/ForDevelopers/SDK/.NET/Reference/TerminalActivityT.md
+    /// </summary>
+    /// <typeparam name="TUi"></typeparam>
     public abstract class TerminalActivity<TUi> : TerminalActivityBase
        where TUi : StandardConfigurationControlsCM
     {
