@@ -323,7 +323,7 @@ namespace Hub.Services
                 if (curActionExecutionMode != ActivityExecutionMode.ReturnFromChildren)
                     EventManager.ActivityRunRequested(curActivityDO, curContainerDO);
 
-                var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, "Run", parameters, curActivityDO, curContainerDO.Id);
+                var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, "run", parameters, curActivityDO, curContainerDO.Id);
 
                 EventManager.ActivityResponseReceived(curActivityDO, ActivityResponse.RequestSuspend);
 
