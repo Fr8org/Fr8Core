@@ -68,7 +68,6 @@ namespace Fr8.Testing.Integration
             catch (Exception ex)
             {
                 System.Diagnostics.Trace.WriteLine("Error during authentication with PlanDirectory: " + ex.Message);
-
             }
         }
     }
