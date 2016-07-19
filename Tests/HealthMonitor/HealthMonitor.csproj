@@ -344,55 +344,7 @@
     <None Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Config\HealthMonitor\Settings.config.src" />
     <None Include="Config\HealthMonitor\Settings.config.src.readme" />
-    <None Include="Config\HubWeb\Settings.config" />
-    <None Include="Config\PlanDirectory\Settings.config" />
-    <None Include="Config\PlanDirectory\Settings.Debug.config" />
-    <None Include="Config\PlanDirectory\Settings.Release.config" />
-    <None Include="Config\terminalAsana\Settings.config" />
-    <None Include="Config\terminalAsana\Settings.Dev.config" />
-    <None Include="Config\terminalAsana\Settings.Release.config" />
-    <None Include="Config\terminalAtlassian\Settings.config" />
-    <None Include="Config\terminalAzure\Settings.config" />
-    <None Include="Config\terminalBasecamp2\Settings.config" />
-    <None Include="Config\terminalBasecamp2\Settings.Demo.config" />
-    <None Include="Config\terminalBasecamp2\Settings.Dev.config" />
-    <None Include="Config\terminalBasecamp2\Settings.Release.config" />
-    <None Include="Config\terminalBox\Settings.config" />
-    <None Include="Config\terminalCloudService\ServiceConfiguration.Demo.cscfg" />
-    <None Include="Config\terminalCloudService\ServiceConfiguration.Dev.cscfg" />
-    <None Include="Config\terminalCloudService\ServiceConfiguration.Release.cscfg" />
-    <None Include="Config\terminalDocuSign\Settings.config" />
-    <None Include="Config\terminalDropbox\Settings.config" />
-    <None Include="Config\terminalFacebook\Settings.config" />
-    <None Include="Config\terminalFacebook\Settings.Demo.config" />
-    <None Include="Config\terminalFacebook\Settings.Dev.config" />
-    <None Include="Config\terminalFacebook\Settings.Release.config" />
-    <None Include="Config\terminalFr8Core\Settings.config" />
-    <None Include="Config\terminalGoogle\Settings.config" />
-    <None Include="Config\terminalInstagram\Settings.config" />
-    <None Include="Config\terminalPapertrail\Settings.config" />
-    <None Include="Config\terminalQuickBooks\Settings.config" />
-    <None Include="Config\terminalSalesforce\Settings.config" />
-    <None Include="Config\terminalSalesforce\Settings.Demo.config" />
-    <None Include="Config\terminalSalesforce\Settings.Dev.config" />
-    <None Include="Config\terminalSalesforce\Settings.Release.config" />
-    <None Include="Config\terminalSendGrid\Settings.config" />
-    <None Include="Config\terminalSlack\Settings.config" />
-    <None Include="Config\terminalSlack\Settings.Demo.config" />
-    <None Include="Config\terminalSlack\Settings.Dev.config" />
-    <None Include="Config\terminalSlack\Settings.Release.config" />
-    <None Include="Config\terminalStatX\Settings.config" />
-    <None Include="Config\terminalTelegram\Settings.config" />
-    <None Include="Config\terminalTelegram\Settings.Demo.config" />
-    <None Include="Config\terminalTelegram\Settings.Dev.config" />
-    <None Include="Config\terminalTelegram\Settings.Release.config" />
-    <None Include="Config\terminalTwilio\Settings.config" />
-    <None Include="Config\terminalYammer\Settings.config" />
-    <None Include="Config\terminalYammer\Settings.Demo.config" />
-    <None Include="Config\terminalYammer\Settings.Dev.config" />
-    <None Include="Config\terminalYammer\Settings.Release.config" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -591,7 +543,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('..\..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Fr8.PrivateSettings.1.2016.201.12944-prerelease\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Fr8.PrivateSettings.1.2016.201.12944-prerelease\build\net40\Fr8.PrivateSettings.targets'))" />
   </Target>
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
   <Import Project="..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
@@ -602,8 +554,10 @@
   <PropertyGroup>
     <PostBuildEvent>powershell.exe –NonInteractive –ExecutionPolicy Unrestricted –command "&amp; { $(ProjectDir)Build-Settings.ps1 }"</PostBuildEvent>
   </PropertyGroup>
-  <Import Project="..\..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets" Condition="Exists('..\..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" />
-  <Import Project="..\..\targets\Fr8.NugetContentRestore.targets" Condition="Exists('..\..\targets\Fr8.NugetContentRestore.targets')" />
+  <Target Name="BeforeBuild">
+    <RestoreSettingsTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)" />
+  </Target>
+  <Import Project="..\..\packages\Fr8.PrivateSettings.1.2016.201.12944-prerelease\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('..\..\packages\Fr8.PrivateSettings.1.2016.201.12944-prerelease\build\net40\Fr8.PrivateSettings.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
