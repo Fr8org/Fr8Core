@@ -19,10 +19,14 @@
 ### Making the activity runnable
 
 Activity execution is a bit more complex than configuration. There are three endpoints you have to implement to make activity ready for execution:
+
 1. Activation endpoint: **/activities/activate**
+
 2. Execution endpoint: **/activities/Run**
+
 3. Deactivation endpoint: **/activities/deactivate**
-4.
+
+
 ### [Responding to /activate and /deactivate](/Docs/ForDevelopers/DevelopmentGuides/Guide-ActivateDeactivate.md)
 
 
