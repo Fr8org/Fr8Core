@@ -86,11 +86,7 @@ app.directive('fr8Click', ['$parse', '$timeout',($parse: ng.IParseService, $time
                         });
                     };
                     var checkConfigStatus = () => {
-                        //normally it would be nice to resolve a promise when
-                        //configuration is completed
-                        //but for now i'll just wait with some delay
-                        //TODO: if more than one logic requires waiting on config request
-                        //implement this solution with promises
+                        
                         if (pca.isThereOnGoingConfigRequest()) {
                             //we need to wait for this to end
                             pca.notifyOnConfigureEnd(simulateClick);
