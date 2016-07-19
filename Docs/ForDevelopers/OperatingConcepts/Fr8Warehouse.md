@@ -1,4 +1,5 @@
 Fr8 Warehouse
+=============
 
 The Fr8 Warehouse is a storage system that can store any crate that has a registered manifest. Terminals can store data in the Warehouse and retrieve it.
 Similar to warehouses found in port facilities, the Fr8 Warehouse isn't intended to be a permanent long term archive of anything, however.
