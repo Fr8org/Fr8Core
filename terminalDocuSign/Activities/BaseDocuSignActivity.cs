@@ -119,10 +119,10 @@ namespace terminalDocuSign.Activities
             }
         }
 
-        public void FillDocuSignTemplateSource(Crate configurationCrate, string controlName)
+        public void FillDocuSignTemplateSource(string controlName)
         {
-            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
-            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            var control = ConfigurationControls.FindByNameNested<DropDownList>(controlName);
+
             if (control != null)
             {
                 var conf = DocuSignManager.SetUp(AuthorizationToken);

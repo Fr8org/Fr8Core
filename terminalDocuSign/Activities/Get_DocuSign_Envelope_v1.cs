@@ -59,7 +59,9 @@ namespace terminalDocuSign.Activities
 
             var infobox = UiBuilder.GenerateTextBlock("This activity will try to get the envelope with the specified Envelope Id. If an envelope id is known at design-time then this activity will signal envelope tabs", "", "");
             Storage.Clear();
-            Storage.Add(PackControlsCrate(infobox, control));
+
+            AddControls(infobox, control);
+
             return Task.FromResult(0);
         }
 
@@ -95,7 +97,7 @@ namespace terminalDocuSign.Activities
             if (envelopeId.IsGuid())
             {
                 try
-                {
+            {
                     var conf = _docusihManager.SetUp(AuthorizationToken.Token);
                     var envelope = _docusihManager.GetEnvelope(conf, envelopeId);
                     envelope.ExternalAccountId = AuthorizationToken.ExternalAccountId;

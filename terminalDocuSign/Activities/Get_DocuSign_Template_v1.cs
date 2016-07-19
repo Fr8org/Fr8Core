@@ -76,10 +76,11 @@ namespace terminalDocuSign.Activities
 
         public override Task Initialize()
         {
-            var configurationCrate = CreateControlsCrate();
-            FillDocuSignTemplateSource(configurationCrate, "Available_Templates");
             Storage.Clear();
-            Storage.Add(configurationCrate);
+
+            CreateControlsCrate();
+            FillDocuSignTemplateSource("Available_Templates");
+            
             return Task.FromResult(0);
         }
 
@@ -102,7 +103,7 @@ namespace terminalDocuSign.Activities
             return Task.FromResult(0);
         }
 
-        private Crate CreateControlsCrate()
+        private void CreateControlsCrate()
         {
             var availableTemplates = new DropDownList
             {
@@ -112,7 +113,8 @@ namespace terminalDocuSign.Activities
                 Source = null,
                 Events = new List<ControlEvent> { ControlEvent.RequestConfig },
             };
-            return PackControlsCrate(availableTemplates);
+
+            AddControl(availableTemplates);
         }
     }
 }
