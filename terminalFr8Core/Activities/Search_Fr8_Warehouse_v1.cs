@@ -305,8 +305,9 @@ namespace terminalFr8Core.Activities
         {
             AddControls(new ActionUi().Controls);
             var designTimefieldLists = GetFr8WarehouseTypes(AuthorizationToken);
-            var availableMtObjects = CrateManager.CreateDesignTimeFieldsCrate("Queryable Objects", designTimefieldLists.ToArray());
-            Storage.Add(availableMtObjects);
+
+            Storage.Add("Queryable Objects", new KeyValueListCM(designTimefieldLists));
+
             return Task.FromResult(0);
         }
 
