@@ -9,8 +9,16 @@ using Fr8.Infrastructure.Data.States;
 
 namespace Fr8.TerminalBase.Services
 {
+    /// <summary>
+    /// Service for signalling about the crates that should be seen by other activities.
+    /// See https://github.com/Fr8org/Fr8Core/blob/dev/Docs/ForDevelopers/SDK/.NET/Reference/CrateSignaller.md
+    /// </summary>
     public class CrateSignaller
     {
+        /// <summary>
+        /// Allows to configure list of available fields for a certain manifest during the process of available crate signaling. 
+        /// See https://github.com/Fr8org/Fr8Core/blob/dev/Docs/ForDevelopers/SDK/.NET/Reference/CrateSignaller.FieldConfigurator.md
+        /// </summary>
         public class FieldConfigurator
         {
             private readonly List<FieldDTO> _fields;
