@@ -33,8 +33,7 @@ Activity execution is a bit more complex than configuration. There are three end
 
 ### [Responding to /run](/Docs/ForDevelopers/DevelopmentGuides/Guide-ActivityExecution.md)
 
-### Final words
-We've touched on elements of creating a simple Activity. Actual business-oriented activities and terminals wil much more complex.
+
 
 More Information:
 
