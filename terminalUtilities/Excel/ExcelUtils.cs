@@ -265,7 +265,7 @@ namespace terminalUtilities.Excel
                 var rows = CreateTableCellPayloadObjects(rowsDictionary, headersArray, isFirstRowAsColumnNames);
                 if (rows != null && rows.Count > 0)
                 {
-                    curExcelPayloadRowsCrateDTO = _crateManager.CreateStandardTableDataCrate("Excel Payload Rows", isFirstRowAsColumnNames, rows.ToArray());
+                    curExcelPayloadRowsCrateDTO = Crate.FromContent("Excel Payload Rows", new StandardTableDataCM(isFirstRowAsColumnNames, rows.ToArray()));
                 }
             }
 

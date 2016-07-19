@@ -810,6 +810,8 @@
     <Content Include="Views\AngularTemplate\PhoneNumberAuthentication.cshtml" />
     <Content Include="Views\AngularTemplate\ActionPickerPanel.cshtml" />
     <Content Include="Config\HubWeb\Settings.config" />
+    <Content Include="Config\HealthMonitor\Settings.config.src" />
+    <Content Include="Views\AngularTemplate\HeaderNav.cshtml" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="_PowerShellScripts\HM-job-run.cmd" />
