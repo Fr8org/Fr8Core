@@ -30,7 +30,6 @@
         RequestTerminate = 3,
         RequestSuspend = 4,
         SkipChildren = 5,
-        ReprocessChildren = 6,
         ExecuteClientAction = 7
     }
 
