@@ -1,17 +1,17 @@
-#DatePicker Control
+#ManagerRoute Control
 
 ##Example Control Payload
 ```javascript
 {
            "errorMessage": null,
-           "events": [],
-           "label": "null",
-           "name": "QueryField_CreateDate",
+           "events": null,
+           "label": "Manager Plan",
+           "name": "ManageRoute",
            "required": false,
            "selected": false,
            "showDocumentation": null,
            "source": null,
-          "type": "DatePicker",
-          "value": null
+           "type": "ManagerRoute",
+           "value": null
 }
 ```
