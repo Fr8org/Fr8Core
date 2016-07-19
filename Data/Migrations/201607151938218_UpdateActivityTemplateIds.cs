@@ -57,8 +57,9 @@ namespace Data.Migrations
                   EXECUTE updateActivityCategorySet @Name = @Name , @Id = @Id, @Version = @Version
                   ");
             Sql(@"                 
-                  IF EXISTS (SELECT * FROM ActivityTemplate WHERE Id = 'f7619e79-112e-43aa-ba43-118c1ffc98f3')
+                  IF NOT EXISTS (SELECT * FROM ActivityTemplate WHERE Id = 'f7619e79-112e-43aa-ba43-118c1ffc98f3')
                   BEGIN
+                  PRINT N'Updating ActivityTemplateIds'
                   ALTER TABLE Actions NOCHECK CONSTRAINT [FK_dbo.Actions_dbo.ActivityTemplate_ActivityTemplateId]
                   
                   ALTER TABLE ActivityDescriptions NOCHECK CONSTRAINT [FK_dbo.ActivityDescriptions_dbo.ActivityTemplate_ActivityTemplateId]
@@ -69,7 +70,7 @@ namespace Data.Migrations
                   
                   EXECUTE updateActivityTables @Name = 'FilterUsingRunTimeData', @Id = '9913A4C4-18A7-4423-AACE-02487BA8C21B' 
                   EXECUTE updateActivityTables @Name = 'Store_File', @Id = '1C4F979D-BC1C-4A4A-B370-049DBACD3678'
-                  EXECUTE updateActivityTables @Name = 'Archive_DocuSign_Template', @Id = 'DC02F0D0-D281-4006-BC25-056D1FDD7748'  
+                  EXECUTE updateActivityTables @Name = 'Archive_DocuSign_Template', @Id = 'CE88F864-24D1-4362-BD9E-066A40B028B6'  
                   EXECUTE updateActivityTables @Name = 'Get_DocuSign_Envelope', @Id = '0DE0F1FC-EBD3-48A6-9DF4-06F396E9F8C3'  
                   EXECUTE updateActivityTables @Name = 'Extract_Data', @Id = '36E485D9-FC8D-4C37-8593-226E5FD553D4'  
                   EXECUTE updateActivityTables @Name = 'PlanLauncher', @Id = '86A28016-9BDE-4E62-A62D-3D48BB994C2D'  
@@ -314,7 +315,7 @@ namespace Data.Migrations
                   UPDATE ActivityTemplate SET Id = '4698C675-CA2C-4BE7-82F9-2421F3608E13' WHERE Name = 'Publish_To_Slack' AND Version = '1'
                   
                   UPDATE ActivityTemplate SET Id = '2b1b4d98-9eb1-4cba-8baa-a6247cd86dce' WHERE Name = 'Send_DocuSign_Envelope' AND Version = '2'
-                  UPDATE ActivityTemplate SET Id = '2b1b4d98-9eb1-4cba-8baa-a6247cd86dce' WHERE Name = 'Send_DocuSign_Envelope' AND Version = '1'
+                  UPDATE ActivityTemplate SET Id = '8AC0A48C-C4B5-43E4-B585-2870D814BA86' WHERE Name = 'Send_DocuSign_Envelope' AND Version = '1'
                   
                   UPDATE ActivityTemplate SET Id = '55693341-6a95-4fc3-8848-2fc3a8101924' WHERE Name = 'Use_DocuSign_Template_With_New_Document' AND Version = '1'
                   
@@ -357,7 +358,7 @@ namespace Data.Migrations
                   
                   UPDATE ActivityTemplate SET Id = '9913A4C4-18A7-4423-AACE-02487BA8C21B' WHERE Name = 'FilterUsingRunTimeData'                                           
                   UPDATE ActivityTemplate SET Id = '1C4F979D-BC1C-4A4A-B370-049DBACD3678' WHERE Name = 'Store_File'                                          
-                  UPDATE ActivityTemplate SET Id = 'DC02F0D0-D281-4006-BC25-056D1FDD7748' WHERE Name = 'Archive_DocuSign_Template'                                            
+                  UPDATE ActivityTemplate SET Id = 'CE88F864-24D1-4362-BD9E-066A40B028B6' WHERE Name = 'Archive_DocuSign_Template'                                            
                   UPDATE ActivityTemplate SET Id = '0DE0F1FC-EBD3-48A6-9DF4-06F396E9F8C3' WHERE Name = 'Get_DocuSign_Envelope'                                            
                   UPDATE ActivityTemplate SET Id = '36E485D9-FC8D-4C37-8593-226E5FD553D4' WHERE Name = 'Extract_Data'                                            
                   UPDATE ActivityTemplate SET Id = '86A28016-9BDE-4E62-A62D-3D48BB994C2D' WHERE Name = 'PlanLauncher'                                            
@@ -387,7 +388,9 @@ namespace Data.Migrations
                   ALTER TABLE ActivityDescriptions WITH CHECK CHECK CONSTRAINT [FK_dbo.ActivityDescriptions_dbo.ActivityTemplate_ActivityTemplateId]
                   
                   ALTER TABLE Actions WITH CHECK CHECK CONSTRAINT [FK_dbo.Actions_dbo.ActivityTemplate_ActivityTemplateId]
-                  END                  
+                  END   
+                  ELSE
+                  PRINT N'ActivityTemplateIds already up to date'               
                   ");
             Sql(@"DROP PROCEDURE  updateActivityTables");
             Sql(@"DROP PROCEDURE  updateActivity");

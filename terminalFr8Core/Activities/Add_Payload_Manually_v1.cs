@@ -55,9 +55,7 @@ namespace terminalFr8Core.Activities
 
         public override Task Initialize()
         {
-            var configurationControlsCrate = CreateControlsCrate();
-            Storage.Add(configurationControlsCrate);
-
+            CreateControls();
             return Task.FromResult(0);
         }
 
@@ -79,7 +77,7 @@ namespace terminalFr8Core.Activities
             return Task.FromResult(0);
         }
 
-        private Crate CreateControlsCrate()
+        private void CreateControls()
         {
             var fieldFilterPane = new FieldList
             {
@@ -89,9 +87,7 @@ namespace terminalFr8Core.Activities
                 Events = new List<ControlEvent>(){ControlEvent.RequestConfig}
             };
 
-            return PackControlsCrate(fieldFilterPane);
+            AddControl(fieldFilterPane);
         }
-
-        
     }
 }

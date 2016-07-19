@@ -1,35 +1,47 @@
 # Building a .Net Terminal - Getting Started
 
-[.NET SDK Home](https://github.com/Fr8org/Fr8Core/blob/FR-3375/Docs/ForDevelopers/SDK/.NET/Home.md)
+[.NET SDK Home](/Docs/ForDevelopers/SDK/.NET/Home.md)
 
 [.NET Terminal Developer Guide Home](../DevGuide_DotNet.md)
 
-####Required software:
+Step 1: Install Required software
+================================
 
-1. Visual Studio 2013 or later. 2015 is recommended.
-2. [Node.js](https://nodejs.org/en/)
-4. [TypeScript 1.5](http://blogs.msdn.com/b/typescript/archive/2015/07/20/announcing-typescript-1-5.aspx) (NOTE THAT 1.6 and later does NOT currently work!). Visual Studio 2015 will prompt you to upgrade TypeScript; close the dialog without updating TypeScript.
-5. .NET 4.5 is recommended.
+1. Visual Studio 2015 is required. The Community Edition is known to work at the time of this writing. 
+2. [Node.js](https://nodejs.org/en/) See notes below
+4. TypeScript 1.8 (automatically installed by recent versions of Visual Studio)
+5. .NET 4.5 is required. In addition, .NET 3.5 must also be enabled in your environment. Instructions are [here](http://windows.microsoft.com/en-us/windows/turn-windows-features-on-off#1TC=windows-7).
+6. Git
+7. [Azure SDK 2.8.#](http://www.microsoft.com/en-us/download/details.aspx?id=48178)
 
-####Database
 
-If you are planning to run Hub locally you'll need to configure a sql database.
+Installing Node
+---------------
+Getting Node to work with Visual Studio has proven to be tricky. Simply installing Node onto your computer isn't usually sufficient. The test is this: if you can go to the Package Manager Console and type npm, then Visual Studio can see your local node installation. If it can't, the key seems to be to manually add a path to your node installation to your system PATH. 
+![](nodewindows.png)
+
+In this image you can see the useless "Roaming" path that seems to get added automatically by node installation, but which doesn't seem to work (at least for Visual Studio). The developer here has done an install of Node and explicitly installed it into c:/code/npm, and then added that path. This seems to be sufficient to get Visual Studio to see npm.
+
+
+
+
+Step 2: Install a Local Development Database
+============================================
+
+If you are planning to run Hub locally you'll need to [configure a sql database](./LocalDB.md). Otherwise, you can skip this step.
 Fr8 uses EntityFramework 6.1 to interact with data. Fr8 uses CodeFirst Migrations.
 
-######Creating a new local database
-1. Check the name of the connection string in Web.config. This is probably "DockyardDB2"
-2. Create a local database on your computer using either Sql Server or Sql Server Express. LocalDB is not recommended because it won't work with the project's default connection string. Make sure you choose the Default Instance and change the database ID to DockyardDB2.
-Dont choose NamedInstance in the Installer (Thats what binds the default database to 1433, making it accessible as "." , which is what we have in our web.config)
-3. Verify that you can connect to your local database by using the Server Explorer in Visual Studio. I like doing this because it separate local db issues from project/connection/EF issues. Until you can connect to your db from Server Explorer, you don't want to be messing with the project.
-4. To fill your empty local database with tables and columns, you can use Package Manager Console and run the Update-Database command. This is part of EF Migrations. If you're new to EF Migrations, stop here and go read about them. 
-This is the Update-Database command:
-Update-Database -StartUpProjectName "HubWeb"  -ProjectName Data -Verbose
-However, this not a required step, as it's done automatically when you try to run the server
-5. Note that a successful Update-Database will also fill your database with some seed data. 
+
+Step 3: Clone the Repositories
+==============================
+Start by cloning [Fr8Core](https://github.com/Fr8org/Fr8Core). This will provide you with all Hub and Client code, and all of the Terminals that have been written in .NET.
+
+Step 4: Build and Run Fr8
+========================
+[Build and Run](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/BuildRunFr8.md)
 
 
-####Configure ports
 
-HubWeb's port is 30643. To learn what port a terminal has you can check it's Web.config file and find a key "terminalName.TerminalEndpoint". Make sure that you have set the same port number in project properties ( Web tab, Project URL ).
+------------------
+Next: Try building a [Terminal Project](./TerminalProjects.md)
 
-[Back to Terminal Development on .Net](../DevGuide_DotNet.md)

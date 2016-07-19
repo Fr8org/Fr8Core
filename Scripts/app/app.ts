@@ -350,7 +350,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                 '@planBuilder': {
                     templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
                         if ($stateParams['viewMode'] === 'kiosk') {
-                            return "/AngularTemplate/PlanBuilder_KioskMode";
+                            return "/AngularTemplate/PlanBuilder_SimpleKioskMode";
                         }
                         return "/AngularTemplate/PlanBuilder";
                     }
@@ -361,6 +361,14 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                             return "/AngularTemplate/KioskModeOrganizationHeader";
                         }
                         return "/AngularTemplate/MiniHeader";
+                    }
+                },
+                'footer@': {
+                    templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
+                        if ($stateParams['viewMode'] === 'kiosk') {
+                            return "/AngularTemplate/Empty";
+                        }
+                        return "/AngularTemplate/Footer";
                     }
                 }
             },

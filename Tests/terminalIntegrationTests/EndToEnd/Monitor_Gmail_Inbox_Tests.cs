@@ -113,12 +113,12 @@ namespace terminalIntegrationTests.EndToEnd
             string connString = (string)ObjectFactory.GetInstance<ISqlConnectionProvider>().ConnectionInfo;
 
             JobStorage.Current = new Hangfire.SqlServer.SqlServerStorage(connString);
-            string terminalId = "";
+            string terminalSecret = "";
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                terminalId = uow.TerminalRepository.GetQuery().Where(a => a.Name == "terminalGoogle").FirstOrDefault().PublicIdentifier;
+                terminalSecret = uow.TerminalRepository.GetQuery().Where(a => a.Name == "terminalGoogle").FirstOrDefault().Secret;
             }
-            string jobId = terminalId + "|" + token.ExternalAccountId;
+            string jobId = terminalSecret + "|" + token.ExternalAccountId;
             RecurringJob.RemoveIfExists(jobId);
         }
 

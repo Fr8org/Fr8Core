@@ -38,7 +38,7 @@ module dockyard.controllers.KioskModeOrganizationHeaderController {
                 else {
                     $scope.name = "App Launcher";
                     $scope.themeName = "Default Theme";
-                    $scope.backgroundColor = "#26A69A";
+                    $scope.backgroundColor = "#368da5";
                     $scope.logoUrl = "/Content/img/dockyard_logo.png";
                 }
             });

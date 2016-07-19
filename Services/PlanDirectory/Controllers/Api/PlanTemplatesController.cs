@@ -1,12 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Security.Claims;
 using System.Web.Http;
+using Data.Entities;
+using Data.Repositories;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Interfaces;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Hub.Infrastructure;
+using Hub.Interfaces;
 using PlanDirectory.Infrastructure;
 using PlanDirectory.Interfaces;
 
@@ -19,6 +25,8 @@ namespace PlanDirectory.Controllers.Api
         private readonly IPlanTemplate _planTemplate;
         private readonly ISearchProvider _searchProvider;
         private readonly ITagGenerator _tagGenerator;
+        private readonly IPageDefinition _pageDefinition;
+        private readonly IPageGenerator _pageGenerator;
 
         public PlanTemplatesController()
         {
@@ -27,47 +35,63 @@ namespace PlanDirectory.Controllers.Api
             _planTemplate = ObjectFactory.GetInstance<IPlanTemplate>();
             _searchProvider = ObjectFactory.GetInstance<ISearchProvider>();
             _tagGenerator = ObjectFactory.GetInstance<ITagGenerator>();
+            _pageGenerator = ObjectFactory.GetInstance<IPageGenerator>();
+            _pageDefinition = ObjectFactory.GetInstance<IPageDefinition>();
         }
 
         [HttpPost]
         [Fr8ApiAuthorize]
         [PlanDirectoryHMACAuthenticate]
-        public Task<IHttpActionResult> Post(PublishPlanTemplateDTO dto)
+        public async Task<IHttpActionResult> Post(PublishPlanTemplateDTO dto)
         {
-            return ExceptionWrapper(async () =>
+            var fr8AccountId = User.Identity.GetUserId();
+
+            var planTemplateCM = await _planTemplate.CreateOrUpdate(fr8AccountId, dto);
+
+            var storage = await _tagGenerator.GetTags(planTemplateCM, fr8AccountId);
+
+            await _searchProvider.CreateOrUpdate(planTemplateCM);
+
+            var pageDefinitions = new List<PageDefinitionDO>();
+            foreach (var tag in storage.WebServiceTemplateTags)
             {
-                var fr8AccountId = User.Identity.GetUserId();
+                var pd = new PageDefinitionDO()
+                {
+                    Title = tag.Title,
+                    Tags = tag.TagsWithIcons.Select(x => x.Key),
+                    Type = "WebService"
+                };
+                pageDefinitions.Add(pd);
+            }
 
-                var planTemplateCM = await _planTemplate.CreateOrUpdate(fr8AccountId, dto);
+            await _pageGenerator.Generate(storage, planTemplateCM, pageDefinitions, fr8AccountId);
 
-                var tags = await _tagGenerator.GetTags(planTemplateCM, fr8AccountId);
-
-                await _searchProvider.CreateOrUpdate(planTemplateCM);
-
-                //TODO: update page definitions
-
-                return Ok();
-            });
+            return Ok();
         }
 
         [HttpDelete]
         [Fr8ApiAuthorize]
         [PlanDirectoryHMACAuthenticate]
-        public Task<IHttpActionResult> Delete(Guid id)
+        public async Task<IHttpActionResult> Delete(Guid id)
         {
-            return ExceptionWrapper(async () =>
+            var identity = User.Identity as ClaimsIdentity;
+            var privileged = identity.HasClaim(ClaimsIdentity.DefaultRoleClaimType, "Admin");
+
+            var fr8AccountId = identity.GetUserId();
+            var planTemplateCM = await _planTemplate.Get(fr8AccountId, id);
+
+            if (planTemplateCM.OwnerId != fr8AccountId && !privileged)
             {
-                var fr8AccountId = User.Identity.GetUserId();
-                var planTemplateCM = await _planTemplate.Get(fr8AccountId, id);
+                return Unauthorized();
+            }
 
-                if (planTemplateCM != null)
-                {
-                    await _planTemplate.Remove(fr8AccountId, id);
-                    await _searchProvider.Remove(id);
-                }
+            if (planTemplateCM != null)
+            {
+                await _planTemplate.Remove(fr8AccountId, id);
+                await _searchProvider.Remove(id);
+            }
 
-                return Ok();
-            });
+            return Ok();
         }
 
         [HttpGet]
@@ -76,7 +100,7 @@ namespace PlanDirectory.Controllers.Api
         public async Task<IHttpActionResult> Get(Guid id)
         {
             var fr8AccountId = User.Identity.GetUserId();
-            var planTemplateDTO = await _planTemplate.Get(fr8AccountId, id);
+            var planTemplateDTO = await _planTemplate.GetPlanTemplateDTO(fr8AccountId, id);
 
             return Ok(planTemplateDTO);
         }
@@ -100,51 +124,49 @@ namespace PlanDirectory.Controllers.Api
         [HttpPost]
         [Fr8ApiAuthorize]
         [PlanDirectoryHMACAuthenticate]
-        public Task<IHttpActionResult> CreatePlan(Guid id)
+        public async Task<IHttpActionResult> CreatePlan(Guid id)
         {
-            return ExceptionWrapper(async () =>
+            var fr8AccountId = User.Identity.GetUserId();
+            var planTemplateDTO = await _planTemplate.GetPlanTemplateDTO(fr8AccountId, id);
+
+            if (planTemplateDTO == null)
             {
-                var fr8AccountId = User.Identity.GetUserId();
-                var planTemplateDTO = await _planTemplate.Get(fr8AccountId, id);
+                throw new ApplicationException("Unable to find PlanTemplate in MT-database.");
+            }
 
-                if (planTemplateDTO == null)
+            var plan = await _hubCommunicator.LoadPlan(planTemplateDTO.PlanContents);
+
+            return Ok(
+                new
                 {
-                    throw new ApplicationException("Unable to find PlanTemplate in MT-database.");
+                    RedirectUrl = CloudConfigurationManager.GetSetting("HubApiBaseUrl").Replace("/api/v1/", "")
+                        + "/dashboard/plans/" + plan.Id.ToString() + "/builder?viewMode=plan"
                 }
-
-                var plan = await _hubCommunicator.LoadPlan(planTemplateDTO.PlanContents);
-
-                return Ok(
-                    new
-                    {
-                        RedirectUrl = CloudConfigurationManager.GetSetting("HubApiBaseUrl").Replace("/api/v1/", "")
-                            + "/dashboard/plans/" + plan.Id.ToString() + "/builder?viewMode=plan"
-                    }
-                );
-            });
+            );
         }
 
+        // TODO: remove this.
         // Added for PD <-> Hub debugging purposes only, to be removed in future.
-        private Task<IHttpActionResult> ExceptionWrapper(Func<Task<IHttpActionResult>> handler)
-        {
-            try
-            {
-                return handler();
-            }
-            catch (Exception ex)
-            {
-                var sb = new System.Text.StringBuilder();
-
-                while (ex != null)
-                {
-                    sb.AppendLine(ex.Message);
-                    sb.AppendLine(ex.StackTrace);
-
-                    ex = ex.InnerException;
-                }
-
-                return Task.FromResult<IHttpActionResult>(Ok(new { exception = sb.ToString() }));
-            }
-        }
+        // private Task<IHttpActionResult> ExceptionWrapper(Func<Task<IHttpActionResult>> handler)
+        // {
+        //     try
+        //     {
+        //         return handler();
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         var sb = new System.Text.StringBuilder();
+        // 
+        //         while (ex != null)
+        //         {
+        //             sb.AppendLine(ex.Message);
+        //             sb.AppendLine(ex.StackTrace);
+        // 
+        //             ex = ex.InnerException;
+        //         }
+        // 
+        //         return Task.FromResult<IHttpActionResult>(Ok(new { exception = sb.ToString() }));
+        //     }
+        // }
     }
 }
