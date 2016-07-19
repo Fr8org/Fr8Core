@@ -120,10 +120,18 @@ namespace terminalDocuSign.Services.New_Api
 
         public JObject DownloadDocuSignTemplate(DocuSignApiConfiguration config, string selectedDocusignTemplateId)
         {
-            // we probably need to make multiple calls to api to collect all template info, i.e. recipients, tabs etc.
-            //return Mapper.Map<DocuSignTemplateDTO>(jObjTemplate);
-
-            throw new NotImplementedException();
+            var templatesApi = new TemplatesApi(config.Configuration);
+            var template = templatesApi.Get(config.AccountId, selectedDocusignTemplateId);
+            foreach (var doc in template.Documents)
+            {
+                var document = templatesApi.GetDocument(config.AccountId, selectedDocusignTemplateId, doc.DocumentId);
+                var ms = new MemoryStream();
+                document.CopyTo(ms);
+                string base64 = Convert.ToBase64String(ms.ToArray());
+                template.Documents.Where(a => a.DocumentId == doc.DocumentId).FirstOrDefault().DocumentBase64 = base64;
+            }
+            var result = JsonConvert.SerializeObject(template);
+            return JObject.Parse(result);
         }
 
         public IEnumerable<KeyValueDTO> GetEnvelopeRecipientsAndTabs(DocuSignApiConfiguration conf, string envelopeId)
