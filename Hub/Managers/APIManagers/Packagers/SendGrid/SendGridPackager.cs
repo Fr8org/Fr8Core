@@ -10,6 +10,7 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Logging;
+using Fr8.Infrastructure.Utilities.Configuration;
 
 namespace Hub.Managers.APIManagers.Packagers.SendGrid
 {
@@ -148,7 +149,7 @@ namespace Hub.Managers.APIManagers.Packagers.SendGrid
                     Logger.LogError("Error occured while trying to send email. " +
                                     $"From = {email.From.Address}; " +
                                     $"Subject = {email.Subject}; " +
-                                    $"Exception = {ex.Message}");
+                                    $"Exception = {ex.Message}; ");
                     EventManager.Error_EmailSendFailure(email.Id, ex.Message);
                 }
             }

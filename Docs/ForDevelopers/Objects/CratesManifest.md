@@ -13,12 +13,16 @@ An Action designer can design an Action that works with DocuSignEnvelopes. They 
 
 Manifests are versioned, and will get generally get richer and more comprehensive over time.
 
- 
+
 
 ### Special Manifests
 
 The Baseline Manifests: Standard Payload Data and Standard Configuration Fields
 
 If there isn’t a more targeted manifest that fits, these are the fallback. Both essentially are a simple List of JSON objects, which can have arbitrarily complex values.
+
+### Developing Manifests
+
+See the [Manifest Development Guide](https://github.com/Fr8org/Fr8Core/blob/docs5/Docs/ForDevelopers/DevelopmentGuides/ManifestDevelopmentGuide.md)
 
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md) 

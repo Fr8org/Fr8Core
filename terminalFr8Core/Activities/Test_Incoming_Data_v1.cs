@@ -157,7 +157,7 @@ namespace terminalFr8Core.Activities
             return whereCallExpression;
         }
 
-        protected virtual Crate CreateControlsCrate()
+        protected virtual void CreateControls()
         {
             var fieldFilterPane = new FilterPane()
             {
@@ -172,7 +172,7 @@ namespace terminalFr8Core.Activities
                 }
             };
 
-            return PackControlsCrate(fieldFilterPane);
+            AddControls(fieldFilterPane);
         }
 
         public override async Task Run()
@@ -210,8 +210,7 @@ namespace terminalFr8Core.Activities
 
         public override async Task Initialize()
         {
-            var configurationControlsCrate = CreateControlsCrate();
-            Storage.Add(configurationControlsCrate);
+            CreateControls();
         }
 
         public override Task FollowUp()

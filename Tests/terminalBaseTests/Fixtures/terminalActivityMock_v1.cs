@@ -64,18 +64,12 @@ namespace terminalBaseTests.Actions
         private void AddCrateMethodInvoked(string methodName)
         {
             Storage.Clear();
-            Storage.Add(CreateControlsCrate(methodName));
-        }
 
-        private Crate CreateControlsCrate(string fieldName)
-        {
-            var fieldFilterPane = new TextBox
+            AddControls(new TextBox
             {
-                Label = fieldName,
+                Label = methodName,
                 Name = "InvokedMethod"
-            };
-
-            return PackControlsCrate(fieldFilterPane);
+            });
         }
 
         public terminalActivityMock_v1(ICrateManager crateManager) 
