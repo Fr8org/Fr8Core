@@ -126,7 +126,8 @@ namespace Hub.StructureMap
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
                 For<ITimer>().Use<Win32Timer>();
                 For<IManifestRegistryMonitor>().Use<ManifestRegistryMonitor>().Singleton();
-                
+                For<IWebService>().Use<WebService>().Singleton();
+
             }
         }
 
