@@ -384,7 +384,11 @@ namespace Hub.Services
                         break;
                 }
 
-                crateStorage.Add(_crate.CreateAuthenticationCrate("RequiresAuthentication", mode, false));
+                crateStorage.Add("RequiresAuthentication", new StandardAuthenticationCM
+                {
+                    Mode = mode,
+                    Revocation = false
+                });
             }
         }
 

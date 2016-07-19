@@ -78,7 +78,9 @@ namespace terminalInstagram.Actions
 
         public override async Task Initialize()
         {
-            Storage.Add(CreateEventSubscriptionCrate());
+            EventSubscriptions.Manufacturer = "Instagram";
+            EventSubscriptions.Add(InstagramMedia);
+
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeCrateLabel)
                                             .AddField(InstagramMediaId)
                                             .AddField(InstagramCaptionId)
@@ -88,11 +90,6 @@ namespace terminalInstagram.Actions
                                             .AddField(InstagramImageUrlStandardResolution);
         }
         
-
-        private Crate CreateEventSubscriptionCrate()
-        {
-            return CrateManager.CreateStandardEventSubscriptionsCrate(EventSubscriptionsCrateLabel, "Instagram", InstagramMedia);
-        }
         public override async Task Activate()
         {
             await _instagramEventManager.Subscribe().ConfigureAwait(false);

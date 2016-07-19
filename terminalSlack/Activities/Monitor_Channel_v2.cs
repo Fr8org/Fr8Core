@@ -90,7 +90,6 @@ namespace terminalSlack.Activities
 
         public const string ResultPayloadCrateLabel = "Slack Message";
 
-        public const string EventSubscriptionsCrateLabel = "Standard Event Subscriptions";
 
         private readonly ISlackIntegration _slackIntegration;
         private readonly ISlackEventManager _slackEventManager;
@@ -108,7 +107,10 @@ namespace terminalSlack.Activities
                 .OrderBy(x => x.Key)
                 .Select(x => new ListItem { Key = $"#{x.Key}", Value = x.Value })
                 .ToList();
-            Storage.Add(CreateEventSubscriptionCrate());
+
+            EventSubscriptions.Manufacturer = "Slack";
+            EventSubscriptions.Add("Slack Outgoing Message");
+
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel)
                 .AddField("token")
                 .AddField("team_id")
@@ -121,12 +123,7 @@ namespace terminalSlack.Activities
                 .AddField("user_name")
                 .AddField("text");
         }
-
-        private Crate CreateEventSubscriptionCrate()
-        {
-            return CrateManager.CreateStandardEventSubscriptionsCrate(EventSubscriptionsCrateLabel, "Slack", "Slack Outgoing Message");
-        }
-
+        
         public override Task FollowUp()
         {
             //No extra configuration is required
