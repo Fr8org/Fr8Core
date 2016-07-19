@@ -53,7 +53,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
             var terminalDTO = dataDTO.ActivityDTO.ActivityTemplate.Terminal;
             var terminal = ObjectFactory.GetInstance<ITerminal>().GetByNameAndVersion(terminalDTO.Name, terminalDTO.Version);
 
-            var actionName = Regex.Replace(curActionType, @"[^-_\w\d]", "_");
+            var actionName = Regex.Replace(curActionType, @"[^-_\w\d]", "_").ToLower();
             string queryString = string.Empty;
             if (parameters != null && parameters.Any())
             {
