@@ -739,6 +739,10 @@
     <Compile Include="Migrations\201607181342049_AddPlanTemplatesReferenceToPageDefinitions.Designer.cs">
       <DependentUpon>201607181342049_AddPlanTemplatesReferenceToPageDefinitions.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201607190941340_RemovedTerminalIdentifierFromTerminalTable.cs" />
+    <Compile Include="Migrations\201607190941340_RemovedTerminalIdentifierFromTerminalTable.Designer.cs">
+      <DependentUpon>201607190941340_RemovedTerminalIdentifierFromTerminalTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -1412,6 +1416,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201607181342049_AddPlanTemplatesReferenceToPageDefinitions.resx">
       <DependentUpon>201607181342049_AddPlanTemplatesReferenceToPageDefinitions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607190941340_RemovedTerminalIdentifierFromTerminalTable.resx">
+      <DependentUpon>201607190941340_RemovedTerminalIdentifierFromTerminalTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
