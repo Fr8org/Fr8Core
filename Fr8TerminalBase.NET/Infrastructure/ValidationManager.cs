@@ -7,6 +7,10 @@ using Fr8.Infrastructure.Data.Manifests;
 
 namespace Fr8.TerminalBase.Infrastructure
 {
+    /// <summary>
+    /// Service for reporting activity configuration validation errors.
+    /// See https://github.com/Fr8org/Fr8Core/blob/dev/Docs/ForDevelopers/SDK/.NET/Reference/ValidationManager.md
+    /// </summary>
     public class ValidationManager
     {
         private readonly ValidationResultsCM _validationResults;
