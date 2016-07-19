@@ -8,6 +8,7 @@ Go to either  [fr8.co](https://fr8.co/dashboard/terminals) (if you've chosen the
 and do the following:
 
 1) Figure out the port number your local Terminal is using, and the resulting URL, which is usually something like localhost:38405.
+
 2) Click "Add Terminal" and add the URL of your new Terminal
 
 Note that you must use exactly the same endpoint that your terminal returns in the response to **/discover** request.
