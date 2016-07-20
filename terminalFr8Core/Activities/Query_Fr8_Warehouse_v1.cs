@@ -202,10 +202,10 @@ namespace terminalFr8Core.Activities
         }
 
         #region Fill Source
-        private void FillObjectsSource(Crate configurationCrate, string controlName)
+        private void FillObjectsSource(string controlName)
         {
-            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
-            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            var control = ConfigurationControls.FindByNameNested<DropDownList>(controlName);
+
             if (control != null)
             {
                 control.ListItems = GetObjects();
@@ -221,17 +221,16 @@ namespace terminalFr8Core.Activities
             }
         }
 
-        private void FillUpstreamCrateManifestTypeDDLSource(Crate configurationCrate)
+        private void FillUpstreamCrateManifestTypeDDLSource()
         {
-            var selectedCrateDetails = GetSelectedCrateDetails(configurationCrate);
+            var selectedCrateDetails = GetSelectedCrateDetails();
             var control = selectedCrateDetails.ManifestType;
             control.ListItems = GetUpstreamCrateManifestList();
         }
 
-        private CrateDetails GetSelectedCrateDetails(Crate configurationCrate)
+        private CrateDetails GetSelectedCrateDetails()
         {
-            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
-            var upstreamCrateChooser = configurationControl.FindByNameNested<UpstreamCrateChooser>("UpstreamCrateChooser");
+            var upstreamCrateChooser = ConfigurationControls.FindByNameNested<UpstreamCrateChooser>("UpstreamCrateChooser");
             return upstreamCrateChooser.SelectedCrates.First();
         }
 
@@ -367,14 +366,13 @@ namespace terminalFr8Core.Activities
 
         public override async Task Initialize()
         {
-            var configurationCrate = PackControls(new ActivityUi());
-            FillObjectsSource(configurationCrate, "AvailableObjects");
-            FillUpstreamCrateManifestTypeDDLSource(configurationCrate);
+            AddControls(new ActivityUi().Controls);
+            
+            FillObjectsSource("AvailableObjects");
+            FillUpstreamCrateManifestTypeDDLSource();
            // await FillUpstreamCrateLabelDDLSource(configurationCrate);
 
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>("Found MT Objects");
-
-            Storage.Add(configurationCrate);
         }
 
         public override Task FollowUp()

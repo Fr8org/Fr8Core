@@ -54,10 +54,11 @@ namespace terminalDocuSign.Activities
 
         public override Task Initialize()
         {
-            var configurationCrate = PackControls(new ActivityUi());
-            FillDocuSignTemplateSource(configurationCrate, "Available_Templates");
             Storage.Clear();
-            Storage.Add(configurationCrate);
+
+            AddControls(new ActivityUi().Controls);
+            FillDocuSignTemplateSource("Available_Templates");
+           
             return Task.FromResult(0);
         }
 

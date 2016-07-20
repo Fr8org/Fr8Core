@@ -197,7 +197,7 @@ namespace terminalDocuSign.Services
                             if (firstActivity != null)
                             {
                                 await hubCommunicator.ApplyNewToken(firstActivity.Id, Guid.Parse(authToken.Id));
-                                await hubCommunicator.RunPlan(existingPlan.Plan.Id, new List<CrateDTO>());
+                                await hubCommunicator.RunPlan(existingPlan.Plan.Id, null);
                                 Logger.Info($"#### Existing MADSE plan activated with planId: {existingPlan.Plan.Id}");
                                 return existingPlan.Plan.Id.to_S();
                             }
@@ -242,7 +242,7 @@ namespace terminalDocuSign.Services
             SetSelectedCrates(storeMTDataActivity);
             //save this
             await hubCommunicator.ConfigureActivity(storeMTDataActivity);
-            await hubCommunicator.RunPlan(monitorDocusignPlan.Plan.Id, new List<CrateDTO>());
+            await hubCommunicator.RunPlan(monitorDocusignPlan.Plan.Id, null);
 
             Logger.Info($"#### New MADSE plan activated with planId: {monitorDocusignPlan.Plan.Id}");
         }

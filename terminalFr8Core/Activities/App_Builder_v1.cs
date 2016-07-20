@@ -233,9 +233,9 @@ namespace terminalFr8Core.Activities
             generatedConfigControls.Add(submitButton);
             return Crate<StandardConfigurationControlsCM>.FromContent(CollectionControlsLabel, new StandardConfigurationControlsCM(generatedConfigControls.ToArray()), AvailabilityType.Configuration);
         }
-        protected Crate CreateInitialControlsCrate()
+        protected void CreateInitialControls()
         {
-            var Label = new TextBox
+            var label = new TextBox
             {
                 Label = "App Name",
                 Name = "AppLabel",
@@ -255,7 +255,7 @@ namespace terminalFr8Core.Activities
                 Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
             };
 
-            return PackControlsCrate(Label,infoText, cc);
+            AddControls(label, infoText, cc);
         }
 
         public App_Builder_v1(ICrateManager crateManager, ExcelUtils excelUtils, IPushNotificationService pushNotificationService)
@@ -289,8 +289,7 @@ namespace terminalFr8Core.Activities
 
         public override Task Initialize()
         {
-            var configurationControlsCrate = CreateInitialControlsCrate();
-            Storage.Add(configurationControlsCrate);
+            CreateInitialControls();
             return Task.FromResult(0);
         }
 
@@ -320,12 +319,10 @@ namespace terminalFr8Core.Activities
                         throw new Exception($"Activity with id \"{ActivityId}\" has no owner plan");
                     }
 
-                    var flagCrate = CrateManager.CreateDesignTimeFieldsCrate(RunFromSubmitButtonLabel);
-                    var payload = new List<CrateDTO>() { CrateManager.ToDto(flagCrate) };
-
+                    var flagCrate = Crate.FromContent(RunFromSubmitButtonLabel, new KeyValueListCM());
                     
                     await HubCommunicator.SaveActivity(ActivityContext.ActivityPayload);
-                    HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, payload);
+                    HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, new[] {flagCrate});
 
 
                     // We must save ourselves before running activity
