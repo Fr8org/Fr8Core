@@ -80,7 +80,8 @@
                         <!-- SEARCH RESULTS-->
                         <div class="result-container">
                             <div class="item" ng-repeat="plan in planTemplates">
-                                <button class="btn green create-plan-btn" ng-click="createPlan(plan)">Create</button>
+                                <button class="btn green create-plan-btn" ng-class="{'privileged': privileged}" ng-click="createPlan(plan)">Create</button>
+                                <button type="button" class="btn red remove-plan-btn" ng-click="removePlan(plan)" ng-if="privileged">Delete</button>
                                 <div class="info-row first">
                                     <div class="label">Name:</div> {{plan.Name}}
                                 </div>
