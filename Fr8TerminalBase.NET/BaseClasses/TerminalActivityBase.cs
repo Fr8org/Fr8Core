@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Constants;
@@ -9,7 +10,6 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.Errors;
-using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Infrastructure.States;
 using Fr8.TerminalBase.Interfaces;
@@ -30,13 +30,15 @@ namespace Fr8.TerminalBase.BaseClasses
 
         public const string ConfigurationControlsLabel = "Configuration_Controls";
         public const string ValidationCrateLabel = "Validation Results";
+        public const string EventSubscriptionsCrateLabel = "Standard Event Subscriptions";
 
         /**********************************************************************************/
 
         private OperationalStateCM _operationalState;
         private ActivityContext _activityContext;
         private ContainerExecutionContext _containerExecutionContext;
-        
+        private EventSubscriptionCM _eventSubscriptions;
+
         /**********************************************************************************/
 
         protected ICrateStorage Payload
@@ -126,6 +128,41 @@ namespace Fr8.TerminalBase.BaseClasses
             }
         }
 
+        /**********************************************************************************/
+
+        public EventSubscriptionCM EventSubscriptions
+        {
+            get
+            {
+                if (_eventSubscriptions == null)
+                {
+                    _eventSubscriptions = Storage.FirstCrateContentOrDefault<EventSubscriptionCM>(x => x.Label == EventSubscriptionsCrateLabel);
+
+                    if (_eventSubscriptions == null)
+                    {
+                        if (!IsRuntime)
+                        {
+                            _eventSubscriptions = new EventSubscriptionCM();
+                            Storage.Add(EventSubscriptionsCrateLabel, _eventSubscriptions);
+                        }
+                    }
+                    else if (_eventSubscriptions.Subscriptions == null)
+                    {
+                        _eventSubscriptions.Subscriptions = new List<string>();
+                    }
+                }
+                
+                return _eventSubscriptions;
+            }
+            set
+            {
+                Storage.Remove(x => x.Label == EventSubscriptionsCrateLabel);
+
+                _eventSubscriptions = value;
+                Storage.Add(EventSubscriptionsCrateLabel, _eventSubscriptions);
+            }
+        }
+        
         /**********************************************************************************/
         // Functions
         /**********************************************************************************/
