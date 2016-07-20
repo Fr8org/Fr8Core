@@ -4,6 +4,8 @@
 
 [Authorization and Authentication Overview](./AuthOverview.md)
 
-Next: [Learn about OAuth Mechanisms](/Docs/ForDevelopers/OperatingConcepts/Authorization/Home.md)
+[Fr8's OAuth Mechanisms](/Docs/ForDevelopers/OperatingConcepts/Authorization/Home.md)
+
+[Token Considerations](/Docs/ForDevelopers/OperatingConcepts/Authorization/ErrorHandling.md)
 
 [Go to Contents](/Docs/Home.md)  
