@@ -215,54 +215,6 @@
       <IsTransformFile>True</IsTransformFile>
     </None>
     <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
-    <Content Include="Config\HealthMonitor\Settings.config.src" />
-    <Content Include="Config\terminalYammer\Settings.Release.config" />
-    <Content Include="Config\terminalYammer\Settings.Dev.config" />
-    <Content Include="Config\terminalYammer\Settings.Demo.config" />
-    <Content Include="Config\terminalYammer\Settings.config" />
-    <Content Include="Config\terminalTwilio\Settings.config" />
-    <Content Include="Config\terminalTelegram\Settings.Release.config" />
-    <Content Include="Config\terminalTelegram\Settings.Dev.config" />
-    <Content Include="Config\terminalTelegram\Settings.Demo.config" />
-    <Content Include="Config\terminalTelegram\Settings.config" />
-    <Content Include="Config\terminalStatX\Settings.config" />
-    <Content Include="Config\terminalSlack\Settings.Release.config" />
-    <Content Include="Config\terminalSlack\Settings.Dev.config" />
-    <Content Include="Config\terminalSlack\Settings.Demo.config" />
-    <Content Include="Config\terminalSlack\Settings.config" />
-    <Content Include="Config\terminalSendGrid\Settings.config" />
-    <Content Include="Config\terminalSalesforce\Settings.Release.config" />
-    <Content Include="Config\terminalSalesforce\Settings.Dev.config" />
-    <Content Include="Config\terminalSalesforce\Settings.Demo.config" />
-    <Content Include="Config\terminalSalesforce\Settings.config" />
-    <Content Include="Config\terminalQuickBooks\Settings.config" />
-    <Content Include="Config\terminalPapertrail\Settings.config" />
-    <Content Include="Config\terminalInstagram\Settings.config" />
-    <Content Include="Config\terminalGoogle\Settings.config" />
-    <Content Include="Config\terminalFr8Core\Settings.config" />
-    <Content Include="Config\terminalFacebook\Settings.Release.config" />
-    <Content Include="Config\terminalFacebook\Settings.Dev.config" />
-    <Content Include="Config\terminalFacebook\Settings.Demo.config" />
-    <Content Include="Config\terminalFacebook\Settings.config" />
-    <Content Include="Config\terminalDropbox\Settings.config" />
-    <Content Include="Config\terminalDocuSign\Settings.config" />
-    <Content Include="Config\terminalCloudService\ServiceConfiguration.Release.cscfg" />
-    <Content Include="Config\terminalCloudService\ServiceConfiguration.Dev.cscfg" />
-    <Content Include="Config\terminalCloudService\ServiceConfiguration.Demo.cscfg" />
-    <Content Include="Config\terminalBox\Settings.config" />
-    <Content Include="Config\terminalBasecamp2\Settings.Release.config" />
-    <Content Include="Config\terminalBasecamp2\Settings.Dev.config" />
-    <Content Include="Config\terminalBasecamp2\Settings.Demo.config" />
-    <Content Include="Config\terminalBasecamp2\Settings.config" />
-    <Content Include="Config\terminalAzure\Settings.config" />
-    <Content Include="Config\terminalAtlassian\Settings.config" />
-    <Content Include="Config\terminalAsana\Settings.Release.config" />
-    <Content Include="Config\terminalAsana\Settings.Dev.config" />
-    <Content Include="Config\terminalAsana\Settings.config" />
-    <Content Include="Config\PlanDirectory\Settings.Release.config" />
-    <Content Include="Config\PlanDirectory\Settings.Debug.config" />
-    <Content Include="Config\PlanDirectory\Settings.config" />
-    <Content Include="Config\HubWeb\Settings.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -321,7 +273,9 @@
     <Compile Include="TerminalStatXBootstrapper.cs" />
     <Compile Include="Infrastructure\RenderUiPropertyAttribute.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Config\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj">
       <Project>{BBA91AF2-7636-41B6-87C4-C1575AE8B04B}</Project>
@@ -360,10 +314,9 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
-    <Error Condition="!Exists('..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets'))" />
+    <Error Condition="!Exists('..\packages\Fr8.PrivateSettings.1.2016.202.12957-prerelease\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fr8.PrivateSettings.1.2016.202.12957-prerelease\build\net40\Fr8.PrivateSettings.targets'))" />
   </Target>
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
-  <Import Project="..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets" Condition="Exists('..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" />
   <ItemGroup>
     <Log4netConfigFiles Include="..\Config\log4net.terminals.config" />
     <Log4netConfigFiles Include="..\Config\log4net.terminals.Demo.config" />
@@ -373,7 +326,10 @@
   <Target Name="BeforeCompile">
     <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
   </Target>
-  <Import Project="..\targets\Fr8.NugetContentRestore.targets" Condition="Exists('..\targets\Fr8.NugetContentRestore.targets')" />
+  <Target Name="BeforeBuild">
+    <RestoreSettingsTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)" ProjectName="$(ProjectName)" />
+  </Target>
+  <Import Project="..\packages\Fr8.PrivateSettings.1.2016.202.12957-prerelease\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('..\packages\Fr8.PrivateSettings.1.2016.202.12957-prerelease\build\net40\Fr8.PrivateSettings.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
