@@ -30,6 +30,6 @@ Authentication flow based on Internal (or InternalWithDomain) AuthenticationType
 
 When a User creates or uploads a Plan to a Hub, the Hub will attempt to Activate the Plan. As part of this process, it examines each Activity in the Plan for the presence of a non-blank AuthenticationType. For each such Activity it checks its database for an AuthenticationToken associated with the requested Activity.
 
-Next: [Learn about OAuth Mechanisms](/Docs/ForDevelopers/OperatingConcepts/Authorization/Home.md)
+Next: [Learn about OAuth Mechanisms](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/TerminalDeveloping-Authentication.md)
 
 [Go to Contents](/Docs/Home.md)  
