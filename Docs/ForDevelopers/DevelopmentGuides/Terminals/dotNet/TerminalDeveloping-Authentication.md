@@ -1,11 +1,16 @@
 # Implementing oAuth2 authentication for a new Terminal
 
+This material assumes you've got a good basic understanding of OAuth. If you need to learn, we recommend [this](https://aaronparecki.com/articles/2012/07/29/1/oauth2-simplified).
+
+There are two elements of OAuth support you need to consider: 
+1) The specific implementation supported by the Web Service your Terminal is connecting to
+2) Participating in the Fr8 authorization interaction
+
+We'll focus on #2. By looking at existing Terminal source code, you'll be able to see a number of different appraoches to #1.
 
 
-First of all, if you don't know what oAuth2 is, then read this short article https://aaronparecki.com/articles/2012/07/29/1/oauth2-simplified
-Keep in mind, that different services follow this specification in their own way
-
-In short words there are 6 steps:
+The Basic Fr8 Authorization Interaction
+--------------------------------------
 
 1. Fr8 checks that Activity needs authentication and doesn't have a token; asks Terminal for **initialOAuthUrl**
 2. Terminal passes **initialOAuthUrl** to Fr8.
