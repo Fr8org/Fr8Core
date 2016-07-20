@@ -160,7 +160,7 @@ namespace Hub.Services
             }
         }
 
-        public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal)
+        public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal, string userId)
         {
             Initialize();
 
@@ -168,14 +168,15 @@ namespace Hub.Services
             {
                 if (!_terminals.TryGetValue(terminal.Id, out terminal))
                 {
-                    throw new KeyNotFoundException(string.Format("Unable to find terminal with id {0}", terminal.Id));
+                    throw new KeyNotFoundException($"Unable to find terminal with id {terminal.Id}");
                 }
             }
 
             return new Dictionary<string, string>
             {
                 {"Fr8HubCallbackSecret", terminal.Secret},
-                {"Fr8HubCallBackUrl", _serverUrl}
+                {"Fr8HubCallBackUrl", _serverUrl},
+                {"Fr8UserId", userId }
             };
         }
 
@@ -207,29 +208,6 @@ namespace Hub.Services
             return standardFr8TerminalCM.Activities.Select(Mapper.Map<ActivityTemplateDO>).ToList();
         }
 
-        public async Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId)
-        {
-            Initialize();
-
-            lock (_terminals)
-            {
-                return _terminals.Values.FirstOrDefault(t => t.PublicIdentifier == terminalId);
-            }
-        }
-
-        public async Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId)
-        {
-            Initialize();
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var subscription = await uow.TerminalSubscriptionRepository.GetQuery()
-                    .FirstOrDefaultAsync(s => s.Terminal.PublicIdentifier == terminalId && s.UserDO.Id == userId);
-                return subscription != null;
-            }
-
-        }
-
         public async Task<List<DocumentationResponseDTO>> GetSolutionDocumentations(string terminalName)
         {
             var _activity = ObjectFactory.GetInstance<IActivity>();
@@ -250,6 +228,16 @@ namespace Hub.Services
             }
             return solutionPages;
         }
-       
+
+        public async Task<TerminalDO> GetByToken(string token)
+        {
+            Initialize();
+
+            lock (_terminals)
+            {
+                return _terminals.Values.FirstOrDefault(t => t.Secret == token);
+            }
+        }
+
     }
 }

@@ -12,6 +12,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
+using System;
 
 namespace terminalFr8Core.Actions
 {
@@ -19,6 +20,7 @@ namespace terminalFr8Core.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("82a722b5-40a6-42d7-8296-aa5239f10173"),
             Name = "Get_File_From_Fr8_Store",
             Label = "Get File From Fr8 Store",
             Category = ActivityCategory.Receivers,
@@ -35,7 +37,7 @@ namespace terminalFr8Core.Actions
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        private Crate CreateControlsCrate()
+        private void CreateControls()
         {
             var fileSelectionDropdown = new DropDownList
             {
@@ -44,14 +46,14 @@ namespace terminalFr8Core.Actions
                 Source = null
             };
 
-            return PackControlsCrate(fileSelectionDropdown);
+            AddControls(fileSelectionDropdown);
         }
 
         #region Fill Source
-        private async Task FillFileSelectorSource(Crate configurationCrate, string controlName)
+        private async Task FillFileSelectorSource(string controlName)
         {
-            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
-            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            var control = ConfigurationControls.FindByNameNested<DropDownList>(controlName);
+
             if (control != null)
             {
                 control.ListItems = await GetCurrentUsersFiles();
@@ -107,10 +109,8 @@ namespace terminalFr8Core.Actions
         public override async Task Initialize()
         {
             //build a controls crate to render the pane
-            var configurationCrate = CreateControlsCrate();
-            await FillFileSelectorSource(configurationCrate, "FileSelector");
-            configurationCrate.Availability = AvailabilityType.Always;
-            Storage.Add(configurationCrate);
+            CreateControls();
+            await FillFileSelectorSource("FileSelector");
         }
 
         public override Task FollowUp()

@@ -1,0 +1,2 @@
+#ManufacturerDTO
+PLACEHOLDER

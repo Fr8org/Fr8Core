@@ -33,7 +33,7 @@ namespace terminalDocuSign.Services
             hubCommunicator.ScheduleEvent(externalAccountId, pollingInterval);
         }
 
-        public async Task<PollingDataDTO> Poll(IHubCommunicator hubCommunicator, PollingDataDTO pollingData)
+        public async Task<PollingDataDTO> Poll(PollingDataDTO pollingData)
         {
             var config = _docuSignManager.SetUp(pollingData.AuthToken);
             EnvelopesApi api = new EnvelopesApi((Configuration)config.Configuration);

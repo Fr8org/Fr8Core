@@ -13,6 +13,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Services;
 using log4net;
@@ -25,6 +26,7 @@ namespace terminalSalesforce.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("5052fc23-c867-4d5a-8fbb-b6b64b5ad688"),
             Version = "2",
             Name = "Post_To_Chatter",
             Label = "Post To Salesforce Chatter",
@@ -194,8 +196,8 @@ namespace terminalSalesforce.Actions
                 try
                 {
                     var chatters = await _salesforceManager.Query(SelectedChatter.ToEnum<SalesforceObjectType>(),
-                                                              new[] { "Id" },
-                                                              ControlHelper.ParseConditionToText(JsonConvert.DeserializeObject<List<FilterConditionDTO>>(ChatterFilter)),
+                                                              new[] { new FieldDTO("Id") },
+                                                              FilterConditionHelper.ParseConditionToText(JsonConvert.DeserializeObject<List<FilterConditionDTO>>(ChatterFilter)),
                                                               AuthorizationToken);
                     var tasks = new List<Task<string>>(chatters.Table.Count);
                     foreach (var chatterId in chatters.DataRows.Select(x => x.Row[0].Cell.Value))

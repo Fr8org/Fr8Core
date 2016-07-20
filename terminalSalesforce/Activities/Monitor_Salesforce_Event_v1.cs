@@ -17,6 +17,7 @@ namespace terminalSalesforce.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new System.Guid("3cb9d14e-6756-410f-b19a-1b365eff267d"),
             Version = "1",
             Name = "Monitor_Salesforce_Event",
             Label = "Monitor Salesforce Events",
@@ -106,8 +107,9 @@ namespace terminalSalesforce.Actions
             {
                 return;
             }
-            var eventSubscriptionCrate = PackEventSubscriptionsCrate();
-            Storage.ReplaceByLabel(eventSubscriptionCrate);
+
+            PackEventSubscriptionsCrate();
+            
             CrateSignaller.ClearAvailableCrates();
             CrateSignaller.MarkAvailableAtRuntime<SalesforceEventCM>("Salesforce Event");
             var selectedObjectProperties = await _salesforceManager.GetProperties(curSfChosenObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
@@ -122,7 +124,7 @@ namespace terminalSalesforce.Actions
             if (sfEventPayloads.Count == 0 || 
                 !sfEventPayloads.Any(payload => payload.Label.Equals("Salesforce Event Notification Payload")))
             {
-                RequestHubExecutionTermination("External event data is missing");
+                RequestPlanExecutionTermination("External event data is missing");
                 return;
             }
 
@@ -154,7 +156,7 @@ namespace terminalSalesforce.Actions
 
             var runtimeCrateLabel = GenerateRuntimeDataLabel();
 
-            var salesforceObjectFields = Storage.FirstCrate<CrateDescriptionCM>().Content.CrateDescriptions.First(x => x.Label == runtimeCrateLabel).Fields.Select(x => x.Name).ToArray();
+            var salesforceObjectFields = Storage.FirstCrate<CrateDescriptionCM>().Content.CrateDescriptions.First(x => x.Label == runtimeCrateLabel).Fields;
 
             //for each Salesforce event notification
             var sfEventsList = Payload.CrateContentsOfType<SalesforceEventCM>().ToList();
@@ -191,25 +193,21 @@ namespace terminalSalesforce.Actions
             return $"{curSfChosenObject} {modifiers} on Salesforce.com";
         }
 
-        private Crate PackEventSubscriptionsCrate()
+        private void PackEventSubscriptionsCrate()
         {
             var curSfChosenObject = ActivityUI.SalesforceObjectList.selectedKey;
 
-            var eventSubscriptions = new List<string>();
+            EventSubscriptions.Subscriptions.Clear();
+            EventSubscriptions.Manufacturer = "Salesforce";
 
             if (ActivityUI.Created.Selected)
             {
-                eventSubscriptions.Add($"{curSfChosenObject}{CreatedEventname}");
+                EventSubscriptions.Add($"{curSfChosenObject}{CreatedEventname}");
             }
             if (ActivityUI.Updated.Selected)
             {
-                eventSubscriptions.Add($"{curSfChosenObject}{UpdatedEventname}");
+                EventSubscriptions.Add($"{curSfChosenObject}{UpdatedEventname}");
             }
-
-            return CrateManager.CreateStandardEventSubscriptionsCrate(
-                "Standard Event Subscriptions",
-                "Salesforce",
-                eventSubscriptions.ToArray());
         }
     }
 }

@@ -7,10 +7,10 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
-using Fr8.Infrastructure.Utilities;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Services;
+using System;
 
 namespace terminalDemo.Activities
 {
@@ -18,6 +18,7 @@ namespace terminalDemo.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("3FE3F514-8927-420B-BB1A-41E06E446165"),
             Name = "Math_Machine",
             Label = "Math Machine",
             Category = ActivityCategory.Solution,
@@ -119,10 +120,9 @@ namespace terminalDemo.Activities
                 var sendEmailActivity = sendEmailActivityTask.Result;
 
                 //let's update their UI according to our inputs
-                var doMathConfigurationControls = ControlHelper.GetConfigurationControls(doMathActivity.CrateStorage);
-                var leftArgument = ControlHelper.GetControl<TextSource>(doMathConfigurationControls, "LeftArgument");
-                var rightArgument = ControlHelper.GetControl<TextSource>(doMathConfigurationControls, "RightArgument");
-                var operation = ControlHelper.GetControl<DropDownList>(doMathConfigurationControls, "Operation");
+                var leftArgument = ActivityConfigurator.GetControl<TextSource>(doMathActivity, "LeftArgument");
+                var rightArgument = ActivityConfigurator.GetControl<TextSource>(doMathActivity, "RightArgument");
+                var operation = ActivityConfigurator.GetControl<DropDownList>(doMathActivity, "Operation");
                 
                 //Update DoMath Activity
                 leftArgument.ValueSource = TextSource.SpecificValueSource;
@@ -136,17 +136,16 @@ namespace terminalDemo.Activities
                 operation.Value = "*";
 
                 //Update BuildMessage Activity
-                ControlHelper.SetControlValue(buildMessageActivity, "Body", string.Format(MessageBody, ActivityUI.Number.Value));
-                ControlHelper.SetControlValue(buildMessageActivity, "Name", "MathMachineMessage");
+                ActivityConfigurator.SetControlValue(buildMessageActivity, "Body", string.Format(MessageBody, ActivityUI.Number.Value));
+                ActivityConfigurator.SetControlValue(buildMessageActivity, "Name", "MathMachineMessage");
 
                 //reconfigure BuildAMessage to publish it's message crate
                 await HubCommunicator.ConfigureChildActivity(ActivityPayload, buildMessageActivity);
 
                 //update SendEmail Activity
-                var sendEmailConfigurationControls = ControlHelper.GetConfigurationControls(sendEmailActivity.CrateStorage);
-                var emailAddress = ControlHelper.GetControl<TextSource>(sendEmailConfigurationControls, "EmailAddress");
-                var emailSubject = ControlHelper.GetControl<TextSource>(sendEmailConfigurationControls, "EmailSubject");
-                var emailBody = ControlHelper.GetControl<TextSource>(sendEmailConfigurationControls, "EmailBody");
+                var emailAddress = ActivityConfigurator.GetControl<TextSource>(sendEmailActivity, "EmailAddress");
+                var emailSubject = ActivityConfigurator.GetControl<TextSource>(sendEmailActivity, "EmailSubject");
+                var emailBody = ActivityConfigurator.GetControl<TextSource>(sendEmailActivity, "EmailBody");
                 emailAddress.ValueSource = TextSource.SpecificValueSource;
                 emailAddress.TextValue = ActivityUI.Email.Value;
                 emailSubject.ValueSource = TextSource.SpecificValueSource;

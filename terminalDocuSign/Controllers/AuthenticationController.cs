@@ -15,11 +15,11 @@ namespace terminalDocuSign.Controllers
     [RoutePrefix("authentication")]
     public class AuthenticationController : ApiController
     {
-        private readonly IHubEventReporter _eventReporter;
+        private readonly IHubLoggerService _loggerService;
 
-        public AuthenticationController(IHubEventReporter eventReporter)
+        public AuthenticationController(IHubLoggerService loggerService)
         {
-            _eventReporter = eventReporter;
+            _loggerService = loggerService;
         }
 
         [HttpPost]
@@ -65,7 +65,7 @@ namespace terminalDocuSign.Controllers
             }
             catch (Exception ex)
             {
-                await _eventReporter.ReportTerminalError(ex, curCredentials.Fr8UserId);
+                await _loggerService.ReportTerminalError(ex, curCredentials.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {

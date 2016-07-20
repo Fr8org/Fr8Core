@@ -12,6 +12,7 @@ using StructureMap;
 using terminalUtilities.Infrastructure;
 using terminalUtilities.Interfaces;
 using terminalUtilities.Models;
+using System;
 
 namespace terminalFr8Core.Activities
 {
@@ -19,8 +20,9 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("6623f94f-5484-4264-b992-f00637bcdb4c"),
             Name = "Send_Email",
-            Label = "Send Email using Fr8 core account",
+            Label = "Send Email",
             Version = "1",
             Category = ActivityCategory.Forwarders,
             NeedsAuthentication = false,

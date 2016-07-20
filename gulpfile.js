@@ -20,6 +20,7 @@ gulp.task('concattemplates', function () {
         '!Views/AngularTemplate/PlanList.cshtml',
         '!Views/AngularTemplate/MyAccountPage.cshtml',
         '!Views/AngularTemplate/Header.cshtml',
+        '!Views/AngularTemplate/HeaderNav.cshtml',
         '!Views/AngularTemplate/MiniHeader.cshtml',
         '!Views/AngularTemplate/ChangePassword.cshtml',
         '!Views/AngularTemplate/AccountList.cshtml'])
@@ -145,7 +146,6 @@ gulp.task('compile_js', function () {
         'Scripts/app/filters/DateTimeFormatter.js',
         'Scripts/app/controllers/PlanBuilderController.js',
         'Scripts/app/controllers/SandboxController.js',
-        'Scripts/app/controllers/PlanFormController.js',
         'Scripts/app/controllers/PlanListController.js',
         'Scripts/app/controllers/ReportFactController.js',
         'Scripts/app/controllers/ReportIncidentController.js',

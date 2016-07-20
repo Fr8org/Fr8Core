@@ -7,6 +7,7 @@ using Fr8.Infrastructure.Data.Control;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Helpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -260,7 +261,7 @@ namespace terminalDocuSignTests.Integration
                 actionUi.QueryBuilder.Value
             );
 
-            Assert.AreEqual(plan.Name.Trim().ToLower(), ParseConditionToText(criteria).Trim().ToLower());
+            Assert.AreEqual(plan.Name.Trim().ToLower(), FilterConditionHelper.ParseConditionToText(criteria).Trim().ToLower());
         }
     }
 

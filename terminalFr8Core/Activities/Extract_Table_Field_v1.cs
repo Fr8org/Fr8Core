@@ -9,6 +9,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
+using System;
 
 namespace terminalFr8Core.Activities
 {
@@ -16,6 +17,7 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("033ec734-2b2d-4671-b1e5-21bd0395c8d2"),
             Name = "Extract_Table_Field",
             Label = "Extract Table Field",
             Version = "1",
@@ -162,9 +164,9 @@ namespace terminalFr8Core.Activities
                 });
             }
 
-        private async Task<Crate> CreateControlsCrate()
+        private void CreateControls()
         {
-            var crateChooser = ControlHelper.GenerateCrateChooser("TableChooser", "Select Upstream Data", true, true, true);
+            var crateChooser = UiBuilder.CreateCrateChooser("TableChooser", "Select Upstream Data", true, true);
             //this cell's list items will be filled on followup configuration
             var cellDdTemplate =  new DropDownList()
             {
@@ -203,7 +205,7 @@ namespace terminalFr8Core.Activities
                 Events = new List<ControlEvent> { ControlEvent.RequestConfig }
             };
 
-            return PackControlsCrate(crateChooser, controlList);
+            AddControls(crateChooser, controlList);
         }
 
         public Extract_Table_Field_v1(ICrateManager crateManager)
@@ -268,14 +270,13 @@ namespace terminalFr8Core.Activities
         public override async Task Initialize()
         {
             //build a controls crate to render the pane
-            var configurationControlsCrate = await CreateControlsCrate();
-            Storage.Add(configurationControlsCrate);
+            CreateControls();
         }
 
         public override async Task FollowUp()
         {
             var tableChooser = GetControl<CrateChooser>("TableChooser");
-            var selectedCrateDescription = tableChooser.CrateDescriptions.FirstOrDefault(c => c.Selected);
+            var selectedCrateDescription = tableChooser.CrateDescriptions?.FirstOrDefault(c => c.Selected);
             if (selectedCrateDescription == null)
             {
                 return;
@@ -305,7 +306,7 @@ namespace terminalFr8Core.Activities
             var tempChosenCellList = GetControl<ControlList>("extractor_list");
             //TODO do this with a more efficient way
             //all dropdowns should use same data
-            var listItems = tableFields.Select(c => new ListItem { Key = c.Key, Value = c.Value }).ToList();
+            var listItems = tableFields.Where(c => c.Key.Equals(c.Value)).Select(c => new ListItem { Key = c.Key, Value = c.Value }).ToList();
             foreach (var cGroup in tempChosenCellList.ControlGroups)
             {
                 var chosenCellDd = (DropDownList)cGroup.First();

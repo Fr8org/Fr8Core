@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
 using System.Web.Http;
 using AutoMapper;
 using AutoMapper.Internal;
@@ -16,6 +17,7 @@ using Hub.Services;
 using Microsoft.AspNet.Identity.EntityFramework;
 using StructureMap;
 using System.Web.Http.Description;
+using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
 {
@@ -69,7 +71,7 @@ namespace HubWeb.Controllers
                 }
 
                 //todo: show not authorized messsage in activityStream.
-                return Ok();
+                return Ok(new List<UserDTO>(0));
             }
         }
         /// <summary>
@@ -138,8 +140,9 @@ namespace HubWeb.Controllers
         /// </remarks>
         /// <param name="oldPassword">Old password</param>
         /// <param name="newPassword">New password</param>
-        /// <response code="200">Password was succesfully changed</response>
         [HttpPost]
+        [SwaggerResponse(HttpStatusCode.OK, "Password was succesfully changed")]
+        [SwaggerResponseRemoveDefaults]
         public IHttpActionResult Update(string oldPassword, string newPassword)
         {
             if (string.IsNullOrEmpty(oldPassword))
@@ -157,7 +160,6 @@ namespace HubWeb.Controllers
                 else
                     throw new Exception("Invalid current password.");
             }
-
             return Ok();
         }
         /// <summary>
@@ -167,8 +169,9 @@ namespace HubWeb.Controllers
         /// User must be logged in
         /// </remarks>
         /// <param name="userDTO">New user info values</param>
-        /// <response code="200">User info was successfully updated</response>
         [HttpPost]
+        [SwaggerResponse(HttpStatusCode.OK, "User info was successfully updated")]
+        [SwaggerResponseRemoveDefaults]
         public IHttpActionResult UpdateUserProfile(UserDTO userDTO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

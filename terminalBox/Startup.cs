@@ -13,7 +13,7 @@ using Fr8.TerminalBase.Services;
 using terminalBox;
 using terminalBox.Actions;
 
-[assembly: OwinStartup(typeof(terminalBox.Startup))]
+[assembly: OwinStartup(typeof(terminalBox.Startup))] 
 
 namespace terminalBox
 {

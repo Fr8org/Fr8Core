@@ -9,7 +9,6 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
     {
         public Guid Id { get; set; }
 
-        [Required]
         public string Name { get; set; }
 
         public string Tag { get; set; }

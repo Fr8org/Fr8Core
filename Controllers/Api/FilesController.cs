@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -15,10 +16,11 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;
+using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
 {
-    //
+    
     public class FilesController : ApiController
     {
         private readonly IFile _fileService;
@@ -39,7 +41,7 @@ namespace HubWeb.Controllers
         /// <remarks>Fr8 authentication headers must be provided</remarks>
         /// <response code="200">Returns the description of file that was succesfully uploaded</response>
         /// <response code="403">Unauthorized request</response>
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         [ResponseType(typeof(FileDO))]
         public async Task<IHttpActionResult> Post()
@@ -50,9 +52,9 @@ namespace HubWeb.Controllers
             {
                 var currentUserId = _security.GetCurrentUser();
 
-                await Request.Content.ReadAsMultipartAsync<MultipartMemoryStreamProvider>(new MultipartMemoryStreamProvider()).ContinueWith((tsk) =>
+                await Request.Content.ReadAsMultipartAsync(new MultipartMemoryStreamProvider()).ContinueWith(tsk =>
                 {
-                    MultipartMemoryStreamProvider prvdr = tsk.Result;
+                    var prvdr = tsk.Result;
 
                     foreach (HttpContent ctnt in prvdr.Contents)
                     {
@@ -74,7 +76,7 @@ namespace HubWeb.Controllers
         /// <summary>
         /// Retrieves file description by specified Id of file and owned by current user
         /// </summary>
-        /// <param name="id">Id of file</param>
+        /// <param name="id">Id of file to retrieve description for</param>
         /// <reponse code="200">Return the description of file</reponse>
         [HttpGet]
         [ActionName("details")]
@@ -109,9 +111,13 @@ namespace HubWeb.Controllers
         /// <response code="200">Contents of specified file as byte array</response>
         /// <response code="403">Unauthorized request</response>
         /// <response code="404">File with specified Id doesn't exist</response>
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         [ResponseType(typeof(byte[]))]
+        [SwaggerResponse(HttpStatusCode.OK, "Contents of specified file as byte array")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unathorized request")]
+        [SwaggerResponse(HttpStatusCode.NotFound, "File with specified Id doesn't exist")]
+        [SwaggerResponseRemoveDefaults]
         public IHttpActionResult Get(int id)
         {
             FileDO fileDO = null;
@@ -142,10 +148,13 @@ namespace HubWeb.Controllers
         /// <response code="200">Contents of specified file as byte array</response>
         /// <response code="403">Unauthorized request</response>
         /// <response code="404">File with specified Id doesn't exist</response>
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         [ActionName("byPath")]
-        [ResponseType(typeof(byte[]))]
+        [SwaggerResponse(HttpStatusCode.OK, "Contents of specified file as byte array")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unathorized request")]
+        [SwaggerResponse(HttpStatusCode.NotFound, "File at specified path doesn't exist")]
+        [SwaggerResponseRemoveDefaults]
         public IHttpActionResult DownloadFileByPath(string path)
         {
             FileDO fileDO = null;
@@ -173,10 +182,10 @@ namespace HubWeb.Controllers
         /// <summary>
         /// Retrieves the list of file descriptions owned by current user
         /// </summary>
-        /// <response code="200">Contents of specified file as byte array</response>
+        /// <response code="200">Collection of files</response>
         /// <response code="403">Unauthorized request</response>
         [HttpGet]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         [ResponseType(typeof(IList<FileDTO>))]
         public IHttpActionResult Get()
@@ -228,8 +237,10 @@ namespace HubWeb.Controllers
         /// </summary>
         /// <param name="id">Id of the file specified</param>
         /// <response code="204">File was succesfully deleted</response>
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
+        [SwaggerResponse(HttpStatusCode.NoContent, "File was successfully delete")]
+        [SwaggerResponseRemoveDefaults]
         public void Delete(int id)
         {
             _fileService.Delete(id);

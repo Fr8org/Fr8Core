@@ -40,7 +40,7 @@ namespace Hub.Services
         private readonly ICrateManager _crate;
         private readonly ISecurityServices _security;
         private readonly IJobDispatcher _dispatcher;
-        private readonly IPusherNotifier _pusher;
+        private readonly IPusherNotifier _pusherNotifier;
 
         public Plan(IContainerService containerService, Fr8Account dockyardAccount, IActivity activity,
             ICrateManager crate, ISecurityServices security, IJobDispatcher dispatcher, IPusherNotifier pusher)
@@ -51,7 +51,7 @@ namespace Hub.Services
             _crate = crate;
             _security = security;
             _dispatcher = dispatcher;
-            _pusher = pusher;
+            _pusherNotifier = pusher;
         }
 
         public PlanResultDTO GetForUser(IUnitOfWork unitOfWork, Fr8AccountDO account, PlanQueryDTO planQueryDTO, bool isAdmin = false)
@@ -116,6 +116,11 @@ namespace Hub.Services
 
         }
 
+        public int UserPlansCount(IUnitOfWork uow,string userId)
+        {
+            return uow.PlanRepository.GetPlanQueryUncached().Where(p => p.Fr8AccountId == userId && p.Visibility == PlanVisibility.Standard).Count();
+        }
+
         public int? GetPlanState(IUnitOfWork uow, Guid planNodeId)
         {
             var existingNode = uow.PlanRepository.GetById<PlanNodeDO>(planNodeId);
@@ -178,6 +183,10 @@ namespace Hub.Services
                 submittedPlan.Id = Guid.NewGuid();
                 submittedPlan.PlanState = PlanState.Inactive;
                 submittedPlan.Fr8Account = _security.GetCurrentAccount(uow);
+                if (string.IsNullOrEmpty(submittedPlan.Name))
+                {
+                    submittedPlan.Name = "Untitled Plan " + (UserPlansCount(uow, _security.GetCurrentUser()) + 1);
+                }
 
                 submittedPlan.ChildNodes.Add(new SubplanDO(true)
                 {
@@ -348,12 +357,12 @@ namespace Hub.Services
         public async Task Deactivate(Guid planId)
         {
             var deactivateTasks = new List<Task>();
-
+            string planName;    // Used by UI notification
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = uow.PlanRepository.GetById<PlanDO>(planId);
-
                 plan.PlanState = PlanState.Inactive;
+                planName = plan.Name;
                 uow.SaveChanges();
 
                 foreach (var activity in plan.GetDescendants().OfType<ActivityDO>())
@@ -371,9 +380,15 @@ namespace Hub.Services
                 throw new Exception("Failed to deactivate plan", ex);
             }
 
+            // Notify UI for stopped plan
+            _pusherNotifier.NotifyUser(new
+            {
+                Message = $"\"{planName}\"",
+                Collapsed = false
+            }, NotificationType.ExecutionStopped, _security.GetCurrentUser());
+
             EventManager.PlanDeactivated(planId);
         }
-
 
         public IList<PlanDO> GetMatchingPlans(string userId, EventReportCM curEventReport)
         {
@@ -582,8 +597,8 @@ namespace Hub.Services
 
                     var activitiesList = string.Join(", ", failedActivities);
 
-                    _pusher.NotifyUser($"Validation failed for activities: {activitiesList} from plan \"{plan.Name}\". See activity configuration pane for details.",
-                        NotificationChannel.GenericFailure,
+                    _pusherNotifier.NotifyUser($"Validation failed for activities: {activitiesList} from plan \"{plan.Name}\". See activity configuration pane for details.",
+                        NotificationType.GenericFailure,
                         currentUserId);
                 }
 
@@ -626,13 +641,11 @@ namespace Hub.Services
                             // Just return empty container
                             if (currentPlanType == PlanType.Monitoring)
                             {
-                                _pusher.NotifyUser(new
+                                _pusherNotifier.NotifyUser(new
                                 {
                                     Message = $"Plan \"{plan.Name}\" activated. It will wait and respond to specified external events.",
                                     Collapsed = false
-                                },
-                                    NotificationChannel.GenericSuccess,
-                                    currentUserId);
+                                }, NotificationType.GenericSuccess, currentUserId);
 
                                 return new ContainerDTO
                                 {
@@ -645,31 +658,29 @@ namespace Hub.Services
                         }
                         else
                         {
-                            _pusher.NotifyUser(new
+                            _pusherNotifier.NotifyUser(new 
                             {
                                 Message = $"Continue execution of the suspended Plan \"{plan.Name}\"",
                                 Collapsed = false
-                            },
-                                                NotificationChannel.GenericSuccess,
-                                                currentUserId);
+                            }, NotificationType.GenericSuccess, currentUserId);
 
                             await _containerService.Continue(uow, container);
                         }
 
-                        var response = _crate.GetContentType<OperationalStateCM>(container.CrateStorage);
+                        var response = _crate.GetStorage(container.CrateStorage).FirstCrateOrDefault<OperationalStateCM>()?.Content;
                         var responseMsg = GetResponseMessage(response);
 
                         if (container.State != State.Failed)
                         {
-                            _pusher.NotifyUser(new
+                            _pusherNotifier.NotifyUser(new
                             {
                                 Message = $"Complete processing for Plan \"{plan.Name}\".{responseMsg}",
                                 Collapsed = false
-                            }, NotificationChannel.GenericSuccess, currentUserId);
+                            }, NotificationType.GenericSuccess, currentUserId);
                         }
                         else
                         {
-                            _pusher.NotifyUser($"Failed executing plan \"{plan.Name}\"", NotificationChannel.GenericFailure, currentUserId);
+                            _pusherNotifier.NotifyUser($"Failed executing plan \"{plan.Name}\"", NotificationType.GenericFailure, currentUserId);
                         }
 
                         var containerDTO = Mapper.Map<ContainerDTO>(container);
@@ -758,7 +769,7 @@ namespace Hub.Services
             }
 
             var message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, messageToNotify);
-            _pusher.NotifyUser(message, NotificationChannel.GenericFailure, userId);
+            _pusherNotifier.NotifyUser(message, NotificationType.GenericFailure, userId);
 
         }
 
@@ -789,8 +800,8 @@ namespace Hub.Services
                     return x;
                 }));
 
-                _pusher.NotifyUser($"Validation of activity '{activityLabel}' from plan \"{planName}\" failed: {errors}",
-                       NotificationChannel.GenericFailure,
+                _pusherNotifier.NotifyUser($"Validation of activity '{activityLabel}' from plan \"{planName}\" failed: {errors}",
+                       NotificationType.GenericFailure,
                        userId);
             }
         }
@@ -900,7 +911,7 @@ namespace Hub.Services
                 errorMessage += ex.Message;
             }
 
-            _pusher.NotifyUser(errorMessage, NotificationChannel.GenericFailure, user.Id);
+            _pusherNotifier.NotifyUser(errorMessage, NotificationType.GenericFailure, user.Id);
         }
 
         private async Task ReportAuthDeactivation(PlanDO plan, InvalidTokenRuntimeException ex)
@@ -910,7 +921,7 @@ namespace Hub.Services
 
             errorMessage += $"Plan \"{plan.Name}\" which contains failed activity was deactivated.";
 
-            _pusher.NotifyUser(errorMessage, NotificationChannel.GenericFailure, plan.Fr8AccountId);
+            _pusherNotifier.NotifyUser(errorMessage, NotificationType.GenericFailure, plan.Fr8AccountId);
 
             //Sending an Email
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

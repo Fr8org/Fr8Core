@@ -9,9 +9,11 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Helpers;
 using Newtonsoft.Json;
 using ServiceStack;
 using terminalSalesforce.Infrastructure;
+using System;
 
 namespace terminalSalesforce.Actions
 {
@@ -19,6 +21,7 @@ namespace terminalSalesforce.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("d8cf2810-87b9-43e7-a69b-a344823fd092"),
             Version = "1",
             Name = "Get_Data",
             Label = "Get Data from Salesforce",
@@ -73,8 +76,6 @@ namespace terminalSalesforce.Actions
 
         public const string PayloadDataCrateLabel = "Payload from Salesforce Get Data";
 
-        public const string CountObjectsCrateLabel = "Count of Objects from Salesforce Get Data";
-
         public const string CountObjectsFieldLabel = "Count of Objects";
 
         private readonly ISalesforceManager _salesforceManager;
@@ -92,7 +93,6 @@ namespace terminalSalesforce.Actions
                 .Select(x => new ListItem() { Key = x.Name, Value = x.Name })
                 .ToList();
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel, true);
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(CountObjectsCrateLabel, true);
 
             return Task.FromResult(true);
         }
@@ -124,9 +124,7 @@ namespace terminalSalesforce.Actions
             this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
             //Publish information for downstream activities
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel, true)
-                          .AddFields(selectedObjectProperties);
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(CountObjectsCrateLabel, true)
-                          .AddField(CountObjectsFieldLabel);
+                          .AddFields(selectedObjectProperties).AddField(CountObjectsFieldLabel);
         }
 
         public override async Task Run()
@@ -141,8 +139,7 @@ namespace terminalSalesforce.Actions
             var salesforceObjectFields = Storage
                 .FirstCrate<FieldDescriptionsCM>(x => x.Label == QueryFilterCrateLabel)
                 .Content
-                .Fields
-                .Select(x => x.Name);
+                .Fields;
 
             var filterValue = ActivityUI.SalesforceObjectFilter.Value;
             var filterDataDTO = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(filterValue);
@@ -151,7 +148,7 @@ namespace terminalSalesforce.Actions
             var parsedCondition = string.Empty;
             if (filterDataDTO.Count > 0)
             {
-                parsedCondition = ControlHelper.ParseConditionToText(filterDataDTO);
+                parsedCondition = FilterConditionHelper.ParseConditionToText(filterDataDTO);
             }
 
             var resultObjects = await _salesforceManager
@@ -170,15 +167,6 @@ namespace terminalSalesforce.Actions
                         AvailabilityType.RunTime
                     )
                 );
-
-            Payload.Add(
-                Crate<StandardPayloadDataCM>
-                    .FromContent(
-                        CountObjectsCrateLabel,
-                        new StandardPayloadDataCM(new KeyValueDTO(CountObjectsFieldLabel, resultObjects.DataRows.Count().ToString())),
-                        AvailabilityType.RunTime
-                    )
-            );
         }
     }
 }

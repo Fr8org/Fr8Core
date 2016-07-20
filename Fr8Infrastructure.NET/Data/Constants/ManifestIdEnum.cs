@@ -134,7 +134,16 @@ namespace Fr8.Infrastructure.Data.Constants
         KeyValueList = 44,
 
         [Display(Name = "StatX Item")]
-        StatXItem = 45
+        StatXItem = 45,
+
+        [Display(Name = "Instagram User Event")]
+        InstagramUserEvent = 46,
+
+        [Display(Name = "Asana task")]
+        AsanaTask = 47,
+
+        [Display(Name = "Asana tasks list")]
+        AsanaTaskList = 48,
     }
 }
 

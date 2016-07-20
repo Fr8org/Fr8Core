@@ -123,7 +123,7 @@ namespace terminalSlackTests.Activities
             configurationControls.FindByNameNested<RadioButtonOption>("AllChannelsOption").Selected = false;
             
             await activity.Run(activityContext, executionContext);
-            var operationalState = CrateManager.GetOperationalState(executionContext.PayloadStorage);
+            var operationalState = executionContext.PayloadStorage.FirstCrateContentOrDefault<OperationalStateCM>();
 
             Assert.AreEqual(ActivityResponse.Error.ToString(), operationalState.CurrentActivityResponse.Type, "Error response was not produced when no monitor option was selected");
         }
@@ -177,7 +177,7 @@ namespace terminalSlackTests.Activities
                                                                           });
             HealthMonitor_FixtureData.ConfigureHubToReturnPayloadWithChannelMessageEvent();
             await activity.Run(activityContext, executionContext);
-            var operationalState = CrateManager.GetOperationalState(executionContext.PayloadStorage);
+            var operationalState = executionContext.PayloadStorage.FirstCrateContentOrDefault<OperationalStateCM>();
             Assert.AreEqual(ActivityResponse.RequestTerminate.ToString(), operationalState.CurrentActivityResponse.Type, "RequestTerminate response was not produced when event didn't match monitoring options");
         }
 
@@ -205,7 +205,7 @@ namespace terminalSlackTests.Activities
                 x.MonitorChannelsOption.Selected = false;
             });
             await activity.Run(activityContext, executionContext);
-            var operationalState = CrateManager.GetOperationalState(executionContext.PayloadStorage);
+            var operationalState = executionContext.PayloadStorage.FirstCrateContentOrDefault<OperationalStateCM>();
             Assert.AreEqual(ActivityResponse.Success.ToString(), operationalState.CurrentActivityResponse.Type, "RequestTerminate response was not produced when event didn't match monitoring options");
             Assert.IsNotNull(executionContext.PayloadStorage.FirstCrateOrDefault<StandardPayloadDataCM>(), "Activity didn't produce crate with payload data");
         }

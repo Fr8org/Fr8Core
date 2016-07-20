@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using System.Web.Http;
 using AutoMapper;
 using Data.Entities;
@@ -9,6 +10,7 @@ using Hub.Interfaces;
 using Hub.Managers;
 using StructureMap;
 using System.Web.Http.Description;
+using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers.Api
 {
@@ -49,8 +51,9 @@ namespace HubWeb.Controllers.Api
         /// Creates or updates specified page definition
         /// </summary>
         /// <param name="pageDefinitionDTO">Page definition to create or update</param>
-        /// <response code="204">Page definition was successfully created or updated</response>
         [DockyardAuthorize(Roles = Roles.Admin)]
+        [SwaggerResponse(HttpStatusCode.NoContent, "Page definition was successfully created or updated")]
+        [SwaggerResponseRemoveDefaults]
         public void Post([FromBody]PageDefinitionDTO pageDefinitionDTO)
         {
             if (_securityServices.UserHasPermission(PermissionType.EditPageDefinitions, nameof(PageDefinitionDO)))
@@ -62,9 +65,9 @@ namespace HubWeb.Controllers.Api
         /// <summary>
         /// Deletes page definition with specified Id
         /// </summary>
-        /// <param name="id">Id of page definition to delete</param>
-        /// <response code="204">Page definition was successfully deleted</response>
         [DockyardAuthorize(Roles = Roles.Admin)]
+        [SwaggerResponse(HttpStatusCode.NoContent, "Page definition was successfully deleted")]
+        [SwaggerResponseRemoveDefaults]
         public void Delete(int id)
         {
             _pageDefinition.Delete(id);

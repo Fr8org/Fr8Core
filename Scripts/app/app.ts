@@ -96,10 +96,23 @@ initialization can be disabled and Layout.init() should be called on page load c
 ***/
 
 /* Setup Layout Part - Header */
-app.controller('HeaderController', ['$scope', '$http', '$window', 'TerminalService', ($scope, $http, $window, TerminalService) => {
+app.controller('HeaderController', ['$scope', '$http', '$window', '$state', 'TerminalService', 'PlanService', ($scope, $http, $window, $state, TerminalService, PlanService) => {
     $scope.$on('$includeContentLoaded', () => {
         Layout.initHeader(); // init header
     });
+
+    $scope.addPlan = function () {
+        var plan = new dockyard.model.PlanDTO();
+        plan.planState = dockyard.model.PlanState.Inactive;
+        plan.visibility = dockyard.model.PlanVisibility.Standard;
+        var result = PlanService.save(plan);
+
+        result.$promise
+            .then(() => {
+                $state.go('planBuilder', { id: result.plan.id });
+                //window.location.href = 'plans/' + result.plan.id + '/builder';
+            });
+    };
 
     $scope.terminals = TerminalService.getAll();
 
@@ -320,13 +333,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             data: { pageTitle: 'Plans', pageSubTitle: 'This page displays all Plans' }
         })
 
-        // Plan form
-        .state('planForm',
-        {
-            url: "/plans/add",
-            templateUrl: "/AngularTemplate/PlanForm",
-            data: { pageTitle: 'Plan', pageSubTitle: 'Add a new Plan' }
-        })
         .state('plan',
         {
             abstract: true,
@@ -371,9 +377,17 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                 '@plan': {
                     templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
                         if ($stateParams['viewMode'] === 'kiosk') {
-                            return "/AngularTemplate/PlanBuilder_KioskMode";
+                            return "/AngularTemplate/PlanBuilder_SimpleKioskMode";
                         }
                         return "/AngularTemplate/PlanBuilder";
+                    }
+                },
+                'header@': {
+                    templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
+                        if ($stateParams['viewMode'] === 'kiosk') {
+                            return "/AngularTemplate/KioskModeOrganizationHeader";
+                        }
+                        return "/AngularTemplate/MiniHeader";
                     }
                 }
             },

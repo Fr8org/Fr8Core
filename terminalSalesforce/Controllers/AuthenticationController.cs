@@ -12,11 +12,11 @@ namespace terminalSalesforce.Controllers
     public class AuthenticationController : ApiController
     {
         private readonly Authentication _authentication = new Authentication();
-        private readonly IHubEventReporter _eventReporter;
+        private readonly IHubLoggerService _loggerService;
 
-        public AuthenticationController(IHubEventReporter eventReporter)
+        public AuthenticationController(IHubLoggerService loggerService)
         {
-            _eventReporter = eventReporter;
+            _loggerService = loggerService;
         }
 
         [HttpPost]
@@ -43,7 +43,7 @@ namespace terminalSalesforce.Controllers
                 Logger.LogError($"Terminal SalesForce Authentication error happened. Fr8UserId = {externalAuthDTO.Fr8UserId} The error message is {ex.Message} ");
 
                 //Report the terminal error in the standard Fr8 Event Reporting mechanism
-                await _eventReporter.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
+                await _loggerService.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
 
                 return new AuthorizationTokenDTO
                     {
