@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Repositories;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities;
@@ -27,18 +26,16 @@ namespace Hub.Services
         private readonly IRestfulServiceClient _restfulServiceClient;
         private readonly EventReporter _eventReporter;
         private readonly IUnitOfWorkFactory _unitOfWorkFactory;
-        private readonly IWebService _webService;
         private readonly string _serverUrl;
         private readonly HashSet<string> _knownTerminals = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
 
-        public TerminalDiscoveryService(IActivityTemplate activityTemplateService, ITerminal terminal, IRestfulServiceClient restfulServiceClient, EventReporter eventReporter, IUnitOfWorkFactory unitOfWorkFactory, IConfigRepository configRepository, IWebService webService)
+        public TerminalDiscoveryService(IActivityTemplate activityTemplateService, ITerminal terminal, IRestfulServiceClient restfulServiceClient, EventReporter eventReporter, IUnitOfWorkFactory unitOfWorkFactory, IConfigRepository configRepository)
         {
             _activityTemplateService = activityTemplateService;
             _terminal = terminal;
             _restfulServiceClient = restfulServiceClient;
             _eventReporter = eventReporter;
             _unitOfWorkFactory = unitOfWorkFactory;
-            _webService = webService;
 
             var serverProtocol = configRepository.Get("ServerProtocol", String.Empty);
             var domainName = configRepository.Get("ServerDomainName", String.Empty);
@@ -194,11 +191,6 @@ namespace Hub.Services
                     throw new Exception($"Terminal at '{terminalUrl}' didn't return meaningfull reply for discovery request.");
                 }
 
-                // There should be the same web service for all activities in one terminal.
-                var webService = terminalRegistrationInfo.Activities.Select(x => Mapper.Map<WebServiceDO>(x.WebService)).First();
-
-                _webService.RegisterOrUpdate(webService);
-                
                 var activityTemplates = terminalRegistrationInfo.Activities.Select(Mapper.Map<ActivityTemplateDO>).ToList();
 
                 var terminal = Mapper.Map<TerminalDO>(terminalRegistrationInfo.Definition);
