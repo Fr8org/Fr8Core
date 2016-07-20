@@ -15,7 +15,7 @@
         * [Events](/Docs/ForDevelopers/OperatingConcepts/Events.md)  
         * [Execution](/Docs/ForDevelopers/OperatingConcepts/PlanExecution.md)
         * [Manifests](/Docs/ForDevelopers/Objects/CratesManifest.md)
-        * [Security/Authorization](/Docs/ForDevelopers/OperatingConcepts/Authorization.md)
+        * [Security/Authorization](/Docs/ForDevelopers/OperatingConcepts/Authorization/Home.md)
         * [Signaling](/Docs/ForDevelopers/OperatingConcepts/Signaling.md)
         * [Solutions](/Docs/ForDevelopers/OperatingConcepts/Solutions)
         * [Warehouse (Data Storage)](/Docs/ForDevelopers/OperatingConcepts/Fr8Warehouse.md)
