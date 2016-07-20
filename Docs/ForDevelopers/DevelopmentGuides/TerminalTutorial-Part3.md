@@ -1,8 +1,12 @@
+### Second terminal: Asana.com - helps you organize your todo list into projects.
+## This walkthrough shows how to build a Terminal that uses OAuth to connect to a Web Service (in this example, Asana)
 
-### Ok, if you feel yourself warmed up enough, do the second attempt. 
-## Second terminal: Asana.com - helps you organize your todo list into projects.
-If external service has SDK (and NuGet packages) it will be much easier to create Activities and handle authentication. But if not, you should do all work by yourself.
-This terminal is little bit complicated, so most work will be done inside services using interfaces. You can mimic the codebase but always free to implement all the steps in way you like.
+## Before starting...
+
+1. Make sure you're familiar with [the basics of Fr8 OAuth](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/TerminalDeveloping-Authentication.md).
+
+2. Look around for available SDK's for the Web Service you're connecting to. OAuth is often wrapped in useful utilities in such libraries. But you don't need them. 
+
 
 ## Step 1 - Same as in previous terminal, create new terminal project
 
