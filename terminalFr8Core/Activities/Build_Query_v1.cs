@@ -265,7 +265,7 @@ namespace terminalFr8Core.Activities
             AddSelectObjectDdl();
             AddLabelControl("SelectObjectError", "No object selected", "Please select object from the list above.");
             Storage.RemoveByLabel("Available Tables");
-            Storage.Add(CrateManager.CreateDesignTimeFieldsCrate("Available Tables", tablesList.ToArray()));
+            Storage.Add("Available Tables", new KeyValueListCM(tablesList));
             await Task.Yield();
         }
 

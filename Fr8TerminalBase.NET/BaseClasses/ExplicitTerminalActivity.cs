@@ -77,8 +77,7 @@ namespace Fr8.TerminalBase.BaseClasses
 
             if (controlsCrate == null)
             {
-                controlsCrate = CrateManager.CreateStandardConfigurationControlsCrate(ConfigurationControlsLabel);
-                Storage.Add(controlsCrate);
+                controlsCrate = Storage.Add(ConfigurationControlsLabel, new StandardConfigurationControlsCM());
             }
 
             _configurationControls = controlsCrate.Content;
