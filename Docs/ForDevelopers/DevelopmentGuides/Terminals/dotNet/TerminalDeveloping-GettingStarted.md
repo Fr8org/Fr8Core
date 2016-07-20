@@ -4,7 +4,8 @@
 
 [.NET Terminal Developer Guide Home](../DevGuide_DotNet.md)
 
-####Required software:
+Step 1: Install Required software
+================================
 
 1. Visual Studio 2015 is required. The Community Edition is known to work at the time of this writing. 
 2. [Node.js](https://nodejs.org/en/) See notes below
@@ -24,12 +25,23 @@ In this image you can see the useless "Roaming" path that seems to get added aut
 
 
 
-####Database
+Step 2: Install a Local Development Database
+============================================
 
 If you are planning to run Hub locally you'll need to [configure a sql database](./LocalDB.md). Otherwise, you can skip this step.
 Fr8 uses EntityFramework 6.1 to interact with data. Fr8 uses CodeFirst Migrations.
 
 
+Step 3: Clone the Repositories
+==============================
+Start by cloning [Fr8Core](https://github.com/Fr8org/Fr8Core). This will provide you with all Hub and Client code, and all of the Terminals that have been written in .NET.
 
+Step 4: Build and Run Fr8
+========================
+[Build and Run](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/BuildRunFr8.md)
+
+
+
+------------------
 Next: Try building a [Terminal Project](./TerminalProjects.md)
 

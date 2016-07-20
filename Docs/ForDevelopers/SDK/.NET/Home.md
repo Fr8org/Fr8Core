@@ -18,4 +18,6 @@ Additional Topics
 
 [DI container configuration] (/Docs/ForDevelopers/SDK/.NET/DI%20container%20configuration.md)
 
+[Where to Get Help](./HelpResources.md)
+
 
