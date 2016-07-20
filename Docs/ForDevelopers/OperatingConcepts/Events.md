@@ -151,7 +151,4 @@ Below is a sample EventReportCM
 After preparing this EventReport, terminal needs to post this crate to /events endpoint of all subscribed hubs. Hub will run related plans but this time it will be different from regular run. When event triggers a plan execution hub will add EventPayload to the payload of container. Therefore all activities will be able to access event data.
 
 
-
-
-
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)
