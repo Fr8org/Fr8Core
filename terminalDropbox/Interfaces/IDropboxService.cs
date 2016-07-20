@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using TerminalBase.Models;
+using Fr8.TerminalBase.Models;
 
 namespace terminalDropbox.Interfaces
 {

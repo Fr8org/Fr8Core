@@ -2,25 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
-using StructureMap;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using TerminalBase.BaseClasses;
 using terminalAtlassian.Interfaces;
-using terminalAtlassian.Services;
-using TerminalBase.Infrastructure;
 
 namespace terminalAtlassian.Actions
 {
-    public class Save_Jira_Issue_v1 : EnhancedTerminalActivity<Save_Jira_Issue_v1.ActivityUi>
+    public class Save_Jira_Issue_v1 : TerminalActivity<Save_Jira_Issue_v1.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("d2e7f4b6-5e83-4f2f-b779-925547aa9542"),
             Version = "1",
             Name = "Save_Jira_Issue",
             Label = "Save Jira Issue",
@@ -28,7 +27,11 @@ namespace terminalAtlassian.Actions
             Category = ActivityCategory.Forwarders,
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[] {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -47,6 +50,12 @@ namespace terminalAtlassian.Actions
             public TextSource Description { get; set; }
 
             public DropDownList AvailablePriorities { get; set; }
+
+            public DropDownList AssigneeSelector { get; set; }
+            public ControlDefinitionDTO SprintFieldName { get; set; }
+
+
+            public DropDownList Sprint { get; set; }
 
             public ActivityUi()
             {
@@ -89,6 +98,14 @@ namespace terminalAtlassian.Actions
                 };
                 Controls.Add(SelectIssueTypeLabel);
 
+                Sprint = new DropDownList()
+                {
+                    Name = "Sprint",
+                    Label = "Sprint",
+                    IsHidden = true
+                };
+                Controls.Add(Sprint);
+
                 AvailablePriorities = new DropDownList()
                 {
                     Label = "Priority",
@@ -98,6 +115,14 @@ namespace terminalAtlassian.Actions
                     IsHidden = true
                 };
                 Controls.Add(AvailablePriorities);
+
+                AssigneeSelector = new DropDownList
+                {
+                    Label = "Asignee",
+                    Name = "Asignee",
+                    IsHidden = true
+                };
+                Controls.Add(AssigneeSelector);
 
                 Summary = new TextSource()
                 {
@@ -116,9 +141,16 @@ namespace terminalAtlassian.Actions
                     IsHidden = true
                 };
                 Controls.Add(Description);
+
+                SprintFieldName = new ControlDefinitionDTO()
+                {
+                    Name = "SprintFieldName",
+                    IsHidden = true
+                };
+                Controls.Add(SprintFieldName);
             }
 
-            public void AppendCustomFields(IEnumerable<FieldDTO> customFields)
+            public void AppendCustomFields(IEnumerable<KeyValueDTO> customFields)
             {
                 var toBeRemoved = new List<ControlDefinitionDTO>();
                 foreach (var control in Controls)
@@ -136,17 +168,24 @@ namespace terminalAtlassian.Actions
 
                 foreach (var customField in customFields)
                 {
-                    Controls.Add(new TextSource()
+                    if (customField.Key != "Sprint")
                     {
-                        Name = "CustomField_" + customField.Value,
-                        InitialLabel = customField.Key,
-                        Source = new FieldSourceDTO()
+                        Controls.Add(new TextSource()
                         {
-                            ManifestType = CrateManifestTypes.StandardDesignTimeFields,
-                            RequestUpstream = true,
-                            AvailabilityType = AvailabilityType.RunTime
-                        }
-                    });
+                            Name = "CustomField_" + customField.Value,
+                            InitialLabel = customField.Key,
+                            Source = new FieldSourceDTO()
+                            {
+                                ManifestType = CrateManifestTypes.StandardDesignTimeFields,
+                                RequestUpstream = true,
+                                AvailabilityType = AvailabilityType.RunTime
+                            }
+                        });
+                    }
+                    else
+                    {
+                        SprintFieldName.Label = customField.Value;
+                    }
                 }
             }
 
@@ -163,9 +202,9 @@ namespace terminalAtlassian.Actions
                 }
             }
 
-            public IEnumerable<FieldDTO> GetValues(ICrateStorage crateStorage)
+            public IEnumerable<KeyValueDTO> GetValues(ICrateStorage crateStorage)
             {
-                var result = new List<FieldDTO>();
+                var result = new List<KeyValueDTO>();
 
                 foreach (var control in Controls)
                 {
@@ -178,7 +217,7 @@ namespace terminalAtlassian.Actions
 
                         if (!string.IsNullOrEmpty(value))
                         {
-                            result.Add(new FieldDTO(key, value));
+                            result.Add(new KeyValueDTO(key, value));
                         }
                     }
                 }
@@ -196,12 +235,20 @@ namespace terminalAtlassian.Actions
 
 
         private const string ConfigurationPropertiesLabel = "ConfigurationProperties";
-        private readonly AtlassianService _atlassianService;
+        private const string RuntimeCrateLabel = "JIRA proprties";
 
-        public Save_Jira_Issue_v1(ICrateManager crateManager, AtlassianService atlassianService)
-            : base(true, crateManager)
+        private const string JiraUrlField = "JIRA link";
+        private const string JiraIdField = "JIRA Id";
+
+        private readonly IAtlassianService _atlassianService;
+        private readonly IPushNotificationService _pushNotificationService;
+
+
+        public Save_Jira_Issue_v1(ICrateManager crateManager, IAtlassianService atlassianService, IPushNotificationService pushNotificationService)
+            : base(crateManager)
         {
             _atlassianService = atlassianService;
+            _pushNotificationService = pushNotificationService;
         }
 
         #region Configuration
@@ -212,7 +259,9 @@ namespace terminalAtlassian.Actions
                 .GetProjects(AuthorizationToken)
                 .ToListItems()
                 .ToList();
-
+            CrateSignaller.MarkAvailableAtRuntime<KeyValueListCM>(RuntimeCrateLabel)
+                          .AddField(JiraIdField)
+                          .AddField(JiraUrlField);
             await Task.Yield();
         }
 
@@ -220,7 +269,7 @@ namespace terminalAtlassian.Actions
         {
             ActivityUI.RestoreCustomFields(Storage);
             var configProps = GetConfigurationProperties();
-            
+
             var projectKey = ActivityUI.AvailableProjects.Value;
             if (!string.IsNullOrEmpty(projectKey))
             {
@@ -229,6 +278,7 @@ namespace terminalAtlassian.Actions
                 if (projectKey != configProps.SelectedProjectKey)
                 {
                     FillIssueTypeDdl(projectKey);
+                    await FillAssigneeSelector(projectKey);
                 }
 
                 var issueTypeKey = ActivityUI.AvailableIssueTypes.Value;
@@ -238,7 +288,7 @@ namespace terminalAtlassian.Actions
 
                     if (configProps.SelectedIssueType != issueTypeKey)
                     {
-                        FillFieldDdls();
+                        await FillFieldDdls();
                     }
                 }
                 else
@@ -259,17 +309,23 @@ namespace terminalAtlassian.Actions
             await Task.Yield();
         }
 
+        private async Task FillAssigneeSelector(string projectKey)
+        {
+            var users = await _atlassianService.GetUsersAsync(projectKey, AuthorizationToken);
+            ActivityUI.AssigneeSelector.ListItems = users.Select(x => new ListItem { Key = x.DisplayName, Value = x.Key }).ToList();
+        }
+
         private ConfigurationProperties GetConfigurationProperties()
         {
             var fd = Storage
-                .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == ConfigurationPropertiesLabel)
+                .CrateContentsOfType<KeyValueListCM>(x => x.Label == ConfigurationPropertiesLabel)
                 .FirstOrDefault();
 
             var result = new ConfigurationProperties();
             if (fd != null)
             {
-                result.SelectedProjectKey = fd.Fields.FirstOrDefault(x => x.Key == "SelectedProjectKey")?.Value;
-                result.SelectedIssueType = fd.Fields.FirstOrDefault(x => x.Key == "SelectedIssueType")?.Value;
+                result.SelectedProjectKey = fd.Values.FirstOrDefault(x => x.Key == "SelectedProjectKey")?.Value;
+                result.SelectedIssueType = fd.Values.FirstOrDefault(x => x.Key == "SelectedIssueType")?.Value;
             }
 
             return result;
@@ -277,12 +333,12 @@ namespace terminalAtlassian.Actions
 
         private void SetConfigurationProperties(ConfigurationProperties configProps)
         {
-            var fd = new FieldDescriptionsCM(
-                new FieldDTO("SelectedProjectKey", configProps.SelectedProjectKey, AvailabilityType.Configuration),
-                new FieldDTO("SelectedIssueType", configProps.SelectedIssueType, AvailabilityType.Configuration)
+            var fd = new KeyValueListCM(
+                new KeyValueDTO("SelectedProjectKey", configProps.SelectedProjectKey),
+                new KeyValueDTO("SelectedIssueType", configProps.SelectedIssueType)
             );
 
-            Storage.ReplaceByLabel(Crate.FromContent(ConfigurationPropertiesLabel, fd, AvailabilityType.Configuration));
+            Storage.ReplaceByLabel(Crate.FromContent(ConfigurationPropertiesLabel, fd));
         }
 
         private void ToggleProjectSelectedVisibility(bool projectSelected)
@@ -305,16 +361,19 @@ namespace terminalAtlassian.Actions
             ActivityUI.Summary.IsHidden = !visible;
             ActivityUI.Description.IsHidden = !visible;
             ActivityUI.AvailablePriorities.IsHidden = !visible;
+            ActivityUI.Sprint.IsHidden = !visible;
             ActivityUI.SelectIssueTypeLabel.IsHidden = visible;
+            ActivityUI.AssigneeSelector.IsHidden = !visible;
         }
 
-        private void FillFieldDdls()
+        private async Task FillFieldDdls()
         {
             ActivityUI.AvailablePriorities.ListItems = _atlassianService
                 .GetPriorities(AuthorizationToken)
                 .ToListItems()
                 .ToList();
 
+            ActivityUI.Sprint.ListItems = await _atlassianService.GetSprints(AuthorizationToken, ActivityUI.AvailableProjects.Value);
             var customFields = _atlassianService.GetCustomFields(AuthorizationToken);
             ActivityUI.AppendCustomFields(customFields);
         }
@@ -329,12 +388,18 @@ namespace terminalAtlassian.Actions
             ActivityUI.RestoreCustomFields(Storage);
 
             var issueInfo = ExtractIssueInfo();
-            _atlassianService.CreateIssue(issueInfo, AuthorizationToken);
-
+            await _atlassianService.CreateIssue(issueInfo, AuthorizationToken);
+            
             var credentialsDTO = JsonConvert.DeserializeObject<CredentialsDTO>(AuthorizationToken.Token);
-            await
-                PushUserNotification("Success", "Jira issue created",
-                    "Created new jira issue: " + credentialsDTO.Domain + "/browse/" + issueInfo.Key);
+            var jiraUrl = $"{credentialsDTO.Domain}/browse/{issueInfo.Key}";
+
+
+            Payload.Add(Crate.FromContent("jira issue", new StandardPayloadDataCM(new KeyValueDTO() { Key = "jira issue key", Value = issueInfo.Key })));
+            Payload.Add(Crate.FromContent("jira issue", new StandardPayloadDataCM(new KeyValueDTO() { Key = "jira domain", Value = credentialsDTO.Domain })));
+            await _pushNotificationService.PushUserNotification(MyTemplate, "Success", "Jira Issue Created", $"Created new jira issue: {jiraUrl}");
+            Payload.Add(Crate<KeyValueListCM>.FromContent(RuntimeCrateLabel, new KeyValueListCM(
+                                                                                      new KeyValueDTO(JiraIdField, issueInfo.Key),
+                                                                                      new KeyValueDTO(JiraUrlField, jiraUrl))));
         }
 
         private IssueInfo ExtractIssueInfo()
@@ -358,8 +423,15 @@ namespace terminalAtlassian.Actions
                 PriorityKey = ActivityUI.AvailablePriorities.Value,
                 Description = ActivityUI.Description.GetValue(Payload),
                 Summary = ActivityUI.Summary.GetValue(Payload),
-                CustomFields = ActivityUI.GetValues(Payload).ToList()
+                CustomFields = ActivityUI.GetValues(Payload).ToList(),
+                Assignee = ActivityUI.AssigneeSelector.Value
             };
+
+
+            if (ActivityUI.Sprint.Value != null)
+            {
+                result.CustomFields.Add(new KeyValueDTO() { Key = ActivityUI.SprintFieldName.Label, Value = ActivityUI.Sprint.Value });
+            }
 
             return result;
         }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using TerminalBase.Models;
+using Fr8.TerminalBase.Models;
 using terminalDropbox.Interfaces;
 
 namespace terminalDropbox.Services

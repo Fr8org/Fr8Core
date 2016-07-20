@@ -1,21 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.Caching;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web.Http.Controllers;
-using System.Web.Http.Filters;
-using Hub.Interfaces;
-using Hub.Security;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Security;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
-using UtilitiesTesting;
-using Fr8Infrastructure.Interfaces;
-using Fr8Infrastructure.Security;
+using Fr8.Testing.Unit;
 
 namespace HubTests.Services
 {
@@ -34,7 +27,7 @@ namespace HubTests.Services
             var fr8HMACService = new Mock<IHMACService>();
             fr8HMACService.Setup(x => x.CalculateHMACHash(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<HttpContent>())).ReturnsAsync("authToken");
             ObjectFactory.Configure(o => o.For<IHMACService>().Use(fr8HMACService.Object));
-            _hmacAuthenticator = new HMACAuthenticator();
+            _hmacAuthenticator = new HMACAuthenticator(fr8HMACService.Object);
         }
 
         private HttpRequestMessage GetInCorrectRequestMessage1()

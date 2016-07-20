@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using TerminalBase.Infrastructure;
-using TerminalBase.Models;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 
 namespace terminalDocuSign.Interfaces
 {

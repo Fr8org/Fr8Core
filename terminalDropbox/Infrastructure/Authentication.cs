@@ -2,8 +2,8 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.DataTransferObjects;
-using Utilities.Configuration.Azure;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Utilities.Configuration;
 
 namespace terminalDropbox.Infrastructure
 {

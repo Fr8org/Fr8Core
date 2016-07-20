@@ -5,8 +5,8 @@
 //using Core.Interfaces;
 //using Moq;
 //using NUnit.Framework;
-//using UtilitiesTesting;
-//using UtilitiesTesting.Fixtures;
+//using Fr8.Testing.Unit;
+//using Fr8.Testing.Unit.Fixtures;
 //using Web.Controllers;
 
 //namespace HubTests.Controllers

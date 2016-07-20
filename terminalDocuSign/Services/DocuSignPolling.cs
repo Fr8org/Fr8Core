@@ -1,37 +1,30 @@
-﻿using Data.Entities;
-using DocuSign.eSign.Api;
+﻿using DocuSign.eSign.Api;
 using DocuSign.eSign.Client;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using StructureMap;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.Infrastructure;
-using Utilities.Configuration.Azure;
 using terminalDocuSign.Infrastructure;
 using System.Threading.Tasks;
-using AutoMapper;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Infrastructure.Interfaces;
-using Hub.Managers;
-using Nito.AsyncEx;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Services;
 
 namespace terminalDocuSign.Services
 {
     public class DocuSignPolling
     {
         private readonly IDocuSignManager _docuSignManager;
-        private readonly IRestfulServiceClient _restfulServiceClient;
-        private readonly ICrateManager _crateManager;
+        private readonly IHubEventReporter _reporter;
 
-        public DocuSignPolling()
+        public DocuSignPolling(IDocuSignManager docuSignManager,  IHubEventReporter reporter)
         {
-            _docuSignManager = ObjectFactory.GetInstance<IDocuSignManager>();
-            _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
-            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
+            _docuSignManager = docuSignManager;
+            _reporter = reporter;
         }
 
         public void SchedulePolling(IHubCommunicator hubCommunicator, string externalAccountId)
@@ -40,18 +33,16 @@ namespace terminalDocuSign.Services
             hubCommunicator.ScheduleEvent(externalAccountId, pollingInterval);
         }
 
-        public async Task<bool> Poll(IHubCommunicator hubCommunicator, string externalAccountId, string pollingInterval)
+        public async Task<PollingDataDTO> Poll(PollingDataDTO pollingData)
         {
-            var authtoken = await hubCommunicator.GetAuthToken(externalAccountId);
-            if (authtoken == null) return false;
-            var config = _docuSignManager.SetUp(authtoken);
+            var config = _docuSignManager.SetUp(pollingData.AuthToken);
             EnvelopesApi api = new EnvelopesApi((Configuration)config.Configuration);
             List<DocuSignEnvelopeCM_v2> changed_envelopes = new List<DocuSignEnvelopeCM_v2>();
 
             // 1. Poll changes
 
             var changed_envelopes_info = api.ListStatusChanges(config.AccountId, new EnvelopesApi.ListStatusChangesOptions()
-            { fromDate = DateTime.UtcNow.AddMinutes(-Convert.ToInt32(pollingInterval)).ToString("o") });
+            { fromDate = DateTime.UtcNow.AddMinutes(-Convert.ToInt32(pollingData.PollingIntervalInMinutes)).ToString("o") });
             foreach (var envelope in changed_envelopes_info.Envelopes)
             {
                 var envelopeCM = new DocuSignEnvelopeCM_v2()
@@ -59,8 +50,10 @@ namespace terminalDocuSign.Services
                     EnvelopeId = envelope.EnvelopeId,
                     Status = envelope.Status,
                     StatusChangedDateTime = DateTime.Parse(envelope.StatusChangedDateTime),
-                    ExternalAccountId = JToken.Parse(authtoken.Token)["Email"].ToString(),
+                    ExternalAccountId = JToken.Parse(pollingData.AuthToken)["Email"].ToString(),
                 };
+
+                changed_envelopes.Add(envelopeCM);
             }
 
             // 2. Check if we processed these envelopes before and if so - retrieve them
@@ -75,18 +68,24 @@ namespace terminalDocuSign.Services
             // 5. Push envelopes to event controller
             await PushEnvelopesToTerminalEndpoint(envelopesToNotify);
 
-            return true;
+            pollingData.Result = true;
+            return pollingData;
         }
-
-
+        
         private async Task PushEnvelopesToTerminalEndpoint(IEnumerable<DocuSignEnvelopeCM_v2> envelopesToNotify)
         {
             foreach (var envelope in envelopesToNotify)
             {
-                var crate = _crateManager.ToDto(Fr8Data.Crates.Crate.FromContent("Polling Event", envelope));
-                string publishUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint") + "/terminals/terminalDocuSign/events";
-                var uri = new Uri(publishUrl, UriKind.Absolute);
-                await _restfulServiceClient.PostAsync<CrateDTO>(new Uri(publishUrl, UriKind.Absolute), crate, null);
+                var eventReportContent = new EventReportCM
+                {
+                    EventNames = DocuSignEventParser.GetEventNames(envelope),
+                    ContainerDoId = "",
+                    EventPayload = new CrateStorage(Crate.FromContent("DocuSign Connect Event", envelope)),
+                    Manufacturer = "DocuSign",
+                    ExternalAccountId = envelope.ExternalAccountId
+                };
+                
+                await _reporter.Broadcast(Crate.FromContent("Standard Event Report", eventReportContent));
             }
         }
 

@@ -3,30 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using StructureMap;
-using terminalDocuSign.Activities;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 using FolderItem = DocuSign.eSign.Model.FolderItem;
-using ListItem = Fr8Data.Control.ListItem;
 
 namespace terminalDocuSign.Activities
 {
-    public class Query_DocuSign_v2 : EnhancedDocuSignActivity<Query_DocuSign_v2.ActivityUi>
+    public class Query_DocuSign_v2 : DocuSignActivity<Query_DocuSign_v2.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("9e9e6230-727f-456a-b56d-5cfbbd6f551a"),
             Name = "Query_DocuSign",
             Label = "Query DocuSign",
             Version = "2",
@@ -34,7 +29,12 @@ namespace terminalDocuSign.Activities
             NeedsAuthentication = true,
             MinPaneWidth = 380,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Receive,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -89,7 +89,7 @@ namespace terminalDocuSign.Activities
         {
             var properties = typeof(DocuSignEnvelopeDTO).GetProperties(BindingFlags.Public | BindingFlags.Instance)
                                                         .Where(x => x.CanRead && x.CanWrite);
-            return properties.Select(x => new FieldDTO(x.Name, x.Name, AvailabilityType.Always)).ToArray();
+            return properties.Select(x => new FieldDTO(x.Name)).ToArray();
         }
 
         private const string RunTimeCrateLabel = "DocuSign Envelope Data";

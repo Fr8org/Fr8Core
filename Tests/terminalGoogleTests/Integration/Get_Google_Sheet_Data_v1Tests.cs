@@ -1,10 +1,10 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using HealthMonitor.Utility;
-using Fr8Data.Managers;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
 
 namespace terminalGoogleTests.Integration
@@ -149,15 +149,12 @@ namespace terminalGoogleTests.Integration
             Assert.NotNull(responseActionDTO.CrateStorage);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            Assert.AreEqual(6, crateStorage.Count);
+
+            Assert.AreEqual(4, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
-            Assert.AreEqual(3, crateStorage.CratesOfType<FieldDescriptionsCM>().Count());
-            Assert.IsTrue(crateStorage.CratesOfType<FieldDescriptionsCM>().Any(c => c.Label == "ExtractedFields"));
-            Assert.IsTrue(crateStorage.CratesOfType<FieldDescriptionsCM>().Single(c => c.Label == "ExtractedFields").Content.Fields.Count() == 4);
-
-            // Due to performance issue, remove functionalilty to load table contents
-            // Assert.AreEqual("(2,1)", crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table[0].Row[0].Cell.Value);
+            Assert.AreEqual(1, crateStorage.FirstCrate<CrateDescriptionCM>().Content.CrateDescriptions.Count);
+            Assert.AreEqual(4, crateStorage.FirstCrate<CrateDescriptionCM>().Content.CrateDescriptions[0].Fields.Count);
         }
 
         /// <summary>

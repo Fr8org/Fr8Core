@@ -65,6 +65,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private EnvelopeRepository _envelopeRepository;
+        public EnvelopeRepository EnvelopeRepository
+        {
+            get
+            {
+                return _envelopeRepository ?? (_envelopeRepository = new EnvelopeRepository(this));
+            }
+        }
+
+
         private RecipientRepository _recipientRepository;
         public RecipientRepository RecipientRepository
         {
@@ -89,27 +99,6 @@ namespace Data.Infrastructure
                 return _SlipRepository ?? (_SlipRepository = new SlipRepository(this));
             }
         }
-
-        private RemoteServiceProviderRepository _remoteServiceProviderRepository;
-
-        public RemoteServiceProviderRepository RemoteServiceProviderRepository
-        {
-            get
-            {
-                return _remoteServiceProviderRepository ?? (_remoteServiceProviderRepository = new RemoteServiceProviderRepository(this));
-            }
-        }
-
-        private RemoteServiceAuthDataRepository _remoteServiceAuthDataRepository;
-
-        public RemoteServiceAuthDataRepository RemoteServiceAuthDataRepository
-        {
-            get
-            {
-                return _remoteServiceAuthDataRepository ?? (_remoteServiceAuthDataRepository = new RemoteServiceAuthDataRepository(this));
-            }
-        }
-
         
         private CommunicationConfigurationRepository _communicationConfigurationRepository;
 
@@ -148,29 +137,6 @@ namespace Data.Infrastructure
             get
             {
                 return _emailStatusRepository ?? (_emailStatusRepository = new EmailStatusRepository(this));
-            }
-        }
-
-/*
-        private EnvelopeRepository _envelopeRepository;
-
-        public EnvelopeRepository EnvelopeRepository
-        {
-            get
-            {
-                return _envelopeRepository ?? (_envelopeRepository = new EnvelopeRepository(this));
-            }
-        }
-*/
-
-
-        private EnvelopeRepository _envelopeRepository;
-
-        public EnvelopeRepository EnvelopeRepository
-        {
-            get
-            {
-                return _envelopeRepository ?? (_envelopeRepository = new EnvelopeRepository(this));
             }
         }
 
@@ -565,6 +531,39 @@ namespace Data.Infrastructure
                 return _planNodeDescriptionsRepository ?? (_planNodeDescriptionsRepository = new PlanNodeDescriptionsRepository(this));
             }
         }
+
+        private IPageDefinitionRepository _pageDefinitionRepository;
+
+        public IPageDefinitionRepository PageDefinitionRepository => 
+            _pageDefinitionRepository ?? (_pageDefinitionRepository = new PageDefinitionRepository(this));
+
+        private TerminalRegistrationRepository _terminalRegistrationRepository;
+        public TerminalRegistrationRepository TerminalRegistrationRepository
+        {
+            get
+            {
+                return _terminalRegistrationRepository ?? (_terminalRegistrationRepository = new TerminalRegistrationRepository(this));
+            }
+        }
+
+        private IActivityCategoryRepository _activityCategoryRepository;
+        public IActivityCategoryRepository ActivityCategoryRepository
+        {
+            get
+            {
+                return _activityCategoryRepository ?? (_activityCategoryRepository = new ActivityCategoryRepository(this));
+            }
+        }
+
+        private IActivityCategorySetRepository _activityCategorySetRepository;
+        public IActivityCategorySetRepository ActivityCategorySetRepository
+        {
+            get
+            {
+                return _activityCategorySetRepository ?? (_activityCategorySetRepository = new ActivityCategorySetRepository(this));
+            }
+        }
+
 
         public void Save()
         {

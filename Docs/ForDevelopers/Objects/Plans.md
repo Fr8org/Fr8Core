@@ -33,4 +33,6 @@ Additional Resources
 [Activating & Running Plans](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/PlansActivationAndRunning.md)  
 [Moving and Sharing Plans](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Plans/MovingPlans.md)
 
+[Plan Execution](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/PlanExecution.md)
+
 [Go to Home](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  

@@ -1,5 +1,6 @@
-﻿using System.Threading.Tasks;
-using Fr8Data.Manifests;
+﻿using System;
+using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.Manifests;
 using PlanDirectory.Interfaces;
 
 namespace PlanDirectory.Infrastructure
@@ -9,5 +10,6 @@ namespace PlanDirectory.Infrastructure
         Task Initialize(bool recreate);
         Task<SearchResultDTO> Search(SearchRequestDTO request);
         Task CreateOrUpdate(PlanTemplateCM planTemplate);
+        Task Remove(Guid planId);
     }
 }

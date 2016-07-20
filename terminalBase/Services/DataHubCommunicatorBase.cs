@@ -200,19 +200,7 @@ namespace TerminalBase.Services
         {
             return Task.FromResult(new List<FieldValidationResult>());
         }
-
-        public async Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability)
-        {
-            //This code only supports integration testing scenarios
-
-            var mergedFields = new FieldDescriptionsCM();
-            var availableData = await GetAvailableData(activityId, direction, availability);
-
-            mergedFields.Fields.AddRange(availableData.AvailableFields);
-
-            return mergedFields;
-        }
-
+        
         public async Task<IncomingCratesDTO> GetAvailableData(Guid activityId, CrateDirection direction, AvailabilityType availability)
         {
             var fields = await GetCratesByDirection<FieldDescriptionsCM>(activityId, direction);

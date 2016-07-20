@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using StructureMap;
 using System.Web.Mvc;
+using Fr8.Infrastructure.Utilities;
 using Hub.Interfaces;
 using Hub.Managers;
-using Utilities;
 
 namespace HubWeb.Controllers
 {
@@ -34,7 +34,7 @@ namespace HubWeb.Controllers
             var clonedPlan = _plan.Clone(id);
             var baseUri = Request.Url.GetLeftPart(UriPartial.Authority);
             var clonedPlanUrl = baseUri + "/dashboard/plans/" + clonedPlan.Id + "/builder?viewMode=kiosk&view=Collection";
-            return Redirect(clonedPlanUrl);
+            return View("~/Views/Redirect/ClonePlan.cshtml", null, clonedPlanUrl);
         }
     }
 }

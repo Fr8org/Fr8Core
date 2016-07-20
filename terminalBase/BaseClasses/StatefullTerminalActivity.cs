@@ -651,9 +651,9 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        protected virtual Task<SolutionPageDTO> GetDocumentation(string documentationType)
+        protected virtual Task<DocumentationResponseDTO> GetDocumentation(string documentationType)
         {
-            return Task.FromResult(new SolutionPageDTO
+            return Task.FromResult(new DocumentationResponseDTO
             {
                 Name = "No Documentation found",
                 Body = "Please override the GetDocumentation method in the Activity class"
@@ -662,7 +662,7 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        public async Task<SolutionPageDTO> GetDocumentation(ActivityContext activityContext, string documentationType)
+        public async Task<DocumentationResponseDTO> GetDocumentation(ActivityContext activityContext, string documentationType)
         {
             InitializeInternalState(activityContext, null);
 

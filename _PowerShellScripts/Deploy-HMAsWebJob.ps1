@@ -6,6 +6,8 @@ param(
 	[string]$buildConfiguration
 )
 
+$ErrorActionPreference = 'Stop'
+
 $rootDir = Split-Path -parent $PSCommandPath
 
 $archiveFolderName = "$rootDir\HM-WebJob-Archive"
@@ -27,6 +29,9 @@ If (Test-Path $outputArchiveFile){
 New-Item -ItemType Directory -Force -Path $archiveFolderName | Out-Null
 # Create SQL folder
 New-Item -ItemType Directory -Force -Path $archiveFolderName\SQL | Out-Null
+# Create Config\HealthMonitor folder
+New-Item -ItemType Directory -Force -Path $archiveFolderName\Config | Out-Null
+New-Item -ItemType Directory -Force -Path $archiveFolderName\Config\HealthMonitor | Out-Null
 
 # Copy HealthMonitor DLLs to archive folder.
 $srcFiles = "$rootDir\..\Tests\HealthMonitor\bin\$($buildConfiguration)\*"
@@ -48,10 +53,29 @@ $srcRunFile = "$rootDir\..\Tests\HealthMonitor\SQL\*"
 $dstRunFile = "$archiveFolderName\SQL\"
 Copy-Item $srcRunFile -Destination $dstRunFile -Force
 
+# Copy Config
+$srcRunFile = "$rootDir\..\Tests\HealthMonitor\Config\HealthMonitor\*"
+$dstRunFile = "$archiveFolderName\Config\HealthMonitor\"
+Copy-Item $srcRunFile -Destination $dstRunFile -Force
+
+# Fix the file argument 
+$configFile = $archiveFolderName + "\HealthMonitor.exe.config"
+$xml = [xml](Get-Content ($configFile))
+$node = $xml.configuration.appSettings
+if ($node -ne $NULL)
+{
+	$node.file = "Config\HealthMonitor\Settings.config"
+	$xml.Save($configFile)
+}		
+
 # Copy PowerShell script
 $srcRunFile = "$rootDir\CleanUpAfterTests.ps1"
 $dstRunFile = "$archiveFolderName\"
 Copy-Item $srcRunFile -Destination $dstRunFile -Force
+
+# Create zip archive.
+$archiveFiles = "$archiveFolderName\*"
+Compress-Archive -Path $archiveFiles -DestinationPath $outputArchiveFile -Force
 
 # Create zip archive.
 $archiveFiles = "$archiveFolderName\*"
@@ -63,7 +87,7 @@ $site = Get-AzureWebsite -Name "fr8" -Slot $slot
 # $site = Get-AzureWebsite -Name "fr8dev"
 
 New-AzureWebsiteJob -Name $site[0].Name `
-  -JobName "HealthMonitor-$($buildConfiguration.ToUpper())" `
+  -JobName "HealthMonitor" `
   -JobType Triggered `
   -JobFile $outputArchiveFile `
   -Slot $slot;

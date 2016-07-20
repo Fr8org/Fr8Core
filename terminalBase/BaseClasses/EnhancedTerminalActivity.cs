@@ -59,8 +59,8 @@ namespace TerminalBase.BaseClasses
         // Functions
         /**********************************************************************************/
 
-        protected EnhancedTerminalActivity(bool isAuthenticationRequired, ICrateManager crateManager) 
-            : base(isAuthenticationRequired, crateManager)
+        protected EnhancedTerminalActivity(ICrateManager crateManager) 
+            : base(crateManager)
         {
             UiBuilder = new UiBuilder();
         }

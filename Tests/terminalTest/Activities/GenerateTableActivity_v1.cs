@@ -1,12 +1,10 @@
 ﻿using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
 
 namespace terminalTest.Actions
 {
@@ -69,7 +67,7 @@ namespace terminalTest.Actions
                 {
                     row.Row.Add(new TableCellDTO
                     {
-                        Cell = new FieldDTO("Column " + j, $"Cell [{i}, {j}]")
+                        Cell = new KeyValueDTO("Column " + j, $"Cell [{i}, {j}]")
                     });
                 }
             }

@@ -1,13 +1,13 @@
 ﻿using System.Linq;
 using NUnit.Framework;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Fr8Infrastructure.Communication;
-using TerminalBase.Services;
+using Fr8.Infrastructure.Communication;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Services;
 
 namespace terminalGoogleTests.Integration
 {
@@ -98,11 +98,11 @@ namespace terminalGoogleTests.Integration
 
             //Assert
             var crateStorage = Crate.FromDto(responseActivityDTO.CrateStorage);
-            var FieldDescriptionsCM = crateStorage.CratesOfType<FieldDescriptionsCM>().Where(x => x.Label == "Available Forms").ToArray();
+            var FieldDescriptionsCM = crateStorage.CratesOfType<KeyValueDTO>().Where(x => x.Label == "Available Forms").ToArray();
 
             Assert.IsNotNull(FieldDescriptionsCM);
             Assert.Greater(FieldDescriptionsCM.Count(), 0);
-            Assert.Greater(FieldDescriptionsCM.First().Content.Fields.Count(), 0);
+            Assert.Greater(FieldDescriptionsCM.First().Content.Value.Count(), 0);
         }
         /// <summary>
         /// This test covers the test that the Drop Down List Box gets updated on followup configuration
@@ -219,6 +219,7 @@ namespace terminalGoogleTests.Integration
             await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
         }
 
+
         /// <summary>
         /// Should return more than one payload fielddto for the response
         /// </summary>
@@ -239,10 +240,10 @@ namespace terminalGoogleTests.Integration
                {
                    EventPayload = new CrateStorage()
                    {
-                        Fr8Data.Crates.Crate.FromContent(
+                        Fr8.Infrastructure.Data.Crates.Crate.FromContent(
                             "Response",
                             new StandardPayloadDataCM(
-                                new FieldDTO("response", "key1=value1&key2=value2")
+                                new KeyValueDTO("response", "key1=value1&key2=value2")
                             )
                         )
                    }

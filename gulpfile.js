@@ -12,6 +12,7 @@ gulp.task('bower', function (done) {
     return bower({ layout: "byComponent" });
 });
 
+
 gulp.task('concattemplates', function () {
     return gulp.src(['Views/AngularTemplate/**/*.cshtml',
         /*we are excluding those files - because they contain razor code*/
@@ -19,6 +20,7 @@ gulp.task('concattemplates', function () {
         '!Views/AngularTemplate/PlanList.cshtml',
         '!Views/AngularTemplate/MyAccountPage.cshtml',
         '!Views/AngularTemplate/Header.cshtml',
+        '!Views/AngularTemplate/HeaderNav.cshtml',
         '!Views/AngularTemplate/MiniHeader.cshtml',
         '!Views/AngularTemplate/ChangePassword.cshtml',
         '!Views/AngularTemplate/AccountList.cshtml'])
@@ -57,10 +59,12 @@ gulp.task('compile_js', function () {
         'Scripts/app/model/TerminalDTO.js',
         'Scripts/app/model/TerminalActionSetDTO.js',
         'Scripts/app/model/AuthenticationTokenDTO.js',
-        'Scripts/app/model/SolutionDTO.js',
+        'Scripts/app/model/DocumentationResponseDTO.js',
+        'Scripts/app/model/ActivityResponseDTO.js',
         'Scripts/app/model/AlertDTO.js',
         'Scripts/app/model/SubordinateSubplan.js',
         'Scripts/app/model/HistoryDTO.js',
+        'Scripts/app/model/AdvioryMessages.js',
         'Scripts/app/services/CrateHelper.js',
         'Scripts/app/services/AuthService.js',
         'Scripts/app/services/ConfigureTrackerService.js',
@@ -83,12 +87,14 @@ gulp.task('compile_js', function () {
         'Scripts/app/services/ManifestRegistryService.js',
         'Scripts/app/services/SolutionDocumentationService.js',
         'Scripts/app/services/UpstreamExtractor.js',
+        'Scripts/app/services/PageDefinitionService.js',
         'Scripts/app/filters/PlanState.js',
         'Scripts/app/filters/ContainerState.js',
         'Scripts/app/filters/FilterByTag.js',
         'Scripts/app/directives/EventArgsBase.js',
         'Scripts/app/directives/directives.js',
         'Scripts/app/directives/indiClick.js',
+        'Scripts/app/directives/fillHeight.js',
         'Scripts/app/directives/layout.js',
         'Scripts/app/directives/PaneWorkflowDesigner/Messages.js',
         'Scripts/app/directives/PaneWorkflowDesigner/PaneWorkflowDesigner.js',
@@ -120,6 +126,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Controls/DatePicker.js',
         'Scripts/app/directives/Controls/UpstreamDataChooser.js',
         'Scripts/app/directives/Controls/UpstreamFieldChooser.js',
+        'Scripts/app/directives/Controls/UpstreamFieldChooserButton.js',
         'Scripts/app/directives/Controls/UpstreamCrateChooser.js',
         'Scripts/app/directives/Controls/CrateChooser.js',
         'Scripts/app/directives/Controls/ContainerTransition.js',
@@ -139,7 +146,6 @@ gulp.task('compile_js', function () {
         'Scripts/app/filters/DateTimeFormatter.js',
         'Scripts/app/controllers/PlanBuilderController.js',
         'Scripts/app/controllers/SandboxController.js',
-        'Scripts/app/controllers/PlanFormController.js',
         'Scripts/app/controllers/PlanListController.js',
         'Scripts/app/controllers/ReportFactController.js',
         'Scripts/app/controllers/ReportIncidentController.js',
@@ -149,6 +155,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/AccountListController.js',
         'Scripts/app/controllers/AccountDetailsController.js',
         'Scripts/app/controllers/InternalAuthenticationController.js',
+        'Scripts/app/controllers/PhoneNumberAuthenticationController.js',
         'Scripts/app/controllers/AuthenticationDialogController.js',
         'Scripts/app/controllers/SelectActionController.js',
         'Scripts/app/controllers/ContainerListController.js',
@@ -162,8 +169,6 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/OrganizationController.js',
         'Scripts/app/controllers/KioskModeOrganizationHeaderController.js',
         'Scripts/app/controllers/PlanActionsDialogController.js',
-        'Scripts/app/controllers/FindObjectsController.js',
-        'Scripts/app/controllers/FindObjectsResultsController.js',
         'Scripts/app/controllers/ManageAuthTokenController.js',
         'Scripts/app/controllers/PayloadFormController.js',
         'Scripts/app/controllers/TerminalListController.js',
@@ -173,6 +178,10 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/ManifestRegistryFormController.js',
         'Scripts/app/controllers/SolutionDocumentationController.js',
         'Scripts/app/controllers/ManageUserController.js',
+        'Scripts/app/controllers/PlanUploadModalController.js',
+        'Scripts/app/controllers/PlanUploadController.js',
+        'Scripts/app/controllers/PageDefinitionListController.js',
+        'Scripts/app/controllers/PageDefinitionFormController.js',
         'Scripts/app/directives/Controls/Fr8Event.js'
     ])
         .pipe(sourcemaps.init())

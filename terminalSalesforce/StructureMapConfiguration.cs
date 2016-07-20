@@ -1,10 +1,6 @@
-﻿using System;
-using System.Web.Http;
-using Microsoft.Owin.Hosting;
+﻿using Fr8.Infrastructure.StructureMap;
 using Moq;
-using Owin;
 using StructureMap;
-using Fr8Infrastructure.StructureMap;
 using terminalSalesforce.Infrastructure;
 
 namespace terminalSalesforce

@@ -1,16 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web.Http;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using Fr8Data.Constants;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.States;
 using Hub.Interfaces;
 using StructureMap;
 using Hub.Services;
+using System.Web.Http.Description;
+using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
 {
@@ -18,18 +21,24 @@ namespace HubWeb.Controllers
     {
         private const string UknownWebServiceName = "UnknownService";
         private readonly IActivityTemplate _activityTemplate;
+        private readonly Fr8Account _fr8Account;
 
         public WebServicesController()
         {
+            _fr8Account = ObjectFactory.GetInstance<Fr8Account>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
         }
-
+        /// <summary>
+        /// Retrieves collection of web services which contain activities of specified category. If category is not specified returns list of web servies only
+        /// </summary>
+        /// <param name="id">Id of activity category. 1 - Monitors, 2 - Receivers, 3 - Processors, 4 - Forwarders, 5 - Solutions</param>
         [HttpGet]
+        [SwaggerResponse(HttpStatusCode.OK, "Collection of web services including activity templates", typeof(List<WebServiceActivitySetDTO>))]
         public IHttpActionResult Get(int id = -1)
         {
             if (id >= 0)
             {
-                var category = (ActivityCategory)id;
+                var category = (Fr8.Infrastructure.Data.States.ActivityCategory)id;
                 List<WebServiceActivitySetDTO> webServiceList;
 
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -39,14 +48,13 @@ namespace HubWeb.Controllers
                     // resulting set is grouped into batches 1 x web service - n x actions
 
                     var unknwonService = uow.WebServiceRepository.GetQuery().FirstOrDefault(x => x.Name == UknownWebServiceName);
-                    Fr8Account fr8Account = new Fr8Account();
 
                     var activityTemplate = _activityTemplate.GetQuery()
                         .Where(x => x.ActivityTemplateState == ActivityTemplateState.Active)
                         .Where(x => id == 0 || category == x.Category)
                         .Where(x => x.Tags == null || !x.Tags.Contains(Tags.Internal));
 
-                    if (!fr8Account.IsCurrentUserInAdminRole())
+                    if (!_fr8Account.IsCurrentUserInAdminRole())
                         activityTemplate = activityTemplate.Where(x => x.ClientVisibility != false);
 
                     webServiceList = activityTemplate
@@ -92,8 +100,13 @@ namespace HubWeb.Controllers
                 return Ok(models);
             }
         }
-
+        /// <summary>
+        /// Creates web service with specified data
+        /// </summary>
+        /// <param name="webService">Web service data to create web service from</param>
+        /// <response code="200">Web service was successfully saved</response>
         [HttpPost]
+        [ResponseType(typeof(WebServiceDTO))]
         public IHttpActionResult Post(WebServiceDTO webService)
         {
             WebServiceDO entity = Mapper.Map<WebServiceDO>(webService);

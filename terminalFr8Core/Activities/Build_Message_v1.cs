@@ -3,28 +3,34 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
+using System;
 
 namespace terminalFr8Core.Activities
 {
-    public class Build_Message_v1 : EnhancedTerminalActivity<Build_Message_v1.ActivityUi>
+    public class Build_Message_v1 : TerminalActivity<Build_Message_v1.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("36151a2a-baf3-4614-96f7-d147dd1a73cd"),
             Name = "Build_Message",
             Label = "Build a Message",
             Category = ActivityCategory.Processors,
             Version = "1",
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Process,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -56,21 +62,22 @@ namespace terminalFr8Core.Activities
                         ManifestType = CrateManifestTypes.StandardDesignTimeFields,
                         RequestUpstream = true,
                         AvailabilityType = AvailabilityType.RunTime
-                    }
+                    },
+                    Value = string.Empty
                 };
                 Controls = new List<ControlDefinitionDTO> { Name, Body };
             }
         }
 
         public Build_Message_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 
         private Crate PackMessageCrate(string body = null)
         {
             return Crate.FromContent(RuntimeCrateLabel,
-                                     new StandardPayloadDataCM(new FieldDTO(ActivityUI.Name.Value, body)));
+                                     new StandardPayloadDataCM(new KeyValueDTO(ActivityUI.Name.Value, body)));
         }
 
         private static readonly Regex FieldPlaceholdersRegex = new Regex(@"\[.*?\]");
@@ -115,9 +122,9 @@ namespace terminalFr8Core.Activities
             Payload.Add(PackMessageCrate(message));
         }
 
-        private List<FieldDTO> ExtractAvaialbleFieldsFromPayload()
+        private List<KeyValueDTO> ExtractAvaialbleFieldsFromPayload()
         {
-            var result = new List<FieldDTO>();
+            var result = new List<KeyValueDTO>();
 
             result.AddRange(Payload.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.AllValues()));
 

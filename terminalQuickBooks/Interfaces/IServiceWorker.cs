@@ -1,6 +1,6 @@
-﻿using Intuit.Ipp.DataService;
-using TerminalBase.Infrastructure;
-using TerminalBase.Models;
+﻿using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
+using Intuit.Ipp.DataService;
 
 namespace terminalQuickBooks.Interfaces
 {

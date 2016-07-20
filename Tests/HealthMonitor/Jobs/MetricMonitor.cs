@@ -7,7 +7,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Collections.Generic;
-using HealthMonitorUtility;
+using Fr8.Testing.Integration;
 
 namespace HealthMonitor.Jobs
 {
@@ -16,9 +16,18 @@ namespace HealthMonitor.Jobs
     /// but not actually testing anything.  
     /// </summary>
     [Explicit]
-    public class MetricMonitor
+    public class MetricMonitor : BaseIntegrationTest
     {
         TelemetryClient _telemetry;
+
+        public override string TerminalName
+        {
+            get
+            {
+                return "Telemetry";
+            }
+        }
+
         public MetricMonitor()
         {
             var appInsightsInstrumentationKey = Program.Context.InstrumentationKey;

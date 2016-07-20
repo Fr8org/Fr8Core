@@ -1,15 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Data.Entities;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
 using Moq;
-using Moq.Protected;
 using terminalDocuSign;
-using terminalDocuSign.Actions;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.Infrastructure;
 using terminalDocuSign.Activities;
 
 namespace terminalDocuSignTests.Fixtures
@@ -35,17 +30,17 @@ namespace terminalDocuSignTests.Fixtures
         {
         }
 
-        protected override Task RunDS()
+        public override Task Run()
         {
             return Task.FromResult(0);
         }
 
-        protected override Task InitializeDS()
+        public override Task Initialize()
         {
             return Task.FromResult(0);
         }
 
-        protected override Task FollowUpDS()
+        public override Task FollowUp()
         {
             return Task.FromResult(0);
         }
@@ -58,7 +53,7 @@ namespace terminalDocuSignTests.Fixtures
         {
             var result = new Mock<IDocuSignManager>();
             result.Setup(x => x.GetTemplatesList(It.IsAny<DocuSignApiConfiguration>()))
-                  .Returns(new List<FieldDTO> { new FieldDTO("1", "First") });
+                  .Returns(new List<KeyValueDTO> { new KeyValueDTO("1", "First") });
             return result.Object;
         }
 
@@ -66,7 +61,7 @@ namespace terminalDocuSignTests.Fixtures
         {
             var result = new Mock<IDocuSignManager>();
             result.Setup(x => x.GetTemplatesList(It.IsAny<DocuSignApiConfiguration>()))
-                  .Returns(new List<FieldDTO>());
+                  .Returns(new List<KeyValueDTO>());
             return result.Object;
         }
     }

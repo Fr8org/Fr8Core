@@ -3,47 +3,51 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Errors;
 using StructureMap;
 using terminalAzure.Infrastructure;
 using terminalAzure.Services;
-using TerminalBase;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 using TerminalSqlUtilities;
 
 namespace terminalAzure.Activities
 {
-    public class Write_To_Sql_Server_v1 : BaseTerminalActivity
+    public class Write_To_Sql_Server_v1 : ExplicitTerminalActivity
     {
+        private readonly IDbProvider _dbProvider;
+
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("7150a1e3-a32a-4a0b-a632-42529e5fd24d"),
             Name = "Write_To_Sql_Server",
             Label = "Write to Azure Sql Server",
             Category = ActivityCategory.Forwarders,
             Version = "1",
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[] { ActivityCategories.Forward }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
 
-        public Write_To_Sql_Server_v1(ICrateManager crateManager) 
-            : base(false, crateManager)
+        public Write_To_Sql_Server_v1(ICrateManager crateManager, IDbProvider dbProvider) 
+            : base(crateManager)
         {
+            _dbProvider = dbProvider;
         }
 
         //If the user provides no Connection String value, provide an empty Connection String field for the user to populate
         public override Task Initialize()
         {
             Storage.Clear();
-            Storage.Add(CreateControlsCrate());
+            CreateControls();
             return Task.FromResult(0);
         }
 
@@ -58,7 +62,7 @@ namespace terminalAzure.Activities
                 var contentsList = GetFieldMappings();
                 Storage.RemoveByLabel("Sql Table Columns");
                 //this needs to be updated to hold Crates instead of FieldDefinitionDTO
-                Storage.Add(CrateManager.CreateDesignTimeFieldsCrate("Sql Table Columns", contentsList.Select(col => new FieldDTO() { Key = col, Value = col }).ToArray()));
+                Storage.Add("Sql Table Columns", new KeyValueListCM(contentsList.Select(col => new KeyValueDTO { Key = col, Value = col })));
             }
             catch
             {
@@ -68,29 +72,24 @@ namespace terminalAzure.Activities
             return Task.FromResult(0);
         }
 
-        private Crate CreateControlsCrate()
+        private void CreateControls()
         {
-            var controls = new ControlDefinitionDTO[]{
-                new TextBox
+            AddControls(new TextBox
+            {
+                Label = "SQL Connection String",
+                Name = "connection_string",
+                Required = true
+            },
+            new Button
+            {
+                Label = "Continue",
+                Name = "Continue",
+                Events = new List<ControlEvent>()
                 {
-                    Label = "SQL Connection String",
-                    Name = "connection_string",
-                    Required = true
-                },
-                new Button
-                {
-                    Label = "Continue",
-                    Name = "Continue",
-                    Events = new List<ControlEvent>()
-                    {
-                        new ControlEvent("onClick", "requestConfig")
-                    }
+                    new ControlEvent("onClick", "requestConfig")
                 }
-            };
-            return PackControlsCrate(controls);
+            });
         }
-
-        
 
         //===============================================================================================
         //Specialized Methods (Only found in this Action class)
@@ -110,9 +109,8 @@ namespace terminalAzure.Activities
         public List<string> GetFieldMappings()
         {
             var connStringField = ConfigurationControls.Controls.First();
-            var curProvider = ObjectFactory.GetInstance<IDbProvider>();
-
-            return (List<string>)curProvider.ConnectToSql(connStringField.Value, (command) =>
+            
+            return (List<string>)_dbProvider.ConnectToSql(connStringField.Value, (command) =>
             {
                 command.CommandText = FieldMappingQuery;
 
@@ -185,7 +183,7 @@ namespace terminalAzure.Activities
             return CreateTables(mappedFieldsCrate.Content.AllValues().ToList(), valuesCrate.Content.AllValues().ToList());
         }
 
-        private IEnumerable<Table> CreateTables(List<FieldDTO> fields, List<FieldDTO> values)
+        private IEnumerable<Table> CreateTables(List<KeyValueDTO> fields, List<KeyValueDTO> values)
         {
             // Map tableName -> field -> value.
             var tableMap = new Dictionary<string, Dictionary<string, string>>();

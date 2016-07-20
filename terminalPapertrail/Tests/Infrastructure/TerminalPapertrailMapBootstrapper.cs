@@ -1,22 +1,22 @@
-﻿using Moq;
+﻿using Fr8.Infrastructure.StructureMap;
+using Moq;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 using terminalPapertrail.Interfaces;
 using terminalPapertrail.Services;
-using DependencyType = Fr8Infrastructure.StructureMap.StructureMapBootStrapper.DependencyType;
 
 namespace terminalPapertrail.Tests.Infrastructure
 {
     public class TerminalPapertrailMapBootstrapper
     {
-        public static void ConfigureDependencies(DependencyType type)
+        public static void ConfigureDependencies(StructureMapBootStrapper.DependencyType type)
         {
             switch (type)
             {
-                case DependencyType.TEST:
+                case StructureMapBootStrapper.DependencyType.TEST:
                     ObjectFactory.Configure(x => x.AddRegistry<TestMode>()); // No test mode yet
                     break;
-                case DependencyType.LIVE:
+                case StructureMapBootStrapper.DependencyType.LIVE:
                     ObjectFactory.Configure(x => x.AddRegistry<LiveMode>());
                     break;
             }

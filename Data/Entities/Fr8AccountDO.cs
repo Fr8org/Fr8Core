@@ -40,9 +40,6 @@ namespace Data.Entities
         [ForeignKey("Profile")]
         public Guid? ProfileId { get; set; }
         public virtual ProfileDO Profile { get; set; }
-
-        //it's important to persist the DocuSignAccountId. The rest of the DocuSignAccount data is accessed through the DocuSignAccount wrapper class
-        public string DocusignAccountId { get; set; }
         //This property helps differentiate visitors of the web pages in analytic tools
         //This should be either 'Internal' or 'External'
         public string Class { get; set; }

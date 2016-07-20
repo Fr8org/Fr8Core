@@ -1,34 +1,39 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Infrastructure;
 using StructureMap;
-using terminalFr8Core.Infrastructure;
-using terminalFr8Core.Interfaces;
 using terminalUtilities.Infrastructure;
 using terminalUtilities.Interfaces;
 using terminalUtilities.Models;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using Utilities.Configuration.Azure;
+using System;
 
 namespace terminalFr8Core.Activities
 {
-    public class Send_Email_v1 : EnhancedTerminalActivity<Send_Email_v1.ActivityUi>
+    public class Send_Email_v1 : TerminalActivity<Send_Email_v1.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("6623f94f-5484-4264-b992-f00637bcdb4c"),
             Name = "Send_Email",
-            Label = "Send Email using Fr8 core account",
+            Label = "Send Email",
             Version = "1",
             Category = ActivityCategory.Forwarders,
             NeedsAuthentication = false,
             MinPaneWidth = 400,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -82,10 +87,10 @@ namespace terminalFr8Core.Activities
             }
         }
 
-        public Send_Email_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+        public Send_Email_v1(ICrateManager crateManager, IEmailPackager emailPackager)
+            : base(crateManager)
         {
-            _emailPackager = ObjectFactory.GetInstance<IEmailPackager>();
+            _emailPackager = emailPackager;
         }
 
         public override Task Initialize()

@@ -1,5 +1,5 @@
 ﻿using Data.Entities;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
@@ -7,22 +7,23 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Helpers;
+using Fr8.TerminalBase.Models;
+using StructureMap;
 using terminalSalesforce.Actions;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
-using Fr8Data.Managers;
-using TerminalBase.Helpers;
-using TerminalBase.Models;
 
 namespace terminalSalesforceTests.Intergration
 {
     [Explicit]
     [Category("terminalSalesforceTests.Integration")]
-    public class SaveToSalesforce_And_GetSalesforceData_EndToEnd_Tests : BaseHubIntegrationTest
+    public class SaveToSalesforce_And_GetSalesforceData_EndToEnd_Tests : BaseSalesforceIntegrationTest
     {
         public override string TerminalName
         {
@@ -31,8 +32,7 @@ namespace terminalSalesforceTests.Intergration
         
         [Test]
         public async Task SaveToSalesforce_And_GetSalesforceData_EndToEnd()
-        {
-            
+        {            
             AuthorizationTokenDO authTokenDO = null;
             AuthorizationToken authorizationToken = null;
             Guid initialPlanId = Guid.Empty;
@@ -53,7 +53,7 @@ namespace terminalSalesforceTests.Intergration
                 initialPlanId = await CreatePlan_SaveAndGetDataFromSalesforce(authTokenDO);
 
                 //get the full plan which is created
-                var plan = await HttpGetAsync<PlanDTO>(_baseUrl + "Plans/full?id=" + initialPlanId.ToString());
+                var plan = await HttpGetAsync<PlanDTO>(_baseUrl + "Plans?include_children=true&id=" + initialPlanId.ToString());
                 Debug.WriteLine("Created plan with all activities.");
 
                 //prepare the two activities with their follow up config
@@ -72,7 +72,7 @@ namespace terminalSalesforceTests.Intergration
                 //Assert
                 Debug.WriteLine("Asserting initial payload.");
                 var payloadList = Crate.GetUpdatableStorage(payload).CratesOfType<StandardPayloadDataCM>().ToList();
-                Assert.AreEqual(2, payloadList.Count, "The payload does not contian all activities payload");
+                Assert.AreEqual(1, payloadList.Count, "The payload does not contain all activities payload");
                 Assert.IsTrue(payloadList.Any(pl => pl.Label.Equals("Lead is saved in Salesforce.com")), "Save Data is Failed to save the lead.");
 
                 Debug.WriteLine("Asserting Save To Salesforce payload.");
@@ -84,7 +84,7 @@ namespace terminalSalesforceTests.Intergration
                 Debug.WriteLine("Newly created Lead ID is " + newLeadId);
 
                 Debug.WriteLine("Deleting newly created lead with " + newLeadId);
-                var isDeleted = await new SalesforceManager().Delete(SalesforceObjectType.Lead, newLeadId, authorizationToken);
+                var isDeleted = await _container.GetInstance<SalesforceManager>().Delete(SalesforceObjectType.Lead, newLeadId, authorizationToken);
                 Assert.IsTrue(isDeleted, "The newly created Lead for integration test purpose is not deleted.");
                 newLeadId = string.Empty;
 
@@ -145,7 +145,7 @@ namespace terminalSalesforceTests.Intergration
         {
             if(!string.IsNullOrEmpty(newLeadId))
             {
-                var isDeleted = await new SalesforceManager().Delete(SalesforceObjectType.Lead, newLeadId, authToken);
+                var isDeleted = await _container.GetInstance<SalesforceManager>().Delete(SalesforceObjectType.Lead, newLeadId, authToken);
                 Assert.IsTrue(isDeleted, "The newly created Lead for integration test purpose is not deleted.");
             }
 

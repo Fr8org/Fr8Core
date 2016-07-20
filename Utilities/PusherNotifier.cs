@@ -38,6 +38,11 @@ namespace Utilities
 
         public void NotifyUser(object message, string eventName, string userName)
         {
+            if (string.IsNullOrWhiteSpace(userName))
+            {
+                return;
+            }
+
             var pusherChannel = BuildChannelName(userName);
             Notify(pusherChannel, eventName, message);
         }

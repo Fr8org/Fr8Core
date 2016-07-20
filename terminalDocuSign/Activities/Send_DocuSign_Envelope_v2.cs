@@ -2,30 +2,30 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Validations;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using StructureMap;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Utilities;
+using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Infrastructure;
 using terminalDocuSign.Activities;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.BaseClasses;
-using TerminalBase.Errors;
-using TerminalBase.Infrastructure;
-using Utilities;
 
 namespace terminalDocuSign.Actions
 {
-    public class Send_DocuSign_Envelope_v2 : EnhancedDocuSignActivity<Send_DocuSign_Envelope_v2.ActivityUi>
+    public class Send_DocuSign_Envelope_v2 : DocuSignActivity<Send_DocuSign_Envelope_v2.ActivityUi>
     {
+        private readonly IConfigRepository _configRepository;
+
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id  = new Guid("2b1b4d98-9eb1-4cba-8baa-a6247cd86dce"),
             Version = "2",
             Name = "Send_DocuSign_Envelope",
             Label = "Send DocuSign Envelope",
@@ -34,7 +34,12 @@ namespace terminalDocuSign.Actions
             NeedsAuthentication = true,
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
         public class ActivityUi : StandardConfigurationControlsCM
@@ -59,10 +64,11 @@ namespace terminalDocuSign.Actions
             public ActivityUi()
             {
                 TemplateSelector = new DropDownList
-                                   {
-                                       Name = nameof(TemplateSelector),
-                                       Events = new List<ControlEvent> { ControlEvent.RequestConfig }
-                                   };
+                {
+                    Name = nameof(TemplateSelector),
+                    Label = "Use DocuSign Template",
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
+                };
                 RolesFields = new List<TextSource>();
                 TextFields = new List<TextSource>();
                 CheckBoxFields = new List<CheckBox>();
@@ -82,10 +88,13 @@ namespace terminalDocuSign.Actions
         }
 
         private const string UserFieldsAndRolesCrateLabel = "Fields and Roles";
-        
-        public Send_DocuSign_Envelope_v2(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+        private const string AdvisoryName = "DocuSign Template Warning";
+        private const string AdvisoryContent = "In your selected template you have fields with default values. Those can be changes inside advanced DocuSign UI to frendlier label.";
+
+        public Send_DocuSign_Envelope_v2(ICrateManager crateManager, IDocuSignManager docuSignManager, IConfigRepository configRepository)
             : base(crateManager, docuSignManager)
         {
+            _configRepository = configRepository;
             DisableValidationOnFollowup = true;
         }
 
@@ -119,6 +128,27 @@ namespace terminalDocuSign.Actions
             var roles = tabsAndFields.Item1.Where(x => x.Tags.Contains(DocuSignConstants.DocuSignSignerTag, StringComparison.InvariantCultureIgnoreCase)).ToArray();
             var userDefinedFields = tabsAndFields.Item1.Where(x => x.Tags.Contains(DocuSignConstants.DocuSignTabTag));
             var envelopeData = tabsAndFields.Item2.ToLookup(x => x.Fr8DisplayType);
+
+            //check for DocuSign default template names and add advisory json
+            var hasDefaultNames = DocuSignManager.DocuSignTemplateDefaultNames(tabsAndFields.Item2);
+            if (hasDefaultNames)
+            {
+                var advisoryCrate = Storage.CratesOfType<AdvisoryMessagesCM>().FirstOrDefault();
+                var currentAdvisoryResults = advisoryCrate == null ? new AdvisoryMessagesCM() : advisoryCrate.Content;
+
+                var advisory = currentAdvisoryResults.Advisories.FirstOrDefault(x => x.Name == AdvisoryName);
+
+                if (advisory == null)
+                {
+                    currentAdvisoryResults.Advisories.Add(new AdvisoryMessageDTO { Name = AdvisoryName, Content = AdvisoryContent });
+                }
+                else
+                {
+                    advisory.Content = AdvisoryContent;
+                }
+
+                Storage.Add(Crate.FromContent("Advisories", currentAdvisoryResults));
+            }
             //Add TextSource control for every DocuSign role to activity UI
             ActivityUI.RolesFields.AddRange(roles.Select(x => UiBuilder.CreateSpecificOrUpstreamValueChooser(x.Key, x.Key, requestUpstream: true)));
             //Add TextSrouce control for every DocuSign template text field to activity UI
@@ -159,7 +189,7 @@ namespace terminalDocuSign.Actions
                         .ToList()
                     }));
 
-            Storage.ReplaceByLabel(Crate.FromContent(UserFieldsAndRolesCrateLabel, new FieldDescriptionsCM(userDefinedFields.Concat(roles)), AvailabilityType.Configuration));
+            Storage.ReplaceByLabel(Crate.FromContent(UserFieldsAndRolesCrateLabel, new KeyValueListCM(userDefinedFields.Concat(roles))));
         }
 
         protected override Task Validate()
@@ -171,7 +201,7 @@ namespace terminalDocuSign.Actions
 
             foreach (var roleControl in ActivityUI.RolesFields.Where(x => x.InitialLabel.Contains(DocuSignConstants.DocuSignRoleEmail)))
             {
-                ValidationManager.ValidateEmail(roleControl);
+                ValidationManager.ValidateEmail(_configRepository, roleControl);
             }
 
             return Task.FromResult(0);
@@ -179,12 +209,12 @@ namespace terminalDocuSign.Actions
 
         public override async Task Run()
         {
-            var userDefinedFields = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == UserFieldsAndRolesCrateLabel);
+            var userDefinedFields = Storage.FirstCrateOrDefault<KeyValueListCM>(x => x.Label == UserFieldsAndRolesCrateLabel);
             if (userDefinedFields == null)
             {
                 throw new ActivityExecutionException("Activity storage doesn't contain info about DocuSign envelope properties. This may indicate that activity was not properly configured. Try to reconfigure this activity");
             }
-            var allFields = userDefinedFields.Content.Fields;
+            var allFields = userDefinedFields.Content.Values;
             var roleValues = ActivityUI.RolesFields.Select(x => new { x.Name, Value = x.GetValue(Payload) }).ToDictionary(x => x.Name, x => x.Value);
             var fieldValues = ActivityUI.CheckBoxFields.Select(x => new { x.Name, Value = x.Selected.ToString().ToLower() })
                                                    .Concat(ActivityUI.DropDownListFields.Select(x => new { x.Name, Value = x.selectedKey }))

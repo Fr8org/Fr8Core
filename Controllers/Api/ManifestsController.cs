@@ -1,19 +1,13 @@
-﻿using Hub;
-using Hub.Interfaces;
+﻿using Hub.Interfaces;
 using StructureMap;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
-using AutoMapper;
-using Fr8Data.Managers;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using System.Web.Http.Description;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace HubWeb.Controllers
 {
-    //[RoutePrefix("manifests")]
     public class ManifestsController : ApiController
     {
         private IManifest _manifest;
@@ -24,9 +18,13 @@ namespace HubWeb.Controllers
             _manifest = ObjectFactory.GetInstance<IManifest>();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
-
+        /// <summary>
+        /// Gets crate that contains information about all properties of manifest with specified Id
+        /// </summary>
+        /// <param name="id">Id of manifest</param>
+        /// <response code="200">Crate with FieldDescriptionsCM manifest. Can be empty</response>
         [HttpGet]
-        //[Route("{id:int}")]
+        [ResponseType(typeof(CrateDTO))]
         public IHttpActionResult Get(int id)
         {
             var crate = _manifest.GetById(id);

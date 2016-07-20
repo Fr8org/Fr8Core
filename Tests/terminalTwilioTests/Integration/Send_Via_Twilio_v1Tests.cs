@@ -1,15 +1,16 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.DataTransferObjects.Helpers;
-using Fr8Data.Manifests;
-using HealthMonitor.Utility;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects.Helpers;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Testing.Integration;
+
 using terminalTwilioTests.Fixture;
 using NUnit.Framework;
-using Fr8Data.Managers;
 
 namespace terminalTwilioTests.Integration
 {
@@ -74,7 +75,7 @@ namespace terminalTwilioTests.Integration
             operationalCrate.CurrentActivityResponse.TryParseErrorDTO(out errorMessage);
 
             Assert.AreEqual(ActivityResponse.Error.ToString(), operationalCrate.CurrentActivityResponse.Type, "Run method of the Send_Via_Twilio did not set CurentActionResponce to Error");
-            Assert.AreEqual("No StandardConfigurationControlsCM crate provided", errorMessage.Message, "Run method of the Send_Via_Twilio did not set error message");
+            Assert.AreEqual("Activity was incorrectly configured. 1 validation error(s).\r\nGlobal: Configuration controls are missing.\r\n", errorMessage.Message, "Run method of the Send_Via_Twilio did not set error message");
 
         }
         /// <summary>

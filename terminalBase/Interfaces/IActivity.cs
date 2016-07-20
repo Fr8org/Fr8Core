@@ -11,6 +11,6 @@ namespace TerminalBase.Interfaces
         Task Configure(ActivityContext activityContext);
         Task Activate(ActivityContext activityContext);
         Task Deactivate(ActivityContext activityContext);
-        Task<SolutionPageDTO> GetDocumentation(ActivityContext activityContext, string documentationType);
+        Task<DocumentationResponseDTO> GetDocumentation(ActivityContext activityContext, string documentationType);
     }
 }

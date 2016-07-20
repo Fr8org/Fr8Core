@@ -5,8 +5,8 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using Hub.Services;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace HubTests.Entities
 {
@@ -33,8 +33,6 @@ namespace HubTests.Entities
             {
                 
                 uow.AspNetRolesRepository.Add(FixtureData.TestRole());
-                var u = new Fr8AccountDO();
-                var user = new Fr8Account();
 
                 //SETUP                 
 

@@ -52,22 +52,19 @@ namespace TerminalBase.Helpers
         /// <param name="requestUpstream"></param>
         /// <param name="requestConfig"></param>
         /// <returns></returns>
-        public async Task<CrateChooser> GenerateCrateChooser(
+        public CrateChooser GenerateCrateChooser(
             string name,
             string label,
             bool singleManifest,
             bool requestUpstream = false,
             bool requestConfig = false)
         {
-            var crateDescriptions = await _hubCommunicator.GetCratesByDirection<CrateDescriptionCM>(_activityContext.ActivityPayload.Id, CrateDirection.Upstream);
-            var runTimeCrateDescriptions = crateDescriptions.Where(c => c.Availability == AvailabilityType.RunTime || c.Availability == AvailabilityType.Always).SelectMany(c => c.Content.CrateDescriptions);
             var control = new CrateChooser
             {
                 Label = label,
                 Name = name,
-                CrateDescriptions = runTimeCrateDescriptions.ToList(),
                 SingleManifestOnly = singleManifest,
-                RequestUpstream = requestUpstream
+                RequestUpstream = true
             };
 
             if (requestConfig)

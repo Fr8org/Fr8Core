@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 using Newtonsoft.Json.Linq;
 
 namespace HubTests.Managers
@@ -63,13 +63,13 @@ namespace HubTests.Managers
             };
         }
 
-        private static FieldDescriptionsCM TestManifest(string value = "value")
+        private static KeyValueListCM TestManifest(string value = "value")
         {
-            return new FieldDescriptionsCM
+            return new KeyValueListCM
             {
-                Fields = new List<FieldDTO>
+                Values = new List<KeyValueDTO>
                 {
-                    new FieldDTO("key", value)
+                    new KeyValueDTO("key", value)
                 }
             };
         }

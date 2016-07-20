@@ -2,24 +2,25 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Errors;
 using Newtonsoft.Json;
 using terminalYammer.Interfaces;
 using terminalYammer.Services;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
 namespace terminalYammer.Actions
 {
-    public class Post_To_Yammer_v1 : BaseTerminalActivity
+    public class Post_To_Yammer_v1 : ExplicitTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("fa163960-901f-4105-8731-234aeb38f11d"),
             Name = "Post_To_Yammer",
             Label = "Post To Yammer",
             Tags = "Notifier",
@@ -28,7 +29,12 @@ namespace terminalYammer.Actions
             Version = "1",
             MinPaneWidth = 330,
             Terminal = TerminalData.TerminalDTO,
-            WebService = TerminalData.WebServiceDTO
+            WebService = TerminalData.WebServiceDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -75,10 +81,10 @@ namespace terminalYammer.Actions
             }
         }
 
-        public Post_To_Yammer_v1(ICrateManager crateManager)
-            : base(true, crateManager)
+        public Post_To_Yammer_v1(ICrateManager crateManager, Yammer yammer)
+            : base(crateManager)
         {
-            _yammer = new Yammer();
+            _yammer = yammer;
         }
 
         public override Task FollowUp()
@@ -91,11 +97,9 @@ namespace terminalYammer.Actions
             var oauthToken = AuthorizationToken.Token;
             var groups = await _yammer.GetGroupsList(oauthToken);
             var crateAvailableGroups = CreateAvailableGroupsCrate(groups);
-            var crateAvailableFields = await CreateAvailableFieldsCrate();
             Storage.Clear();
-            Storage.Add(PackControls(new ActivityUi()));
+            AddControls(new ActivityUi().Controls);
             Storage.Add(crateAvailableGroups);
-            Storage.Add(crateAvailableFields);
         }
 
         public override async Task Run()
@@ -112,22 +116,16 @@ namespace terminalYammer.Actions
                 await _yammer.PostMessageToGroup(AuthorizationToken.Token,
                     groupMessageField.GroupID, groupMessageField.Message);
             }
-            catch (TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException)
+            catch (AuthorizationTokenExpiredOrInvalidException)
             {
                 RaiseInvalidTokenError();
                 return;
             }
         }
 
-        private Crate CreateAvailableGroupsCrate(IEnumerable<FieldDTO> groups)
+        private Crate CreateAvailableGroupsCrate(IEnumerable<KeyValueDTO> groups)
         {
-            var crate =
-                CrateManager.CreateDesignTimeFieldsCrate(
-                    "Available Groups",
-                    groups.ToArray()
-                );
-
-            return crate;
+            return Crate.FromContent("Available Groups", new KeyValueListCM(groups));
         }
 
         private  GroupMessage GetGroupMessageFields(StandardConfigurationControlsCM ui, ICrateStorage payload)
@@ -144,22 +142,7 @@ namespace terminalYammer.Actions
             return groupMessage;
         }
 
-        private async Task<Crate> CreateAvailableFieldsCrate()
-        {
-            var curUpstreamFields =
-                (await HubCommunicator.GetCratesByDirection<FieldDescriptionsCM>(ActivityId, CrateDirection.Upstream))
-
-                .Where(x => x.Label != "Available Groups")
-                .SelectMany(x => x.Content.Fields)
-                .ToArray();
-
-            var availableFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(
-                    "Available Fields",
-                    curUpstreamFields
-                );
-
-            return availableFieldsCrate;
-        }
+       
 
         private void ValidateYammerActivity(string value, string exceptionMessage)
         {

@@ -1,12 +1,7 @@
-using Data.States.Templates;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.States;
 
 namespace Data.Migrations
 {
-    using System;
-    using System.Data.Entity.Migrations;
-    using Data.States;
-    
     public partial class ActivityTemplate_AuthType_Migration : DockyardDbMigration
     {
         public override void Up()

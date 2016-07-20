@@ -5,11 +5,11 @@ using Data.Entities;
 using Data.States;
 using Hub.Interfaces;
 using NUnit.Framework;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 using StructureMap;
 using Data.Interfaces;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.States;
 
 namespace HubTests.Services
 {
@@ -47,7 +47,7 @@ namespace HubTests.Services
             var fieldsCrate = planNodeService.GetIncomingData(testActionTree.ChildNodes.Last().Id, CrateDirection.Upstream, AvailabilityType.NotSet);
             Assert.NotNull(fieldsCrate);
             Assert.NotNull(fieldsCrate.AvailableCrates.SelectMany(x=> x.Fields).ToList());
-            Assert.AreEqual(396, fieldsCrate.AvailableCrates.SelectMany(x => x.Fields).ToList().Count);
+            Assert.AreEqual(33, fieldsCrate.AvailableCrates.SelectMany(x => x.Fields).ToList().Count);
         }
 
         [Test]

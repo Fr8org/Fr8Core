@@ -249,4 +249,4 @@ You should see updates in the Activity Stream bar at right side of your screen a
  
 ![Fr8 plan result](./Images/9_tdg_SlackResult.PNG "Fr8 plan result")
 
-Continue to [Part 3]().
+Continue to [Part 3](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/TerminalTutorial-Part3.md).

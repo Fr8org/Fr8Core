@@ -1,14 +1,18 @@
-﻿using System.Web.Http;
-using System.Web.Http.ExceptionHandling;
+﻿using System.Net.Http;
+using System.Web.Http;
 using System.Web.Http.Routing;
-using System.Net.Http;
+using System.Web.Http.Dispatcher;
+using Hub.Infrastructure;
 
-namespace PlanDirectory.App_Start
+namespace PlanDirectory
 {
 	public static class WebApiConfig
 	{
 		public static void Register(HttpConfiguration config)
 		{
+            // Web API configuration and services
+            config.Services.Replace(typeof(IHttpControllerSelector), new CustomSelector(config));
+
             config.Routes.MapHttpRoute(
 				name : "DefaultApiWithAction",
 				routeTemplate : "api/{controller}/{action}/{id}",
@@ -42,6 +46,8 @@ namespace PlanDirectory.App_Start
                 defaults: new { id = RouteParameter.Optional, action = "Delete" },
                 constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Delete) }
             );
+
+            config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
 
             HttpConfiguration config1 = GlobalConfiguration.Configuration;
             config.Formatters.JsonFormatter.SerializerSettings.Formatting =

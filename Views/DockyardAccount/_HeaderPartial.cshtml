@@ -29,3 +29,14 @@
         </div>
     </div>
 </header>
+
+<script type="text/javascript">
+    /* Menu Dropdown*/
+    $("li.dropdown").hover(function () {
+        $(this).find("a.dropdown-toggle").attr('aria-expanded', "true");
+        $(this).addClass("open");
+    }, function () {
+        $(this).find("a.dropdown-toggle").attr('aria-expanded', "false");
+        $(this).removeClass("open");
+    });
+</script>

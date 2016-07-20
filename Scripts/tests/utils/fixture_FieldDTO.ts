@@ -152,6 +152,7 @@ module dockyard.tests.utils.fixtures {
             isHidden: false,
             isCollapsed: false,
             hasRefreshButton: false,
+            groupLabelText: null,
             source: {
                 manifestType: 'testManifest',
                 label: 'testLabel',

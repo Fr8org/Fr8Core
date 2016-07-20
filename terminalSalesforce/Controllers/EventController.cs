@@ -1,28 +1,22 @@
 ﻿using System.Net;
 using System.Xml.Linq;
 using terminalSalesforce.Infrastructure;
-using terminalSalesforce.Services;
-using TerminalBase.Infrastructure;
-using StructureMap;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Http;
+using Fr8.TerminalBase.Services;
 
 namespace terminalSalesforce.Controllers
 {
     [RoutePrefix("terminals/terminalSalesforce")]
     public class EventController : ApiController
     {
-        private IEvent _event;
-        private BaseTerminalEvent _baseTerminalEvent;
+        private readonly IEvent _event;
+        private readonly IHubEventReporter _eventReporter;
 
-        public EventController()
+        public EventController(IEvent @event, IHubEventReporter eventReporter)
         {
-            _event = ObjectFactory.GetInstance<IEvent>();
-            _baseTerminalEvent = new BaseTerminalEvent();
+            _event = @event;
+            _eventReporter = eventReporter;
         }
 
         [HttpPost]
@@ -30,7 +24,8 @@ namespace terminalSalesforce.Controllers
         public async Task<IHttpActionResult> ProcessIncomingNotification()
         {
             string eventPayLoadContent = Request.Content.ReadAsStringAsync().Result;
-            await _baseTerminalEvent.Process(eventPayLoadContent, _event.ProcessEvent);
+
+            await _eventReporter.Broadcast(await _event.ProcessEvent(eventPayLoadContent));
 
             //We need to acknowledge the request from Salesforce
             //Creating a SOAP XML response to acknowledge

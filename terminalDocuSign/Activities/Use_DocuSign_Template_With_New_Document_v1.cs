@@ -2,21 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using Hub.Managers;
-using Newtonsoft.Json;
-using StructureMap.Diagnostics;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Infrastructure;
 using terminalDocuSign.Actions;
-using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.Infrastructure;
 
 namespace terminalDocuSign.Activities
 {
@@ -24,6 +19,7 @@ namespace terminalDocuSign.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("55693341-6a95-4fc3-8848-2fc3a8101924"),
             Version = "1",
             Name = "Use_DocuSign_Template_With_New_Document",
             Label = "Use DocuSign Template With New Document",
@@ -32,7 +28,12 @@ namespace terminalDocuSign.Activities
             NeedsAuthentication = true,
             MinPaneWidth = 380,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -45,29 +46,31 @@ namespace terminalDocuSign.Activities
 
 
         protected override void SendAnEnvelope(DocuSignApiConfiguration loginInfo,
-            List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId)
+            List<KeyValueDTO> rolesList, List<KeyValueDTO> fieldList, string curTemplateId)
         {
             try
             {
-                var fileCrateLabel = GetControl<DropDownList>("document_Override_DDLB").selectedKey;
-                var file_crate = Payload.FirstOrDefault(a => a.ManifestType.ToString() == CrateManifestTypes.StandardFileDescription && a.Label == fileCrateLabel);
-                if (file_crate == null)
+                var documentSelector = GetControl<CrateChooser>("document_selector");
+
+                var fileCrate = documentSelector.GetValue(Payload);
+                if (fileCrate == null)
                 {
                     RaiseError($"New document file wasn't found");
                     return;
                 }
 
-                var file_manifest = file_crate.Get<StandardFileDescriptionCM>();
+                var file_manifest = fileCrate.Get<StandardFileDescriptionCM>();
                 DocuSignManager.SendAnEnvelopeFromTemplate(loginInfo, rolesList, fieldList, curTemplateId, file_manifest);
             }
             catch (Exception ex)
             {
                 RaiseError($"Couldn't send an envelope. {ex}");
             }
+
             Success();
         }
 
-        protected override async Task<Crate> CreateDocusignTemplateConfigurationControls()
+        protected override void CreateDocusignTemplateConfigurationControls()
         {
             var infoBox = new TextBlock() { Value = @"This Activity overlays the tabs from an existing Template onto a new Document and sends out a DocuSign Envelope. 
                                                         When this Activity executes, it will look for and expect to be provided from upstream with one Excel or Word file." };
@@ -84,83 +87,30 @@ namespace terminalDocuSign.Activities
                 Source = null
             };
 
-            var documentOverrideDDLB = new DropDownList
+            var documentSelector = new CrateChooser
             {
                 Label = "Use new document",
-                Name = "document_Override_DDLB",
-                Events = new List<ControlEvent>()
+                Name = "document_selector",
+                Events = new List<ControlEvent>
                 {
-                     ControlEvent.RequestConfig
+                    ControlEvent.RequestConfig
                 },
                 Required = true
             };
 
-            var fieldsDTO = new List<ControlDefinitionDTO>
-            {
-                infoBox, documentOverrideDDLB, fieldSelectDocusignTemplateDTO
-            };
-
-            var controls = new StandardConfigurationControlsCM
-            {
-                Controls = fieldsDTO
-            };
-
-            return CrateManager.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
+            AddControls(infoBox, documentSelector, fieldSelectDocusignTemplateDTO);
         }
 
-        protected override async Task FollowUpDS()
+        public override async Task FollowUp()
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(AuthorizationToken.Token);
-            await UpdateFilesDD();
             await HandleFollowUpConfiguration();
         }
 
-        private async Task UpdateFilesDD()
+        public override async Task Initialize()
         {
-            var ddlb = GetControl<DropDownList>("document_Override_DDLB");
-            ddlb.ListItems = await GetFilesCrates();
-        }
+            CreateDocusignTemplateConfigurationControls();
 
-        private async Task<List<ListItem>> GetFilesCrates()
-        {
-            CrateDescriptionCM cratesDescription = new CrateDescriptionCM();
-            var crates = await UpstreamQueryManager.GetCratesByDirection(CrateDirection.Upstream);
-            var file_crates = crates.Where(a => a.ManifestType.Id == (int)MT.StandardFileHandle);
-            if (file_crates.Count() != 0)
-                cratesDescription.CrateDescriptions.AddRange(file_crates.Select(a => new CrateDescriptionDTO() { Label = a.Label }));
-            var upstream_available_crates = crates.FirstOrDefault(a => a.Label == "Runtime Available Crates");
-            if (upstream_available_crates != null)
-            {
-                cratesDescription.CrateDescriptions.AddRange(upstream_available_crates.Get<CrateDescriptionCM>().CrateDescriptions.Where(a => a.ManifestType == CrateManifestTypes.StandardFileDescription));
-            }
-            return new List<ListItem>(cratesDescription.CrateDescriptions.Select(a => new ListItem() { Key = a.Label }));
-        }
-
-        protected virtual ConfigurationRequestType GetConfigurationRequestType()
-        {
-            // Do we have any crate? If no, it means that it's Initial configuration
-            if (Storage.Count < 1) { return ConfigurationRequestType.Initial; }
-            // Try to find Configuration_Controls
-            var stdCfgControlMS = Storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-            // Try to get DropdownListField
-            var dropdownControlDTO = stdCfgControlMS?.FindByName("target_docusign_template");
-            var docusignTemplateId = dropdownControlDTO?.Value;
-            if (string.IsNullOrEmpty(docusignTemplateId)) { return ConfigurationRequestType.Initial; }
-            var ddDocument = stdCfgControlMS.FindByName("document_Override_DDLB");
-            if (string.IsNullOrEmpty((ddDocument as DropDownList)?.selectedKey)) { return ConfigurationRequestType.Initial; }
-            return ConfigurationRequestType.Followup;
-        }
-
-        protected override async Task InitializeDS()
-        {
-            var configurationCrate = Storage.CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-            if (configurationCrate == null)
-            {
-                configurationCrate = (Crate<StandardConfigurationControlsCM>)(await CreateDocusignTemplateConfigurationControls());
-                Storage.Add(configurationCrate);
-            }
-            FillDocuSignTemplateSource(configurationCrate, "target_docusign_template");
-            await UpdateFilesDD();
+            FillDocuSignTemplateSource("target_docusign_template");
         }
 
         protected override Task Validate()
@@ -172,17 +122,23 @@ namespace terminalDocuSign.Activities
             }
 
             var templateList = GetControl<DropDownList>("target_docusign_template");
-            var documentsList = GetControl<DropDownList>("document_Override_DDLB");
+            var documentSelector = GetControl<CrateChooser>("document_selector");
 
             if (templateList != null)
             {
                 ValidationManager.ValidateTemplateList(templateList);
             }
-            if (!DocuSignValidationUtils.ItemIsSelected(documentsList))
-            {
-                ValidationManager.SetError(DocuSignValidationUtils.DocumentIsNotValidErrorMessage, documentsList);
-            }
 
+            if (ValidationManager.ValidateCrateChooserNotEmpty(documentSelector, DocuSignValidationUtils.DocumentIsNotValidErrorMessage))
+            {
+                var selectedCrate = documentSelector.CrateDescriptions.First(x => x.Selected);
+
+                if (selectedCrate.ManifestId != (int) MT.FieldDescription)
+                {
+                    ValidationManager.SetError("Only File Description crates are allowed.", documentSelector);
+                }
+            }
+            
             return Task.FromResult(0);
         }
     }

@@ -9,7 +9,7 @@ using Hub.Interfaces;
 using HubWeb.ViewModels;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace HubWeb.Controllers
 {
@@ -74,6 +74,10 @@ namespace HubWeb.Controllers
                 model.TerminalId = response.AuthorizationToken.TerminalID;
                 model.TerminalName = terminal.Name;
 
+                if (response.AuthorizationToken.ExternalAccountId == "ga_admin@fr8.co")
+                {
+                    EventManager.TerminalAuthenticationCompleted(response.AuthorizationToken.UserId, terminal, response.AuthorizationToken);
+                }
                 return View(model);
             }
             else

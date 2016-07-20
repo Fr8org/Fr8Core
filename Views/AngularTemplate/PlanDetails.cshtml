@@ -1,11 +1,22 @@
 ﻿<div ng-controller="PlanDetailsController">
-    <h2>{{ptvm.plan.name}} 
+    <h2 class="clearfix">{{ptvm.plan.name}}
         <md-button class="md-icon-button" ui-sref="^.planBuilder({ id: id })">
-            <md-icon md-font-icon="fa-edit" class="fa fa-lg" style="margin-top:15px"></md-icon>
+            <md-icon md-font-icon="fa-edit" class="fa fa-lg" style="margin-top: 15px"></md-icon>
             <md-tooltip md-direction="top">
                 Edit
             </md-tooltip>
         </md-button>
+        <a class="md-raised md-button" ng-click="sharePlan()"   style="float: right">
+            Share plan
+        </a>
+
+        <a class="md-raised md-button" ng-click="unpublishPlan()" style="float: right">
+            Unpublish plan
+        </a>
+
+        <a class="md-raised md-button" ng-click="download($event)"  download='{{ptvm.plan.name}}.json'  type='application/json' style="float: right">
+            Download template as JSON file
+        </a>
     </h2>
     
     

@@ -1,5 +1,5 @@
 ﻿using System;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace terminalTests.Fixtures
 {
@@ -20,7 +20,7 @@ namespace terminalTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "BaseTerminalActivityMock",
+                Name = "ExplicitTerminalActivityMock",
                 Version = "1"
             };
         }

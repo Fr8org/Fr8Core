@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace Data.Repositories.MultiTenant.Queryable
 {
@@ -8,5 +8,6 @@ namespace Data.Repositories.MultiTenant.Queryable
         where T : Manifest
     {
         IEnumerator<T> RunQuery(IMtQueryable<T> queryable);
+        int Count(IMtQueryable<T> queryable);
     }
 }

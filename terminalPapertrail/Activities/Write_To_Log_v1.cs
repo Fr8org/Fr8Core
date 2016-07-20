@@ -1,43 +1,48 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.BaseClasses;
 using StructureMap;
 using terminalPapertrail.Interfaces;
-using TerminalBase.BaseClasses;
-using Utilities.Configuration.Azure;
-using Fr8Data.States;
-using TerminalBase.Infrastructure;
 
 namespace terminalPapertrail.Actions
 {
     /// <summary>
     /// Write To Log action which writes Log Messages to Papertrail at run time
     /// </summary>
-    public class Write_To_Log_v1 : BaseTerminalActivity
+    public class Write_To_Log_v1 : ExplicitTerminalActivity
     {
         private IPapertrailLogger _papertrailLogger;
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("82689803-f577-47cd-9a7a-dd728f72acfe"),
             Version = "1",
             Name = "Write_To_Log",
             Label = "Write To Log",
             Category = ActivityCategory.Forwarders,
             Terminal = TerminalData.TerminalDTO,
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO
+            WebService = TerminalData.WebServiceDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        public Write_To_Log_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+        public Write_To_Log_v1(ICrateManager crateManager, IPapertrailLogger papertrailLogger)
+            : base(crateManager)
         {
-            _papertrailLogger = ObjectFactory.GetInstance<IPapertrailLogger>();
+            _papertrailLogger = papertrailLogger;
         }
 
         public override async Task Initialize()
@@ -50,9 +55,7 @@ namespace terminalPapertrail.Actions
                 Required = true
             };
 
-            var curControlsCrate = PackControlsCrate(targetUrlTextBlock);
-
-            Storage.Add(curControlsCrate);
+            AddControls(targetUrlTextBlock);
         }
 
         public override async Task Run()
@@ -84,7 +87,7 @@ namespace terminalPapertrail.Actions
                 });
 
                 Payload.RemoveByLabel("Log Messages");
-                Payload.Add(Fr8Data.Crates.Crate.FromContent("Log Messages", curLogMessages));
+                Payload.Add(Crate.FromContent("Log Messages", curLogMessages));
              }
              Success();
         }

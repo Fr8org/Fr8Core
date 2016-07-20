@@ -1,5 +1,4 @@
-﻿using Fr8Infrastructure.StructureMap;
-using StructureMap;
+﻿using StructureMap;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
 

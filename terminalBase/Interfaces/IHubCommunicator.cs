@@ -19,7 +19,6 @@ namespace TerminalBase.Infrastructure
 
         Task<PayloadDTO> GetPayload(Guid containerId);
         Task<UserDTO> GetCurrentUser();
-        Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability);
         Task<IncomingCratesDTO> GetAvailableData(Guid activityId, CrateDirection direction, AvailabilityType availability);
         Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(Guid activityId, CrateDirection direction);
         Task<List<Crate>> GetCratesByDirection(Guid activityId, CrateDirection direction);

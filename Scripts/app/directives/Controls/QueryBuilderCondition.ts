@@ -17,6 +17,7 @@
         focusOutSet: (focusElem: any) => void;
 
         rootElem: any;
+        isDisabled:boolean;
     }
 
     export function QueryBuilderCondition(): ng.IDirective {
@@ -31,7 +32,8 @@
                 requestUpstream: '=?',
                 operators: '=',
                 isSingle: '=',
-                onRemoveCondition: '&'
+                onRemoveCondition: '&',
+                isDisabled: '='
             },
             link: (scope: IQueryBuilderConditionScope,
                 elem: ng.IAugmentedJQuery,

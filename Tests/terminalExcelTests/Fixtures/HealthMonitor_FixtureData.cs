@@ -1,5 +1,5 @@
 ﻿using System;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace terminalExcelTests.Fixtures
 {
@@ -33,7 +33,7 @@ namespace terminalExcelTests.Fixtures
             };
         }
 
-        public static Fr8DataDTO Load_Table_Data_v1_InitialConfiguration_Fr8DataDTO(Guid guid)
+        public static Fr8DataDTO Load_Excel_File_v1_InitialConfiguration_Fr8DataDTO(Guid guid)
         {
             var activityTemplate = Load_Table_Data_v1_ActivityTemplate();
 

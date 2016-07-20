@@ -1,6 +1,4 @@
-﻿using Fr8Data.Managers;
-using StructureMap;
-
+﻿
 namespace terminalTwilio.Services
 {
     public class Event : IEvent

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using Data.Entities;
 using Data.Interfaces;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
-using Utilities.Configuration.Azure;
 
 
 namespace Data.Repositories

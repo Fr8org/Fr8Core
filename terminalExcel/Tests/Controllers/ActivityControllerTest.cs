@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using NUnit.Framework;
 using terminalExcel.Controllers;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace terminalExcel.Tests.Controllers
 {

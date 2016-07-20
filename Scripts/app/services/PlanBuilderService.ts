@@ -5,7 +5,7 @@
 */
 module dockyard.services {
     export interface IPlanService extends ng.resource.IResourceClass<interfaces.IPlanFullDTO> {
-        getbystatus: (id: { id: number; status: number; category?: string }) => Array<interfaces.IPlanVM>;
+        getbystatus: (id: { id: number; status: number; category?: string; orderBy: string; }) => Array<interfaces.IPlanVM>;
         getByQuery: (query: model.PlanQueryDTO) => interfaces.IPlanResultDTO;
         getFull: (id: Object) => interfaces.IPlanFullDTO;
         getByActivity: (id: { id: string }) => interfaces.IPlanVM;
@@ -17,6 +17,8 @@ module dockyard.services {
         run: (id: string) => ng.IPromise<model.ContainerDTO>;
         runAndProcessClientAction: (id: string) => ng.IPromise<model.ContainerDTO>;
         share: (id: string) => ng.IPromise<any>;
+        unpublish: (id: string) => ng.IPromise<any>;
+        createTemplate: (id: string) => ng.IPromise<any>;
     }
 
     export interface ISubPlanService extends ng.resource.IResourceClass<interfaces.ISubPlanVM> {
@@ -97,29 +99,31 @@ module dockyard.services {
                     'getFull': {
                         method: 'GET',
                         isArray: false,
-                        url: '/api/plans/full/:id',
+                        url: '/api/plans?id=:id&include_children=true',
                         params: {
                             id: '@id'
                         }
                     },
                     'getbystatus': {
                         method: 'GET',
-                        isArray: true,
-                        url: '/api/plans/status?status=:status&category=:category',
+                        isArray: false,
+                        url: '/api/plans/query?status=:status&category=:category&orderBy=:orderBy',
                         params: {
                             status: '@status',
-                            category: '@category'
+                            category: '@category',
+                            orderBy : '@orderBy'
                         }
                     },
                     'getByQuery': {
                         method: 'GET',
                         isArray: false,
-                        url: '/api/plans/getByQuery'
+                        //url: '/api/plans/getByQuery'
+                        url: '/api/plans/query'
                     },
                     'getByActivity': {
                         method: 'GET',
                         isArray: false,
-                        url: '/api/plans/getByActivity/:id',
+                        url: '/api/plans?activity_id=:id',
                         params: {
                             id: '@id'
                         }
@@ -133,15 +137,16 @@ module dockyard.services {
                         }
                     },
                     
-                    'create': {
-                        method: 'POST',
-                        url: '/api/plans/create'
-                    },
+                    //'create': {
+                    //    method: 'POST',
+                    //    url: '/api/plans/create'
+                    //},
                     'createSolution': {
                         method: 'POST',
-                        url: '/api/plans/createSolution',
+                        //url: '/api/plans/createSolution',
+                        url: '/api/plans/',
                         params: {
-                            solutionName: '@solutionName'
+                            solution_name: '@solutionName'
                         }
                     },
                     'deactivate': {
@@ -168,6 +173,37 @@ module dockyard.services {
                 $http.post(url, null)
                     .then((res: any) => {
                         d.resolve();
+                    })
+                    .catch((err: any) => {
+                        d.reject(err);
+                    });
+
+                return d.promise;
+            };
+
+            resource.unpublish = (id: string): ng.IPromise<any> => {
+                var url = '/api/plans/unpublish?planId=' + id;
+                var d = $q.defer();
+
+                $http.post(url, null)
+                    .then((res: any) => {
+                        d.resolve();
+                    })
+                    .catch((err: any) => {
+                        d.reject(err);
+                    });
+
+                return d.promise;
+            };
+
+            resource.createTemplate = (id: string): ng.IPromise<any> => {
+                
+                var url = '/api/plans/Templates?planId=' + id;
+                var d = $q.defer();
+
+                $http.post(url, null)
+                    .then((template: any) => {
+                        d.resolve(template.data);
                     })
                     .catch((err: any) => {
                         d.reject(err);
@@ -223,7 +259,7 @@ module dockyard.services {
 
                             $rootScope.$broadcast(
                                 directives.paneConfigureAction.MessageType[directives.paneConfigureAction.MessageType.PaneConfigureAction_ResetValidationMessages],
-                                new directives.paneConfigureAction.ResetValidationMessagesEventArgs ()
+                                new directives.paneConfigureAction.ResetValidationMessagesEventArgs()
                             );
 
                             // if we have validation errors, send them to activities

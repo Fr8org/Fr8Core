@@ -4,23 +4,26 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.Manifests.Helpers;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.Manifests.Helpers;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using terminalUtilities.Excel;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using TerminalBase.Services;
+using Fr8.TerminalBase.Infrastructure;
 
 namespace terminalExcel.Actions
 {
-    public class Save_To_Excel_v1 : EnhancedTerminalActivity<Save_To_Excel_v1.ActivityUi>
+    public class Save_To_Excel_v1 : TerminalActivity<Save_To_Excel_v1.ActivityUi>
     {
+        private readonly ExcelUtils _excelUtils;
+        private readonly IPushNotificationService _pushNotificationService;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public CrateChooser UpstreamCrateChooser { get; set; }
@@ -49,7 +52,7 @@ namespace terminalExcel.Actions
             {
                 UpstreamCrateChooser = builder.CreateCrateChooser(
                         "Available_Crates",
-                        "This Loop will process the data inside of",
+                        "Save which data:",
                         true,
                         requestConfig: true
                     );
@@ -131,10 +134,11 @@ namespace terminalExcel.Actions
 
         private const string SelectedSpreadsheetCrateLabel = "Selected Spreadsheet";
 
-
-        public Save_To_Excel_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+        public Save_To_Excel_v1(ICrateManager crateManager, ExcelUtils excelUtils, IPushNotificationService pushNotificationService)
+            : base(crateManager)
         {
+            _excelUtils = excelUtils;
+            _pushNotificationService = pushNotificationService;
         }
 
         public override async Task Initialize()
@@ -174,7 +178,7 @@ namespace terminalExcel.Actions
 
         private async Task<List<ListItem>> GetWorksheets(int fileId, string fileName)
         {
-            //let's download this file
+            // Let's download this file
             Stream file = await HubCommunicator.DownloadFile(fileId);
             var fileBytes = ExcelUtils.StreamToByteArray(file);
 
@@ -187,8 +191,8 @@ namespace terminalExcel.Actions
         {
             get
             {
-                var storedValue = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == SelectedSpreadsheetCrateLabel);
-                return storedValue?.Content.Fields.First().Key;
+                var storedValue = Storage.FirstCrateOrDefault<KeyValueListCM>(x => x.Label == SelectedSpreadsheetCrateLabel);
+                return storedValue?.Content.Values.First().Key;
             }
             set
             {
@@ -197,20 +201,33 @@ namespace terminalExcel.Actions
                 {
                     return;
                 }
-                Storage.Add(Crate<FieldDescriptionsCM>.FromContent(SelectedSpreadsheetCrateLabel, new FieldDescriptionsCM(new FieldDTO(value)), AvailabilityType.Configuration));
+                Storage.Add(Crate<KeyValueListCM>.FromContent(SelectedSpreadsheetCrateLabel, new KeyValueListCM(new KeyValueDTO(value, value)), AvailabilityType.Configuration));
             }
         }
+
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("f3c99f97-e6e2-4343-b592-6674ac5b4c16"),
             Name = "Save_To_Excel",
             Label = "Save to Excel",
             Version = "1",
             Category = ActivityCategory.Forwarders,
             Terminal = TerminalData.TerminalDTO,
             MinPaneWidth = 300,
-            WebService = TerminalData.WebServiceDTO
+            WebService = TerminalData.WebServiceDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
+        protected override Task Validate()
+        {
+            ValidationManager.ValidateCrateChooserNotEmpty(ActivityUI.UpstreamCrateChooser, "A selection must be made.");
+            return Task.FromResult(0);
+        }
 
         public override async Task Run()
         {
@@ -277,7 +294,7 @@ namespace terminalExcel.Actions
                 if (ActivityUI.UseExistingWorksheetOption.Selected
                     || ActivityUI.ExistingWorksheetsList.ListItems.Any(x => x.Key == ActivityUI.NewWorksheetName.Value))
                 {
-                    var existingData = ExcelUtils.GetExcelFile(existingFileBytes, fileName, true, worksheetName);
+                    var existingData = _excelUtils.GetExcelFile(existingFileBytes, fileName, true, worksheetName);
 
                     StandardTableDataCMTools.AppendToStandardTableData(existingData, tableToSave);
                     dataToInsert = existingData;
@@ -327,7 +344,7 @@ namespace terminalExcel.Actions
 
         private async Task PushLaunchURLNotification(string url)
         {
-            await PushUserNotification("Success", "Excel File", $"The Excel file can be downloaded by navigating to this URL: {new Uri(url).AbsoluteUri}");
+            await _pushNotificationService.PushUserNotification(MyTemplate, "Success", "Excel File URL Generated", $"The Excel file can be downloaded by navigating to this URL: {new Uri(url).AbsoluteUri}");
         }
     }
 }

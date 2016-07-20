@@ -5,8 +5,8 @@ using Microsoft.Owin.Hosting;
 using Microsoft.Owin.Security.DataProtection;
 using StructureMap;
 using Hub.Infrastructure;
-using PlanDirectory.App_Start;
 using PlanDirectory.Infrastructure;
+using System.Web.Http.Dispatcher;
 
 namespace PlanDirectory
 {
@@ -14,9 +14,11 @@ namespace PlanDirectory
     {
         public class SelfHostStartup
         {
-            public void Configuration(IAppBuilder app)
+            public void Configuration(IAppBuilder app) 
             {
                 var configuration = new HttpConfiguration();
+                // Web API routes
+                configuration.Services.Replace(typeof(IHttpControllerTypeResolver), new PlanDirectoryHttpControllerTypeResolver());
 
                 WebApiConfig.Register(configuration);
                 app.SetDataProtectionProvider(new DpapiDataProtectionProvider());
@@ -25,7 +27,7 @@ namespace PlanDirectory
                 app.UseWebApi(configuration);
 
                 ObjectFactory.Initialize();
-                ObjectFactory.Configure(Fr8Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
+                ObjectFactory.Configure(Fr8.Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
                 ObjectFactory.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
                 ObjectFactory.Configure(PlanDirectoryBootStrapper.LiveConfiguration);
 

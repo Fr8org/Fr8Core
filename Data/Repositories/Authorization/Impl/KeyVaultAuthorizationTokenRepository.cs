@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.Infrastructure;
-using Data.Interfaces;
 using Data.Repositories.Authorization;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Microsoft.Azure.KeyVault;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using Segment;
-using Utilities.Configuration.Azure;
 
 namespace Data.Repositories
 {

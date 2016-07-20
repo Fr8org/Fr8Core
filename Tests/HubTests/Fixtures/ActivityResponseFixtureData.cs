@@ -1,6 +1,6 @@
-﻿using Fr8Data.Constants;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.DataTransferObjects.Helpers;
+﻿using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects.Helpers;
 
 namespace HubTests.Fixtures
 {

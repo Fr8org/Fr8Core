@@ -1,16 +1,15 @@
 ﻿using Data.Entities;
 using System;
 using System.Threading.Tasks;
-using TerminalBase.BaseClasses;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using TerminalBase.Infrastructure;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalBaseTests.Actions
 {
-    public class terminalActivityMock_v1 : BaseTerminalActivity
+    public class terminalActivityMock_v1 : ExplicitTerminalActivity
     {
         public override Task Initialize()
         {
@@ -65,22 +64,16 @@ namespace terminalBaseTests.Actions
         private void AddCrateMethodInvoked(string methodName)
         {
             Storage.Clear();
-            Storage.Add(CreateControlsCrate(methodName));
-        }
 
-        private Crate CreateControlsCrate(string fieldName)
-        {
-            var fieldFilterPane = new TextBox
+            AddControls(new TextBox
             {
-                Label = fieldName,
+                Label = methodName,
                 Name = "InvokedMethod"
-            };
-
-            return PackControlsCrate(fieldFilterPane);
+            });
         }
 
         public terminalActivityMock_v1(ICrateManager crateManager) 
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
     }

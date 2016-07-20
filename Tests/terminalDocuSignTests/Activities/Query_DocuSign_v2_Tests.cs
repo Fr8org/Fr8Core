@@ -1,22 +1,19 @@
-﻿using System;
-using System.Threading.Tasks;
-using Data.Entities;
+﻿using System.Threading.Tasks;
 using DocuSign.eSign.Model;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Helpers;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.Helpers;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
 using terminalDocuSign.Activities;
-using TerminalBase.Models;
-using Fr8Data.Managers;
-using TerminalBase.Infrastructure;
 
 namespace terminalDocuSignTests.Activities
 {
@@ -27,7 +24,7 @@ namespace terminalDocuSignTests.Activities
         public async Task Initialize_Always_FillsFolderAndStatusSources()
         {
             ObjectFactory.GetInstance<Mock<IDocuSignFolders>>().Setup(x => x.GetFolders(It.IsAny<DocuSignApiConfiguration>()))
-                .Returns(new[] { new FieldDTO("Name", "Id") });
+                .Returns(new[] { new KeyValueDTO("Name", "Id") });
             var activity = ObjectFactory.Container.GetInstance<Query_DocuSign_v2>();
             var activityContext = new ActivityContext
             {

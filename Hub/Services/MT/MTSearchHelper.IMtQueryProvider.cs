@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Data.Interfaces;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace Hub.Services
 {
@@ -12,6 +12,7 @@ namespace Hub.Services
             Type Type { get; }
 
             List<object> Query(IUnitOfWork uow, string accountId, List<FilterConditionDTO> conditions);
+            void Delete(IUnitOfWork uow, string accountId, List<FilterConditionDTO> conditions);
         }
 	}
 }

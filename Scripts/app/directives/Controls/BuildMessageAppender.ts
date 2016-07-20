@@ -13,6 +13,7 @@ module dockyard.directives.buildMessageAppender {
         dropDownListBox: model.DropDownList;
         insertToTextBox: (value: string) => void;
         onBlur: (field: model.TextArea) => void;
+
     }
 
     export function BuildMessageAppender(): ng.IDirective {
@@ -29,8 +30,8 @@ module dockyard.directives.buildMessageAppender {
             };
 
             $scope.insertToTextBox = () => {
-                if (!angular.isUndefined($scope.dropDownListBox.value)){
-                    $scope.field.value += '[' + $scope.dropDownListBox.value + ']';
+                if (!angular.isUndefined($scope.dropDownListBox.selectedKey)) {
+                    $scope.field.value += '[' + $scope.dropDownListBox.selectedKey + ']';
                 }
             };
         }];
@@ -43,7 +44,8 @@ module dockyard.directives.buildMessageAppender {
                 plan: '=',
                 field: '=',
                 currentAction: '=',
-                change: '&'
+                change: '&',
+                isDisabled:'='
             }
         };
     }

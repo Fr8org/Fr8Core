@@ -4,8 +4,8 @@ using Hub.Managers;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace HubTests.Managers
 {

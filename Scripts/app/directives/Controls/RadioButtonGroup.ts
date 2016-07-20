@@ -7,13 +7,16 @@ module dockyard.directives.radioButtonGroup {
         changeSelection: (radio: model.RadioButtonOption) => void;
         uniqueDirectiveId: number;
         change: () => (field: model.ControlDefinitionDTO) => void;
+
+        //for DropdownListBox issue FR-4160
+        isDisabled: boolean;
     }
 
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     export function RadioButtonGroup(): ng.IDirective {
         var uniqueDirectiveId = 1;
-        var template = '<div ng-repeat="radio in field.radios" ng-id="!radio.isHidden"><div class="radio-button-group-content input-group"> <radio-button-option group-name="{{field.groupName+\'_rgb_\'+uniqueDirectiveId}}" change-selection="changeSelection(radio)" current-action="currentAction" field="radio"></radio-button-option></div></div>';
+        var template = '<div ng-repeat="radio in field.radios" ng-id="!radio.isHidden"><div class="radio-button-group-content input-group"> <radio-button-option group-name="{{field.groupName+\'_rgb_\'+uniqueDirectiveId}}" change-selection="changeSelection(radio)" current-action="currentAction" field="radio" is-disabled="isDisabled"></radio-button-option></div></div>';
         var controller = ['$scope','$element','$attrs', ($scope: IRadioButtonGroupScope, $element: ng.IAugmentedJQuery, $attrs: ng.IAttributes) => {
             $scope.uniqueDirectiveId = ++uniqueDirectiveId;
             $scope.changeSelection = (radio: model.RadioButtonOption) => {
@@ -41,7 +44,8 @@ module dockyard.directives.radioButtonGroup {
                 currentAction: '=',
                 field: '=',
                 changeSelection: '&',
-                change: '&'
+                change: '&',
+                isDisabled: '='
             }
         };
         
@@ -53,12 +57,15 @@ module dockyard.directives.radioButtonGroup {
         field: model.RadioButtonOption;
         groupName: string;
         changeSelection: (radio: model.RadioButtonOption) => void;
+
+        // for FR-4160
+        isDisabled:boolean;
     }
 
     export function RadioButtonOption($compile: ng.ICompileService): ng.IDirective {
         var link = (scope: IRadioButtonOptionScope, element: ng.IAugmentedJQuery,attrs: ng.IAttributes) => {
             if (angular.isArray(scope.field.controls) || scope.field.controls.length > 0) {
-                $compile('<div ng-repeat="control in field.controls"><configuration-control current-action="currentAction" field="control" /></div>')(scope, function (cloned, scope) {
+                $compile('<div ng-repeat="control in field.controls"><configuration-control current-action="currentAction" field="control" is-disabled="isDisabled" /></div>')(scope, function (cloned, scope) {
                     element.find('.nested-controls').append(cloned);
                 });
             }
@@ -72,7 +79,8 @@ module dockyard.directives.radioButtonGroup {
                 currentAction: '=',
                 field: '=',
                 changeSelection: '&',
-                groupName: '@'
+                groupName: '@',
+                isDisabled: '='
             }
         };
     }

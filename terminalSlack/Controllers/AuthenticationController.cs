@@ -1,28 +1,26 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Fr8Data.DataTransferObjects;
-using TerminalBase.BaseClasses;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.TerminalBase.Services;
 using terminalSlack.Interfaces;
-using terminalSlack.Services;
 
 namespace terminalSlack.Controllers
 {
     [RoutePrefix("authentication")]
-    public class AuthenticationController : BaseTerminalController
+    public class AuthenticationController : ApiController
     {
-        private const string curTerminal = "terminalSlack";
-
         private readonly ISlackIntegration _slackIntegration;
+        private readonly IHubLoggerService _loggerService;
 
-
-        public AuthenticationController()
+        public AuthenticationController(ISlackIntegration slackIntegration, IHubLoggerService loggerService)
         {
-            _slackIntegration = new SlackIntegration();
+            _slackIntegration = slackIntegration;
+            _loggerService = loggerService;
         }
 
         [HttpPost]
-        [Route("initial_url")]
+        [Route("request_url")]
         public ExternalAuthUrlDTO GenerateOAuthInitiationURL()
         {
             var externalStateToken = Guid.NewGuid().ToString();
@@ -68,7 +66,7 @@ namespace terminalSlack.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerminal, ex,externalAuthDTO.Fr8UserId);
+                await _loggerService.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {

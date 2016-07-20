@@ -2,22 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
-using Data.Entities;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
-using terminalDocuSign.Actions;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.Infrastructure;
-using TerminalBase.Models;
 
 namespace terminalDocuSign.Activities
 {
@@ -25,6 +21,7 @@ namespace terminalDocuSign.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("c64f4378-f259-4006-b4f1-f7e90709829e"),
             Name = "Search_DocuSign_History",
             Label = "Search DocuSign History",
             Version = "1",
@@ -33,7 +30,12 @@ namespace terminalDocuSign.Activities
             MinPaneWidth = 380,
             Tags = Tags.Internal,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Receive,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -94,24 +96,25 @@ namespace terminalDocuSign.Activities
         {
         }
 
-        protected override async Task RunDS()
+        public override async Task Run()
         {
             Success();
         }
-        
-        protected override async Task InitializeDS()
+
+        public override async Task Initialize()
         {
             var actionUi = new ActivityUi();
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(AuthorizationToken.Token);           
-            var configurationCrate = PackControls(actionUi);
+            
+            AddControls(actionUi.Controls);
             //commented out by FR-2400
             //_docuSignManager.FillFolderSource(configurationCrate, "Folder", docuSignAuthDTO);
             //_docuSignManager.FillStatusSource(configurationCrate, "Status");
-            Storage.Add(configurationCrate);
+            
             await ConfigureNestedActivities(actionUi);
         }
 
-        protected override async Task FollowUpDS()
+        public override async Task FollowUp()
         {
             if (ConfigurationControls == null)
             {
@@ -137,16 +140,18 @@ namespace terminalDocuSign.Activities
             {
                 throw new Exception("Can't find activity template: Query_DocuSign");
             }
-
+            
             var storage = new CrateStorage(Crate.FromContent("Config", config))
             {
-                PackControlsCrate(new TextArea
+                Crate.FromContent(TerminalActivityBase.ConfigurationControlsLabel, new StandardConfigurationControlsCM( 
+                new TextArea
                 {
                     IsReadOnly = true,
                     Label = "",
                     Value = "<p>This activity is managed by the parent activity</p>"
-                })
+                }))
             };
+
             var activity = ActivityPayload.ChildrenActivities.OfType<ActivityPayload>().FirstOrDefault();
 
             if (activity == null)

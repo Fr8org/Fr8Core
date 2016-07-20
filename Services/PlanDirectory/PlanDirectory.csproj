@@ -44,6 +44,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AutoParameterizationWebConfigConnectionStrings>False</AutoParameterizationWebConfigConnectionStrings>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Analytics.NET, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -52,6 +53,22 @@
     </Reference>
     <Reference Include="AutoMapper, Version=4.0.4.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>..\..\packages\AutoMapper.4.0.4\lib\net45\AutoMapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.ApplicationInsights, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.ApplicationInsights.2.0.0\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -119,6 +136,18 @@
       <HintPath>..\..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="PhoneNumbers, Version=7.0.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\libphonenumber-csharp.7.2.5\lib\PhoneNumbers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PusherServer, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\PusherServer.2.1.1.0\lib\net35\PusherServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\RestSharp.105.2.3\lib\net45\RestSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="StructureMap, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\structuremap.3.1.6.186\lib\net40\StructureMap.dll</HintPath>
       <Private>True</Private>
@@ -129,8 +158,16 @@
     </Reference>
     <Reference Include="System.Net" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Extensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives, Version=4.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Primitives.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Net.Http.WebRequest" />
@@ -187,29 +224,86 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="YamlDotNet, Version=2.0.1.20271, Culture=neutral, PublicKeyToken=2b53052c5884d7a1, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\YamlDotNet.3.1.1\lib\net35\YamlDotNet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\dockyard_logo.png" />
+    <Content Include="Content\css\additionalcss\font-awesome\css\font-awesome.css" />
+    <Content Include="Content\css\additionalcss\font-awesome\css\style.css" />
+    <Content Include="Content\css\additionalcss\font-awesome\fonts\fontawesome-webfont.svg" />
+    <Content Include="Content\css\plan-directory.css" />
+    <Content Include="Content\css\shared\main.css" />
+    <Content Include="Content\icons\web_services\basecamp2-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\facebook-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\fr8-core-icon-64x64-lower-case.png" />
+    <Content Include="Content\icons\web_services\fr8-demo-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\gmail-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\statX-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\telegram-icon-64x64.png" />
+    <Content Include="Content\img\dockyard_logo.png" />
+    <Content Include="Content\img\dockyard_logo_dark.png" />
+    <Content Include="Content\img\dockyard_logo_white.png" />
+    <Content Include="Content\img\favicon.ico" />
+    <Content Include="Content\img\plan-bg.jpg" />
+    <Content Include="Content\img\white-bg-overlay.png" />
+    <Content Include="Content\icons\plus.png" />
+    <Content Include="Content\icons\web_services\aws-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\Box-logo_64x64.png" />
+    <Content Include="Content\icons\web_services\docusign-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\DocuSign-Logo.png" />
+    <Content Include="Content\icons\web_services\dropbox-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\fr8-core-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\google-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\jira-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\ms-azure-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\ms-excel-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\papertrail-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\quickbooks-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\salesforce-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\sendgrid-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\slack-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\twilio-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\unknown-service.png" />
+    <Content Include="Content\icons\web_services\yammer-64x64.png" />
     <Content Include="Content\metronic\components.css" />
     <Content Include="Content\metronic\jquery.blockui.min.js" />
     <Content Include="Content\metronic\loading.gif" />
     <Content Include="Content\metronic\ui.js" />
-    <Content Include="Content\plan-directory.css" />
+    <Content Include="Content\css\plan-category.css" />
+    <Content Include="CategoryPages\PlanCategoryTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>PlanCategoryTemplate.cs</LastGenOutput>
+    </Content>
     <Content Include="Global.asax" />
     <Content Include="gulpfile.js" />
     <Content Include="packages.config" />
     <Content Include="package.json" />
     <Content Include="bower.json" />
     <Content Include="PreBuild.bat" />
+    <Content Include="Scripts\main.js" />
     <Content Include="Scripts\PlanDirectoryApp.js" />
-    <Content Include="Scripts\SearchController.js" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\Reauthenticate.cshtml" />
+    <Content Include="Views\Shared\HomeNav.cshtml" />
+    <Content Include="Content\css\additionalcss\font-awesome\fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\css\additionalcss\font-awesome\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Content\css\additionalcss\font-awesome\fonts\fontawesome-webfont.woff" />
+    <Content Include="Content\css\additionalcss\font-awesome\fonts\FontAwesome.otf" />
+    <Content Include="Config\PlanDirectory\Settings.config.readme" />
     <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Demo.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -218,6 +312,11 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="CategoryPages\PlanCategoryTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PlanCategoryTemplate.tt</DependentUpon>
+    </Compile>
     <Compile Include="Controllers\AngularTemplateController.cs" />
     <Compile Include="Controllers\Api\AuthenticationController.cs" />
     <Compile Include="Controllers\Api\PlanTemplatesController.cs" />
@@ -225,8 +324,19 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Infrastructure\ActivityTemplateTag.cs" />
     <Compile Include="Infrastructure\AuthTokenManager.cs" />
+    <Compile Include="Infrastructure\PlanDirectoryHubCommunicatorFactory.cs" />
+    <Compile Include="Infrastructure\HubAuthenticationPDHeaderSignature.cs" />
+    <Compile Include="Infrastructure\IPageGenerator.cs" />
     <Compile Include="Infrastructure\ISearchProvider.cs" />
+    <Compile Include="Infrastructure\TagGenerator.cs" />
+    <Compile Include="Interfaces\IHubCommunicatorFactory.cs" />
+    <Compile Include="Infrastructure\TemplateTag.cs" />
+    <Compile Include="Infrastructure\TemplateTagStorage.cs" />
+    <Compile Include="Infrastructure\WebServiceTemplateTag.cs" />
+    <Compile Include="Interfaces\ITagGenerator.cs" />
+    <Compile Include="Infrastructure\PageGenerator.cs" />
     <Compile Include="Infrastructure\PlanDirectoryHMACAuthenticateAttribute.cs" />
     <Compile Include="Infrastructure\IAuthTokenManager.cs" />
     <Compile Include="Infrastructure\PlanDirectoryAuthorizeAttribute.cs" />
@@ -236,11 +346,14 @@
     <Compile Include="Interfaces\SearchItemDTO.cs" />
     <Compile Include="Interfaces\SearchRequestDTO.cs" />
     <Compile Include="Interfaces\SearchResultDTO.cs" />
+    <Compile Include="PlanDirectoryHttpControllerTypeResolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Infrastructure\IPlanTemplate.cs" />
     <Compile Include="Infrastructure\PlanTemplate.Impl.cs" />
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\HomeVM.cs" />
+    <Compile Include="ViewModels\NavLinks.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\AngularTemplate\" />
@@ -250,22 +363,21 @@
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Fr8Data\Fr8Data.csproj">
-      <Project>{a3178d71-a2c3-45b9-8334-adcc7c313541}</Project>
-      <Name>Fr8Data</Name>
+    <ProjectReference Include="..\..\Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj">
+      <Project>{bba91af2-7636-41b6-87c4-c1575ae8b04b}</Project>
+      <Name>Fr8Infrastructure.NET</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Fr8TerminalBase.NET\Fr8TerminalBase.NET.csproj">
+      <Project>{bf96675e-6baf-4ac9-b247-1551d62e8c44}</Project>
+      <Name>Fr8TerminalBase.NET</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Infrastructure\Fr8Infrastructure.csproj">
-      <Project>{9f4b5c92-3535-4d4c-b1e4-37beb1ae5c42}</Project>
-      <Name>Fr8Infrastructure</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Utilities\Utilities.csproj">
-      <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
-      <Name>Utilities</Name>
-    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -279,15 +391,17 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <AutoParameterizationWebConfigConnectionStrings>False</AutoParameterizationWebConfigConnectionStrings>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;DEV</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <AutoParameterizationWebConfigConnectionStrings>False</AutoParameterizationWebConfigConnectionStrings>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
@@ -365,7 +479,17 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+    <Error Condition="!Exists('..\..\packages\Fr8.PrivateSettings.1.2016.202.12957-prerelease\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Fr8.PrivateSettings.1.2016.202.12957-prerelease\build\net40\Fr8.PrivateSettings.targets'))" />
   </Target>
+  <Import Project="..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+    <Error Condition="!Exists('..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
+  </Target>
+  <Target Name="BeforeBuild">
+    <RestoreSettingsTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)" ProjectName="$(ProjectName)" />
+  </Target>
+  <Import Project="..\..\packages\Fr8.PrivateSettings.1.2016.202.12957-prerelease\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('..\..\packages\Fr8.PrivateSettings.1.2016.202.12957-prerelease\build\net40\Fr8.PrivateSettings.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

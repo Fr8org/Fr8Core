@@ -1,11 +1,6 @@
-﻿using Data.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace Hub.Exceptions
 {

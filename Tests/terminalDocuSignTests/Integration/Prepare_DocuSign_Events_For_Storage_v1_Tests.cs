@@ -1,15 +1,15 @@
-﻿using HealthMonitor.Utility;
+﻿using Fr8.Testing.Integration;
 using NUnit.Framework;
 using System;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
 using terminalDocuSignTests.Fixtures;
-using Fr8Data.Managers;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -28,7 +28,7 @@ namespace terminalDocuSignTests.Integration
 
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<EventSubscriptionCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<ManifestDescriptionCM>().Count(x => x.Label == "Available Run-Time Objects"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
             Assert.IsNotNullOrEmpty(crateStorage.CratesOfType<StandardPayloadDataCM>()
                 .FirstOrDefault(a => a.Label == "DocuSignUserCrate").Content.GetValueOrDefault("DocuSignUserEmail"));
         }

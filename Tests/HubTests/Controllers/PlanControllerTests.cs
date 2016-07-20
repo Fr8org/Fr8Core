@@ -7,12 +7,14 @@ using StructureMap;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.States;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.States;
 using HubTests.Controllers.Api;
 using HubWeb.Controllers;
-using UtilitiesTesting.Fixtures;
-using Fr8Data.States;
+using Fr8.Testing.Unit.Fixtures;
+
+using HubWeb.ViewModels.RequestParameters;
+using System.Text.RegularExpressions;
 
 namespace HubTests.Controllers
 {
@@ -59,12 +61,12 @@ namespace HubTests.Controllers
             ShouldHaveFr8ApiAuthorize(typeof(PlansController));
         }
 
-        [Test]
-        public void PlansController_ShouldHaveHMACOnCreateMethod()
-        {
-            var createMethod = typeof(PlansController).GetMethod("Create", new Type[] { typeof(Guid), typeof(string), typeof(string), typeof(int?), typeof(Guid?), typeof(Guid?) });
-            ShouldHaveFr8HMACAuthorizeOnFunction(createMethod);
-        }
+        //[Test]
+        //public void PlansController_ShouldHaveHMACOnCreateMethod()
+        //{
+        //    var createMethod = typeof(PlansController).GetMethod("Create", new Type[] { typeof(Guid), typeof(string), typeof(string), typeof(int?), typeof(Guid?), typeof(Guid?) });
+        //    ShouldHaveFr8HMACAuthorizeOnFunction(createMethod);
+        //}
 
         [Test]
         public void PlansController_ShouldHaveHMACOnPostMethod()
@@ -74,11 +76,18 @@ namespace HubTests.Controllers
         }
 
         [Test]
-        public void PlansController_ShouldHaveHMACOnGetByNameMethod()
+        public void PlansController_ShouldHaveHMACOnGetMethod()
         {
 
-            ShouldHaveFr8HMACAuthorizeOnFunction(typeof(PlansController), "GetByName");
+            ShouldHaveFr8HMACAuthorizeOnFunction(typeof(PlansController), "Get");
         }
+
+        //[Test]
+        //public void PlansController_ShouldHaveHMACOnGetByNameMethod()
+        //{
+
+        //    ShouldHaveFr8HMACAuthorizeOnFunction(typeof(PlansController), "GetByName");
+        //}
         
         [Test]
         public void PlanController_CanAddNewPlan()
@@ -88,7 +97,7 @@ namespace HubTests.Controllers
 
             //Act
             var ptc = CreatePlanController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
-            var response = ptc.Post(PlanDto);
+            var response = ptc.Post(PlanDto).Result;
 
 
             //Assert
@@ -104,19 +113,27 @@ namespace HubTests.Controllers
         }
 
         [Test]
-        public void PlanController_Will_Return_BadResult_If_Name_Is_Empty()
+        public void PlanController_Will_Create_Untitled_Plan_Incrementing_Name()
         {
             //Arrange 
             var PlanDto = FixtureData.CreateTestPlanDTO();
             PlanDto.Name = String.Empty;
 
+            var PlanDto1 = FixtureData.CreateTestPlanDTO();
+            PlanDto1.Name = String.Empty;
+
             //Act
             var ptc = CreatePlanController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address); ;
-            var response = ptc.Post(PlanDto);
+            var response = ptc.Post(PlanDto).Result;
+            var response1 = ptc.Post(PlanDto1).Result;
 
             //Assert
-            var badResult = response as BadRequestErrorMessageResult;
-            Assert.NotNull(badResult);
+            var okResult = response as OkNegotiatedContentResult<PlanDTO>;
+            var okResult1 = response1 as OkNegotiatedContentResult<PlanDTO>;
+            var result = Int32.Parse(Regex.Match(okResult.Content.Plan.Name, @"\d+").Value);
+            var result1 = Int32.Parse(Regex.Match(okResult1.Content.Plan.Name, @"\d+").Value);
+ 
+            Assert.IsTrue(result1 - result == 1);
 
         }
 
@@ -127,7 +144,11 @@ namespace HubTests.Controllers
             PlansController PlanController = CreatePlanController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
 
             //Assert
-            var postResult = PlanController.Get(FixtureData.GetTestGuidById(55));
+            var postResult = PlanController.Get(new PlansGetParams()
+            {
+                id = FixtureData.GetTestGuidById(55)
+            });
+                //FixtureData.GetTestGuidById(55));
             Assert.IsNull(postResult as OkNegotiatedContentResult<PlanDO>);
         }
 
@@ -157,7 +178,7 @@ namespace HubTests.Controllers
                 PlanController.Post(PlanDto);
             }
             //Act
-            var actionResult = PlanController.Get() as OkNegotiatedContentResult<IList<PlanEmptyDTO>>;
+            var actionResult = PlanController.Get(new PlansGetParams()) as OkNegotiatedContentResult<IList<PlanEmptyDTO>>;
 
             //Assert
             Assert.NotNull(actionResult);
@@ -170,10 +191,13 @@ namespace HubTests.Controllers
             //Arrange
             var PlanController = CreatePlanController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             var PlanDto = FixtureData.CreateTestPlanDTO();
-            var resultPlan = (PlanController.Post(PlanDto) as OkNegotiatedContentResult<PlanDTO>).Content;
+            var resultPlan = (PlanController.Post(PlanDto).Result as OkNegotiatedContentResult<PlanDTO>).Content;
 
             //Act
-            var actionResult = PlanController.Get(resultPlan.Plan.Id) as OkNegotiatedContentResult<PlanEmptyDTO>;
+            var actionResult = PlanController.Get( new PlansGetParams()
+            {
+                id = resultPlan.Plan.Id
+            }) as OkNegotiatedContentResult<PlanEmptyDTO>;
 
             //Assert
             Assert.NotNull(actionResult);
@@ -192,7 +216,7 @@ namespace HubTests.Controllers
             var PlanDto = FixtureData.CreateTestPlanDTO();
 
             var PlanController = CreatePlanController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
-            var postResult = PlanController.Post(PlanDto) as OkNegotiatedContentResult<PlanEmptyDTO>;
+            var postResult = PlanController.Post(PlanDto).Result as OkNegotiatedContentResult<PlanEmptyDTO>;
 
             Assert.NotNull(postResult);
 
@@ -204,13 +228,16 @@ namespace HubTests.Controllers
             //Assert
             //After delete, if we get the same process template, it should be null
             var afterDeleteAttemptResult =
-                PlanController.Get(postResult.Content.Id) as OkNegotiatedContentResult<PlanEmptyDTO>;
+                PlanController.Get( new PlansGetParams()
+                {
+                    id = postResult.Content.Id
+                }) as OkNegotiatedContentResult<PlanEmptyDTO>;
             Assert.IsNull(afterDeleteAttemptResult);
         }
 
 
         [Test]
-        public void ProcessController_CannotCreateIfProcessNameIsEmpty()
+        public void PlanController_CreatesUntitledPlanIfNameNotSpecified()
         {
             //Arrange 
             var PlanDto = FixtureData.CreateTestPlanDTO();
@@ -218,10 +245,12 @@ namespace HubTests.Controllers
 
             //Act
             var PlanController = CreatePlanController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
-            PlanController.Post(PlanDto);
+            var response = PlanController.Post(PlanDto).Result;
 
             //Assert
-            Assert.AreEqual(1, PlanController.ModelState.Count()); //must be one error
+            var okResult = response as OkNegotiatedContentResult<PlanDTO>;
+            
+            Assert.IsTrue(okResult.Content.Plan.Name.Contains("Untitled Plan"));
         }
 
         [Test]
@@ -240,21 +269,27 @@ namespace HubTests.Controllers
             }
 
             //Save First
-            var postResult = PlanController.Post(PlanDto) as OkNegotiatedContentResult<PlanDTO>;
+            var postResult = PlanController.Post(PlanDto).Result as OkNegotiatedContentResult<PlanDTO>;
             Assert.NotNull(postResult);
 
             //Then Get
-            var getResult = PlanController.Get(postResult.Content.Plan.Id) as OkNegotiatedContentResult<PlanEmptyDTO>;
+            var getResult = PlanController.Get(new PlansGetParams()
+            {
+                id = postResult.Content.Plan.Id
+            }) as OkNegotiatedContentResult<PlanEmptyDTO>;
             Assert.NotNull(getResult);
 
             //Then Edit
             var postEditNameValue = "EditedName";
             getResult.Content.Name = postEditNameValue;
-            var editResult = PlanController.Post(getResult.Content) as OkNegotiatedContentResult<PlanDTO>;
+            var editResult = PlanController.Post(getResult.Content).Result as OkNegotiatedContentResult<PlanDTO>;
             Assert.NotNull(editResult);
 
             //Then Get
-            var postEditGetResult = PlanController.Get(editResult.Content.Plan.Id) as OkNegotiatedContentResult<PlanEmptyDTO>;
+            var postEditGetResult = PlanController.Get( new PlansGetParams()
+            {
+                id = editResult.Content.Plan.Id
+            }) as OkNegotiatedContentResult<PlanEmptyDTO>;
             Assert.NotNull(postEditGetResult);
 
             //Assert 
@@ -296,7 +331,14 @@ namespace HubTests.Controllers
                 uow.SaveChanges();
             }
 
-            var curResult = curPlanController.GetFullPlan(curPlanDO.Id) as OkNegotiatedContentResult<PlanDTO>;
+            //var curResult = curPlanController.GetFullPlan(curPlanDO.Id) as OkNegotiatedContentResult<PlanDTO>;
+            var curResult = curPlanController.Get( new PlansGetParams()
+            {
+                id = curPlanDO.Id,
+                include_children = true
+            })
+                as OkNegotiatedContentResult<PlanDTO>;
+
             var curPlanDTO = curResult.Content.Plan;
 
             Assert.AreEqual(curPlanDO.Name, curPlanDTO.Name);

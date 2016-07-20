@@ -38,6 +38,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\HubWeb.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -46,6 +47,10 @@
     <DefineConstants>TRACE;RELEASE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\HubWeb.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DeployOnBuild Condition=" '$(DeployHub)'!='' ">$(DeployHub)</DeployOnBuild>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Analytics.NET, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -75,6 +80,10 @@
       <HintPath>packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Excel, Version=2.1.2.3, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
+      <HintPath>packages\ExcelDataReader.2.1.2.3\lib\net45\Excel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="FluentValidation, Version=5.6.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
       <Private>True</Private>
@@ -91,30 +100,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Utilities\Fr8.AI.DependencyCollector.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Apis, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>packages\Google.Apis.1.11.1\lib\net45\Google.Apis.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Google.Apis.Auth, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>packages\Google.Apis.Auth.1.11.1\lib\net45\Google.Apis.Auth.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Google.Apis.Auth.Mvc4, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>packages\Google.Apis.Auth.Mvc.1.11.1\lib\net45\Google.Apis.Auth.Mvc4.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Google.Apis.Auth.PlatformServices, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>packages\Google.Apis.Auth.1.11.1\lib\net45\Google.Apis.Auth.PlatformServices.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Google.Apis.Core, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>packages\Google.Apis.Core.1.11.1\lib\net45\Google.Apis.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Google.Apis.PlatformServices, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>packages\Google.Apis.1.11.1\lib\net45\Google.Apis.PlatformServices.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Hangfire.Core, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Hangfire.Core.1.6.0-beta2\lib\net45\Hangfire.Core.dll</HintPath>
       <Private>True</Private>
@@ -127,8 +112,12 @@
       <HintPath>packages\Hangfire.StructureMap3.1.5.3\lib\net45\Hangfire.StructureMap.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="LogentriesCore, Version=2.4.4.0, Culture=neutral, processorArchitecture=MSIL">
@@ -211,10 +200,6 @@
       <HintPath>packages\Microsoft.Owin.Security.Facebook.3.0.1\lib\net45\Microsoft.Owin.Security.Facebook.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Owin.Security.Google, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.Owin.Security.Google.3.0.1\lib\net45\Microsoft.Owin.Security.Google.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.Owin.Security.MicrosoftAccount, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Owin.Security.MicrosoftAccount.3.0.1\lib\net45\Microsoft.Owin.Security.MicrosoftAccount.dll</HintPath>
       <Private>True</Private>
@@ -260,8 +245,16 @@
       <HintPath>packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="RestSharp, Version=105.2.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\RestSharp.105.2.2\lib\net45\RestSharp.dll</HintPath>
+    <Reference Include="PhoneNumbers, Version=7.0.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\libphonenumber-csharp.7.2.5\lib\PhoneNumbers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PusherServer, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\PusherServer.2.1.1.0\lib\net35\PusherServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\RestSharp.105.2.3\lib\net45\RestSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="StructureMap, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
@@ -366,6 +359,10 @@
       <HintPath>packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="YamlDotNet, Version=2.0.1.20271, Culture=neutral, PublicKeyToken=2b53052c5884d7a1, processorArchitecture=MSIL">
+      <HintPath>packages\YamlDotNet.3.1.1\lib\net35\YamlDotNet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Zlib.Portable, Version=1.11.0.0, Culture=neutral, PublicKeyToken=431cba815f6a8b5b, processorArchitecture=MSIL">
       <HintPath>packages\Zlib.Portable.Signed.1.11.0\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
       <Private>True</Private>
@@ -383,7 +380,8 @@
     <Compile Include="Controllers\Api\ActivitiesController.cs" />
     <Compile Include="Controllers\Api\ActivityTemplatesController.cs" />
     <Compile Include="Controllers\Api\DocumentationController.cs" />
-    <Compile Include="Controllers\Api\OrganizationController.cs" />
+    <Compile Include="Controllers\Api\LockedHttpActionResult.cs" />
+    <Compile Include="Controllers\Api\OrganizationsController.cs" />
     <Compile Include="Controllers\Api\Fr8BaseApiController.cs" />
     <Compile Include="Controllers\Api\NotificationsController.cs" />
     <Compile Include="Controllers\Api\AlarmsController.cs" />
@@ -391,6 +389,7 @@
     <Compile Include="Controllers\Api\ConfigurationController.cs" />
     <Compile Include="Controllers\Api\ManifestRegistriesController.cs" />
     <Compile Include="Controllers\Api\ManifestsController.cs" />
+    <Compile Include="Controllers\Api\PageDefinitionsController.cs" />
     <Compile Include="Controllers\Api\SubPlansController.cs" />
     <Compile Include="Controllers\Api\PlansController.cs" />
     <Compile Include="Controllers\Api\TerminalsController.cs" />
@@ -401,8 +400,6 @@
     <Compile Include="Controllers\ServicesController.cs" />
     <Compile Include="Controllers\SupportController.cs" />
     <Compile Include="Controllers\WelcomeController.cs" />
-    <Compile Include="Controllers\Api\FieldController.cs" />
-    <Compile Include="Controllers\DocuSignTemplateController.cs" />
     <Compile Include="Controllers\Api\PlanNodesController.cs" />
     <Compile Include="Controllers\AuthenticationCallbackController.cs" />
     <Compile Include="Controllers\Api\FilesController.cs" />
@@ -417,27 +414,66 @@
     <Compile Include="DependencyResolution\IoC.cs" />
     <Compile Include="DependencyResolution\StructureMapDependencyResolver.cs" />
     <Compile Include="DependencyResolution\StructureMapDependencyScope.cs" />
+    <Compile Include="Documentation\Swagger\DocumentFilters\AddDefaultValuesDocumentFilter.cs" />
+    <Compile Include="Documentation\Swagger\DocumentFilters\RemoveDuplicatesDocumentFilter.cs" />
+    <Compile Include="Documentation\Swagger\OperationFilters\RemoveParameterModelNameOperationFilter.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\ActivityDescriptionSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\ActivitySampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\ActivityTemplateSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\AuthenticationTokenGrantSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\AuthenticationTokenSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\AuthenticationTokenTerminalSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\AuthorizationTokenSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\ContainerSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\CrateDescriptionSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\CrateSampeFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\CrateStorageSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\CredentialsSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\DocumentationResponseSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\FactSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\FieldSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\FileDOSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\FileSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\FilterConditionSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\FullSubplanSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\HistoryResultSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\IncidentSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\IncomingCratesSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\ISwaggerSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\ManifestDescriptionSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\NodeTransitionSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\OrganizationSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\PageDefinitionSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\PayloadSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\PhoneNumberCredentialsSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\PhoneNumberVerificationSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\PlanEmptySampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\PlanFullSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\PlanNodeDescriptionSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\PlanPostParamsSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\PlanQuerySampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\PlanResultSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\PlanSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\PlanTemplateSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\PollingDataSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\ProfileSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\QuerySampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\ResponseMessageSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\SubplanSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\TerminalNotificationSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\TerminalRegistrationSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\TerminalSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\TokenResponseSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\TokenWrapperSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\UrlResponseSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\UserSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\ValidationErrorsSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\ValidationResultSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\WebServiceActivitySetSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\WebServiceSampleFactory.cs" />
     <Compile Include="ExceptionHandling\ExeceptionHandler.cs" />
     <Compile Include="ExceptionHandling\Fr8ExceptionHandler.ErrorResult.cs" />
-    <Compile Include="Fr8ApiAuthorizeAttribute.cs" />
     <Compile Include="ExceptionHandling\Fr8ExceptionHandler.cs" />
-    <Compile Include="Api\EventResponse.aspx.cs">
-      <DependentUpon>EventResponse.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Api\EventResponse.aspx.designer.cs">
-      <DependentUpon>EventResponse.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Api\GetAttachment.ashx.cs">
-      <DependentUpon>GetAttachment.ashx</DependentUpon>
-    </Compile>
-    <Compile Include="Api\GetEmailHTML.aspx.cs">
-      <DependentUpon>GetEmailHTML.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Api\GetEmailHTML.aspx.designer.cs">
-      <DependentUpon>GetEmailHTML.aspx</DependentUpon>
-    </Compile>
     <Compile Include="App_Start\AutoMapperBootstrapper.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -446,28 +482,22 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DataController.cs" />
-    <Compile Include="Controllers\DiagnosticsController.cs" />
-    <Compile Include="Controllers\External\Google\GoogleAuthCallbackController.cs" />
     <Compile Include="Controllers\ControllerExtensions.cs" />
     <Compile Include="Controllers\Helpers\DemoExtensions.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\Api\ReportController.cs" />
     <Compile Include="Controllers\TokenAuthController.cs" />
-    <Compile Include="ExceptionHandling\MvcHandleErrorAttribute.cs" />
     <Compile Include="Infrastructure_HubWeb\AngularTemplateCacheAttribute.cs" />
     <Compile Include="Infrastructure_HubWeb\FileActionResult.cs" />
-    <Compile Include="Infrastructure_HubWeb\Fr8HubWebHMACAuthenticateAttribute.cs" />
+    <Compile Include="Infrastructure_HubWeb\Fr8PlanDirectoryAuthenticationAttribute.cs" />
+    <Compile Include="Infrastructure_HubWeb\Fr8TerminalAuthenticationAttribute.cs" />
     <Compile Include="Infrastructure_HubWeb\Fr8Identity.cs" />
     <Compile Include="Infrastructure_HubWeb\HtmlHelpers.cs" />
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="ViewModels\AuthenticationErrorVM.cs" />
-    <Compile Include="ViewModels\DocusignLoginVM.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />
     <Compile Include="ViewModels\HomeVM.cs" />
-    <Compile Include="ViewModels\DiagnosticInfoVM.cs" />
-    <Compile Include="ViewModels\JsonConverters\RelatedItemShowVM.cs" />
     <Compile Include="ViewModels\EventVM.cs" />
-    <Compile Include="ViewModels\MyAccountVM.cs" />
     <Compile Include="Filters\RequestParamsEncryptedFilter.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -477,20 +507,16 @@
     <Compile Include="ViewModels\ExternalLoginConfirmationVM.cs" />
     <Compile Include="ViewModels\LoginVM.cs" />
     <Compile Include="ViewModels\ManageUserVM.cs" />
-    <Compile Include="ViewModels\NavLinksHome.cs" />
-    <Compile Include="ViewModels\NavLinksShared.cs" />
-    <Compile Include="ViewModels\ProcessCreateEventVM.cs" />
+    <Compile Include="ViewModels\NavLinks.cs" />
     <Compile Include="ViewModels\RegisterVM.cs" />
+    <Compile Include="ViewModels\RequestParameters\PlansGetParams.cs" />
+    <Compile Include="ViewModels\RequestParameters\PlansPostParams.cs" />
     <Compile Include="ViewModels\ResetPasswordVM.cs" />
-    <Compile Include="ViewModels\SendEmailVM.cs" />
     <Compile Include="ViewModels\UserProfilesVM.cs" />
     <Compile Include="ViewModels\UserVM.cs" />
-    <Compile Include="ViewModels\Validators\ProcessTemplateDTO.cs" />
     <Compile Include="ExceptionHandling\WebApiExceptionFilterAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Api\EventResponse.aspx" />
-    <Content Include="Api\GetEmailHTML.aspx" />
     <Content Include="Content\css\CDNRelatedStyles.css" />
     <Content Include="Content\css\dockyard\activity-stream.css" />
     <Content Include="Content\css\dockyard\authentication-dialog.css" />
@@ -506,7 +532,19 @@
     <Content Include="Content\css\homecss\main.css" />
     <Content Include="Content\css\shared\main.css" />
     <Content Include="Content\css\shared\navbar.css" />
+    <Content Include="Content\icons\forward-icon-64x64.png" />
+    <Content Include="Content\icons\get-icon-64x64.png" />
+    <Content Include="Content\icons\monitor-icon-64x64.png" />
+    <Content Include="Content\icons\process-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\basecamp2-icon-64x64.png" />
     <Content Include="Content\icons\web_services\Box-logo_64x64.png" />
+    <Content Include="Content\icons\web_services\fr8-demo-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\facebook-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\gmail-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\instagram-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\statX-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\twitter-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\telegram-icon-64x64.png" />
     <Content Include="Content\img\background-7.png" />
     <Content Include="Content\img\background-cta-3.jpg" />
     <Content Include="Content\img\background-cta-3.png" />
@@ -532,6 +570,7 @@
     <Content Include="Content\img\logo-fr8.svg" />
     <Content Include="Content\img\Management\Alexei_Avrutin.png" />
     <Content Include="Content\img\Management\Alex_Edelstein_Round.png" />
+    <Content Include="Content\img\Management\Andrew_Cantino.png" />
     <Content Include="Content\img\Management\Bahadir_Bozdag.png" />
     <Content Include="Content\img\Management\Benjamin_Black.png" />
     <Content Include="Content\css\additionalcss\bootstrap23\css\bootstrap2.3.css" />
@@ -563,7 +602,6 @@
     <Content Include="Content\css\NegotiationWidgets.css" />
     <Content Include="Content\css\toolbar.min.css" />
     <Content Include="Content\css\welcome.css" />
-    <Content Include="Content\Databases\DO-823.sql" />
     <Content Include="Content\DO-823.sql" />
     <Content Include="Content\documents\Medical_Form_v2.xml" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
@@ -666,184 +704,6 @@
     <Content Include="Content\videos\motion.png" />
     <Content Include="Content\videos\motion_1920.jpg" />
     <Content Include="Content\videos\motion_1920.mp4" />
-    <Content Include="Documentation\DocuSignRESTAPI.html" />
-    <Content Include="Documentation\UpstreamCrates.html" />
-    <Content Include="fr8terminals.txt" />
-    <Content Include="Documentation\AccountCustomFields.html" />
-    <Content Include="Documentation\AddaNewGroup.html" />
-    <Content Include="Documentation\AddaUserSocialAccount.html" />
-    <Content Include="Documentation\AddCloudStorageProviderReturnInformationforaUser.html" />
-    <Content Include="Documentation\AddCustomDocumentFieldstoanEnvelopeDocument.html" />
-    <Content Include="Documentation\AddCustomDocumentFieldstoaTemplateDocument.html" />
-    <Content Include="Documentation\AddDocument.html" />
-    <Content Include="Documentation\AddDocumentstoaDraftEnvelope.html" />
-    <Content Include="Documentation\AddEmailSettingOverridestoanEnvelope.html" />
-    <Content Include="Documentation\AddEnvelopeCustomFieldstoanEnvelope.html" />
-    <Content Include="Documentation\AddGroupBrandIDInformation.html" />
-    <Content Include="Documentation\AddorReplaceanEnvelopeBulkRecipientFile.html" />
-    <Content Include="Documentation\AddorReplaceaTemplateBulkRecipientFile.html" />
-    <Content Include="Documentation\AddRecipientstoanEnvelope.html" />
-    <Content Include="Documentation\AddTabsforaRecipient.html" />
-    <Content Include="Documentation\AddUserstoaGroup.html" />
-    <Content Include="Documentation\AddUsertoAccount.html" />
-    <Content Include="Documentation\BulkReceiptBatches.html" />
-    <Content Include="Documentation\BulkSendBatch.html" />
-    <Content Include="Documentation\ChangePassword.html" />
-    <Content Include="Documentation\ClearAPIRequestLoggingLogs.html" />
-    <Content Include="Documentation\ClearOneConnectLogEntry.html" />
-    <Content Include="Documentation\ClearSingleConnectFailureLogEntry.html" />
-    <Content Include="Documentation\CleartheConnectLog.html" />
-    <Content Include="Documentation\CloseaUser.html" />
-    <Content Include="Documentation\CloseaUserSignature.html" />
-    <Content Include="Documentation\CreateAccount.html" />
-    <Content Include="Documentation\CreateanAuthorizationToken.html" />
-    <Content Include="Documentation\CreateMultipleAccounts.html" />
-    <Content Include="Documentation\css\bootstrap-treeview.css" />
-    <Content Include="Documentation\css\bootstrap.css" />
-    <Content Include="Documentation\css\bootstrap.min.css" />
-    <Content Include="Documentation\DeleteAccount.html" />
-    <Content Include="Documentation\DeleteaUserInitialsImage.html" />
-    <Content Include="Documentation\DeleteaUserSignatureImage.html" />
-    <Content Include="Documentation\DeleteBrandProfile.html" />
-    <Content Include="Documentation\DeleteCaptiveRecipientSignature.html" />
-    <Content Include="Documentation\DeleteCloudStorageProviderAuthenticationsforaUser.html" />
-    <Content Include="Documentation\DeleteCustomDocumentFieldsfromanEnvelopeDocument.html" />
-    <Content Include="Documentation\DeleteCustomDocumentFieldsfromaTemplateDocument.html" />
-    <Content Include="Documentation\DeleteEmailSettingOverridesforanEnvelope.html" />
-    <Content Include="Documentation\DeleteEnvelopeBulkRecipientFile.html" />
-    <Content Include="Documentation\DeleteEnvelopeorTemplateLock.html" />
-    <Content Include="Documentation\DeleteGroupBrandIDInformation.html" />
-    <Content Include="Documentation\DeleteRecipientsfromanEnvelope.html" />
-    <Content Include="Documentation\DeleteSingleConnectConfiguration.html" />
-    <Content Include="Documentation\DeleteTabsforaRecipient.html" />
-    <Content Include="Documentation\DeleteTemplateBulkRecipientFile.html" />
-    <Content Include="Documentation\DeleteUserProfileImage.html" />
-    <Content Include="Documentation\EnableorDisableAPIRequestLogging.html" />
-    <Content Include="Documentation\GetAccountBillingPlan.html" />
-    <Content Include="Documentation\GetAccountInvoice.html" />
-    <Content Include="Documentation\GetAccountPayment.html" />
-    <Content Include="Documentation\GetAccountProvisioningInformation.html" />
-    <Content Include="Documentation\GetAccountSettings.html" />
-    <Content Include="Documentation\GetaListofPermissionProfiles.html" />
-    <Content Include="Documentation\GetaListofUserSignatureDefinitions.html" />
-    <Content Include="Documentation\GetAllAccountInvoices.html" />
-    <Content Include="Documentation\GetAllAccountPayments.html" />
-    <Content Include="Documentation\GetaPageImage.html" />
-    <Content Include="Documentation\GetAPIRequestLoggingLogFiles.html" />
-    <Content Include="Documentation\GetAPIRequestLoggingSettings.html" />
-    <Content Include="Documentation\GetaUserInitialsImage.html" />
-    <Content Include="Documentation\GetaUserSignatureImage.html" />
-    <Content Include="Documentation\GetBillingCharges.html" />
-    <Content Include="Documentation\GetBillingPlanDetails.html" />
-    <Content Include="Documentation\GetBrandProfileInformation.html" />
-    <Content Include="Documentation\GetCloudStorageProviderConfigurationsforaUser.html" />
-    <Content Include="Documentation\GetConnectConfigureInformation.html" />
-    <Content Include="Documentation\GetCustomDocumentFieldsforanEnvelopeDocument.html" />
-    <Content Include="Documentation\GetCustomDocumentFieldsforaTemplateDocument.html" />
-    <Content Include="Documentation\GetCustomUserSettings.html" />
-    <Content Include="Documentation\GetDisclosure.html" />
-    <Content Include="Documentation\GetDocumentfromEnvelope.html" />
-    <Content Include="Documentation\GetEmailSettingOverridesforanEnvelope.html" />
-    <Content Include="Documentation\GetEnvelopeAuditEvents.html" />
-    <Content Include="Documentation\GetEnvelopeCertificate.html" />
-    <Content Include="Documentation\GetEnvelopeCustomFieldInformation.html" />
-    <Content Include="Documentation\GetEnvelopeDocumentsandCertificate.html" />
-    <Content Include="Documentation\GetEnvelopeNotificationInformation.html" />
-    <Content Include="Documentation\GetEnvelopeorTemplateLockInformation.html" />
-    <Content Include="Documentation\GetEnvelopePurgeDocumentStatus.html" />
-    <Content Include="Documentation\GetEnvelopeRecipientStatus.html" />
-    <Content Include="Documentation\GetEnvelopeStatusChanges.html" />
-    <Content Include="Documentation\GetEnvelopeStatusformorethanOneEnvelope.html" />
-    <Content Include="Documentation\GetFolderEnvelopeList.html" />
-    <Content Include="Documentation\GetFolderList.html" />
-    <Content Include="Documentation\GetGroupBrandIDInformation.html" />
-    <Content Include="Documentation\GetGroupInformation.html" />
-    <Content Include="Documentation\GetIndividualEnvelopeStatus.html" />
-    <Content Include="Documentation\GetListofBillingPlans.html" />
-    <Content Include="Documentation\GetListofEnvelopeDocuments.html" />
-    <Content Include="Documentation\GetListofEnvelopesinFolders.html" />
-    <Content Include="Documentation\GetListofTemplates.html" />
-    <Content Include="Documentation\GetListofTemplatesusedinanEnvelope.html" />
-    <Content Include="Documentation\GetListofUnsupportedFileTypes.html" />
-    <Content Include="Documentation\GetListofUsersinaGroup.html" />
-    <Content Include="Documentation\GetLogforAll.html" />
-    <Content Include="Documentation\GetLogforOne.html" />
-    <Content Include="Documentation\GetOneAPIRequestLoggingLogFile.html" />
-    <Content Include="Documentation\GetOneCloudStorageProviderConfigurationforaUser.html" />
-    <Content Include="Documentation\GetOneConnectLogEntry.html" />
-    <Content Include="Documentation\GetPastDueInvoices.html" />
-    <Content Include="Documentation\GetRecipientNames.html" />
-    <Content Include="Documentation\GetSignatureInformationforAccountlessSigner.html" />
-    <Content Include="Documentation\GetSingleConnectConfigurationInformation.html" />
-    <Content Include="Documentation\GetTabInformationforaRecipient.html" />
-    <Content Include="Documentation\GetTemplate.html" />
-    <Content Include="Documentation\GettheConnectLog.html" />
-    <Content Include="Documentation\GetUserAccountSettings.html" />
-    <Content Include="Documentation\GetUserInformation.html" />
-    <Content Include="Documentation\GetUserItemsinaCloudStorageProvider.html" />
-    <Content Include="Documentation\GetUserItemsinoneCloudStorageProviderFolder.html" />
-    <Content Include="Documentation\GetUserList.html" />
-    <Content Include="Documentation\GetUserProfile.html" />
-    <Content Include="Documentation\GetUserProfileImage.html" />
-    <Content Include="Documentation\GetUserSignatureInformation.html" />
-    <Content Include="Documentation\GetUserSocialAccounts.html" />
-    <Content Include="Documentation\Get_Account_Information.html" />
-    <Content Include="Documentation\js\bootstrap-treeview.js" />
-    <Content Include="Documentation\LockanEnvelopeorTemplate.html" />
-    <Content Include="Documentation\Login.html" />
-    <Content Include="Documentation\MakeAccountPayment.html" />
-    <Content Include="Documentation\ModifyAccountSettings.html" />
-    <Content Include="Documentation\ModifyaTemplate.html" />
-    <Content Include="Documentation\ModifyaUserSignature.html" />
-    <Content Include="Documentation\ModifyCustomDocumentFieldsforanEnvelopeDocument.html" />
-    <Content Include="Documentation\ModifyCustomDocumentFieldsforaTemplateDocument.html" />
-    <Content Include="Documentation\ModifyDraftEnvelopeEmailSubjectandMessage.html" />
-    <Content Include="Documentation\ModifyEmailSettingOverridesforanEnvelope.html" />
-    <Content Include="Documentation\ModifyEnvelopeCustomFieldsforanEnvelope.html" />
-    <Content Include="Documentation\ModifyGroupInformation.html" />
-    <Content Include="Documentation\ModifyorCorrectandResendRecipientInformation.html" />
-    <Content Include="Documentation\ModifyTabsforaRecipient.html" />
-    <Content Include="Documentation\ModifyUserAccountSettings.html" />
-    <Content Include="Documentation\ModifyUserProfile.html" />
-    <Content Include="Documentation\ModifyUserProfileImage.html" />
-    <Content Include="Documentation\MoveEnvelope.html" />
-    <Content Include="Documentation\PostAuthenticationView.html" />
-    <Content Include="Documentation\PostEditView.html" />
-    <Content Include="Documentation\PostEnvelopeCorrection.html" />
-    <Content Include="Documentation\PostRecipientView.html" />
-    <Content Include="Documentation\PostSenderView.html" />
-    <Content Include="Documentation\PostTemplate.html" />
-    <Content Include="Documentation\PurchaseAdditionalEnvelopes.html" />
-    <Content Include="Documentation\PurgeDocuments.html" />
-    <Content Include="Documentation\RemoveaPage.html" />
-    <Content Include="Documentation\RemoveaUserSocialAccount.html" />
-    <Content Include="Documentation\RemoveDocumentsfromaDraftEnvelope.html" />
-    <Content Include="Documentation\RemoveEnvelopeCustomFieldsfromanEnvelope.html" />
-    <Content Include="Documentation\RemoveTemplateSharingforaGroup.html" />
-    <Content Include="Documentation\RemoveUsersfromaGroup.html" />
-    <Content Include="Documentation\RepublishConnectInformationforMultipleEnvelopes.html" />
-    <Content Include="Documentation\RepublishConnectInformationforOneEnvelope.html" />
-    <Content Include="Documentation\RestAPIGuide.html" />
-    <Content Include="Documentation\RetrieveEnvelopeBulkRecipientFile.html" />
-    <Content Include="Documentation\RetrieveTemplatesBulkRecipientFile.html" />
-    <Content Include="Documentation\RevokeanAuthorizationToken.html" />
-    <Content Include="Documentation\RotatePageImage.html" />
-    <Content Include="Documentation\SendanEnvelopeorCreateaDraftEnvelope.html" />
-    <Content Include="Documentation\SendDraftEnvelope.html" />
-    <Content Include="Documentation\SetaUserInitialsImage.html" />
-    <Content Include="Documentation\SetaUserSignatureImage.html" />
-    <Content Include="Documentation\SetInitialsImageforAccountlessSigner.html" />
-    <Content Include="Documentation\SetSharedAccessInformation.html" />
-    <Content Include="Documentation\SetSignatureImageforAccountlessSigner.html" />
-    <Content Include="Documentation\SettingUserSignatureandInitialsImageswhenCreatingaSignature.html" />
-    <Content Include="Documentation\SetupandConfigure.html" />
-    <Content Include="Documentation\ShareaTemplatewithaGroup.html" />
-    <Content Include="Documentation\update-account-billing-plan.html" />
-    <Content Include="Documentation\UpdateConnectConfiguration.html" />
-    <Content Include="Documentation\UpdateEnvelopeorTemplateLock.html" />
-    <Content Include="Documentation\UploadBrandProfiles.html" />
-    <Content Include="Documentation\UsingBulkSendintheRESTAPI.html" />
-    <Content Include="Documentation\VoidEnvelope.html" />
     <Content Include="Content\img\Management\Rob_Bailey.png" />
     <Content Include="Scripts\ai.0.15.0-build58334.js" />
     <Content Include="Scripts\ai.0.15.0-build58334.min.js" />
@@ -949,6 +809,11 @@
     <Content Include="Views\AngularTemplate\FilterPane.cshtml" />
     <Content Include="Views\AngularTemplate\MiniHeader.cshtml" />
     <Content Include="Views\AngularTemplate\ActivityLabelModal.cshtml" />
+    <Content Include="Views\AngularTemplate\AdvisoryMessagesPopup.cshtml" />
+    <Content Include="Views\AngularTemplate\PhoneNumberAuthentication.cshtml" />
+    <Content Include="Views\AngularTemplate\ActionPickerPanel.cshtml" />
+    <Content Include="Views\AngularTemplate\HeaderNav.cshtml" />
+    <Content Include="Config\HubWeb\Settings.config.readme" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="_PowerShellScripts\HM-job-run.cmd" />
@@ -957,20 +822,18 @@
     <Content Include="_PowerShellScripts\SetCloudServiceSize.ps1" />
     <Content Include="_PowerShellScripts\CloneDatabase.ps1" />
     <Content Include="_PowerShellScripts\DeleteDatabase.ps1" />
-    <Content Include="_PowerShellScripts\Set-StagingHostname.ps1" />
+    <Content Include="_PowerShellScripts\Set-EndpointsStaging.ps1" />
     <Content Include="_PowerShellScripts\CopyAppInsightsConfigs.ps1" />
     <Content Include="_PowerShellScripts\Set-CS.ps1" />
-    <Content Include="_PowerShellScripts\Set-CloudServiceSettings.ps1" />
     <Content Include="_PowerShellScripts\Wait-Database.ps1" />
     <Content Include="_PowerShellScripts\Run-IntegrationTests.ps1" />
-    <Content Include="_PowerShellScripts\Set-HealthMonitorSettings.ps1" />
     <Content Include="_PowerShellScripts\Upload-File.ps1" />
     <Content Include="_PowerShellScripts\Start-StagingWebsite.ps1" />
     <Content Include="_PowerShellScripts\Stop-StagingWebsite.ps1" />
     <Content Include="_PowerShellScripts\Start-Sleep.ps1" />
-    <Content Include="_PowerShellScripts\Update-TerminalHostnameInDb.ps1" />
+    <Content Include="_PowerShellScripts\Update-HostnameInTerminals.ps1" />
     <Content Include="_PowerShellScripts\Add-BuildServer.ps1" />
-    <Content Include="_PowerShellScripts\UpdateTerminalHostnameInDb.ps1" />
+    <Content Include="_PowerShellScripts\Set-EndpointsDev.ps1" />
     <Content Include="_PowerShellScripts\Check-Confirmation.ps1" />
     <Content Include="_PowerShellScripts\MergePRSourcesIntoDev.ps1" />
     <Content Include="_PowerShellScripts\Run-ProtractorTests.ps1" />
@@ -979,16 +842,38 @@
     <Content Include="_PowerShellScripts\RestoreDatabaseFromBackup.ps1" />
     <Content Include="_PowerShellScripts\CleanUpAfterTests.ps1" />
     <Content Include="_PowerShellScripts\Copy-ImagesBetweenAccount.ps1" />
+    <Content Include="Views\JsTests\endpoints.cshtml" />
+    <Content Include="Views\AngularTemplate\PlanUploadModal.cshtml" />
+    <Content Include="_PowerShellScripts\Combine-Sources.ps1" />
+    <Content Include="_PowerShellScripts\Set-Config.ps1" />
+    <Content Include="Views\Redirect\ClonePlan.cshtml" />
+    <Content Include="Views\AngularTemplate\UpstreamFieldChooser.cshtml" />
+    <Content Include="_PowerShellScripts\Set-WebsiteAppSettings.ps1" />
+    <Content Include="_PowerShellScripts\Create-SDKNuget.ps1" />
+    <Content Include="Views\AngularTemplate\PageDefinitionList.cshtml" />
+    <Content Include="_PowerShellScripts\Reboot-CloudService.ps1" />
+    <Content Include="_PowerShellScripts\Remove-HMAsWebJob.ps1" />
+    <Content Include="_PowerShellScripts\Create-VersionFile.ps1" />
+    <Content Include="_PowerShellScripts\Set-CsConfig.ps1" />
+    <Content Include="_PowerShellScripts\ClearDbBeforeTests.ps1" />
+    <Content Include="_PowerShellScripts\Run-DBMigration.ps1" />
+    <Content Include="Views\Shared\CDN\_AngularAppScripts.cshtml" />
+    <Content Include="Views\AngularTemplate\PlanBuilder_SimpleKioskMode.cshtml" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
+    <Content Include="_PowerShellScripts\Update-HostnameInTerminalRegistration.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\KioskModeOrganizationHeaderController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ManageUserController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\OrganizationController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\PhoneNumberAuthenticationController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\PlanUploadModalController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\PlanUploadController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\PageDefinitionFormController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\PageDefinitionListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionDocumentationController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\collapse\collapse.directive.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\collapse\collapse.module.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\BuildMessageAppender.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ControlList.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ExternalObjectChooser.ts" />
@@ -1002,10 +887,12 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\SelectData.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\SourceableCriteria.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\CrateChooser.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TimePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamCrateChooser.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooserButton.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActivityResize.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\fillHeight.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ModalResizable.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\SubplanHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Validators\ManifestDescriptionValidators.ts" />
@@ -1014,9 +901,14 @@
     <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\AuthenticationDialogController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManageAuthTokenController.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\IPageDefinition.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IManifestRegistry.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IProfile.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\ActivityResponseDTO.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\AdvisoryMessages.ts" />
     <TypeScriptCompile Include="Scripts\app\model\AlertDTO.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\PageDefinition.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\TerminalRegistrationDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ValidationResults.ts" />
     <TypeScriptCompile Include="Scripts\app\model\HistoryDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\IncomingCratesDTO.ts" />
@@ -1029,8 +921,9 @@
     <TypeScriptCompile Include="Scripts\app\services\ConfigureTrackerService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\FileDetailsService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\FileService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\PageDefinitionService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ManifestRegistryService.ts" />
-    <TypeScriptCompile Include="Scripts\app\model\SolutionDTO.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\DocumentationResponseDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\services\AuthService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ConfigureTrackerService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\FileDetailsService.ts" />
@@ -1039,10 +932,10 @@
     <TypeScriptCompile Include="Scripts\app\services\SolutionDocumentationService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\SubordinateSubplanService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\UpstreamExtractor.ts" />
+    <TypeScriptCompile Include="Scripts\tests\endpoints\plansControllerRefactoring.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\ActionPicker.spec.ts" />
-    <TypeScriptCompile Include="Scripts\tests\unit\directives\collapse.directive.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\QueryBuilder.spec.ts" />
-    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamFieldChooser.spec.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamFieldChooserButton.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\filters\FilterByTagTests.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalListController.ts" />
@@ -1084,7 +977,6 @@
     <Content Include="Views\AngularTemplate\PlanBuilder.cshtml" />
     <Content Include="Views\AngularTemplate\RadioButtonOption.cshtml" />
     <Content Include="Views\AngularTemplate\PlanDetails.cshtml" />
-    <Content Include="Views\AngularTemplate\PlanForm.cshtml" />
     <Content Include="Views\AngularTemplate\PlanList.cshtml" />
     <Content Include="Views\AngularTemplate\ShowFacts.cshtml" />
     <Content Include="Views\AngularTemplate\ShowIncidents.cshtml" />
@@ -1103,7 +995,6 @@
     <None Include="Properties\PublishProfiles\fr8 - Web Deploy.pubxml" />
     <Content Include="Views\Services\DocuSign.cshtml" />
     <Content Include="Views\Shared\_HomePage.cshtml" />
-    <Content Include="_PowerShellScripts\UpdateTerminalUrl.ps1" />
     <Content Include="_PowerShellScripts\CheckWebSettings.ps1" />
     <Content Include="Service References\Application Insights\ConnectedService.json" />
     <Content Include="Views\Welcome\Index.cshtml" />
@@ -1116,7 +1007,7 @@
     <Content Include="Views\AngularTemplate\TerminalList.cshtml" />
     <Content Include="Views\AngularTemplate\AuthenticationDialog.cshtml" />
     <Content Include="Views\AngularTemplate\UpstreamDataChooser.cshtml" />
-    <Content Include="Views\AngularTemplate\UpstreamFieldChooser.cshtml" />
+    <Content Include="Views\AngularTemplate\UpstreamFieldChooserDialog.cshtml" />
     <Content Include="Views\AngularTemplate\UsersEmailList.cshtml" />
     <Content Include="Views\AngularTemplate\FileDetails.cshtml" />
     <Content Include="Views\AngularTemplate\ManifestRegistryList.cshtml" />
@@ -1130,7 +1021,6 @@
     <Content Include="Views\Support\Index.cshtml" />
     <Content Include="Views\AngularTemplate\ChangePassword.cshtml" />
     <Content Include="Views\Company\Index.cshtml" />
-    <Content Include="Views\Shared\CDN\_AngularAppScripts.cshtml" />
     <Content Include="Views\Shared\_AngularAppStyles.cshtml" />
     <Content Include="Views\Shared\CDN\_AngularAppStyles.cshtml" />
     <Content Include="Views\AngularTemplate\SourceableCriteria.cshtml" />
@@ -1157,8 +1047,6 @@
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
-    <TypeScriptCompile Include="Scripts\app\controllers\FindObjectsController.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\FindObjectsResultsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\InternalAuthenticationController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManageFileListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ContainerListController.ts" />
@@ -1178,7 +1066,6 @@
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionListController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Counter.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Duration.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Controls\RunPlanButton.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ManagePlan.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextSource.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DropDownListBox.ts" />
@@ -1268,7 +1155,6 @@
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\PaneConfigureAction.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\Messages.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\PaneWorkflowDesigner.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\PlanFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\directives.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IAppRootScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\ICriteria.ts" />
@@ -4038,8 +3924,6 @@
     <Content Include="Content\templates\metronic\views\tree.html" />
     <Content Include="Content\templates\metronic\views\ui_bootstrap.html" />
     <Content Include="Content\templates\metronic\views\ui_select.html" />
-    <Content Include="Content\templates\inline_html_template_v1.html" />
-    <Content Include="Content\templates\googletemplate1.html" />
     <Content Include="gulpfile.js" />
     <Content Include="Content\backgroundsize.min.htc" />
     <Content Include="Content\gadegets.xml" />
@@ -4048,9 +3932,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="Api\GetAttachment.ashx" />
     <Content Include="Content\img\.DS_Store" />
-    <Content Include="Api\GetAttachment.ashx" />
     <Content Include="Content\css\additionalcss\bootstrap30\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\css\additionalcss\bootstrap30\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="Content\css\additionalcss\bootstrap30\fonts\glyphicons-halflings-regular.woff" />
@@ -4327,7 +4209,6 @@
     <None Include="Properties\PublishProfiles\kwasant-rc - Web Deploy %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\kwasant-rc - Web Deploy %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\kwasant-rc - Web Deploy.pubxml" />
-    <Content Include="TestWidgetLibrary.html" />
     <Content Include="Themes\areas.css" />
     <Content Include="Themes\areas\icons.png" />
     <Content Include="Themes\bubble_default.css" />
@@ -4385,7 +4266,6 @@
     <Content Include="Themes\scheduler_white\tree_expand.png" />
     <Content Include="Themes\scheduler_white\tree_nochildren.png" />
     <Content Include="UnauthorizedRequest.html" />
-    <Compile Include="ViewModels\EventWindowVM.cs" />
     <Content Include="tsd.json" />
     <Content Include="Scripts\tests\Chutzpah.json" />
     <None Include="Properties\PublishProfiles\test.pubxml" />
@@ -4401,7 +4281,6 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\index_docusign.cshtml" />
     <Content Include="Views\DockyardAccount\_ChangePasswordPartial.cshtml" />
@@ -4414,61 +4293,17 @@
     <Content Include="Views\DockyardAccount\Manage.cshtml" />
     <Content Include="Views\DockyardAccount\Register.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
-    <Content Include="Views\User\Create.cshtml" />
-    <Content Include="Views\User\Delete.cshtml" />
-    <Content Include="Views\User\Details.cshtml" />
-    <Content Include="Views\User\Index.cshtml" />
-    <Content Include="Views\Message\Create.cshtml" />
-    <Content Include="Views\Message\Delete.cshtml" />
-    <Content Include="Views\Message\Details.cshtml" />
-    <Content Include="Views\Message\Edit.cshtml" />
-    <Content Include="Views\Message\Index.cshtml" />
-    <Content Include="Views\Email\Create.cshtml" />
-    <Content Include="Views\Email\Delete.cshtml" />
-    <Content Include="Views\Email\Details.cshtml" />
-    <Content Include="Views\Email\Edit.cshtml" />
-    <Content Include="Views\Email\Index.cshtml" />
-    <Content Include="Views\Event\Edit.cshtml" />
     <Content Include="Views\Shared\_Blank.cshtml" />
-    <Content Include="Views\Event\ConfirmChanges.cshtml" />
-    <Content Include="Views\Event\ConfirmEventEdits.cshtml" />
-    <Content Include="Views\Event\DeleteEvent.cshtml" />
-    <Content Include="Views\MandrillWebhook\Index.cshtml" />
     <Content Include="Views\DockyardAccount\Confirm.cshtml" />
-    <Content Include="Views\NegotiationResponse\ProcessResponse.cshtml" />
-    <Content Include="Views\User\MyAccount.cshtml" />
-    <Content Include="Views\Report\Index.cshtml" />
-    <Content Include="Views\NegotiationResponse\View.cshtml" />
     <Content Include="Views\Shared\404.cshtml" />
     <Content Include="Views\DockyardAccount\RegistrationConfirmation.cshtml" />
-    <Content Include="Views\User\ChooseCalendars.cshtml" />
-    <Content Include="Views\User\FindUser.cshtml" />
-    <Content Include="Views\User\ShowAddUser.cshtml" />
-    <Content Include="Views\User\ShowCalendarEvents.cshtml" />
-    <Content Include="Views\User\ShowUserCreationSettings.cshtml" />
-    <Content Include="Views\User\ShowUserDetails.cshtml" />
     <Content Include="Views\Dashboard\Index.cshtml" />
-    <Content Include="Views\Diagnostics\Index.cshtml" />
-    <Content Include="Views\Email\Show.cshtml" />
-    <Content Include="Views\Profile\Index.cshtml" />
-    <Content Include="Views\Profile\ProfilesForUser.cshtml" />
     <Content Include="Views\DockyardAccount\ForgotPassword.cshtml" />
     <Content Include="Views\DockyardAccount\ForgotPasswordConfirmation.cshtml" />
     <Content Include="Views\DockyardAccount\ResetPassword.cshtml" />
     <Content Include="Views\DockyardAccount\ResetPasswordConfirmation.cshtml" />
-    <Content Include="Views\Email\Send.cshtml" />
-    <Content Include="Views\Report\History.cshtml" />
-    <Content Include="Views\Report\_History.cshtml" />
     <Content Include="Views\Shared\_HomeNav.cshtml" />
-    <Content Include="Views\Report\TimeSpanNavigator.cshtml" />
-    <Content Include="Views\User\ExistingUserAlert.cshtml" />
-    <Content Include="Views\User\UserRoles.cshtml" />
     <Content Include="Views\Shared\AccessDenied.cshtml" />
-    <Content Include="Views\NegotiationResponse\ThankYouView.cshtml" />
-    <Content Include="Views\Email\ShowReport.cshtml" />
-    <Content Include="Views\User\MakeNewBookingRequest.cshtml" />
-    <Content Include="Views\User\RemoteServices.cshtml" />
-    <Content Include="Views\User\LearnHowToUseKwasant.cshtml" />
     <Content Include="Views\Shared\403.cshtml" />
     <Content Include="Views\AngularTemplate\TextSource.cshtml" />
     <Content Include="Views\AngularTemplate\_PlanList.cshtml" />
@@ -4478,11 +4313,10 @@
     <Content Include="Views\AngularTemplate\ManagePlan.cshtml" />
     <Content Include="Views\AngularTemplate\Duration.cshtml" />
     <Content Include="Views\AngularTemplate\Counter.cshtml" />
-    <Content Include="Views\AngularTemplate\FindObjects.cshtml" />
-    <Content Include="Views\AngularTemplate\FindObjectsResults.cshtml" />
     <Content Include="Views\AngularTemplate\_AddPayloadModal.cshtml" />
     <None Include="Views\DocusignAuthCallback\Login.cshtml" />
     <TypeScriptCompile Include="Scripts\tests\utils\services\fixture_CrateHelper.ts" />
+    <TypeScriptCompile Include="Scripts\typings\angular-ui-bootstrap.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angular-ui-router\angular-ui-router.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-mocks.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-resource.d.ts" />
@@ -4519,37 +4353,21 @@
     <Folder Include="Views\CommunicationManager\" />
     <Folder Include="Views\Data\" />
     <Folder Include="Views\DockyardEvent\" />
-    <Folder Include="Views\DocuSignTemplate\" />
     <Folder Include="Views\Envelope\" />
-    <Folder Include="Views\Portal\" />
-    <Folder Include="Views\Process\" />
     <Folder Include="Views\Settings\" />
-    <Folder Include="Webhooks\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Fr8Data\Fr8Data.csproj">
-      <Project>{a3178d71-a2c3-45b9-8334-adcc7c313541}</Project>
-      <Name>Fr8Data</Name>
+    <ProjectReference Include="Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj">
+      <Project>{bba91af2-7636-41b6-87c4-c1575ae8b04b}</Project>
+      <Name>Fr8Infrastructure.NET</Name>
     </ProjectReference>
     <ProjectReference Include="Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
     </ProjectReference>
-    <ProjectReference Include="Daemons\Daemons.csproj">
-      <Project>{b15ea73e-e0d0-4604-bcfc-ddafb67f872d}</Project>
-      <Name>Daemons</Name>
-    </ProjectReference>
     <ProjectReference Include="Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="Infrastructure\Fr8Infrastructure.csproj">
-      <Project>{9F4B5C92-3535-4D4C-B1E4-37BEB1AE5C42}</Project>
-      <Name>Fr8Infrastructure</Name>
-    </ProjectReference>
-    <ProjectReference Include="Utilities\Utilities.csproj">
-      <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
-      <Name>Utilities</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -4575,6 +4393,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\HubWeb.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Demo|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -4637,6 +4456,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+    <Error Condition="!Exists('packages\Fr8.PrivateSettings.1.2016.202.12957-prerelease\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fr8.PrivateSettings.1.2016.202.12957-prerelease\build\net40\Fr8.PrivateSettings.targets'))" />
   </Target>
   <PropertyGroup>
     <CopyAllFilesToSingleFolderForPackageDependsOn>
@@ -4719,4 +4539,8 @@
   </Target>
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
   <Import Project="packages\Microsoft.ApplicationInsights.Agent.Intercept.0.17.0\build\Microsoft.ApplicationInsights.Agent.Intercept.targets" Condition="Exists('packages\Microsoft.ApplicationInsights.Agent.Intercept.0.17.0\build\Microsoft.ApplicationInsights.Agent.Intercept.targets')" />
+  <Target Name="BeforeBuild">
+    <RestoreSettingsTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)" ProjectName="$(ProjectName)" />
+  </Target>
+  <Import Project="packages\Fr8.PrivateSettings.1.2016.202.12957-prerelease\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.202.12957-prerelease\build\net40\Fr8.PrivateSettings.targets')" />
 </Project>

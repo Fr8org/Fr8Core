@@ -1,24 +1,24 @@
 ﻿using System;
 using StructureMap;
 using System.Threading.Tasks;
-using TerminalBase.BaseClasses;
 using terminalSalesforce.Infrastructure;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Helpers;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Helpers;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Helpers;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Services;
 using log4net;
 using Newtonsoft.Json;
 using ServiceStack;
-using TerminalBase.Errors;
-using TerminalBase.Infrastructure;
-using TerminalBase.Services;
 
 namespace terminalSalesforce.Actions
 {
@@ -26,6 +26,7 @@ namespace terminalSalesforce.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("5052fc23-c867-4d5a-8fbb-b6b64b5ad688"),
             Version = "2",
             Name = "Post_To_Chatter",
             Label = "Post To Salesforce Chatter",
@@ -33,9 +34,15 @@ namespace terminalSalesforce.Actions
             Category = ActivityCategory.Forwarders,
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
 
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -51,7 +58,7 @@ namespace terminalSalesforce.Actions
 
             public RadioButtonOption UseIncomingChatterIdOption { get; set; }
 
-            public DropDownList IncomingChatterIdSelector { get; set; }
+            public UpstreamFieldChooser IncomingChatterIdSelector { get; set; }
 
             public ActivityUi() : this(new UiBuilder()) { }
 
@@ -82,14 +89,13 @@ namespace terminalSalesforce.Actions
                     Value = "Query for chatter objects",
                     Controls = new List<ControlDefinitionDTO> { ChatterSelector, ChatterFilter }
                 };
-                IncomingChatterIdSelector = new DropDownList
+                IncomingChatterIdSelector = new UpstreamFieldChooser
                 {
                     Name = nameof(IncomingChatterIdSelector),
                     Source = new FieldSourceDTO
                     {
                         AvailabilityType = AvailabilityType.RunTime,
-                        ManifestType = CrateManifestTypes.StandardDesignTimeFields,
-                        RequestUpstream = true
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     }
                 };
                 UseIncomingChatterIdOption = new RadioButtonOption
@@ -116,7 +122,7 @@ namespace terminalSalesforce.Actions
         public const string PostedFeedPropertiesCrateLabel = "Posted Feeds";
         public const string FeedIdKeyName = "FeedId";
 
-        private static readonly ILog Logger = Utilities.Logging.Logger.GetCurrentClassLogger();
+        private static readonly ILog Logger = Fr8.Infrastructure.Utilities.Logging.Logger.GetCurrentClassLogger();
             
 
         private readonly ISalesforceManager _salesforceManager;
@@ -131,11 +137,8 @@ namespace terminalSalesforce.Actions
         public override async Task Initialize()
         {
             IsPostingToQueryiedChatter = true;
-            AvailableChatters = _salesforceManager.GetSalesforceObjectTypes(filterByProperties: SalesforceObjectProperties.HasChatter).Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PostedFeedCrateLabel);
-            Storage.Add(Crate<FieldDescriptionsCM>.FromContent(PostedFeedPropertiesCrateLabel,
-                                                                              new FieldDescriptionsCM(new FieldDTO(FeedIdKeyName, FeedIdKeyName, AvailabilityType.RunTime) { SourceCrateLabel = FeedIdKeyName }),
-                                                                              AvailabilityType.RunTime));
+            AvailableChatters = _salesforceManager.GetSalesforceObjectTypes(filterByProperties: SalesforceObjectProperties.HasChatter).Select(x => new ListItem {Key = x.Name, Value = x.Label}).ToList();
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PostedFeedCrateLabel).AddField(FeedIdKeyName);
         }
 
         public override async Task FollowUp()
@@ -193,8 +196,8 @@ namespace terminalSalesforce.Actions
                 try
                 {
                     var chatters = await _salesforceManager.Query(SelectedChatter.ToEnum<SalesforceObjectType>(),
-                                                              new[] { "Id" },
-                                                              ControlHelper.ParseConditionToText(JsonConvert.DeserializeObject<List<FilterConditionDTO>>(ChatterFilter)),
+                                                              new[] { new FieldDTO("Id") },
+                                                              FilterConditionHelper.ParseConditionToText(JsonConvert.DeserializeObject<List<FilterConditionDTO>>(ChatterFilter)),
                                                               AuthorizationToken);
                     var tasks = new List<Task<string>>(chatters.Table.Count);
                     foreach (var chatterId in chatters.DataRows.Select(x => x.Row[0].Cell.Value))
@@ -211,13 +214,13 @@ namespace terminalSalesforce.Actions
                     //If we did not find any chatter object we don't fail activity execution but rather returns empty list and inform caller about it 
                     if (!chatters.HasDataRows)
                     {
-                        Logger.Info($"No salesforce objects were found to use as chatter id.");
+                        Logger.Info("No salesforce objects were found to use as chatter id.");
                         Success($"No {SelectedChatter} that satisfies specified conditions were found. No message were posted");
                     }
                     else
                     {
                         var resultPayload = new StandardPayloadDataCM();
-                        resultPayload.PayloadObjects.AddRange(tasks.Select(x => new PayloadObjectDTO(new FieldDTO(FeedIdKeyName, x.Result))));
+                        resultPayload.PayloadObjects.AddRange(tasks.Select(x => new PayloadObjectDTO(new KeyValueDTO(FeedIdKeyName, x.Result))));
                         Payload.Add(Crate<StandardPayloadDataCM>.FromContent(PostedFeedCrateLabel, resultPayload));
                     }
                 }
@@ -241,18 +244,18 @@ namespace terminalSalesforce.Actions
 
                 Logger.Info($"Posting message to chatter succeded with feedId: {feedId}");
 
-                Payload.Add(Crate.FromContent(PostedFeedCrateLabel, new StandardPayloadDataCM(new FieldDTO(FeedIdKeyName, feedId))));
+                Payload.Add(Crate.FromContent(PostedFeedCrateLabel, new StandardPayloadDataCM(new KeyValueDTO(FeedIdKeyName, feedId))));
             }
         }
 
         public static string StripHTML(string input)
         {
-            return Regex.Replace(input, "<.*?>", String.Empty);
+            return Regex.Replace(input, "<.*?>", string.Empty);
         }
 
         #region Controls properties wrappers
 
-        private string SelectedChatter { get { return ActivityUI.ChatterSelector.selectedKey; } }
+        private string SelectedChatter => ActivityUI.ChatterSelector.selectedKey;
 
         private bool IsPostingToQueryiedChatter
         {
@@ -260,23 +263,18 @@ namespace terminalSalesforce.Actions
             set { ActivityUI.QueryForChatterOption.Selected = value; }
         }
 
-        private bool IsUsingIncomingChatterId
-        {
-            get { return ActivityUI.UseIncomingChatterIdOption.Selected; }
-            set { ActivityUI.UseIncomingChatterIdOption.Selected = value; }
-        }
+        private bool IsUsingIncomingChatterId => ActivityUI.UseIncomingChatterIdOption.Selected;
 
         private List<ListItem> AvailableChatters
         {
-            get { return ActivityUI.ChatterSelector.ListItems; }
             set { ActivityUI.ChatterSelector.ListItems = value; }
         }
 
-        private string FeedText { get { return ActivityUI.FeedTextSource.GetValue(Payload); } }
+        private string FeedText => ActivityUI.FeedTextSource.GetValue(Payload);
 
-        private string ChatterFilter { get { return ActivityUI.ChatterFilter.Value; } }
+        private string ChatterFilter => ActivityUI.ChatterFilter.Value;
 
-        private string IncomingChatterId { get { return Payload.FindField(ActivityUI.IncomingChatterIdSelector.selectedKey); } }
+        private string IncomingChatterId => Payload.FindField(ActivityUI.IncomingChatterIdSelector.selectedKey);
 
         #endregion
     }

@@ -11,7 +11,7 @@ namespace Data.Repositories.Utilization
     public class SqlUtilizationDataProvider : IUtilizationDataProvider
     {
         private readonly ISqlConnectionProvider _connectionProvider;
-        private static readonly ILog Logger = Utilities.Logging.Logger.GetCurrentClassLogger();
+        private static readonly ILog Logger = Fr8.Infrastructure.Utilities.Logging.Logger.GetCurrentClassLogger();
 
         public SqlUtilizationDataProvider(ISqlConnectionProvider connectionProvider)
         {

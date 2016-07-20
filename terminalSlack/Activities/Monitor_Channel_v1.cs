@@ -1,21 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
-using Fr8Data.States;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
-using TerminalBase.BaseClasses;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
 using System;
-using Fr8Data.Managers;
-using TerminalBase.Infrastructure;
+using ServiceStack.Text;
 
 namespace terminalSlack.Actions
 {
-    public class Monitor_Channel_v1 : EnhancedTerminalActivity<Monitor_Channel_v1.ActivityUi>
+    public class Monitor_Channel_v1 : TerminalActivity<Monitor_Channel_v1.ActivityUi>
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -75,12 +75,11 @@ namespace terminalSlack.Actions
 
         public const string ResultPayloadCrateLabel = "Slack Message";
 
-        public const string EventSubscriptionsCrateLabel = "Standard Event Subscriptions";
-
         private readonly ISlackIntegration _slackIntegration;
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("246DF538-3B7E-4D1B-B045-72021BAA0D2D"),
             Name = "Monitor_Channel",
             Label = "Monitor Channel",
             Category = ActivityCategory.Monitors,
@@ -88,77 +87,54 @@ namespace terminalSlack.Actions
             NeedsAuthentication = true,
             Version = "1",
             WebService = TerminalData.WebServiceDTO,
-            MinPaneWidth = 330
+            MinPaneWidth = 330,
+            Categories = new[]
+            {
+                ActivityCategories.Monitor,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
         
 
-        public Monitor_Channel_v1(ICrateManager crateManager)
-            : base(true, crateManager)
+        public Monitor_Channel_v1(ICrateManager crateManager, ISlackIntegration slackIntegration)
+            : base(crateManager)
         {
-            _slackIntegration = new SlackIntegration();
+            _slackIntegration = slackIntegration;
         }
-
-        
-        private Crate CreateChannelPropertiesCrate()
-        {
-            var fields = new[]
-            {
-                new FieldDTO() { Key = "token", Value = "token", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel},
-                new FieldDTO() { Key = "team_id", Value = "team_id", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel},
-                new FieldDTO() { Key = "team_domain", Value = "team_domain", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
-                new FieldDTO() { Key = "service_id", Value = "service_id", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
-                new FieldDTO() { Key = "timestamp", Value = "timestamp", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
-                new FieldDTO() { Key = "channel_id", Value = "channel_id", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
-                new FieldDTO() { Key = "channel_name", Value = "channel_name", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
-                new FieldDTO() { Key = "user_id", Value = "user_id", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
-                new FieldDTO() { Key = "user_name", Value = "user_name", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
-                new FieldDTO() { Key = "text", Value = "text", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel }
-            };
-            var crate = Crate.FromContent(SlackMessagePropertiesCrateLabel, new FieldDescriptionsCM(fields), AvailabilityType.Always);
-            return crate;
-        }
-
-        private Crate CreateEventSubscriptionCrate()
-        {
-            return CrateManager.CreateStandardEventSubscriptionsCrate(EventSubscriptionsCrateLabel, 
-                                                                      "Slack", 
-                                                                      new string[] { "Slack Outgoing Message" });
-        }
-
+      
         public override Task Run()
         {
             var incomingMessageContents = ExtractIncomingMessageContentFromPayload();
-            var hasIncomingMessage = incomingMessageContents?.Fields.Count > 0;
+            var hasIncomingMessage = incomingMessageContents?.Count > 0;
+
             if (hasIncomingMessage)
             {
                 var channelMatches = ActivityUI.AllChannelsOption.Selected
                     || string.IsNullOrEmpty(ActivityUI.ChannelList.selectedKey)
-                    || ActivityUI.ChannelList.Value == incomingMessageContents["channel_id"];
+                    || ActivityUI.ChannelList.Value == incomingMessageContents.FirstOrDefault(x=>x.Key == "channel_id")?.Value;
                 if (channelMatches)
                 {
-                    Payload.Add(Crate.FromContent(ResultPayloadCrateLabel, new StandardPayloadDataCM(incomingMessageContents.Fields), AvailabilityType.RunTime));
+                    Payload.Add(Crate.FromContent(ResultPayloadCrateLabel, new StandardPayloadDataCM(incomingMessageContents)));
                 }
                 else
                 {
-                    TerminateHubExecution("Incoming message doesn't belong to specified channel. No downstream activities are executed");
+                    RequestPlanExecutionTermination("Incoming message doesn't belong to specified channel. No downstream activities are executed");
                 }                
             }
             else
             {
-                TerminateHubExecution("Plan successfully activated. It will wait and respond to specified Slack postings");
+                RequestPlanExecutionTermination("Plan successfully activated. It will wait and respond to specified Slack postings");
             }
+
             return Task.FromResult(0);
         }
 
-        private FieldDescriptionsCM ExtractIncomingMessageContentFromPayload()
+        private List<KeyValueDTO> ExtractIncomingMessageContentFromPayload()
         {
             var eventReport = Payload.CrateContentsOfType<EventReportCM>().FirstOrDefault();
-            if (eventReport == null)
-            {
-                return null;
-            }
-            return new FieldDescriptionsCM(eventReport.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()));
+
+            return eventReport?.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()).ToList();
         }
 
         public override async Task Initialize()
@@ -168,9 +144,21 @@ namespace terminalSlack.Actions
                 .OrderBy(x => x.Key)
                 .Select(x => new ListItem { Key = $"#{x.Key}", Value = x.Value })
                 .ToList();
-            Storage.Add(CreateChannelPropertiesCrate());
-            Storage.Add(CreateEventSubscriptionCrate());
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel);
+
+            EventSubscriptions.Manufacturer = "Slack";
+            EventSubscriptions.Add("Slack Outgoing Message");
+
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel)
+                 .AddField("token")
+                .AddField("team_id")
+                .AddField("team_domain")
+                .AddField("service_id")
+                .AddField("timestamp")
+                .AddField("channel_id")
+                .AddField("channel_name")
+                .AddField("user_id")
+                .AddField("user_name")
+                .AddField("text");
         }
 
         public override Task FollowUp()

@@ -55,7 +55,6 @@
     CONTROLLERS
 */
 /// <reference path="controllers/planbuildercontroller.ts" />
-/// <reference path="controllers/planformcontroller.ts" />
 /// <reference path="controllers/planlistcontroller.ts" />
 /// <reference path="controllers/managefilelistcontroller.ts" />
 
@@ -63,7 +62,7 @@
 /*
     LIBRARIES    
 */
-/// <reference path="../typings/jquery/jquery.d.ts" />
+// <reference path="../typings/jquery/jquery.d.ts" />
 
 
 

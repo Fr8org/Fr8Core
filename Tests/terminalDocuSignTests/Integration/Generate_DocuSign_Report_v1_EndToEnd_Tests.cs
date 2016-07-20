@@ -2,18 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Helpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 
 namespace terminalDocuSignTests.Integration
 {
+    [Ignore("Commented out due to FR-2845, Generate_DocuSign_Report activity is no longer available for discovery")]
     [Explicit]
     [Category("terminalDocuSignTests.Integration")]
     public class Generate_DocuSign_Report_v1_EndToEnd_Tests : BaseHubIntegrationTest
@@ -24,6 +26,7 @@ namespace terminalDocuSignTests.Integration
         }
 
         [Test]
+        [Ignore("Commented out due to FR-2845, Generate_DocuSign_Report activity is no longer available for discovery")]
         public async Task Generate_DocuSign_Report_EndToEnd()
         {
             try
@@ -72,8 +75,8 @@ namespace terminalDocuSignTests.Integration
 
         private async Task<PlanDTO> CreateSolution()
         {
-            var solutionCreateUrl = _baseUrl + "plans/createSolution?solutionName=Generate_DocuSign_Report";
-            
+            var solutionCreateUrl = _baseUrl + "plans?solution_name=Generate_DocuSign_Report";
+
             var plan = await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
 
             return plan;
@@ -102,7 +105,7 @@ namespace terminalDocuSignTests.Integration
 
                 var token = await HttpPostAsync<CredentialsDTO, JObject>(
                     _baseUrl + "authentication/token", creds
-                );      
+                );
 
                 Assert.AreNotEqual(
                     token["error"].ToString(),
@@ -201,7 +204,7 @@ namespace terminalDocuSignTests.Integration
         private void ValidateChildrenActivities(ActivityDTO solution)
         {
             Assert.AreEqual(1, solution.ChildrenActivities.Length);
-            Assert.AreEqual("QueryFr8Warehouse", solution.ChildrenActivities[0].ActivityTemplate.Name);
+            Assert.AreEqual("Query_Fr8_Warehouse", solution.ChildrenActivities[0].ActivityTemplate.Name);
         }
 
         private void ValidateSolutionOperationalState(ICrateStorage crateStorage)
@@ -234,7 +237,7 @@ namespace terminalDocuSignTests.Integration
 
         private async Task<PlanDTO> GetPlanByActivity(Guid id)
         {
-            var solutionCreateUrl = _baseUrl + "/plans/getByActivity?id=" + id.ToString();
+            var solutionCreateUrl = _baseUrl + "/plans?activity_id=" + id.ToString();
             var plan = await HttpGetAsync<PlanDTO>(solutionCreateUrl);
 
             return plan;
@@ -258,7 +261,7 @@ namespace terminalDocuSignTests.Integration
                 actionUi.QueryBuilder.Value
             );
 
-            Assert.AreEqual(plan.Name.Trim().ToLower(), ParseConditionToText(criteria).Trim().ToLower());
+            Assert.AreEqual(plan.Name.Trim().ToLower(), FilterConditionHelper.ParseConditionToText(criteria).Trim().ToLower());
         }
     }
 

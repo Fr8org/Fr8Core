@@ -2,31 +2,29 @@
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using Fr8Data.DataTransferObjects;
-using Fr8Infrastructure.Interfaces;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
-using StructureMap;
 using terminalGoogle.Interfaces;
 using terminalGoogle.Services.Authorization;
-using TerminalBase.BaseClasses;
 
 namespace terminalGoogle.Controllers
 {
     [RoutePrefix("authentication")]
-    public class AuthenticationController : BaseTerminalController
+    public class AuthenticationController : ApiController
     {
-        private const string curTerminal = "terminalGoogle";
-
         private readonly IGoogleIntegration _googleIntegration;
+        private readonly IHubLoggerService _loggerService;
 
-
-        public AuthenticationController()
+        public AuthenticationController(IHubLoggerService loggerService, IRestfulServiceClient restfulServiceClient)
         {
-            _googleIntegration = new GoogleIntegration(ObjectFactory.GetInstance<IRestfulServiceClient>());
+            _loggerService = loggerService;
+            _googleIntegration = new GoogleIntegration(restfulServiceClient);
         }
 
         [HttpPost]
-        [Route("initial_url")]
+        [Route("request_url")]
         public ExternalAuthUrlDTO GenerateOAuthInitiationURL()
         {
             var externalStateToken = Guid.NewGuid().ToString();
@@ -68,7 +66,7 @@ namespace terminalGoogle.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerminal, ex, externalAuthDTO.Fr8UserId);
+                await _loggerService.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {

@@ -2,13 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using Data.Entities;
-using Data.Interfaces;
-using Data.States;
 using Data.States.Templates;
-using Fr8Data.States;
-using StructureMap;
+using Fr8.Infrastructure.Data.States;
 
 namespace Data.Entities
 {
@@ -42,7 +37,6 @@ namespace Data.Entities
         /// <param name="version"></param>
         ///<param name="label"></param>
         /// <param name="terminalName">Name of the new TerminalDO</param>
-        /*<param name="baseEndPoint">New TerminalDO base end point</param>*/
         /// <param name="Endpoint">New TerminalDO end point</param>
         public ActivityTemplateDO(string name, string version,
             string terminalName, string terminalLabel, string endPoint, string label = "", string description = "") : this()
@@ -96,6 +90,9 @@ namespace Data.Entities
 
         [Required]
         public ActivityType Type { get; set; }
+
+        [InverseProperty("ActivityTemplate")]
+        public virtual IList<ActivityCategorySetDO> Categories { get; set; }
 
         public int MinPaneWidth { get; set; }
 

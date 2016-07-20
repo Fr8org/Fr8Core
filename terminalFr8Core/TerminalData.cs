@@ -1,6 +1,6 @@
-﻿using Fr8Data.DataTransferObjects;
-using Fr8Data.States;
-using Utilities.Configuration.Azure;
+﻿using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Utilities.Configuration;
 
 namespace terminalFr8Core
 {
@@ -8,7 +8,8 @@ namespace terminalFr8Core
     {
         public static WebServiceDTO WebServiceDTO = new WebServiceDTO
         {
-            Name = "Built-In Services"
+            Name = "Built-In Services",
+            IconPath = "/Content/icons/web_services/fr8-core-icon-64x64.png"
         };
 
         public static TerminalDTO TerminalDTO = new TerminalDTO

@@ -1,6 +1,5 @@
 ﻿using System.Web.Http;
 using StructureMap;
-using TerminalBase.Infrastructure;
 using System.Threading.Tasks;
 using terminalFr8Core.Interfaces;
 

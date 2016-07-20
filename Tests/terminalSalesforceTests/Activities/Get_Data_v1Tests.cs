@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -15,11 +18,7 @@ using terminalSalesforce;
 using terminalSalesforce.Actions;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforceTests.Fixtures;
-using TerminalBase.Infrastructure;
-using UtilitiesTesting;
-using Fr8Data.Managers;
-using TerminalBase.Models;
-
+using Fr8.Testing.Unit;
 namespace terminalSalesforceTests.Actions
 {
     [TestFixture]
@@ -46,13 +45,13 @@ namespace terminalSalesforceTests.Actions
             ObjectFactory.Container.Inject(typeof(IHubCommunicator), hubCommunicatorMock.Object);
 
             Mock<ISalesforceManager> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceManager>());
-            FieldDTO testField = new FieldDTO("Account", "TestAccount");
+            FieldDTO testField = new FieldDTO("Account") {Label = "TestAccount"};
             salesforceIntegrationMock.Setup(
                 s => s.GetProperties(SalesforceObjectType.Account, It.IsAny<AuthorizationToken>(), false,null))
                 .Returns(() => Task.FromResult(new List<FieldDTO> { testField }));
 
             salesforceIntegrationMock.Setup(
-                s => s.Query(SalesforceObjectType.Account, It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationToken>()))
+                s => s.Query(SalesforceObjectType.Account, It.IsAny<IEnumerable<FieldDTO>>(), It.IsAny<string>(), It.IsAny<AuthorizationToken>()))
                 .Returns(() => Task.FromResult(new StandardTableDataCM()));
 
             _getData_v1 = New<Get_Data_v1>();
@@ -128,7 +127,7 @@ namespace terminalSalesforceTests.Actions
             await _getData_v1.Run(activityContext, executionContext);
             //Assert
             var stroage = executionContext.PayloadStorage;
-            Assert.AreEqual(3, stroage.Count, "Number of Payload crates not populated correctly");
+            Assert.AreEqual(2, stroage.Count, "Number of Payload crates not populated correctly");
 
             Assert.IsNotNull(stroage.CratesOfType<StandardTableDataCM>().Single(), "Not able to get the required salesforce object");
         }

@@ -7,8 +7,6 @@ using Hub.Managers.APIManagers.Packagers.SendGrid;
 using InternalInterfaces = Hub.Interfaces;
 using Hub.Interfaces;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Authorizers;
-using Hub.Managers.APIManagers.Authorizers.Google;
 using Hub.Managers.APIManagers.Packagers;
 using Hub.Managers.APIManagers.Packagers.SegmentIO;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
@@ -25,16 +23,16 @@ using ExtternalStructureMap = StructureMap;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 using System.Threading.Tasks;
-using Utilities;
-using Utilities.Interfaces;
 using System.Net.Http;
 using Microsoft.ApplicationInsights;
 using System.Linq.Expressions;
 using Castle.DynamicProxy;
 using Data.Interfaces;
 using Data.Repositories.Utilization;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities;
 using Hub.Security.ObjectDecorators;
 using Hub.Services.Timers;
 
@@ -79,6 +77,7 @@ namespace Hub.StructureMap
         {
             public LiveMode()
             {
+                For<ITerminalDiscoveryService>().Use<TerminalDiscoveryService>().Singleton();
                 For<IConfigRepository>().Use<ConfigRepository>();
                 For<IMappingEngine>().Use(Mapper.Engine);
 
@@ -90,7 +89,6 @@ namespace Hub.StructureMap
                 For<ITracker>().Use<SegmentIO>();
                 For<IIntakeManager>().Use<IntakeManager>();
 
-                For<IOAuthAuthorizer>().Use<GoogleAuthorizer>().Named("Google");
 
                 For<IImapClient>().Use<ImapClientWrapper>();
                 For<ITerminalTransmitter>().Use<TerminalTransmitter>();
@@ -103,21 +101,21 @@ namespace Hub.StructureMap
                 For<IPlanNode>().Use<PlanNode>();
                 For<ISubscription>().Use<Subscription>();
                 For<ISubplan>().Use<Subplan>();
-                For<IField>().Use<Field>();
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Hub.Services.Event>();
                 For<IActivityTemplate>().Use<ActivityTemplate>().Singleton();
+                For<IActivityCategory>().Use<ActivityCategory>().Singleton();
                 For<IFile>().Use<InternalClass.File>();
                 For<ITerminal>().Use<Terminal>().Singleton();
                 For<ICrateManager>().Use<CrateManager>();
                 For<IReport>().Use<Report>();
-                For<IManifest>().Use<Manifest>();
-                For<IFindObjectsPlan>().Use<FindObjectsPlan>();
+                For<IManifest>().Use<ManifestService>();
                 For<ITime>().Use<Time>();
                 For<IPusherNotifier>().Use<PusherNotifier>();
                 For<IAuthorization>().Use<Authorization>();
                 For<ITag>().Use<Tag>();
                 For<IOrganization>().Use<Organization>();
+                For<IPageDefinition>().Use<PageDefinition>();
 
                 For<TelemetryClient>().Use<TelemetryClient>();
                 For<IJobDispatcher>().Use<HangfireJobDispatcher>();
@@ -127,6 +125,8 @@ namespace Hub.StructureMap
                 For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
                 For<ITimer>().Use<Win32Timer>();
+                For<IManifestRegistryMonitor>().Use<ManifestRegistryMonitor>().Singleton();
+                
             }
         }
 
@@ -134,7 +134,7 @@ namespace Hub.StructureMap
         {
             public TestMode()
             {
-
+                For<ITerminalDiscoveryService>().Use<TerminalDiscoveryService>().Singleton();
                 For<IConfigRepository>().Use<MockedConfigRepository>();
                 For<IMappingEngine>().Use(Mapper.Engine);
 
@@ -147,7 +147,6 @@ namespace Hub.StructureMap
 
                 For<ISecurityServices>().Use(new MockedSecurityServices());
 
-                For<IOAuthAuthorizer>().Use<GoogleAuthorizer>().Named("Google");
 
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
 
@@ -163,7 +162,6 @@ namespace Hub.StructureMap
                 For<IPlan>().Use<Hub.Services.Plan>();
 
                 For<ISubplan>().Use<Subplan>();
-                For<IField>().Use<Field>();
                 //var mockProcess = new Mock<IProcessService>();
                 //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
                 //For<IProcessService>().Use(mockProcess.Object);
@@ -172,14 +170,14 @@ namespace Hub.StructureMap
                 var terminalTransmitterMock = new Mock<ITerminalTransmitter>();
                 For<ITerminalTransmitter>().Use(terminalTransmitterMock.Object).Singleton();
                 For<IActivityTemplate>().Use<ActivityTemplate>().Singleton();
+                For<IActivityCategory>().Use<ActivityCategory>().Singleton();
                 For<IEvent>().Use<Hub.Services.Event>();
                 //For<ITemplate>().Use<Services.Template>();
                 For<IFile>().Use<InternalClass.File>();
 
                 For<ICrateManager>().Use<CrateManager>();
 
-                For<IManifest>().Use<Manifest>();
-                For<IFindObjectsPlan>().Use<FindObjectsPlan>();
+                For<IManifest>().Use<ManifestService>();
                 For<IAuthorization>().Use<Authorization>();
                 For<IReport>().Use<Report>();
                 var timeMock = new Mock<ITime>();
@@ -190,14 +188,17 @@ namespace Hub.StructureMap
 
                 For<ITag>().Use<Tag>();
                 For<IOrganization>().Use<Organization>();
+                For<IPageDefinition>().Use<PageDefinition>();
+
                 For<TelemetryClient>().Use<TelemetryClient>();
-                For<ITerminal>().Use(new TerminalServiceForTests()).Singleton();
+                For<ITerminal>().Use(x=>new TerminalServiceForTests(x.GetInstance<IConfigRepository>())).Singleton();
                 For<IJobDispatcher>().Use<MockJobDispatcher>();
                 // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
                 For<IPlanTemplates>().Use<PlanTemplates>();
                 For<IUtilizationMonitoringService>().Use<UtilizationMonitoringService>().Singleton();
                 For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
                 For<ITimer>().Use<Win32Timer>();
+                
             }
         }
 
@@ -213,14 +214,19 @@ namespace Hub.StructureMap
         {
             private readonly ITerminal _terminal;
 
-            public TerminalServiceForTests()
+            public TerminalServiceForTests(IConfigRepository configRepository)
             {
-                _terminal = new Terminal();
+                _terminal = new Terminal(configRepository);
             }
 
-            public Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId)
+            public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal, string userId)
             {
-                return Task.FromResult(new TerminalDO());
+                return new Dictionary<string, string>();
+            }
+
+            public Task<TerminalDO> GetByToken(string token)
+            {
+                return _terminal.GetByToken(token);
             }
 
             public IEnumerable<TerminalDO> GetAll()
@@ -247,14 +253,7 @@ namespace Hub.StructureMap
             {
                 return _terminal.GetByKey(terminalId);
             }
-
-            public Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId)
-            {
-                return _terminal.IsUserSubscribedToTerminal(terminalId, userId);
-
-            }
-
-            public Task<List<SolutionPageDTO>> GetSolutionDocumentations(string terminalName)
+            public Task<List<DocumentationResponseDTO>> GetSolutionDocumentations(string terminalName)
             {
                 return _terminal.GetSolutionDocumentations(terminalName);
             }

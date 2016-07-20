@@ -1,23 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Data.Entities;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Infrastructure.Behaviors;
+using Fr8.TerminalBase.Infrastructure.States;
 using terminalDocuSign.Activities;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
-using TerminalBase.Infrastructure;
-using TerminalBase.Infrastructure.Behaviors;
 using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSign.Actions
@@ -26,6 +23,7 @@ namespace terminalDocuSign.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("8AC0A48C-C4B5-43E4-B585-2870D814BA86"),
             Version = "1",
             Name = "Send_DocuSign_Envelope",
             Label = "Send DocuSign Envelope",
@@ -34,18 +32,27 @@ namespace terminalDocuSign.Actions
             NeedsAuthentication = true,
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
         protected override string ActivityUserFriendlyName => "Send DocuSign Envelope";
+        private const string advisoryName = "DocuSign Template Warning";
+        private const string advisoryContent = "In your selected template you have fields with default values. Those can be changes inside advanced DocuSign UI to frendlier label.";
+
+
 
         public Send_DocuSign_Envelope_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
             : base(crateManager, docuSignManager)
         {
         }
 
-        protected override async Task RunDS()
+        public override async Task Run()
         {
             var loginInfo = DocuSignManager.SetUp(AuthorizationToken);
             var curTemplateId = ExtractTemplateId();
@@ -67,7 +74,7 @@ namespace terminalDocuSign.Actions
         }
 
         protected virtual void SendAnEnvelope(DocuSignApiConfiguration loginInfo,
-            List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId)
+            List<KeyValueDTO> rolesList, List<KeyValueDTO> fieldList, string curTemplateId)
         {
             try
             {
@@ -81,16 +88,16 @@ namespace terminalDocuSign.Actions
             Success();
         }
 
-        protected List<FieldDTO> MapControlsToFields()
+        protected List<KeyValueDTO> MapControlsToFields()
         {
             //todo: refactor the method
-            var resultCollection = new List<FieldDTO>();
+            var resultCollection = new List<KeyValueDTO>();
 
             //get existing userDefinedFields 
-            var usedDefinedFields = Storage.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "DocuSignTemplateUserDefinedFields").FirstOrDefault();
+            var usedDefinedFields = Storage.CrateContentsOfType<KeyValueListCM>(x => x.Label == "DocuSignTemplateUserDefinedFields").FirstOrDefault();
             if (usedDefinedFields != null)
             {
-                var tempFieldCollection = usedDefinedFields.Fields;
+                var tempFieldCollection = usedDefinedFields.Values;
 
                 //extract data from text source Controls
                 var mappingBehavior = new TextSourceMappingBehavior(Storage, "Mapping", true);
@@ -151,15 +158,15 @@ namespace terminalDocuSign.Actions
             return resultCollection;
         }
 
-        protected List<FieldDTO> MapRoleControlsToFields()
+        protected List<KeyValueDTO> MapRoleControlsToFields()
         {
-            var resultCollection = new List<FieldDTO>();
+            var resultCollection = new List<KeyValueDTO>();
 
             //get existing userDefinedFields 
-            var usedDefinedFields = Storage.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "DocuSignTemplateUserDefinedFields").FirstOrDefault();
+            var usedDefinedFields = Storage.CrateContentsOfType<KeyValueListCM>(x => x.Label == "DocuSignTemplateUserDefinedFields").FirstOrDefault();
             if (usedDefinedFields != null)
             {
-                var tempFieldCollection = usedDefinedFields.Fields;
+                var tempFieldCollection = usedDefinedFields.Values;
 
                 var mappingBehavior = new TextSourceMappingBehavior(Storage, "RolesMapping", true);
                 var textSourceValues = mappingBehavior.GetValues(Payload);
@@ -191,21 +198,22 @@ namespace terminalDocuSign.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task InitializeDS()
+        public override async Task Initialize()
         {
-                // Only do it if no existing MT.FieldDescription crate is present to avoid loss of existing settings
-                // Two crates are created
-                // One to hold the ui controls
-            if (Storage.All(c => c.ManifestType.Id != (int)MT.FieldDescription))
-                {
-                var configurationCrate = await CreateDocusignTemplateConfigurationControls();
-                FillDocuSignTemplateSource(configurationCrate, "target_docusign_template");
+            // Only do it if no existing MT.FieldDescription crate is present to avoid loss of existing settings
+            // Two crates are created
+            // One to hold the ui controls
+            if (Storage.All(c => c.ManifestType.Id != (int) MT.FieldDescription))
+            {
                 Storage.Clear();
-                Storage.Add(configurationCrate);
+
+                CreateDocusignTemplateConfigurationControls();
+
+                FillDocuSignTemplateSource("target_docusign_template");
             }
         }
 
-        protected override async Task FollowUpDS()
+        public override async Task FollowUp()
             {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(AuthorizationToken.Token);
             await HandleFollowUpConfiguration();
@@ -217,19 +225,13 @@ namespace terminalDocuSign.Actions
             {
                 return;
             }
-
-            // Try to find Configuration_Controls.
-            var stdCfgControlCrate = Storage.CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-            if (stdCfgControlCrate == null)
-            {
-                return;
-            }
+            
 
             //update docusign templates list to get if new templates were provided by DS
-            FillDocuSignTemplateSource(stdCfgControlCrate, "target_docusign_template");
+            FillDocuSignTemplateSource("target_docusign_template");
             // Try to find DocuSignTemplate drop-down.
-            var stdCfgControlMS = stdCfgControlCrate.Get<StandardConfigurationControlsCM>();
-            var dropdownControlDTO = stdCfgControlMS.FindByName("target_docusign_template");
+            
+            var dropdownControlDTO = ConfigurationControls.FindByName("target_docusign_template");
             if (dropdownControlDTO == null)
             {
                 return;
@@ -244,29 +246,38 @@ namespace terminalDocuSign.Actions
             var tabsandfields = DocuSignManager.GetTemplateRecipientsTabsAndDocuSignTabs(conf, docusignTemplateId);
 
             var roles = tabsandfields.Item1.Where(a => a.Tags.Contains(DocuSignConstants.DocuSignSignerTag));
-            var crateRolesDTO = CrateManager.CreateDesignTimeFieldsCrate(
-              "DocuSignTemplateRolesFields",
-              AvailabilityType.Configuration,
-              roles.ToArray()
-
-          );
 
             Storage.RemoveByLabel("DocuSignTemplateRolesFields");
-            Storage.Add(crateRolesDTO);
+            Storage.Add("DocuSignTemplateRolesFields", new KeyValueListCM(roles));
 
 
             var envelopeDataDTO = tabsandfields.Item2;
 
             var userDefinedFields = tabsandfields.Item1.Where(a => a.Tags.Contains(DocuSignConstants.DocuSignTabTag));
 
-            var crateUserDefinedDTO = CrateManager.CreateDesignTimeFieldsCrate(
-                "DocuSignTemplateUserDefinedFields",
-                AvailabilityType.Configuration,
-                userDefinedFields.Concat(roles).ToArray()
-            );
+            //check for DocuSign default template names and add advisory json
+            var hasDefaultNames = DocuSignManager.DocuSignTemplateDefaultNames(tabsandfields.Item2);
+            if (hasDefaultNames)
+            {
+                var advisoryCrate = Storage.CratesOfType<AdvisoryMessagesCM>().FirstOrDefault();
+                var currentAdvisoryResults = advisoryCrate == null ? new AdvisoryMessagesCM() : advisoryCrate.Content;
 
+                var advisory = currentAdvisoryResults.Advisories.FirstOrDefault(x => x.Name == advisoryName);
+
+                if (advisory == null)
+                {
+                    currentAdvisoryResults.Advisories.Add(new AdvisoryMessageDTO { Name = advisoryName, Content = advisoryContent });
+                }
+                else
+                {
+                    advisory.Content = advisoryContent;
+                }
+
+                Storage.Add(Crate.FromContent("Advisories", currentAdvisoryResults));
+            }
+            
             Storage.RemoveByLabel("DocuSignTemplateUserDefinedFields");
-            Storage.Add(crateUserDefinedDTO);
+            Storage.Add("DocuSignTemplateUserDefinedFields", new KeyValueListCM(userDefinedFields.Concat(roles)));
 
             //Create TextSource controls for ROLES
             var rolesMappingBehavior = new TextSourceMappingBehavior(Storage, "RolesMapping", true);
@@ -338,8 +349,8 @@ namespace terminalDocuSign.Actions
                 previousTemplateId = previousTemplateIdCrate.Get<StandardPayloadDataCM>().GetValueOrDefault("TemplateId");
             }
 
-            crateStorage.ReplaceByLabel(Fr8Data.Crates.Crate.FromContent("ChosenTemplateId", new StandardPayloadDataCM()
-            { PayloadObjects = new List<PayloadObjectDTO>() { new PayloadObjectDTO() { PayloadObject = new List<FieldDTO>() { new FieldDTO("TemplateId", docusignTemplateId) } } } }));
+            crateStorage.ReplaceByLabel(Crate.FromContent("ChosenTemplateId", new StandardPayloadDataCM()
+            { PayloadObjects = new List<PayloadObjectDTO>() { new PayloadObjectDTO() { PayloadObject = new List<KeyValueDTO>() { new KeyValueDTO("TemplateId", docusignTemplateId) } } } }));
 
             return docusignTemplateId != previousTemplateId;
         }
@@ -358,7 +369,7 @@ namespace terminalDocuSign.Actions
             return Task.FromResult(0);
         }
 
-        protected virtual async Task<Crate> CreateDocusignTemplateConfigurationControls()
+        protected virtual void CreateDocusignTemplateConfigurationControls()
         {
             var fieldSelectDocusignTemplateDTO = new DropDownList
             {
@@ -371,13 +382,8 @@ namespace terminalDocuSign.Actions
                 },
                 Source = null
             };
-
-            var fieldsDTO = new List<ControlDefinitionDTO>
-            {
-                fieldSelectDocusignTemplateDTO
-            };
-
-            return CrateManager.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
+            
+            AddControls(fieldSelectDocusignTemplateDTO);
         }
     }
 }

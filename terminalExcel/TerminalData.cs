@@ -1,6 +1,6 @@
-﻿using Fr8Data.DataTransferObjects;
-using Fr8Data.States;
-using Utilities.Configuration.Azure;
+﻿using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Utilities.Configuration;
 
 namespace terminalExcel
 {
@@ -8,7 +8,8 @@ namespace terminalExcel
     {
         public static WebServiceDTO WebServiceDTO = new WebServiceDTO
         {
-            Name = "Excel"
+            Name = "Excel",
+            IconPath = "/Content/icons/web_services/ms-excel-icon-64x64.png"
         };
 
         public static TerminalDTO TerminalDTO = new TerminalDTO

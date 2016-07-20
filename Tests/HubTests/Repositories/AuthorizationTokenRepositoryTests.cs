@@ -5,12 +5,11 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.Repositories.Authorization;
-using Data.States;
+using Fr8.Infrastructure.Data.States;
 using Hub.StructureMap;
 using NUnit.Framework;
 using StructureMap;
-using UtilitiesTesting;
-using Fr8Data.States;
+using Fr8.Testing.Unit;
 
 namespace HubTests.Repositories
 {
@@ -103,14 +102,6 @@ namespace HubTests.Repositories
             }
 
             ObjectFactory.GetInstance<AuthorizationRepTestSupportService>().Reset();
-        }
-
-        private void SetupTester(Dictionary<Guid, string> tokens)
-        {
-            foreach (var token in tokens)
-            {
-                ObjectFactory.GetInstance<AuthorizationRepTestSupportService>().Tokens.Add(token.Key, token.Value);
-            }
         }
 
         private AuthorizationTokenDO NewToken(IUnitOfWork uow, Guid id, string securePart)

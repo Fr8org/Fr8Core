@@ -1,34 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Web.Http;
-using TerminalBase.BaseClasses;
-using AutoMapper;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using StructureMap;
-using TerminalBase.Infrastructure;
-using TerminalBase.Services;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 
 namespace terminalAzure.Controllers
-{    
-    [RoutePrefix("activities")]
-    public class ActivityController : ApiController
+{
+    public class ActivityController : DefaultActivityController
     {
-        private const string curTerminal = "terminalAzure";
-        private readonly ActivityExecutor _activityExecutor;
-
-        public ActivityController()
+        public ActivityController(IActivityExecutor activityExecutor)
+            : base(activityExecutor)
         {
-            _activityExecutor = ObjectFactory.GetInstance<ActivityExecutor>();
-        }
-
-        [HttpPost]
-        [fr8TerminalHMACAuthenticate(curTerminal)]
-        [Authorize]
-        public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
-        {
-            return _activityExecutor.HandleFr8Request(curTerminal, actionType, curDataDTO);
         }
 
         //----------------------------------------------------------
@@ -41,7 +23,6 @@ namespace terminalAzure.Controllers
             return
                 Ok("This end point has been deprecated. Please use the V2 mechanisms to POST to this terminal. For more" +
                    "info see https://maginot.atlassian.net/wiki/display/SH/V2+Plugin+Design");
-
         }
 
         [HttpPost]
@@ -53,8 +34,6 @@ namespace terminalAzure.Controllers
             return
                 Ok("This end point has been deprecated. Please use the V2 mechanisms to POST to this terminal. For more" +
                    "info see https://maginot.atlassian.net/wiki/display/SH/V2+Plugin+Design");
-
         }
-
     }
 }

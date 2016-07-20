@@ -3,22 +3,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 using Task = System.Threading.Tasks.Task;
 using StructureMap;
 using terminalQuickBooks.Interfaces;
-using Fr8Data.States;
 
 namespace terminalQuickBooks.Actions
 {
-    public class Convert_TableData_To_AccountingTransactions_v1 :
+    /*public class Convert_TableData_To_AccountingTransactions_v1 :
         BaseQuickbooksTerminalActivity<Convert_TableData_To_AccountingTransactions_v1.ActivityUi>
     {
         public class ActivityUi : StandardConfigurationControlsCM
@@ -161,6 +152,7 @@ namespace terminalQuickBooks.Actions
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new System.Guid("83313A48-85FD-4EF3-A377-DAA450705C69"),
             Version = "1",
             Name = "Convert_TableData_To_AccountingTransactions",
             Label = "Convert Table Data To Accounting Transactions",
@@ -391,5 +383,5 @@ namespace terminalQuickBooks.Actions
                 DebitOrCredit = debitOrCredit
             };
         }
-    }
+    }*/
 }

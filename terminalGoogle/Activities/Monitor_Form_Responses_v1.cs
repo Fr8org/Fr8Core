@@ -2,19 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Errors;
 using Newtonsoft.Json;
-using TerminalBase.BaseClasses;
 using terminalGoogle.Services;
-using StructureMap;
 using terminalGoogle.Interfaces;
-using TerminalBase.Infrastructure;
 
 namespace terminalGoogle.Actions
 {
@@ -37,20 +35,14 @@ namespace terminalGoogle.Actions
                 Controls.Add(FormsList);
             }
         }
-        private readonly GoogleDrive _googleDrive;
-        private readonly GoogleAppScript _googleAppScript;
+        private readonly IGoogleDrive _googleDrive;
+        private readonly IGoogleAppsScript _googleAppsScript;
 
-        private readonly IGoogleIntegration _googleIntegration;
         private const string ConfigurationCrateLabel = "Selected_Google_Form";
         private const string RunTimeCrateLabel = "Google Form Payload Data";
-        private const string EventSubscriptionsCrateLabel = "Standard Event Subscriptions";
-        private FieldDTO SelectedForm
+
+        private KeyValueDTO SelectedForm
         {
-            get
-            {
-                var storedValues = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == ConfigurationCrateLabel)?.Content;
-                return storedValues?.Fields.First();
-            }
             set
             {
                 if (value == null)
@@ -58,31 +50,36 @@ namespace terminalGoogle.Actions
                     Storage.RemoveByLabel(ConfigurationCrateLabel);
                     return;
                 }
-                value.Availability = AvailabilityType.Configuration;
-                var newValues = Crate.FromContent(ConfigurationCrateLabel, new FieldDescriptionsCM(value), AvailabilityType.Configuration);
+      
+                var newValues = Crate.FromContent(ConfigurationCrateLabel, new KeyValueListCM(value), AvailabilityType.Configuration);
                 Storage.ReplaceByLabel(newValues);
             }
         }
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("f7619e79-112e-43aa-ba43-118c1ffc98f3"),
             Name = "Monitor_Form_Responses",
             Label = "Monitor Form Responses",
             Version = "1",
             Category = ActivityCategory.Monitors,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
-            WebService = TerminalData.WebServiceDTO,
-            MinPaneWidth = 300
+            WebService = TerminalData.GooogleWebServiceDTO,
+            MinPaneWidth = 300,
+            Categories = new[]
+            {
+                ActivityCategories.Monitor,
+                new ActivityCategoryDTO(TerminalData.GooogleWebServiceDTO.Name, TerminalData.GooogleWebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        public Monitor_Form_Responses_v1(ICrateManager crateManager, IGoogleIntegration googleIntegration)
+        public Monitor_Form_Responses_v1(ICrateManager crateManager, IGoogleIntegration googleIntegration, IGoogleAppsScript googleAppsScript, IGoogleDrive googleDrive)
             : base(crateManager, googleIntegration)
         {
-            _googleDrive = new GoogleDrive();
-            _googleAppScript = new GoogleAppScript();
-            _googleIntegration = googleIntegration;
+            _googleDrive = googleDrive;
+            _googleAppsScript = googleAppsScript;
         }
 
         public override async Task Initialize()
@@ -92,7 +89,10 @@ namespace terminalGoogle.Actions
             ActivityUI.FormsList.ListItems = forms
                 .Select(x => new ListItem { Key = x.Value, Value = x.Key })
                 .ToList();
-            Storage.Add(CreateEventSubscriptionCrate());
+
+            EventSubscriptions.Manufacturer = "Google";
+            EventSubscriptions.Add("Google Form Response");
+
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
 
@@ -115,12 +115,19 @@ namespace terminalGoogle.Actions
             }
             if (string.IsNullOrEmpty(ActivityUI.FormsList.selectedKey))
                 SelectedForm = null;
+
+            //get form id
+            var googleFormControl = ActivityUI.FormsList;
+            var formId = googleFormControl.Value;
+
             CrateSignaller.ClearAvailableCrates();
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel)
-                .AddField("Full Name")
-                .AddField("TR ID")
-                .AddField("Email Address")
-                .AddField("Period of Availability");
+
+            if (!string.IsNullOrEmpty(formId))
+            {
+                //need to get all form fields and mark them available for runtime
+                var formFields = await _googleAppsScript.GetGoogleFormFields(googleAuth, formId);
+                CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel).AddFields(formFields.Select(x => new FieldDTO() {Name = x.Title, Label = x.Title}).ToList());
+            }
         }
 
         public override async Task Activate()
@@ -132,28 +139,13 @@ namespace terminalGoogle.Actions
             if (string.IsNullOrEmpty(formId))
                 throw new ArgumentNullException("Google Form selected is empty. Please select google form to receive.");
 
-            bool triggerEvent = false;
             try
             {
-                triggerEvent = await _googleDrive.CreateFr8TriggerForDocument(googleAuth, formId, AuthorizationToken.ExternalAccountId);
+                await _googleAppsScript.CreateFr8TriggerForDocument(googleAuth, formId, AuthorizationToken.ExternalAccountId);
             }
-            finally
+            catch
             {
-                if (!triggerEvent)
-                {
-                    //in case of fail as a backup plan use old manual script notification
-                    var scriptUrl = await _googleDrive.CreateManualFr8TriggerForDocument(googleAuth, formId);
-                    await HubCommunicator.NotifyUser(new TerminalNotificationDTO
-                    {
-                        Type = "Success",
-                        ActivityName = "Monitor_Form_Responses",
-                        ActivityVersion = "1",
-                        TerminalName = "terminalGoogle",
-                        TerminalVersion = "1",
-                        Message = "You need to create fr8 trigger on current form please go to this url and run Initialize function manually. Ignore this message if you completed this step before. " + scriptUrl,
-                        Subject = "Trigger creation URL"
-                    });
-                }
+                throw new ActivityExecutionException($"Failed to activate {ActivityPayload.Name} because of problem with activating trigger on google form.");
             }
         }
 
@@ -167,7 +159,7 @@ namespace terminalGoogle.Actions
             // Just return Success as a quick fix to avoid "Plan Failed" message.
             if (payloadFields == null)
             {
-                RequestHubExecutionTermination();
+                RequestPlanExecutionTermination();
                 return Task.FromResult(0);
             }
             var formResponseFields = CreatePayloadFormResponseFields(payloadFields);
@@ -176,44 +168,26 @@ namespace terminalGoogle.Actions
             // Just return Success as a quick fix to avoid "Plan Failed" message.
             if (formResponseFields == null)
             {
-                RequestHubExecutionTermination();
+                RequestPlanExecutionTermination();
                 return Task.FromResult(0); ;
             }
             Payload.Add(Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(formResponseFields)));
             return Task.FromResult(0);
         }
 
-        private Crate CreateEventSubscriptionCrate()
+        private List<KeyValueDTO> CreatePayloadFormResponseFields(List<KeyValueDTO> payloadfields)
         {
-            var subscriptions = new string[] {
-                "Google Form Response"
-            };
-
-            return CrateManager.CreateStandardEventSubscriptionsCrate(
-                EventSubscriptionsCrateLabel,
-                "Google",
-                subscriptions.ToArray()
-                );
-        }
-
-        private List<FieldDTO> CreatePayloadFormResponseFields(List<FieldDTO> payloadfields)
-        {
-            List<FieldDTO> formFieldResponse = new List<FieldDTO>();
+            var formFieldResponse = new List<KeyValueDTO>();
             string[] formresponses = payloadfields.FirstOrDefault(w => w.Key == "response").Value.Split(new char[] { '&' });
 
             if (formresponses.Length > 0)
             {
                 formresponses[formresponses.Length - 1] = formresponses[formresponses.Length - 1].TrimEnd(new char[] { '&' });
 
-                foreach (var response in formresponses)
-                {
-                    string[] itemResponse = response.Split(new char[] { '=' });
-
-                    if (itemResponse.Length >= 2)
-                    {
-                        formFieldResponse.Add(new FieldDTO() { Key = itemResponse[0], Value = itemResponse[1] });
-                    }
-                }
+                formFieldResponse.AddRange(from response in formresponses
+                                           select response.Split(new char[] {'='}) into itemResponse
+                                           where itemResponse.Length >= 2
+                                           select new KeyValueDTO() {Key = itemResponse[0], Value = itemResponse[1]});
             }
             else
             {
@@ -223,27 +197,15 @@ namespace terminalGoogle.Actions
             return formFieldResponse;
         }
 
-        private List<FieldDTO> ExtractPayloadFields(ICrateStorage currentPayload)
+        private List<KeyValueDTO> ExtractPayloadFields(ICrateStorage currentPayload)
         {
             var eventReportMS = currentPayload.CrateContentsOfType<EventReportCM>().SingleOrDefault();
-            if (eventReportMS == null)
-                return null;
 
-            var eventFieldsCrate = eventReportMS.EventPayload.SingleOrDefault();
+            var eventFieldsCrate = eventReportMS?.EventPayload.SingleOrDefault();
             if (eventFieldsCrate == null)
                 return null;
 
             return eventReportMS.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()).ToList();
         }
-    }
-
-    public class EnumerateFormFieldsResponseItem
-    {
-        [JsonProperty("type")]
-        public string Type { get; set; }
-        [JsonProperty("id")]
-        public object Id { get; set; }
-        [JsonProperty("title")]
-        public string Title { get; set; }
     }
 }

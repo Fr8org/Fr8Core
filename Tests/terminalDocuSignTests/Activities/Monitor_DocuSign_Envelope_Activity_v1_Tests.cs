@@ -1,17 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Models;
 using NUnit.Framework;
 using StructureMap;
 using terminalDocuSign;
 using terminalDocuSign.Actions;
 using terminalDocuSign.Services.New_Api;
 using terminalDocuSignTests.Fixtures;
-using UtilitiesTesting.Fixtures;
-using TerminalBase.Models;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace terminalDocuSignTests.Activities
 {

@@ -1,9 +1,9 @@
-﻿using HealthMonitor.Utility;
+﻿using Fr8.Testing.Integration;
 using NUnit.Framework;
 using System;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 using terminalFr8CoreTests.Fixtures;
 
 namespace terminalTests.Integration
@@ -37,7 +37,7 @@ namespace terminalTests.Integration
             Assert.NotNull(responseActivityDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActivityDTO.CrateStorage);
-            Assert.AreEqual(7, crateStorage.Count);
+            Assert.AreEqual(2, crateStorage.Count);
         }
 
         [Test]
@@ -70,7 +70,7 @@ namespace terminalTests.Integration
                {
                    EventPayload = new CrateStorage()
                    {
-                        Fr8Data.Crates.Crate.FromContent(
+                        Fr8.Infrastructure.Data.Crates.Crate.FromContent(
                             "RouteActivatedReport",
                                 RouteActivated()
                             )
@@ -78,7 +78,7 @@ namespace terminalTests.Integration
                    EventNames = "RouteActivated"
                }
            );
-
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
             var runResponse = HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO).Result;
 
             Assert.NotNull(runResponse);

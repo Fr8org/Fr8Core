@@ -5,7 +5,7 @@ using Data.Repositories.Cache;
 using Data.Repositories.Plan;
 using Hub.StructureMap;
 using NUnit.Framework;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace HubTests.Repositories.Plan
 {

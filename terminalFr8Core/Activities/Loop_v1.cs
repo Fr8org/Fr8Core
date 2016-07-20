@@ -1,26 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Helpers;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Helpers;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Errors;
 using Newtonsoft.Json.Linq;
-using TerminalBase;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
-    public class Loop_v1 : BaseTerminalActivity
+    public class Loop_v1 : ExplicitTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("3d5dd0c5-6702-4b59-8c18-b8e2c5955c40"),
             Name = "Loop",
             Label = "Loop",
             Category = ActivityCategory.Processors,
@@ -29,7 +28,12 @@ namespace terminalFr8Core.Activities
             Type = ActivityType.Loop,
             Tags = Tags.AggressiveReload,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Process,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -163,9 +167,8 @@ namespace terminalFr8Core.Activities
         public override async Task Initialize()
         {
             //build a controls crate to render the pane
-            var configurationControlsCrate = await CreateControlsCrate();
-            Storage.Add(configurationControlsCrate);
-            SelectTheOnlyCrate(ConfigurationControls);
+            CreateControls();
+            SelectTheOnlyCrate();
         }
 
         public override async Task FollowUp()
@@ -176,42 +179,41 @@ namespace terminalFr8Core.Activities
                 var selected = crateChooser.CrateDescriptions.FirstOrDefault(x => x.Selected);
                 if (selected != null)
                 {
-                    SelectTheOnlyCrate(ConfigurationControls);
+                    SelectTheOnlyCrate();
                 }
                 else
                 {
-                    var configurationControlsCrate = await CreateControlsCrate();
                     Storage.Clear();
-                    Storage.Add(configurationControlsCrate);
-                    SelectTheOnlyCrate(ConfigurationControls);
+                    CreateControls();
+                    SelectTheOnlyCrate();
                 }
             }
         }
         
 
-        private void SelectTheOnlyCrate(StandardConfigurationControlsCM controls)
+        private void SelectTheOnlyCrate()
         {
-            var crateChooser = controls.Controls.OfType<CrateChooser>().Single();
+            var crateChooser = ConfigurationControls.Controls.OfType<CrateChooser>().Single();
             if (crateChooser.CrateDescriptions?.Count == 1)
             {
                 crateChooser.CrateDescriptions[0].Selected = true;
             }
         }
 
-        private async Task<Crate> CreateControlsCrate()
+        private void CreateControls()
         {
-            var crateChooser = await ControlHelper.GenerateCrateChooser(
+            var crateChooser = UiBuilder.CreateCrateChooser(
                 "Available_Crates",
                 "This Loop will process the data inside of",
                 true,
-                requestUpstream: true,
-                requestConfig: true
-            );
-            return PackControlsCrate(crateChooser);
+                true
+                );
+
+            AddControls(crateChooser);
         }
 
         public Loop_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
     }

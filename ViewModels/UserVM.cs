@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace HubWeb.ViewModels
 {
@@ -16,11 +15,5 @@ namespace HubWeb.ViewModels
         public bool SendMail { get; set; }
 
         public String Role { get; set; }
-    }
-
-    public class UserCalendarVM
-    {
-        public int Id { get; set; }
-        public String Name { get; set; }
     }
 }

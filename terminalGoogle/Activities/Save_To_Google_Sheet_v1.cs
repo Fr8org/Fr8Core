@@ -2,30 +2,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
-using Fr8Data.Constants;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.Manifests.Helpers;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.Manifests.Helpers;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Infrastructure;
+using Google.GData.Client;
 using Newtonsoft.Json;
-using StructureMap;
+using terminalGoogle.Actions;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
-using TerminalBase.BaseClasses;
-using Google.GData.Client;
-using TerminalBase.Errors;
-using TerminalBase.Infrastructure;
 
-namespace terminalGoogle.Actions
+namespace terminalGoogle.Activities
 {
     public class Save_To_Google_Sheet_v1 : BaseGoogleTerminalActivity<Save_To_Google_Sheet_v1.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("120110db-b8dd-41ca-b88e-9865db315528"),
             Name = "Save_To_Google_Sheet",
             Label = "Save To Google Sheet",
             Version = "1",
@@ -33,7 +31,12 @@ namespace terminalGoogle.Actions
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             MinPaneWidth = 300,
-            WebService = TerminalData.WebServiceDTO
+            WebService = TerminalData.GooogleWebServiceDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.GooogleWebServiceDTO.Name, TerminalData.GooogleWebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -154,8 +157,8 @@ namespace terminalGoogle.Actions
         {
             get
             {
-                var storedValue = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == SelectedSpreadsheetCrateLabel);
-                return storedValue?.Content.Fields.First().Key;
+                var storedValue = Storage.FirstCrateOrDefault<KeyValueListCM>(x => x.Label == SelectedSpreadsheetCrateLabel);
+                return storedValue?.Content.Values.First().Key;
             }
             set
             {
@@ -164,7 +167,7 @@ namespace terminalGoogle.Actions
                 {
                     return;
                 }
-                Storage.Add(Crate<FieldDescriptionsCM>.FromContent(SelectedSpreadsheetCrateLabel, new FieldDescriptionsCM(new FieldDTO(value)), AvailabilityType.Configuration));
+                Storage.Add(Crate<KeyValueListCM>.FromContent(SelectedSpreadsheetCrateLabel, new KeyValueListCM(new KeyValueDTO(value, value))));
             }
         }
 
@@ -199,6 +202,7 @@ namespace terminalGoogle.Actions
                     ActivityUI.ExistingWorksheetsList.SelectByValue(firstWorksheet.Value);
                 }
                 SelectedSpreadsheet = ActivityUI.ExistingSpreadsheetsList.Value;
+                ActivityUI.ExistingSpreadsheetsList.ListItems = (await _googleSheet.GetSpreadsheets(GetGoogleAuthToken())).Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
             }
             else
             {
@@ -249,7 +253,7 @@ namespace terminalGoogle.Actions
             {
                 if (ex.InnerException.Message.IndexOf("(401) Unauthorized") > -1)
                 {
-                    throw new TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException();
+                    throw new AuthorizationTokenExpiredOrInvalidException();
                 }
 
                 throw;

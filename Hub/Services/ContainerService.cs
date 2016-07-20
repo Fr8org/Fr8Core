@@ -6,13 +6,13 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
-using Fr8Data.Crates;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Interfaces;
 using Hub.Exceptions;
 using Hub.Interfaces;
-using StructureMap;
-using Utilities.Interfaces;
 
 namespace Hub.Services
 {
@@ -20,7 +20,7 @@ namespace Hub.Services
     {
         private readonly IUtilizationMonitoringService _utilizationMonitoringService;
         private readonly IActivityExecutionRateLimitingService _activityRateLimiter;
-        private readonly IPusherNotifier _pusher;
+        private readonly IPusherNotifier _pusherNotifier;
         private readonly IActivity _activity;
         private readonly ICrateManager _crate;
 
@@ -32,7 +32,7 @@ namespace Hub.Services
         {
             _utilizationMonitoringService = utilizationMonitoringService;
             _activityRateLimiter = activityRateLimiter;
-            _pusher = pusher;
+            _pusherNotifier = pusher;
             _activity = activity;
             _crate = crateManager;
         }
@@ -243,11 +243,10 @@ namespace Hub.Services
         public IList<ContainerDO> GetByFr8Account(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false, Guid? id = null)
         {
             if (account.Id == null)
+            {
                 throw new ApplicationException("UserId must not be null");
-
+            }
             var containerRepository = unitOfWork.ContainerRepository.GetQuery();
-
-
             return (id == null ? containerRepository.Where(container => container.Plan.Fr8Account.Id == account.Id) : containerRepository.Where(container => container.Id == id && container.Plan.Fr8Account.Id == account.Id)).ToList();
         }
         
@@ -267,7 +266,7 @@ namespace Hub.Services
                 errorMessage += ex.Message;
             }
 
-            _pusher.NotifyUser(errorMessage, NotificationChannel.GenericFailure, user.UserName);
+            _pusherNotifier.NotifyUser(errorMessage, NotificationType.GenericFailure, user.Id);
         }
     }
 }

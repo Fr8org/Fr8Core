@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 using Data.States;
-using Fr8Data.Constants;
 
 namespace Data.Entities
 {

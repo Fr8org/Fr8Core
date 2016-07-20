@@ -5,15 +5,14 @@ using terminalSalesforce.Infrastructure;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
-using TerminalBase.Errors;
-using TerminalBase.Infrastructure;
-using TerminalBase.Services;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Services;
 
 namespace terminalSalesforce.Actions
 {
@@ -21,6 +20,7 @@ namespace terminalSalesforce.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("E2250022-FA40-4FCF-9CDD-130DF6DD1984"),
             Version = "1",
             Name = "Post_To_Chatter",
             Label = "Post To Salesforce Chatter",
@@ -28,7 +28,12 @@ namespace terminalSalesforce.Actions
             Category = ActivityCategory.Forwarders,
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -136,7 +141,7 @@ namespace terminalSalesforce.Actions
             {
                 throw new ActivityExecutionException("Failed to post to chatter due to Salesforce API error");
             }
-            Payload.Add(Crate.FromContent(PostedFeedCrateLabel, new StandardPayloadDataCM(new FieldDTO("FeedID", result))));
+            Payload.Add(Crate.FromContent(PostedFeedCrateLabel, new StandardPayloadDataCM(new KeyValueDTO("FeedID", result))));
         }
 
         public static string StripHTML(string input)

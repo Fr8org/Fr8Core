@@ -4,9 +4,8 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using System.Web.Http.Routing;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 using Microsoft.Owin.Hosting;
 using Owin;
 
@@ -85,7 +84,7 @@ namespace terminalFr8CoreTests.Fixtures
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Label = "ConnectToSql Fr8Core",
+                Label = "Connect_To_Sql Fr8Core",
                 ActivityTemplate = activityTemplate
             };
 
@@ -97,7 +96,7 @@ namespace terminalFr8CoreTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "ConnectToSql_TEST",
+                Name = "Connect_To_Sql_TEST",
                 Version = "1"
             };
         }
@@ -109,7 +108,7 @@ namespace terminalFr8CoreTests.Fixtures
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Label = "ExecuteSql Fr8Core",
+                Label = "Execute_Sql Fr8Core",
                 ActivityTemplate = activityTemplate
             };
 
@@ -121,7 +120,7 @@ namespace terminalFr8CoreTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "ExecuteSql_TEST",
+                Name = "Execute_Sql_TEST",
                 Version = "1"
             };
         }
@@ -133,7 +132,7 @@ namespace terminalFr8CoreTests.Fixtures
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Label = "ExecuteSql Fr8Core",
+                Label = "Execute_Sql Fr8Core",
                 ActivityTemplate = activityTemplate
             };
 
@@ -145,7 +144,7 @@ namespace terminalFr8CoreTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "SaveToFr8Warehouse_TEST",
+                Name = "Save_To_Fr8_Warehouse_TEST",
                 Version = "1"
             };
         }
@@ -203,19 +202,19 @@ namespace terminalFr8CoreTests.Fixtures
                 {
                     new TableCellDTO()
                     {
-                        Cell = new FieldDTO("1", "Date")
+                        Cell = new KeyValueDTO("1", "Date")
                     },
                     new TableCellDTO()
                     {
-                        Cell = new FieldDTO("2", "Description")
+                        Cell = new KeyValueDTO("2", "Description")
                     },
                     new TableCellDTO()
                     {
-                        Cell = new FieldDTO("3", "Phone")
+                        Cell = new KeyValueDTO("3", "Phone")
                     },
                     new TableCellDTO()
                     {
-                        Cell = new FieldDTO("4", "Travelling")
+                        Cell = new KeyValueDTO("4", "Travelling")
                     }
                 }
             };
@@ -225,19 +224,19 @@ namespace terminalFr8CoreTests.Fixtures
                 {
                     new TableCellDTO()
                     {
-                        Cell = new FieldDTO("5", "30-Dec-2015")
+                        Cell = new KeyValueDTO("5", "30-Dec-2015")
                     },
                     new TableCellDTO()
                     {
-                        Cell = new FieldDTO("6", "Trip to Samarkand")
+                        Cell = new KeyValueDTO("6", "Trip to Samarkand")
                     },
                     new TableCellDTO()
                     {
-                        Cell = new FieldDTO("7", "70")
+                        Cell = new KeyValueDTO("7", "70")
                     },
                     new TableCellDTO()
                     {
-                        Cell = new FieldDTO("8", "90")
+                        Cell = new KeyValueDTO("8", "90")
                     }
                 }
             };

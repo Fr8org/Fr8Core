@@ -1,5 +1,5 @@
 ﻿using System;
-using Fr8Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace terminalSendGridTests.Fixtures
 {
@@ -10,7 +10,7 @@ namespace terminalSendGridTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "SendEmailViaSendGrid_TEST",
+                Name = "Send_Email_Via_SendGrid_TEST",
                 Version = "1"
             };
         }

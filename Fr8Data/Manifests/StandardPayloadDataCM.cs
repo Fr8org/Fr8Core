@@ -36,6 +36,18 @@ namespace Fr8Data.Manifests
         {
         }
 
+        public List<FieldDTO> GetAllFields()
+        {
+            var fields = new List<FieldDTO>();
+
+            if (PayloadObjects != null)
+            {
+                fields.AddRange(PayloadObjects.Where(x=>x.PayloadObject != null).SelectMany(x => x.PayloadObject));
+            }
+
+            return fields;
+        }
+
         public bool TryGetValue(string key, bool skipNull, bool ignoreCase, out string value)
         {
             if (PayloadObjects == null)

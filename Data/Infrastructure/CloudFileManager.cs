@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
-using Utilities.Configuration.Azure;
 
 namespace Data.Infrastructure
 {

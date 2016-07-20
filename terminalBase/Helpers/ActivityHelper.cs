@@ -44,7 +44,7 @@ namespace TerminalBase.Helpers
             activityUi.RestoreDynamicControlsFrom(controlsCrate.Content);
             action(activityUi);
             var newControls = new StandardConfigurationControlsCM(activityUi.Controls.ToArray());
-            storage.ReplaceByLabel(Crate.FromContent(controlsCrate.Label, newControls, controlsCrate.Availability));
+            storage.ReplaceByLabel(Crate.FromContent(controlsCrate.Label, newControls));
             activityUi.SaveDynamicControlsTo(newControls);
         }
 

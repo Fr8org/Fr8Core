@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using Fr8Data.States;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
 using terminalGoogle.Activities;
 
 namespace terminalGoogleTests.Integration
@@ -44,23 +44,7 @@ namespace terminalGoogleTests.Integration
 
         private Crate PackCrate_GoogleForms()
         {
-            var curFields = new List<FieldDTO>() { new FieldDTO() { Key = "Survey Form", Value = "1z7mIQdHeFIpxBm92sIFB52B7SwyEO3IT5LiUcmojzn8" } }.ToArray();
-            Crate crate = CrateManager.CreateDesignTimeFieldsCrate("Available Forms", curFields);
-
-            return crate;
-        }
-
-        private Crate CreateEventSubscriptionCrate()
-        {
-            var subscriptions = new string[] {
-                "Google Form Response"
-            };
-
-            return CrateManager.CreateStandardEventSubscriptionsCrate(
-                "Standard Event Subscriptions",
-                "Google",
-                subscriptions.ToArray()
-                );
+           return Crate.FromContent("Available Forms", new KeyValueListCM(new KeyValueDTO("Survey Form", "1z7mIQdHeFIpxBm92sIFB52B7SwyEO3IT5LiUcmojzn8" )));
         }
 
         public static ActivityTemplateDTO Monitor_Form_Responses_v1_ActivityTemplate()
@@ -118,13 +102,12 @@ namespace terminalGoogleTests.Integration
         {
             var configurationControlsCrate = curCrate;
             var crateDesignTimeFields = PackCrate_GoogleForms();
-            var eventCrate = CreateEventSubscriptionCrate();
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDTO))
             {
                 crateStorage.Add(configurationControlsCrate);
                 crateStorage.Add(crateDesignTimeFields);
-                crateStorage.Add(eventCrate);
+                crateStorage.Add("Standard Event Subscriptions", new EventSubscriptionCM("Google", "Google Form Response"));
             }
         }
 
@@ -174,16 +157,16 @@ namespace terminalGoogleTests.Integration
             ActivateCrateStorage(activity, PackCrate_ConfigurationControlsWithNoListItems());
             return new Fr8DataDTO { ActivityDTO = activity };
         }
-        private ICrateStorage WrapPayloadDataCrate(List<FieldDTO> payloadFields)
+        private ICrateStorage WrapPayloadDataCrate(List<KeyValueDTO> payloadFields)
         {
-            return new CrateStorage(Fr8Data.Crates.Crate.FromContent("Payload Data", new StandardPayloadDataCM(payloadFields)));
+            return new CrateStorage(Crate.FromContent("Payload Data", new StandardPayloadDataCM(payloadFields)));
         }
 
         private Crate PayloadRaw()
         {
-            List<FieldDTO> payloadFields = new List<FieldDTO>();
-            payloadFields.Add(new FieldDTO() { Key = "user_id", Value = "g_admin@dockyard.company" });
-            payloadFields.Add(new FieldDTO() { Key = "response", Value = "What is your pets name=cat&What is your favorite book?=book&Who is your favorite superhero?=hero&" });
+            List<KeyValueDTO> payloadFields = new List<KeyValueDTO>();
+            payloadFields.Add(new KeyValueDTO() { Key = "user_id", Value = "g_admin@dockyard.company" });
+            payloadFields.Add(new KeyValueDTO() { Key = "response", Value = "What is your pets name=cat&What is your favorite book?=book&Who is your favorite superhero?=hero&" });
             var eventReportContent = new EventReportCM
             {
                 EventNames = "Google Form Response",
@@ -200,7 +183,7 @@ namespace terminalGoogleTests.Integration
 
         private Crate PayloadEmptyRaw()
         {
-            List<FieldDTO> payloadFields = new List<FieldDTO>();
+            List<KeyValueDTO> payloadFields = new List<KeyValueDTO>();
             var eventReportContent = new EventReportCM
             {
                 EventNames = "Google Form Response",
@@ -301,37 +284,35 @@ namespace terminalGoogleTests.Integration
         {
             Crate crate;
 
-            var curFields = new List<FieldDTO>()
-            {
-                new FieldDTO
+            var curFields = new KeyValueListCM(
+                new KeyValueDTO
                 {
                     Key = "Column_Only",
                     Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/1o0cle_rnfVtmeLqDDeF40dRWKL6FSCuQz5E84pcCpTs"
                 },
-                new FieldDTO
+                new KeyValueDTO
                 {
                     Key = "Row_Only",
                     Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/1pzbssu5vuCqv5LMTdIQ7SCqVFaQR0_d7MnB7oGonzf0"
                 },
-                new FieldDTO
+                new KeyValueDTO
                 {
                     Key = "Row_And_Column",
                     Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/1zG93EWaycPyCdM9OJf03C2knK9Neu09OutAl2p7NZbw"
                 },
-                new FieldDTO
+                new KeyValueDTO
                 {
                     Key="Empty_First_Row",
                     Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/1Nzf_s2OyZTxG8ppxzvypH6s1ePvUT_ALPffZchuM14o"
                 },
-                new FieldDTO
+                new KeyValueDTO
                 {
                     Key="OneRow_WithHeader",
                     Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/1XES9LEK6WmSp5adZ8F-_cfoE7EeLMgPr6NhRPyGaSfM"
                 }
-            }.ToArray();
-            crate = CrateManager.CreateDesignTimeFieldsCrate("Select a Google Spreadsheet", curFields);
+            );
 
-            return crate;
+            return Crate.FromContent("Select a Google Spreadsheet", curFields);
         }
 
         private Crate Get_Google_Sheet_Data_v1_PackCrate_ConfigurationControls(Tuple<string, string> spreadsheetTuple)

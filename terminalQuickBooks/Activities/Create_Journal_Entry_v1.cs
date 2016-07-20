@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Control;
-using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
-using TerminalBase.BaseClasses;
-using StructureMap;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
 using terminalQuickBooks.Interfaces;
-using TerminalBase.Infrastructure;
-using Fr8Data.States;
 
 namespace terminalQuickBooks.Actions
 {
@@ -22,6 +18,7 @@ namespace terminalQuickBooks.Actions
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("8d1d8407-488f-4494-a724-746c1ae4e901"),
             Version = "1",
             Name = "Create_Journal_Entry",
             Label = "Create Journal Entry",
@@ -29,7 +26,12 @@ namespace terminalQuickBooks.Actions
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO
+            WebService = TerminalData.WebServiceDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -44,14 +46,7 @@ namespace terminalQuickBooks.Actions
         {
             if (ActivityId == Guid.Empty)
                 throw new ArgumentException("Configuration requires the submission of an Action that has a real ActionId");
-
-            //get StandardAccountingTransactionCM
-            var upstreamCrates = await HubCommunicator.GetCratesByDirection<StandardAccountingTransactionCM>(ActivityId, CrateDirection.Upstream);
-            TextBlock textBlock;
-            if (upstreamCrates.Count > 0)
-            {
-                Storage.Add(upstreamCrates.First());
-            }
+          
         }
 
         public override Task FollowUp()

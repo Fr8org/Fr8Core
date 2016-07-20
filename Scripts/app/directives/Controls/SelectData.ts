@@ -19,10 +19,12 @@ module dockyard.directives {
             '$http',
             'SubordinateSubplanService',
             'CrateHelper',
+            '$window',
             function ($scope: ISelectDataControllerScope,
                 $http: ng.IHttpService,
                 SubordinateSubplanService: services.SubordinateSubplanService,
-                CrateHelper: services.CrateHelper) {
+                CrateHelper: services.CrateHelper,
+                $window: any) {
 
                 $scope.select = () => {
                     SubordinateSubplanService
@@ -33,20 +35,26 @@ module dockyard.directives {
                         });
                 };
 
+                var isConfiguring = false;
                 $scope.configure = () => {
+                    if (isConfiguring) {
+                        return;
+                    }
+                    isConfiguring = true;
+
                     $http.get('/api/activitytemplates/?id=' + $scope.field.activityTemplateId)
                         .then((res) => {
                             var activityTemplate = <model.ActivityTemplate>res.data;
 
                             SubordinateSubplanService
                                 .createSubplanAndConfigureActivity(
-                                    $scope,
-                                    $scope.field.name,
-                                    false,
-                                    $scope.plan,
-                                    $scope.currentAction,
-                                    $scope.field.subPlanId,
-                                    activityTemplate)
+                                $scope,
+                                $scope.field.name,
+                                false,
+                                $scope.plan,
+                                $scope.currentAction,
+                                $scope.field.subPlanId,
+                                activityTemplate)
                                 .then((subplanInfo: model.SubordinateSubplan) => {
                                     $scope.field.subPlanId = subplanInfo.subPlanId;
 
@@ -66,7 +74,7 @@ module dockyard.directives {
                                             $scope.field.externalObjectName = externalObjectName;
                                         });
                                 });
-                        });
+                        }).finally(() => { isConfiguring = false; });
                 };
             }
         ];
