@@ -52,50 +52,49 @@ Not encoded: ` http://localhost:30643/AuthenticationCallback/ProcessSuccessfulOA
 ###Example: Generating the initial oAuth url
 In this C# example, the Terminal has built an  AuthenticationController which responds to the incoming POST request. 
 
-
-Following code in AuthenticationController passes initialOAuthUrl to Fr8
 ![](../../../../../Docs/img/TerminalDeveloping-Authentication.md-3.png)
 
-CloudConfigurationManager.GetSetting("MailChimpOAuthUrl") retrieves a value specified in Web.config:
+The hardcoded URL is stored as a configuration setting, and retrieved with CloudConfigurationManager.GetSetting("MailChimpOAuthUrl") 
 `<add key="MailChimpOAuthUrl" value="https://login.mailchimp.com/oauth2/authorize?response_type=code&amp;state=%STATE%&amp;client_id=583227558154&amp;redirect_uri=http%3A%2F%2F127.0.0.1%3A30643%2FAuthenticationCallback%2FProcessSuccessfulOAuthResponse%3FterminalName%3DterminalMailChimp%26terminalVersion%3D1" />`
+A GUID is injected into the URL to make it unique, and it's returned to the user via C# class called ExternalAuthUrlDTO which automates the JSON serialization.
 
-If you have composed  **initialOAuthUrl** right, then user will be redirected to 3rd party authentication page and after user enters his credentials **redirect_uri** will be called with code and state parameters
-After that in AuthenticationController you have to implement a method to **GenerateOAuthToken** and return it to Fr8 
+If you have composed  **initialOAuthUrl** right, then user will be redirected to 3rd party authentication page and after user enters their credentials **redirect_uri** will be called with code and state parameters
 
-###Configuring **OAuthAccessUrl**
+At this point the AuthenticationController has to implement a method to respond to the [POSTing to /authentication/token](https://fr8.co/swagger/ui/index#!/Authentication/Authentication_token). 
 
-As with **initialOAuthUrl** you have to compose **OAuthAccessUrl** based on service documentation.
-You certainly will have to specify **code, client_id, client_secret** and **redirect_uri**
-MailChimp service requiere to specify **response_type=code**. Slack doesn't 
+### Generating oAuthToken
 
-###Generating oAuthToken
 
-When user have entered credentials Fr8 passes response to Terminal / AuthenticationController / token
 In order to generate **oAuthToken** you have to make a call to OAuthAccessUrl with the code you've received
 First you have to parse received **code** and **state**
 
 ![](../../../../../Docs/img/TerminalDeveloping-Authentication.md-4.png)
 
 When you get **code** and **state** you have to make a call to **OAuthAccessUrl**
-Different services might have different requirements on how this call should be perfomed! 
-Pay attention to documentation!
+Different services have different variations on how this is done, so read their documentation carefully. Here are two different examples:
 
-For example in Slack, in order to exchange code for token you simply have to make a GET call on the **OAuthAccessUrl** with code specifed.
+
+#### Example: Getting a Token from Slack
+
+In Slack, in order to exchange a code for a token you simply have to make a GET call on the **OAuthAccessUrl** with code specifed.
 
 ![](../../../../../Docs/img/TerminalDeveloping-Authentication.md-5.png)
 
-In ChimpMonkey you have to do it differently.
+#### Example: Getting a Token from MailChimp
+
+In MailChimp you have to do it differently.
+
 You have to:
 1. Make a POST call to https://login.mailchimp.com/oauth2/token
 2. Specify response_type in addition to **code, client_id,  client_secret and  redirect_uri** as a POST call payload
 3. Specify special User-Agent 
 4. Decompress the response
 
-Code for ChimpMonkeys GetOAuthToken looks like this:
+Code for MailChimp GetOAuthToken looks like this:
 
 ![](../../../../../Docs/img/TerminalDeveloping-Authentication.md-6.png)
 
-If you've done everything right - you will get the oAuth token 
+ 
 
 ###Troubleshooting:
 - Pay attention to API documentation
