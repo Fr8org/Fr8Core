@@ -6,7 +6,6 @@ using Fr8.Infrastructure.Data.Manifests;
 using Moq;
 using NUnit.Framework;
 using PlanDirectory.Infrastructure;
-using Ploeh.AutoFixture;
 
 namespace terminalIntegrationTests.Unit
 {
