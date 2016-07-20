@@ -536,7 +536,7 @@
     <Content Include="Content\icons\web_services\basecamp2-icon-64x64.png" />
     <Content Include="Content\icons\web_services\Box-logo_64x64.png" />
     <Content Include="Content\icons\web_services\fr8-demo-icon-64x64.png" />
-	<Content Include="Content\icons\web_services\facebook-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\facebook-icon-64x64.png" />
     <Content Include="Content\icons\web_services\gmail-icon-64x64.png" />
     <Content Include="Content\icons\web_services\instagram-icon-64x64.png" />
     <Content Include="Content\icons\web_services\statX-icon-64x64.png" />
@@ -938,6 +938,9 @@
     <TypeScriptCompile Include="Scripts\app\directives\ModalResizable.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\SubplanHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Validators\ManifestDescriptionValidators.ts" />
+    <TypeScriptCompile Include="Scripts\app\enums\NotificationArea.ts" />
+    <TypeScriptCompile Include="Scripts\app\enums\NotificationType.ts" />
+    <TypeScriptCompile Include="Scripts\app\enums\UINotificationMessageStatus.ts" />
     <TypeScriptCompile Include="Scripts\app\events\Fr8Events.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\DateTimeFormatter.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />
@@ -963,6 +966,7 @@
     <TypeScriptCompile Include="Scripts\app\services\ConfigureTrackerService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\FileDetailsService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\FileService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\UINotificationService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\PageDefinitionService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ManifestRegistryService.ts" />
     <TypeScriptCompile Include="Scripts\app\model\DocumentationResponseDTO.ts" />
