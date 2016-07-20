@@ -175,7 +175,7 @@ namespace terminalSalesforceTests.Intergration
             }
 
             activity = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", activity);
-            activity = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", activity);
+            activity = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?id=" + activity.Id.ToString(), activity);
 
             return activity;
         }
