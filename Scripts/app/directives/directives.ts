@@ -41,7 +41,7 @@ app.directive('blockIf', function () {
         restrict: 'A',
         link: function (_scope, _element, attrs) {
             var expr = attrs['blockIf'];
-            _scope.$watch(expr, function (value) {
+            _scope.$watch(expr, (value) => {
                 if (attrs['class'] === "plan-loading-message" && _scope.$eval(expr) == null) {
                     Metronic.blockUI({ target: _element, animate: true });
                 }
@@ -55,6 +55,52 @@ app.directive('blockIf', function () {
         }
     };
 });
+
+app.directive('fr8Click', ['$parse', '$timeout',($parse: ng.IParseService, $timeout: ng.ITimeoutService) => {
+    return {
+        restrict: 'A',
+        require: '^paneConfigureAction',
+        compile: ($element: ng.IAugmentedJQuery, attr) => {
+            var fn = $parse(attr['fr8Click']);
+            return (scope, element, attr, pca) => {
+                element.on('click', (event) => {
+
+                    var simulateClick = () => {
+                        var x = event.clientX;
+                        var y = event.clientY;
+                        var ev = document.createEvent("MouseEvent");
+                        var el = document.elementFromPoint(x, y);
+                        ev.initMouseEvent(
+                            "click",
+                            true /* bubble */, true /* cancelable */,
+                            window, null,
+                            x, y, 0, 0, /* coordinates */
+                            false, false, false, false, /* modifier keys */
+                            0 /*left*/, null
+                        );
+                        el.dispatchEvent(ev);
+                    };
+                    var callCallback = () => {
+                        scope.$apply(() => {
+                            fn(scope, { $event: event });
+                        });
+                    };
+                    var checkConfigStatus = () => {
+                        
+                        if (pca.isThereOnGoingConfigRequest()) {
+                            //we need to wait for this to end
+                            pca.notifyOnConfigureEnd(simulateClick);
+                        } else {
+                            callCallback();
+                        }
+                    };
+                    checkConfigStatus();
+                });
+            };
+        }
+    };
+}]);
+
 
 app.directive("checkboxGroup", function () {
     return {
