@@ -17,7 +17,7 @@ Sections
 --------
 
 *  [General Guidelines](/Docs/ForDevelopers/DevelopmentGuides/PlatformIdependentTerminalDeveloperGuide.md)
-*  [Implementing oAuth2 authentication](dotNet/TerminalDeveloping-Authentication.md)
+*  [Implementing oAuth2 authentication](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/TerminalDeveloping-Authentication.md)
 *  [Connecting your Terminal to a WebService ](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/TerminalDeveloping-AddingAWebService.md)
 
 
