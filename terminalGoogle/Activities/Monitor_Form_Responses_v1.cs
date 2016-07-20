@@ -40,7 +40,6 @@ namespace terminalGoogle.Actions
 
         private const string ConfigurationCrateLabel = "Selected_Google_Form";
         private const string RunTimeCrateLabel = "Google Form Payload Data";
-        private const string EventSubscriptionsCrateLabel = "Standard Event Subscriptions";
 
         private KeyValueDTO SelectedForm
         {
@@ -90,7 +89,10 @@ namespace terminalGoogle.Actions
             ActivityUI.FormsList.ListItems = forms
                 .Select(x => new ListItem { Key = x.Value, Value = x.Key })
                 .ToList();
-            Storage.Add(CreateEventSubscriptionCrate());
+
+            EventSubscriptions.Manufacturer = "Google";
+            EventSubscriptions.Add("Google Form Response");
+
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
 
@@ -171,19 +173,6 @@ namespace terminalGoogle.Actions
             }
             Payload.Add(Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(formResponseFields)));
             return Task.FromResult(0);
-        }
-
-        private Crate CreateEventSubscriptionCrate()
-        {
-            var subscriptions = new string[] {
-                "Google Form Response"
-            };
-
-            return CrateManager.CreateStandardEventSubscriptionsCrate(
-                EventSubscriptionsCrateLabel,
-                "Google",
-                subscriptions.ToArray()
-                );
         }
 
         private List<KeyValueDTO> CreatePayloadFormResponseFields(List<KeyValueDTO> payloadfields)
