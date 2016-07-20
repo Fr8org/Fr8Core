@@ -540,11 +540,12 @@ Here we define a Crate containing a List of Asana Tasks, and a Crate containing 
 *MT.AsanaTask* here is an int value obtained by registering the Manifests with a Manifest Registry such as the one at [fr8.co](https://fr8.co/manifest_registry)
 
 
-## Step 6 - Add "Get tasks" Activity
+## Step 6 - Add "Get Tasks" Activity
 
-To make activities development easy for the terminal we add file AsanaOAuthBaseActivity with same named class to **Activities** folder.
-The purpose of this class is handle token interaction. General idea here is separation of concerns all authentification specific actions will do SDK, hub interaction with data transformations is activity responsibility  
-You probably want ask 'why don't we implement general auth logic in TerminalActivity base class?' - the answer is simple, every third party service has it's own way of authentication implementation, even if it follows oAuth spec, there are many small incompatible things. 
+To make activities development easy for the Terminal we add the AsanaOAuthBaseActivity  class to the **Activities** folder.
+The purpose of this class is to handle token interaction. This frees Activity code from having to deal with token issues.
+
+At this point you might ask 'Why isn't more of this auth logic implemented at the SDK level in the TerminalActivity base class?' - the answer is  that there's enough incompatibility between different web service oauth implemetations to make it difficult to generalize beyond where we've gone so far. But we're still working on it.  
 
 ---
     using System;
@@ -611,7 +612,7 @@ You probably want ask 'why don't we implement general auth logic in TerminalActi
         }
     }
 ---
-We override *InitializeInternalState* because everything we need appears here (not in the class constructor). Also we define *RefreshHubToken* callback which will prepare and renew token data for the hub.   
+We override the *InitializeInternalState* from the base classes of the SDK because everything we need appears here (not in the class constructor). Also we define *RefreshHubToken* callback which will prepare and renew token data for the hub.   
 As like as in previous terminal, we renamed existing or add new file in **Activities** folder to Get_Tasks_v1.cs.
 
 ---
@@ -657,7 +658,7 @@ As like as in previous terminal, we renamed existing or add new file in **Activi
 
 ---
 
-Now activity template has *NeedsAuthentication* attribute setted to **true**, and don't forget specify **Id** otherwise you activity won't be registered on hub.
+Note how  *NeedsAuthentication* attribute is set to **true**, and don't forget to provide a GUID **Id** .
 
 ---
             private const string RunTimeCrateLabel = "Asana Tasks";
@@ -711,7 +712,7 @@ Now activity template has *NeedsAuthentication* attribute setted to **true**, an
                 DisableValidationOnFollowup = true;
             }
 ---
-We define activity UI same way as in previous terminal. Pay attention to constructor, now it has *DisableValidationOnFollowup* setted to **true**, it means that when `/configure` call happens, *Validate()* method will not be called before *FollowUp()*.  
+We define activity UI same way as in previous terminal. Pay attention to constructor, now it has *DisableValidationOnFollowup* set to **true**, it means that when `/configure` call happens, *Validate()* method will not be called before *FollowUp()*.  This saves some performance in scenarios where many calls to /configure are generated.
 
 To initialize our activity`s UI with Asana workspaces we use client class we created before.
 
@@ -726,7 +727,7 @@ To initialize our activity`s UI with Asana workspaces we use client class we cre
             }
 
 ---
-This time we use *CrateSignaller* two times, telling downstream activities that we gonna give them data in form of *AsanaTaskListCM* and *StandardTableDataCM*.
+This time we use *CrateSignaller* two times, telling downstream activities that we gonna give them data in form of *AsanaTaskListCM* and *StandardTableDataCM*. [Learn more about Crate Signaling](/Docs/ForDevelopers/OperatingConcepts/Signaling.md)
 
 ---
 
@@ -781,16 +782,15 @@ This time we use *CrateSignaller* two times, telling downstream activities that 
     }
 
 ---
-Each time before *Run()*, the Activity will call *Validate()* method, and if it has any errors plan execution will be stopped with failure, user`s UI Activity Stream will show description for corresponding validation error.    
-Everything inside the Activity is straightforward when you have SDK for external service, one intermediate step we do inside *Run()* is prepare recived data for StandardTableDataCM.   
+Each time  *Run()* is called, the Activity will first carry out Activation, which results in a call to the *Validate()* method, and if it has any errors plan execution will be stopped.
+
 
 ---
 
 ## Step 6 - Configure terminal project
 
-After adding so much stuff the terminal need to be configured to work properly. First, look into web.config appSettings
-#### a) web.config file 
-
+This is what our Web.Config file looks like:
+ 
 ---
     <appSettings file="Config\terminalAsana\Settings.config">
         <add key="CoreWebServerUrl" value="http://localhost:30643/" />
@@ -806,11 +806,12 @@ After adding so much stuff the terminal need to be configured to work properly. 
     </appSettings>
 ---
 
-As you can see we choose port 56785 for *terminalAsana.TerminalEndpoint*, don't forget set it in Visual Studio project settings.
-Suppose you noticed absence of  *AsanaClientSecret* and *AsanaClientId* values, they are carried out to external settings file, because we don`t want to share our secrets in public repositories.
+As you can see we choose port 56785 for *terminalAsana.TerminalEndpoint*.  You'll need to set the same value in Visual Studio project settings in order for your Terminal to be responsive when run.
+
+Notice the absence of  *AsanaClientSecret* and *AsanaClientId* values? They are referenced via an  external settings file, because we to avoid having to post the values to this open source repository.
 
 
-#### b) TerminalAsansBootstrapper.cs 
+#### b) TerminalAsansaBootstrapper.cs 
 
 ---
     using System.Linq;
@@ -843,7 +844,7 @@ Suppose you noticed absence of  *AsanaClientSecret* and *AsanaClientId* values, 
                 TerminalAsanaBootstrapper.ConfigureAutoMappert();
             }
 
-            public static void ConfigureAutoMappert()
+            public static void ConfigureAutoMapper()
             {
                 Mapper.CreateMap<AuthorizationToken, AuthorizationTokenDTO>();
 
@@ -859,7 +860,7 @@ Suppose you noticed absence of  *AsanaClientSecret* and *AsanaClientId* values, 
         }
     }
 ---
-Here we add our classes to dependency injection container and creat mapping between AsanaTask and AsanaTaskCM, Projects and Tags are commented out because we haven`t brought them to Task definition yet.   
+Here we add our classes to the dependency injection container and create a mapping between AsanaTask and AsanaTaskCM, Projects and Tags are commented out because we haven`t brought them to Task definition yet.   
 
 ---
 
@@ -874,8 +875,8 @@ As well as in previous terminal all we need here is register our Activity, to ma
 ---
 
 
-## Step 4 - Create SDK for external service
-This step leaves freedom for your fantasy. Use any classes and any approach you like. And of course it will be good if service already has SDK for .Net platform, then we can skip this step.
+## Additional Design Ideas - Create SDK for external service
+Here we build additional services into the Terminal. This makes life easier for Activity builders and enhancers that may follow you. Of course, if there's already an SDK for your platform, much of this won't be necessary or add value.
 
 To interact with Asana using OAuth without thinking about token refreshing we will crate *IAsanaOAuthCommunicator* based on *IRestClientService*
 
