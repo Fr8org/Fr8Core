@@ -428,6 +428,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
         .state('configureSolution',
         {
             url: "/solution/{solutionName}",
+            controller: 'PlanBuilderController',
             templateUrl: "/AngularTemplate/PlanBuilder",
             data: { pageTitle: 'Create a Solution', pageSubTitle: '' }
         })

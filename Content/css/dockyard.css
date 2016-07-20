@@ -151,10 +151,14 @@
 }
 
 .route-name {
-    display: inline-block;
+   
     vertical-align: top;
     color: #697882;
     font-weight: 400;
+    /*max-width: 500px;*/
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .designer-header-status {

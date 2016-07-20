@@ -1,48 +1,52 @@
-﻿<div class="page-head designer-header container row" layout="row">
-    <div flex="40">
-        <div class="designer-header-title page-title" ng-class="{'design-header-title-editing': editing}" >
-            <h1 ng-if="!kioskMode">
-                <div class="route-name" ng-click="editTitle()">{{plan.name}}</div>
-                <input class="design-header-title-editField" type="text" ng-model="plan.name" ng-blur="onTitleChange()" input-focus="editing" />
+﻿<div class="page-head designer-header container row"  layout="row" layout-gt-md="row">
+    <div layout="row"  flex>
+        <div flex="70" flex-md="60" flex-sm="50">
+            <div layout="row"  flex>
+                <div class="designer-header-title page-title" ng-class="{'design-header-title-editing': editing}" style="min-width: 0">
+                    <h1 ng-if="!kioskMode">
+                        <div class="route-name" ng-click="editTitle()">{{plan.name}}</div>
+                        <input class="design-header-title-editField" type="text" ng-model="plan.name" ng-blur="onTitleChange()" input-focus="editing" />
 
-            </h1>
-            <h1 ng-if="kioskMode">
-                <div class="route-name">{{plan.name}}</div>
-            </h1>
+                    </h1>
+                    <h1 ng-if="kioskMode">
+                        <div class="route-name">{{plan.name}}</div>
+                    </h1>
 
+                </div>
+                <md-button class="md-icon-button" ng-click="editTitle()" style="margin-top: 2px">
+                    <md-icon md-font-icon="glyphicon-pencil" class="glyphicon glyphicon-pencil"></md-icon>
+                    <md-tooltip md-direction="top">
+                        Edit Name
+                    </md-tooltip>
+                </md-button>
+            </div>
         </div>
-        <md-button class="md-icon-button" ng-click="editTitle()" style="margin-top: 2px">
-            <md-icon md-font-icon="glyphicon-pencil" class="glyphicon glyphicon-pencil" ></md-icon>
-            <md-tooltip md-direction="top">
-                Edit Name
-            </md-tooltip>
-        </md-button>
+        <md-radio-group ng-model="state" layout="row" layout-gt-md="row" layout-align="end center" flex  >
+            <span>View:</span>
+            <a ui-sref="plan.planBuilder({id:plan.id})" style="margin-left:5px">
+                <md-radio-button value="plan.planBuilder">Activities</md-radio-button>
+            </a>
+            <a ui-sref="plan.planDetails({id:plan.id})" style="margin-left:5px">
+                <md-radio-button value="plan.planDetails">Settings</md-radio-button>
+            </a>
+        </md-radio-group>
     </div>
-    <md-radio-group ng-model="state" layout="row"  layout-align="start center" flex="60" flex-offset="10">
-        <span flex="5">View:</span> 
-        <a ui-sref="plan.planBuilder({id:plan.id})" flex="10" flex-offset="3">
-            <md-radio-button value="plan.planBuilder">Activities</md-radio-button>
-        </a>
-        <a ui-sref="plan.planDetails({id:plan.id})" flex="10" flex-offset="5">
-            <md-radio-button value="plan.planDetails">Settings</md-radio-button>
-        </a>
-    </md-radio-group>
+    <div flex="40" flex-md="35" flex-sm="25">
+        <div class="designer-header-status" ng-if="!kioskMode" flex="noshrink">
 
-
-    <div class="designer-header-status" ng-if="!kioskMode" flex="10" flex-offset="40">
-
-        <span class="h4">
-            <strong> 
-                <span class="plan-state-text" ng-if="plan.planState === 2">{{plan.planState | PlanState}}</span>   
-                <span ng-if="plan.planState === 1">Ready</span> 
-                <span ng-if="plan.planState === 3">Saving Changes...</span>  
-            </strong>
-            <md-button ng-disabled="plan.planState === 3" class="md-icon-button" ng-click="runPlan()" ng-show="plan.planState === 1" event-run>
-                <md-icon md-font-icon="fa-play" class="fa fa-2x" style="color:green"></md-icon>
-            </md-button>
-            <md-button class="md-icon-button" ng-click="deactivatePlan()" ng-show="plan.planState === 2">
-                <md-icon md-font-icon="fa fa-power-off" class="fa fa-2x"></md-icon>
-            </md-button>
-        </span>
+            <span class="h4">
+                <strong>
+                    <span class="plan-state-text" ng-if="plan.planState === 2">{{plan.planState | PlanState}}</span>
+                    <span ng-if="plan.planState === 1">Ready</span>
+                    <span ng-if="plan.planState === 3">Saving Changes...</span>
+                </strong>
+                <md-button ng-disabled="plan.planState === 3" class="md-icon-button" ng-click="runPlan()" ng-show="plan.planState === 1" event-run>
+                    <md-icon md-font-icon="fa-play" class="fa fa-2x" style="color:green"></md-icon>
+                </md-button>
+                <md-button class="md-icon-button" ng-click="deactivatePlan()" ng-show="plan.planState === 2">
+                    <md-icon md-font-icon="fa fa-power-off" class="fa fa-2x"></md-icon>
+                </md-button>
+            </span>
+        </div>
     </div>
 </div>

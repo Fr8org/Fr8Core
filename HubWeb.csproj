@@ -1014,7 +1014,6 @@
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\OrganizationController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\PhoneNumberAuthenticationController.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\PlanController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\PlanUploadModalController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\PlanUploadController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\PageDefinitionFormController.ts" />

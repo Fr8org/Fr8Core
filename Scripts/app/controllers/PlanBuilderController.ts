@@ -12,9 +12,14 @@ module dockyard.controllers {
         current: ng.ui.IState;
     }
 
-    export interface IPlanBuilderScope extends ng.IScope {
-        isPlanBuilderScope: boolean;
+    export interface IMainPlanScope extends ng.IScope {
         planId: string;
+        current: model.PlanBuilderState;
+    }
+
+    export interface IPlanBuilderScope extends IMainPlanScope  {
+        isPlanBuilderScope: boolean;
+       
         subPlans: Array<model.SubPlanDTO>;
         fields: Array<model.Field>;
         //currentSubroute: model.SubrouteDTO;
@@ -23,7 +28,6 @@ module dockyard.controllers {
         //curNodeId: number;
         //// Flag, that indicates if currently edited processNodeTemplate has temporary identity.
         //curNodeIsTempId: boolean;
-        current: model.PlanBuilderState;
         actionGroups: model.ActionGroup[];
         processedSubPlans: any[];
 
@@ -483,7 +487,9 @@ module dockyard.controllers {
                 this.setAdvancedEditingMode();
             }
             this.renderPlan(<interfaces.IPlanVM>curPlan.plan);
-           // this.$state.go('plan.planBuilder', { id: curPlan.plan.id, viewMode: mode });
+            if (this.$state.current.name != 'plan.planDetails') {
+                this.$state.go('plan.planBuilder', { id: curPlan.plan.id, viewMode: mode });
+            }
         }
 
         /*
