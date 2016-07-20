@@ -34,4 +34,124 @@ Terminals should avoid posting manifests with both `externalAccountId` and `exte
 
 Values assigned to `externalDomainId` and `externalAccountId` should match the same values terminal assigns to authorization tokens retrieved from `/authentication/token` endpoint for the respective user authorizations
 
+
+## Walkthrough
+
+Please read [Activity Development Guide](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/ActivityDevelopmentGuide.md) before this tutorial.
+
+### Listening For Events
+
+An activity needs to include EventSubscriptionCM inside its CrateStorage on a configure response. With this crate inside activity's storage, activity is telling hub to run containing plan when this event happens. Here is an example configure response to subscribe our activity to events.
+
+```javascript
+{
+  "label": null,
+  "name": "My first activtiy",
+  "activityTemplate":{  
+    "id":"87ab869a-9573-4554-b5b1-4bcaea7064a9",
+    "name":"My_first_activity",
+    "label":"My first activity",
+    "version":"1",
+    "terminal":{  
+    "name":"MyTerminal",
+    "label":"My Teriminal",
+    "version":"1",
+    "endpoint":"http://terminal.com",
+  },
+  "RootPlanNodeId":"4a0e2fa4-0422-4cc2-b308-089720f2dd5c",
+  "ParentPlanNodeId":"4554d028-9955-4121-97e0-2fb9a1e40e80",
+  "ordering": 1,
+  "id": "1cfdba78-9a86-47bb-8bc9-2422528220ac",
+  "crateStorage": {
+    "crates": [
+      {
+        "manifestType": "Standard UI Controls",
+        "manifestId": 6,
+        "manifestRegistrar": "www.fr8.co/registry",
+        "id": "{generate some GUID value here}",
+        "label": "Configuration_Controls",
+        "contents": {
+          "Controls": [
+            {
+              "type": "TextBlock",
+              "name": "MyFirstMonitorActivityTextblock",
+              "required": false,
+              "selected": false,
+              "value": "This is my first monitor activity",
+              "label": null,
+              "events": []
+	         }
+          ]
+        },
+      },
+      {
+        "manifestType": "Standard Event Subscription",
+        "manifestId": 8,
+        "manufacturer": null,
+        "manifestRegistrar": "www.fr8.co/registry",
+        "id": "{generate some GUID value here}",
+        "label": "Standard Event Subscriptions",
+        "contents": {
+          "Subscriptions": [
+            "Event1", "Event2"
+          ],
+          "Manufacturer": "MyExternalSystem"
+        }
+      }
+    ]
+  },
+  "childrenActivities": [],
+}
+```
+
+With this json response we are creating an EventSubscription crate which is listening for "Event1" and "Event2". Whenever one of those events happens hub will run activated plans which have EventSubscriptionCM and listening to one of those events.
+
+### Triggering Events
+
+It is your terminal's responsiblity to create an endpoint for external system's events and listen to them. Every system has different methods for registering to their events. Most of them use webhooks for this purpose.
+
+Here are some samples to help you understand this concept. [Docusign Event Mechanism](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Samples/DocusignEventGeneration.md) and [Facebook Event Mechanism](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Samples/FacebookEventGeneration.md).
+
+Assuming that you have correctly configured external system to notify your terminal on events. Terminal needs to parse incoming event data and create an EventReportCM crate according to incoming event.
+
+Below is a sample EventReportCM
+
+```javascript
+{
+  "manifestType": "Standard Event Report",
+  "manifestId": 7,
+  "manifestRegistrar": "www.fr8.co/registry",
+  "id": "{generate some GUID value here}",
+  "label": "Standard Event Report",
+  "contents": {
+    "EventNames": ["Event1", "Event3"],
+    "Manufacturer": "MyExternalSystem",
+    "ExternalAccountId": "whichUserThisEventWasCreated@domain.com",
+    "ExternalDomainId": null,
+    "EventPayload": {
+        "crates": [
+          {
+            "manifestType": "Custom Data Manifest",
+            "manifestId": --,
+            "manifestRegistrar": "www.fr8.co/registry",
+            "id": "{generate some GUID value here}",
+            "label": "External Payload Data",
+            "contents": {
+              //custom data created by your external system
+              //this data will be processed by your monitor activity
+            },
+          }
+        ]
+    }
+  },
+}
+```
+
+
+After preparing this EventReport, terminal needs to post this crate to /events endpoint of all subscribed hubs. Hub will run related plans but this time it will be different from regular run. When event triggers a plan execution hub will add EventPayload to the payload of container. Therefore all activities will be able to access event data.
+
+
+
+
+
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)
