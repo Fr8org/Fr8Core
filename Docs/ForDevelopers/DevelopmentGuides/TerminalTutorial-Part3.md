@@ -1,5 +1,5 @@
-### Second terminal: Asana.com - helps you organize your todo list into projects.
-## This walkthrough shows how to build a Terminal that uses OAuth to connect to a Web Service (in this example, Asana)
+## Terminal Walkthrough: Asana.com - helps you organize your todo list into projects.
+### This walkthrough shows how to build a Terminal that uses OAuth to connect to a Web Service (in this example, Asana)
 
 ## Before starting...
 
@@ -487,9 +487,10 @@ Here's the AuthentificationController:
 ---
 
 
-## Step 5 - Another thing you probably would do is define Manifest for data you operate 
-Now we have bunch of standard manifests for crates which other activities will be use. You can read more about this in documentation [Link to docs]()
-And submit it via our google form.
+## Step 4 - Defining Crate Manifests
+We want to define one or more Asana-centric [Crate Manifests](/Docs/ForDevelopers/Objects/CratesManifest.md) so we can pass structured data to and from other Asana Activities. 
+
+Here we define a Crate containing a List of Asana Tasks, and a Crate containing a single Asana Task:
 
 ---
     using System;
@@ -536,7 +537,7 @@ And submit it via our google form.
         }
     }
 ---
-*MT.AsanaTask* here is an int value from *MT enum*  you can use number which was given you by Fr8 admins or any other number whch is in allowed developers range (will be defined in future documentation)   
+*MT.AsanaTask* here is an int value obtained by registering the Manifests with a Manifest Registry such as the one at [fr8.co](https://fr8.co/manifest_registry)
 
 
 ## Step 6 - Add "Get tasks" Activity
