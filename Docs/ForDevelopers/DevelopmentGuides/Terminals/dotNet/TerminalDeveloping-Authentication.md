@@ -14,7 +14,7 @@ The Basic Fr8 OAuth Interaction
 
 This is diagrammed [here](Docs/ForDevelopers/OperatingConcepts/Authorization/AuthOverview.md). The key items are:
 
-1. If your ActivityTemplate is signalling that Authentication is required, and the Fr8 Hub can't find a valid Authorization Token, it will call your Terminal to [GET the **initialOAuthUrl**](https://fr8.co/swagger/ui/index#!/Authentication/Authentication_initial_url)
+1. If your ActivityTemplate is signalling that Authentication is required, and the Fr8 Hub can't find a valid Authorization Token, it will [POST to the Terminal](http://dev-terminals.fr8.co:25923/swagger/ui/index#!/Authentication/Authentication_GenerateOAuthInitiationURL) to retrieve the **initialOAuthUrl**
 2. You return this URL to the Hub. It's usually hardcoded into your Terminal. 
 3. Fr8 redirects the user to this URL, triggering the OAuth process, and if all goes well receives a http response with a code.
 4. The code gets passed first from the Client to the Hub, and the Hub then passes the code to the Terminal by [POSTing to /authentication/token](https://fr8.co/swagger/ui/index#!/Authentication/Authentication_token). 
@@ -24,10 +24,10 @@ This is diagrammed [here](Docs/ForDevelopers/OperatingConcepts/Authorization/Aut
 
 As a Terminal developer you have to implement responses to these requests, and carry out whatever steps are required by any Web Services you're attempting to connect to.
 
-###Preparation for initial oAuth url
+###Finding the Initial OAuth URL
 
-First you have to find oAuth2 documentation of the service you are working with.
-After that you have to register Fr8 as an app. Specify **redirect_uri**, retrieve **client_id** and **client_secret**
+This process varies from Web Service to Web Service. Here are a couple of examples.
+Both MailChimp and Slack ask you to register a new "app" and then provide you with the information necessary to construct the initial URL.
 
 | Mail Chimp app registration   |      Slack app registration      |
 |----------|:-------------:|
@@ -48,8 +48,11 @@ or this:
 
 Encoded: ` http://localhost:30643/AuthenticationCallback/ProcessSuccessfulOAuthResponse?terminalName=terminalSlack%26terminalVersion=1 `
 Not encoded: ` http://localhost:30643/AuthenticationCallback/ProcessSuccessfulOAuthResponse?terminalName=terminalSlack&terminalVersion=1 `
-###Configuring initial oAuth url
-To pass **initialOAuthUrl** to Fr8 your Terminal has to have AuthenticationController
+
+###Example: Generating the initial oAuth url
+In this C# example, the Terminal has built an  AuthenticationController which responds to the incoming POST request. 
+
+
 Following code in AuthenticationController passes initialOAuthUrl to Fr8
 ![](../../../../../Docs/img/TerminalDeveloping-Authentication.md-3.png)
 
