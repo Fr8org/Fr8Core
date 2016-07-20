@@ -1,4 +1,6 @@
-# Implementing oAuth2 authentication for a new Terminal
+# Adding OAuth Support to a Terminal
+
+Not all Terminal Activities require authentication, but if you need access to a user's accounts from some Web Service, you probably need to support the OAuth process in your Terminal.
 
 This material assumes you've got a good basic understanding of OAuth. If you need to learn, we recommend [this](https://aaronparecki.com/articles/2012/07/29/1/oauth2-simplified).
 
@@ -6,7 +8,7 @@ There are two elements of OAuth support you need to consider:
 1) The specific implementation supported by the Web Service your Terminal is connecting to
 2) Participating in the Fr8 authorization interaction
 
-We'll focus on #2. By looking at existing Terminal source code, you'll be able to see a number of different appraoches to #1.
+We'll focus on #2. By looking at existing Terminal source code, you'll be able to see a number of different appraoches to #1. There are often platform-specific SDK's that simplify the interaction with a particular Web Service.
 
 
 The Basic Fr8 OAuth Interaction
