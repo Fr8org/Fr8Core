@@ -26,7 +26,8 @@ var app = angular.module("app", [
     "angularResizable",
     "mdColorPicker",
     "md.data.table",
-    "popoverToggle"
+    "popoverToggle",
+    'jsonFormatter'
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */
@@ -108,7 +109,7 @@ app.controller('HeaderController', ['$scope', '$http', '$window', '$state', 'Ter
 
         result.$promise
             .then(() => {
-                $state.go('planBuilder', { id: result.plan.id });
+                $state.go('plan.builder', { id: result.plan.id });
                 //window.location.href = 'plans/' + result.plan.id + '/builder';
             });
     };
@@ -334,20 +335,48 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             data: { pageTitle: 'Plans', pageSubTitle: 'This page displays all Plans' }
         })
 
-        // Plan Builder framework
-        .state('planBuilder',
+        .state('plan',
         {
-            url: "/plans/{id}/builder?viewMode&view",
+            abstract: true,
+            url: "/plans/{id}/",
             views: {
+                'header@': {
+                    templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
+                        if ($stateParams['viewMode'] === 'kiosk') {
+                            return "/AngularTemplate/KioskModeOrganizationHeader";
+                        }
+                        return "/AngularTemplate/MiniHeader";
+                    }
+                },
                 'maincontainer@': {
                     templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
                         if ($stateParams['viewMode'] === 'kiosk') {
                             return "/AngularTemplate/MainContainer";
                         }
                         return "/AngularTemplate/MainContainer_AS";
-                    }
-                },
-                '@planBuilder': {
+                    },
+                    controller: 'PlanBuilderController',
+                }
+            }
+        })
+
+        .state('plan.details',
+        {
+            url: "details",
+            views: {
+                '@plan': {
+                    templateUrl: "/AngularTemplate/PlanDetails"
+                }
+            },
+            data: { pageTitle: 'Plan Details', pageSubTitle: '' }
+        })
+
+        // Plan Builder framework
+        .state('plan.builder',
+        {
+            url: "builder?viewMode&view",
+            views: {
+                '@plan': {
                     templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
                         if ($stateParams['viewMode'] === 'kiosk') {
                             return "/AngularTemplate/PlanBuilder_SimpleKioskMode";
@@ -361,14 +390,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                             return "/AngularTemplate/KioskModeOrganizationHeader";
                         }
                         return "/AngularTemplate/MiniHeader";
-                    }
-                },
-                'footer@': {
-                    templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
-                        if ($stateParams['viewMode'] === 'kiosk') {
-                            return "/AngularTemplate/Empty";
-                        }
-                        return "/AngularTemplate/Footer";
                     }
                 }
             },
@@ -387,12 +408,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             templateUrl: "/AngularTemplate/ShowFacts",
             data: { pageTitle: 'Facts', pageSubTitle: 'This page displays all facts' },
         })
-        .state('planDetails',
-        {
-            url: "/plans/{id}/details",
-            templateUrl: "/AngularTemplate/PlanDetails",
-            data: { pageTitle: 'Plan Details', pageSubTitle: '' }
-        })
+
 
         // Manage files
         .state('managefiles',
@@ -428,6 +444,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
         .state('configureSolution',
         {
             url: "/solution/{solutionName}",
+            controller: 'PlanBuilderController',
             templateUrl: "/AngularTemplate/PlanBuilder",
             data: { pageTitle: 'Create a Solution', pageSubTitle: '' }
         })
