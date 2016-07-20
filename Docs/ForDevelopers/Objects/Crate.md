@@ -26,7 +26,7 @@ In the above example, a fragment of the Crate JSON for a Crate of UI Controls ca
 
 ### Additional information
 - [Crate JSON Definition](/Docs/ForDevelopers/Objects/CrateJSON.md)
-- [Signalling of Crate Data]/Docs/ForDevelopers/OperatingConcepts/Signalling.md)
+- [Signalling of Crate Data](/Docs/ForDevelopers/OperatingConcepts/Signaling.md)
 - [Crate Development Best Practices](/Docs/ForDevelopers/DevelopmentGuides/CrateBestPractices.md)
 
 
