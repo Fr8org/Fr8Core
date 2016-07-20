@@ -373,6 +373,10 @@
       <Project>{5fb0adc8-24c7-4b32-a4d2-afa31b0baaa7}</Project>
       <Name>terminalStatX</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\terminalTelegram\terminalTelegram.csproj">
+      <Project>{fba67d4e-d81a-4b6e-a6fd-464a2a5af9d5}</Project>
+      <Name>terminalTelegram</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Fr8.Testing\Fr8.Testing.csproj">
       <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
       <Name>Fr8.Testing</Name>
