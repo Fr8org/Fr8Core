@@ -89,7 +89,7 @@ namespace terminalFr8Core.Activities
         // Get the Design time fields crate.
         private async Task<Crate> GetDesignTimeFieldsCrateOfSelectedFr8Object(string fr8Object)
         {
-            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+            var url = CloudConfigurationManager.GetSetting("DefaultHubUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/manifests?id="
                 + int.Parse(fr8Object);
             var response = await _restfulServiceClient.GetAsync<CrateDTO>(new Uri(url));
