@@ -9,6 +9,7 @@ using Data.Entities;
 using Data.Interfaces;
 using HubTests.Controllers.Api;
 using Data.States;
+using Fr8.Infrastructure;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Hub.Interfaces;
 using HubWeb.Controllers;
@@ -252,7 +253,7 @@ namespace HubTests.Controllers
         }
 
         [Test]
-        [ExpectedException(ExpectedException = typeof(ArgumentException), ExpectedMessage = "Current activity was not found.")]
+        [ExpectedException(ExpectedException = typeof(MissingObjectException)]
         public async Task ActivityController_GetConfigurationSettings_IdIsMissing()
         { 
             var controller = ObjectFactory.GetInstance<ActivitiesController>();
@@ -270,7 +271,7 @@ namespace HubTests.Controllers
         }
 
         [Test]
-        [ExpectedException(ExpectedException = typeof(ArgumentException))]
+        [ExpectedException(ExpectedException = typeof(MissingObjectException))]
         public async Task ActivityController_GetConfigurationSettings_ActionTemplateNameAndVersionIsMissing()
         {
             var controller = ObjectFactory.GetInstance<ActivitiesController>();
