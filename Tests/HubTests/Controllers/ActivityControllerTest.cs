@@ -253,7 +253,7 @@ namespace HubTests.Controllers
         }
 
         [Test]
-        [ExpectedException(ExpectedException = typeof(MissingObjectException)]
+        [ExpectedException(ExpectedException = typeof(MissingObjectException))]
         public async Task ActivityController_GetConfigurationSettings_IdIsMissing()
         { 
             var controller = ObjectFactory.GetInstance<ActivitiesController>();
