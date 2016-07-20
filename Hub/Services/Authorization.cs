@@ -588,8 +588,7 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var authToken = uow.AuthorizationTokenRepository.FindTokenById(authTokenId);
-                    .FindTokenById(Guid.Parse(token.Id));
+                var authToken = uow.AuthorizationTokenRepository.FindTokenById(Guid.Parse(token.Id));
                 if (authToken == null)
                 {
                     return;
