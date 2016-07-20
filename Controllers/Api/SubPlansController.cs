@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -9,6 +10,7 @@ using Data.Interfaces;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Interfaces;
+using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
 {
@@ -21,7 +23,12 @@ namespace HubWeb.Controllers
         {
             _subplan = ObjectFactory.GetInstance<ISubplan>();
         }
-
+        /// <summary>
+        /// Creates new subplan using specified values
+        /// </summary>
+        /// <param name="subplanDto">Subplan data to create subplan from</param>
+        /// <response code="200">Subplan was successfully created</response>
+        /// <response code="400">Specified data is not valid</response>
         [ResponseType(typeof(SubplanDTO))]
         public IHttpActionResult Post(SubplanDTO subplanDto)
         {
@@ -55,7 +62,12 @@ namespace HubWeb.Controllers
                 return Ok(Mapper.Map<SubplanDO, SubplanDTO>(curSubPlanDO));
             }
         }
-
+        /// <summary>
+        /// Updates subplan with specified values
+        /// </summary>
+        /// <param name="subplanDto">Values used to updates subplan</param>
+        /// <response code="200">Subplan was successfully updated</response>
+        /// <response code="400">Specified data is not valid</response>
         [ResponseType(typeof(SubplanDTO))]
         public IHttpActionResult Put(SubplanDTO subplanDto)
         {
@@ -85,8 +97,14 @@ namespace HubWeb.Controllers
                 return Ok(Mapper.Map<SubplanDO, SubplanDTO>(curSubPlanDO));
             }
         }
-
+        /// <summary>
+        /// Deletes subplan with specified Id
+        /// </summary>
+        /// <param name="id">Id of subplan to delete</param>
         [HttpDelete]
+        [SwaggerResponse(HttpStatusCode.OK, "Subplan was successfully deleted")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "Subplan with specified Id doesn't exist")]
+        [SwaggerResponseRemoveDefaults]
         public async Task<IHttpActionResult> Delete(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -108,28 +126,29 @@ namespace HubWeb.Controllers
                 return Ok();
             }
         }
-
+        /// <summary>
+        /// Retrieves the first activity of the subplan with specified Id
+        /// </summary>
+        /// <param name="id">Id of subplan</param>
+        /// <param name="filter">Deprecated</param>
+        /// <response code="200">First activity of the subplan with specified Id. Can be empty</response>
         [ActionName("activities")]
         [ResponseType(typeof(ActivityDTO))]
         [HttpPost]
-        public async Task<IHttpActionResult> FirstActivity(Guid id, string filter)
+        public async Task<IHttpActionResult> FirstActivity(Guid id, string filter = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (filter == "first")
+                try
                 {
-                    try
-                    {
-                        var activity = _subplan.GetFirstActivity(uow, id);
-                        return Ok(Mapper.Map<ActivityDTO>(activity));
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError(ex.Message);
-                        return InternalServerError(ex);
-                    }
+                    var activity = _subplan.GetFirstActivity(uow, id);
+                    return Ok(Mapper.Map<ActivityDTO>(activity));
                 }
-                return Ok();
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex.Message);
+                    return InternalServerError(ex);
+                }
             }
         }
     }

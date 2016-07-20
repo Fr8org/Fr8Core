@@ -78,7 +78,10 @@ namespace Data.Interfaces
 
         TerminalRegistrationRepository TerminalRegistrationRepository { get; }
 
-	    /// <summary>
+        IActivityCategoryRepository ActivityCategoryRepository { get; }
+        IActivityCategorySetRepository ActivityCategorySetRepository { get; }
+
+        /// <summary>
         /// Call this to commit the unit of work
         /// </summary>
         void Commit();

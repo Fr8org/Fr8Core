@@ -27,7 +27,7 @@ module dockyard.controllers {
 
             $scope.showAddTerminalModal = <() => void>angular.bind(this, this.showAddTerminalModal);
 
-            TerminalService.getAll().$promise.then(data => {
+            TerminalService.getRegistrations().$promise.then(data => {
                 $scope.terminals = data;
             }).catch(e => {
                 console.log(e.statusText);

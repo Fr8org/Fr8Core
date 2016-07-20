@@ -32,7 +32,8 @@ namespace terminalFr8Core
 
             Container.Configure(x => x.AddRegistry<Hub.StructureMap.StructureMapBootStrapper.LiveMode>());
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
-            
+
+            SwaggerConfig.Register(_configuration);
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
 
@@ -66,7 +67,7 @@ namespace terminalFr8Core
             ActivityStore.RegisterActivity<Search_Fr8_Warehouse_v1>(Search_Fr8_Warehouse_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Select_Fr8_Object_v1>(Select_Fr8_Object_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Set_Delay_v1>(Set_Delay_v1.ActivityTemplateDTO);
-            ActivityStore.RegisterActivity<Show_Report_Onscreen_v1>(Show_Report_Onscreen_v1.ActivityTemplateDTO);
+            //ActivityStore.RegisterActivity<Show_Report_Onscreen_v1>(Show_Report_Onscreen_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Store_File_v1>(Store_File_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Make_A_Decision_v1>(Make_A_Decision_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Test_Incoming_Data_v1>(Test_Incoming_Data_v1.ActivityTemplateDTO);

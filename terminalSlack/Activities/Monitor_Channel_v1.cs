@@ -10,6 +10,8 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
+using System;
+using ServiceStack.Text;
 
 namespace terminalSlack.Actions
 {
@@ -73,12 +75,11 @@ namespace terminalSlack.Actions
 
         public const string ResultPayloadCrateLabel = "Slack Message";
 
-        public const string EventSubscriptionsCrateLabel = "Standard Event Subscriptions";
-
         private readonly ISlackIntegration _slackIntegration;
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("246DF538-3B7E-4D1B-B045-72021BAA0D2D"),
             Name = "Monitor_Channel",
             Label = "Monitor Channel",
             Category = ActivityCategory.Monitors,
@@ -86,7 +87,12 @@ namespace terminalSlack.Actions
             NeedsAuthentication = true,
             Version = "1",
             WebService = TerminalData.WebServiceDTO,
-            MinPaneWidth = 330
+            MinPaneWidth = 330,
+            Categories = new[]
+            {
+                ActivityCategories.Monitor,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
         
@@ -96,14 +102,7 @@ namespace terminalSlack.Actions
         {
             _slackIntegration = slackIntegration;
         }
-        
-        private Crate CreateEventSubscriptionCrate()
-        {
-            return CrateManager.CreateStandardEventSubscriptionsCrate(EventSubscriptionsCrateLabel, 
-                                                                      "Slack", 
-                                                                      new string[] { "Slack Outgoing Message" });
-        }
-
+      
         public override Task Run()
         {
             var incomingMessageContents = ExtractIncomingMessageContentFromPayload();
@@ -120,12 +119,12 @@ namespace terminalSlack.Actions
                 }
                 else
                 {
-                    TerminateHubExecution("Incoming message doesn't belong to specified channel. No downstream activities are executed");
+                    RequestPlanExecutionTermination("Incoming message doesn't belong to specified channel. No downstream activities are executed");
                 }                
             }
             else
             {
-                TerminateHubExecution("Plan successfully activated. It will wait and respond to specified Slack postings");
+                RequestPlanExecutionTermination("Plan successfully activated. It will wait and respond to specified Slack postings");
             }
 
             return Task.FromResult(0);
@@ -145,7 +144,10 @@ namespace terminalSlack.Actions
                 .OrderBy(x => x.Key)
                 .Select(x => new ListItem { Key = $"#{x.Key}", Value = x.Value })
                 .ToList();
-            Storage.Add(CreateEventSubscriptionCrate());
+
+            EventSubscriptions.Manufacturer = "Slack";
+            EventSubscriptions.Add("Slack Outgoing Message");
+
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel)
                  .AddField("token")
                 .AddField("team_id")

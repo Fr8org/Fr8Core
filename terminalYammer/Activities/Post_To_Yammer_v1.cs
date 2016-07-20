@@ -20,6 +20,7 @@ namespace terminalYammer.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("fa163960-901f-4105-8731-234aeb38f11d"),
             Name = "Post_To_Yammer",
             Label = "Post To Yammer",
             Tags = "Notifier",
@@ -28,7 +29,12 @@ namespace terminalYammer.Actions
             Version = "1",
             MinPaneWidth = 330,
             Terminal = TerminalData.TerminalDTO,
-            WebService = TerminalData.WebServiceDTO
+            WebService = TerminalData.WebServiceDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -92,7 +98,7 @@ namespace terminalYammer.Actions
             var groups = await _yammer.GetGroupsList(oauthToken);
             var crateAvailableGroups = CreateAvailableGroupsCrate(groups);
             Storage.Clear();
-            Storage.Add(PackControls(new ActivityUi()));
+            AddControls(new ActivityUi().Controls);
             Storage.Add(crateAvailableGroups);
         }
 
@@ -119,13 +125,7 @@ namespace terminalYammer.Actions
 
         private Crate CreateAvailableGroupsCrate(IEnumerable<KeyValueDTO> groups)
         {
-            var crate =
-                CrateManager.CreateDesignTimeFieldsCrate(
-                    "Available Groups",
-                    groups.ToArray()
-                );
-
-            return crate;
+            return Crate.FromContent("Available Groups", new KeyValueListCM(groups));
         }
 
         private  GroupMessage GetGroupMessageFields(StandardConfigurationControlsCM ui, ICrateStorage payload)

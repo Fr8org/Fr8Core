@@ -13,7 +13,7 @@ namespace Fr8.TerminalBase.Services
             _hubCommunicator = hubCommunicator;
         }
         
-        public async Task PushUserNotification(ActivityTemplateDTO activityTemplate, string type, string subject, string message,string userId = null)
+        public async Task PushUserNotification(ActivityTemplateDTO activityTemplate, string type, string subject, string message)
         {
             var notificationMsg = new TerminalNotificationDTO
             {
@@ -26,8 +26,6 @@ namespace Fr8.TerminalBase.Services
                 TerminalVersion = activityTemplate.Terminal.Version,
                 Collapsed = false
             };
-
-            _hubCommunicator.Authorize(userId);
 
             await _hubCommunicator.NotifyUser(notificationMsg);
         }

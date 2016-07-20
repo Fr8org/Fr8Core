@@ -21,6 +21,7 @@ namespace terminalTwilio.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("ddd5be71-a23c-41e3-baf0-501e34f0517b"),
             Name = "Send_Via_Twilio",
             Label = "Send SMS",
             Tags = "Twillio,Notifier",
@@ -28,7 +29,12 @@ namespace terminalTwilio.Activities
             Version = "1",
             MinPaneWidth = 330,
             Terminal = TerminalData.TerminalDTO,
-            WebService = TerminalData.WebServiceDTO
+            WebService = TerminalData.WebServiceDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -44,19 +50,19 @@ namespace terminalTwilio.Activities
         public override async Task Initialize()
         {
             Storage.Clear();
-            Storage.Add(PackCrate_ConfigurationControls());
+            PackCrate_ConfigurationControls();
         }
         
 
-        private Crate PackCrate_ConfigurationControls()
+        private void PackCrate_ConfigurationControls()
         {
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
-                ControlHelper.CreateSpecificOrUpstreamValueChooser("SMS Number", "SMS_Number", "Upstream Terminal-Provided Fields", "", true),
-                ControlHelper.CreateSpecificOrUpstreamValueChooser("SMS Body", "SMS_Body", "Upstream Terminal-Provided Fields", "", true)
+                UiBuilder.CreateSpecificOrUpstreamValueChooser("SMS Number", "SMS_Number", "Upstream Terminal-Provided Fields", "", addRequestConfigEvent: true),
+                UiBuilder.CreateSpecificOrUpstreamValueChooser("SMS Body", "SMS_Body", "Upstream Terminal-Provided Fields", "", addRequestConfigEvent: true)
             };
 
-            return CrateManager.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
+            AddControls(fieldsDTO);
         }
 
         public override async Task FollowUp()
@@ -67,12 +73,7 @@ namespace terminalTwilio.Activities
         public override async Task Run()
         {
             Message curMessage;
-            if (ConfigurationControls == null)
-            {
-                PackCrate_WarningMessage("No StandardConfigurationControlsCM crate provided", "No Controls");
-                RaiseError("No StandardConfigurationControlsCM crate provided");
-                return;
-            }
+
             try
             {
                 var smsFieldDTO = ParseSMSNumberAndMsg();
@@ -119,10 +120,11 @@ namespace terminalTwilio.Activities
         protected override Task Validate()
         {
             ValidationManager.Reset();
-            if (ConfigurationControls != null)
+
+            if (ConfigurationControls?.Controls?.Count > 0)
             {
-                var numberControl = (TextSource)ConfigurationControls.Controls[0];
-                var bodyControl = (TextSource)ConfigurationControls.Controls[1];
+                var numberControl = (TextSource) ConfigurationControls.Controls[0];
+                var bodyControl = (TextSource) ConfigurationControls.Controls[1];
 
                 if (numberControl != null)
                 {
@@ -143,6 +145,11 @@ namespace terminalTwilio.Activities
                     }
                 }
             }
+            else
+            {
+                ValidationManager.SetError("Configuration controls are missing.");
+            }
+
             return Task.FromResult(0);
         }
 
@@ -194,10 +201,12 @@ namespace terminalTwilio.Activities
         }
 
         private void PackCrate_WarningMessage(string warningMessage, string warningLabel)
-            {
-            var textBlock = ControlHelper.GenerateTextBlock(warningLabel, warningMessage, "alert alert-warning");
+        {
             Storage.Clear();
-            Storage.Add(PackControlsCrate(textBlock));
+
+            var textBlock = UiBuilder.GenerateTextBlock(warningLabel, warningMessage, "alert alert-warning");
+
+            AddControls(textBlock);
         }
 
         private string GeneralisePhoneNumber(string smsNumber)

@@ -11,6 +11,7 @@ using Fr8.Infrastructure.Data.States;
 using terminalGoogle.Actions;
 using terminalGoogle.Interfaces;
 using terminalUtilities;
+using System;
 
 namespace terminalGoogle.Activities
 {
@@ -18,6 +19,7 @@ namespace terminalGoogle.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("f389bea8-164c-42c8-bdc5-121d7fb93d73"),
             Name = "Get_Google_Sheet_Data",
             Label = "Get Google Sheet Data",
             Version = "1",
@@ -26,7 +28,12 @@ namespace terminalGoogle.Activities
             NeedsAuthentication = true,
             MinPaneWidth = 300,
             WebService = TerminalData.GooogleWebServiceDTO,
-            Tags = "Table Data Generator"
+            Tags = "Table Data Generator",
+            Categories = new[]
+            {
+                ActivityCategories.Receive,
+                new ActivityCategoryDTO(TerminalData.GooogleWebServiceDTO.Name, TerminalData.GooogleWebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

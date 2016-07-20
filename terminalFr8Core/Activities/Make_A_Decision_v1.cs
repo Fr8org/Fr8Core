@@ -17,6 +17,7 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("f52a0f0f-571c-4530-a49f-c2ff2e18eafd"),
             Name = "Make_A_Decision",
             Label = "Make a Decision",
             Version = "1",
@@ -24,7 +25,12 @@ namespace terminalFr8Core.Activities
             NeedsAuthentication = false,
             MinPaneWidth = 550,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Process,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -91,7 +97,7 @@ namespace terminalFr8Core.Activities
                                 RaiseError("Target Additional Plan for transition is not specified. Please choose it in the Make a Decision activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
                                 return;
                             }
-                            LaunchPlan(containerTransitionField.TargetNodeId.Value);
+                            RequestLaunchPlan(containerTransitionField.TargetNodeId.Value);
                             return;
                         case ContainerTransitions.JumpToSubplan:
                             if (!containerTransitionField.TargetNodeId.HasValue)
@@ -105,7 +111,7 @@ namespace terminalFr8Core.Activities
                             Success();
                             return;
                         case ContainerTransitions.StopProcessing:
-                            TerminateHubExecution();
+                            RequestPlanExecutionTermination();
                             return;
                         case ContainerTransitions.SuspendProcessing:
                             throw new NotImplementedException();
@@ -165,7 +171,7 @@ namespace terminalFr8Core.Activities
             return checker;
         }
 
-        protected override Crate CreateControlsCrate()
+        protected override void CreateControls()
         {
             var transition = new ContainerTransition
             {
@@ -178,8 +184,7 @@ namespace terminalFr8Core.Activities
                 }
             };
 
-
-            return PackControlsCrate(transition);
+            AddControls(transition);
         }
     }
 }

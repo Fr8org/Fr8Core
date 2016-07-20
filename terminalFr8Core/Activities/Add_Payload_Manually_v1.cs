@@ -16,13 +16,19 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("315c3603-eb27-4217-a07e-f5c5a52bbfc7"),
             Name = "Add_Payload_Manually",
             Label = "Add Payload Manually",
             Category = ActivityCategory.Processors,
             Terminal = TerminalData.TerminalDTO,
             Version = "1",
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO
+            WebService = TerminalData.WebServiceDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Process,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
         private const string RunTimeCrateLabel = "ManuallyAddedPayload";
@@ -49,9 +55,7 @@ namespace terminalFr8Core.Activities
 
         public override Task Initialize()
         {
-            var configurationControlsCrate = CreateControlsCrate();
-            Storage.Add(configurationControlsCrate);
-
+            CreateControls();
             return Task.FromResult(0);
         }
 
@@ -73,7 +77,7 @@ namespace terminalFr8Core.Activities
             return Task.FromResult(0);
         }
 
-        private Crate CreateControlsCrate()
+        private void CreateControls()
         {
             var fieldFilterPane = new FieldList
             {
@@ -83,9 +87,7 @@ namespace terminalFr8Core.Activities
                 Events = new List<ControlEvent>(){ControlEvent.RequestConfig}
             };
 
-            return PackControlsCrate(fieldFilterPane);
+            AddControl(fieldFilterPane);
         }
-
-        
     }
 }

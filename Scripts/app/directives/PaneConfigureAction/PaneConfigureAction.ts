@@ -132,6 +132,8 @@ module dockyard.directives.paneConfigureAction {
         configurationControls: ng.resource.IResource<model.ControlsList> | model.ControlsList;
         mapFields: (scope: IPaneConfigureActionScope) => void;
         processing: boolean;
+        isConfigRequestQueued: boolean;
+        configNotificationQueue: Array<Function>;
         configurationWatchUnregisterer: Function;
         mode: string;
         reconfigureChildrenActions: boolean;
@@ -141,6 +143,7 @@ module dockyard.directives.paneConfigureAction {
         populateAllActivities: () => void;
         allActivities: Array<interfaces.IActivityDTO>;
         view: string;
+        plan: model.PlanDTO;
         showAdvisoryPopup: boolean;
     }
     
@@ -190,6 +193,8 @@ module dockyard.directives.paneConfigureAction {
         {
             $scope.collapsed = false;
             $scope.showAdvisoryPopup = false;
+            $scope.isConfigRequestQueued = false;
+            $scope.configNotificationQueue = [];
 
             $scope.$on("onChange", <() => void>angular.bind(this, this.onControlChange));
             $scope.$on("onClick", <() => void>angular.bind(this, this.onClickEvent));
@@ -288,7 +293,14 @@ module dockyard.directives.paneConfigureAction {
             }
         }
     
-        public test(): void {
+        
+
+        public isThereOnGoingConfigRequest(): boolean {
+            return this.$scope.isConfigRequestQueued;
+        }
+
+        public notifyOnConfigureEnd(callback: Function) {
+            this.$scope.configNotificationQueue.push(callback);
         }
 
         private reloadAction (reloadActionEventArgs: ReloadActionEventArgs): void {
@@ -338,13 +350,15 @@ module dockyard.directives.paneConfigureAction {
                 this.$scope.currentAction.configurationControls,
                 this.$scope.currentAction.crateStorage,
                 this.$scope.view
-            );
-        }
+                );
+            }
 
                 this.$scope.currentAction.crateStorage.crateDTO = this.$scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
+
                 this.ActionService.save({ id: this.$scope.currentAction.id }, this.$scope.currentAction, null, null)
                     .$promise
                     .then(() => {
+                        
                         if (this.$scope.currentAction.childrenActivities
                             && this.$scope.currentAction.childrenActivities.length > 0) {
 
@@ -353,6 +367,17 @@ module dockyard.directives.paneConfigureAction {
                             }
                         }
                     });
+                
+                // save request will stop running plans, so FE should know that
+                // commented out because of FR-4352, now running plan locks activities configuration
+                //if (this.$scope.plan.planState === 2) {
+                //    this.$scope.plan.planState = 1;
+                //}
+
+                // the save request is sent, so we can run the plan
+                if (this.$scope.plan.planState === 3) {
+                    this.$scope.plan.planState = 1;
+                }
             }
 
         private getControlEventHandler(control: model.ControlDefinitionDTO, eventName: string) {
@@ -385,8 +410,13 @@ module dockyard.directives.paneConfigureAction {
                 }
 
                 this.$scope.currentAction.crateStorage.crateDTO = this.$scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
-
-                this.$scope.loadConfiguration();
+                var that = this;
+                this.$scope.isConfigRequestQueued = true;
+                //this delay lets us to process other events before this config request
+                //for example a user might type some text to textfield and click a button
+                //before triggering change on textfield we should queue click handler
+                //with this delay we give them a chance to handle this
+                this.$timeout(that.$scope.loadConfiguration, 100);
             }
         }
 
@@ -458,6 +488,7 @@ module dockyard.directives.paneConfigureAction {
     
             this.ActionService.configure(this.$scope.currentAction).$promise
                 .then((res: interfaces.IActionVM) => {
+                    
                 var childActionsDetected = false;
 
                 // Detect OperationalState crate with CurrentClientActionName = 'RunImmediately'.
@@ -470,7 +501,7 @@ module dockyard.directives.paneConfigureAction {
                         this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ExecutePlan]);
                     }
                 }
-
+                
                 var oldAction = this.$scope.currentAction;
                 if (oldAction.label !== res.label) {
                     this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ActionUpdated], res);
@@ -513,7 +544,15 @@ module dockyard.directives.paneConfigureAction {
 
                 deferred.resolve(this.$scope.currentAction);
 
+                
+
             }).catch((result) => {
+                   
+                if (result.status == 423) {
+                    this.$scope.processing = false;
+                    deferred.reject(result);
+                    return;
+                }
 
                 var errorText = 'Something went wrong. Click to retry.';
                 if (result.status && result.status >= 400) {
@@ -532,10 +571,25 @@ module dockyard.directives.paneConfigureAction {
                 this.$scope.processing = false;
                 deferred.reject(result);
 
-            }).finally(() => {
-                this.ConfigureTrackerService.configureCallFinished(this.$scope.currentAction.id);
-                // emit ConfigureCallResponse for RouteBuilderController be able to reload actions with AgressiveReloadTag
-                this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ConfigureCallResponse], new CallConfigureResponseEventArgs(this.$scope.currentAction, this.$scope.currentActiveElement));
+                }).finally(() => {
+
+                    this.$scope.isConfigRequestQueued = false;
+
+                    var notifyCallbackFunctions = () => {
+                        //let's notify watchers about end of this config call
+                        for (var i = 0; i < this.$scope.configNotificationQueue.length; i++) {
+                            var callbackFunction: Function = this.$scope.configNotificationQueue[i];
+                            callbackFunction.apply(null);
+                        }
+                        this.$scope.configNotificationQueue = [];
+                    };
+
+                    //lets wait for BLOCKUI to disappear
+                    this.$timeout(notifyCallbackFunctions, 600);
+
+                    this.ConfigureTrackerService.configureCallFinished(this.$scope.currentAction.id);
+                    // emit ConfigureCallResponse for RouteBuilderController be able to reload actions with AgressiveReloadTag
+                    this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ConfigureCallResponse], new CallConfigureResponseEventArgs(this.$scope.currentAction, this.$scope.currentActiveElement));
             });
             return deferred.promise;
         };
@@ -570,6 +624,7 @@ module dockyard.directives.paneConfigureAction {
             }
 
             this.$timeout.cancel(this.timeoutPromise);  //does nothing, if timeout alrdy done
+            this.$scope.plan.planState = 3; // a control value is changed, the plan should not be run after the change request is sent to server
             this.timeoutPromise = this.$timeout(() => {   //Set timeout to prevent sending more than one save requests for changes lasts less than 1 sec.
                 this.$scope.onConfigurationChanged(newValue, oldValue);
             }, 1000);

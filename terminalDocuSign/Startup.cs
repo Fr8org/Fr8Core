@@ -34,6 +34,7 @@ namespace terminalDocuSign
             Container.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
 
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
+            SwaggerConfig.Register(_configuration);
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
             app.UseWebApi(_configuration);
@@ -46,7 +47,6 @@ namespace terminalDocuSign
         protected override void RegisterActivities()
         {
             ActivityStore.RegisterActivity<Monitor_DocuSign_Envelope_Activity_v1>(Monitor_DocuSign_Envelope_Activity_v1.ActivityTemplateDTO);
-            ActivityStore.RegisterActivity<Get_DocuSign_Envelope_v1>(Get_DocuSign_Envelope_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Send_DocuSign_Envelope_v1>(Send_DocuSign_Envelope_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Send_DocuSign_Envelope_v2>(Send_DocuSign_Envelope_v2.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Use_DocuSign_Template_With_New_Document_v1>(Use_DocuSign_Template_With_New_Document_v1.ActivityTemplateDTO);
@@ -58,7 +58,9 @@ namespace terminalDocuSign
             ActivityStore.RegisterActivity<Query_DocuSign_v1>(Query_DocuSign_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Query_DocuSign_v2>(Query_DocuSign_v2.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Search_DocuSign_History_v1>(Search_DocuSign_History_v1.ActivityTemplateDTO);
-            ActivityStore.RegisterActivity<Get_DocuSign_Template_v1>(Get_DocuSign_Template_v1.ActivityTemplateDTO);
+            //FR-3917
+            //ActivityStore.RegisterActivity<Get_DocuSign_Envelope_v1>(Get_DocuSign_Envelope_v1.ActivityTemplateDTO);
+            //ActivityStore.RegisterActivity<Get_DocuSign_Template_v1>(Get_DocuSign_Template_v1.ActivityTemplateDTO);
         }
 
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)

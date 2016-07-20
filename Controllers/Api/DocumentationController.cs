@@ -6,6 +6,7 @@ using Fr8.Infrastructure.Utilities;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using StructureMap;
+using System.Web.Http.Description;
 
 namespace HubWeb.Controllers
 {
@@ -35,10 +36,20 @@ namespace HubWeb.Controllers
             _terminal = terminal;
             _activity = activity;
         }
-
+        /// <summary>
+        /// Retrieves documentaion for solutions activities depending on parameters passed
+        /// </summary>
+        /// <param name="curActivityDTO">Activity to return documentation for</param>
+        /// <response code="200">
+        /// If activity Documentation property contains value of 'Terminal=[name of terminal]' then list of solution descriptions for specified terminal will be returned. <br />
+        /// If activity Documentation property contains value of 'MainPage' then list of solutions descriptions for all terminals will be returned. <br />
+        /// If activity Documentation property contains value of 'HelpMenu' then documentation for template of specified activity will be returned
+        /// </response>
+        /// <response code="400">If specified activity's Documenation doesn't contain non of 'Terminal=[name of terminal]', 'MainPage' or 'HelpMenu'</response>
         [HttpPost]
         [ActionName("activity")]
         [AllowAnonymous]
+        [ResponseType(typeof(DocumentationResponseDTO))]
         public async Task<IHttpActionResult> Activity([FromBody] ActivityDTO curActivityDTO)
         {
             var curDocSupport = curActivityDTO.Documentation;

@@ -123,6 +123,11 @@ namespace HubTests.Services
         {
             return _activity.DeleteChildNodes(id);
         }
+
+        public bool Exists(Guid id)
+        {
+            return _activity.Exists(id);
+        }
     }
 
     public class PlanNodeMock : IPlanNode
@@ -217,6 +222,11 @@ namespace HubTests.Services
         }
 
         public IEnumerable<ActivityTemplateDTO> GetSolutions(IUnitOfWork uow)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<ActivityTemplateCategoryDTO> GetActivityTemplatesGroupedByCategories()
         {
             throw new NotImplementedException();
         }

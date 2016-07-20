@@ -273,7 +273,7 @@ namespace Fr8.Infrastructure.Utilities.Logging
 			// syslog udp defaults
 			this.RemotePort = DefaultSyslogPort;
 			this.RemoteAddress = System.Net.IPAddress.Parse("127.0.0.1");
-			this.Encoding = System.Text.Encoding.ASCII;
+			this.Encoding = System.Text.Encoding.UTF8;
 		}
 
 		#endregion Public Instance Constructors

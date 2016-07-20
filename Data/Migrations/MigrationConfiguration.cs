@@ -12,6 +12,7 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using StructureMap;
+using System.Text.RegularExpressions;
 
 namespace Data.Migrations
 {
@@ -76,21 +77,68 @@ namespace Data.Migrations
         private void RegisterTerminals(UnitOfWork uow)
         {
             // Example of terminal registration: RegisterTerminal (uow, "localhost:12345");   
+            RegisterTerminal(uow, "localhost:10109");
+            RegisterTerminal(uow, "localhost:56785");
+            RegisterTerminal(uow, "localhost:46281");
+            RegisterTerminal(uow, "localhost:61121");
+            RegisterTerminal(uow, "localhost:54642");
+            RegisterTerminal(uow, "localhost:39504");
+            RegisterTerminal(uow, "localhost:53234");
+            RegisterTerminal(uow, "localhost:30700");
+            RegisterTerminal(uow, "localhost:51234");
+            RegisterTerminal(uow, "localhost:50705");
+            RegisterTerminal(uow, "localhost:10601");
+            RegisterTerminal(uow, "localhost:30699");
+            RegisterTerminal(uow, "localhost:25923");
+            RegisterTerminal(uow, "localhost:47011");
+            RegisterTerminal(uow, "localhost:19760");
+            RegisterTerminal(uow, "localhost:30701");
+            RegisterTerminal(uow, "localhost:39768");
+            RegisterTerminal(uow, "localhost:48317");
+            RegisterTerminal(uow, "localhost:39555");
+            RegisterTerminal(uow, "localhost:64879");
+            RegisterTerminal(uow, "localhost:50479");
+            RegisterTerminal(uow, "localhost:22555");
+            RegisterTerminal(uow, "localhost:48675");
+            RegisterTerminal(uow, "localhost:22666");
+            RegisterTerminal(uow, "localhost:59022");
+            RegisterTerminal(uow, "localhost:38080");
         }
-        
+
+        private string ExtractPort(string url)
+        {
+            if (string.IsNullOrEmpty(url))
+            {
+                throw new ArgumentNullException(nameof(url));
+            }
+
+            Regex r = new Regex(@"[^/]+?:(?<port>\d+)",
+                                     RegexOptions.None, TimeSpan.FromMilliseconds(150));
+            Match m = r.Match(url);
+            if (m.Success)
+                return r.Match(url).Result("${port}");
+            else
+                return null;
+        }
+
         // ReSharper disable once UnusedMember.Local
         private void RegisterTerminal(UnitOfWork uow, string terminalEndpoint)
         {
             var terminalRegistration = new TerminalRegistrationDO();
+            string terminalPort = ExtractPort(terminalEndpoint);
 
             terminalEndpoint = ExtractTerminalAuthority(terminalEndpoint);
 
-            if (uow.TerminalRegistrationRepository.GetAll().FirstOrDefault(x => string.Equals(ExtractTerminalAuthority(x.Endpoint), terminalEndpoint, StringComparison.OrdinalIgnoreCase)) != null)
+            if (uow.TerminalRegistrationRepository.GetAll().FirstOrDefault(x =>
+                    string.Equals(ExtractTerminalAuthority(x.Endpoint), terminalEndpoint, StringComparison.OrdinalIgnoreCase) ||
+                    (ExtractPort(x.Endpoint) != null && ExtractPort(terminalEndpoint) !=null && string.Equals(ExtractPort(x.Endpoint), terminalPort, StringComparison.OrdinalIgnoreCase))
+                ) != null)
             {
                 return;
             }
 
             terminalRegistration.Endpoint = terminalEndpoint;
+            terminalRegistration.IsFr8OwnTerminal = true;
 
             uow.TerminalRegistrationRepository.Add(terminalRegistration);
             uow.SaveChanges();

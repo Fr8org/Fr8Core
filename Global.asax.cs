@@ -58,7 +58,7 @@ namespace HubWeb
 
             //Register global Exception Filter for WebAPI 
             GlobalConfiguration.Configuration.Filters.Add(new WebApiExceptionFilterAttribute());
-            
+
             if (!selfHostMode)
             {
                 Fr8.Infrastructure.Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
@@ -67,14 +67,14 @@ namespace HubWeb
                 if (!segmentWriteKey.IsNullOrEmpty())
                     Analytics.Initialize(segmentWriteKey);
             }
-            
+
             ModelBinders.Binders.Add(typeof(DateTimeOffset), new KwasantDateBinder());
-            
+
             Logger.LogWarning("Dockyard  starting...");
 
             ConfigureValidationEngine();
         }
-        
+
         private void ConfigureValidationEngine()
         {
             FluentValidationModelValidatorProvider.Configure(GlobalConfiguration.Configuration);

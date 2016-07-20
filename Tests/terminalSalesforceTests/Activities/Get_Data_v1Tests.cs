@@ -51,7 +51,7 @@ namespace terminalSalesforceTests.Actions
                 .Returns(() => Task.FromResult(new List<FieldDTO> { testField }));
 
             salesforceIntegrationMock.Setup(
-                s => s.Query(SalesforceObjectType.Account, It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationToken>()))
+                s => s.Query(SalesforceObjectType.Account, It.IsAny<IEnumerable<FieldDTO>>(), It.IsAny<string>(), It.IsAny<AuthorizationToken>()))
                 .Returns(() => Task.FromResult(new StandardTableDataCM()));
 
             _getData_v1 = New<Get_Data_v1>();
@@ -127,7 +127,7 @@ namespace terminalSalesforceTests.Actions
             await _getData_v1.Run(activityContext, executionContext);
             //Assert
             var stroage = executionContext.PayloadStorage;
-            Assert.AreEqual(4, stroage.Count, "Number of Payload crates not populated correctly");
+            Assert.AreEqual(2, stroage.Count, "Number of Payload crates not populated correctly");
 
             Assert.IsNotNull(stroage.CratesOfType<StandardTableDataCM>().Single(), "Not able to get the required salesforce object");
         }

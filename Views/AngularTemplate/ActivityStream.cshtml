@@ -6,8 +6,7 @@
         <md-content>
             <md-progress-linear md-mode="indeterminate" ng-show="planIsRunning"></md-progress-linear>
             <md-list flex>    
-                <fr8-event ng-repeat="event in eventList" event="event.data" type="{{event.type}}">
-                </fr8-event>
+                <fr8-event ng-repeat="event in eventList" event="event.data" type="event.type"> </fr8-event>
             </md-list>
         </md-content>
     </md-content>

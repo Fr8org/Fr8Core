@@ -19,13 +19,19 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("23e0576e-7c51-42a6-89f2-e954c8499ca5"),
             Name = "Execute_Sql",
             Label = "Execute Sql Query",
             Category = ActivityCategory.Processors,
             Version = "1",
             Tags = Tags.Internal,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Process,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -158,7 +164,6 @@ namespace terminalFr8Core.Activities
 
         public override async Task Initialize()
         {
-            Storage.Add(PackControlsCrate());
             AddLabelControl("NoConfigLabel","No configuration","This activity does not require any configuration.");
         }
 

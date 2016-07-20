@@ -139,14 +139,14 @@ namespace terminalExcel.Activities
             // Fetch rows in Excel file
             var rowsDictionary = ExcelUtils.GetTabularData(fileAsByteArray, ext, isFirstRowAsColumnNames, sheetName);
 
-            Crate tableCrate = CrateManager.CreateStandardTableDataCrate(RunTimeCrateLabel, isFirstRowAsColumnNames, new TableRowDTO[] { } ); // default one
+            Crate tableCrate = Crate.FromContent(RunTimeCrateLabel, new StandardTableDataCM(isFirstRowAsColumnNames, new TableRowDTO[0])); // default one
 
             if (rowsDictionary != null && rowsDictionary.Count > 0)
             {
                 var rows = ExcelUtils.CreateTableCellPayloadObjects(rowsDictionary, headersArray, isFirstRowAsColumnNames);
                 if (rows != null && rows.Count > 0)
                 {
-                    tableCrate = CrateManager.CreateStandardTableDataCrate(RunTimeCrateLabel, isFirstRowAsColumnNames, rows.ToArray());
+                    tableCrate = Crate.FromContent(RunTimeCrateLabel, new StandardTableDataCM(isFirstRowAsColumnNames, rows));
                     var fieldsCrate = TabularUtilities.PrepareFieldsForOneRowTable(isFirstRowAsColumnNames, isRunTime, rows, headersArray);
                     if (fieldsCrate != null)
                     {
@@ -223,6 +223,7 @@ namespace terminalExcel.Activities
         }
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("df2df85f-9364-48af-aa97-bb8adccc91d7"),
             Name = "Load_Excel_File",
             Label = "Load Excel File",
             Version = "1",
@@ -230,7 +231,12 @@ namespace terminalExcel.Activities
             Terminal = TerminalData.TerminalDTO,
             Tags = "Table Data Generator,Getter",
             MinPaneWidth = 300,
-            WebService = TerminalData.WebServiceDTO
+            WebService = TerminalData.WebServiceDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Receive,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

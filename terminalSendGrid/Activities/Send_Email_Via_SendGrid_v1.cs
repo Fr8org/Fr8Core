@@ -12,6 +12,7 @@ using Fr8.TerminalBase.Infrastructure;
 using terminalUtilities.Infrastructure;
 using terminalUtilities.Interfaces;
 using terminalUtilities.Models;
+using System;
 
 namespace terminalSendGrid.Activities
 {
@@ -22,6 +23,7 @@ namespace terminalSendGrid.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("f827af1c-3348-4981-bebd-cf81c8ab27ae"),
             Name = "Send_Email_Via_SendGrid",
             Label = "Send Email",
             Version = "1",
@@ -29,7 +31,12 @@ namespace terminalSendGrid.Activities
             Terminal = TerminalData.TerminalDTO,
             Category = ActivityCategory.Forwarders,
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO
+            WebService = TerminalData.WebServiceDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -44,7 +51,9 @@ namespace terminalSendGrid.Activities
         public override async Task Initialize()
         {
             Storage.Clear();
-            Storage.Add(CreateControlsCrate());
+
+            CreateControls();
+
             await Task.FromResult(0);
         }
 
@@ -54,7 +63,7 @@ namespace terminalSendGrid.Activities
         /// <returns></returns>
         private ControlDefinitionDTO CreateEmailAddressTextSourceControl()
         {
-            var control = ControlHelper.CreateSpecificOrUpstreamValueChooser(
+            var control = UiBuilder.CreateSpecificOrUpstreamValueChooser(
                 "Email Address",
                 "EmailAddress",
                 addRequestConfigEvent: true,
@@ -70,7 +79,7 @@ namespace terminalSendGrid.Activities
         /// <returns></returns>
         private ControlDefinitionDTO CreateEmailSubjectTextSourceControl()
         {
-            var control = ControlHelper.CreateSpecificOrUpstreamValueChooser(
+            var control = UiBuilder.CreateSpecificOrUpstreamValueChooser(
                 "Email Subject",
                 "EmailSubject",
                 addRequestConfigEvent: true,
@@ -86,7 +95,7 @@ namespace terminalSendGrid.Activities
         /// <returns></returns>
         private ControlDefinitionDTO CreateEmailBodyTextSourceControl()
         {
-            var control = ControlHelper.CreateSpecificOrUpstreamValueChooser(
+            var control = UiBuilder.CreateSpecificOrUpstreamValueChooser(
                 "Email Body",
                 "EmailBody",
                 addRequestConfigEvent: true,
@@ -96,7 +105,7 @@ namespace terminalSendGrid.Activities
             return control;
         }
 
-        private Crate CreateControlsCrate()
+        private void CreateControls()
         {
             var controls = new List<ControlDefinitionDTO>()
             {
@@ -105,7 +114,7 @@ namespace terminalSendGrid.Activities
                 CreateEmailBodyTextSourceControl()
             };
 
-            return CrateManager.CreateStandardConfigurationControlsCrate(ConfigurationControlsLabel, controls.ToArray());
+            AddControls(controls);
         }
 
         private string CreateEmailHTMLText(string emailBody)

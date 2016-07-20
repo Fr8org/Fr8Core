@@ -13,5 +13,6 @@ namespace Data.Entities
         [ForeignKey("User")]
         public String UserId { get; set; }
         public Fr8AccountDO User { get; set; }
+        public bool IsFr8OwnTerminal { get; set; }
     }
 }

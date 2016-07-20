@@ -21,6 +21,7 @@ namespace terminalBasecamp2.Activities
 
         public static ActivityTemplateDTO ActivityTemplate = new ActivityTemplateDTO
         {
+            Id = new Guid("BCAA6CCF-47E4-4853-9EBD-B50276B3016E"),
             Name = "Create_Message",
             Label = "Create Message",
             Category = ActivityCategory.Forwarders,
@@ -28,7 +29,8 @@ namespace terminalBasecamp2.Activities
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
-            NeedsAuthentication = true
+            NeedsAuthentication = true,
+            Categories = new[] { ActivityCategories.Forward }
         };
 
         public class ActivityUi : StandardConfigurationControlsCM

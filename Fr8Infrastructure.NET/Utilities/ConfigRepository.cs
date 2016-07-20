@@ -1,4 +1,5 @@
 ﻿using System;
+using Fr8.Infrastructure.Utilities.Configuration;
 
 namespace Fr8.Infrastructure.Utilities
 {
@@ -41,7 +42,7 @@ namespace Fr8.Infrastructure.Utilities
 
         private T InternalGet<T>(String key, T defaultValue = default(T), bool defaultProvided = false)
         {
-            var stringValue = global::Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting(key);
+            var stringValue = CloudConfigurationManager.GetSetting(key);
 
             if (String.IsNullOrEmpty(stringValue))
             {

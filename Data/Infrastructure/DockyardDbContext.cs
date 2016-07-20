@@ -264,6 +264,8 @@ namespace Data.Infrastructure
             modelBuilder.Entity<SubplanDO>().ToTable("SubPlans");
             modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");
             modelBuilder.Entity<ActivityTemplateDO>().ToTable("ActivityTemplate");
+            modelBuilder.Entity<ActivityCategoryDO>().ToTable("ActivityCategory");
+            modelBuilder.Entity<ActivityCategorySetDO>().ToTable("ActivityCategorySet");
             modelBuilder.Entity<WebServiceDO>().ToTable("WebServices");
             modelBuilder.Entity<TerminalSubscriptionDO>().ToTable("TerminalSubscription");
             modelBuilder.Entity<EncryptedAuthorizationData>().ToTable("EncryptedAuthorizationData");

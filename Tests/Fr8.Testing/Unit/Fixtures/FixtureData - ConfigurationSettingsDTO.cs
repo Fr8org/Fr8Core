@@ -27,8 +27,9 @@ namespace Fr8.Testing.Unit.Fixtures
             fieldDTO.Label = "SQL Connection String";
 
             ICrateStorage curCrateStorage = new CrateStorage();
-            ICrateManager crate = ObjectFactory.GetInstance<ICrateManager>();
-            curCrateStorage.Add(crate.CreateStandardConfigurationControlsCrate("Configuration Data for WriteToAzureSqlServer", fieldDTO));
+
+            curCrateStorage.Add("Configuration Data for WriteToAzureSqlServer", new StandardConfigurationControlsCM(fieldDTO));
+
             return curCrateStorage;
         }
 
@@ -48,51 +49,6 @@ namespace Fr8.Testing.Unit.Fixtures
                 Name = "Connection_String",
                 Value = @"This is incorrect database connection string!"
             };
-        }
-
-        public static ICrateStorage TestCrateStorage()
-        {
-            ICrateManager crate = ObjectFactory.GetInstance<ICrateManager>();
-            var curConfigurationStore = new CrateStorage
-            {
-                //this needs to be updated to hold Crates instead of FieldDefinitionDTO
-               
-                    crate.CreateStandardConfigurationControlsCrate("AzureSqlServer Design-Time Fields", TestConnectionStringFieldDefinition())
-                
-            };
-
-            return curConfigurationStore;
-        }
-
-        public static ControlDefinitionDTO TestConnectionStringFieldDefinition()
-        {
-            return new TextBlock()
-            {
-                Label = "SQL Connection String",
-                Name = "connection_string",
-                Required = true,
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
-            };
-        }
-
-        public static ActivityDO TestConfigurationSettingsDTO1()
-        {
-            ActivityDO curAction = FixtureData.TestActivity1();
-            ICrateManager crate = ObjectFactory.GetInstance<ICrateManager>();
-
-            //create connection string value crates with a vald connection string
-            
-            using (var crateStorage = crate.GetUpdatableStorage(curAction))
-            {
-                crateStorage.Replace(TestCrateStorage());
-
-               var connectionStringFields = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
-                
-                connectionStringFields.Content.Controls[0].Value = @"Data Source=s79ifqsqga.database.windows.net;Initial Catalog=demodb_health;User ID=alexeddodb;Password=Thales89";
-            }
-            
-            return curAction;
-
         }
     }
 }

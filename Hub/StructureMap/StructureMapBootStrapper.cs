@@ -104,6 +104,7 @@ namespace Hub.StructureMap
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Hub.Services.Event>();
                 For<IActivityTemplate>().Use<ActivityTemplate>().Singleton();
+                For<IActivityCategory>().Use<ActivityCategory>().Singleton();
                 For<IFile>().Use<InternalClass.File>();
                 For<ITerminal>().Use<Terminal>().Singleton();
                 For<ICrateManager>().Use<CrateManager>();
@@ -169,6 +170,7 @@ namespace Hub.StructureMap
                 var terminalTransmitterMock = new Mock<ITerminalTransmitter>();
                 For<ITerminalTransmitter>().Use(terminalTransmitterMock.Object).Singleton();
                 For<IActivityTemplate>().Use<ActivityTemplate>().Singleton();
+                For<IActivityCategory>().Use<ActivityCategory>().Singleton();
                 For<IEvent>().Use<Hub.Services.Event>();
                 //For<ITemplate>().Use<Services.Template>();
                 For<IFile>().Use<InternalClass.File>();
@@ -217,14 +219,14 @@ namespace Hub.StructureMap
                 _terminal = new Terminal(configRepository);
             }
 
-            public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal)
+            public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal, string userId)
             {
                 return new Dictionary<string, string>();
             }
 
-            public Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId)
+            public Task<TerminalDO> GetByToken(string token)
             {
-                return Task.FromResult(new TerminalDO());
+                return _terminal.GetByToken(token);
             }
 
             public IEnumerable<TerminalDO> GetAll()
@@ -251,13 +253,6 @@ namespace Hub.StructureMap
             {
                 return _terminal.GetByKey(terminalId);
             }
-
-            public Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId)
-            {
-                return _terminal.IsUserSubscribedToTerminal(terminalId, userId);
-
-            }
-
             public Task<List<DocumentationResponseDTO>> GetSolutionDocumentations(string terminalName)
             {
                 return _terminal.GetSolutionDocumentations(terminalName);

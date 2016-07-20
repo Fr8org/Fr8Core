@@ -330,7 +330,7 @@ namespace Hub.Services
             IEnumerable<ActivityTemplateDTO> curActivityTemplates;
             curActivityTemplates = _activityTemplate
                 .GetAll()
-                .Where(at => at.Category == ActivityCategory.Solution
+                .Where(at => at.Category == Fr8.Infrastructure.Data.States.ActivityCategory.Solution
                     && at.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
                 .OrderBy(t => t.Category)
                 .Select(Mapper.Map<ActivityTemplateDTO>)
@@ -364,7 +364,36 @@ namespace Hub.Services
                     Name = c.Key.ToString()
                 })
                 .ToList();
+
             return curActivityTemplates;
+        }
+
+        public IEnumerable<ActivityTemplateCategoryDTO> GetActivityTemplatesGroupedByCategories()
+        {
+            var categories = _activityTemplate
+                .GetQuery()
+                .Where(x => x.Categories != null)
+                .SelectMany(x => x.Categories)
+                .Select(x => new { x.ActivityCategory.Name, x.ActivityCategory.IconPath })
+                .OrderBy(x => x.Name)
+                .Distinct()
+                .ToList();
+
+            var result = categories
+                .Select(x => new ActivityTemplateCategoryDTO()
+                {
+                    Name = x.Name,
+                    IconPath = x.IconPath,
+                    Activities = _activityTemplate.GetQuery()
+                        .Where(y => y.Categories != null && y.Categories.Any(z => z.ActivityCategory.Name == x.Name))
+                        .GroupBy(y => y.Name)
+                        .Select(y => Mapper.Map<ActivityTemplateDTO>(y.OrderByDescending(z => Int32.Parse(z.Version)).First()))
+                        .OrderBy(y => y.Label)
+                        .ToList()
+                })
+                .ToList();
+
+            return result;
         }
     }
 }

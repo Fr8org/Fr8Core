@@ -35,21 +35,13 @@ namespace terminalStatXTests.Fixtures
             };
         }
 
-        public static ActivityTemplateDTO MonitorFr8Event_ActivityTemplate()
+        public static ActivityTemplateDTO Create_Stat_ActivityTemplate()
         {
             return new ActivityTemplateDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Post_To_Timeline_TEST",
+                Name = "Create_Stat_TEST",
                 Version = "1"
-            };
-        }
-
-        public static AuthorizationTokenDTO StatX_AuthToken()
-        {
-            return new AuthorizationTokenDTO()
-            {
-                Token = @"{\'apiKey\':\'statx_install_a06b7406-f570-4f62-9a39-970376c30b21\',\'authToken\':\'m82Janb2UqB3s/Eq1MikYAiyBMaUehmDAtJ08iNCcCg=\'}"
             };
         }
 
@@ -62,7 +54,20 @@ namespace terminalStatXTests.Fixtures
                 Id = Guid.NewGuid(),
                 Label = "Update Stat",
                 ActivityTemplate = activityTemplate,
-                AuthToken = StatX_AuthToken()
+            };
+
+            return new Fr8DataDTO { ActivityDTO = activityDTO };
+        }
+
+        public static Fr8DataDTO Create_Stat_InitialConfiguration_Fr8DataDTO()
+        {
+            var activityTemplate = Create_Stat_ActivityTemplate();
+
+            var activityDTO = new ActivityDTO()
+            {
+                Id = Guid.NewGuid(),
+                Label = "Create Stat",
+                ActivityTemplate = activityTemplate,
             };
 
             return new Fr8DataDTO { ActivityDTO = activityDTO };
@@ -70,14 +75,13 @@ namespace terminalStatXTests.Fixtures
 
         public static Fr8DataDTO Monitor_Stat_Changes_InitialConfiguration_Fr8DataData()
         {
-            var activityTemplate = Update_Stat_ActivityTemplate();
+            var activityTemplate = MonitorStatChanges_ActivityTemplate();
 
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
                 Label = "Update Stat",
                 ActivityTemplate = activityTemplate,
-                AuthToken = StatX_AuthToken()
             };
 
             return new Fr8DataDTO { ActivityDTO = activityDTO };

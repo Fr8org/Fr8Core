@@ -21,13 +21,19 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("62087361-da08-44f4-9826-70f5e26a1d5a"),
             Name = "Test_Incoming_Data",
             Label = "Test Incoming Data",
             Category = ActivityCategory.Processors,
             Version = "1",
             MinPaneWidth = 550,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Process,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -151,7 +157,7 @@ namespace terminalFr8Core.Activities
             return whereCallExpression;
         }
 
-        protected virtual Crate CreateControlsCrate()
+        protected virtual void CreateControls()
         {
             var fieldFilterPane = new FilterPane()
             {
@@ -166,7 +172,7 @@ namespace terminalFr8Core.Activities
                 }
             };
 
-            return PackControlsCrate(fieldFilterPane);
+            AddControls(fieldFilterPane);
         }
 
         public override async Task Run()
@@ -195,7 +201,7 @@ namespace terminalFr8Core.Activities
 
             if (!result)
             {
-                TerminateHubExecution();
+                RequestPlanExecutionTermination();
                 return;
             }
 
@@ -204,8 +210,7 @@ namespace terminalFr8Core.Activities
 
         public override async Task Initialize()
         {
-            var configurationControlsCrate = CreateControlsCrate();
-            Storage.Add(configurationControlsCrate);
+            CreateControls();
         }
 
         public override Task FollowUp()

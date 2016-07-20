@@ -5,6 +5,6 @@ namespace Fr8.TerminalBase.Services
 {
     public interface IPushNotificationService
     {
-        Task PushUserNotification(ActivityTemplateDTO activityTemplate, string type, string subject, string message, string userId = null);
+        Task PushUserNotification(ActivityTemplateDTO activityTemplate, string type, string subject, string message);
     }
 }

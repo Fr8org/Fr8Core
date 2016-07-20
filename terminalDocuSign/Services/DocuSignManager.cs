@@ -31,15 +31,23 @@ namespace terminalDocuSign.Services.New_Api
     public class DocuSignManager : IDocuSignManager
     {
         public const string DocusignTerminalName = "terminalDocuSign";
-        private static readonly string[] DefaultControlNames = new[] { "Text","Checkbox", "Check Box", "Radio Group", "List", "Drop Down", "Note", "Number", "Data Field" };
+        private static readonly string[] DefaultControlNames = new[] { "Text", "Checkbox", "Check Box", "Radio Group", "List", "Drop Down", "Note", "Number", "Data Field" };
         const string DefaultTemplateNameRegex = @"\s*\d+$";
+
+        public DocuSignApiConfiguration SetUp(string authToken)
+        {
+            return SetUp(JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authToken));
+        }
 
         public DocuSignApiConfiguration SetUp(AuthorizationToken authToken)
         {
+            return SetUp(JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authToken.Token));
+        }
+
+        public DocuSignApiConfiguration SetUp(DocuSignAuthTokenDTO docuSignAuthDTO)
+        {
             string baseUrl = string.Empty;
             string integratorKey = string.Empty;
-
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authToken.Token);
             //create configuration for future api calls
             if (docuSignAuthDTO.IsDemoAccount)
             {
@@ -62,9 +70,9 @@ namespace terminalDocuSign.Services.New_Api
                 AuthenticationApi authApi = new AuthenticationApi(conf);
                 try
                 {
-                LoginInformation loginInfo = authApi.Login();
-                result.AccountId = loginInfo.LoginAccounts[0].AccountId; //it seems that althought one DocuSign account can have multiple users - only one is returned, the one that oAuth token was created for
-            }
+                    LoginInformation loginInfo = authApi.Login();
+                    result.AccountId = loginInfo.LoginAccounts[0].AccountId; //it seems that althought one DocuSign account can have multiple users - only one is returned, the one that oAuth token was created for
+                }
                 catch (Exception ex)
                 {
                     throw new AuthorizationTokenExpiredOrInvalidException();
@@ -255,7 +263,7 @@ namespace terminalDocuSign.Services.New_Api
                 }
             }
 
-            var percentOfTemplateNames = ((double) defaultTemplateNamesCount/ (double) totalTemplateNamesCount * 100);
+            var percentOfTemplateNames = ((double)defaultTemplateNamesCount / (double)totalTemplateNamesCount * 100);
             return percentOfTemplateNames >= 80;
         }
 
@@ -268,16 +276,16 @@ namespace terminalDocuSign.Services.New_Api
         {
             try
             {
-            var result = new List<KeyValueDTO>();
-            var recipients = GetRecipients(conf, api, id);
-            result.AddRange(MapRecipientsToFieldDTO(recipients));
-            foreach (var recipient in recipients.Signers)
-            {
-                result.AddRange(GetTabs(conf, api, id, recipient));
-            }
+                var result = new List<KeyValueDTO>();
+                var recipients = GetRecipients(conf, api, id);
+                result.AddRange(MapRecipientsToFieldDTO(recipients));
+                foreach (var recipient in recipients.Signers)
+                {
+                    result.AddRange(GetTabs(conf, api, id, recipient));
+                }
 
-            return result;
-        }
+                return result;
+            }
             catch (Exception ex)
             {
                 throw new AuthorizationTokenExpiredOrInvalidException();
@@ -303,7 +311,7 @@ namespace terminalDocuSign.Services.New_Api
         {
             var envelopesApi = api as EnvelopesApi;
             var templatesApi = api as TemplatesApi;
-            var docutabs = envelopesApi != null 
+            var docutabs = envelopesApi != null
                             ? envelopesApi.ListTabs(conf.AccountId, id, recipient.RecipientId)
                             : templatesApi.ListTabs(conf.AccountId, id, recipient.RecipientId, new Tabs());
 
