@@ -224,11 +224,6 @@ namespace Hub.StructureMap
                 return new Dictionary<string, string>();
             }
 
-            public Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId)
-            {
-                return Task.FromResult(new TerminalDO());
-            }
-
             public Task<TerminalDO> GetByToken(string token)
             {
                 return _terminal.GetByToken(token);
@@ -258,13 +253,6 @@ namespace Hub.StructureMap
             {
                 return _terminal.GetByKey(terminalId);
             }
-
-            public Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId)
-            {
-                return _terminal.IsUserSubscribedToTerminal(terminalId, userId);
-
-            }
-
             public Task<List<DocumentationResponseDTO>> GetSolutionDocumentations(string terminalName)
             {
                 return _terminal.GetSolutionDocumentations(terminalName);

@@ -676,7 +676,7 @@ namespace Hub.Services
                             await _containerService.Continue(uow, container);
                         }
 
-                        var response = _crate.GetContentType<OperationalStateCM>(container.CrateStorage);
+                        var response = _crate.GetStorage(container.CrateStorage).FirstCrateOrDefault<OperationalStateCM>()?.Content;
                         var responseMsg = GetResponseMessage(response);
 
                         if (container.State != State.Failed)

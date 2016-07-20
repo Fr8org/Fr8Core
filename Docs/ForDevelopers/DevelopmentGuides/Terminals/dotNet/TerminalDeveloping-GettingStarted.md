@@ -12,7 +12,7 @@ Step 1: Install Required software
 4. TypeScript 1.8 (automatically installed by recent versions of Visual Studio)
 5. .NET 4.5 is required. In addition, .NET 3.5 must also be enabled in your environment. Instructions are [here](http://windows.microsoft.com/en-us/windows/turn-windows-features-on-off#1TC=windows-7).
 6. Git
-7. [Azure SDK 2.8.#](http://www.microsoft.com/en-us/download/details.aspx?id=48178)
+7. [Azure SDK 2.7.#](https://www.microsoft.com/en-us/download/details.aspx?id=48178)
 
 
 Installing Node

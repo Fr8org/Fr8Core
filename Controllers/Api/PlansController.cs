@@ -49,6 +49,7 @@ namespace HubWeb.Controllers
         private readonly IPusherNotifier _pusherNotifier;
         private readonly IPlanTemplates _planTemplates;
 
+
         public PlansController()
         {
             _plan = ObjectFactory.GetInstance<IPlan>();

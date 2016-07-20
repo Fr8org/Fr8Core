@@ -98,7 +98,7 @@ namespace Fr8.TerminalBase.Services
             throw new NotImplementedException("Terminals can't communicate with an unknown hub");
         }
 
-        public Task RunPlan(Guid planId, List<CrateDTO> payload)
+        public Task RunPlan(Guid planId, IEnumerable<Crate> payload)
         {
             throw new NotImplementedException("Terminals can't communicate with an unknown hub");
         }
