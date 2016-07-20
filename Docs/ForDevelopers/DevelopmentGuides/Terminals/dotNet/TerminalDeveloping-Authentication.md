@@ -9,17 +9,20 @@ There are two elements of OAuth support you need to consider:
 We'll focus on #2. By looking at existing Terminal source code, you'll be able to see a number of different appraoches to #1.
 
 
-The Basic Fr8 Authorization Interaction
+The Basic Fr8 OAuth Interaction
 --------------------------------------
 
-1. Fr8 checks that Activity needs authentication and doesn't have a token; asks Terminal for **initialOAuthUrl**
-2. Terminal passes **initialOAuthUrl** to Fr8.
-3. Fr8 redirects user to this **initialOAuthUrl** via authentication window and receives a response from a 3rd party service
-4. Fr8 passes response to Terminal. 
-5. Terminal gets **code** from a response and uses OAuthAccessUrl to exchange it for an oAuth2 **access_token**. Terminal passes retrieved access_token to Fr8
-6. Fr8 stores the **access_token**
+This is diagrammed [here](Docs/ForDevelopers/OperatingConcepts/Authorization/AuthOverview.md). The key items are:
 
-As a Terminal developer you have to implement steps 2 and 5
+1. If your ActivityTemplate is signalling that Authentication is required, and the Fr8 Hub can't find a valid Authorization Token, it will call your Terminal to [GET the **initialOAuthUrl**](https://fr8.co/swagger/ui/index#!/Authentication/Authentication_initial_url)
+2. You return this URL to the Hub. It's usually hardcoded into your Terminal. 
+3. Fr8 redirects the user to this URL, triggering the OAuth process, and if all goes well receives a http response with a code.
+4. The code gets passed first from the Client to the Hub, and the Hub then passes the code to the Terminal by [POSTing to /authentication/token](https://fr8.co/swagger/ui/index#!/Authentication/Authentication_token). 
+5. Terminal gets **code** from a response and contacts the Web Service to exchange it for an oAuth2 **access_token**. (for example, the Google Terminal does this with the line var oauthToken = _googleIntegration.GetToken(code). 
+6. The Terminal returns the retrieved token to the Hub, which stores it with the Fr8 User account.
+7. Depending on the intial circumstance, the Hub may redirect to the Client to enable the user to continue with what they were doing.
+
+As a Terminal developer you have to implement responses to these requests, and carry out whatever steps are required by any Web Services you're attempting to connect to.
 
 ###Preparation for initial oAuth url
 
