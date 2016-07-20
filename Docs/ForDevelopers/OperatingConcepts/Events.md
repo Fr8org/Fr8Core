@@ -110,7 +110,7 @@ With this json response we are creating an EventSubscription crate which is list
 
 It is your terminal's responsiblity to create an endpoint for external system's events and listen to them. Every system has different methods for registering to their events. Most of them use webhooks for this purpose.
 
-Here are some samples to help you understand this concept. [Docusign Event Mechanism](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Samples/DocusignEventGeneration.md) and [Facebook Event Mechanism](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Samples/FacebookEventGeneration.md).
+Here are some samples to help you understand this concept. [Docusign Event Mechanism](/Docs/ForDevelopers/Samples/DocusignEventGeneration.md).
 
 Assuming that you have correctly configured external system to notify your terminal on events. Terminal needs to parse incoming event data and create an EventReportCM crate according to incoming event.
 
