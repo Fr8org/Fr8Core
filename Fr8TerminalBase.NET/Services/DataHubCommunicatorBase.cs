@@ -243,7 +243,7 @@ namespace Fr8.TerminalBase.Services
             throw new NotImplementedException();
         }
 
-        public Task NotifyUser(TerminalNotificationDTO notificationMessage)
+        public Task NotifyUser(NotificationMessageDTO notificationMessage)
         {
             return Task.FromResult(0);
         }

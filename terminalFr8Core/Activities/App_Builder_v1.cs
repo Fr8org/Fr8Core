@@ -61,7 +61,7 @@ namespace terminalFr8Core.Activities
         {
             var msg = "This Plan can be launched with the following URL: " + CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "redirect/cloneplan?id=" + ActivityId;
-            await _pushNotificationService.PushUserNotification(MyTemplate, "Success", "App Builder URL Generated", msg);
+            await _pushNotificationService.PushUserNotification(MyTemplate, NotificationArea.ActivityStream, "App Builder URL Generated", msg);
         }
 
         private async Task UpdateMetaControls()

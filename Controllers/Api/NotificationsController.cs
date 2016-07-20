@@ -31,7 +31,7 @@ namespace HubWeb.Controllers
         [SwaggerResponse(HttpStatusCode.OK, "Message was successfully posted")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
         [SwaggerResponseRemoveDefaults]
-        public IHttpActionResult Post(TerminalNotificationDTO notificationMessage)
+        public IHttpActionResult Post(NotificationMessageDTO notificationMessage)
         {
             string userId;
 
@@ -45,7 +45,9 @@ namespace HubWeb.Controllers
                 userId = _security.GetCurrentUser();
             }
 
-            _pusherNotifier.NotifyUser(notificationMessage, NotificationType.TerminalEvent, userId);
+            notificationMessage.NotificationType = NotificationType.TerminalEvent;
+
+            _pusherNotifier.NotifyUser(notificationMessage, userId);
             return Ok();
         }
     }

@@ -257,7 +257,7 @@ namespace Fr8.TerminalBase.Services
             return await _restfulServiceClient.PostAsync<PlanDTO>(uri, jsonContent);
         }
 
-        public async Task NotifyUser(TerminalNotificationDTO notificationMessage)
+        public async Task NotifyUser(NotificationMessageDTO notificationMessage)
         {
             var hubUrl = $"{GetHubUrlWithApiVersion()}/notifications";
             var uri = new Uri(hubUrl);

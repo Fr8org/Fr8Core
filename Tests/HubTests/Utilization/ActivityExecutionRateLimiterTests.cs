@@ -4,6 +4,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories.Utilization;
 using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
@@ -71,14 +72,14 @@ namespace HubTests.Utilization
                 throw new NotImplementedException();
             }
 
-            public void Notify(string channelName, NotificationType notificationType, object message)
+            public void Notify(string channelName, NotificationMessageDTO notificationMessage)
             {
-                Notifications.Add(message.ToString());
+                Notifications.Add(notificationMessage.ToString());
             }
 
-            public void NotifyUser(object message, NotificationType notificationType, string userId)
+            public void NotifyUser(NotificationMessageDTO notificationMessage, string userId)
             {
-                Notifications.Add(message.ToString());
+                Notifications.Add(notificationMessage.ToString());
             }
         }
 
