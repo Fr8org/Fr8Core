@@ -324,7 +324,7 @@ namespace Hub.Services
                 if (curActionExecutionMode != ActivityExecutionMode.ReturnFromChildren)
                     EventManager.ActivityRunRequested(curActivityDO, curContainerDO);
 
-                var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, "Run", parameters, curActivityDO, curContainerDO.Id);
+                var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, "run", parameters, curActivityDO, curContainerDO.Id);
 
                 EventManager.ActivityResponseReceived(curActivityDO, ActivityResponse.RequestSuspend);
 
@@ -691,14 +691,8 @@ namespace Hub.Services
                     },
                     Documentation = activityDTO.Documentation
                 };
-                activityResponce = await GetDocumentation<T>(curActivityDTO);
-                //Add log to the database
-                if (!isSolution)
-                {
-                    var curActivityDo = Mapper.Map<ActivityDO>(activityDTO);
-                    EventManager.ActivityResponseReceived(curActivityDo, ActivityResponse.ShowDocumentation);
-                }
 
+                activityResponce = await GetDocumentation<T>(curActivityDTO);
             }
             return activityResponce;
         }

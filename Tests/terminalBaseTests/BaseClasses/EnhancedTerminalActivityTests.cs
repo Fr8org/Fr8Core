@@ -466,7 +466,7 @@ namespace terminaBaselTests.BaseClasses
         {
             return new ContainerExecutionContext
             {
-                PayloadStorage = new CrateStorage(CrateManager.CreateOperationalStatusCrate("", new OperationalStateCM()))
+                PayloadStorage = new CrateStorage(Crate.FromContent("", new OperationalStateCM()))
             };
         }
 

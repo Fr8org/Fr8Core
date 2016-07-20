@@ -18,6 +18,7 @@ namespace terminalSlack.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("af0c038c-3adc-4372-b07e-e04b71102aa7"),
             Name = "Monitor_Channel",
             Label = "Monitor Slack Messages",
             Category = ActivityCategory.Monitors,
@@ -89,7 +90,6 @@ namespace terminalSlack.Activities
 
         public const string ResultPayloadCrateLabel = "Slack Message";
 
-        public const string EventSubscriptionsCrateLabel = "Standard Event Subscriptions";
 
         private readonly ISlackIntegration _slackIntegration;
         private readonly ISlackEventManager _slackEventManager;
@@ -107,7 +107,10 @@ namespace terminalSlack.Activities
                 .OrderBy(x => x.Key)
                 .Select(x => new ListItem { Key = $"#{x.Key}", Value = x.Value })
                 .ToList();
-            Storage.Add(CreateEventSubscriptionCrate());
+
+            EventSubscriptions.Manufacturer = "Slack";
+            EventSubscriptions.Add("Slack Outgoing Message");
+
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel)
                 .AddField("token")
                 .AddField("team_id")
@@ -120,12 +123,7 @@ namespace terminalSlack.Activities
                 .AddField("user_name")
                 .AddField("text");
         }
-
-        private Crate CreateEventSubscriptionCrate()
-        {
-            return CrateManager.CreateStandardEventSubscriptionsCrate(EventSubscriptionsCrateLabel, "Slack", "Slack Outgoing Message");
-        }
-
+        
         public override Task FollowUp()
         {
             //No extra configuration is required
@@ -149,7 +147,7 @@ namespace terminalSlack.Activities
 
             if (!hasIncomingMessage)
             {
-                TerminateHubExecution("Incoming message is missing.");
+                RequestPlanExecutionTermination("Incoming message is missing.");
                 return Task.FromResult(0);
             }
 
@@ -158,7 +156,7 @@ namespace terminalSlack.Activities
 
             if (string.IsNullOrEmpty(incomingChannelId))
             {
-                TerminateHubExecution("Incoming message doesn't contain information about source channel");
+                RequestPlanExecutionTermination("Incoming message doesn't contain information about source channel");
             }
             else
             {
@@ -175,7 +173,7 @@ namespace terminalSlack.Activities
                 }
                 else
                 {
-                    TerminateHubExecution("Incoming message doesn't pass filter criteria. No downstream activities are executed");
+                    RequestPlanExecutionTermination("Incoming message doesn't pass filter criteria. No downstream activities are executed");
                 }
             }
 

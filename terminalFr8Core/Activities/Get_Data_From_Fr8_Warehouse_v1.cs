@@ -28,6 +28,7 @@ namespace terminalFr8Core.Actions
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("826bf794-7608-4194-8d5e-7350df9adf65"),
             Name = "Get_Data_From_Fr8_Warehouse",
             Label = "Get Data From Fr8 Warehouse",
             Category = Fr8.Infrastructure.Data.States.ActivityCategory.Processors,

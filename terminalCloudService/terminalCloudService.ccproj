@@ -57,10 +57,9 @@
     <ServiceConfiguration Include="Config\terminalCloudService\ServiceConfiguration.Demo.cscfg" />
     <ServiceConfiguration Include="Config\terminalCloudService\ServiceConfiguration.Release.cscfg" />
     <ServiceConfiguration Include="ServiceConfiguration.Local.cscfg" />
-    <ServiceConfiguration Include="Config\terminalCloudService\ServiceConfiguration.Cloud.cscfg" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config"/>
+    <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Config\" />
@@ -111,6 +110,7 @@
   </PropertyGroup>
   <!-- These SecondarySite items represent the collection of sites (other than the web application associated with the role) that need special packaging. -->
   <ItemGroup>
+    <SecondarySite Include="..\terminalAsana\terminalAsana.csproj" />
     <SecondarySite Include="..\terminalAzure\terminalAzure.csproj" />
     <SecondarySite Include="..\terminalBasecamp2\terminalBasecamp2.csproj" />
     <SecondarySite Include="..\terminalFr8Core\terminalFr8Core.csproj" />
@@ -151,8 +151,9 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets'))" />
   </Target>
-  <Import Project="..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets" Condition="Exists('..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" />
-  <Import Project="..\targets\Fr8.NugetContentRestore.targets" Condition="Exists('..\targets\Fr8.NugetContentRestore.targets')" />
+  <Import Project="..\packages\Fr8.PrivateSettings.1.2016.202.12957-prerelease\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('..\packages\Fr8.PrivateSettings.1.2016.202.12957-prerelease\build\net40\Fr8.PrivateSettings.targets')" />
+  <Target Name="BeforeBuild">
+    <RestoreSettingsTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)"  ProjectName="$(ProjectName)" />
+  </Target>
 </Project>

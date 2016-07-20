@@ -69,14 +69,13 @@ namespace terminalSalesforceTests.Activities
             };
             await activity.Configure(activityContext);
             
-            var helper = new ControlHelper(activityContext);
 
-            helper.GetControl<ControlDefinitionDTO>(helper.GetConfigurationControls(activityContext.ActivityPayload.CrateStorage), "FeedTextSource").Value = null;
+            ActivityConfigurator.GetControl<ControlDefinitionDTO>(activityContext.ActivityPayload, "FeedTextSource").Value = null;
             
             activity = New<Post_To_Chatter_v2>();
             
             await activity.Run(activityContext, executionContext);
-            var operationalState = new CrateManager().GetOperationalState(executionContext.PayloadStorage);
+            var operationalState = executionContext.PayloadStorage.FirstCrateContentOrDefault<OperationalStateCM>();
             Assert.AreEqual(ActivityResponse.Error.ToString(), operationalState.CurrentActivityResponse.Type, "Run must fail if message is empty");
         }
 
@@ -110,7 +109,7 @@ namespace terminalSalesforceTests.Activities
             activity = New<Post_To_Chatter_v2>();
 
             await activity.Run(activityContext, executionContext);
-            var operationalState = new CrateManager().GetOperationalState(executionContext.PayloadStorage);
+            var operationalState = executionContext.PayloadStorage.FirstCrateContentOrDefault<OperationalStateCM>();
             Assert.AreEqual(ActivityResponse.Error.ToString(), operationalState.CurrentActivityResponse.Type, "Run must fail if chatter is not specified is empty");
         }
 

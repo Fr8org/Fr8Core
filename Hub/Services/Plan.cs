@@ -358,7 +358,7 @@ namespace Hub.Services
         public async Task Deactivate(Guid planId)
         {
             var deactivateTasks = new List<Task>();
-
+            string planName;    // Used by UI notification
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = uow.PlanRepository.GetById<PlanDO>(planId);
@@ -367,6 +367,7 @@ namespace Hub.Services
                     throw new MissingObjectException($"Plan with Id {planId} doesn't exist");
                 }
                 plan.PlanState = PlanState.Inactive;
+                planName = plan.Name;
                 uow.SaveChanges();
 
                 foreach (var activity in plan.GetDescendants().OfType<ActivityDO>())
@@ -384,9 +385,15 @@ namespace Hub.Services
                 throw new Exception("Failed to deactivate plan", ex);
             }
 
+            // Notify UI for stopped plan
+            _pusherNotifier.NotifyUser(new
+            {
+                Message = $"\"{planName}\"",
+                Collapsed = false
+            }, NotificationType.ExecutionStopped, _security.GetCurrentUser());
+
             EventManager.PlanDeactivated(planId);
         }
-
 
         public IList<PlanDO> GetMatchingPlans(string userId, EventReportCM curEventReport)
         {
@@ -669,7 +676,7 @@ namespace Hub.Services
                             await _containerService.Continue(uow, container);
                         }
 
-                        var response = _crate.GetContentType<OperationalStateCM>(container.CrateStorage);
+                        var response = _crate.GetStorage(container.CrateStorage).FirstCrateOrDefault<OperationalStateCM>()?.Content;
                         var responseMsg = GetResponseMessage(response);
 
                         if (container.State != State.Failed)

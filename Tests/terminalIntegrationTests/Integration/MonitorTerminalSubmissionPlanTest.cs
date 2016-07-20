@@ -43,7 +43,7 @@ namespace terminalIntegrationTests.Integration
 
         private readonly string jiraToken = @"{""Terminal"":null,""Username"":""fr8_atlassian_test@fr8.co"",""Password"":""shoggoth34"",""Domain"":""https://maginot.atlassian.net"",""IsDemoAccount"":false}";
 
-        private const int MaxAwaitPeriod = 30000;
+        private const int MaxAwaitPeriod = 45000;
         private const int SingleAwaitPeriod = 3000;
         private const int PlanExecutionPeriod = 10000;
 
@@ -55,9 +55,10 @@ namespace terminalIntegrationTests.Integration
             }
         }
 
+
         
 
-        [Test]
+        [Test, Ignore ("Being resolved in FR-4692")]
         public async Task MonitorTerminalSubmissionPlan()
         {
             AutoMapperBootstrapper.ConfigureAutoMapper();

@@ -1,46 +1,50 @@
 
-[Return to Terminal Development Guide Home](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/TerminalDevelopmentGuide.md)
+[Return to Terminal Development Guide Home](/Docs/ForDevelopers/DevelopmentGuides/TerminalDevelopmentGuide.md)
 
-### [Choosing a Development Approach](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/ChoosingADevelopmentApproach.md)
-
-
-### [Making Your Terminal Visible on the Public Web](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/PublicVisibility.md)
-
-    
-### [Responding to /discover Requests](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Guide-TerminalDiscovery.md)
+### [Choosing a Development Approach](/Docs/ForDevelopers/DevelopmentGuides/ChoosingADevelopmentApproach.md)
 
 
-### [Terminal registration](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Guide-TerminalRegistration.md)
+### [Making Your Terminal Visible on the Public Web](/Docs/ForDevelopers/DevelopmentGuides/PublicVisibility.md)
 
-### [Responding to /configure Requests](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Guide-ActivityConfiguration.md)
+
+### [Responding to /discover Requests](/Docs/ForDevelopers/DevelopmentGuides/Guide-TerminalDiscovery.md)
+
+
+### [Registering your Terminal with a Hub](/Docs/ForDevelopers/DevelopmentGuides/Guide-TerminalRegistration.md)
+
+### [Responding to /configure Requests](/Docs/ForDevelopers/DevelopmentGuides/Guide-ActivityConfiguration.md)
+
+### [Communicating with Hub](/Docs/ForDevelopers/DevelopmentGuides/Guide-HubCommunication.md)
 
 ### Making the activity runnable
 
 Activity execution is a bit more complex than configuration. There are three endpoints you have to implement to make activity ready for execution:
+
 1. Activation endpoint: **/activities/activate**
+
 2. Execution endpoint: **/activities/Run**
+
 3. Deactivation endpoint: **/activities/deactivate**
-4. 
-### [Responding to /activate and /deactivate](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Guide-ActivateDeactivate.md)
+
+
+### [Responding to /activate and /deactivate](/Docs/ForDevelopers/DevelopmentGuides/Guide-ActivateDeactivate.md)
 
 
 
-### [Responding to /run](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Guide-ActivityExecution.md)
+### [Responding to /run](/Docs/ForDevelopers/DevelopmentGuides/Guide-ActivityExecution.md)
 
-### Final words
-We've touched on elements of creating a simple Activity. Actual business-oriented activities and terminals wil much more complex.
+
 
 More Information:
 
-[Authentication](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Authorization/Home.md)
+[Authentication](/Docs/ForDevelopers/OperatingConcepts/Authorization/Home.md)
 
-[Validation](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/ActivitiesValidation.md)
+[Validation](/Docs/ForDevelopers/OperatingConcepts/ActivitiesValidation.md)
 
-[Plan Execution](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/PlanExecution.md)
+[Plan Execution](/Docs/ForDevelopers/OperatingConcepts/PlanExecution.md)
 
-[Plan Directory](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/PlanDirectory.md)
+[Plan Directory](/Docs/ForDevelopers/OperatingConcepts/PlanDirectory.md)
 
-[Events](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Events.md)
+[Events](/Docs/ForDevelopers/OperatingConcepts/Events.md)
 
-[Activity Signaling](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Signaling.md)
-
+[Activity Signaling](/Docs/ForDevelopers/OperatingConcepts/Signaling.md)

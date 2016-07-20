@@ -111,18 +111,20 @@ namespace terminalDocuSign.Activities
             {
                 var conf = DocuSignManager.SetUp(AuthorizationToken);
                 var userDefinedFields = DocuSignManager.GetTemplateRecipientsAndTabs(conf, templateId);
+
                 if (allFields != null)
                 {
                     allFields.AddRange(userDefinedFields);
                 }
-                Storage.Add(CrateManager.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", userDefinedFields.ToArray()));
+
+                Storage.Add("DocuSignTemplateUserDefinedFields", new KeyValueListCM(userDefinedFields));
             }
         }
 
-        public void FillDocuSignTemplateSource(Crate configurationCrate, string controlName)
+        public void FillDocuSignTemplateSource(string controlName)
         {
-            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
-            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            var control = ConfigurationControls.FindByNameNested<DropDownList>(controlName);
+
             if (control != null)
             {
                 var conf = DocuSignManager.SetUp(AuthorizationToken);

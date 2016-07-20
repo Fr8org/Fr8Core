@@ -81,5 +81,16 @@ namespace Fr8.TerminalBase.Infrastructure
 
             return true;
         }
+
+        public static bool ValidateDropDownListNotEmpty(this ValidationManager validationManager, DropDownList control, string errorMessage)
+        {
+            if (control != null && control.Value.IsNullOrEmpty())
+            {
+                validationManager.SetError(errorMessage, control);
+                return false;
+            }
+
+            return true;
+        }
     }
 }

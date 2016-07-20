@@ -12,6 +12,7 @@ using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Services;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
+using System;
 
 namespace terminalSlack.Activities
 {
@@ -19,6 +20,7 @@ namespace terminalSlack.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("0e21b4e8-3f08-41b1-bb6b-399ef4c2b683"),
             Name = "Publish_To_Slack",
             Label = "Publish To Slack",
             Tags = "Notifier",
