@@ -188,7 +188,7 @@ namespace terminalGoogle.Services
 
         public async Task RunPlan()
         {
-            await _hubCommunicator.RunPlan(monitorTerminalSubmissions.Plan.Id, new List<CrateDTO>());
+            await _hubCommunicator.RunPlan(monitorTerminalSubmissions.Plan.Id, null);
         }
 
         public async Task CreateAndConfigureSlackActivity(string slackChannel)

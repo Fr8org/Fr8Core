@@ -83,6 +83,33 @@ namespace Fr8.Infrastructure.Data.Crates
 
         /**********************************************************************************/
         /// <summary>
+        /// Returns first crate's content that complies with the predicate and with content of the given type.
+        /// This method will return NULL if no such crates exists
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public static T FirstCrateContentOrDefault<T>(this ICrateStorage storage, Predicate<Crate> predicate)
+            where T : class 
+        {
+            return storage.CratesOfType<T>(predicate).FirstOrDefault()?.Content;
+        }
+
+        /// <summary>
+        /// Returns first crate's content of the given type.
+        /// This method will return NULL if no such crates exists
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public static T FirstCrateContentOrDefault<T>(this ICrateStorage storage)
+            where T : class
+        {
+            return storage.CratesOfType<T>().FirstOrDefault()?.Content;
+        }
+
+        /**********************************************************************************/
+        /// <summary>
         /// Returns all crates with content of the given type
         /// </summary>
         /// <typeparam name="T"></typeparam>

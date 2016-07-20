@@ -107,8 +107,9 @@ namespace terminalSalesforce.Actions
             {
                 return;
             }
-            var eventSubscriptionCrate = PackEventSubscriptionsCrate();
-            Storage.ReplaceByLabel(eventSubscriptionCrate);
+
+            PackEventSubscriptionsCrate();
+            
             CrateSignaller.ClearAvailableCrates();
             CrateSignaller.MarkAvailableAtRuntime<SalesforceEventCM>("Salesforce Event");
             var selectedObjectProperties = await _salesforceManager.GetProperties(curSfChosenObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
@@ -192,25 +193,21 @@ namespace terminalSalesforce.Actions
             return $"{curSfChosenObject} {modifiers} on Salesforce.com";
         }
 
-        private Crate PackEventSubscriptionsCrate()
+        private void PackEventSubscriptionsCrate()
         {
             var curSfChosenObject = ActivityUI.SalesforceObjectList.selectedKey;
 
-            var eventSubscriptions = new List<string>();
+            EventSubscriptions.Subscriptions?.Clear();
+            EventSubscriptions.Manufacturer = "Salesforce";
 
             if (ActivityUI.Created.Selected)
             {
-                eventSubscriptions.Add($"{curSfChosenObject}{CreatedEventname}");
+                EventSubscriptions.Add($"{curSfChosenObject}{CreatedEventname}");
             }
             if (ActivityUI.Updated.Selected)
             {
-                eventSubscriptions.Add($"{curSfChosenObject}{UpdatedEventname}");
+                EventSubscriptions.Add($"{curSfChosenObject}{UpdatedEventname}");
             }
-
-            return CrateManager.CreateStandardEventSubscriptionsCrate(
-                "Standard Event Subscriptions",
-                "Salesforce",
-                eventSubscriptions.ToArray());
         }
     }
 }
