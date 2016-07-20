@@ -54,12 +54,8 @@ namespace terminalGoogle.Activities
 
         public async override Task Initialize()
         {
-            Storage.Remove<EventSubscriptionCM>();
-            Storage.Add
-                (CrateManager.CreateStandardEventSubscriptionsCrate(
-                "Standard Event Subscriptions",
-                "Google",
-                "GmailInbox"));
+            EventSubscriptions.Manufacturer = "Google";
+            EventSubscriptions.Add("GmailInbox");
 
             CrateSignaller.MarkAvailableAtRuntime<StandardEmailMessageCM>(RuntimeCrateLabel);
         }

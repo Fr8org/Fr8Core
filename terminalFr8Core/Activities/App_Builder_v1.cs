@@ -319,12 +319,10 @@ namespace terminalFr8Core.Activities
                         throw new Exception($"Activity with id \"{ActivityId}\" has no owner plan");
                     }
 
-                    var flagCrate = CrateManager.CreateDesignTimeFieldsCrate(RunFromSubmitButtonLabel);
-                    var payload = new List<CrateDTO>() { CrateManager.ToDto(flagCrate) };
-
+                    var flagCrate = Crate.FromContent(RunFromSubmitButtonLabel, new KeyValueListCM());
                     
                     await HubCommunicator.SaveActivity(ActivityContext.ActivityPayload);
-                    HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, payload);
+                    HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, new[] {flagCrate});
 
 
                     // We must save ourselves before running activity

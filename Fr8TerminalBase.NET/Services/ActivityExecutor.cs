@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.TerminalBase.Helpers;
@@ -145,7 +146,7 @@ namespace Fr8.TerminalBase.Services
 
             return new ContainerExecutionContext
             {
-                PayloadStorage = CrateManager.GetUpdatableStorage(payload),
+                PayloadStorage = CrateStorageSerializer.Default.ConvertFromDto(payload?.CrateStorage),
                 ContainerId = containerId
             };
         }

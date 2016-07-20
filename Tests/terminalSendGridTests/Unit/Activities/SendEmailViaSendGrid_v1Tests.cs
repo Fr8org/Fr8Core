@@ -92,13 +92,14 @@ namespace terminalSendGridTests.Unit.Activities
             var executionContext = FixtureData.CrateExecutionContextForSendEmailViaSendGridConfiguration;
             //updating controls
             var standardControls = activityPayload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+
             foreach (TextSource control in standardControls.Controls)
             {
                 control.ValueSource = "specific";
                 control.Value = (control.Name == "EmailAddress") ? "test@mail.com" : "test";
             }
-            var crate = Crate.CreateStandardConfigurationControlsCrate(ExplicitTerminalActivity.ConfigurationControlsLabel, standardControls.Controls.ToArray());
-            activityContext.ActivityPayload.CrateStorage.Add(crate);
+            activityContext.ActivityPayload.CrateStorage.Add(TerminalActivityBase.ConfigurationControlsLabel, standardControls);
+
             // Act
             await _gridActivity.Run(activityContext, executionContext);
         }

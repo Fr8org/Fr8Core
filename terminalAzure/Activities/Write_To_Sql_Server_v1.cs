@@ -62,7 +62,7 @@ namespace terminalAzure.Activities
                 var contentsList = GetFieldMappings();
                 Storage.RemoveByLabel("Sql Table Columns");
                 //this needs to be updated to hold Crates instead of FieldDefinitionDTO
-                Storage.Add(CrateManager.CreateDesignTimeFieldsCrate("Sql Table Columns", contentsList.Select(col => new KeyValueDTO() { Key = col, Value = col }).ToArray()));
+                Storage.Add("Sql Table Columns", new KeyValueListCM(contentsList.Select(col => new KeyValueDTO { Key = col, Value = col })));
             }
             catch
             {
