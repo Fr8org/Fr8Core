@@ -14,7 +14,7 @@ namespace PlanDirectory
     {
         public class SelfHostStartup
         {
-            public void Configuration(IAppBuilder app)
+            public void Configuration(IAppBuilder app) 
             {
                 var configuration = new HttpConfiguration();
                 // Web API routes
