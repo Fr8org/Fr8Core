@@ -7,6 +7,8 @@
 
 2. Look around for available SDK's for the Web Service you're connecting to. OAuth is often wrapped in useful utilities in such libraries. But you don't need them. 
 
+3. [Read the documentation](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/TerminalDeveloping-Authentication.md) on the Fr8 endpoints that Terminals must support if they have Activities that require Authorization.
+
 
 ## Step 1 - Same as in previous terminal, create new terminal project
 
@@ -19,7 +21,7 @@ Enter a name of the terminal you want to build (it could look like terminal%Serv
 ![Fr8 terminal](./Images/3_tdg_terminalProject.PNG "Fr8 terminal")
 
 ## Step 2 - Fill terminal information
-Here we will have one difference from previous terminal - *AuthenticationType* property is set to *External*. That means **hub** will handle authentication callbacks and going to interact with our terminal during that process.
+The main difference here from the previous tutorial is that- [*AuthenticationType* property is set to *External*](/Docs/ForDevelopers/OperatingConcepts/Authorization/AuthOverview.md). That means the Hub will initiate an OAuth process when users try to use this Terminal, unless the Hub already has a valid authentication token.
  
  ---
     namespace terminalAsana
@@ -74,9 +76,7 @@ Asana uses OAuth 2.0 spec so we reflect it in *IAsanaOAuth* interface
     }
  ---
 
-*IsIntialized* property and *InitializeAsync* method appears here because OAuthToken will be passed to Activity after object creation.
-We need expose event for *token refresh* to be able notify **hub** in case it happens.  
-*OAuthToken* class reflects meaningfull for us fields of token response:
+We create an *OAuthToken* class to store token data:
 
  ---
     namespace terminalAsana.Asana
@@ -107,7 +107,7 @@ We need expose event for *token refresh* to be able notify **hub** in case it ha
     } 
  ---
 
-Add delegate and class for event arguments:
+We need to provide event mechanisms for *token refresh* to be able notify the **Hub** in case it happens.  The Fr8 APIs currently support requesting and generating OAuth Tokens, but do not provide any support for token refresh. This Web Service (Asana) requires some token refresh activities, so we'll build those here.
 
  ---
     namespace terminalAsana.Asana.Services
@@ -125,7 +125,8 @@ Add delegate and class for event arguments:
     }
  ---
 
-Implementation of IAsanaOAuth:
+
+In this Terminal most of the OAuth is handled by this AsanaOAuthService. Most of the code involves the handling of refresh tokens. The Terminal determines if the current token has expired and if so, passes in the refresh token to trigger a renewal.
 
 ---
 
@@ -269,8 +270,9 @@ Implementation of IAsanaOAuth:
     }
 ---
 
-Also we add couple helpers methods like *public bool IsTokenExpired()* which duplicates interface method, but uses internal token object. Constructor takes interfaces for parameters and REST client. 
-The parameters implimentation will contatin all neccessary constatns and variables meaningful for asana interaction.
+We add a couple of helper methods like *public bool IsTokenExpired()* which duplicates interface method, but uses internal token object. Constructor takes interfaces for parameters and REST client. 
+
+The AsanaParametersservice stores all neccessary constants and variables meaningful for asana interaction.
 
 ---
     using Fr8.Infrastructure.Utilities.Configuration;
@@ -369,23 +371,17 @@ The parameters implimentation will contatin all neccessary constatns and variabl
     }
 ---
 
-As *IRestfulServiceClient* implementation we will use *RestfulServiceClient* from Fr8.Infrastructure. 
-This classes are all we need for authrization.
 
-#### b) Interaction between terminal and hub.
-Let`s look at *AuthenticationController* inside our terminal *Controllers* folder
+#### b) Auth Interaction between Terminal and Hub.
+Let`s look at *AuthenticationController* inside our Terminal *Controllers* folder
 
 ![AuthenticationController](./Images/11_tdg2_AuthCtrlr.PNG "AuthenticationController")
 
-All user's interaction happens with **hub** interface, so it stores and recives user secrets from third party services, Asana is not exceptin here. First the hub ask our terminal about url where it can aquire a code which will be exchanged for an access token. For this purpose we have *GenerateOAuthInitiationURL()* method which matches `/authentication/request_url` terminal endpoint.
+The Fr8 **Hub** stores and recives user secrets from third party services. First the Hub requests from our terminal a url where it can aquire a code which will be exchanged for an access token. For this purpose we have *GenerateOAuthInitiationURL()* method which matches `/authentication/request_url` terminal endpoint.
 
 
-
-
-The **hub** shows user a window with recived *url* where user can confirm access privelages for application.
-
-#### с) External service application
-- After you registered Asana account, navigate to profile settings
+#### с) Constructing the Auth URLs
+- In a registered Asana account, navigate to profile settings
 
 	![Asana profile settings](./Images/12_tdg2_AsanaAccount.PNG "Asana profile settings")
 
@@ -395,16 +391,16 @@ The **hub** shows user a window with recived *url* where user can confirm access
 
 In order to proceed successful request we need to pass redirect url. In the example picture we pass 
 `https://dev.fr8.co/AuthenticationCallback/ProcessSuccessfulOAuthResponse?terminalName=terminalAsana&terminalVersion=1`
-but for local development usually using hub at *http://localhost:30643/*
-Hub's AuthenticationCallback controller determine terminal and it's version and passes returned query string to our terminal
+but for local development usually using Hub at *http://localhost:30643/*
+THe Hub's AuthenticationCallback controller determine terminal and its version and passes returned query string to our terminal.
 
 #### d) Process returned token values
-So, user saw our asana app window requested access, confirmed it. Hub recived request with token data in query string and going to pass it to our terminal.
-We should prepare enpoint to proceed the data and finally get the access token.  
-This work will be done by *GenerateOAuthToken(ExternalAuthenticationDTO externalAuthDTO)* method at `/authentication/token` endpoint.
-It uses received *code* to exchange it to token, then fills and sends data for the hub.  
+At this point, the user has see our asana oauth dialog box and  confirmed access. The Hub has received a request from the Client with token data in query string and wants to  pass it to our terminal.
 
-Whole code of Authentification controller will look like this:
+This work will be done by *GenerateOAuthToken(ExternalAuthenticationDTO externalAuthDTO)* method at `/authentication/token` endpoint.
+Through this endpoint we receive the *code* we can exchange for a token, which we pass back to the Hub for storage.
+
+Here's the AuthentificationController:
     
 ---
     using System;
@@ -489,6 +485,393 @@ Whole code of Authentification controller will look like this:
         }
     }
 ---
+
+
+## Step 5 - Another thing you probably would do is define Manifest for data you operate 
+Now we have bunch of standard manifests for crates which other activities will be use. You can read more about this in documentation [Link to docs]()
+And submit it via our google form.
+
+---
+    using System;
+    using System.Collections.Generic;
+    using Fr8.Infrastructure.Data.Constants;
+
+    namespace Fr8.Infrastructure.Data.Manifests
+    {
+        public class AsanaTaskCM:Manifest
+        {
+            public string Id { get; set; }
+            public string Assignee { get; set; }
+            public string AssigneeStatus { get; set; }
+            public DateTime CreatedAt { get; set; }
+            public bool Completed { get; set; }
+            public DateTime? CompletedAt { get; set; }
+            public DateTime? DueOn { get; set; }
+            public DateTime? DueAt { get; set; }
+            public string External { get; set; }
+            public IEnumerable<string> Followers { get; set; }
+            public bool Hearted { get; set; }
+            public IEnumerable<string> Hearts { get; set; }
+            public DateTime ModifiedAt { get; set; }
+            public string Name { get; set; }
+            public string Notes { get; set; }
+            public int NumHearts { get; set; }
+            public IEnumerable<string> Projects { get; set; }
+            public string Parent { get; set; }
+            public string Workspace { get; set; }
+            public IEnumerable<string> Tags { get; set; }
+
+            public AsanaTaskCM():base(MT.AsanaTask)
+            {
+            }
+        }
+
+        public class AsanaTaskListCM : Manifest
+        {
+            public IEnumerable<AsanaTaskCM> Tasks;
+
+            public AsanaTaskListCM() : base(MT.AsanaTaskList)
+            {
+            }  
+        }
+    }
+---
+*MT.AsanaTask* here is an int value from *MT enum*  you can use number which was given you by Fr8 admins or any other number whch is in allowed developers range (will be defined in future documentation)   
+
+
+## Step 6 - Add "Get tasks" Activity
+
+To make activities development easy for the terminal we add file AsanaOAuthBaseActivity with same named class to **Activities** folder.
+The purpose of this class is handle token interaction. General idea here is separation of concerns all authentification specific actions will do SDK, hub interaction with data transformations is activity responsibility  
+You probably want ask 'why don't we implement general auth logic in TerminalActivity base class?' - the answer is simple, every third party service has it's own way of authentication implementation, even if it follows oAuth spec, there are many small incompatible things. 
+
+---
+    using System;
+    using System.Threading.Tasks;
+    using AutoMapper;
+    using Fr8.Infrastructure.Data.DataTransferObjects;
+    using Fr8.Infrastructure.Data.Managers;
+    using Fr8.Infrastructure.Data.Manifests;
+    using Fr8.Infrastructure.Interfaces;
+    using Fr8.Infrastructure.Utilities.Logging;
+    using Fr8.TerminalBase.BaseClasses;
+    using Newtonsoft.Json.Linq;
+    using terminalAsana.Asana;
+    using terminalAsana.Asana.Services;
+    using terminalAsana.Interfaces;
+
+    namespace terminalAsana.Activities
+    {
+        public abstract class AsanaOAuthBaseActivity<T> : TerminalActivity<T>
+            where T : StandardConfigurationControlsCM
+        {
+            protected AsanaClient AClient;
+
+            public AsanaOAuthBaseActivity(ICrateManager crateManager, IAsanaParameters parameters, IRestfulServiceClient client) : base(crateManager)
+            {
+                AClient = new AsanaClient(parameters, client);
+            }
+
+            protected override void InitializeInternalState()
+            {
+                base.InitializeInternalState();
+                    
+                AClient.OAuth.RefreshTokenEvent += RefreshHubToken;
+
+                var tokenData = JObject.Parse(this.AuthorizationToken.Token);
+                var token = new OAuthToken
+                {
+                    AccessToken = tokenData.Value<string>("access_token"),
+                    RefreshToken = tokenData.Value<string>("refresh_token"),
+                    ExpirationDate = this.AuthorizationToken.ExpiresAt ?? DateTime.MinValue
+                };
+                 
+                AClient.OAuth = Task.Run(() => AClient.OAuth.InitializeAsync(token)).Result;   
+            }
+
+            protected void RefreshHubToken(object sender, AsanaRefreshTokenEventArgs eventArgs)
+            {
+                var originalTokenData = JObject.Parse(this.AuthorizationToken.Token);
+                originalTokenData["access_token"] = eventArgs.RefreshedToken.AccessToken;
+
+                this.AuthorizationToken.AdditionalAttributes = eventArgs.RefreshedToken.ExpirationDate.ToString("O");
+                this.AuthorizationToken.ExpiresAt = eventArgs.RefreshedToken.ExpirationDate;
+                this.AuthorizationToken.Token = originalTokenData.ToString();
+                try
+                {
+                    var authDTO = Mapper.Map<AuthorizationTokenDTO>(this.AuthorizationToken);
+                    Task.Run(() => HubCommunicator.RenewToken(authDTO));
+                }
+                catch (Exception exp)
+                {
+                    Logger.LogError($"terminalAsana: Error while token renew:  {exp.Message}", "Asana terminal");
+                }
+            }
+        }
+    }
+---
+We override *InitializeInternalState* because everything we need appears here (not in the class constructor). Also we define *RefreshHubToken* callback which will prepare and renew token data for the hub.   
+As like as in previous terminal, we renamed existing or add new file in **Activities** folder to Get_Tasks_v1.cs.
+
+---
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using AutoMapper;
+    using Fr8.Infrastructure.Data.Control;
+    using Fr8.Infrastructure.Data.Crates;
+    using Fr8.Infrastructure.Data.DataTransferObjects;
+    using Fr8.Infrastructure.Data.Managers;
+    using Fr8.Infrastructure.Data.Manifests;
+    using Fr8.Infrastructure.Data.States;
+    using Fr8.Infrastructure.Interfaces;
+    using Fr8.TerminalBase.Infrastructure;
+    using Microsoft.Ajax.Utilities;
+    using terminalAsana.Asana.Entities;
+    using terminalAsana.Interfaces;
+
+    namespace terminalAsana.Activities
+    {
+        public class Get_Tasks_v1 : AsanaOAuthBaseActivity<Get_Tasks_v1.ActivityUi>
+        {
+            public static readonly  ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+            {
+                Id = new Guid("4b21e180-8029-4352-a756-52973cd98717"),
+                Name = "Get_Tasks",
+                Label = "Get Tasks",
+                Category = ActivityCategory.Receivers,
+                Version = "1",
+                MinPaneWidth = 330,
+                WebService = TerminalData.WebServiceDTO,
+                Terminal = TerminalData.TerminalDTO,
+                NeedsAuthentication = true,
+                Categories = new[] {
+                    ActivityCategories.Receive,
+                    new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                }
+            };
+            protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
+
+---
+
+Now activity template has *NeedsAuthentication* attribute setted to **true**, and don't forget specify **Id** otherwise you activity won't be registered on hub.
+
+---
+            private const string RunTimeCrateLabel = "Asana Tasks";
+            private const string RunTimeCrateLabelCustomCM = "Asana Tasks List";
+
+            public class ActivityUi : StandardConfigurationControlsCM
+            {
+                public DropDownList WorkspacesList;
+                public DropDownList UsersList;
+                public DropDownList ProjectsList;
+                public TextBlock Information;
+
+                public ActivityUi()
+                {
+                    WorkspacesList = new DropDownList()
+                    {
+                        Label = "Avaliable workspaces",
+                        Name = nameof(WorkspacesList),
+                        ListItems = new List<ListItem>(),
+                        Events = new List<ControlEvent> { ControlEvent.RequestConfig },
+                    };
+
+                    ProjectsList = new DropDownList()
+                    {
+                        Label = "Projects in workspace",
+                        Name = nameof(ProjectsList),
+                        ListItems = new List<ListItem>(),
+                        Events = new List<ControlEvent> { ControlEvent.RequestConfig }
+                    };
+
+                    Information = new TextBlock()
+                    {
+                        Name = nameof(Information),
+                        Label = "If you specify a project, username and workspace won`t be taken in account."
+                    };
+
+                    UsersList = new DropDownList()
+                    {
+                        Label = "Users in workspace",
+                        Name = nameof(UsersList),
+                        ListItems = new List<ListItem>(),
+                        Events = new List<ControlEvent> { ControlEvent.RequestConfig }
+                    };
+
+                    Controls = new List<ControlDefinitionDTO>(){ WorkspacesList, UsersList, Information, ProjectsList };
+                }
+            }
+
+            public Get_Tasks_v1(ICrateManager crateManager, IRestfulServiceClient client, IAsanaParameters parameters) : base(crateManager, parameters, client)
+            {
+                DisableValidationOnFollowup = true;
+            }
+---
+We define activity UI same way as in previous terminal. Pay attention to constructor, now it has *DisableValidationOnFollowup* setted to **true**, it means that when `/configure` call happens, *Validate()* method will not be called before *FollowUp()*.  
+
+To initialize our activity`s UI with Asana workspaces we use client class we created before.
+
+---
+            public override async Task Initialize()
+            {
+                var workspaces = await AClient.Workspaces.GetAsync();
+                ActivityUI.WorkspacesList.ListItems = workspaces.Select( w => new ListItem() { Key= w.Name, Value = w.Id} ).ToList();
+
+                CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel).AddFields("Task name", "Task id");
+                CrateSignaller.MarkAvailableAtRuntime<AsanaTaskListCM>(RunTimeCrateLabelCustomCM);
+            }
+
+---
+This time we use *CrateSignaller* two times, telling downstream activities that we gonna give them data in form of *AsanaTaskListCM* and *StandardTableDataCM*.
+
+---
+
+            public override async Task FollowUp()
+            {           
+                if (!ActivityUI.WorkspacesList.Value.IsNullOrWhiteSpace())
+                {
+                    var users =  await AClient.Users.GetUsersAsync(ActivityUI.WorkspacesList.Value);
+                    ActivityUI.UsersList.ListItems = users.Select(w => new ListItem() {Key = w.Name, Value = w.Id}).ToList();                
+
+                    var projects = 
+                        await AClient.Projects.Get(new AsanaProjectQuery() {Workspace = ActivityUI.WorkspacesList.Value });     
+                    ActivityUI.ProjectsList.ListItems = projects.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();                                         
+                }
+            }
+
+            protected override Task Validate()
+            {
+                ValidationManager.ValidateDropDownListNotEmpty(ActivityUI.WorkspacesList, "Workspace should not be empty");
+                if (ActivityUI.WorkspacesList.selectedKey.IsNullOrWhiteSpace())
+                {
+                    ValidationManager.ValidateDropDownListNotEmpty(ActivityUI.UsersList, "User should not be empty");
+                }
+    
+                return Task.FromResult(0);
+            }
+
+            public override async Task Run()
+            {
+                var query = new AsanaTaskQuery()
+                {
+                    Workspace = ActivityUI.WorkspacesList.Value,
+                    Assignee = ActivityUI.UsersList.Value,
+                    Project = ActivityUI.ProjectsList.Value
+                };
+
+                var tasks = await AClient.Tasks.GetAsync(query);
+                
+                var dataRows = tasks.Select(t => new TableRowDTO()
+                { Row = {
+                    new TableCellDTO() {Cell = new KeyValueDTO("Task name",t.Name)},
+                    new TableCellDTO() {Cell = new KeyValueDTO("Task id",t.Id)}
+                }}).ToList();      
+
+                var payload = new StandardTableDataCM() {Table = dataRows};
+                var customPayload = new AsanaTaskListCM() {Tasks = tasks.Select(t => Mapper.Map<AsanaTaskCM>(t)).ToList()};
+
+                Payload.Add(RunTimeCrateLabel, payload);
+                Payload.Add(RunTimeCrateLabelCustomCM, customPayload);
+            }
+        }
+    }
+
+---
+Each time before *Run()*, the Activity will call *Validate()* method, and if it has any errors plan execution will be stopped with failure, user`s UI Activity Stream will show description for corresponding validation error.    
+Everything inside the Activity is straightforward when you have SDK for external service, one intermediate step we do inside *Run()* is prepare recived data for StandardTableDataCM.   
+
+---
+
+## Step 6 - Configure terminal project
+
+After adding so much stuff the terminal need to be configured to work properly. First, look into web.config appSettings
+#### a) web.config file 
+
+---
+    <appSettings file="Config\terminalAsana\Settings.config">
+        <add key="CoreWebServerUrl" value="http://localhost:30643/" />
+        <add key="HubApiVersion" value="v1" />
+        <add key="terminalAsana.TerminalEndpoint" value="http://localhost:56785" />
+        <add key="TerminalId" value="6a5c763f-4355-49c1-8b25-3e0423d7aaaa" />
+
+        <add key="MinutesBeforeTokenRenewal" value="10" />
+        <add key="AsanaOriginalRedirectUrl" value="AuthenticationCallback/ProcessSuccessfulOAuthResponse?terminalName=terminalAsana%26terminalVersion=1" />
+        <add key="AsanaOAuthCodeUrl" value="https://app.asana.com/-/oauth_authorize?response_type=code&amp;client_id=%ASANA_CLIENT_ID%&amp;state=%STATE%&amp;redirect_uri=%REDIRECT_URI%" />
+        <add key="AsanaOAuthTokenUrl" value="https://app.asana.com/-/oauth_token" />
+        <add key="AsanaNumberOfObjectsLimit" value="100" />
+    </appSettings>
+---
+
+As you can see we choose port 56785 for *terminalAsana.TerminalEndpoint*, don't forget set it in Visual Studio project settings.
+Suppose you noticed absence of  *AsanaClientSecret* and *AsanaClientId* values, they are carried out to external settings file, because we don`t want to share our secrets in public repositories.
+
+
+#### b) TerminalAsansBootstrapper.cs 
+
+---
+    using System.Linq;
+    using AutoMapper;
+    using Fr8.Infrastructure.Data.DataTransferObjects;
+    using Fr8.Infrastructure.Data.Manifests;
+    using Fr8.TerminalBase.Models;
+    using StructureMap;
+    using terminalAsana.Interfaces;
+    using terminalAsana.Asana;
+    using terminalAsana.Asana.Entities;
+    using terminalAsana.Asana.Services;
+
+    namespace terminalAsana
+    {
+        public static class TerminalAsanaBootstrapper
+        {
+            public static void ConfigureAsanaDependencies(this IContainer container)
+            {
+                container.Configure(ConfigureLive);
+            }
+
+            public static void ConfigureLive(ConfigurationExpression configurationExpression)
+            {
+                configurationExpression.For<IAsanaParameters>().Use<AsanaParametersService>().Singleton();
+                configurationExpression.For<IAsanaOAuth>().Use<AsanaOAuthService>();
+                configurationExpression.For<IAsanaWorkspaces>().Use<Workspaces>();
+                configurationExpression.For<IAsanaUsers>().Use<Users>();
+
+                TerminalAsanaBootstrapper.ConfigureAutoMappert();
+            }
+
+            public static void ConfigureAutoMappert()
+            {
+                Mapper.CreateMap<AuthorizationToken, AuthorizationTokenDTO>();
+
+                Mapper.CreateMap<AsanaTask, AsanaTaskCM>()
+                    .ForMember(cm=>cm.Assignee, opt => opt.ResolveUsing(at => at.Assignee?.Id))
+                    .ForMember(cm=>cm.Followers, opt => opt.ResolveUsing(at => at.Followers?.Select(f => f.Id)))
+                    .ForMember(cm=>cm.Parent, opt => opt.ResolveUsing(at => at.Parent?.Id))
+                    .ForMember(cm=>cm.Hearts, opt => opt.ResolveUsing(at => at.Hearts?.Select(h => h.Id)))
+                    //.ForMember(cm=>cm.Projects, opt => opt.ResolveUsing(at => at.Projects?.Select(p => p.Id)))
+                    //.ForMember(cm=>cm.Tags, opt => opt.ResolveUsing(at => at.Tags?.Select(t => t.Id)))
+                    .ForMember(cm=>cm.Workspace, opt => opt.ResolveUsing(at => at.Workspace?.Id));
+            }
+        }
+    }
+---
+Here we add our classes to dependency injection container and creat mapping between AsanaTask and AsanaTaskCM, Projects and Tags are commented out because we haven`t brought them to Task definition yet.   
+
+---
+
+c) Startup.cs 
+As well as in previous terminal all we need here is register our Activity, to make it avaliable in `/discover` call
+
+---
+        protected override void RegisterActivities()
+        {
+            ActivityStore.RegisterActivity<Activities.Get_Tasks_v1>(Activities.Get_Tasks_v1.ActivityTemplateDTO);
+        }
+---
+
 
 ## Step 4 - Create SDK for external service
 This step leaves freedom for your fantasy. Use any classes and any approach you like. And of course it will be good if service already has SDK for .Net platform, then we can skip this step.
@@ -928,389 +1311,4 @@ Finally unite all those class to single *client*
             }
         }
     }
----
-
-## Step 5 - Another thing you probably would do is define Manifest for data you operate 
-Now we have bunch of standard manifests for crates which other activities will be use. You can read more about this in documentation [Link to docs]()
-And submit it via our google form.
-
----
-    using System;
-    using System.Collections.Generic;
-    using Fr8.Infrastructure.Data.Constants;
-
-    namespace Fr8.Infrastructure.Data.Manifests
-    {
-        public class AsanaTaskCM:Manifest
-        {
-            public string Id { get; set; }
-            public string Assignee { get; set; }
-            public string AssigneeStatus { get; set; }
-            public DateTime CreatedAt { get; set; }
-            public bool Completed { get; set; }
-            public DateTime? CompletedAt { get; set; }
-            public DateTime? DueOn { get; set; }
-            public DateTime? DueAt { get; set; }
-            public string External { get; set; }
-            public IEnumerable<string> Followers { get; set; }
-            public bool Hearted { get; set; }
-            public IEnumerable<string> Hearts { get; set; }
-            public DateTime ModifiedAt { get; set; }
-            public string Name { get; set; }
-            public string Notes { get; set; }
-            public int NumHearts { get; set; }
-            public IEnumerable<string> Projects { get; set; }
-            public string Parent { get; set; }
-            public string Workspace { get; set; }
-            public IEnumerable<string> Tags { get; set; }
-
-            public AsanaTaskCM():base(MT.AsanaTask)
-            {
-            }
-        }
-
-        public class AsanaTaskListCM : Manifest
-        {
-            public IEnumerable<AsanaTaskCM> Tasks;
-
-            public AsanaTaskListCM() : base(MT.AsanaTaskList)
-            {
-            }  
-        }
-    }
----
-*MT.AsanaTask* here is an int value from *MT enum*  you can use number which was given you by Fr8 admins or any other number whch is in allowed developers range (will be defined in future documentation)   
-
-
-## Step 6 - Add "Get tasks" Activity
-
-To make activities development easy for the terminal we add file AsanaOAuthBaseActivity with same named class to **Activities** folder.
-The purpose of this class is handle token interaction. General idea here is separation of concerns all authentification specific actions will do SDK, hub interaction with data transformations is activity responsibility  
-You probably want ask 'why don't we implement general auth logic in TerminalActivity base class?' - the answer is simple, every third party service has it's own way of authentication implementation, even if it follows oAuth spec, there are many small incompatible things. 
-
----
-    using System;
-    using System.Threading.Tasks;
-    using AutoMapper;
-    using Fr8.Infrastructure.Data.DataTransferObjects;
-    using Fr8.Infrastructure.Data.Managers;
-    using Fr8.Infrastructure.Data.Manifests;
-    using Fr8.Infrastructure.Interfaces;
-    using Fr8.Infrastructure.Utilities.Logging;
-    using Fr8.TerminalBase.BaseClasses;
-    using Newtonsoft.Json.Linq;
-    using terminalAsana.Asana;
-    using terminalAsana.Asana.Services;
-    using terminalAsana.Interfaces;
-
-    namespace terminalAsana.Activities
-    {
-        public abstract class AsanaOAuthBaseActivity<T> : TerminalActivity<T>
-            where T : StandardConfigurationControlsCM
-        {
-            protected AsanaClient AClient;
-
-            public AsanaOAuthBaseActivity(ICrateManager crateManager, IAsanaParameters parameters, IRestfulServiceClient client) : base(crateManager)
-            {
-                AClient = new AsanaClient(parameters, client);
-            }
-
-            protected override void InitializeInternalState()
-            {
-                base.InitializeInternalState();
-                    
-                AClient.OAuth.RefreshTokenEvent += RefreshHubToken;
-
-                var tokenData = JObject.Parse(this.AuthorizationToken.Token);
-                var token = new OAuthToken
-                {
-                    AccessToken = tokenData.Value<string>("access_token"),
-                    RefreshToken = tokenData.Value<string>("refresh_token"),
-                    ExpirationDate = this.AuthorizationToken.ExpiresAt ?? DateTime.MinValue
-                };
-                 
-                AClient.OAuth = Task.Run(() => AClient.OAuth.InitializeAsync(token)).Result;   
-            }
-
-            protected void RefreshHubToken(object sender, AsanaRefreshTokenEventArgs eventArgs)
-            {
-                var originalTokenData = JObject.Parse(this.AuthorizationToken.Token);
-                originalTokenData["access_token"] = eventArgs.RefreshedToken.AccessToken;
-
-                this.AuthorizationToken.AdditionalAttributes = eventArgs.RefreshedToken.ExpirationDate.ToString("O");
-                this.AuthorizationToken.ExpiresAt = eventArgs.RefreshedToken.ExpirationDate;
-                this.AuthorizationToken.Token = originalTokenData.ToString();
-                try
-                {
-                    var authDTO = Mapper.Map<AuthorizationTokenDTO>(this.AuthorizationToken);
-                    Task.Run(() => HubCommunicator.RenewToken(authDTO));
-                }
-                catch (Exception exp)
-                {
-                    Logger.LogError($"terminalAsana: Error while token renew:  {exp.Message}", "Asana terminal");
-                }
-            }
-        }
-    }
----
-We override *InitializeInternalState* because everything we need appears here (not in the class constructor). Also we define *RefreshHubToken* callback which will prepare and renew token data for the hub.   
-As like as in previous terminal, we renamed existing or add new file in **Activities** folder to Get_Tasks_v1.cs.
-
----
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using AutoMapper;
-    using Fr8.Infrastructure.Data.Control;
-    using Fr8.Infrastructure.Data.Crates;
-    using Fr8.Infrastructure.Data.DataTransferObjects;
-    using Fr8.Infrastructure.Data.Managers;
-    using Fr8.Infrastructure.Data.Manifests;
-    using Fr8.Infrastructure.Data.States;
-    using Fr8.Infrastructure.Interfaces;
-    using Fr8.TerminalBase.Infrastructure;
-    using Microsoft.Ajax.Utilities;
-    using terminalAsana.Asana.Entities;
-    using terminalAsana.Interfaces;
-
-    namespace terminalAsana.Activities
-    {
-        public class Get_Tasks_v1 : AsanaOAuthBaseActivity<Get_Tasks_v1.ActivityUi>
-        {
-            public static readonly  ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
-            {
-                Id = new Guid("4b21e180-8029-4352-a756-52973cd98717"),
-                Name = "Get_Tasks",
-                Label = "Get Tasks",
-                Category = ActivityCategory.Receivers,
-                Version = "1",
-                MinPaneWidth = 330,
-                WebService = TerminalData.WebServiceDTO,
-                Terminal = TerminalData.TerminalDTO,
-                NeedsAuthentication = true,
-                Categories = new[] {
-                    ActivityCategories.Receive,
-                    new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
-                }
-            };
-            protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
-
-
----
-
-Now activity template has *NeedsAuthentication* attribute setted to **true**, and don't forget specify **Id** otherwise you activity won't be registered on hub.
-
----
-            private const string RunTimeCrateLabel = "Asana Tasks";
-            private const string RunTimeCrateLabelCustomCM = "Asana Tasks List";
-
-            public class ActivityUi : StandardConfigurationControlsCM
-            {
-                public DropDownList WorkspacesList;
-                public DropDownList UsersList;
-                public DropDownList ProjectsList;
-                public TextBlock Information;
-
-                public ActivityUi()
-                {
-                    WorkspacesList = new DropDownList()
-                    {
-                        Label = "Avaliable workspaces",
-                        Name = nameof(WorkspacesList),
-                        ListItems = new List<ListItem>(),
-                        Events = new List<ControlEvent> { ControlEvent.RequestConfig },
-                    };
-
-                    ProjectsList = new DropDownList()
-                    {
-                        Label = "Projects in workspace",
-                        Name = nameof(ProjectsList),
-                        ListItems = new List<ListItem>(),
-                        Events = new List<ControlEvent> { ControlEvent.RequestConfig }
-                    };
-
-                    Information = new TextBlock()
-                    {
-                        Name = nameof(Information),
-                        Label = "If you specify a project, username and workspace won`t be taken in account."
-                    };
-
-                    UsersList = new DropDownList()
-                    {
-                        Label = "Users in workspace",
-                        Name = nameof(UsersList),
-                        ListItems = new List<ListItem>(),
-                        Events = new List<ControlEvent> { ControlEvent.RequestConfig }
-                    };
-
-                    Controls = new List<ControlDefinitionDTO>(){ WorkspacesList, UsersList, Information, ProjectsList };
-                }
-            }
-
-            public Get_Tasks_v1(ICrateManager crateManager, IRestfulServiceClient client, IAsanaParameters parameters) : base(crateManager, parameters, client)
-            {
-                DisableValidationOnFollowup = true;
-            }
----
-We define activity UI same way as in previous terminal. Pay attention to constructor, now it has *DisableValidationOnFollowup* setted to **true**, it means that when `/configure` call happens, *Validate()* method will not be called before *FollowUp()*.  
-
-To initialize our activity`s UI with Asana workspaces we use client class we created before.
-
----
-            public override async Task Initialize()
-            {
-                var workspaces = await AClient.Workspaces.GetAsync();
-                ActivityUI.WorkspacesList.ListItems = workspaces.Select( w => new ListItem() { Key= w.Name, Value = w.Id} ).ToList();
-
-                CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel).AddFields("Task name", "Task id");
-                CrateSignaller.MarkAvailableAtRuntime<AsanaTaskListCM>(RunTimeCrateLabelCustomCM);
-            }
-
----
-This time we use *CrateSignaller* two times, telling downstream activities that we gonna give them data in form of *AsanaTaskListCM* and *StandardTableDataCM*.
-
----
-
-            public override async Task FollowUp()
-            {           
-                if (!ActivityUI.WorkspacesList.Value.IsNullOrWhiteSpace())
-                {
-                    var users =  await AClient.Users.GetUsersAsync(ActivityUI.WorkspacesList.Value);
-                    ActivityUI.UsersList.ListItems = users.Select(w => new ListItem() {Key = w.Name, Value = w.Id}).ToList();                
-
-                    var projects = 
-                        await AClient.Projects.Get(new AsanaProjectQuery() {Workspace = ActivityUI.WorkspacesList.Value });     
-                    ActivityUI.ProjectsList.ListItems = projects.Select(w => new ListItem() { Key = w.Name, Value = w.Id }).ToList();                                         
-                }
-            }
-
-            protected override Task Validate()
-            {
-                ValidationManager.ValidateDropDownListNotEmpty(ActivityUI.WorkspacesList, "Workspace should not be empty");
-                if (ActivityUI.WorkspacesList.selectedKey.IsNullOrWhiteSpace())
-                {
-                    ValidationManager.ValidateDropDownListNotEmpty(ActivityUI.UsersList, "User should not be empty");
-                }
-    
-                return Task.FromResult(0);
-            }
-
-            public override async Task Run()
-            {
-                var query = new AsanaTaskQuery()
-                {
-                    Workspace = ActivityUI.WorkspacesList.Value,
-                    Assignee = ActivityUI.UsersList.Value,
-                    Project = ActivityUI.ProjectsList.Value
-                };
-
-                var tasks = await AClient.Tasks.GetAsync(query);
-                
-                var dataRows = tasks.Select(t => new TableRowDTO()
-                { Row = {
-                    new TableCellDTO() {Cell = new KeyValueDTO("Task name",t.Name)},
-                    new TableCellDTO() {Cell = new KeyValueDTO("Task id",t.Id)}
-                }}).ToList();      
-
-                var payload = new StandardTableDataCM() {Table = dataRows};
-                var customPayload = new AsanaTaskListCM() {Tasks = tasks.Select(t => Mapper.Map<AsanaTaskCM>(t)).ToList()};
-
-                Payload.Add(RunTimeCrateLabel, payload);
-                Payload.Add(RunTimeCrateLabelCustomCM, customPayload);
-            }
-        }
-    }
-
----
-Each time before *Run()*, the Activity will call *Validate()* method, and if it has any errors plan execution will be stopped with failure, user`s UI Activity Stream will show description for corresponding validation error.    
-Everything inside the Activity is straightforward when you have SDK for external service, one intermediate step we do inside *Run()* is prepare recived data for StandardTableDataCM.   
-
----
-
-## Step 6 - Configure terminal project
-
-After adding so much stuff the terminal need to be configured to work properly. First, look into web.config appSettings
-#### a) web.config file 
-
----
-    <appSettings file="Config\terminalAsana\Settings.config">
-        <add key="CoreWebServerUrl" value="http://localhost:30643/" />
-        <add key="HubApiVersion" value="v1" />
-        <add key="terminalAsana.TerminalEndpoint" value="http://localhost:56785" />
-        <add key="TerminalId" value="6a5c763f-4355-49c1-8b25-3e0423d7aaaa" />
-
-        <add key="MinutesBeforeTokenRenewal" value="10" />
-        <add key="AsanaOriginalRedirectUrl" value="AuthenticationCallback/ProcessSuccessfulOAuthResponse?terminalName=terminalAsana%26terminalVersion=1" />
-        <add key="AsanaOAuthCodeUrl" value="https://app.asana.com/-/oauth_authorize?response_type=code&amp;client_id=%ASANA_CLIENT_ID%&amp;state=%STATE%&amp;redirect_uri=%REDIRECT_URI%" />
-        <add key="AsanaOAuthTokenUrl" value="https://app.asana.com/-/oauth_token" />
-        <add key="AsanaNumberOfObjectsLimit" value="100" />
-    </appSettings>
----
-
-As you can see we choose port 56785 for *terminalAsana.TerminalEndpoint*, don't forget set it in Visual Studio project settings.
-Suppose you noticed absence of  *AsanaClientSecret* and *AsanaClientId* values, they are carried out to external settings file, because we don`t want to share our secrets in public repositories.
-
-
-#### b) TerminalAsansBootstrapper.cs 
-
----
-    using System.Linq;
-    using AutoMapper;
-    using Fr8.Infrastructure.Data.DataTransferObjects;
-    using Fr8.Infrastructure.Data.Manifests;
-    using Fr8.TerminalBase.Models;
-    using StructureMap;
-    using terminalAsana.Interfaces;
-    using terminalAsana.Asana;
-    using terminalAsana.Asana.Entities;
-    using terminalAsana.Asana.Services;
-
-    namespace terminalAsana
-    {
-        public static class TerminalAsanaBootstrapper
-        {
-            public static void ConfigureAsanaDependencies(this IContainer container)
-            {
-                container.Configure(ConfigureLive);
-            }
-
-            public static void ConfigureLive(ConfigurationExpression configurationExpression)
-            {
-                configurationExpression.For<IAsanaParameters>().Use<AsanaParametersService>().Singleton();
-                configurationExpression.For<IAsanaOAuth>().Use<AsanaOAuthService>();
-                configurationExpression.For<IAsanaWorkspaces>().Use<Workspaces>();
-                configurationExpression.For<IAsanaUsers>().Use<Users>();
-
-                TerminalAsanaBootstrapper.ConfigureAutoMappert();
-            }
-
-            public static void ConfigureAutoMappert()
-            {
-                Mapper.CreateMap<AuthorizationToken, AuthorizationTokenDTO>();
-
-                Mapper.CreateMap<AsanaTask, AsanaTaskCM>()
-                    .ForMember(cm=>cm.Assignee, opt => opt.ResolveUsing(at => at.Assignee?.Id))
-                    .ForMember(cm=>cm.Followers, opt => opt.ResolveUsing(at => at.Followers?.Select(f => f.Id)))
-                    .ForMember(cm=>cm.Parent, opt => opt.ResolveUsing(at => at.Parent?.Id))
-                    .ForMember(cm=>cm.Hearts, opt => opt.ResolveUsing(at => at.Hearts?.Select(h => h.Id)))
-                    //.ForMember(cm=>cm.Projects, opt => opt.ResolveUsing(at => at.Projects?.Select(p => p.Id)))
-                    //.ForMember(cm=>cm.Tags, opt => opt.ResolveUsing(at => at.Tags?.Select(t => t.Id)))
-                    .ForMember(cm=>cm.Workspace, opt => opt.ResolveUsing(at => at.Workspace?.Id));
-            }
-        }
-    }
----
-Here we add our classes to dependency injection container and creat mapping between AsanaTask and AsanaTaskCM, Projects and Tags are commented out because we haven`t brought them to Task definition yet.   
-
----
-
-c) Startup.cs 
-As well as in previous terminal all we need here is register our Activity, to make it avaliable in `/discover` call
-
----
-        protected override void RegisterActivities()
-        {
-            ActivityStore.RegisterActivity<Activities.Get_Tasks_v1>(Activities.Get_Tasks_v1.ActivityTemplateDTO);
-        }
 ---
