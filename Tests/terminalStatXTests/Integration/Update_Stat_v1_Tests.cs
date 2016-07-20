@@ -39,7 +39,7 @@ namespace terminalStatXTests.Integration
             Assert.AreEqual(4, crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls.Count, "Control count is not 4");
         }
 
-        [Test]
+        [Test, Ignore("Being resolved in FR-4846")]
         public async Task Update_Stat_FollowUp_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
