@@ -39,7 +39,8 @@ module dockyard.controllers {
             private $scope: IPlanDetailsScope,
             private PlanService: services.IPlanService,
             private $stateParams: any,
-            private $filter: ng.IFilterService ) {
+            private $filter: ng.IFilterService,
+            private PusherNotifierService: dockyard.services.IPusherNotifierService) {
 
             $scope.descriptionEditing = false;
             $scope.nameEditing = false;

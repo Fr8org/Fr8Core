@@ -109,7 +109,7 @@ app.controller('HeaderController', ['$scope', '$http', '$window', '$state', 'Ter
 
         result.$promise
             .then(() => {
-                $state.go('planBuilder', { id: result.plan.id });
+                $state.go('plan.builder', { id: result.plan.id });
                 //window.location.href = 'plans/' + result.plan.id + '/builder';
             });
     };
@@ -358,7 +358,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             }
         })
 
-        .state('plan.planDetails',
+        .state('plan.details',
         {
             url: "details",
             views: {
@@ -370,7 +370,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
         })
 
         // Plan Builder framework
-        .state('plan.planBuilder',
+        .state('plan.builder',
         {
             url: "builder?viewMode&view",
             views: {

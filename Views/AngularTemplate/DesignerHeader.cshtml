@@ -23,11 +23,11 @@
         </div>
         <md-radio-group ng-model="state" layout="row" layout-gt-md="row" layout-align="end center" flex  >
             <span>View:</span>
-            <a ui-sref="plan.planBuilder({id:plan.id})" style="margin-left:5px">
-                <md-radio-button value="plan.planBuilder">Activities</md-radio-button>
+            <a ui-sref="plan.builder({id:plan.id})" style="margin-left:5px">
+                <md-radio-button value="plan.builder">Activities</md-radio-button>
             </a>
-            <a ui-sref="plan.planDetails({id:plan.id})" style="margin-left:5px">
-                <md-radio-button value="plan.planDetails">Settings</md-radio-button>
+            <a ui-sref="plan.details({id:plan.id})" style="margin-left:5px">
+                <md-radio-button value="plan.details">Settings</md-radio-button>
             </a>
         </md-radio-group>
     </div>
