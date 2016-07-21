@@ -818,7 +818,11 @@ module dockyard.controllers {
 
         private PaneConfigureAction_ReConfigureDownStreamActivities(eventArgs: pca.DownStreamReConfigureEventArgs) {
             var actionsToReconfigure = this.getDownstreamActions(<model.ActivityDTO>eventArgs.action);
-            actionsToReconfigure.splice(0, 0, <model.ActivityDTO>eventArgs.action);
+            for (var i = 0; i < actionsToReconfigure.length; i++) {
+                if (actionsToReconfigure[i].id === eventArgs.action.id) {
+                    actionsToReconfigure.splice(i, 1);
+                }
+            }
             this.reConfigure(actionsToReconfigure);
         }
 

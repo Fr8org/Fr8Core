@@ -52,11 +52,11 @@ namespace terminalDocuSign.Actions
                                               <p>This Activity also highlights the use of the Loop activity, which can process any amount of table data, one row at a time.</p>
                                               <iframe src='https://player.vimeo.com/video/162762690' width='500' height='343' frameborder='0' webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>";
 
-       
+
         protected override string ActivityUserFriendlyName => SolutionName;
 
 
-        public Mail_Merge_Into_DocuSign_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+        public Mail_Merge_Into_DocuSign_v1(ICrateManager crateManager, IDocuSignManager docuSignManager)
             : base(crateManager, docuSignManager)
         {
         }
@@ -117,6 +117,12 @@ namespace terminalDocuSign.Actions
 
         protected override Task Validate()
         {
+            if (!IsContinueButtonClicked())
+            {
+                //No need to validate for now
+                return Task.FromResult(0);
+            }
+
             var templateList = GetControl<DropDownList>("DocuSignTemplate");
 
             if (ValidationManager.ValidateControlExistance(templateList))
@@ -149,18 +155,7 @@ namespace terminalDocuSign.Actions
         /// </summary>
         protected override ConfigurationRequestType GetConfigurationRequestType()
         {
-            // Do not tarsnfer to follow up when child actions are already present 
-            //if (curActivityDO.ChildNodes.Any()) return ConfigurationRequestType.Initial;
             if (Storage == null || !Storage.Any())
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            // "Follow up" phase is when Continue button is clicked 
-            Button button = GetControl<Button>("Continue");
-            if (button == null) return ConfigurationRequestType.Initial;
-            if (button.Clicked == false &&
-                (ActivityPayload.ChildrenActivities == null || ActivityPayload.ChildrenActivities.Count == 0))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -183,8 +178,21 @@ namespace terminalDocuSign.Actions
             return activityTemplate.Tags != null && activityTemplate.Tags.Split(',').Any(t => t.ToLowerInvariant().Contains("table"));
         }
 
+        private bool IsContinueButtonClicked()
+        {
+            Button button = GetControl<Button>("Continue");
+            return button != null && button.Clicked;
+        }
+
         public override async Task FollowUp()
         {
+            //if we already have children we should return
+            //or if the button was not clicked
+            if (!IsContinueButtonClicked() && ActivityPayload.ChildrenActivities.Count < 1)
+            {
+                return;
+            }
+
             var reconfigList = new List<ConfigurationRequest>()
             {
                 new ConfigurationRequest()
@@ -259,7 +267,7 @@ namespace terminalDocuSign.Actions
                 .Single(x => x.Ordering == 1);
 
             activity.CrateStorage = new CrateStorage();
-            activity = await HubCommunicator.ConfigureActivity(activity);
+            activity = await HubCommunicator.ConfigureChildActivity(context.SolutionActivity, activity);
             return activity;
         }
 
@@ -379,11 +387,11 @@ namespace terminalDocuSign.Actions
                 loopActivity = await HubCommunicator.ConfigureChildActivity(context.SolutionActivity, loopActivity);
 
                 var crateChooser = ActivityConfigurator.GetControl<CrateChooser>(loopActivity, "Available_Crates");
-                    var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(c => c.ManifestId == (int)MT.StandardTableData);
-                    if (tableDescription != null)
-                    {
-                        tableDescription.Selected = true;
-                    }
+                var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(c => c.ManifestId == (int)MT.StandardTableData);
+                if (tableDescription != null)
+                {
+                    tableDescription.Selected = true;
+                }
                 parentActivity = loopActivity;
                 activityIndex = 1;
             }
