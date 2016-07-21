@@ -42,6 +42,9 @@ Specifications
    
 [Security](/Docs/Security/SecurityOverview.md)  
 ----------------------------------
-    * [Permissions](/Docs/Security/Permissions.md)
-    * [Security Internals](/Docs/Security/SecurityInternals.md)
-    * [Profiles](/Docs/Security/Profiles.md)
+
+[Permissions](/Docs/Security/Permissions.md)
+ 
+[Security Internals](/Docs/Security/SecurityInternals.md)
+
+[Profiles](/Docs/Security/Profiles.md)
