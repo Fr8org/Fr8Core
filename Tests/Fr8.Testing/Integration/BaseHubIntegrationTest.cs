@@ -89,7 +89,7 @@ namespace Fr8.Testing.Integration
                 return new Dictionary<string, string>
                 {
                     {"Fr8HubCallbackSecret", terminal.Secret},
-                    {"Fr8HubCallBackUrl", ConfigurationManager.AppSettings["CoreWebServerUrl"]},
+                    {"Fr8HubCallBackUrl", ConfigurationManager.AppSettings["DefaultHubUrl"]},
                     {"Fr8UserId", userId }
                 };
             }

@@ -12,9 +12,14 @@ module dockyard.controllers {
         current: ng.ui.IState;
     }
 
-    export interface IPlanBuilderScope extends ng.IScope {
-        isPlanBuilderScope: boolean;
+    export interface IMainPlanScope extends ng.IScope {
         planId: string;
+        current: model.PlanBuilderState;
+    }
+
+    export interface IPlanBuilderScope extends IMainPlanScope  {
+        isPlanBuilderScope: boolean;
+       
         subPlans: Array<model.SubPlanDTO>;
         fields: Array<model.Field>;
         //currentSubroute: model.SubrouteDTO;
@@ -23,7 +28,6 @@ module dockyard.controllers {
         //curNodeId: number;
         //// Flag, that indicates if currently edited processNodeTemplate has temporary identity.
         //curNodeIsTempId: boolean;
-        current: model.PlanBuilderState;
         actionGroups: model.ActionGroup[];
         processedSubPlans: any[];
 
@@ -43,6 +47,7 @@ module dockyard.controllers {
         view: string;
         viewMode: string;
         hasAnyActivity: (pSubPlan: any) => boolean;
+        state: string;
     }
 
 
@@ -225,18 +230,18 @@ module dockyard.controllers {
                 });
 
             };
-
+            $scope.state = $state.current.name;
             this.processState($state);
         }
 
         private handleBackButton(event, toState, toParams, fromState, fromParams, options) {
 
-            if (fromParams.viewMode === "plan" && toParams.viewMode === undefined && fromState.name === "planBuilder" && toState.name === "planBuilder") {
+            if (fromParams.viewMode === "plan" && toParams.viewMode === undefined && fromState.name === "plan.builder" && toState.name === "plan.builder") {
                 event.preventDefault();
                 this.$state.go("planList");
             }
 
-            if (toParams.viewMode === "plan" && fromParams.viewMode === undefined && fromState.name === "planBuilder" && toState.name === "planBuilder") {
+            if (toParams.viewMode === "plan" && fromParams.viewMode === undefined && fromState.name === "plan.builder" && toState.name === "plan.builder") {
                 this.reloadFirstActions();
             }
         }
@@ -433,7 +438,9 @@ module dockyard.controllers {
                 this.setAdvancedEditingMode();
             }
             this.renderPlan(<interfaces.IPlanVM>curPlan.plan);
-            this.$state.go('planBuilder', { id: curPlan.plan.id, viewMode: mode });
+            if (this.$state.current.name != 'plan.details') {
+                this.$state.go('plan.builder', { id: curPlan.plan.id, viewMode: mode });
+            }
         }
 
         /*

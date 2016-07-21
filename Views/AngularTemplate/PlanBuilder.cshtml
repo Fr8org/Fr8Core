@@ -3,11 +3,10 @@
     <li> <a href="#">Home</a><i class="fa fa-circle"></i> </li>
     <li class="active"> Dashboard </li>
 </ul>
-
-<!-- MAIN CONTENT -->
-<div ng-controller="PlanBuilderController" class="margin-top-25" block-if="isBusy()" event-planbuilder>
-    <designer-header class="designer-header-fixed" ng-show="current.plan" plan="current.plan"></designer-header>
-    <div ng-if="editingMode == 'advanced'" class="col-md-12" style="border-bottom: 1px solid; margin-bottom: 10px;"></div>
+<!-- END PAGE BREADCRUMB -->
+<!-- BEGIN MAIN CONTENT -->
+<div class="margin-top-25" block-if="isBusy()" event-planbuilder>
+    <div ng-if="editingMode=='advanced'" class="col-md-12" style="border-bottom: 1px solid; margin-bottom: 10px;"></div>
     <div class="plan-loading-message" block-if="current.plan"></div>
     <!-- SUB-PLAN CONTAINER -->
     <div class="sub-plan-container" fill-height footer-element-id="footer" additional-padding="100">
