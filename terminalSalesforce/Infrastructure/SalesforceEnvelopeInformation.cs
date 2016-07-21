@@ -4,9 +4,14 @@ using System.Xml.Serialization;
 namespace terminalSalesforce.Infrastructure
 {
     [XmlRoot(ElementName = "sObject", Namespace = "http://soap.sforce.com/2005/09/outbound")]
-    [XmlInclude(typeof(Lead))]
+    [XmlInclude(typeof(Account))]
+    [XmlInclude(typeof(Case))]
     [XmlInclude(typeof(Contact))]
+    [XmlInclude(typeof(Contract))]
+    [XmlInclude(typeof(Document))]
+    [XmlInclude(typeof(Lead))]
     [XmlInclude(typeof(Opportunity))]
+    [XmlInclude(typeof(Product2))]
     public class SObject
     {
         [XmlElement(ElementName = "Id", Namespace = "urn:sobject.enterprise.soap.sforce.com")]
@@ -28,8 +33,14 @@ namespace terminalSalesforce.Infrastructure
     }
 
     [XmlRoot(Namespace = "http://soap.sforce.com/2005/09/outbound")]
-    [XmlType(TypeName = "Lead", Namespace = "urn:sobject.enterprise.soap.sforce.com")]
-    public class Lead : SObject
+    [XmlType(TypeName = "Account", Namespace = "urn:sobject.enterprise.soap.sforce.com")]
+    public class Account : SObject
+    {
+    }
+
+    [XmlRoot(Namespace = "http://soap.sforce.com/2005/09/outbound")]
+    [XmlType(TypeName = "Case", Namespace = "urn:sobject.enterprise.soap.sforce.com")]
+    public class Case : SObject
     {
     }
 
@@ -40,8 +51,32 @@ namespace terminalSalesforce.Infrastructure
     }
 
     [XmlRoot(Namespace = "http://soap.sforce.com/2005/09/outbound")]
+    [XmlType(TypeName = "Contract", Namespace = "urn:sobject.enterprise.soap.sforce.com")]
+    public class Contract : SObject
+    {
+    }
+
+    [XmlRoot(Namespace = "http://soap.sforce.com/2005/09/outbound")]
+    [XmlType(TypeName = "Document", Namespace = "urn:sobject.enterprise.soap.sforce.com")]
+    public class Document : SObject
+    {
+    }
+
+    [XmlRoot(Namespace = "http://soap.sforce.com/2005/09/outbound")]
+    [XmlType(TypeName = "Lead", Namespace = "urn:sobject.enterprise.soap.sforce.com")]
+    public class Lead : SObject
+    {
+    }
+
+    [XmlRoot(Namespace = "http://soap.sforce.com/2005/09/outbound")]
     [XmlType(TypeName = "Opportunity", Namespace = "urn:sobject.enterprise.soap.sforce.com")]
     public class Opportunity : SObject
+    {
+    }
+
+    [XmlRoot(Namespace = "http://soap.sforce.com/2005/09/outbound")]
+    [XmlType(TypeName = "Product2", Namespace = "urn:sobject.enterprise.soap.sforce.com")]
+    public class Product2 : SObject
     {
     }
 
