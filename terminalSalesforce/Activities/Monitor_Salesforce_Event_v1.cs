@@ -197,7 +197,7 @@ namespace terminalSalesforce.Actions
         {
             var curSfChosenObject = ActivityUI.SalesforceObjectList.selectedKey;
 
-            EventSubscriptions.Subscriptions.Clear();
+            EventSubscriptions.Subscriptions?.Clear();
             EventSubscriptions.Manufacturer = "Salesforce";
 
             if (ActivityUI.Created.Selected)

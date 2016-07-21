@@ -202,6 +202,7 @@ namespace terminalGoogle.Activities
                     ActivityUI.ExistingWorksheetsList.SelectByValue(firstWorksheet.Value);
                 }
                 SelectedSpreadsheet = ActivityUI.ExistingSpreadsheetsList.Value;
+                ActivityUI.ExistingSpreadsheetsList.ListItems = (await _googleSheet.GetSpreadsheets(GetGoogleAuthToken())).Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
             }
             else
             {
