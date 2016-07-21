@@ -3,7 +3,7 @@
 module dockyard.controllers {
     'use strict';
 
-    export interface IPlanDetailsScope extends ng.IScope {
+    export interface IPlanDetailsScope extends IMainPlanScope {
         ptvm: interfaces.IPlanFullDTO;
         submit: (isValid: boolean) => void;
         errorMessage: string;
@@ -15,6 +15,9 @@ module dockyard.controllers {
         sharePlan: () => void;
         unpublishPlan: () => void;
         download: ($event: Event) => void;
+        descriptionEditing: boolean;
+        nameEditing: boolean;
+        onTitleChange(): void;
     }
 
     class PlanDetailsController {
@@ -38,11 +41,15 @@ module dockyard.controllers {
             private $stateParams: any,
             private $filter: ng.IFilterService,
             private PusherNotifierService: dockyard.services.IPusherNotifierService) {
-            
+
+            $scope.descriptionEditing = false;
+            $scope.nameEditing = false;
             //Load detailed information
             $scope.id = $stateParams.id;
             if (this.isValidGUID($scope.id)) {
-                $scope.ptvm = PlanService.getFull({ id: $stateParams.id });
+                PlanService.getFull({ id: $stateParams.id }).$promise.then(function (plan) {
+                    $scope.current.plan = (<any>plan).plan;
+                });
             }
 
             $scope.sharePlan = () => {
@@ -57,6 +64,13 @@ module dockyard.controllers {
                         PusherNotifierService.frontendFailure("Plan sharing faliure: "+exp.data);
                     });
             };
+            $scope.onTitleChange = () => {
+                $scope.descriptionEditing = false;
+                $scope.nameEditing = false;
+                var result = PlanService.update({ id: $scope.current.plan.id, name: $scope.current.plan.name, description: $scope.current.plan.description });
+                result.$promise.then(() => { });
+            };
+
 
             $scope.unpublishPlan = () => {
                 PlanService.unpublish($stateParams.id)
@@ -76,7 +90,7 @@ module dockyard.controllers {
                 if (!$scope.digestFlag) {
                     $scope.digestFlag = true;
 
-                    var promise = PlanService.createTemplate($scope.ptvm.plan.id);
+                    var promise = PlanService.createTemplate($scope.current.plan.id);
                     var element = $event.target;
 
                     promise.then((template) => {
