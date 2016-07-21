@@ -14,6 +14,7 @@ Fr8 Operating Concepts Home
 
 Advanced Concepts
 ------------------
-[Client-Driven Actions](/Docs/ForDevelopers/OperatingConcepts/Client-DrivenActions.md)
+* [Client-Driven Actions](/Docs/ForDevelopers/OperatingConcepts/Client-DrivenActions.md)
+* [Run Triggers](/Docs/ForDevelopers/OperatingConcepts/RunTriggers.md)
 
 [Back](/Docs/Home.md)
