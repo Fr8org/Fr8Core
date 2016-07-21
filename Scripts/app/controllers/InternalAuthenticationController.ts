@@ -58,6 +58,7 @@
                             $scope.authErrorText = null;
                             $scope.$close({
                                 terminalId: res.data.terminalId,
+                                terminalName: res.data.terminalName,
                                 authTokenId: res.data.authTokenId
                             });
                         }

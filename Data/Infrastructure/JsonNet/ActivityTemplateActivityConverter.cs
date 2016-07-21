@@ -1,4 +1,4 @@
-﻿using Data.Interfaces.DataTransferObjects;
+﻿using Fr8Data.DataTransferObjects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Data.Infrastructure.JsonNet
+namespace Fr8Data.Infrastructure.JsonNet
 {
     class ActivityTemplateActivityConverter : JsonConverter
     {

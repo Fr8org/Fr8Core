@@ -26,11 +26,12 @@ namespace HubWeb.ViewModels
         // the system or the user is directly registering into the system.
         public string GuestUserTempEmail { get; set; }
 
-        [Display(Name = "Organization")]
+        [Display(Name = "Set up an Organization")]
         public bool HasOrganization { get; set; }
 
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 3)]
         [Display(Name = "Organization Name")]
         public string OrganizationName { get; set; }
+        public string AnonimousId { get; set; }
     }
 }

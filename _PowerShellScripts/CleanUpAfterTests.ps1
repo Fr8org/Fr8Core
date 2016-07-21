@@ -28,6 +28,7 @@ update p set p.ParentPlanNodeId = null, p.RootPlanNodeId = null from PlanNodes p
 -- list of ObjectRolePermissions
 delete derived from ObjectRolePermissions derived 
 	inner join #Nodes cp on cp.Id = derived.ObjectId
+	where derived.[Type] <> 'Plan Template'
 
 delete m from History m
 	inner join Containers as derived on convert(nvarchar(50), derived.Id) = m.ObjectId
@@ -54,6 +55,10 @@ delete derived from Actions derived
 delete derived from PlanNodes derived 
 	inner join #Nodes cp on cp.Id = derived.Id
 
+delete orp from ObjectRolePermissions orp
+	inner join [MTData] m on orp.[Type] = 'Plan Template' and convert(nvarchar(50), m.Id) = orp.ObjectId
+	inner join [AspNetUsers] on AspNetUsers.Id = m.Fr8AccountId 
+	where UserName = 'integration_test_runner@fr8.company'
 
 delete m from MTData m
 	inner join [AspNetUsers] on AspNetUsers.Id = m.Fr8AccountId 

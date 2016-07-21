@@ -1,84 +1,70 @@
 ﻿using System;
 using System.Collections.Generic;
 using Segment;
-using Segment.Model;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using Hub.Interfaces;
 using Hub.Services;
+using Newtonsoft.Json.Schema;
+using Segment.Model;
 
 namespace Hub.Managers.APIManagers.Packagers.SegmentIO
-//When a user visits Kwasant, we try three ways to get their ID:
-//1) If they're already logged in, we use their userID from the database
-//2) If they're not logged in, we check their userID from a cookie we set (sessionID)
-//3) If they don't have a cookie, we generate a new ID based on ASP's session
-//When an unknown user performs actions, we log it under their ID taken from above (usually from the ASP session ID). If they then sign in, we push an alias between their previous session ID, and their new logged-in ID.
-//This means, the following workflow:
-//Anonymous user visits kwasant.com
-//Anonymous user plays the video
-//Anonymous user signs in as 'rjrudman@gmail.com'.
-//When viewing the profile for 'rjrudman@gmail.com' - the first two actions are properly retrieved.
-//Also - when submitting the 'Try it out' form, we link them to the user which is generated for that email. Although it's not perfect (they can enter any email) - it helps give us an idea of who's who. From then on, all actions they've done in the past and future will be aggregated to the submitted email (as well as any other accounts they register, assuming cookies aren't cleared, which we can't do anything about. Aggregation only works for the most recently used account, however).
-//Still working through updating our templated emails. I've taken advantage of the token authorization, which automatically logs them in when clicking on it - so the tracking works better. This also works regardless of them having cookies or not
-//The basic work is now done - to add more tracking, we just need to add more analytics.track('someEvent') - the rest of the identify and aliasing should be done automatically.
-//Server side, we have the following methods:
-//void Identify(String userID);
-//void Identify(DockyardAccountDO DockyardAccountDO);
-//void Track(DockyardAccountDO DockyardAccountDO, String eventName, String action, Dictionary<String, object> properties = null);
-//void Track(DockyardAccountDO DockyardAccountDO, String eventName, Dictionary<String, object> properties = null);
-//Example:
-//ObjectFactory.GetInstance<ISegmentIO>().Track(bookingRequestDO.DockYardAccount, "BookingRequest", "Submit", new Dictionary<string, object> "BookingRequestId", bookingRequestDO.Id);
-//They also help to push changes to a user (ie, name change, email change, etc, etc). Already setup to be mockable if needed
-//namespace Core.Managers.APIManagers.Packagers.SegmentIO
 {
     public class SegmentIO : ITracker
     {
-        public void Identify(String userID)
+        private readonly Fr8Account _fr8Account;
+
+        public SegmentIO(Fr8Account fr8Account)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            if (fr8Account == null)
             {
-                Identify(uow.UserRepository.GetByKey(userID));
+                throw new ArgumentNullException(nameof(fr8Account));
             }
+            _fr8Account = fr8Account;
         }
-
-        private Dictionary<String, object> GetProperties(Fr8AccountDO dockyardAccountDO)
+        private Traits GetProperties(Fr8AccountDO fr8AccountDO)
         {
-            var user = new Fr8Account();
-
-            return new Dictionary<string, object>
+            return new Traits
             {
-                {"First Name", dockyardAccountDO.FirstName},
-                {"Last Name", dockyardAccountDO.LastName},
-                {"Username", dockyardAccountDO.UserName},
-                {"Email", dockyardAccountDO.EmailAddress.Address},
-                {"Delegate Account", user.GetMode(dockyardAccountDO) == CommunicationMode.Delegate }
+                {"First Name", fr8AccountDO.FirstName},
+                {"Last Name", fr8AccountDO.LastName},
+                {"Username", fr8AccountDO.UserName},
+                {"Email", fr8AccountDO.EmailAddress.Address},
+                {"Delegate Account", _fr8Account.GetMode(fr8AccountDO) == CommunicationMode.Delegate },
+                {"Class", fr8AccountDO.Class }
             };
         }
 
-        public void Identify(Fr8AccountDO dockyardAccountDO)
+        public void Registered(string anonimousId, Fr8AccountDO fr8AccountDO)
         {
-            var props = new Traits();
-            foreach (var prop in GetProperties(dockyardAccountDO))
-                props.Add(prop.Key, prop.Value);
-            
-            Analytics.Client.Identify(dockyardAccountDO.Id, props);
+            if (Analytics.Client == null)
+                return;
+
+            var userProperties = GetProperties(fr8AccountDO);
+            Analytics.Client.Identify(fr8AccountDO.Id, userProperties);
+            Analytics.Client.Track(fr8AccountDO.Id, "User Registered");
         }
-
-        public void Track(Fr8AccountDO dockyardAccountDO, String eventName, String action, Dictionary<String, object> properties = null)
+        public void Identify(Fr8AccountDO fr8AccountDO)
         {
-            if (properties == null)
-                properties = new Dictionary<string, object>();
-            properties["Action"] = action;
-
-            Track(dockyardAccountDO, eventName, properties);
-        }
-
-        public void Track(Fr8AccountDO dockyardAccountDO, String eventName, Dictionary<String, object> properties = null)
-        {
+            if (Analytics.Client == null)
+                return;
             var props = new Segment.Model.Properties();
-            foreach (var prop in GetProperties(dockyardAccountDO))
+            foreach (var prop in GetProperties(fr8AccountDO))
+                props.Add(prop.Key, prop.Value);
+            Analytics.Client.Identify(fr8AccountDO.Id, GetProperties(fr8AccountDO));
+            Analytics.Client.Track(fr8AccountDO.Id, "User Logged In", props);
+        }
+        //https://segment.com/docs/integrations/mixpanel/#identify
+        //For Mixpanel People, it’s important to identify a user before you call track. 
+        //A track without an identify won’t create a user in Mixpanel People.
+        public void Track(Fr8AccountDO fr8AccountDO, string eventName, Dictionary<string, object> properties = null)
+        {
+            if (Analytics.Client == null)
+                return;
+            var props = new Segment.Model.Properties();
+            foreach (var prop in GetProperties(fr8AccountDO))
                 props.Add(prop.Key, prop.Value);
 
             if (properties != null)
@@ -86,8 +72,8 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
                 foreach (var prop in properties)
                     props[prop.Key] = prop.Value;
             }
-
-            Analytics.Client.Track(dockyardAccountDO.Id, eventName, props);
+            Analytics.Client.Identify(fr8AccountDO.Id, GetProperties(fr8AccountDO));
+            Analytics.Client.Track(fr8AccountDO.Id, eventName, props);
         }
     }
 }

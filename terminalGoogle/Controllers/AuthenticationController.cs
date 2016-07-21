@@ -2,33 +2,33 @@
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
 using terminalGoogle.Interfaces;
-using terminalGoogle.Services;
-using TerminalBase.BaseClasses;
+using terminalGoogle.Services.Authorization;
 
 namespace terminalGoogle.Controllers
 {
     [RoutePrefix("authentication")]
-    public class AuthenticationController : BaseTerminalController
+    public class AuthenticationController : ApiController
     {
-        private const string curTerminal = "terminalGoogle";
+        private readonly IGoogleIntegration _googleIntegration;
+        private readonly IHubLoggerService _loggerService;
 
-        private readonly IGoogleIntegration _google;
-
-
-        public AuthenticationController()
+        public AuthenticationController(IHubLoggerService loggerService, IRestfulServiceClient restfulServiceClient)
         {
-            _google = new GoogleIntegration();
+            _loggerService = loggerService;
+            _googleIntegration = new GoogleIntegration(restfulServiceClient);
         }
 
         [HttpPost]
-        [Route("initial_url")]
+        [Route("request_url")]
         public ExternalAuthUrlDTO GenerateOAuthInitiationURL()
         {
             var externalStateToken = Guid.NewGuid().ToString();
-            var url = _google.CreateOAuth2AuthorizationUrl(externalStateToken);
+            var url = _googleIntegration.CreateOAuth2AuthorizationUrl(externalStateToken);
 
             var externalAuthUrlDTO = new ExternalAuthUrlDTO()
             {
@@ -54,8 +54,8 @@ namespace terminalGoogle.Controllers
                     throw new ApplicationException("Code or State is empty.");
                 }
 
-                var oauthToken = _google.GetToken(code);
-                var email = await _google.GetExternalUserId(oauthToken);
+                var oauthToken = _googleIntegration.GetToken(code);
+                var email = await _googleIntegration.GetExternalUserId(oauthToken);
 
                 return new AuthorizationTokenDTO()
                 {
@@ -66,7 +66,7 @@ namespace terminalGoogle.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerminal, ex,externalAuthDTO.Fr8UserId);
+                await _loggerService.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {

@@ -1,8 +1,8 @@
 ﻿using System;
-using Data.Interfaces.DataTransferObjects;
-using Hub.Managers;
-using Data.Crates;
-using Data.Interfaces.Manifests;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Models;
 
 namespace terminalTests.Fixtures
 {
@@ -30,16 +30,16 @@ namespace terminalTests.Fixtures
             };
 
             return new Fr8DataDTO { ActivityDTO = activityDTO };
-
         }
 
-        public static PayloadDTO PayloadWithOnlyOperationalState()
+        public static ContainerExecutionContext ExecutionContextWithOnlyOperationalState()
         {
-            var result = new PayloadDTO(Guid.NewGuid());
-            using (var storage = new CrateManager().GetUpdatableStorage(result))
+            var result = new ContainerExecutionContext()
             {
-                storage.Add(Crate.FromContent("Operational State", new OperationalStateCM()));
-            }
+                ContainerId = Guid.NewGuid(),
+                PayloadStorage = new CrateStorage(Crate.FromContent("Operational State", new OperationalStateCM()))
+            };
+
             return result;
         }
 
@@ -48,7 +48,7 @@ namespace terminalTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "GetDataFromFr8Warehouse_TEST",
+                Name = "Get_Data_From_Fr8_Warehouse_TEST",
                 Version = "1"
             };
         }

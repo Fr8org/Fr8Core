@@ -5,15 +5,15 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.Manifests;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using System.Diagnostics;
 using System.Net.Http;
 using AutoMapper;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 using Newtonsoft.Json.Linq;
+using Data.Repositories.MultiTenant.Queryable;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -72,6 +72,7 @@ namespace terminalDocuSignTests.Integration
 
         private const int MaxAwaitPeriod = 300000;
         private const int SingleAwaitPeriod = 10000;
+        private const int MadseCreationPeriod = 30000;
         private const string DocuSignEmail = "fr8.madse.testing@gmail.com"; // "freight.testing@gmail.com";
         private const string DocuSignApiPassword = "I6HmXEbCxN";
 
@@ -106,7 +107,7 @@ namespace terminalDocuSignTests.Integration
                         string.Format("No terminal found with Name = {0}", TerminalName)
                     );
                 }
-
+                
                 await RecreateDefaultAuthToken(unitOfWork, testAccount, docuSignTerminal);
 
                 var mtDataCountBefore = unitOfWork.MultiTenantObjectRepository
@@ -114,9 +115,11 @@ namespace terminalDocuSignTests.Integration
                     .Count();
 
 
+                Debug.WriteLine("Waiting for MADSE plan to be created");
                 //let's wait 10 seconds to ensure that MADSE plan was created/activated by re-authentication
-                await Task.Delay(SingleAwaitPeriod);
+                await Task.Delay(MadseCreationPeriod);
 
+                Debug.WriteLine("Sending test event");
                 string response = 
                     await HttpPostAsync<string>(GetTerminalEventsUrl(), new StringContent(string.Format(EnvelopeToSend, Guid.NewGuid())));
 
@@ -130,13 +133,17 @@ namespace terminalDocuSignTests.Integration
                 {
                     await Task.Delay(SingleAwaitPeriod);
 
+                    Debug.WriteLine($"Querying MT objects...");
+
                     mtDataCountAfter = unitOfWork.MultiTenantObjectRepository
-                        .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id.ToString()).Count();
+                        .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id).Count();
 
                     if (mtDataCountBefore < mtDataCountAfter)
                     {
                         break;
                     }
+
+                    Debug.WriteLine($"Number of objects stays unchanged: {mtDataCountBefore}");
                 }
 
                 Assert.IsTrue(mtDataCountBefore < mtDataCountAfter,
@@ -149,8 +156,8 @@ namespace terminalDocuSignTests.Integration
            Fr8AccountDO account, TerminalDO docuSignTerminal)
         {
             Debug.WriteLine($"Reauthorizing tokens for {account.EmailAddress.Address}");
-            var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
-                _baseUrl + "manageauthtoken/"
+            var tokens = await HttpGetAsync<IEnumerable<AuthenticationTokenTerminalDTO>>(
+                _baseUrl + "authentication/tokens"
             );
 
             var docusignTokens = tokens?.FirstOrDefault(x => x.Name == "terminalDocuSign");
@@ -160,7 +167,7 @@ namespace terminalDocuSignTests.Integration
                 foreach (var token in docusignTokens.AuthTokens)
                 {
                     await HttpPostAsync<string>(
-                        _baseUrl + "manageauthtoken/revoke?id=" + token.Id,
+                        _baseUrl + "authentication/tokens/revoke?id=" + token.Id,
                         null
                         );
                 }
@@ -178,6 +185,8 @@ namespace terminalDocuSignTests.Integration
                 _baseUrl + "authentication/token",
                 creds
             );
+
+            Debug.WriteLine("Received new tokens.");
 
             Assert.NotNull(
                 tokenResponse["authTokenId"],

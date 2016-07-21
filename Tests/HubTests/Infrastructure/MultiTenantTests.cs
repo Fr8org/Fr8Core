@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
+﻿using System.Collections.Generic;
 using System.Linq;
 using RestSharp.Serializers;
 using NUnit.Framework;
 using StructureMap;
-using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Interfaces;
-using Hub.StructureMap;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace HubTests.Infrastructure
 {
@@ -154,9 +150,9 @@ namespace HubTests.Infrastructure
                 manifest.PayloadObjects.Add(
                     new PayloadObjectDTO()
                     {
-                        PayloadObject = new List<FieldDTO>()
+                        PayloadObject = new List<KeyValueDTO>()
                         {
-                            new FieldDTO()
+                            new KeyValueDTO()
                             {
                                 Key = "Key2",
                                 Value = "Value2"
@@ -179,9 +175,9 @@ namespace HubTests.Infrastructure
                 manifest.PayloadObjects.Add(
                     new PayloadObjectDTO()
                     {
-                        PayloadObject = new List<FieldDTO>()
+                        PayloadObject = new List<KeyValueDTO>()
                         {
-                            new FieldDTO()
+                            new KeyValueDTO()
                             {
                                 Key = "Key3",
                                 Value = "Value3"

@@ -1,26 +1,21 @@
-﻿
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Data.Crates;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
-using Hub.StructureMap;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.StructureMap;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Models;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
 using terminalPapertrail.Actions;
 using terminalPapertrail.Interfaces;
 using terminalPapertrail.Tests.Infrastructure;
-using TerminalBase.Infrastructure;
-using Utilities.Logging;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
 
 namespace terminalPapertrail.Tests.Actions
 {
@@ -35,22 +30,25 @@ namespace terminalPapertrail.Tests.Actions
             base.SetUp();
             TerminalBootstrapper.ConfigureTest();
             TerminalPapertrailMapBootstrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
-
-            //setup the rest client
-            Mock<IRestfulServiceClient> restClientMock = new Mock<IRestfulServiceClient>(MockBehavior.Default);
-            restClientMock.Setup(restClient => restClient.GetAsync<PayloadDTO>(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
-                .Returns(Task.FromResult(PreparePayloadDTOWithLogMessages()));
-            ObjectFactory.Container.Inject(typeof(IRestfulServiceClient), restClientMock.Object);
-            
-            _activity_under_test = new Write_To_Log_v1();
+            AutoMapperBootstrapper.ConfigureAutoMapper();
+            _activity_under_test = New<Write_To_Log_v1>();
         }
 
         [Test]
         public async Task Configure_InitialConfigurationResponse_ShourldReturn_OneConfigControlsCrate()
         {
             //Act
-            var result = await _activity_under_test.Configure(new ActivityDO());
-            ActivityDTO resultActionDTO = Mapper.Map<ActivityDTO>(result);
+            var testAction = new ActivityContext()
+            {
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage()
+                },
+                AuthorizationToken = null,
+                UserId = null,
+            };
+            await _activity_under_test.Configure(testAction);
+            ActivityDTO resultActionDTO = Mapper.Map<ActivityDTO>(testAction.ActivityPayload);
 
             //Assert
             var crateStorage = new CrateManager().FromDto(resultActionDTO.CrateStorage);
@@ -68,12 +66,21 @@ namespace terminalPapertrail.Tests.Actions
         public async Task Configure_FollowUpConfigurationResponse_ShourldReturn_OneConfigControlsCrate()
         {
             //Arrange
-            ActivityDO testAction = new ActivityDO();
+            var testAction = new ActivityContext()
+            {
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage()
+                },
+                //HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
+                AuthorizationToken = null,
+                UserId = null
+            };
             await _activity_under_test.Configure(testAction);
 
             //Act
-            var result = await _activity_under_test.Configure(testAction);
-            ActivityDTO resultActionDTO = Mapper.Map<ActivityDTO>(result);
+            await _activity_under_test.Configure(testAction);
+            ActivityDTO resultActionDTO = Mapper.Map<ActivityDTO>(testAction.ActivityPayload);
 
             //Assert
             var crateStorage = new CrateManager().FromDto(resultActionDTO.CrateStorage);
@@ -94,44 +101,35 @@ namespace terminalPapertrail.Tests.Actions
             //Arrange
 
             //create initial and follow up configuration
-            ActivityDO testAction = new ActivityDO();
+            var testAction = new ActivityContext()
+            {
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage()
+                },
+                AuthorizationToken = null,
+                UserId = null
+            };
+            var executionContext = new ContainerExecutionContext();
+
+            executionContext.PayloadStorage = new CrateStorage(Crate.FromContent("", new OperationalStateCM()));
+
+            executionContext.PayloadStorage.Add("Log Messages", new StandardLoggingCM
+            {
+                Item = new List<LogItemDTO>()
+                {
+                    new LogItemDTO() {Activity = "A", Data = "Test Log Message"}
+                }
+            });
+
             await _activity_under_test.Configure(testAction);
             await _activity_under_test.Configure(testAction);
-            
-            //Act
-            var result = await _activity_under_test.Run(testAction, Guid.NewGuid(), null);
-
-            //Assert
-            var loggedMessge = new CrateManager().GetStorage(result).CrateContentsOfType<StandardLoggingCM>().Single();
-            Assert.IsNotNull(loggedMessge, "Logged message is missing from the payload");
-            Assert.AreEqual(1, loggedMessge.Item.Count, "Logged message is missing from the payload");
-
-            Assert.IsTrue(loggedMessge.Item[0].IsLogged, "Log did not happen");
-
-            Mock<IPapertrailLogger> papertrailLogger = Mock.Get(ObjectFactory.GetInstance<IPapertrailLogger>());
-            papertrailLogger.Verify( logger => logger.LogToPapertrail(It.IsAny<string>(), It.IsAny<int>(), "Test Log Message"), Times.Exactly(1));
-            papertrailLogger.VerifyAll();
-        }
-
-        [Test]
-        public async Task Run_SecondTimeForSameLog_WithOneUpstreamLogedMessage_LoggedAlready_ShouldLogOnlyOneTime()
-        {
-            //Arrange
-
-            //create initial and follow up configuration
-            ActivityDO testAction = new ActivityDO();
-            await _activity_under_test.Configure(testAction);
-            await _activity_under_test.Configure(testAction);
-
-            //log first time
-            var result = await _activity_under_test.Run(testAction, Guid.NewGuid(), null);
 
             //Act
-            //try to log the same message again
-            result = await _activity_under_test.Run(testAction, Guid.NewGuid(), null);
+            await _activity_under_test.Run(testAction, executionContext);
 
             //Assert
-            var loggedMessge = new CrateManager().GetStorage(result).CrateContentsOfType<StandardLoggingCM>().Single();
+            var loggedMessge = executionContext.PayloadStorage.CrateContentsOfType<StandardLoggingCM>().Single();
             Assert.IsNotNull(loggedMessge, "Logged message is missing from the payload");
             Assert.AreEqual(1, loggedMessge.Item.Count, "Logged message is missing from the payload");
 
@@ -142,27 +140,52 @@ namespace terminalPapertrail.Tests.Actions
             papertrailLogger.VerifyAll();
         }
 
-        private PayloadDTO PreparePayloadDTOWithLogMessages()
+        [Test]
+        public async Task Run_SecondTimeForSameLog_WithOneUpstreamLogedMessage_LoggedAlready_ShouldLogOnlyOneTime()
         {
-            var curPayload = FixtureData.PayloadDTO1();
-            var logMessages = new StandardLoggingCM()
+            //Arrange
+
+            //create initial and follow up configuration
+            var testAction = new ActivityContext()
             {
-                Item = new List<LogItemDTO>
+                ActivityPayload = new ActivityPayload
                 {
-                    new LogItemDTO
-                    {
-                        Data = "Test Log Message",
-                        IsLogged = false
-                    }
-                }
+                    CrateStorage = new CrateStorage()
+                },
+                AuthorizationToken = null,
+                UserId = null
             };
+            await _activity_under_test.Configure(testAction);
+            await _activity_under_test.Configure(testAction);
 
-            using (var crateStorage = new CrateManager().GetUpdatableStorage(curPayload))
+            var executionContext = new ContainerExecutionContext();
+            executionContext.PayloadStorage = new CrateStorage(Crate.FromContent("", new OperationalStateCM()));
+
+            executionContext.PayloadStorage.Add("Log Messages", new StandardLoggingCM
             {
-                crateStorage.Add(Crate.FromContent("Log Messages", logMessages));
-            }
+                Item = new List<LogItemDTO>()
+                {
+                    new LogItemDTO() {Activity = "A", Data = "Test Log Message"}
+                }
+            });
 
-            return curPayload;
+            //log first time
+            await _activity_under_test.Run(testAction, executionContext);
+
+            //Act
+            //try to log the same message again
+            await _activity_under_test.Run(testAction, executionContext);
+
+            //Assert
+            var loggedMessge = executionContext.PayloadStorage.CrateContentsOfType<StandardLoggingCM>().Single();
+            Assert.IsNotNull(loggedMessge, "Logged message is missing from the payload");
+            Assert.AreEqual(1, loggedMessge.Item.Count, "Logged message is missing from the payload");
+
+            Assert.IsTrue(loggedMessge.Item[0].IsLogged, "Log did not happen");
+
+            Mock<IPapertrailLogger> papertrailLogger = Mock.Get(ObjectFactory.GetInstance<IPapertrailLogger>());
+            papertrailLogger.Verify(logger => logger.LogToPapertrail(It.IsAny<string>(), It.IsAny<int>(), "Test Log Message"), Times.Exactly(1));
+            papertrailLogger.VerifyAll();
         }
     }
 }

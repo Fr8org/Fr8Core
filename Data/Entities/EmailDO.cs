@@ -6,8 +6,6 @@ using System.Linq;
 using Data.Interfaces;
 using Data.States;
 using Data.States.Templates;
-using StructureMap;
-using Utilities;
 
 namespace Data.Entities
 {
@@ -17,57 +15,15 @@ namespace Data.Entities
         {
             Recipients = new List<RecipientDO>();
             Attachments = new List<AttachmentDO>();
-            //Events = new List<EventDO>();
             DateReceived = DateTimeOffset.UtcNow;
-            //Envelopes = new List<EnvelopeDO>();
-
             //By default, the MessageID is a random GUID. This is so we can match our sent emails to replies
             SetMessageID(Guid.NewGuid().ToString());
         }
 
-
-        //public void TagEmailToBookingRequest(BookingRequestDO bookingRequestDO, bool linkToConversation = true)
-        //{
-        //    SetReplyTo(bookingRequestDO.Id);
-        //    AddReference(bookingRequestDO.MessageID);
-        //    if (linkToConversation)
-        //        ConversationId = bookingRequestDO.Id;
-        //}
-
-        private void SetReplyTo(int bookingRequestID)
-        {
-            var injectReplyTo = ObjectFactory.GetInstance<IConfigRepository>().Get("injectReplyTo", true);
-            
-            ReplyToName = ObjectFactory.GetInstance<IConfigRepository>().Get("replyToName", String.Empty);
-            string replyToEmail = ObjectFactory.GetInstance<IConfigRepository>().Get("replyToEmail", String.Empty);
-            if (String.IsNullOrEmpty(replyToEmail))
-                return;
-
-            if (injectReplyTo)
-            {
-                var originalAddress = replyToEmail;
-                var splitPoint = originalAddress.Split('@');
-                var replyToAddress = String.Format("{0}+{1}@{2}", splitPoint[0], bookingRequestID, splitPoint[1]);
-                ReplyToAddress = replyToAddress;
-            }
-            else
-            {
-                ReplyToAddress = replyToEmail;
-            }
-        }
-
-        private void SetMessageID(String messageID)
+        private void SetMessageID(string messageID)
         {
             const string messageFormat = @"<{0}@sant.com>";
-            MessageID = String.Format(messageFormat, messageID);
-        }
-
-        private void AddReference(String messageID)
-        {  
-            if (String.IsNullOrEmpty(References))
-                References = messageID;
-            else
-                References = string.Concat(References, "\t", messageID);
+            MessageID = string.Format(messageFormat, messageID);
         }
 
         [Key]
@@ -79,7 +35,7 @@ namespace Data.Entities
         /// We also use it to identify negotiation response emails
         /// *** Use 'SetMessageID' unless you know what you're doing! ***
         /// </summary>
-        public String MessageID { get; set; }
+        public string MessageID { get; set; }
 
         /// <summary>
         /// This is used at the moment for outbound emails.
@@ -91,16 +47,12 @@ namespace Data.Entities
         /// References = negotiationRequestDO.BookingRequest.MessageID;
         /// *** Use 'AddReference' unless you know what you're doing! ***
         /// </summary>
-        public String References { get; set; }
+        public string References { get; set; }
 
-        public String Subject { get; set; }
-        public String HTMLText { get; set; }
-        public String PlainText { get; set; }
+        public string Subject { get; set; }
+        public string HTMLText { get; set; }
+        public string PlainText { get; set; }
         public DateTimeOffset DateReceived { get; set; }
-        
-        //[ForeignKey("Conversation")]
-        //public int? ConversationId { get; set; }
-        //public virtual BookingRequestDO Conversation { get; set; }
 
         [ForeignKey("EmailStatusTemplate")]
         public int? EmailStatus { get; set; }
@@ -113,14 +65,14 @@ namespace Data.Entities
         /// <summary>
         /// Overrides the name of the sender (instead of taking it from From.Name).
         /// </summary>
-        public String FromName { get; set; }
+        public string FromName { get; set; }
 
         /// <summary>
         /// We do not link to email address rows - as we will be dynamically creating reply-tos based on entities
         /// No need to flood the email table
         /// </summary>
-        public String ReplyToName { get; set; }
-        public String ReplyToAddress { get; set; }
+        public string ReplyToName { get; set; }
+        public string ReplyToAddress { get; set; }
 
 
         /// <summary>

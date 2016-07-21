@@ -10,6 +10,9 @@ namespace Data.Repositories.MultiTenant
         int Upsert(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtObject obj, AstNode where);
         int Update(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtObject obj, AstNode where);
         IEnumerable<MtObject> Query (ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode where);
+        int QueryScalar (ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode where);
         int Delete(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode where);
+
+        int? GetObjectId(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode where);
     }
 }

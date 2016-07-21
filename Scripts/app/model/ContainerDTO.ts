@@ -4,14 +4,13 @@
         name: string;
         planId: number;
         state: number;
-        currentPlanNodeId: string;
-        nextRouteNodeId: string;
         lastUpdated: string;
         createDate: string;
         currentActivityResponse: ActivityResponse;
         currentPlanType: PlanType;
         currentClientActivityName: string;
         error: any;
+        validationErrors: { [activityId: string]: ValidationResults };
     }
 
     export enum State {
@@ -31,7 +30,6 @@
         RequestTerminate = 3,
         RequestSuspend = 4,
         SkipChildren = 5,
-        ReprocessChildren = 6,
         ExecuteClientAction = 7
     }
 

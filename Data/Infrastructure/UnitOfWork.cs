@@ -8,6 +8,7 @@ using Data.Interfaces;
 using Data.Repositories;
 using Data.Repositories.MultiTenant;
 using Data.Repositories.Plan;
+using Data.Repositories.PlanDescriptions;
 using StructureMap;
 
 namespace Data.Infrastructure
@@ -64,6 +65,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private EnvelopeRepository _envelopeRepository;
+        public EnvelopeRepository EnvelopeRepository
+        {
+            get
+            {
+                return _envelopeRepository ?? (_envelopeRepository = new EnvelopeRepository(this));
+            }
+        }
+
+
         private RecipientRepository _recipientRepository;
         public RecipientRepository RecipientRepository
         {
@@ -72,7 +83,7 @@ namespace Data.Infrastructure
                 return _recipientRepository ?? (_recipientRepository = new RecipientRepository(this));
             }
         }
-
+        
         private IProfileRepository _profileRepository;
         public IProfileRepository ProfileRepository => _profileRepository ?? (_profileRepository = new ProfileRepository(this));
 
@@ -88,27 +99,6 @@ namespace Data.Infrastructure
                 return _SlipRepository ?? (_SlipRepository = new SlipRepository(this));
             }
         }
-
-        private RemoteServiceProviderRepository _remoteServiceProviderRepository;
-
-        public RemoteServiceProviderRepository RemoteServiceProviderRepository
-        {
-            get
-            {
-                return _remoteServiceProviderRepository ?? (_remoteServiceProviderRepository = new RemoteServiceProviderRepository(this));
-            }
-        }
-
-        private RemoteServiceAuthDataRepository _remoteServiceAuthDataRepository;
-
-        public RemoteServiceAuthDataRepository RemoteServiceAuthDataRepository
-        {
-            get
-            {
-                return _remoteServiceAuthDataRepository ?? (_remoteServiceAuthDataRepository = new RemoteServiceAuthDataRepository(this));
-            }
-        }
-
         
         private CommunicationConfigurationRepository _communicationConfigurationRepository;
 
@@ -147,29 +137,6 @@ namespace Data.Infrastructure
             get
             {
                 return _emailStatusRepository ?? (_emailStatusRepository = new EmailStatusRepository(this));
-            }
-        }
-
-/*
-        private EnvelopeRepository _envelopeRepository;
-
-        public EnvelopeRepository EnvelopeRepository
-        {
-            get
-            {
-                return _envelopeRepository ?? (_envelopeRepository = new EnvelopeRepository(this));
-            }
-        }
-*/
-
-
-        private EnvelopeRepository _envelopeRepository;
-
-        public EnvelopeRepository EnvelopeRepository
-        {
-            get
-            {
-                return _envelopeRepository ?? (_envelopeRepository = new EnvelopeRepository(this));
             }
         }
 
@@ -433,16 +400,6 @@ namespace Data.Infrastructure
         }
 
 
-        private CriteriaRepository _criteriaRepository;
-
-        public ICriteriaRepository CriteriaRepository
-        {
-            get
-            {
-                return _criteriaRepository ?? (_criteriaRepository = new CriteriaRepository(this));
-            }
-        }
-
         private FileRepository _fileRepository;
 
         public IFileRepository FileRepository
@@ -538,6 +495,76 @@ namespace Data.Infrastructure
             }
         }
 
+        private ActivityDescriptionRepository _activityDescriptionRepository;
+        public IActivityDescriptionRepository ActivityDescriptionRepository
+        {
+            get
+            {
+                return _activityDescriptionRepository ?? (_activityDescriptionRepository = new ActivityDescriptionRepository(this));
+            }
+        }
+
+        private NodeTransitionRepository _nodeTransitionRepository;
+        public INodeTransitionRepository NodeTransitionRepository
+
+        {
+            get
+            {
+                return _nodeTransitionRepository ?? (_nodeTransitionRepository = new NodeTransitionRepository(this));
+            }
+        }
+
+        private PlanTemplateRepository _planTemplateRepository;
+        public IPlanTemplateRepository PlanTemplateRepository
+        {
+            get
+            {
+                return _planTemplateRepository ?? (_planTemplateRepository = new PlanTemplateRepository(this));
+            }
+        }
+
+        private PlanNodeDescriptionsRepository _planNodeDescriptionsRepository;
+        public IPlanNodeDescriptionsRepository PlanNodeDescriptionsRepository
+        {
+            get
+            {
+                return _planNodeDescriptionsRepository ?? (_planNodeDescriptionsRepository = new PlanNodeDescriptionsRepository(this));
+            }
+        }
+
+        private IPageDefinitionRepository _pageDefinitionRepository;
+
+        public IPageDefinitionRepository PageDefinitionRepository => 
+            _pageDefinitionRepository ?? (_pageDefinitionRepository = new PageDefinitionRepository(this));
+
+        private TerminalRegistrationRepository _terminalRegistrationRepository;
+        public TerminalRegistrationRepository TerminalRegistrationRepository
+        {
+            get
+            {
+                return _terminalRegistrationRepository ?? (_terminalRegistrationRepository = new TerminalRegistrationRepository(this));
+            }
+        }
+
+        private IActivityCategoryRepository _activityCategoryRepository;
+        public IActivityCategoryRepository ActivityCategoryRepository
+        {
+            get
+            {
+                return _activityCategoryRepository ?? (_activityCategoryRepository = new ActivityCategoryRepository(this));
+            }
+        }
+
+        private IActivityCategorySetRepository _activityCategorySetRepository;
+        public IActivityCategorySetRepository ActivityCategorySetRepository
+        {
+            get
+            {
+                return _activityCategorySetRepository ?? (_activityCategorySetRepository = new ActivityCategorySetRepository(this));
+            }
+        }
+
+
         public void Save()
         {
             _context.SaveChanges();
@@ -585,14 +612,14 @@ namespace Data.Infrastructure
                 }
             }
             catch
-            {}
+            { }
 
             _context.DetectChanges();
             var addedEntities = _context.AddedEntities;
             var modifiedEntities = _context.ModifiedEntities;
             var deletedEntities = _context.DeletedEntities;
 
-            UpateRepository(addedEntities, modifiedEntities, deletedEntities, AuthorizationTokenRepository);
+            ((AuthorizationTokenRepositoryBase)AuthorizationTokenRepository).SaveChanges();
 
             try
             {
@@ -614,22 +641,6 @@ namespace Data.Infrastructure
             OnEntitiesAdded(new EntitiesStateEventArgs(this, addedEntities));
             OnEntitiesModified(new EntitiesStateEventArgs(this, modifiedEntities));
             OnEntitiesDeleted(new EntitiesStateEventArgs(this, deletedEntities));
-        }
-
-        private void UpateRepository(Object[] addedEntities, Object[] modifiedEntities, Object[] deletedEntities,  object repository)
-        {
-            var trackingChanges = repository as ITrackingChangesRepository;
-
-            if (trackingChanges != null)
-            {
-                var entityType = trackingChanges.EntityType;
-
-                trackingChanges.TrackAdds(addedEntities.Where(x => entityType.IsInstanceOfType(x)));
-                trackingChanges.TrackDeletes(deletedEntities.Where(x => entityType.IsInstanceOfType(x)));
-                trackingChanges.TrackUpdates(modifiedEntities.Where(x => entityType.IsInstanceOfType(x)));
-                
-                trackingChanges.SaveChanges();
-            }
         }
 
         public bool IsEntityModified<TEntity>(TEntity entity) 

@@ -4,6 +4,7 @@ using Data.Entities;
 using Data.Infrastructure.AutoMapper;
 using Data.Interfaces;
 using Data.Repositories;
+using Data.Repositories.Authorization;
 using Data.Repositories.Cache;
 using Data.Repositories.Encryption;
 using Data.Repositories.Encryption.Impl;
@@ -18,8 +19,9 @@ using Data.Repositories.Security.StorageImpl;
 using Data.Repositories.Security.StorageImpl.Cache;
 using Data.Repositories.Security.StorageImpl.SqlBased;
 using Data.Repositories.SqlBased;
+using Data.Repositories.Utilization;
+using Fr8.Infrastructure.Utilities.Configuration;
 using StructureMap.Configuration.DSL;
-using Utilities.Configuration.Azure;
 
 //using MT_FieldService = Data.Infrastructure.MultiTenant.MT_Field;
 
@@ -49,6 +51,7 @@ namespace Data.Infrastructure.StructureMap
                 For<IAspNetRolesDO>().Use<AspNetRolesDO>();
                 For<IAspNetUserRolesDO>().Use<AspNetUserRolesDO>();
                 For<IUnitOfWork>().Use<UnitOfWork>();
+                For<IUnitOfWorkFactory>().Use<StructureMapUnitOfWorkFactory>().Singleton();
                 For<IMultiTenantObjectRepository>().Use<MultitenantRepository>();
                 For<IMtObjectConverter>().Use<MtObjectConverter>().Singleton();
                 For<IMtTypeStorage>().Use<MtTypeStorage>().Singleton();
@@ -94,6 +97,8 @@ namespace Data.Infrastructure.StructureMap
                     For<IAuthorizationTokenRepository>().Use<AuthorizationTokenRepositoryStub>();
                 }
 
+                For<IAuthorizationTokenStorageProvider>().Use<EfAuthorizationTokenStorageProvider>();
+
                 For<IPlanStorageProvider>().Use<PlanStorageProviderEf>();
                 For<ISqlConnectionProvider>().Use<SqlConnectionProvider>();
                 For<IMtObjectsStorage>().Use<SqlMtObjectsStorage>().Singleton();
@@ -101,6 +106,7 @@ namespace Data.Infrastructure.StructureMap
                 For<ISqlConnectionProvider>().Use<SqlConnectionProvider>();
                 For<ISecurityObjectsStorageProvider>().Use<SqlSecurityObjectsStorageProvider>();
                 For<ISecurityObjectsStorageProvider>().DecorateAllWith<SecurityObjectsStorage>();
+                For<IUtilizationDataProvider>().Use<SqlUtilizationDataProvider>();
                 
                 var defaultEncryptionProvider = CloudConfigurationManager.GetSetting("DefaultEncryptionProvider");
 
@@ -128,6 +134,7 @@ namespace Data.Infrastructure.StructureMap
         {
             public TestMode()
             {
+                For<IAuthorizationTokenStorageProvider>().Use<MockedDbAuthorizationTokenStorageProvider>();
                 For<IAuthorizationTokenRepository>().Use<AuthorizationTokenRepositoryForTests>();
                 For<IDBContext>().Use<MockedDBContext>();
                 For<CloudFileManager>().Use<CloudFileManager>();
@@ -141,6 +148,8 @@ namespace Data.Infrastructure.StructureMap
                 For<IMtTypeStorageProvider>().Use<InMemoryMtTypeStorageProvider>();
                 For<ISecurityObjectsStorageProvider>().Use<InMemorySecurityObjectsStorageProvider>();
                 For<IEncryptionProvider>().Use<BypassEncryptionProvider>().Singleton();
+                For<IUtilizationDataProvider>().Use<MockedUtilizationDataProvider>().Singleton();
+
                 DataAutoMapperBootStrapper.ConfigureAutoMapper();
             }
         }

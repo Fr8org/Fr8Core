@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
 using Microsoft.Owin.Hosting;
 using Owin;
 
@@ -58,7 +55,7 @@ namespace terminalIntegrationTests.Fixtures
         {
             get
             {
-                var payloadDTO = new PayloadDTO(UtilitiesTesting.Fixtures.FixtureData.TestContainer_Id_1());
+                var payloadDTO = new PayloadDTO(Fr8.Testing.Unit.Fixtures.FixtureData.TestContainer_Id_1());
                 using (var crateStorage = new CrateManager().GetUpdatableStorage(payloadDTO))
                 {
                     var operationalStatus = new OperationalStateCM();

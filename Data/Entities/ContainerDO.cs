@@ -58,8 +58,8 @@ namespace Data.Entities
         {
             base.AfterCreate();
 
-            //var securityService = ObjectFactory.GetInstance<ISecurityServices>();
-            //securityService.SetDefaultObjectSecurity(Id, GetType().Name);
+            var securityService = ObjectFactory.GetInstance<ISecurityServices>();
+            securityService.SetDefaultObjectSecurity(Id, GetType().Name);
         }
     }
 }

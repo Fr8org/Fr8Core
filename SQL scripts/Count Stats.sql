@@ -2,12 +2,7 @@ SELECT
     t.NAME AS TableName,
     i.name as indexName,
     p.[Rows],
-    sum(a.total_pages) as TotalPages, 
-    sum(a.used_pages) as UsedPages, 
-    sum(a.data_pages) as DataPages,
-    (sum(a.total_pages) * 8) / 1024 as TotalSpaceMB, 
-    (sum(a.used_pages) * 8) / 1024 as UsedSpaceMB, 
-    (sum(a.data_pages) * 8) / 1024 as DataSpaceMB
+    (sum(a.used_pages) * 8) / 1024 as UsedSpaceMB
 FROM 
     sys.tables t
 INNER JOIN      
@@ -19,7 +14,9 @@ INNER JOIN
 WHERE 
     t.NAME NOT LIKE 'dt%' AND
     i.OBJECT_ID > 255 AND   
-    i.index_id <= 1
+    i.index_id <= 1 AND
+	t.NAME NOT LIKE '_%Template' AND 
+	t.NAME IN ('Actions', 'Containers', 'MT_Data', 'Plans', 'Job', 'JobQueue', 'History')
 GROUP BY 
     t.NAME, i.object_id, i.index_id, i.name, p.[Rows]
 ORDER BY 

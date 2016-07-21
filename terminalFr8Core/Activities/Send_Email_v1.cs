@@ -1,0 +1,162 @@
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Infrastructure;
+using StructureMap;
+using terminalUtilities.Infrastructure;
+using terminalUtilities.Interfaces;
+using terminalUtilities.Models;
+using System;
+
+namespace terminalFr8Core.Activities
+{
+    public class Send_Email_v1 : TerminalActivity<Send_Email_v1.ActivityUi>
+    {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Id = new Guid("6623f94f-5484-4264-b992-f00637bcdb4c"),
+            Name = "Send_Email",
+            Label = "Send Email",
+            Version = "1",
+            Category = ActivityCategory.Forwarders,
+            NeedsAuthentication = false,
+            MinPaneWidth = 400,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
+        private readonly IEmailPackager _emailPackager;
+
+        public class ActivityUi : StandardConfigurationControlsCM
+        {
+            public TextSource EmailAddress { get; set; }
+            public TextSource EmailSubject { get; set; }
+            public TextSource EmailBody { get; set; }
+
+            public ActivityUi()
+            {
+                EmailAddress = new TextSource("Email Address", string.Empty, nameof(EmailAddress))
+                {
+                    Source = new FieldSourceDTO
+                    {
+                        Label = string.Empty,
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields,
+                        FilterByTag = string.Empty,
+                        RequestUpstream = true
+                    }
+                };
+                EmailAddress.Events.Add(new ControlEvent("onChange", "requestConfig"));
+
+                EmailSubject = new TextSource("Email Subject", string.Empty, nameof(EmailSubject))
+                {
+                    Source = new FieldSourceDTO
+                    {
+                        Label = string.Empty,
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields,
+                        FilterByTag = string.Empty,
+                        RequestUpstream = true
+                    }
+                };
+                EmailSubject.Events.Add(new ControlEvent("onChange", "requestConfig"));
+
+                EmailBody = new TextSource("Email Body", string.Empty, nameof(EmailBody))
+                {
+                    Source = new FieldSourceDTO
+                    {
+                        Label = string.Empty,
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields,
+                        FilterByTag = string.Empty,
+                        RequestUpstream = true
+                    }
+                };
+                EmailBody.Events.Add(new ControlEvent("onChange", "requestConfig"));
+
+                Controls = new List<ControlDefinitionDTO> { EmailAddress, EmailSubject, EmailBody };
+            }
+        }
+
+        public Send_Email_v1(ICrateManager crateManager, IEmailPackager emailPackager)
+            : base(crateManager)
+        {
+            _emailPackager = emailPackager;
+        }
+
+        public override Task Initialize()
+        {
+            return Task.FromResult(0);
+        }
+
+        public override Task FollowUp()
+        {
+            return Task.FromResult(0);
+        }
+
+        
+        protected override Task Validate()
+        {
+            ValidationManager.ValidateTextSourceNotEmpty(ActivityUI.EmailAddress, "Email address can't be empty");
+            ValidationManager.ValidateTextSourceNotEmpty(ActivityUI.EmailSubject, "Email subject can't be empty");
+            ValidationManager.ValidateTextSourceNotEmpty(ActivityUI.EmailBody, "Email body can't be empty");
+
+            return Task.FromResult(0);
+        }
+
+        public override async Task Run()
+        {
+            var fromAddress = CloudConfigurationManager.GetSetting("OutboundFromAddress");
+
+            var emailAddress = ActivityUI.EmailAddress.GetValue(Payload);
+            var emailSubject = ActivityUI.EmailSubject.GetValue(Payload);
+            var emailBody = ActivityUI.EmailBody.GetValue(Payload);
+
+            var userData = await HubCommunicator.GetCurrentUser();
+            var footerMessage = string.Format("<hr> <p> This email was generated by The Fr8 Company as part of the processing of Fr8 Container {0} on behalf of Fr8 User {1}." +
+                                             "For questions about Fr8, go to www.fr8.co </p>", ExecutionContext.ContainerId, userData.FirstName + " " + userData.LastName);
+
+            var mailerDO = new TerminalMailerDO()
+            {
+                Email = new EmailDTO()
+                {
+                    From = new EmailAddressDTO
+                    {
+                        Address = fromAddress,
+                        Name = "Fr8 Operations"
+                    },
+                    Recipients = new List<RecipientDTO>()
+                    {
+                        new RecipientDTO()
+                        {
+                            EmailAddress = new EmailAddressDTO(emailAddress),
+                            EmailParticipantType = EmailParticipantType.To
+                        }
+                    },
+                    Subject = emailSubject,
+                    HTMLText = CreateEmailHTMLText(emailBody)
+                },
+                Footer = footerMessage,
+            };
+            await _emailPackager.Send(mailerDO);
+            Success();
+        }
+
+        private string CreateEmailHTMLText(string emailBody)
+        {
+            var template = @"<html><body>{0}</body></html>";
+            var htmlText = string.Format(template, emailBody);
+
+            return htmlText;
+        }
+    }
+}

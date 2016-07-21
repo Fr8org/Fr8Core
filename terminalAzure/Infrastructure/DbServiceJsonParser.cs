@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Data.Crates;
-using Newtonsoft.Json;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Models;
 using Newtonsoft.Json.Linq;
-using Data.Interfaces;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
-using StructureMap;
-using TerminalBase.Infrastructure;
 using TerminalSqlUtilities;
 
 namespace terminalAzure.Infrastructure
@@ -20,13 +14,6 @@ namespace terminalAzure.Infrastructure
         //since we're working with a single table, leaving these constants for now.
         private const string TableName = "Customer";
         private const string SchemaName = "dbo";
-        private readonly ICrateManager _crateManager;
-
-
-        public DbServiceJsonParser()
-        {
-            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
-        }
 
         /// <summary>
         /// Create Table instance from raw JSON data.
@@ -45,9 +32,9 @@ namespace terminalAzure.Infrastructure
             return ExtractTable(data);
         }
 
-        public string ExtractConnectionString(ActivityDO curActivityDO)
+        public string ExtractConnectionString(ActivityContext activityContext)
         {
-            var controlsMS = _crateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsMS = activityContext.ActivityPayload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controlsMS == null)
             {

@@ -1,22 +1,44 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.Manifests;
-using Data.States;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Helpers;
 using Newtonsoft.Json;
-using StructureMap;
-using TerminalBase.BaseClasses;
-using terminalSalesforce.Infrastructure;
-using Data.Interfaces.DataTransferObjects;
-using Data.Constants;
 using ServiceStack;
+using terminalSalesforce.Infrastructure;
+using System;
 
 namespace terminalSalesforce.Actions
 {
-    public class Get_Data_v1 : EnhancedTerminalActivity<Get_Data_v1.ActivityUi>
+    public class Get_Data_v1 : BaseSalesforceTerminalActivity<Get_Data_v1.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Id = new Guid("d8cf2810-87b9-43e7-a69b-a344823fd092"),
+            Version = "1",
+            Name = "Get_Data",
+            Label = "Get Data from Salesforce",
+            NeedsAuthentication = true,
+            Category = ActivityCategory.Receivers,
+            MinPaneWidth = 550,
+            Tags = Tags.TableDataGenerator,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Receive,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public DropDownList SalesforceObjectSelector { get; set; }
@@ -30,7 +52,7 @@ namespace terminalSalesforce.Actions
                     Name = nameof(SalesforceObjectSelector),
                     Label = "Get all objects of type:",
                     Required = true,
-                    Events = new List<ControlEvent> {  ControlEvent.RequestConfig }
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
                 SalesforceObjectFilter = new QueryBuilder
                 {
@@ -40,7 +62,7 @@ namespace terminalSalesforce.Actions
                     Source = new FieldSourceDTO
                     {
                         Label = QueryFilterCrateLabel,
-                        ManifestType = CrateManifestTypes.StandardQueryFields
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     }
                 };
                 Controls.Add(SalesforceObjectSelector);
@@ -52,33 +74,36 @@ namespace terminalSalesforce.Actions
 
         public const string RuntimeDataCrateLabel = "Table from Salesforce Get Data";
 
-        public const string SalesforceObjectFieldsCrateLabel = "Salesforce Object Fields";
+        public const string PayloadDataCrateLabel = "Payload from Salesforce Get Data";
+
+        public const string CountObjectsFieldLabel = "Count of Objects";
 
         private readonly ISalesforceManager _salesforceManager;
 
-        public Get_Data_v1() : base(true)
+        public Get_Data_v1(ICrateManager crateManager, ISalesforceManager salesforceManager)
+            : base(crateManager)
         {
-            _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
-            ActivityName = "Get Data from Salesforce";
+            _salesforceManager = salesforceManager;
         }
 
-        protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        public override Task Initialize()
         {
-            ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager.GetSalesforceObjectTypes()
-                                                                                .Select(x => new ListItem() { Key = x.Key, Value = x.Key })
-                                                                                .ToList();
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
+            ActivityUI.SalesforceObjectSelector.ListItems = _salesforceManager
+                .GetSalesforceObjectTypes()
+                .Select(x => new ListItem() { Key = x.Name, Value = x.Name })
+                .ToList();
+            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel, true);
+
             return Task.FromResult(true);
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        public override async Task FollowUp()
         {
             //If Salesforce object is empty then we should clear filters as they are no longer applicable
-            var selectedObject = ConfigurationControls.SalesforceObjectSelector.selectedKey;
+            var selectedObject = ActivityUI.SalesforceObjectSelector.selectedKey;
             if (string.IsNullOrEmpty(selectedObject))
             {
-                CurrentActivityStorage.RemoveByLabel(QueryFilterCrateLabel);
-                CurrentActivityStorage.RemoveByLabel(SalesforceObjectFieldsCrateLabel);
+                Storage.RemoveByLabel(QueryFilterCrateLabel);
                 this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
                 return;
             }
@@ -88,48 +113,60 @@ namespace terminalSalesforce.Actions
                 return;
             }
             //Prepare new query filters from selected object properties
-            var selectedObjectProperties = await _salesforceManager.GetProperties(selectedObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
-            var queryFilterCrate = Crate<TypedFieldsCM>.FromContent(
+            var selectedObjectProperties = await _salesforceManager
+                .GetProperties(selectedObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
+            var queryFilterCrate = Crate<FieldDescriptionsCM>.FromContent(
                 QueryFilterCrateLabel,
-                new TypedFieldsCM(selectedObjectProperties.OrderBy(x => x.Key)
-                                                                  .Select(x => new TypedFieldDTO(x.Key, x.Value, FieldType.String, new TextBox { Name = x.Key }))),
+                new FieldDescriptionsCM(selectedObjectProperties),
                 AvailabilityType.Configuration);
-            CurrentActivityStorage.ReplaceByLabel(queryFilterCrate);
+            Storage.ReplaceByLabel(queryFilterCrate);
 
-            var objectPropertiesCrate = Crate<FieldDescriptionsCM>.FromContent(
-                SalesforceObjectFieldsCrateLabel,
-                new FieldDescriptionsCM(selectedObjectProperties.Select(c => new FieldDTO(c.Key, c.Key))),            
-                AvailabilityType.RunTime);
-            CurrentActivityStorage.ReplaceByLabel(objectPropertiesCrate);
             this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
             //Publish information for downstream activities
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
+            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel, true)
+                          .AddFields(selectedObjectProperties).AddField(CountObjectsFieldLabel);
         }
 
-        protected override async Task RunCurrentActivity()
+        public override async Task Run()
         {
-            var salesforceObject = ConfigurationControls.SalesforceObjectSelector.selectedKey;
+            var salesforceObject = ActivityUI.SalesforceObjectSelector.selectedKey;
             if (string.IsNullOrEmpty(salesforceObject))
             {
-                throw new ActivityExecutionException("No Salesforce object is selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                throw new ActivityExecutionException(
+                    "No Salesforce object is selected",
+                    ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
-            var salesforceObjectFields = CurrentActivityStorage
-                                            .FirstCrate<TypedFieldsCM>(x => x.Label == QueryFilterCrateLabel)
-                                            .Content
-                                            .Fields
-                                            .Select(x => x.Name);
-            var filterValue = ConfigurationControls.SalesforceObjectFilter.Value;
+            var salesforceObjectFields = Storage
+                .FirstCrate<FieldDescriptionsCM>(x => x.Label == QueryFilterCrateLabel)
+                .Content
+                .Fields;
+
+            var filterValue = ActivityUI.SalesforceObjectFilter.Value;
             var filterDataDTO = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(filterValue);
             //If without filter, just get all selected objects
             //else prepare SOQL query to filter the objects based on the filter conditions
             var parsedCondition = string.Empty;
             if (filterDataDTO.Count > 0)
             {
-                parsedCondition = ParseConditionToText(filterDataDTO);
+                parsedCondition = FilterConditionHelper.ParseConditionToText(filterDataDTO);
             }
 
-            var resultObjects = await _salesforceManager.Query(salesforceObject.ToEnum<SalesforceObjectType>(), salesforceObjectFields, parsedCondition, AuthorizationToken);
-            CurrentPayloadStorage.Add(Crate<StandardTableDataCM>.FromContent(RuntimeDataCrateLabel, resultObjects, AvailabilityType.RunTime));
+            var resultObjects = await _salesforceManager
+                .Query(
+                    salesforceObject.ToEnum<SalesforceObjectType>(),
+                    salesforceObjectFields,
+                    parsedCondition,
+                    AuthorizationToken
+                );
+
+            Payload.Add(
+                Crate<StandardTableDataCM>
+                    .FromContent(
+                        RuntimeDataCrateLabel,
+                        resultObjects,
+                        AvailabilityType.RunTime
+                    )
+                );
         }
     }
 }

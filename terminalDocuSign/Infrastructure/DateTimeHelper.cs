@@ -7,11 +7,10 @@ namespace terminalDocuSign.Infrastructure
     {
         public static DateTime? Parse(string value)
         {
-            if (value == null)
+            if (string.IsNullOrWhiteSpace(value))
             {
                 return null;
             }
-
             return DateTime.Parse(value, CultureInfo.InvariantCulture);
         }
     }

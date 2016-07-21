@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Linq;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
 using Hub.StructureMap;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
-using UtilitiesTesting.Fixtures;
-using UtilitiesTesting;
+using Fr8.Testing.Unit.Fixtures;
+using Fr8.Testing.Unit;
+
 
 namespace HubTests.Managers
 {
@@ -47,8 +48,9 @@ namespace HubTests.Managers
         //
         //        }
 
-
-        [Test]
+/*
+        [Test, Ignore]
+        [Obsolete("AddLogMessage is not used by anywhere on code, it is just used by this test")]
         public void CanAddLogMessageToContainerDO()
         {
             // Arrange
@@ -58,7 +60,7 @@ namespace HubTests.Managers
             var curCrateDTOContents = "{\"Item\":[{\"Name\":\"LogItemDTO1\",\"PrimaryCategory\":\"Container\",\"SecondaryCategory\":\"LogItemDTO Generator\",\"Activity\":\"Add Log Message\",\"Data\":\"\"}],\"ManifestType\":13,\"ManifestId\":13,\"ManifestName\":\"Standard Logging Crate\"}";
 
             //Act
-            _crateManager.AddLogMessage(curLabel, curLogItemList, curContainerDO);
+            //_crateManager.AddLogMessage(curLabel, curLogItemList, curContainerDO.);
             var updatedCrate = _crateManager.GetStorage(curContainerDO.CrateStorage).FirstCrateOrDefault<StandardLoggingCM>(x => x.Label == curLabel);
 
             //Assert
@@ -85,7 +87,7 @@ namespace HubTests.Managers
 
             Assert.AreEqual(eq, curLogItemList.Count);
         }
-
+        */
         [Test]
         public void FromNullCrateStorageDTO_ReturnsEmptyStorage()
         {
@@ -96,14 +98,6 @@ namespace HubTests.Managers
         public void IsEmptyStorageWithNull_ReturnsTrue()
         {
             Assert.IsTrue(_crateManager.IsEmptyStorage(null));
-        }
-
-        [Test]
-        public void MergeContentFields_ReturnsStandardDesignTimeFieldsMS()
-        {
-            var result = _crateManager.MergeContentFields(FixtureData.TestCrateDTO1());
-            Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Fields.Count);
         }
 
         [Test]
@@ -135,7 +129,7 @@ namespace HubTests.Managers
         {
             var crate = Crate.FromContent("test", TestManifest());
 
-            crate.Get<FieldDescriptionsCM>();
+            crate.Get<KeyValueListCM>();
         }
 
         [Test]
@@ -143,7 +137,7 @@ namespace HubTests.Managers
         {
             var crate = Crate.FromContent("test", TestManifest());
 
-            Assert.IsTrue(crate.IsOfType<FieldDescriptionsCM>());
+            Assert.IsTrue(crate.IsOfType<KeyValueListCM>());
         }
 
         [Test]
@@ -169,7 +163,7 @@ namespace HubTests.Managers
                     x.Id == dto.Id &&
                     x.ManifestType.Type == dto.ManifestType &&
                     x.ManifestType.Id == dto.ManifestId &&
-                    IsEquals(x.Get<FieldDescriptionsCM>(), dto.Contents.ToObject<FieldDescriptionsCM>())));
+                    IsEquals(x.Get<KeyValueListCM>(), dto.Contents.ToObject<KeyValueListCM>())));
             }
         }
 
@@ -215,8 +209,8 @@ namespace HubTests.Managers
             Assert.AreEqual(crate.Label, crateDto.Label);
             Assert.AreEqual(crate.ManifestType.Type, crateDto.ManifestType);
             Assert.AreEqual(crate.ManifestType.Id, crateDto.ManifestId);
-            Assert.AreEqual(crate.Get<FieldDescriptionsCM>().Fields[0].Key, "key");
-            Assert.AreEqual(crate.Get<FieldDescriptionsCM>().Fields[0].Value, "value");
+            Assert.AreEqual(crate.Get<KeyValueListCM>().Values[0].Key, "key");
+            Assert.AreEqual(crate.Get<KeyValueListCM>().Values[0].Value, "value");
         }
 
         [Test]
@@ -241,29 +235,7 @@ namespace HubTests.Managers
 
             CheckStorageDTOs(newCrateStorageDto, activityDto.CrateStorage);
         }
-
-        [Test]
-        public void TransformStandardTableDataToStandardPayloadData_ShouldProcessFirstRowAndHaveCorrectKeys()
-        {
-            var payload = _crateManager.TransformStandardTableDataToStandardPayloadData("Some type", GetTestTable());
-            Assert.AreEqual("SerbianWord", payload.PayloadObjects[0].PayloadObject[0].Key);
-            Assert.AreEqual("Pouzdan", payload.PayloadObjects[0].PayloadObject[0].Value);
-            Assert.AreEqual("EnglishWord", payload.PayloadObjects[0].PayloadObject[1].Key);
-            Assert.AreEqual("Reliable", payload.PayloadObjects[0].PayloadObject[1].Value);
-            Assert.AreEqual(2, payload.PayloadObjects.Count());
-        }
-
-        [Test]
-        public void TransformStandardTableDataToStandardPayloadData_ShouldNotProcessFirstRow()
-        {
-            var payload = _crateManager.TransformStandardTableDataToStandardPayloadData("Some type", GetTestTableWithHeaders());
-            Assert.AreEqual("SerbianWord", payload.PayloadObjects[0].PayloadObject[0].Key);
-            Assert.AreEqual("Pouzdan", payload.PayloadObjects[0].PayloadObject[0].Value);
-            Assert.AreEqual("EnglishWord", payload.PayloadObjects[0].PayloadObject[1].Key);
-            Assert.AreEqual("Reliable", payload.PayloadObjects[0].PayloadObject[1].Value);
-            Assert.AreEqual(2, payload.PayloadObjects.Count());
-        }
-
+        
         [Test]
         public void UpdateStorageStringRewrite_Works()
         {
@@ -273,8 +245,7 @@ namespace HubTests.Managers
 
             var newCrateStorageDto = GetKnownManifestsStorageDto("newValue");
             var newCrateStorage = _crateManager.FromDto(newCrateStorageDto);
-
-            using (var crateStorage = _crateManager.GetUpdatableStorage(actionDo))
+            using (var crateStorage = Hub.Managers.CrateManagerExtensions.GetUpdatableStorage( _crateManager ,actionDo))
             {
                 crateStorage.Clear();
 
@@ -300,33 +271,33 @@ namespace HubTests.Managers
             }
         }
 
-        private static bool IsEquals(FieldDescriptionsCM a, FieldDescriptionsCM b)
+        private static bool IsEquals(KeyValueListCM a, KeyValueListCM b)
         {
             if (ReferenceEquals(a, b))
             {
                 return true;
             }
 
-            if (a.Fields == null && b.Fields == null)
+            if (a.Values == null && b.Values == null)
             {
                 return true;
             }
 
-            if (a.Fields == null || b.Fields == null)
+            if (a.Values == null || b.Values == null)
             {
                 return false;
             }
 
-            if (a.Fields.Count != b.Fields.Count)
+            if (a.Values.Count != b.Values.Count)
             {
                 return false;
             }
 
-            foreach (var fieldDto in a.Fields)
+            foreach (var fieldDto in a.Values)
             {
                 var field = fieldDto;
 
-                if (!b.Fields.Any(x => x.Key == field.Key && x.Value == field.Value))
+                if (!b.Values.Any(x => x.Key == field.Key && x.Value == field.Value))
                 {
                     return false;
                 }

@@ -20,6 +20,7 @@ module dockyard.directives.dropDownListBox {
         toggleDropDown: (select) => void;
         focusOutSet: (focusElem: any) => void;
         reconfigure: () => void;
+        isDisabled: string;
     }
 
     export function DropDownListBox(): ng.IDirective {
@@ -34,14 +35,26 @@ module dockyard.directives.dropDownListBox {
                 };
 
                 $scope.setSelectedItem = (item: model.DropDownListItem) => {
-                    $scope.field.value = item.value;
-                    $scope.field.selectedKey = item.key;
+                  
+                    let field = {
+                        value: null,
+                        key: null
+                    };
+                    if (item) {
+                        field = {
+                            value: item.value,
+                            key: item.key
+                        };
+                    }
+                    $scope.field.value = field.value;
+                    $scope.field.selectedKey = field.key;
                     $scope.selectedItem = item;
 
                     // Invoke onChange event handler
                     if ($scope.change != null && angular.isFunction($scope.change)) {
                         $scope.change()($scope.field);
                     }
+                    
                 };
 
                 // parameter isSilent is for to show the error messages or not
@@ -70,18 +83,20 @@ module dockyard.directives.dropDownListBox {
                         .then((data: model.IncomingCratesDTO) => {
                             var listItems: Array<model.DropDownListItem> = [];
 
-                                angular.forEach(data.availableFields, (it) => {
+                            angular.forEach(data.availableCrates, (ct) => {
+                                angular.forEach(ct.fields, (f) => {
                                     var i, j;
                                     var found = false;
                                     for (i = 0; i < listItems.length; ++i) {
-                                        if (listItems[i].key === it.key) {
+                                        if (listItems[i].key === f.key) {
                                             found = true;
                                             break;
                                         }
                                     }
                                     if (!found) {
-                                        listItems.push(<model.DropDownListItem>it);
+                                        listItems.push(<model.DropDownListItem>f);
                                     }
+                                });
                             });
 
                             listItems.sort((x, y) => {
@@ -106,6 +121,11 @@ module dockyard.directives.dropDownListBox {
                 $scope.toggle = false;
 
                 $scope.toggleDropDown = $select => {
+
+                        // added by Tony
+                    if ($scope.isDisabled) {
+                        return false;
+                    }
 
                     if (!$scope.focusOutSet) {
                         var focusElem = angular.element($select.focusInput);
@@ -188,7 +208,8 @@ module dockyard.directives.dropDownListBox {
                 currentAction: '=',
                 field: '=',
                 change: '&',
-                click: '&'
+                click: '&',
+                isDisabled: '='
             }
         };
     }

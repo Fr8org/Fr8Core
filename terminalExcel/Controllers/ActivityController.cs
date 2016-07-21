@@ -1,27 +1,13 @@
-﻿using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
-using Data.Entities;
-using TerminalBase.BaseClasses;
-using System.Collections.Generic;
-using Data.States;
-using System;
-using System.Threading.Tasks;
-using AutoMapper;
-using TerminalBase.Infrastructure;
+﻿using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 
 namespace terminalExcel.Controllers
 {
-    [RoutePrefix("activities")]
-    public class ActivityController : BaseTerminalController
+    public class ActivityController : DefaultActivityController
     {
-        private const string curTerminal = "terminalExcel";
-
-        [HttpPost]
-        [fr8TerminalHMACAuthenticate(curTerminal)]
-        [Authorize]
-        public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
+        public ActivityController(IActivityExecutor activityExecutor)
+            : base(activityExecutor)
         {
-            return HandleFr8Request(curTerminal, actionType, curDataDTO);
         }
     }
 }

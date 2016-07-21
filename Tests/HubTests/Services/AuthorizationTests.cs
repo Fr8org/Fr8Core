@@ -1,23 +1,18 @@
 ﻿using System;
 using System.Linq;
-using Data.Crates;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
 using Hub.StructureMap;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
-using UtilitiesTesting.Fixtures;
-using Hub.Managers.APIManagers.Transmitters.Restful;
+using Fr8.Testing.Unit.Fixtures;
 using System.Threading.Tasks;
 using Moq;
 using Hub.Services;
 using System.Collections.Generic;
 using Data.Interfaces;
-using UtilitiesTesting;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Testing.Unit;
 
 namespace HubTests.Services
 {
@@ -59,7 +54,7 @@ namespace HubTests.Services
 
                 var response = JsonConvert.SerializeObject(authorizationToken);
                 var restfulServiceClient = new Mock<IRestfulServiceClient>();
-                restfulServiceClient.Setup(r => r.PostAsync<CredentialsDTO>(new Uri(terminal.Endpoint + "/authentication/internal"),
+                restfulServiceClient.Setup(r => r.PostAsync<CredentialsDTO>(new Uri(terminal.Endpoint + "/authentication/token"),
                         It.Is<CredentialsDTO>(it => it.Username == credentialsDTO.Username
                             && it.Password == credentialsDTO.Password
                             && it.Domain == credentialsDTO.Domain), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories.Security;
@@ -76,8 +74,13 @@ namespace Data.Infrastructure.StructureMap
 
         public void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType)
         {
+            SetDefaultObjectSecurity(dataObjectId.ToString(), dataObjectType);
+        }
+
+        public void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType)
+        {
             var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
-            securityStorageProvider.SetDefaultObjectSecurity(dataObjectId.ToString(), dataObjectType);
+            securityStorageProvider.SetDefaultObjectSecurity(GetCurrentUser(), dataObjectId.ToString(), dataObjectType, Guid.Empty, null);
         }
 
         public bool AuthorizeActivity(PermissionType permissionName, string curObjectId, string curObjectType, string propertyName = null)
@@ -94,7 +97,7 @@ namespace Data.Infrastructure.StructureMap
             //Object Based permission set checks
 
             var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
-            var permissionSets = securityStorageProvider.GetObjectBasedPermissionSetForObject(curObjectId, curObjectType, roles);
+            var permissionSets = securityStorageProvider.GetObjectBasedPermissionSetForObject(curObjectId, curObjectType, Guid.Empty);
 
             var modifyAllData = permissionSets.FirstOrDefault(x => x == (int) PermissionType.ModifyAllObjects);
             var viewAllData = permissionSets.FirstOrDefault(x => x == (int) PermissionType.ViewAllObjects);
@@ -106,6 +109,11 @@ namespace Data.Infrastructure.StructureMap
             if (currentPermission != 0) return true;
 
             return false;
+        }
+
+        public bool UserHasPermission(PermissionType permissionType, string objectType)
+        {
+            return true;
         }
     }
 }

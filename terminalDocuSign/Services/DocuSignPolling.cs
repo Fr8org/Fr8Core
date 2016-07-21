@@ -1,91 +1,48 @@
-﻿using Data.Control;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
-using DocuSign.eSign.Api;
+﻿using DocuSign.eSign.Api;
 using DocuSign.eSign.Client;
-using DocuSign.eSign.Model;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using Data.Validations;
-using terminalDocuSign.DataTransferObjects;
-using terminalDocuSign.Services.NewApi;
-using StructureMap;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.Infrastructure;
-using Utilities.Configuration.Azure;
 using terminalDocuSign.Infrastructure;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using System.Threading.Tasks;
-using Hub.Managers;
-using Hangfire;
-using System.Web.Http.Results;
-using Nito.AsyncEx;
-using Hangfire.States;
-using Hangfire.Common;
-using Hangfire.Server;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Services;
 
 namespace terminalDocuSign.Services
 {
     public class DocuSignPolling
     {
-        private IDocuSignManager _docuSignManager;
-        private IHubCommunicator _hubCommunicator;
-        private IRestfulServiceClient _restfulServiceClient;
-        private ICrateManager _crateManager;
+        private readonly IDocuSignManager _docuSignManager;
+        private readonly IHubEventReporter _reporter;
 
-        public DocuSignPolling()
+        public DocuSignPolling(IDocuSignManager docuSignManager,  IHubEventReporter reporter)
         {
-            _hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
-            _docuSignManager = ObjectFactory.GetInstance<IDocuSignManager>();
-            _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
-            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
-            _hubCommunicator.Configure("terminalDocuSign");
+            _docuSignManager = docuSignManager;
+            _reporter = reporter;
         }
 
-        public void SchedulePolling(string externalAccountId, string curFr8UserId)
+        public void SchedulePolling(IHubCommunicator hubCommunicator, string externalAccountId)
         {
             string pollingInterval = CloudConfigurationManager.GetSetting("terminalDocuSign.PollingInterval");
-            var jobId = GetSchedulledJobId(externalAccountId);
-            RecurringJob.AddOrUpdate(jobId, () => LaunchScheduledActivity(externalAccountId, curFr8UserId, pollingInterval), "*/" + pollingInterval + " * * * *", null, "terminal_docusign");
+            hubCommunicator.ScheduleEvent(externalAccountId, pollingInterval);
         }
 
-        [Queue("terminal_docusign")]
-        public void LaunchScheduledActivity(string externalAccountId, string curFr8UserId, string pollingInterval)
+        public async Task<PollingDataDTO> Poll(PollingDataDTO pollingData)
         {
-
-            //http://stackoverflow.com/questions/9343594/how-to-call-asynchronous-method-from-synchronous-method-in-c
-            var success = AsyncContext.Run(() => Poll(externalAccountId, curFr8UserId, pollingInterval));
-            if (!success)
-            {
-                RecurringJob.RemoveIfExists(GetSchedulledJobId(externalAccountId));
-            }
-        }
-
-        public string GetSchedulledJobId(string externalAccountId)
-        {
-            return externalAccountId.GetHashCode().ToString();
-        }
-
-        public async Task<bool> Poll(string externalAccountId, string curFr8UserId, string pollingInterval)
-        {
-            AuthorizationTokenDTO authtoken = await _hubCommunicator.GetAuthToken(externalAccountId, curFr8UserId);
-            if (authtoken == null) return false;
-
-            var authTokenDO = new AuthorizationTokenDO() { Token = authtoken.Token };
-            var config = _docuSignManager.SetUp(authTokenDO);
+            var config = _docuSignManager.SetUp(pollingData.AuthToken);
             EnvelopesApi api = new EnvelopesApi((Configuration)config.Configuration);
             List<DocuSignEnvelopeCM_v2> changed_envelopes = new List<DocuSignEnvelopeCM_v2>();
 
             // 1. Poll changes
 
             var changed_envelopes_info = api.ListStatusChanges(config.AccountId, new EnvelopesApi.ListStatusChangesOptions()
-            { fromDate = DateTime.UtcNow.AddMinutes(-Convert.ToInt32(pollingInterval)).ToString("o") });
+            { fromDate = DateTime.UtcNow.AddMinutes(-Convert.ToInt32(pollingData.PollingIntervalInMinutes)).ToString("o") });
             foreach (var envelope in changed_envelopes_info.Envelopes)
             {
                 var envelopeCM = new DocuSignEnvelopeCM_v2()
@@ -93,8 +50,10 @@ namespace terminalDocuSign.Services
                     EnvelopeId = envelope.EnvelopeId,
                     Status = envelope.Status,
                     StatusChangedDateTime = DateTime.Parse(envelope.StatusChangedDateTime),
-                    ExternalAccountId = JToken.Parse(authTokenDO.Token)["Email"].ToString(),
+                    ExternalAccountId = JToken.Parse(pollingData.AuthToken)["Email"].ToString(),
                 };
+
+                changed_envelopes.Add(envelopeCM);
             }
 
             // 2. Check if we processed these envelopes before and if so - retrieve them
@@ -109,18 +68,24 @@ namespace terminalDocuSign.Services
             // 5. Push envelopes to event controller
             await PushEnvelopesToTerminalEndpoint(envelopesToNotify);
 
-            return true;
+            pollingData.Result = true;
+            return pollingData;
         }
-
-
+        
         private async Task PushEnvelopesToTerminalEndpoint(IEnumerable<DocuSignEnvelopeCM_v2> envelopesToNotify)
         {
             foreach (var envelope in envelopesToNotify)
             {
-                var crate = _crateManager.ToDto(Data.Crates.Crate.FromContent("Polling Event", envelope));
-                string publishUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint") + "/terminals/terminalDocuSign/events";
-                var uri = new Uri(publishUrl, UriKind.Absolute);
-                await _restfulServiceClient.PostAsync<CrateDTO>(new Uri(publishUrl, UriKind.Absolute), crate, null);
+                var eventReportContent = new EventReportCM
+                {
+                    EventNames = DocuSignEventParser.GetEventNames(envelope),
+                    ContainerDoId = "",
+                    EventPayload = new CrateStorage(Crate.FromContent("DocuSign Connect Event", envelope)),
+                    Manufacturer = "DocuSign",
+                    ExternalAccountId = envelope.ExternalAccountId
+                };
+                
+                await _reporter.Broadcast(Crate.FromContent("Standard Event Report", eventReportContent));
             }
         }
 

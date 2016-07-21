@@ -1,17 +1,13 @@
-﻿using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using HealthMonitor.Utility;
+﻿using System.Linq;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
 using terminalFr8CoreTests.Fixtures;
-using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 
 namespace terminalFr8CoreTests.Integration
 {
@@ -39,7 +35,7 @@ namespace terminalFr8CoreTests.Integration
         {
             Assert.AreEqual(2, control.Controls.Count);
 
-            Assert.IsTrue(control.Controls[0] is TextBlock);
+            Assert.IsTrue(control.Controls[0] is TextBox);
             Assert.AreEqual("Connection String", control.Controls[0].Label);
             Assert.AreEqual("ConnectionString", control.Controls[0].Name);
             
@@ -51,12 +47,12 @@ namespace terminalFr8CoreTests.Integration
         private void AssertFollowUpCrateTypes(ICrateStorage crateStorage)
         {
             Assert.AreEqual(4, crateStorage.Count);
-            Assert.AreEqual(3, crateStorage.CratesOfType<FieldDescriptionsCM>().Count());
+            Assert.AreEqual(3, crateStorage.CratesOfType<KeyValueListCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             
-            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Sql Table Definitions"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Sql Column Types"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Sql Connection String"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count(x => x.Label == "Sql Table Definitions"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count(x => x.Label == "Sql Column Types"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count(x => x.Label == "Sql Connection String"));
         }
 
         private void AssertConfigureCrate(ICrateStorage crateStorage)
@@ -69,7 +65,7 @@ namespace terminalFr8CoreTests.Integration
 
         private Crate CreateConnectionStringCrate()
         {
-            var control = UtilitiesTesting.Fixtures.FixtureData.TestConnectionString2();
+            var control = Fr8.Testing.Unit.Fixtures.FixtureData.TestConnectionString2();
             control.Name = "ConnectionString";
             control.Label = "Connection String";
 
@@ -78,7 +74,7 @@ namespace terminalFr8CoreTests.Integration
 
         private Crate CreateWrongConnectionStringCrate()
         {
-            var control = UtilitiesTesting.Fixtures.FixtureData.TestConnectionString2();
+            var control = Fr8.Testing.Unit.Fixtures.FixtureData.TestConnectionString2();
             control.Name = "ConnectionString";
             control.Label = "Connection String";
             control.Value = "Wrong connection string";

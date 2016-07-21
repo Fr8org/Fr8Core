@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Hub.Managers.APIManagers.Transmitters.Restful;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Models;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
 using terminalDropbox.Actions;
 using terminalDropboxTests.Fixtures;
-using TerminalBase.Infrastructure;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
+using terminalDropbox.Interfaces;
 
 namespace terminalDropboxTests.Activities
 {
@@ -28,24 +29,34 @@ namespace terminalDropboxTests.Activities
             var restfulServiceClient = new Mock<IRestfulServiceClient>();
             restfulServiceClient.Setup(r => r.GetAsync<PayloadDTO>(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
                 .Returns(Task.FromResult(FixtureData.FakePayloadDTO));
-            ObjectFactory.Configure(cfg => cfg.For<IRestfulServiceClient>().Use(restfulServiceClient.Object));
+
+            var dropboxServiceMock = new Mock<IDropboxService>();
+
+            dropboxServiceMock.Setup(x => x.GetFileList(It.IsAny<AuthorizationToken>())).Returns((AuthorizationToken x) => Task.FromResult(new List<string>()));
+
+            ObjectFactory.Configure(cfg =>
+            {
+                cfg.For<IRestfulServiceClient>().Use(restfulServiceClient.Object);
+                cfg.For<IDropboxService>().Use(dropboxServiceMock.Object);
+            });
+            
 
             _getFileList_v1 = ObjectFactory.GetInstance<Get_File_List_v1>();
-            _getFileList_v1.HubCommunicator.Configure("terminalDropbox");
+            //_getFileList_v1.HubCommunicator.Configure("terminalDropbox");
         }
 
         [Test]
-        public void Initialize_ReturnsActivityDto()
+        public async Task Initialize_ReturnsActivityDto()
         {
             //Arrange
-            var curActivityDO = FixtureData.GetFileListActivityDO();
-            AuthorizationTokenDO tokenDO = FixtureData.DropboxAuthorizationToken();
-
+            var curActivityContext = FixtureData.GetFileListActivityDO();
+            AuthorizationToken tokenDTO = FixtureData.DropboxAuthorizationToken();
+            curActivityContext.AuthorizationToken = tokenDTO;
             //Act
-            var activityDto = _getFileList_v1.Configure(curActivityDO, tokenDO).Result;
+            await _getFileList_v1.Configure(curActivityContext);
 
             // Assert
-            Assert.NotNull(activityDto);
+            Assert.True(curActivityContext.ActivityPayload.CrateStorage.Count > 0);
         }
     }
 }

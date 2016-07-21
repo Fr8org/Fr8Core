@@ -25,7 +25,9 @@ var app = angular.module("app", [
     "ngMaterial",
     "angularResizable",
     "mdColorPicker",
-    "md.data.table"
+    "md.data.table",
+    "popoverToggle",
+    'jsonFormatter'
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */
@@ -78,10 +80,10 @@ app.config(['$mdThemingProvider', ($mdThemingProvider) => {
         'A200': '26a69a',
         'A400': '26a69a',
         'A700': '26a69a',
-        'contrastDefaultColor': 'light',   
-        'contrastDarkColors': ['50', '100', 
+        'contrastDefaultColor': 'light',
+        'contrastDarkColors': ['50', '100',
             '200', '300', '400', 'A100'],
-        'contrastLightColors': undefined    
+        'contrastLightColors': undefined
     });
     $mdThemingProvider.theme('default')
         .primaryPalette('fr8Theme');
@@ -94,10 +96,36 @@ initialization can be disabled and Layout.init() should be called on page load c
 ***/
 
 /* Setup Layout Part - Header */
-app.controller('HeaderController', ['$scope', ($scope) => {
+app.controller('HeaderController', ['$scope', '$http', '$window', '$state', 'TerminalService', 'PlanService', ($scope, $http, $window, $state, TerminalService, PlanService) => {
     $scope.$on('$includeContentLoaded', () => {
         Layout.initHeader(); // init header
     });
+
+    $scope.addPlan = function () {
+        var plan = new dockyard.model.PlanDTO();
+        plan.planState = dockyard.model.PlanState.Inactive;
+        plan.visibility = dockyard.model.PlanVisibility.Standard;
+        var result = PlanService.save(plan);
+
+        result.$promise
+            .then(() => {
+                $state.go('plan.builder', { id: result.plan.id });
+                //window.location.href = 'plans/' + result.plan.id + '/builder';
+            });
+    };
+
+    $scope.terminals = TerminalService.getAll();
+
+    $scope.goToPlanDirectory = function (planDirectoryUrl) {
+        $http.post('/api/authentication/authenticatePlanDirectory', {})
+            .then(function (res) {
+                var token = res.data.token;
+                var url = planDirectoryUrl + '/AuthenticateByToken?token=' + token;
+                $window.open(url, '_blank');
+            });
+    };
+
+    $scope.runManifestRegistryMonitoring = () => { $http.post('/api/manifest_registries/runMonitoring', {}); };
 }]);
 
 /* Setup Layout Part - Footer */
@@ -113,11 +141,11 @@ app.config(['applicationInsightsServiceProvider', function (applicationInsightsS
     //Temporary instr key (for local instances) until the real one is loaded
     applicationInsightsServiceProvider.configure('e08e940f-1491-440c-8d39-f38e9ff053db', options, true);
 
-    $.get('/api/v1/configuration/appinsights').then((appInsightsInstrKey: string) => {
-        console.log(appInsightsInstrKey);
-        if (appInsightsInstrKey.indexOf('0000') == -1) { // if not local instance ('Debug' configuration)
+    $.get('/api/v1/configuration/instrumentation-key').then((instrumentationKey: string) => {
+        console.log(instrumentationKey);
+        if (instrumentationKey.indexOf('0000') == -1) { // if not local instance ('Debug' configuration)
             options = { applicationName: 'HubWeb' };
-            applicationInsightsServiceProvider.configure(appInsightsInstrKey, options, true);
+            applicationInsightsServiceProvider.configure(instrumentationKey, options, true);
         } else {
             // don't send telemetry 
             options = {
@@ -127,14 +155,14 @@ app.config(['applicationInsightsServiceProvider', function (applicationInsightsS
                 autoExceptionTracking: false,
                 sessionInactivityTimeout: 1
             };
-            applicationInsightsServiceProvider.configure(appInsightsInstrKey, options, false);
+            applicationInsightsServiceProvider.configure(instrumentationKey, options, false);
         }
     });
 }]);
 
 
-/* Setup Routing For All Pages */ 
-app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationProvider', ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider, $httpProvider: ng.IHttpProvider, $locationProvider:ng.ILocationProvider) => {
+/* Setup Routing For All Pages */
+app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationProvider', ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider, $httpProvider: ng.IHttpProvider, $locationProvider: ng.ILocationProvider) => {
 
 
     $locationProvider.html5Mode(true);
@@ -142,7 +170,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
     $httpProvider.interceptors.push('fr8VersionInterceptor');
 
     // Install a HTTP request interceptor that causes 'Processing...' message to display
-    $httpProvider.interceptors.push(['$q','$window',($q: ng.IQService, $window: ng.IWindowService) => {
+    $httpProvider.interceptors.push(['$q', '$window', ($q: ng.IQService, $window: ng.IWindowService) => {
         return {
             request: (config: ng.IRequestConfig) => {
                 // Show page spinner If there is no request parameter suppressSpinner.
@@ -160,55 +188,198 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                 return config;
             },
             responseError: (config) => {
-                if (config.status === 403) {
-                    $window.location.href = $window.location.origin + '/DockyardAccount'
-                    + '?returnUrl=/dashboard' + encodeURIComponent($window.location.hash);
-                }
+                //Andrei Chaplygin: not applicable as this is a valid response from methods signalling that user is authorized but doesn't have sufficient priviligies
+                //All unauthorized requests are handled (and redirected to login page) by built-in functionality (authorize attributes)
+                //if (config.status === 403) {
+                //    $window.location.href = $window.location.origin + '/DockyardAccount'
+                //        + '?returnUrl=/dashboard' + encodeURIComponent($windoFw.location.hash);
+                //}
                 Metronic.stopPageLoading();
                 return $q.reject(config);
             }
         }
     }]);
 
+    class ApiRequestCoordinatorService {
+        private configurePattern: string = 'activities/configure';
+        private savePattern: string = 'activities/save';
+        private currentConfigurationRequests: string[] = [];
+
+        // If the function returns false, request must be rejected. If true, the request can proceed.
+        public startRequest(url: string, activityId: string): boolean {
+            if (url.indexOf(this.configurePattern) > -1) {
+                // check if such activity is currently being configured. if so, reject the request.
+                if (this.currentConfigurationRequests.indexOf(activityId) > -1) {
+                    return false;
+                }
+                else {
+                    // if not, add it in the list of configured activities
+                    this.currentConfigurationRequests.push(activityId);
+                }
+            }
+
+            else if (url.indexOf(this.savePattern) > -1) {
+                if (this.currentConfigurationRequests.indexOf(activityId) > -1) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public endRequest(url: string, activityId: string) {
+            if (url.indexOf(this.configurePattern) == -1) return;
+
+            // check if such activity is currently being configured. if so, remove it from the array
+            let idx: number = this.currentConfigurationRequests.indexOf(activityId);
+            if (idx > -1) {
+                this.currentConfigurationRequests.splice(idx, 1);
+            }
+        }
+    }
+
+    app.service('ApiRequestCoordinatorService', [ApiRequestCoordinatorService]);
+
+
+    // Install a HTTP request interceptor that syncronizes Save and Config requests for a single activity.
+    // If a Configure request is currently executing, Save and other Configure requests will be dropped. 
+    // See FR-3475 for rationale. 
+    $httpProvider.interceptors.push(['$q', ($q: ng.IQService) => {
+
+        // Since we cannot reference services from initialization code, we define a nested class and instantiate it. 
+        class ApiRequestCoordinatorService {
+            private configurePattern: string = 'activities/configure';
+            private savePattern: string = 'activities/save';
+            private currentConfigurationRequests: string[] = [];
+
+            // If the function returns false, request must be rejected. If true, the request can proceed.
+            public startRequest(url: string, activityId: string): boolean {
+                if (url.indexOf(this.configurePattern) > -1) {
+                    // check if such activity is currently being configured. if so, reject the request.
+                    if (this.currentConfigurationRequests.indexOf(activityId) > -1) {
+                        return false;
+                    }
+                    else {
+                        // if not, add it in the list of configured activities
+                        this.currentConfigurationRequests.push(activityId);
+                    }
+                }
+
+                else if (url.indexOf(this.savePattern) > -1) {
+                    if (this.currentConfigurationRequests.indexOf(activityId) > -1) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            public endRequest(url: string, activityId: string) {
+                if (url.indexOf(this.configurePattern) == -1) return;
+
+                // check if such activity is currently being configured. if so, remove it from the array
+                let idx: number = this.currentConfigurationRequests.indexOf(activityId);
+                if (idx > -1) {
+                    this.currentConfigurationRequests.splice(idx, 1);
+                }
+            }
+        }
+
+        let apiRequestCoordinatorService = new ApiRequestCoordinatorService();
+
+        return {
+            request: (config) => {
+                // bypass any requests which are not of interest for us
+                if (config.method != 'POST') return config;
+                if (!config.params || !config.params.id) return config;
+                if (!apiRequestCoordinatorService.startRequest(config.url, config.params.id)) {
+                    var canceler = $q.defer();
+                    config.timeout = canceler.promise;
+                    canceler.resolve();
+                }
+                return config;
+            },
+
+            response: (response) => {
+                let config = response.config;
+                if (!config.url) return response;
+                if (!response.data || !response.data.id) return response;
+                apiRequestCoordinatorService.endRequest(config.url, response.data.id)
+                return response;
+            },
+
+            responseError: (response) => {
+                if (!response.url) return $q.reject(response);
+                if (!response.data || !response.data.id) return $q.reject(response);
+                apiRequestCoordinatorService.endRequest(response.url, response.data.id)
+                return $q.reject(response);
+            }
+        }
+    }]);
+
+
     // Redirect any unmatched url
     $urlRouterProvider.otherwise("/myaccount");
 
     $stateProvider
-        .state('myaccount', {
+        .state('myaccount',
+        {
             url: "/myaccount",
             templateUrl: "/AngularTemplate/MyAccountPage",
             data: { pageTitle: 'My Account', pageSubTitle: '' }
         })
-    // Plan list
-        .state('planList', {
+        // Plan list
+        .state('planList',
+        {
             url: "/plans",
             templateUrl: "/AngularTemplate/PlanList",
             data: { pageTitle: 'Plans', pageSubTitle: 'This page displays all Plans' }
         })
 
-    // Plan form
-        .state('planForm', {
-            url: "/plans/add",
-            templateUrl: "/AngularTemplate/PlanForm",
-            data: { pageTitle: 'Plan', pageSubTitle: 'Add a new Plan' }
-        })
-
-    // Plan Builder framework
-        .state('planBuilder', {
-            url: "/plans/{id}/builder?viewMode&view",
+        .state('plan',
+        {
+            abstract: true,
+            url: "/plans/{id}/",
             views: {
+                'header@': {
+                    templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
+                        if ($stateParams['viewMode'] === 'kiosk') {
+                            return "/AngularTemplate/KioskModeOrganizationHeader";
+                        }
+                        return "/AngularTemplate/MiniHeader";
+                    }
+                },
                 'maincontainer@': {
                     templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
                         if ($stateParams['viewMode'] === 'kiosk') {
                             return "/AngularTemplate/MainContainer";
                         }
                         return "/AngularTemplate/MainContainer_AS";
-                    }
-                },
-                '@planBuilder': {
+                    },
+                    controller: 'PlanBuilderController',
+                }
+            }
+        })
+
+        .state('plan.details',
+        {
+            url: "details",
+            views: {
+                '@plan': {
+                    templateUrl: "/AngularTemplate/PlanDetails"
+                }
+            },
+            data: { pageTitle: 'Plan Details', pageSubTitle: '' }
+        })
+
+        // Plan Builder framework
+        .state('plan.builder',
+        {
+            url: "builder?viewMode&view",
+            views: {
+                '@plan': {
                     templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
                         if ($stateParams['viewMode'] === 'kiosk') {
-                            return "/AngularTemplate/PlanBuilder_KioskMode";
+                            return "/AngularTemplate/PlanBuilder_SimpleKioskMode";
                         }
                         return "/AngularTemplate/PlanBuilder";
                     }
@@ -218,121 +389,113 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                         if ($stateParams['viewMode'] === 'kiosk') {
                             return "/AngularTemplate/KioskModeOrganizationHeader";
                         }
-                        return "/AngularTemplate/Header";
+                        return "/AngularTemplate/MiniHeader";
                     }
                 }
             },
-            
+
             data: { pageTitle: '' }
         })
-
-        .state('showIncidents', {
+        .state('showIncidents',
+        {
             url: "/showIncidents",
             templateUrl: "/AngularTemplate/ShowIncidents",
             data: { pageTitle: 'Incidents', pageSubTitle: 'This page displays all incidents' }
         })
-
-        .state('showFacts', {
+        .state('showFacts',
+        {
             url: "/showFacts",
             templateUrl: "/AngularTemplate/ShowFacts",
             data: { pageTitle: 'Facts', pageSubTitle: 'This page displays all facts' },
         })
 
-        .state('planDetails', {
-            url: "/plans/{id}/details",
-            templateUrl: "/AngularTemplate/PlanDetails",
-            data: { pageTitle: 'Plan Details', pageSubTitle: '' }
-        })
 
-    // Manage files
-        .state('managefiles', {
+        // Manage files
+        .state('managefiles',
+        {
             url: "/managefiles",
             templateUrl: "/AngularTemplate/ManageFileList",
             data: { pageTitle: 'Manage Files', pageSubTitle: '' }
         })
-
-        .state('fileDetail', {
+        .state('fileDetail',
+        {
             url: "/managefiles/{id}",
             templateUrl: "/AngularTemplate/FileDetails",
             data: { pageTitle: 'File details', pageSubTitle: '' }
         })
-
-        .state('accounts', {
+        .state('accounts',
+        {
             url: '/accounts',
             templateUrl: '/AngularTemplate/AccountList',
             data: { pageTitle: 'Manage Accounts', pageSubTitle: '' }
         })
-
-        .state('accountDetails', {
+        .state('accountDetails',
+        {
             url: '/accounts/{id}',
             templateUrl: '/AngularTemplate/AccountDetails',
             data: { pageTitle: 'Account Details', pageSubTitle: '' }
         })
-
-        .state('containerDetails', {
+        .state('containerDetails',
+        {
             url: "/container/{id}/details",
             templateUrl: "/AngularTemplate/containerDetails",
             data: { pageTitle: 'Container  Details', pageSubTitle: '' }
         })
-
-        .state('configureSolution', {
+        .state('configureSolution',
+        {
             url: "/solution/{solutionName}",
+            controller: 'PlanBuilderController',
             templateUrl: "/AngularTemplate/PlanBuilder",
             data: { pageTitle: 'Create a Solution', pageSubTitle: '' }
         })
-
-        .state('containers', {
+        .state('containers',
+        {
             url: "/containers",
             templateUrl: "/AngularTemplate/ContainerList",
             data: { pageTitle: 'Containers', pageSubTitle: 'This page displays all Containers ' },
         })
-
-        .state('webservices', {
+        .state('webservices',
+        {
             url: "/webservices",
             templateUrl: "/AngularTemplate/WebServiceList",
             data: { pageTitle: 'Web Services', pageSubTitle: '' }
         })
 
-        .state('findObjects', {
-            url: '/findObjects/create',
-            templateUrl: '/AngularTemplate/FindObjects',
-            data: { pageTitle: 'Constructing Find Objects plan', pageSubTitle: '' }
-        })
-
-        .state('findObjectsResult', {
-            url: '/findObjects/{id}/results',
-            templateUrl: '/AngularTemplate/FindObjectsResults',
-            data: { pageTitle: 'Find Objects results', pageSubTitle: '' }
-        })
 
         .state('terminals', {
             url: "/terminals",
             templateUrl: "/AngularTemplate/TerminalList",
             data: { pageTitle: 'Terminals', pageSubTitle: '' }
         })
-
-        .state('manifestregistry', {
-            url: "/manifestregistry",
+        .state('manifestregistry',
+        {
+            url: "/manifest_registries",
             templateUrl: "/AngularTemplate/ManifestRegistryList",
             data: { pageTitle: 'Manifest Registry', pageSubTitle: '' }
         })
-
-        .state('manageAuthTokens', {
+        .state('manageAuthTokens',
+        {
             url: '/manageAuthTokens',
             templateUrl: '/AngularTemplate/ManageAuthTokens',
             data: { pageTitle: 'Manage Auth Tokens', pageSubTitle: '' }
         })
-
-        .state('changePassword', {
+        .state('changePassword',
+        {
             url: '/changePassword',
             templateUrl: '/AngularTemplate/ChangePassword',
             data: { pageTitle: 'Change Password', pageSubTitle: '' }
         })
-
-        .state('reports', {
+        .state('reports',
+        {
             url: "/reports",
             templateUrl: "/AngularTemplate/PlanReportList",
             data: { pageTitle: 'Reports', pageSubTitle: 'This page displays all Reports' }
+        })
+        .state("pageDefinitions",
+        {
+            url: "/page_definitions",
+            templateUrl: "/AngularTemplate/PageDefinitionList",
+            data: { pageTitle: "Manage Page Definitions", pageSubTitle: "" }
         });
 }]);
 

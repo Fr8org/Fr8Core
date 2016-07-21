@@ -6,8 +6,8 @@ Global Directives
 ***/
 
 'use strict';
- 
-app.directive('autoFocus', ['$timeout',function ($timeout) {
+
+app.directive('autoFocus', ['$timeout', function ($timeout) {
     return {
         restrict: 'AC',
         link: function (_scope, _element) {
@@ -25,9 +25,12 @@ app.filter('parseUrl', () => {
         if (!angular.isString(text)) {
             return text;
         }
-
         if (text.match(urls)) {
-            text = text.replace(urls, "<a href=\"$1\" target=\"_blank\">$1</a>");
+            var indexOfUrl = text.indexOf(text.match(urls)[0]);
+            // if url is inside of a href tag, skip adding href
+            if (text.substring(indexOfUrl - 6, indexOfUrl - 1) != "href=") {
+                text = text.replace(urls, "<a href=\"$1\" target=\"_blank\">$1</a>");
+            }
         }
         return text;
     }
@@ -38,7 +41,7 @@ app.directive('blockIf', function () {
         restrict: 'A',
         link: function (_scope, _element, attrs) {
             var expr = attrs['blockIf'];
-            _scope.$watch(expr, function (value) {
+            _scope.$watch(expr, (value) => {
                 if (attrs['class'] === "plan-loading-message" && _scope.$eval(expr) == null) {
                     Metronic.blockUI({ target: _element, animate: true });
                 }
@@ -52,6 +55,52 @@ app.directive('blockIf', function () {
         }
     };
 });
+
+app.directive('fr8Click', ['$parse', '$timeout',($parse: ng.IParseService, $timeout: ng.ITimeoutService) => {
+    return {
+        restrict: 'A',
+        require: '^paneConfigureAction',
+        compile: ($element: ng.IAugmentedJQuery, attr) => {
+            var fn = $parse(attr['fr8Click']);
+            return (scope, element, attr, pca) => {
+                element.on('click', (event) => {
+
+                    var simulateClick = () => {
+                        var x = event.clientX;
+                        var y = event.clientY;
+                        var ev = document.createEvent("MouseEvent");
+                        var el = document.elementFromPoint(x, y);
+                        ev.initMouseEvent(
+                            "click",
+                            true /* bubble */, true /* cancelable */,
+                            window, null,
+                            x, y, 0, 0, /* coordinates */
+                            false, false, false, false, /* modifier keys */
+                            0 /*left*/, null
+                        );
+                        el.dispatchEvent(ev);
+                    };
+                    var callCallback = () => {
+                        scope.$apply(() => {
+                            fn(scope, { $event: event });
+                        });
+                    };
+                    var checkConfigStatus = () => {
+                        
+                        if (pca.isThereOnGoingConfigRequest()) {
+                            //we need to wait for this to end
+                            pca.notifyOnConfigureEnd(simulateClick);
+                        } else {
+                            callCallback();
+                        }
+                    };
+                    checkConfigStatus();
+                });
+            };
+        }
+    };
+}]);
+
 
 app.directive("checkboxGroup", function () {
     return {
@@ -198,11 +247,13 @@ app.directive('delayedControl', ['$compile', ($compile: ng.ICompileService) => (
     scope: {
         currentAction: '=',
         field: '=',
-        plan: '='
+        plan: '=',
+        change: '='
     },
     template: '',
     link: (scope: ng.IScope, elem: ng.IAugmentedJQuery, attr: ng.IAttributes) => {
-        elem.append("<configuration-control plan='plan' current-action='currentAction' field='field'></configuration-control>");
+
+        elem.append("<configuration-control plan='plan' current-action='currentAction' field='field' change='change'></configuration-control>");
         $compile(elem.contents())(scope);
     }
 })]);
@@ -277,3 +328,51 @@ app.directive('stickyFooter', [
         };
     }
 ]);
+
+app.directive('eventAdd', ['$timeout', '$window', function ($timeout, $window) {
+    return {
+        restrict: 'A',
+        link: function (scope, element) {
+            element.on('click', function () {
+                if ($window.analytics != null) {
+                    $window.analytics.track("Clicked Add Plan Button");
+                }
+            });
+        }
+    };
+}]);
+
+app.directive('eventRun', ['$timeout', '$window', function ($timeout, $window) {
+    return {
+        restrict: 'A',
+        link: function (scope, element) {
+            element.on('click', function () {
+                if ($window.analytics != null) {
+                    $window.analytics.track("Clicked Run Plan Button");
+                }
+            });
+        }
+    };
+}]);
+
+app.directive('eventAuthDialog', ['$timeout', '$window', function ($timeout, $window) {
+    return {
+        restrict: 'A',
+        link: function (scope, element) {
+            if ($window.analytics != null) {
+                $window.analytics.track("Auth Dialog Opened");
+            }
+        }
+    };
+}]);
+
+app.directive('eventPlanbuilder', ['$timeout', '$window', function ($timeout, $window) {
+    return {
+        restrict: 'A',
+        link: function (scope, element) {
+            if ($window.analytics != null) {
+                $window.analytics.page("Visited Page - Plan Builder");
+            }
+        }
+    };
+}]);

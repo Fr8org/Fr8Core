@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
-using Data.Interfaces.DataTransferObjects;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 
 namespace terminalDocuSign.Interfaces
 {
@@ -11,11 +12,11 @@ namespace terminalDocuSign.Interfaces
         /// <summary>
         /// Creates Monitor All DocuSign Events plan with Record DocuSign Events and Store MT Data actions.
         /// </summary>
-        Task CreatePlan_MonitorAllDocuSignEvents(string curFr8UserId, AuthorizationTokenDTO authTokenDTO);
+        Task CreatePlan_MonitorAllDocuSignEvents(IHubCommunicator hubCommunicator, AuthorizationToken authToken);
 
-        void CreateConnect(string curFr8UserId, AuthorizationTokenDTO authTokenDTO);
+        void CreateConnect(IHubCommunicator hubCommunicator, AuthorizationToken authToken);
 
-        void CreateOrUpdatePolling(string curFr8UserId, AuthorizationTokenDTO authTokenDTO);
+        void CreateOrUpdatePolling(IHubCommunicator hubCommunicator, AuthorizationToken authToken);
 
     }
 }

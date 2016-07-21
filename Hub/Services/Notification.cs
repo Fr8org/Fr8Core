@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using StructureMap;
 using Data.Infrastructure;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities;
 using Hub.Interfaces;
-using Utilities;
 
 namespace Hub.Services
 {
@@ -14,11 +11,13 @@ namespace Hub.Services
     {
         private readonly IConfigRepository _configRepository;
 	    private readonly ITime _time;
+        private readonly IPusherNotifier _pusherNotifier;
 
         public Notification()
         {
             _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
 	        _time = ObjectFactory.GetInstance<ITime>();
+            _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
         }
 
         public bool IsInNotificationWindow(string startTimeConfigName, string endTimeConfigName)
@@ -36,5 +35,7 @@ namespace Hub.Services
         {
             EventManager.UserNotification(userId, message, expiresIn);
         }
+
+
     }
 }

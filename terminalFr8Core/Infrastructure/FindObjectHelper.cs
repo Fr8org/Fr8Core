@@ -2,17 +2,13 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Data.Entities;
-using Newtonsoft.Json;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 using TerminalSqlUtilities;
-using TerminalBase.BaseClasses;
-using Utilities.Configuration.Azure;
 
 namespace terminalFr8Core.Infrastructure
 {
@@ -21,12 +17,9 @@ namespace terminalFr8Core.Infrastructure
         private const string DefaultDbProvider = "System.Data.SqlClient";
 
         public async Task<Dictionary<string, DbType>> ExtractColumnTypes(
-            BaseTerminalActivity activity, ActivityDO activityDO)
+            IHubCommunicator hubCommunicator, ActivityContext activityContext)
         {
-            var upstreamCrates = await activity.GetCratesByDirection<FieldDescriptionsCM>(
-                activityDO,
-                CrateDirection.Upstream
-            );
+            var upstreamCrates = await hubCommunicator.GetCratesByDirection<KeyValueListCM>(activityContext.ActivityPayload.Id, CrateDirection.Upstream);
 
             if (upstreamCrates == null) { return null; }
 
@@ -39,7 +32,7 @@ namespace terminalFr8Core.Infrastructure
 
             if (columnTypes == null) { return null; }
 
-            var columnTypeFields = columnTypes.Fields;
+            var columnTypeFields = columnTypes.Values;
             if (columnTypeFields == null) { return null; }
 
             var columnTypeMap = GetColumnTypeMap(columnTypeFields);
@@ -84,16 +77,16 @@ namespace terminalFr8Core.Infrastructure
             });
 
             var fieldsList = tableNames
-                .Select(x => new FieldDTO(x, x))
-                .OrderBy(x => x.Key)
+                .Select(x => new FieldDTO(x))
+                .OrderBy(x => x.Name)
                 .ToList();
 
             return fieldsList;
         }
 
-        public List<FieldDTO> RetrieveColumnDefinitions(string connectionString)
+        public List<KeyValueDTO> RetrieveColumnDefinitions(string connectionString)
         {
-            var fieldsList = new List<FieldDTO>();
+            var fieldsList = new List<KeyValueDTO>();
 
             ListAllDbColumns(connectionString, columns =>
             {
@@ -101,7 +94,7 @@ namespace terminalFr8Core.Infrastructure
                 {
                     var fullColumnName = column.ToString();
 
-                    fieldsList.Add(new FieldDTO()
+                    fieldsList.Add(new KeyValueDTO()
                     {
                         Key = fullColumnName,
                         Value = fullColumnName
@@ -112,9 +105,9 @@ namespace terminalFr8Core.Infrastructure
             return fieldsList;
         }
 
-        public List<FieldDTO> RetrieveColumnTypes(string connectionString)
+        public List<KeyValueDTO> RetrieveColumnTypes(string connectionString)
         {
-            var fieldsList = new List<FieldDTO>();
+            var fieldsList = new List<KeyValueDTO>();
 
             ListAllDbColumns(connectionString, columns =>
             {
@@ -122,7 +115,7 @@ namespace terminalFr8Core.Infrastructure
                 {
                     var fullColumnName = column.ToString();
 
-                    fieldsList.Add(new FieldDTO()
+                    fieldsList.Add(new KeyValueDTO()
                     {
                         Key = fullColumnName,
                         Value = column.DbType.ToString()
@@ -133,7 +126,7 @@ namespace terminalFr8Core.Infrastructure
             return fieldsList;
         }
 
-        public Dictionary<string, DbType> GetColumnTypeMap(List<FieldDTO> columnTypeFields)
+        public Dictionary<string, DbType> GetColumnTypeMap(List<KeyValueDTO> columnTypeFields)
         {
             var columnTypeMap = new Dictionary<string, DbType>();
             foreach (var columnType in columnTypeFields)
@@ -144,7 +137,7 @@ namespace terminalFr8Core.Infrastructure
             return columnTypeMap;
         }
 
-        public List<FieldDTO> MatchColumnsForSelectedObject(string connectionString, string selectedObject)
+        public List<KeyValueDTO> MatchColumnsForSelectedObject(string connectionString, string selectedObject)
         {
             var columnDefinitions = RetrieveColumnDefinitions(connectionString);
             var columnTypes = RetrieveColumnTypes(connectionString);
@@ -156,21 +149,21 @@ namespace terminalFr8Core.Infrastructure
             return result;
         }
 
-        public List<FieldDTO> MatchColumnsForSelectedObject(IEnumerable<FieldDTO> columnDefinitions,
+        public List<KeyValueDTO> MatchColumnsForSelectedObject(IEnumerable<KeyValueDTO> columnDefinitions,
             string selectedObject, IDictionary<string, DbType> columnTypeMap)
         {
             if (columnDefinitions == null || columnTypeMap == null)
             {
-                columnDefinitions = new List<FieldDTO>();
+                columnDefinitions = new List<KeyValueDTO>();
             }
 
             var supportedColumnTypes = new HashSet<DbType>() { DbType.String, DbType.Int32, DbType.Boolean };
 
             // Match columns and filter by supported column type.
-            List<FieldDTO> matchedColumns;
+            List<KeyValueDTO> matchedColumns;
             if (string.IsNullOrEmpty(selectedObject))
             {
-                matchedColumns = new List<FieldDTO>();
+                matchedColumns = new List<KeyValueDTO>();
             }
             else
             {
@@ -182,7 +175,7 @@ namespace terminalFr8Core.Infrastructure
                         var tokens = x.Key.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
                         var columnName = tokens[tokens.Length - 1];
 
-                        return new FieldDTO() { Key = columnName, Value = columnName };
+                        return new KeyValueDTO() { Key = columnName, Value = columnName };
                     })
                     .ToList();
             }

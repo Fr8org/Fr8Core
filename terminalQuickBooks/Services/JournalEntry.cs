@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 using Intuit.Ipp.Data;
-using Intuit.Ipp.DataService;
+using StructureMap;
 using terminalQuickBooks.Interfaces;
 
 namespace terminalQuickBooks.Services
@@ -16,12 +15,13 @@ namespace terminalQuickBooks.Services
     /// </summary>
     public class JournalEntry : IJournalEntry
     {
-        private Connectivity _qbConnectivity;
-        private DataService _dataService;
-        public JournalEntry()
+        private readonly IServiceWorker _serviceWorker;
+
+        public JournalEntry(IServiceWorker serviceWorker)
         {
-            _qbConnectivity = new Connectivity();
+            _serviceWorker = serviceWorker;
         }
+
         /// <summary>
         /// Converts JournalEntry to StandardAccountingTransactionDTO object
         /// </summary>
@@ -65,29 +65,34 @@ namespace terminalQuickBooks.Services
         /// <returns>JournalEntry</returns>
         public Intuit.Ipp.Data.JournalEntry CreateQbJournalEntry(StandardAccountingTransactionDTO curAccountTransactionDTO)
         {
-            var curJournalEntry = new Intuit.Ipp.Data.JournalEntry();
             //Pack Standard Accounting Transaction DTO with data
-            //Add DocNumber
-            curJournalEntry.DocNumber = curAccountTransactionDTO.Name;
-            //Add Date
-            curJournalEntry.TxnDate = curAccountTransactionDTO.TransactionDate;
-            //Add Memo
-            curJournalEntry.PrivateNote = curAccountTransactionDTO.Memo;
+            var curJournalEntry = new Intuit.Ipp.Data.JournalEntry
+            {
+                DocNumber = curAccountTransactionDTO.Name,
+                TxnDate = curAccountTransactionDTO.TransactionDate,
+                PrivateNote = curAccountTransactionDTO.Memo
+            };
+
             var curFinancialLines = curAccountTransactionDTO.FinancialLines;
             var curTransactionList = new List<Line>();
             foreach (var curTransaction in curFinancialLines)
             {
-                var curLineToAdd = new Line();
-                //Add Description
-                curLineToAdd.Description = curTransaction.Description;
-                //Add Account Id
-                curLineToAdd.Id = curTransaction.AccountId;
+                var curLineToAdd = new Line
+                {
+                    Description = curTransaction.Description,
+                    Id = curTransaction.AccountId
+                };
+               
                 //Add Debit or Credit type
-                var curJournalEntryLineDetail = new JournalEntryLineDetail();
-                curJournalEntryLineDetail.PostingType = ParseEnum<PostingTypeEnum>(curTransaction.DebitOrCredit);
+                var curJournalEntryLineDetail = new JournalEntryLineDetail
+                {
+                    PostingType = ParseEnum<PostingTypeEnum>(curTransaction.DebitOrCredit)
+                };
                 //Add AccountRef and add name
-                var curAccountRef = new ReferenceType();
-                curAccountRef.name = curTransaction.AccountName;
+                var curAccountRef = new ReferenceType
+                {
+                    name = curTransaction.AccountName
+                };
                 curJournalEntryLineDetail.AccountRef = curAccountRef;
                 curLineToAdd.AnyIntuitObject = curJournalEntryLineDetail;
                 //Add Amount
@@ -99,15 +104,17 @@ namespace terminalQuickBooks.Services
             curJournalEntry.Line = curLineArray;
             return curJournalEntry;
         }
+
         /// <summary>
         /// Creates Journal Entry in the developers account in Sandbox in Intuit https://sandbox.qbo.intuit.com/app/journal
         /// </summary>
-        /// <param name="StandardAccountingTransactionCM"></param>
-        /// <param name="authTokenDO"></param>
-        public void Create(StandardAccountingTransactionDTO curAccountingTransactionDto, AuthorizationTokenDO authTokenDO)
+        public void Create(
+            StandardAccountingTransactionDTO curAccountingTransactionDto, 
+            AuthorizationToken authToken,
+            IHubCommunicator hubCommunicator)
         {
             var curJournalEntry = CreateQbJournalEntry(curAccountingTransactionDto);
-            var curDataService = _qbConnectivity.GetDataService(authTokenDO);
+            var curDataService = _serviceWorker.GetDataService(authToken, hubCommunicator);
             try
             {
                 curDataService.Add(curJournalEntry);

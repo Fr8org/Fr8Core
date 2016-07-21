@@ -2,21 +2,38 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Control;
-using Data.Crates;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
 using StructureMap;
 using terminalAtlassian.Services;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
 namespace terminalAtlassian.Actions
 {
-    public class Get_Jira_Issue_v1 : EnhancedTerminalActivity<Get_Jira_Issue_v1.ActivityUi>
+    public class Get_Jira_Issue_v1 : TerminalActivity<Get_Jira_Issue_v1.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Id = new Guid("e51bd483-bc63-49a1-a7c4-36e0a14a6235"),
+            Version = "1",
+            Name = "Get_Jira_Issue",
+            Label = "Get Jira Issue",
+            NeedsAuthentication = true,
+            Category = ActivityCategory.Receivers,
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new [] {
+                ActivityCategories.Receive,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public TextSource IssueNumber { get; set; }
@@ -42,51 +59,49 @@ namespace terminalAtlassian.Actions
             }
         }
 
+        private const string RunTimeCrateLabel = "Jira Issue Details";
 
         private readonly AtlassianService _atlassianService;
 
-        public Get_Jira_Issue_v1() : base(true)
+        public Get_Jira_Issue_v1(ICrateManager crateManager, AtlassianService atlassianService) 
+            : base(crateManager)
         {
-            _atlassianService = ObjectFactory.GetInstance<AtlassianService>();
+            _atlassianService = atlassianService;
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        public override async Task Initialize()
         {
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel);
             await Task.Yield();
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        public override async Task FollowUp()
         {
-            var issueKey = ConfigurationControls.IssueNumber.GetValue(CurrentActivityStorage);
+            var issueKey = ActivityUI.IssueNumber.GetValue(Storage);
             if (!string.IsNullOrEmpty(issueKey))
             {
-                var issueFields = _atlassianService.GetJiraIssue(issueKey, AuthorizationToken);
-                CurrentActivityStorage.ReplaceByLabel(CrateJiraIssueDetailsDescriptionCrate(issueFields));
+                var curJiraIssue = await _atlassianService.GetJiraIssue(issueKey, AuthorizationToken);
+                var issueFields = curJiraIssue.Select(x => new FieldDTO(x.Key));
+                CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel).AddFields(issueFields);
+            }
+            await Task.Yield();
+        }
+
+        public override async Task Run()
+        {
+            var issueKey = ActivityUI.IssueNumber.GetValue(Storage);
+            if (!string.IsNullOrEmpty(issueKey))
+            {
+                var issueFields = await _atlassianService.GetJiraIssue(issueKey, AuthorizationToken);
+                Payload.Add(CrateJiraIssueDetailsPayloadCrate(issueFields));
             }
 
             await Task.Yield();
         }
 
-        protected override async Task RunCurrentActivity()
+        private Crate CrateJiraIssueDetailsPayloadCrate(List<KeyValueDTO> curJiraIssue)
         {
-            var issueKey = ConfigurationControls.IssueNumber.GetValue(CurrentActivityStorage);
-            if (!string.IsNullOrEmpty(issueKey))
-            {
-                var issueFields = _atlassianService.GetJiraIssue(issueKey, AuthorizationToken);
-                CurrentPayloadStorage.Add(CrateJiraIssueDetailsPayloadCrate(issueFields));
-            }
-
-            await Task.Yield();
-        }
-
-        private Crate CrateJiraIssueDetailsDescriptionCrate(List<FieldDTO> curJiraIssue)
-        {
-            return Data.Crates.Crate.FromContent("Jira Issue Details", new FieldDescriptionsCM(curJiraIssue), Data.States.AvailabilityType.Configuration);
-        }
-
-        private Crate CrateJiraIssueDetailsPayloadCrate(List<FieldDTO> curJiraIssue)
-        {
-            return Data.Crates.Crate.FromContent("Jira Issue Details", new StandardPayloadDataCM(curJiraIssue), Data.States.AvailabilityType.RunTime);
+            return Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(curJiraIssue), AvailabilityType.RunTime);
         }
     }
 }

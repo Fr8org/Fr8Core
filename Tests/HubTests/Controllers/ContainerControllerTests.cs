@@ -1,23 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Metadata.W3cXsd2001;
-using System.Security.Claims;
-using System.Security.Principal;
 using System.Web.Http.Results;
 using NUnit.Framework;
 using StructureMap;
-using StructureMap.AutoMocking;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using HubTests.Controllers.Api;
-using Hub.Interfaces;
 using HubWeb.Controllers;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
 
 
 namespace HubTests.Controllers
@@ -28,7 +22,7 @@ namespace HubTests.Controllers
     {
         private Fr8AccountDO _testUserAccount;
 
-        private Hub.Interfaces.IContainer _containerService;
+        private Hub.Interfaces.IContainerService _containerServiceService;
 
         [SetUp]
         public override void SetUp()
@@ -36,7 +30,7 @@ namespace HubTests.Controllers
             base.SetUp();
 
             _testUserAccount = FixtureData.TestDockyardAccount5();
-            _containerService = ObjectFactory.GetInstance<Hub.Interfaces.IContainer>();
+            _containerServiceService = ObjectFactory.GetInstance<Hub.Interfaces.IContainerService>();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -80,15 +74,10 @@ namespace HubTests.Controllers
         }
 
         [Test]
-        public void ContainerController_ShouldHaveFr8ApiAuthorizeOnGetIdsByNameMethod()
-        {
-            ShouldHaveFr8ApiAuthorizeOnFunction(typeof(ContainersController), "GetIdsByName");
-        }
-
-        [Test]
         public void ContainerController_ShouldHaveFr8ApiAuthorizeOnGetMethod()
         {
-            ShouldHaveFr8ApiAuthorizeOnFunction(typeof(ContainersController), "Get");
+            ShouldHaveFr8ApiAuthorizeOnFunction(typeof(ContainersController), "Get",Type.EmptyTypes);
+            ShouldHaveFr8ApiAuthorizeOnFunction(typeof(ContainersController), "Get",new[] { typeof(Guid)});
         }
 
         [Test]
@@ -97,7 +86,7 @@ namespace HubTests.Controllers
             //Act
             var containerController = CreateContainerController();
             Addcontainer();
-            Guid? id = FixtureData.TestContainer_Id_55();
+            Guid id = FixtureData.TestContainer_Id_55();
             var actionResult = containerController.Get(id);
             //Assert
             Assert.IsNull(actionResult as OkNegotiatedContentResult<ContainerDO>);
@@ -111,8 +100,7 @@ namespace HubTests.Controllers
             Addcontainer();
 
             //Act
-            Guid? id = null;
-            var actionResult = containerController.Get(id) as OkNegotiatedContentResult<IEnumerable<ContainerDTO>>;
+            var actionResult = containerController.Get() as OkNegotiatedContentResult<IEnumerable<ContainerDTO>>;
 
             ////Assert
             Assert.NotNull(actionResult);
@@ -127,7 +115,7 @@ namespace HubTests.Controllers
             Addcontainer();
 
             //Act
-            Guid? id = FixtureData.TestContainer_Id_1();
+            Guid id = FixtureData.TestContainer_Id_1();
             var actionResult = containerController.Get(id) as OkNegotiatedContentResult<ContainerDTO>;
 
             ////Assert

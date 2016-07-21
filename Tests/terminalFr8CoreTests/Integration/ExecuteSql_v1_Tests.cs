@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using HealthMonitor.Utility;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
 using terminalFr8CoreTests.Fixtures;
-using Hub.Managers;
-using StructureMap.Util;
 
 namespace terminalFr8CoreTests.Integration
 {
@@ -67,7 +63,6 @@ namespace terminalFr8CoreTests.Integration
         [Test]
         public async Task ExecuteSql_Run()
         {
-
             var runUrl = GetTerminalRunUrl();
 
             var dataDTO = FixtureData.ExecuteSql_InitialConfiguration_Fr8DataDTO();
@@ -82,20 +77,20 @@ namespace terminalFr8CoreTests.Integration
                "Sql Query"
             );
 
-            var lstFields = new List<FieldDTO>();
-            lstFields.Add(new FieldDTO() { Key = "Customer.Physician", Value = "String" });
-            lstFields.Add(new FieldDTO() { Key = "Customer.CurrentMedicalCondition", Value = "String" });
+            var lstFields = new List<KeyValueDTO>();
+            lstFields.Add(new KeyValueDTO() { Key = "Customer.Physician", Value = "String" });
+            lstFields.Add(new KeyValueDTO() { Key = "Customer.CurrentMedicalCondition", Value = "String" });
             AddUpstreamCrate(
                 dataDTO,
-                new FieldDescriptionsCM(lstFields),
+                new KeyValueListCM(lstFields),
                 "Sql Column Types"
             );
 
             lstFields.Clear();
-            lstFields.Add(new FieldDTO() { Key = UtilitiesTesting.Fixtures.FixtureData.TestConnectionString2().Value, Value = "value" });
+            lstFields.Add(new KeyValueDTO() { Key = Fr8.Testing.Unit.Fixtures.FixtureData.TestConnectionString2().Value, Value = "value" });
             AddUpstreamCrate(
                 dataDTO,
-                new FieldDescriptionsCM(lstFields),
+                new KeyValueListCM(lstFields),
                 "Sql Connection String"
             );
 

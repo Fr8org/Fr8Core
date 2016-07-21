@@ -1,29 +1,24 @@
-﻿using Google.Apis.Auth.OAuth2;
-using Google.GData.Client;
-using Hub.Managers.APIManagers.Transmitters.Restful;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using StructureMap;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
+﻿using System;
+using System.Net;
 using System.Threading.Tasks;
-using System.Web;
+using Fr8.Infrastructure.Communication;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Utilities.Logging;
+using Google.GData.Client;
+using Newtonsoft.Json.Linq;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
-using Utilities.Configuration.Azure;
 
-namespace terminalGoogle.Services
+namespace terminalGoogle.Services.Authorization
 {
     public class GoogleIntegration : IGoogleIntegration
     {
-
         private readonly IRestfulServiceClient _client;
 
-        public GoogleIntegration()
+        public GoogleIntegration(IRestfulServiceClient serviceClient)
         {
-            _client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+            _client = serviceClient;
         }
 
         public OAuth2Parameters CreateOAuth2Parameters(
@@ -72,13 +67,64 @@ namespace terminalGoogle.Services
             };
         }
 
-        public async Task<string> GetExternalUserId(GoogleAuthDTO authDTO)
+        public GoogleAuthDTO RefreshToken(GoogleAuthDTO googleAuthDTO)
+        {
+            var parameters = CreateOAuth2Parameters(
+                accessToken: googleAuthDTO.AccessToken,
+                refreshToken: googleAuthDTO.RefreshToken);
+            OAuthUtil.RefreshAccessToken(parameters);
+            googleAuthDTO.AccessToken = parameters.AccessToken;
+            googleAuthDTO.Expires = parameters.TokenExpiry;
+            return googleAuthDTO;
+        }
+
+        public async Task<string> GetExternalUserId(GoogleAuthDTO googleAuthDTO)
         {
             var url = CloudConfigurationManager.GetSetting("GoogleUserProfileUrl");
-            url = url.Replace("%TOKEN%", authDTO.AccessToken);
+            url = url.Replace("%TOKEN%", googleAuthDTO.AccessToken);
 
             var jsonObj = await _client.GetAsync<JObject>(new Uri(url));
             return jsonObj.Value<string>("email");
+        }
+
+        /// <summary>
+        /// Checks google token validity
+        /// </summary>
+        /// <param name="googleAuthDTO"></param>
+        /// <returns></returns>
+        public async Task<bool> IsTokenInfoValid(GoogleAuthDTO googleAuthDTO)
+        {
+            try
+            {
+                // Checks token for expiration local
+                if (googleAuthDTO.Expires - DateTime.Now < TimeSpan.FromMinutes(5)
+                    && string.IsNullOrEmpty(googleAuthDTO.RefreshToken))
+                {
+                    var message = "Google access token is expired. Token refresh will be executed";
+                    //EventManager.TokenValidationFailed(JsonConvert.SerializeObject(googleAuthDTO), message);
+                    Logger.LogError(message);
+                    return false;
+                }
+
+                // To validate token, we just need to make a get request to the GoogleTokenInfo url. 
+                // We don't need result of this response, because if token is valid, there are no useful info for us;
+                // if token is invalid, request fails with error code 400 and we catches this error below.
+                var url = CloudConfigurationManager.GetSetting("GoogleTokenInfo");
+                url = url.Replace("%TOKEN%", googleAuthDTO.AccessToken);
+                await _client.GetAsync(new Uri(url));
+                return true;
+            }
+            catch (Exception exception)
+            {
+                if (exception is RestfulServiceException || exception is WebException)
+                {
+                    var message = "Google token validation fails with error: " + exception.Message;
+                    //EventManager.TokenValidationFailed(JsonConvert.SerializeObject(googleAuthDTO), message);
+                    Logger.LogError(message);
+                    return false;
+                }
+                throw;
+            }
         }
     }
 }

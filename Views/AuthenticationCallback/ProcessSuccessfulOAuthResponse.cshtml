@@ -1,7 +1,6 @@
 ﻿@{
     Layout = null;
 }
-@model Data.Interfaces.DataTransferObjects.AuthenticateResponse
 <!DOCTYPE html>
 
 <html>
@@ -14,8 +13,9 @@
         window.opener.postMessage(
             {
                 type: 'external-auth-success',
-                terminalId: @Model.AuthorizationToken.TerminalID,
-                authTokenId: '@Model.AuthorizationToken.Id.ToString()'
+                terminalId: @Model.TerminalId,
+                terminalName: '@Model.TerminalName',
+                authTokenId: '@Model.AuthorizationTokenId.ToString()'
             },
             '*'
         );

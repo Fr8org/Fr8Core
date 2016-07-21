@@ -4,7 +4,7 @@ using Hub.Exceptions;
 using HubTests.Fixtures;
 using NUnit.Framework;
 using StructureMap;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace HubTests.Services
 {
@@ -15,9 +15,6 @@ namespace HubTests.Services
         [Test, Ignore]
         public void ProcessCurrentActivityResponse_WhenErrorExists_ThrowsErrorResponseExceptionAndUsesItsErrorMessage()
         {
-            var container = FixtureData.EmptyContainer();
-            var containerDO = FixtureData.EmptyContainerDO();
-            var activityResponseDTO = FixtureData.ErrorActivityResponseDTOWithErrorMessage();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 try
@@ -37,9 +34,6 @@ namespace HubTests.Services
         [Test, Ignore]
         public void ProcessCurrentActivityResponse_WhenErrorDoesntExist_ThrowsErrorResponseExceptionWithEmptyMessage()
         {
-            var container = FixtureData.EmptyContainer();
-            var containerDO = FixtureData.EmptyContainerDO();
-            var activityResponseDTO = FixtureData.ErrorActivityResponseDTOWithoutErrorMessage();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 try

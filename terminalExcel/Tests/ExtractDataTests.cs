@@ -1,29 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Diagnostics;
-using System.Linq;
-using AutoMapper;
-using Moq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using AutoMapper;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.TerminalBase.Infrastructure;
+using Fr8.TerminalBase.Interfaces;
 using NUnit.Framework;
 using StructureMap;
-using Data.Crates;
-using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.Repositories;
-using Hub.Interfaces;
-using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
-using Utilities;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 using terminalExcel.Actions;
-using terminalExcel.Fixtures;
-using TerminalBase.Infrastructure;
+using terminalExcel.Activities;
 
 namespace terminalExcel.PluginExcelTests
 {
@@ -35,7 +20,6 @@ namespace terminalExcel.PluginExcelTests
 
         public const string filesCommand = "files";
 
-        private IActivity _activity;
         private ICrateManager _crate;
         private FixtureData _fixtureData;
 
@@ -45,8 +29,7 @@ namespace terminalExcel.PluginExcelTests
             base.SetUp();
             TerminalBootstrapper.ConfigureTest();
 
-            _fixtureData = new FixtureData(ObjectFactory.GetInstance<IUnitOfWork>());
-            _activity = ObjectFactory.GetInstance<IActivity>();
+            //_fixtureData = new FixtureData(ObjectFactory.GetInstance<IUnitOfWork>());
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
@@ -61,10 +44,10 @@ namespace terminalExcel.PluginExcelTests
         {
             
             var curActionDTO = new ActivityDTO();
-            var curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
-            var result = new Load_Excel_File_v1().ConfigurationEvaluator(curActivityDO);
+            //var curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
+            //var result = new Load_Excel_File_v1().ConfigurationEvaluator(curActivityDO);
 
-            Assert.AreEqual(result, TerminalBase.Infrastructure.ConfigurationRequestType.Initial);
+            //Assert.AreEqual(result, TerminalBase.Infrastructure.ConfigurationRequestType.Initial);
         }
 
         //[Test]

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Data.Entities;
 
 namespace Data.Repositories.Security.Entities
@@ -24,6 +25,13 @@ namespace Data.Repositories.Security.Entities
         /// Type of the object
         /// </summary>
         public string Type { get; set; }
+
+        /// <summary>
+        /// Fr8 Account that created this. Used in combination with OwnerOfObject Role
+        /// </summary>
+        public string Fr8AccountId { get; set; }
+
+        public int? OrganizationId { get; set; }
 
         /// <summary>
         /// All role permissions of current secured object.

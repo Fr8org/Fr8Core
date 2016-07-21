@@ -7,10 +7,9 @@ using Microsoft.AspNet.Identity;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Validations;
+using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Services;
-using Utilities;
-using Utilities.Logging;
 using HubWeb.ViewModels;
 
 namespace HubWeb.Controllers
@@ -46,7 +45,7 @@ namespace HubWeb.Controllers
                     dockyardAccountDO = uow.UserRepository.GetByKey(userID);
                 }
 
-                var returnVM = new HomeVM { SegmentWriteKey = new ConfigRepository().Get("SegmentWriteKey") };
+                var returnVM = new HomeVM { SegmentWriteKey = Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey") };
 
                 if (dockyardAccountDO != null)
                 {
@@ -144,49 +143,37 @@ namespace HubWeb.Controllers
             return View("~/shared/401.cshtml");
         }
 
-        //Validate emailAddress and meetingInfo then call Generate() parameterized method in BookingRequest controller
-        [HttpPost]
-        public ActionResult ProcessHomePageBookingRequest(string emailAddress, string meetingInfo)
-        {
-            RegexUtilities.ValidateEmailAddress(emailAddress);
-            if (meetingInfo.Trim().Length < 30)
-                return Json(new { Message = "Meeting information must have at least 30 characters" });
-
-            return RedirectToAction("CreateViaHomePage", "BookingRequest", new { emailAddress = emailAddress, meetingInfo = meetingInfo });
-        }
-
         //  EmailAddress  is valid then send mail .    
         // return "success" or  error 
         public async Task<ActionResult> ProcessSubmittedEmail(string name, string emailId, string message)
         {
             string result = "";
+
             try
             {
                 EmailAddressDO emailAddressDO = new EmailAddressDO(emailId);
 
-                RegexUtilities.ValidateEmailAddress(emailAddressDO.Address);
+                RegexUtilities.ValidateEmailAddress(_configRepository, emailAddressDO.Address);
                 using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     _emailAddress.ConvertFromMailAddress(uow, new MailAddress(emailId, name));
                     string toRecipient = _configRepository.Get("CustomerSupportEmail");
                     string fromAddress = emailId;
 
-                    // EmailDO emailDO = email.GenerateBasicMessage(emailAddressDO, message);
                     string subject = "Customer query";
                     await _email.SendAsync(uow, subject, message, fromAddress, toRecipient);
-                    //uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
                     uow.SaveChanges();
                 }
                 result = "success";
             }
-            catch (ValidationException)
+            catch (ValidationException ex)
             {
                 result = "You need to provide a valid Email Address.";
+                Logger.LogWarning("Invalid email provided: " + emailId);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                result = "Something went wrong with our effort to send this message. Sorry! Please try emailing your message directly to info@kwasant.com";
-                //Logger.GetLogger().Error("Error processing a home page email form submission.", ex);
+                result = "Something went wrong with our effort to send this message. Sorry! Please try emailing your message directly to support@fr8.co";
                 Logger.LogError($"Error processing a home page email form submission. Name = {name}; EmailId = {emailId}; Exception = {ex}");
             }
             return Content(result);

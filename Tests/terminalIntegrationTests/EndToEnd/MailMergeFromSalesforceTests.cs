@@ -2,26 +2,30 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using terminalIntegrationTests.Fixtures;
 using terminalSalesforce.Services;
 using Data.Entities;
 using terminalSalesforce.Infrastructure;
-using HealthMonitor.Utility;
-using Data.Interfaces.DataTransferObjects;
-using Hub.Managers;
+using Fr8.Testing.Integration;
 using terminalSalesforce.Actions;
-using Data.Interfaces.Manifests;
-using Data.Crates;
-using Data.Utility;
-using Data.Constants;
-using terminaBaselTests.Tools.Terminals;
-using Data.Control;
+using Fr8.Testing.Integration.Tools.Terminals;
 using Data.States;
 using terminalDocuSign.Services.New_Api;
 using terminalDocuSign.Services;
 using DocuSign.eSign.Api;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Helpers;
+using Fr8.TerminalBase.Models;
+using StructureMap;
+using terminalDocuSign.Actions;
+using Fr8.TerminalBase.Interfaces;
 
 namespace terminalIntegrationTests.EndToEnd
 {
@@ -29,10 +33,20 @@ namespace terminalIntegrationTests.EndToEnd
     public class MailMergeFromSalesforceTests : BaseHubIntegrationTest
     {
         private readonly IntegrationTestTools_terminalDocuSign _docuSignTestTools;
+        private readonly IContainer _container;
 
         public MailMergeFromSalesforceTests()
         {
             _docuSignTestTools = new IntegrationTestTools_terminalDocuSign(this);
+            Mapper.CreateMap<AuthorizationTokenDO, AuthorizationToken>();
+
+            _container = ObjectFactory.Container.CreateChildContainer();
+            _container.Configure(MockedHubCommunicatorConfiguration);
+        }
+
+        public static void MockedHubCommunicatorConfiguration(ConfigurationExpression configuration)
+        {
+            configuration.AddRegistry<MockedHubCommunicatorRegistry>();
         }
 
         public override string TerminalName
@@ -42,10 +56,11 @@ namespace terminalIntegrationTests.EndToEnd
                 return "terminalSalesforce";
             }
         }
-
+        
         [Test, Category("Integration.terminalSalesforce")]
         public async Task MailMergeFromSalesforceEndToEnd()
         {
+          
             await RevokeTokens("terminalDocuSign");
             var salesforceAuthToken = await HealthMonitor_FixtureData.CreateSalesforceAuthToken();
             //Create Case object in Salesforce
@@ -101,13 +116,15 @@ namespace terminalIntegrationTests.EndToEnd
                 //    await HttpDeleteAsync($"{_baseUrl}plans?id={plan.Plan.Id}");
                 //}
             }
+            
         }
 
         private void AssertEnvelopeContents(Guid docuSignTokenId, string expectedName)
         {
-            var configuration = new DocuSignManager().SetUp(_docuSignTestTools.GetDocuSignAuthToken(docuSignTokenId));
+            var token = Mapper.Map<AuthorizationToken>(_docuSignTestTools.GetDocuSignAuthToken(docuSignTokenId));
+            var configuration = new DocuSignManager().SetUp(token);
             //find the envelope on the Docusign Account
-            var folderItems = DocuSignFolders.GetFolderItems(configuration, new DocusignQuery()
+            var folderItems = DocuSignFolders.GetFolderItems(configuration, new DocuSignQuery()
             {
                 Status = "sent",
                 SearchText = expectedName
@@ -134,28 +151,21 @@ namespace terminalIntegrationTests.EndToEnd
                 tokenId = await _docuSignTestTools.AuthenticateDocuSignAndAssociateTokenWithAction(docuSignActivity.Id, GetDocuSignCredentials(), docuSignActivity.ActivityTemplate.Terminal);
                 docuSignActivity = await Configure(docuSignActivity);
             }
-            using (var storage = Crate.GetUpdatableStorage(docuSignActivity))
-            {
-                var controls = storage.FirstCrate<StandardConfigurationControlsCM>();
-                var templateSelector = controls.Content.FindByName<DropDownList>("target_docusign_template");
-                templateSelector.selectedKey = "SendEnvelopeTestTemplate";
-                templateSelector.Value = "392f63c3-cabb-4b21-b331-52dabf1c2993";
-            }
+            docuSignActivity.UpdateControls<Send_DocuSign_Envelope_v2.ActivityUi>(x => x.TemplateSelector.SelectByKey("SendEnvelopeTestTemplate"));
             //This configuration call will generate text source fields for selected template properties
             docuSignActivity = await Configure(docuSignActivity);
-            using (var storage = Crate.GetUpdatableStorage(docuSignActivity))
+            docuSignActivity.UpdateControls<Send_DocuSign_Envelope_v2.ActivityUi>(x =>
             {
-                var controls = storage.FirstCrate<StandardConfigurationControlsCM>();
-                var textSource = controls.Content.FindByName<TextSource>("RolesMappingTestSigner role email");
-                textSource.ValueSource = "upstream";
-                textSource.selectedKey = "SuppliedEmail";
-                textSource.Value = "SuppliedEmail";
+                                                                                      var roleEmailControl = x.RolesFields.First(y => y.Name == "TestSigner role email");
+                                                                                      roleEmailControl.ValueSource = TextSource.UpstreamValueSrouce;
+                                                                                      roleEmailControl.selectedKey = "SuppliedEmail";
+                                                                                      roleEmailControl.Value = "SuppliedEmail";
 
-                textSource = controls.Content.FindByName<TextSource>("RolesMappingTestSigner role name");
-                textSource.ValueSource = "upstream";
-                textSource.selectedKey = "SuppliedName";
-                textSource.Value = "SuppliedName";
-            }
+                                                                                      var roleNameControl = x.RolesFields.First(y => y.Name == "TestSigner role name");
+                                                                                      roleNameControl.ValueSource = TextSource.UpstreamValueSrouce;
+                                                                                      roleNameControl.selectedKey = "SuppliedName";
+                                                                                      roleNameControl.Value = "SuppliedName";
+                                                                                  });
             return new Tuple<ActivityDTO, Guid>(await Save(docuSignActivity), tokenId);
         }
 
@@ -181,32 +191,42 @@ namespace terminalIntegrationTests.EndToEnd
 
         private async Task ApplyAuthTokenToSolution(ActivityDTO solution, AuthorizationTokenDO salesforceAuthToken)
         {
-            var applyToken = new ManageAuthToken_Apply()
+            var applyToken = new AuthenticationTokenGrantDTO()
             {
                 ActivityId = solution.Id,
                 AuthTokenId = salesforceAuthToken.Id,
                 IsMain = true
             };
-            await HttpPostAsync<ManageAuthToken_Apply[], string>(GetHubApiBaseUrl() + "ManageAuthToken/apply", new[] { applyToken });
+            await HttpPostAsync<AuthenticationTokenGrantDTO[], string>(GetHubApiBaseUrl() + "authentication/tokens/grant", new[] { applyToken });
         }
 
         private async Task<PlanDTO> CreatePlan()
         {
-            var solutionCreateUrl = GetHubApiBaseUrl() + "activities/create?solutionName=Mail_Merge_From_Salesforce";
+            var solutionCreateUrl = GetHubApiBaseUrl() + "plans?solution_name=Mail_Merge_From_Salesforce";
             return await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
         }
 
         private async Task<bool> DeleteCase(string caseId, AuthorizationTokenDO authToken)
         {
-            return await new SalesforceManager().Delete(SalesforceObjectType.Case, caseId, authToken);
+            var token = Mapper.Map<AuthorizationToken>(authToken);
+            return await _container.GetInstance<SalesforceManager>().Delete(SalesforceObjectType.Case, caseId, token);
         }
 
         private async Task<Tuple<string, string>> CreateCase(AuthorizationTokenDO authToken)
         {
-            var manager = new SalesforceManager();
+            var token = Mapper.Map<AuthorizationToken>(authToken);
+            var manager = _container.GetInstance<SalesforceManager>();
             var name = Guid.NewGuid().ToString();
             var data = new Dictionary<string, object> { { "SuppliedEmail", TestEmail }, { "SuppliedName", name } };
-            return new Tuple<string, string>(await manager.Create(SalesforceObjectType.Case, data, authToken), name);
+            return new Tuple<string, string>(await manager.Create(SalesforceObjectType.Case, data, token), name);
+        }
+
+        public class MockedHubCommunicatorRegistry : StructureMap.Configuration.DSL.Registry
+        {
+            public MockedHubCommunicatorRegistry()
+            {
+                For<IHubCommunicator>().Use(new Moq.Mock<IHubCommunicator>(Moq.MockBehavior.Default).Object);
+            }
         }
     }
 }

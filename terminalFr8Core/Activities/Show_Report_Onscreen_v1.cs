@@ -1,121 +1,89 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Data.Control;
-using Data.Crates;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
-using Hub.Managers;
-using Newtonsoft.Json;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
+﻿//using System.Collections.Generic;
+//using System.Linq;
+//using System.Threading.Tasks;
+//using Fr8.Infrastructure.Data.Control;
+//using Fr8.Infrastructure.Data.Crates;
+//using Fr8.Infrastructure.Data.DataTransferObjects;
+//using Fr8.Infrastructure.Data.Managers;
+//using Fr8.Infrastructure.Data.Manifests;
+//using Fr8.Infrastructure.Data.States;
+//using Fr8.TerminalBase.BaseClasses;
+//using Newtonsoft.Json;
 
-namespace terminalFr8Core.Actions
-{
-    public class Show_Report_Onscreen_v1 : BaseTerminalActivity
-    {
-        public class ActivityUi : StandardConfigurationControlsCM
-        {
-            [JsonIgnore]
-            public UpstreamDataChooser ReportSelector { get; set; }
+//namespace terminalFr8Core.Activities
+//{
+//    public class Show_Report_Onscreen_v1 : ExplicitTerminalActivity
+//    {
+//        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+//        {
+//            Id = new System.Guid("7fbefa24-44cf-4220-8a3b-04f4e49bbcc8"),
+//            Name = "Show_Report_Onscreen",
+//            Label = "Show Report Onscreen",
+//            Version = "2",
+//            Category = ActivityCategory.Processors,
+//            NeedsAuthentication = false,
+//            MinPaneWidth = 380,
+//            WebService = TerminalData.WebServiceDTO,
+//            Terminal = TerminalData.TerminalDTO
+//        };
+//        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-            public ActivityUi()
-            {
-                Controls = new List<ControlDefinitionDTO>();
+//        public class ActivityUi : StandardConfigurationControlsCM
+//        {
+//            [JsonIgnore]
+//            public UpstreamDataChooser ReportSelector { get; set; }
 
-                Controls.Add((ReportSelector = new UpstreamDataChooser
-                {
-                    Name = "ReportSelector",
-                    Events = new List<ControlEvent> { ControlEvent.RequestConfig },
-                    Label = "Display which table?"
-                }));
+//            public ActivityUi()
+//            {
+//                Controls = new List<ControlDefinitionDTO>();
 
-                Controls.Add(new RunPlanButton());
-            }
-        }
+//                Controls.Add((ReportSelector = new UpstreamDataChooser
+//                {
+//                    Name = "ReportSelector",
+//                    Events = new List<ControlEvent> { ControlEvent.RequestConfig },
+//                    Label = "Display which table?"
+//                }));
 
+//                Controls.Add(new RunPlanButton());
+//            }
+//        }
 
-        private async Task<Data.Crates.Crate> FindTables(ActivityDO curActivityDO)
-        {
-            var fields = new List<FieldDTO>();
+//        public Show_Report_Onscreen_v1(ICrateManager crateManager)
+//            : base(crateManager)
+//        {
+//        }
 
-            foreach (var table in (await GetCratesByDirection<FieldDescriptionsCM>(curActivityDO, CrateDirection.Upstream))
-                                             .Select(x => x.Content)
-                                             .SelectMany(x => x.Fields)
-                                             .Where(x => x.Availability == AvailabilityType.RunTime && x.Value == "Table"))
-            {
-                fields.Add(new FieldDTO(table.Key, table.Key));    
-            }
+//        public override Task Run()
+//        {
+//            var actionUi = new ActivityUi();
+//            actionUi.ClonePropertiesFrom(ConfigurationControls);
 
-            return Data.Crates.Crate.FromContent("Upstream Crate Label List", new FieldDescriptionsCM(fields));
-        }
+//            if (!string.IsNullOrWhiteSpace(actionUi.ReportSelector.SelectedLabel))
+//            {
+//                var reportTable = Payload.CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == actionUi.ReportSelector.SelectedLabel);
 
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.Add(PackControls(new ActivityUi()));
-                crateStorage.Add(await FindTables(curActivityDO));
-            }
+//                if (reportTable != null)
+//                {
+//                    Payload.Add(Crate.FromContent("Sql Query Result", new StandardPayloadDataCM
+//                    {
+//                        PayloadObjects = reportTable.Content.PayloadObjects
+//                    }));
+//                }
+//            }
 
-            return curActivityDO;
-        }
+//            RequestClientActivityExecution("ShowTableReport");
+//            return Task.FromResult(0);
+//        }
 
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.ReplaceByLabel(await FindTables(curActivityDO));
-            }
+//        public override async Task Initialize()
+//        {
+//            Storage.Add(PackControls(new ActivityUi()));
 
-            return curActivityDO;
-        }
+//        }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
-        {
-            var payload = await GetPayload(curActivityDO, containerId);
+//        public override async Task FollowUp()
+//        {
 
-            var configurationControls = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
-
-            if (configurationControls == null)
-            {
-                return Error(payload, "Action was not configured correctly");
-            }
-
-            var actionUi = new ActivityUi();
-
-            actionUi.ClonePropertiesFrom(configurationControls);
-
-            if (!string.IsNullOrWhiteSpace(actionUi.ReportSelector.SelectedLabel))
-            {
-                using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
-                {
-                    var reportTable = crateStorage.CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == actionUi.ReportSelector.SelectedLabel);
-
-                    if (reportTable != null)
-                    {
-                        crateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", new StandardPayloadDataCM
-                        {
-                            PayloadObjects = reportTable.Content.PayloadObjects
-                        }));
-                    }
-                }
-            }
-
-            return ExecuteClientActivity(payload, "ShowTableReport");
-        }
-
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
-        {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            return ConfigurationRequestType.Followup;
-        }
-    }
-}
+//        }
+//    }
+//}

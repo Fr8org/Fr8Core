@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 using Hub.StructureMap;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace HubTests.Managers
 {

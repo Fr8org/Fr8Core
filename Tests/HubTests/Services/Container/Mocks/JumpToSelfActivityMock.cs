@@ -1,6 +1,6 @@
 ﻿using System;
-using Data.Constants;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Managers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace HubTests.Services.Container

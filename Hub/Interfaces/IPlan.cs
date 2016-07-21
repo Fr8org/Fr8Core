@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using System.Threading.Tasks;
-using Data.Crates;
 using Data.States;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
 
 namespace Hub.Interfaces
 {
@@ -14,27 +15,22 @@ namespace Hub.Interfaces
     {
         PlanResultDTO GetForUser(IUnitOfWork uow, Fr8AccountDO account, PlanQueryDTO planQueryDTO, bool isAdmin);
         IList<PlanDO> GetByName(IUnitOfWork uow, Fr8AccountDO account, string name, PlanVisibility visibility);
-        void CreateOrUpdate(IUnitOfWork uow, PlanDO submittedPlan, bool withTemplate);
-        PlanDO Create(IUnitOfWork uow, string name, string category = "");
-        void Delete(IUnitOfWork uow, Guid id);
+        void CreateOrUpdate(IUnitOfWork uow, PlanDO submittedPlan);
+        PlanDO Create(IUnitOfWork uow, string name, string category = "", string ownerId = "", PlanVisibility visibility = PlanVisibility.Standard);
+        PlanDO GetFullPlan(IUnitOfWork uow, Guid id);
+        Task Delete(Guid id);
 
         IList<PlanDO> GetMatchingPlans(string userId, EventReportCM curEventReport);
         Task<ActivateActivitiesDTO> Activate(Guid planId, bool planBuilderActivate);
-        Task<string> Deactivate(Guid curPlanId);
+        Task Deactivate(Guid curPlanId);
 
         PlanDO GetPlanByActivityId(IUnitOfWork uow, Guid planActivityId);
-        //  ActionListDO GetActionList(IUnitOfWork uow, int id);
         List<PlanDO> MatchEvents(List<PlanDO> curPlans, EventReportCM curEventReport);
-
-        PlanDO Copy(IUnitOfWork uow, PlanDO curPlanDO, string name);
+        bool IsMonitoringPlan(IUnitOfWork uow, PlanDO planDo);
+        int? GetPlanState(IUnitOfWork uow, Guid planNodeId);
 
         void Enqueue(Guid curPlanId, params Crate[] curEventReport);
-        void Enqueue(List<PlanDO> curPlans, params Crate[] curEventReport);
-        ContainerDO Create(IUnitOfWork uow, Guid planId, params Crate[] curPayload);
-        Task<ContainerDO> Run(PlanDO curPlan, params Crate[] curPayload);
-        Task<ContainerDO> Run(Guid planId, params Crate[] curPayload);
-        Task<ContainerDO> Run(IUnitOfWork uow, PlanDO curPlan, params Crate[] curPayload);
-        Task<ContainerDO> Continue(Guid containerId);
-        Task<PlanDO> Clone(Guid planId);
+        Task<ContainerDTO> Run(Guid planId, Crate[] payload, Guid? containerId);
+        PlanDO Clone(Guid planId);
     }
 }

@@ -1,34 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 
 namespace Hub.Interfaces
 {
     /// <summary>
-    /// SubPlan service.
+    /// Subplan service.
     /// </summary>
-    public interface ISubPlan
+    public interface ISubplan
     {
-        void Update(IUnitOfWork uow, SubPlanDO subPlan);
-        void Create(IUnitOfWork uow, SubPlanDO subPlan);
+        void Update(IUnitOfWork uow, SubplanDO subplan);
+        void Create(IUnitOfWork uow, SubplanDO subplan);
         Task Delete(IUnitOfWork uow, Guid id);
-        Task<bool> DeleteAllChildNodes(Guid activityId);
-        /// <summary>
-        /// Backups current action and calls configure on downstream actions
-        /// if there are validation errors restores current action and returns false
-        /// </summary>
-        /// <param name="userId">Current user id</param>
-        /// <param name="activityId">Action to delete</param>
-        /// <param name="confirmed">Forces deletion of current action even when there are validation errors</param>
-        /// <returns>Deletion status of action</returns>
-        Task<bool> DeleteActivity(string userId, Guid activityId, bool confirmed);
 
         /// <summary>
-        /// Extract first activity from subplan by SubPlan.Id.
+        /// Extract first activity from subplan by Subplan.Id.
         /// </summary>
-        Task<ActivityDO> GetFirstActivity(IUnitOfWork uow, Guid subPlanId);
+       ActivityDO GetFirstActivity(IUnitOfWork uow, Guid subPlanId);
     }
 }

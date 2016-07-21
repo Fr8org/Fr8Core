@@ -5,19 +5,17 @@ using Data.Entities;
 using StructureMap;
 using Data.Interfaces;
 using Data.States;
-using Data.Interfaces.DataTransferObjects;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
-using Owin;
-using System.Web.Http;
-using System.Web.Http.Dispatcher;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 using System.Collections.Generic;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using Moq;
-using Hub.Managers;
-using Data.Interfaces.Manifests;
-using Data.Crates;
 using AutoMapper;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Interfaces;
+using Hub.Interfaces;
 
 namespace HubTests.Security
 {
@@ -65,7 +63,6 @@ namespace HubTests.Security
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var user = new Fr8Account();
                 var emailAddress = new EmailAddressDO
                 {
                     Address = "tester@gmail.com",
@@ -94,7 +91,6 @@ namespace HubTests.Security
                 };
                 uow.AuthorizationTokenRepository.Add(tokenDO);
 
-                tokenDO.ExpiresAt = DateTime.UtcNow.AddYears(100);
                 tokenDO.Token = Token;
                 uow.SaveChanges();
 
@@ -106,7 +102,7 @@ namespace HubTests.Security
         public void CanGetTokenByUserIdAndTerminalId()
         {
             var tokenDO = CreateAndAddTokenDO();
-            var testToken = _authorization.GetToken(tokenDO.UserDO.Id, tokenDO.TerminalID);
+            var testToken = _authorization.GetToken(tokenDO.UserID, tokenDO.TerminalID);
 
             Assert.AreEqual(Token, testToken);
         }
@@ -131,7 +127,7 @@ namespace HubTests.Security
         public void CanPrepareAuthToken()
         {
             var tokenDO = CreateAndAddTokenDO();
-            tokenDO.Terminal.AuthenticationType = AuthenticationType.Internal;
+           
 
             var activityDTO = new ActivityDTO();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -143,6 +139,8 @@ namespace HubTests.Security
                     "test_description",
                     tokenDO.TerminalID
                 );
+
+                uow.TerminalRepository.GetByKey(tokenDO.TerminalID).AuthenticationType = AuthenticationType.Internal;
                 activityTemplateDO.NeedsAuthentication = true;
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 uow.SaveChanges();
@@ -152,8 +150,8 @@ namespace HubTests.Security
                     Id = FixtureData.GetTestGuidById(23),
                     Description = "HealthDemo Integration Test",
                     Name = "StandardEventTesting",
-                    PlanState = PlanState.Active,
-                    Fr8Account = tokenDO.UserDO
+                    PlanState = PlanState.Running,
+                    Fr8Account = uow.UserRepository.GetByKey(tokenDO.UserID)
                 };
                 uow.PlanRepository.Add(planDO);
                 uow.SaveChanges();
@@ -193,8 +191,7 @@ namespace HubTests.Security
             var tokenDO = CreateAndAddTokenDO();
             var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", "test_description", tokenDO.TerminalID);
             activityTemplateDO.Id = FixtureData.GetTestGuidById(1);
-            activityTemplateDO.Terminal = tokenDO.Terminal;
-            activityTemplateDO.Terminal.AuthenticationType = AuthenticationType.Internal;
+            activityTemplateDO.Terminal = ObjectFactory.GetInstance<ITerminal>().GetByKey(tokenDO.TerminalID);
 
             var activityDO = FixtureData.TestActivity1();
             activityDO.ActivityTemplate = activityTemplateDO;
@@ -202,12 +199,13 @@ namespace HubTests.Security
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                uow.TerminalRepository.GetByKey(tokenDO.TerminalID).AuthenticationType = AuthenticationType.Internal;
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
 
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { activityDO }
                 });
 
@@ -221,14 +219,19 @@ namespace HubTests.Security
                 Domain = "Domain"
             };
 
-            var result = _authorization.AuthenticateInternal(
-               tokenDO.UserDO,
-               tokenDO.Terminal,
-               credentialsDTO.Domain,
-               credentialsDTO.Username,
-               credentialsDTO.Password
-            );
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var user = uow.UserRepository.GetByKey(tokenDO.UserID);
+                var terminal = uow.TerminalRepository.GetByKey(tokenDO.TerminalID);
 
+                var result = _authorization.AuthenticateInternal(
+                    user,
+                    terminal,
+                    credentialsDTO.Domain,
+                    credentialsDTO.Username,
+                    credentialsDTO.Password
+                    );
+            }
             //Assert
             Mock<IRestfulServiceClient> restClientMock = Mock.Get(
                 ObjectFactory.GetInstance<IRestfulServiceClient>()
@@ -237,7 +240,7 @@ namespace HubTests.Security
             //verify that the post call is made 
             restClientMock.Verify(
                 client => client.PostAsync<CredentialsDTO>(
-                new Uri(activityTemplateDO.Terminal.Endpoint + "/authentication/internal"),
+                new Uri(activityTemplateDO.Terminal.Endpoint + "/authentication/token"),
                 It.Is<CredentialsDTO>(it => it.Username == credentialsDTO.Username &&
                                            it.Password == credentialsDTO.Password &&
                                            it.Domain == credentialsDTO.Domain), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()), Times.Exactly(1));
@@ -283,7 +286,6 @@ namespace HubTests.Security
         public void CanGetOAuthInitiationURL()
         {
             var tokenDO = CreateAndAddTokenDO();
-            tokenDO.Terminal.AuthenticationType = AuthenticationType.Internal;
 
             var activityTemplateDO = new ActivityTemplateDO(
                 "test_name", "test_label", "1", "test_description", tokenDO.TerminalID
@@ -295,25 +297,33 @@ namespace HubTests.Security
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                uow.TerminalRepository.GetByKey(tokenDO.TerminalID).AuthenticationType = AuthenticationType.Internal;
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { activityDO }
                 });
                 uow.SaveChanges();
             }
 
-            var result = _authorization.GetOAuthInitiationURL(tokenDO.UserDO, tokenDO.Terminal);
+            TerminalDO terminal;
 
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var user = uow.UserRepository.GetByKey(tokenDO.UserID);
+                 terminal = uow.TerminalRepository.GetByKey(tokenDO.TerminalID);
+                var result = _authorization.GetOAuthInitiationURL(user, terminal);
+            }
             //Assert
             Mock<IRestfulServiceClient> restClientMock = Mock.Get(ObjectFactory.GetInstance<IRestfulServiceClient>());
 
             //verify that the post call is made 
+           
             restClientMock.Verify(
                 client => client.PostAsync(
-                    new Uri(tokenDO.Terminal.Endpoint + "/authentication/initial_url"), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()
+                    new Uri(terminal.Endpoint + "/authentication/request_url"), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()
                 ),
                 Times.Exactly(1)
             );
@@ -350,7 +360,7 @@ namespace HubTests.Security
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { activityDO }
                 });
 
@@ -371,13 +381,12 @@ namespace HubTests.Security
         public void ValidateAuthenticationNeededIsFalse()
         {
             var tokenDO = CreateAndAddTokenDO();
-            tokenDO.Terminal.AuthenticationType = AuthenticationType.Internal;
-
             var activityDO = FixtureData.TestActivity1();
             var activityDTO = new ActivityDTO();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                uow.TerminalRepository.GetByKey(tokenDO.TerminalID).AuthenticationType = AuthenticationType.Internal;
                 var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", "test_description", tokenDO.TerminalID);
                 activityTemplateDO.Id = FixtureData.GetTestGuidById(1);
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
@@ -388,7 +397,7 @@ namespace HubTests.Security
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { activityDO }
                 });
 

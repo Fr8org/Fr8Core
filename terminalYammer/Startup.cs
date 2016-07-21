@@ -5,10 +5,11 @@ using System.Web;
 using Microsoft.Owin;
 using Newtonsoft.Json;
 using Owin;
-using TerminalBase;
-using TerminalBase.BaseClasses;
 using System.Threading.Tasks;
 using System.Web.Http.Dispatcher;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
+using terminalYammer.Actions;
 
 [assembly: OwinStartup(typeof(terminalYammer.Startup))]
 
@@ -16,17 +17,28 @@ namespace terminalYammer
 {
     public class Startup : BaseConfiguration
     {
+        public Startup()
+            : base(TerminalData.TerminalDTO)
+        {
+        }
+
         public void Configuration(IAppBuilder app, bool selfHost)
         {
             ConfigureProject(selfHost, null);
+            SwaggerConfig.Register(_configuration);
             WebApiConfig.Register(_configuration);
             app.UseWebApi(_configuration);
-            StartHosting("terminalYammer");
+            StartHosting();
         }
 
         public void Configuration(IAppBuilder app)
         {
             Configuration(app, false);
+        }
+
+        protected override void RegisterActivities()
+        {
+            ActivityStore.RegisterActivity<Post_To_Yammer_v1>(Post_To_Yammer_v1.ActivityTemplateDTO);
         }
 
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)

@@ -1,13 +1,11 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 using NUnit.Framework;
-using HealthMonitor.Utility;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using terminalAtlassian;
+using Fr8.Testing.Integration;
 using terminalAtlassianTests.Fixtures;
 
 namespace terminalAtlassianTests.Integration
@@ -21,19 +19,19 @@ namespace terminalAtlassianTests.Integration
         }
 
         [Test]
-        public async Task Configure_Initial()
+        public async Task Get_Jira_Issue_v1_Configure_Initial()
         {
             await ConfigureInitial();
         }
 
         [Test]
-        public async Task Configure_FollowUp()
+        public async Task Get_Jira_Issue_v1_Configure_FollowUp()
         {
             await ConfigureFollowUp();
         }
 
         [Test]
-        public async Task Run_CheckPayloadDTO()
+        public async Task Get_Jira_Issue_v1_Run_CheckPayloadDTO()
         {
             var activityDTO = await ConfigureFollowUp();
             activityDTO.AuthToken = HealthMonitor_FixtureData.Jira_AuthToken();
@@ -78,14 +76,14 @@ namespace terminalAtlassianTests.Integration
             Assert.IsNotNull(activityDTO.CrateStorage);
 
             var crateStorage = Crate.FromDto(activityDTO.CrateStorage);
-            Assert.AreEqual(1, crateStorage.Count);
+            Assert.AreEqual(2, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
 
             var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
             Assert.AreEqual(1, controls.Controls.Count);
             Assert.AreEqual("TextSource", controls.Controls[0].Type);
             Assert.AreEqual("IssueNumber", controls.Controls[0].Name);
-
+                
             return activityDTO;
         }
 
@@ -115,10 +113,10 @@ namespace terminalAtlassianTests.Integration
             var crateStorage = Crate.FromDto(activityDTO.CrateStorage);
             Assert.AreEqual(2, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count());
+            Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
 
-            var fieldDescriptions = crateStorage.CrateContentsOfType<FieldDescriptionsCM>().First();
-            Assert.True(fieldDescriptions.Fields.Any(x => x.Key == "Key" && x.Value == "FR-1245"));
+            var fieldDescriptions = crateStorage.CrateContentsOfType<CrateDescriptionCM>().FirstOrDefault().CrateDescriptions[0];
+            Assert.True(fieldDescriptions.Fields.Any(x => x.Name == "Key"));
 
             return activityDTO;
         }

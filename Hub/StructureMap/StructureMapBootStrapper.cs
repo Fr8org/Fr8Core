@@ -1,46 +1,40 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net.Http.Formatting;
-using System.Security.Principal;
-using System.Web;
 using AutoMapper;
 // This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
 using Hub.Managers.APIManagers.Packagers.SendGrid;
 using InternalInterfaces = Hub.Interfaces;
 using Hub.Interfaces;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Authorizers;
-using Hub.Managers.APIManagers.Authorizers.Google;
 using Hub.Managers.APIManagers.Packagers;
 using Hub.Managers.APIManagers.Packagers.SegmentIO;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 // This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
 using InternalClass = Hub.Services;
 using Hub.Services;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Repositories;
 using Hub.ExternalServices;
 using Hub.Security;
 using Moq;
-using SendGrid;
 // This is used to avoid ambiguity between StructureMap.IContainer and  Core.Interfaces.IContainer
 using ExtternalStructureMap = StructureMap;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 using System.Threading.Tasks;
-using Utilities;
-using Utilities.Interfaces;
 using System.Net.Http;
 using Microsoft.ApplicationInsights;
 using System.Linq.Expressions;
 using Castle.DynamicProxy;
-using Data.States;
+using Data.Interfaces;
+using Data.Repositories.Utilization;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities;
 using Hub.Security.ObjectDecorators;
+using Hub.Services.Timers;
 
 namespace Hub.StructureMap
 {
@@ -63,7 +57,7 @@ namespace Hub.StructureMap
                     ObjectFactory.Initialize(x => x.AddRegistry<TestMode>());
                     break;
                 case DependencyType.LIVE:
-                    ObjectFactory.Initialize(x => x.AddRegistry<LiveMode>());
+                    ObjectFactory.Configure(x => x.AddRegistry<LiveMode>());
                     break;
             }
             return ObjectFactory.Container;
@@ -78,21 +72,12 @@ namespace Hub.StructureMap
         {
             configuration.AddRegistry<LiveMode>();
         }
-
-        public class CoreRegistry : Registry
-        {
-            public CoreRegistry()
-            {
-
-            }
-
-
-        }
-
+        
         public class LiveMode : DatabaseStructureMapBootStrapper.LiveMode
         {
             public LiveMode()
             {
+                For<ITerminalDiscoveryService>().Use<TerminalDiscoveryService>().Singleton();
                 For<IConfigRepository>().Use<ConfigRepository>();
                 For<IMappingEngine>().Use(Mapper.Engine);
 
@@ -104,44 +89,44 @@ namespace Hub.StructureMap
                 For<ITracker>().Use<SegmentIO>();
                 For<IIntakeManager>().Use<IntakeManager>();
 
-                For<IOAuthAuthorizer>().Use<GoogleAuthorizer>().Named("Google");
 
                 For<IImapClient>().Use<ImapClientWrapper>();
-
-                For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
-                For<IRestfulServiceClient>().Singleton().Use<RestfulServiceClient>().SelectConstructor(() => new RestfulServiceClient());
                 For<ITerminalTransmitter>().Use<TerminalTransmitter>();
 
                 For<IPlan>().Use<Hub.Services.Plan>().DecorateWith((context, service) => new PlanSecurityDecorator(service, ObjectFactory.GetInstance<ISecurityServices>()));
-                For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
+                For<InternalInterfaces.IContainerService>().Use<InternalClass.ContainerService>();
                 For<InternalInterfaces.IFact>().Use<InternalClass.Fact>();
                 var dynamicProxy = new ProxyGenerator();
                 For<IActivity>().Use<Activity>().Singleton().DecorateWith(z => dynamicProxy.CreateInterfaceProxyWithTarget(z, new AuthorizeActivityInterceptor(ObjectFactory.GetInstance<ISecurityServices>())));
                 For<IPlanNode>().Use<PlanNode>();
                 For<ISubscription>().Use<Subscription>();
-                For<ISubPlan>().Use<SubPlan>();
-                For<IField>().Use<Field>();
+                For<ISubplan>().Use<Subplan>();
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Hub.Services.Event>();
                 For<IActivityTemplate>().Use<ActivityTemplate>().Singleton();
+                For<IActivityCategory>().Use<ActivityCategory>().Singleton();
                 For<IFile>().Use<InternalClass.File>();
                 For<ITerminal>().Use<Terminal>().Singleton();
                 For<ICrateManager>().Use<CrateManager>();
                 For<IReport>().Use<Report>();
-                For<IManifest>().Use<Manifest>();
-                For<IFindObjectsPlan>().Use<FindObjectsPlan>();
+                For<IManifest>().Use<ManifestService>();
                 For<ITime>().Use<Time>();
                 For<IPusherNotifier>().Use<PusherNotifier>();
                 For<IAuthorization>().Use<Authorization>();
                 For<ITag>().Use<Tag>();
                 For<IOrganization>().Use<Organization>();
-
-                For<IHMACAuthenticator>().Use<HMACAuthenticator>();
-                For<IHMACService>().Use<Fr8HMACService>();
+                For<IPageDefinition>().Use<PageDefinition>();
 
                 For<TelemetryClient>().Use<TelemetryClient>();
                 For<IJobDispatcher>().Use<HangfireJobDispatcher>();
                 // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
+                For<IPlanTemplates>().Use<PlanTemplates>();
+                For<IUtilizationMonitoringService>().Use<UtilizationMonitoringService>().Singleton();
+                For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
+                For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
+                For<ITimer>().Use<Win32Timer>();
+                For<IManifestRegistryMonitor>().Use<ManifestRegistryMonitor>().Singleton();
+                
             }
         }
 
@@ -149,7 +134,7 @@ namespace Hub.StructureMap
         {
             public TestMode()
             {
-
+                For<ITerminalDiscoveryService>().Use<TerminalDiscoveryService>().Singleton();
                 For<IConfigRepository>().Use<MockedConfigRepository>();
                 For<IMappingEngine>().Use(Mapper.Engine);
 
@@ -162,16 +147,12 @@ namespace Hub.StructureMap
 
                 For<ISecurityServices>().Use(new MockedSecurityServices());
 
-                For<IOAuthAuthorizer>().Use<GoogleAuthorizer>().Named("Google");
 
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
 
-                var restfulServiceClientMock = new Mock<RestfulServiceClient>(MockBehavior.Default);
-                For<IRestfulServiceClient>().Use(restfulServiceClientMock.Object).Singleton();
-
                 var mockSegment = new Mock<ITracker>();
                 For<ITracker>().Use(mockSegment.Object);
-                For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
+                For<InternalInterfaces.IContainerService>().Use<InternalClass.ContainerService>();
                 For<InternalInterfaces.IFact>().Use<InternalClass.Fact>();
 
                 For<ISubscription>().Use<Subscription>();
@@ -180,8 +161,7 @@ namespace Hub.StructureMap
 
                 For<IPlan>().Use<Hub.Services.Plan>();
 
-                For<ISubPlan>().Use<SubPlan>();
-                For<IField>().Use<Field>();
+                For<ISubplan>().Use<Subplan>();
                 //var mockProcess = new Mock<IProcessService>();
                 //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
                 //For<IProcessService>().Use(mockProcess.Object);
@@ -190,13 +170,14 @@ namespace Hub.StructureMap
                 var terminalTransmitterMock = new Mock<ITerminalTransmitter>();
                 For<ITerminalTransmitter>().Use(terminalTransmitterMock.Object).Singleton();
                 For<IActivityTemplate>().Use<ActivityTemplate>().Singleton();
+                For<IActivityCategory>().Use<ActivityCategory>().Singleton();
                 For<IEvent>().Use<Hub.Services.Event>();
                 //For<ITemplate>().Use<Services.Template>();
                 For<IFile>().Use<InternalClass.File>();
 
                 For<ICrateManager>().Use<CrateManager>();
-                For<IManifest>().Use<Manifest>();
-                For<IFindObjectsPlan>().Use<FindObjectsPlan>();
+
+                For<IManifest>().Use<ManifestService>();
                 For<IAuthorization>().Use<Authorization>();
                 For<IReport>().Use<Report>();
                 var timeMock = new Mock<ITime>();
@@ -207,20 +188,17 @@ namespace Hub.StructureMap
 
                 For<ITag>().Use<Tag>();
                 For<IOrganization>().Use<Organization>();
+                For<IPageDefinition>().Use<PageDefinition>();
 
-                var fr8HMACAuthenticator = new Mock<IHMACAuthenticator>();
-                fr8HMACAuthenticator.Setup(x => x.IsValidRequest(It.IsAny<HttpRequestMessage>(), It.IsAny<string>())).ReturnsAsync(true);
-                var outTerminalId = "testTerminal";
-                var outUserId = "testUser";
-                fr8HMACAuthenticator.Setup(s => s.ExtractTokenParts(It.IsAny<HttpRequestMessage>(), out outTerminalId, out outUserId));
-                For<IHMACAuthenticator>().Use(fr8HMACAuthenticator.Object);
-
-                var fr8HMACService = new Mock<IHMACService>();
-                For<IHMACService>().Use(fr8HMACService.Object);
                 For<TelemetryClient>().Use<TelemetryClient>();
-                For<ITerminal>().Use(new TerminalServiceForTests()).Singleton();
+                For<ITerminal>().Use(x=>new TerminalServiceForTests(x.GetInstance<IConfigRepository>())).Singleton();
                 For<IJobDispatcher>().Use<MockJobDispatcher>();
                 // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
+                For<IPlanTemplates>().Use<PlanTemplates>();
+                For<IUtilizationMonitoringService>().Use<UtilizationMonitoringService>().Singleton();
+                For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
+                For<ITimer>().Use<Win32Timer>();
+                
             }
         }
 
@@ -236,14 +214,19 @@ namespace Hub.StructureMap
         {
             private readonly ITerminal _terminal;
 
-            public TerminalServiceForTests()
+            public TerminalServiceForTests(IConfigRepository configRepository)
             {
-                _terminal = new Terminal();
+                _terminal = new Terminal(configRepository);
             }
 
-            public Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId)
+            public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal, string userId)
             {
-                return Task.FromResult(new TerminalDO());
+                return new Dictionary<string, string>();
+            }
+
+            public Task<TerminalDO> GetByToken(string token)
+            {
+                return _terminal.GetByToken(token);
             }
 
             public IEnumerable<TerminalDO> GetAll()
@@ -270,14 +253,7 @@ namespace Hub.StructureMap
             {
                 return _terminal.GetByKey(terminalId);
             }
-
-            public Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId)
-            {
-                return _terminal.IsUserSubscribedToTerminal(terminalId, userId);
-
-            }
-
-            public Task<List<SolutionPageDTO>> GetSolutionDocumentations(string terminalName)
+            public Task<List<DocumentationResponseDTO>> GetSolutionDocumentations(string terminalName)
             {
                 return _terminal.GetSolutionDocumentations(terminalName);
             }

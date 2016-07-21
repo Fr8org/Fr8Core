@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using terminalSlack.RtmClient.Entities;
 using terminalSlack.RtmClient.Events;
 using WebSocketSharp;
+using Logger = Fr8.Infrastructure.Utilities.Logging.Logger;
 
 namespace terminalSlack.RtmClient
 {
@@ -58,13 +59,9 @@ namespace terminalSlack.RtmClient
 
         private bool _isDisposed;
 
-        private BlockingCollection<EventBase> _outgoingMessages;
-
         private Task<LoginResponse> _connectTask;
 
         private readonly string _oAuthToken;
-
-        private static readonly JsonSerializerSettings DefaultSerializerSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
 
         public SlackRtmClient(string oAuthToken)
         {
@@ -75,7 +72,6 @@ namespace terminalSlack.RtmClient
             if (_connectTask == null)
             {
                 _connectTask = ConnectInternalAsync(token);
-                token.Register(StopOutgoingMessageProcessing);
             }
             return await _connectTask.ConfigureAwait(false);
         }
@@ -89,13 +85,21 @@ namespace terminalSlack.RtmClient
                 var loginResponse = JToken.Parse(responseContent).ToObject<LoginResponse>();
                 _socket = new WebSocket(loginResponse.Url);
                 _socket.OnMessage += SocketOnOnMessage;
-                _outgoingMessages = new BlockingCollection<EventBase>(new ConcurrentQueue<EventBase>());
+                _socket.OnClose += SocketOnOnClose; 
+                _socket.OnError += SocketOnOnError;
                 await Task.Run(() => _socket.Connect(), token).ConfigureAwait(false);
-                //We don't wait for this as this is an infinite processing loop. This is ran in separate task as it will block the running thread if no messages to send
-                //TODO: we currently don't use RTM API to send messages. Turn it on if needed
-                //Task.Run(async () => await RunOutgoingMessageProcessing(token).ConfigureAwait(false), token);
                 return loginResponse;
             }
+        }
+
+        private void SocketOnOnError(object sender, ErrorEventArgs e)
+        {
+            Logger.LogError($"SlackRtmClient: Socket reported an error. Message - {e.Message}. Exception - {e.Exception}. Is connection alive - {(sender as WebSocket).IsAlive}");
+        }
+
+        private void SocketOnOnClose(object sender, CloseEventArgs e)
+        {
+            Logger.LogInfo($"SlackRtmClient: Socket was closed. Code - {e.Code}. Reason - {e.Reason}. WasClean - {e.WasClean}. Is connection alive - {(sender as WebSocket).IsAlive}");
         }
 
         private void SocketOnOnMessage(object sender, MessageEventArgs e)
@@ -122,29 +126,6 @@ namespace terminalSlack.RtmClient
                 eventHandler(this, @event);
             }
         }
-        //Do not delete. This method will be used in case of sending messages via RTM
-        private async Task RunOutgoingMessageProcessing(CancellationToken token)
-        {
-            try
-            {
-                foreach (var message in _outgoingMessages.GetConsumingEnumerable(token))
-                {
-                    var sendOperation = new TaskCompletionSource<bool>();
-                    _socket.SendAsync(EncodeMessage(message), sendOperation.SetResult);
-                    await sendOperation.Task.ConfigureAwait(false);
-                    //TODO: try several times to resend this event if it is not ping
-                }
-            }
-            catch (ObjectDisposedException)
-            {
-                //Do nothing. This means that we decided to dispose object and stop processing
-            }
-        }
-
-        private void StopOutgoingMessageProcessing()
-        {
-            _outgoingMessages?.CompleteAdding();
-        }
 
         private static JToken ParseMessage(string json)
         {
@@ -158,18 +139,12 @@ namespace terminalSlack.RtmClient
             }
         }
 
-        private static string EncodeMessage(EventBase @event)
-        {
-            return JsonConvert.SerializeObject(@event, Formatting.None, DefaultSerializerSettings);
-        }
-
         public async Task DisconnectAsync(CancellationToken token)
         {
             if (_isDisposed)
             {
                 throw new ObjectDisposedException(nameof(SlackRtmClient));
             }
-            _outgoingMessages.CompleteAdding();
             await Task.Run(() => _socket.Close(), token).ConfigureAwait(false);
         }
 
@@ -180,8 +155,6 @@ namespace terminalSlack.RtmClient
                 return;
             }
             _isDisposed = true;
-            StopOutgoingMessageProcessing();
-            _outgoingMessages.Dispose();
             _socket.Close();
         }
 

@@ -3,8 +3,8 @@
     import pwd = dockyard.directives.paneWorkflowDesigner;
 
     export interface IManageAuthTokenScope extends ng.IScope {
-        terminals: Array<interfaces.IManageAuthToken_TerminalVM>;
-        revokeToken: (authToken: model.ManageAuthToken_AuthTokenDTO) => void;
+        terminals: Array<interfaces.IAuthenticationTokenTerminalVM>;
+        revokeToken: (authToken: model.AuthenticationTokenDTO) => void;
     }
 
 
@@ -23,7 +23,7 @@
                 $scope.terminals = ManageAuthTokenService.list();
             };
 
-            $scope.revokeToken = function (authToken: model.ManageAuthToken_AuthTokenDTO) {
+            $scope.revokeToken = function (authToken: model.AuthenticationTokenDTO) {
                 $scope.$emit(
                     pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_LongRunningOperation],
                     new pwd.LongRunningOperationEventArgs(pwd.LongRunningOperationFlag.Started)

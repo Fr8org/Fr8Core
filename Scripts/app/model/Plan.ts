@@ -17,7 +17,8 @@
 
     export enum PlanState {
         Inactive = 1,
-        Active = 2
+        Running = 2,
+        Saving_Changes = 3
     }
 
     export enum PlanVisibility {
@@ -45,4 +46,14 @@
         currentPage: number;
         totalPlanCount: number;
     }
+
+    // TODO: implement FE PlanTemplateDTO
+    //export class PlanTemplateDTO {
+    //    id: string;        
+    //    name: string;
+    //    startingPlanNodeDescriptionId: string;        
+    //    description: string;
+        
+    //    PlanNodeDescriptions: Array<PlanNodeDescriptionDTO>;
+    //}
 }

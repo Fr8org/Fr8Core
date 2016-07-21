@@ -1,16 +1,22 @@
-﻿using Data.Constants;
-using Data.Helpers;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 
-namespace Data.Crates
+namespace Fr8Data.Crates
 {
     public static class CrateStorageExtensions
     {
+        /**********************************************************************************/
+
+        public static Crate<T> Add<T>(this ICrateStorage storage, string label, T content)
+        {
+            var crate = Crate.FromContent(label, content);
+
+            storage.Add(crate);
+
+            return crate;
+        }
+
         /**********************************************************************************/
         /// <summary>
         /// Add collection of crates to storage
@@ -113,7 +119,7 @@ namespace Data.Crates
 
         /**********************************************************************************/
         /// <summary>
-        /// Returns all crates content of the give type.
+        /// Returns all crates content of the given type.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
@@ -203,6 +209,28 @@ namespace Data.Crates
             }
 
             return storage.Remove(x => x.ManifestType == manifestType);
+        }
+
+        /**********************************************************************************/
+        /// <summary>
+        /// Remove all crates with the content of given type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static T GetOrAdd<T>(this ICrateStorage storage, Func<Crate<T>> createNewCrate)
+        {
+            var exising = storage.CrateContentsOfType<T>().FirstOrDefault();
+
+            if (exising == null)
+            {
+                var newCrate = createNewCrate();
+
+                storage.Add(newCrate);
+
+                return newCrate.Content;
+            }
+
+            return exising;
         }
 
         /**********************************************************************************/

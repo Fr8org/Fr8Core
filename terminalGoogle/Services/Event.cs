@@ -1,31 +1,24 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
-using Newtonsoft.Json;
-using StructureMap;
+﻿using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Web;
 using terminalGoogle.Infrastructure;
-using Utilities.Configuration.Azure;
-using Hub.Managers;
-using Data.Crates;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using terminalGoogle.Interfaces;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using Fr8.TerminalBase.Interfaces;
+
 namespace terminalGoogle.Services
 {
     public class Event : IEvent
     {
-        private readonly ICrateManager _crate;
-
-        public Event()
-        {
-            _crate = ObjectFactory.GetInstance<ICrateManager>();
-        }
-
-        public async Task<Crate> Process(string externalEventPayload)
+        public async Task<Crate> Process(IContainer container, string externalEventPayload)
         {
             if (string.IsNullOrEmpty(externalEventPayload))
             {
@@ -33,6 +26,17 @@ namespace terminalGoogle.Services
             }
 
             var payloadFields = ParseGoogleFormPayloadData(externalEventPayload);
+            if(payloadFields.Count == 0)
+            {
+                var jo = (JObject)JsonConvert.DeserializeObject(externalEventPayload);
+                var curFr8UserId = jo["fr8_user_id"].Value<string>();
+                if (!string.IsNullOrEmpty(curFr8UserId))
+                {
+                    var hub = container.GetInstance<IHubCommunicator>();
+                    var plan = new GoogleMTSFPlan(curFr8UserId,hub, "alexed","dev");
+                    await plan.CreateAndActivateNewMTSFPlan();
+                }
+            }
 
             var externalAccountId = payloadFields.FirstOrDefault(x => x.Key == "user_id");
             if (externalAccountId == null || string.IsNullOrEmpty(externalAccountId.Value))
@@ -55,12 +59,12 @@ namespace terminalGoogle.Services
             return curEventReport;
         }
 
-        private List<FieldDTO> ParseGoogleFormPayloadData(string message)
+        private List<KeyValueDTO> ParseGoogleFormPayloadData(string message)
         {
             var tokens = message.Split(
                 new[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
 
-            var payloadFields = new List<FieldDTO>();
+            var payloadFields = new List<KeyValueDTO>();
             foreach (var token in tokens)
             {
                 var nameValue = token.Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
@@ -72,7 +76,7 @@ namespace terminalGoogle.Services
                 var name = HttpUtility.UrlDecode(nameValue[0]);
                 var value = HttpUtility.UrlDecode(nameValue[1]);
 
-                payloadFields.Add(new FieldDTO()
+                payloadFields.Add(new KeyValueDTO()
                 {
                     Key = name,
                     Value = value
@@ -82,10 +86,10 @@ namespace terminalGoogle.Services
             return payloadFields;
         }
 
-        private ICrateStorage WrapPayloadDataCrate(List<FieldDTO> payloadFields)
+        private ICrateStorage WrapPayloadDataCrate(List<KeyValueDTO> payloadFields)
         {
 
-            return new CrateStorage(Data.Crates.Crate.FromContent("Payload Data", new StandardPayloadDataCM(payloadFields)));
+            return new CrateStorage(Crate.FromContent("Payload Data", new StandardPayloadDataCM(payloadFields)));
         }
     }
 }

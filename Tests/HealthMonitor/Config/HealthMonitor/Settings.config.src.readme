@@ -1,0 +1,154 @@
+﻿<?xml version="1.0"?>
+<appSettings>
+  <!-- 
+  ====================================
+  HealthMonitor Configuration File
+  ====================================
+
+  Add your own configuration settings in this file and remove the ".readme" extension from filename.
+
+  You may also need to modify settings in the appSettings section of web.config. 
+
+  Note that all the settings defined in this file cannot take advantage of XML transformation. 
+  If you need a setting to be able to change depending on build configuration (Debug/Release/etc),
+  define it in web.config. 
+
+  This settings file is referenced by HealthMonitor. It combines the settings for the Hub and terminals 
+	and also contains HealthMonitor own settings.
+    
+  This file will be processed by the HealthMonitor post-bulid script Build-Settings.ps1 
+  which will replace the <include> tags with application settings from the specified 
+  configuration files and then save the file without the "src" extension.
+  -->
+
+  <!-- Common settings (these are not copied from the terminal configuration 
+files for predictability) -->
+  <add key="HubApiVersion" value="v1" />
+  <add key="DefaultHubUrl" value="http://localhost:30643/" />
+
+  <!-- Terminal Secret-Id -->
+  <add key="terminalAtlassianTerminalSecret" value="f747e49c-63a8-4a1b-8347-dd2e436c3b36" />
+  <add key="terminalAtlassianTerminalId" value="d770ec3c-975b-4ca8-910e-a55ac43af383" />
+  <add key="terminalAzureTerminalSecret" value="8d3d33d9-a260-46e2-b25a-121f2aba2a54" />
+  <add key="terminalAzureTerminalId" value="e134e36f-9f63-4109-b913-03498d9356b1" />
+  <add key="terminalDocuSignTerminalSecret" value="cc426e06-a42a-4193-9b90-d1122be979a3" />
+  <add key="terminalDocuSignTerminalId" value="ee29c5bc-b9e7-49c5-90e1-b462c7e320e9" />
+  <add key="terminalDropboxTerminalSecret" value="f6e4a687-fc0b-462a-87de-9cb2729d2bc1" />
+  <add key="terminalDropboxTerminalId" value="c471e51e-1b2d-4751-b155-4af03ef51c3a" />
+  <add key="terminalExcelTerminalSecret" value="36392f9d-c3c0-4b6a-a54a-142ba1ce312f" />
+  <add key="terminalExcelTerminalId" value="551acd9b-d91d-4de7-a0ba-8c61be413635" />
+  <add key="terminalFr8CoreTerminalSecret" value="9b4a97f3-97ea-42d7-8b02-a208ea47d760" />
+  <add key="terminalFr8CoreTerminalId" value="2db48191-cda3-4922-9cc2-a636e828063f" />
+  <add key="terminalGoogleTerminalSecret" value="ee7a622b-4a12-4dd6-ac09-03caf0da0f25" />
+  <add key="terminalGoogleTerminalId" value="1a170d44-841f-4fa2-aae4-b17ad6c469ec" />
+  <add key="terminalPapertrailTerminalSecret" value="42783cd2-d5e1-4d5a-9ea8-b63922ce2e20" />
+  <add key="terminalPapertrailTerminalId" value="9b21279b-efb4-493a-a02b-fe8694262cc8" />
+  <add key="terminalQuickBooksTerminalSecret" value="749f5c59-1bf1-4cb6-9275-eb1d489d9a05" />
+  <add key="terminalQuickBooksTerminalId" value="75ec4967-6113-43b5-bb4c-6b3468696e57" />
+  <add key="terminalSalesforceTerminalSecret" value="3b685a89-314d-48ce-91c6-7b1cfa29aa21" />
+  <add key="terminalSalesforceTerminalId" value="d814af88-72b3-444c-9198-8c62292f0be5" />
+  <add key="terminalSendGridTerminalSecret" value="a3a65c3c-6d75-4fd6-bd76-e66047affe09" />
+  <add key="terminalSendGridTerminalId" value="7eab0e81-288c-492b-88e5-c49e9aae38da" />
+  <add key="terminalSlackTerminalSecret" value="aa43d09e-a0dd-4433-8b05-4485e57738c6" />
+  <add key="terminalSlackTerminalId" value="8783174f-7fb7-4947-98af-4f1cdd8b394f" />
+  <add key="terminalTwilioTerminalSecret" value="3a772e7d-1368-4173-b081-91a7318910c7" />
+  <add key="terminalTwilioTerminalId" value="2dd73dda-411d-4e18-8e0a-54bbe1aa015b" />
+  <add key="terminalYammerTerminalSecret" value="d14aaa44-22a1-4d2c-b14b-be559c8941b5" />
+  <add key="terminalYammerTerminalId" value="f2b999be-be3f-42b5-b0d5-611d0606723b" />
+  <add key="terminalFacebookTerminalSecret" value="b6b813ad-3ae3-435f-a3b3-578ce16969ff" />
+  <add key="terminalFacebookTerminalId" value="6a5c763f-4355-49c1-8c26-3e0423d7ed97" />
+  <add key="terminalStatXTerminalSecret" value="079ac62f-ab28-4377-9e5c-89063a839dee" />
+  <add key="terminalStatXTerminalId" value="5963c987-0947-4749-8c2b-a939ac5d93dc" />
+
+  <!-- HealthMonitor settings: Test email details used by EmailAssert -->
+  <add key="TestEmail" value="add-test-email" />
+  <add key="TestEmail_Name" value="add-test-emailbox-name" />
+  <add key="TestEmail_Pop3Server" value="add-pop3-server" />
+  <add key="TestEmail_Port" value="add-port" />
+  <add key="TestEmail_UseSsl" value="true/false" />
+  <add key="TestEmail_Username" value="add-username" />
+  <add key="TestEmail_Password" value="add-password" />
+
+  <!-- Dummy terminal secret for tests which still require it -->
+  <add key="TerminalSecret" value="ee7a622b-4a12-4dd6-ac09-03caf0da0f25" />
+
+  <!-- Hub settings -->
+  <include src="Config\HubWeb\Settings.config"/>
+  <include src="..\..\web.config"/>
+
+  <!-- terminalAtlassian settings -->
+  <include src="Config\terminalAtlassian\Settings.config"/>
+  <include src="..\..\terminalAtlassian\web.config" only="terminalAtlassian.TerminalEndpoint"/>
+
+  <!-- terminalAzure settings -->
+  <include src="Config\terminalAzure\Settings.config"/>
+  <include src="..\..\terminalAzure\web.config" only="terminalAzure.TerminalEndpoint"/>
+
+  <!-- terminalBox settings -->
+  <include src="Config\terminalBox\Settings.config"/>
+  <include src="..\..\terminalBox\web.config" only="terminalBox.TerminalEndpoint"/>
+
+  <!-- terminalBasecamp2 settings -->
+  <include src="Config\terminalBasecamp2\Settings.config"/>
+  <include src="..\..\terminalBasecamp2\web.config" only="terminalBasecamp2.TerminalEndpoint, terminalBasecamp2TerminalId"/>
+
+  <!-- terminalFacebook settings -->
+  <include src="Config\terminalFacebook\Settings.config"/>
+  <include src="..\..\terminalFacebook\web.config" only="terminalFacebook.TerminalEndpoint"/>
+
+  <!-- terminalDocuSign settings -->
+  <include src="Config\terminalDocuSign\Settings.config"/>
+  <include src="..\..\terminalDocuSign\web.config" only="terminalDocuSign.TerminalEndpoint"/>
+
+  <!-- terminalDropbox settings -->
+  <include src="Config\terminalDropbox\Settings.config"/>
+  <include src="..\..\terminalDropbox\web.config" only="terminalDropbox.TerminalEndpoint"/>
+
+  <!-- terminalExcel settings -->
+  <include src="..\..\terminalExcel\web.config" only="terminalExcel.TerminalEndpoint"/>
+
+  <!-- terminalFr8Core settings -->
+  <include src="Config\terminalFr8Core\Settings.config"/>
+  <include src="..\..\terminalFr8Core\web.config" only="terminalFr8Core.TerminalEndpoint"/>
+
+  <!-- terminalGoogle settings -->
+  <include src="Config\terminalGoogle\Settings.config"/>
+  <!-- We need actual GoogleFormEventWebServerUrl value for the current configuration -->
+  <include src="..\..\terminalGoogle\obj\Dev\TransformWebConfig\transformed\web.config" only="terminalGoogle.TerminalEndpoint , GoogleRedirectUri , GoogleFormEventWebServerUrl"/>
+
+  <!-- terminalPapertrail settings -->
+  <include src="Config\terminalPapertrail\Settings.config"/>
+  <include src="..\..\terminalPapertrail\web.config" only="terminalPapertrail.TerminalEndpoint"/>
+
+  <!-- terminalQuickBooks settings -->
+  <include src="Config\terminalQuickBooks\Settings.config"/>
+  <include src="..\..\terminalQuickBooks\web.config" only="terminalQuickBooks.TerminalEndpoint"/>
+
+  <!-- terminalSalesforce settings -->
+  <include src="Config\terminalSalesforce\Settings.config"/>
+  <include src="..\..\terminalSalesforce\web.config" only="terminalSalesforce.TerminalEndpoint"/>
+
+  <!-- terminalSendGrid settings -->
+  <include src="Config\terminalSendGrid\Settings.config"/>
+  <include src="..\..\terminalSendGrid\web.config" only="terminalSendGrid.TerminalEndpoint"/>
+
+  <!-- terminalSlack settings -->
+  <include src="Config\terminalSlack\Settings.config"/>
+  <include src="..\..\terminalSlack\web.config" only="terminalSlack.TerminalEndpoint"/>
+
+  <!-- terminalTelegram settings -->
+  <include src="Config\terminalTelegram\Settings.config"/>
+  <include src="..\..\terminalTelegram\web.config" only="terminalTelegram.TerminalEndpoint"/>
+
+  <!-- terminalTwilio settings -->
+  <include src="Config\terminalTwilio\Settings.config"/>
+  <include src="..\..\terminalTwilio\web.config" only="terminalTwilio.TerminalEndpoint"/>
+
+  <!-- terminalYammer settings -->
+  <include src="Config\terminalYammer\Settings.config"/>
+  <include src="..\..\terminalYammer\web.config" only="terminalYammer.TerminalEndpoint"/>
+
+  <!-- Plan Directory settings -->
+  <include src="Config\PlanDirectory\Settings.config"/>
+
+</appSettings>

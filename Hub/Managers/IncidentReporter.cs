@@ -1,18 +1,14 @@
 ﻿using System;
 using Data.Entities;
-using Microsoft.SqlServer.Server;
 using StructureMap;
-using Data.Exceptions;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Interfaces;
 using Hub.Services;
-using Utilities;
-using Utilities.Configuration.Azure;
-using Utilities.Logging;
 
 namespace Hub.Managers
 {
@@ -21,11 +17,9 @@ namespace Hub.Managers
         private readonly EventReporter _eventReporter;
         private readonly ITerminal _terminal;
         private readonly ISecurityServices _sercurity;
-        private readonly IActivityTemplate _activityTemplate;
 
-        public IncidentReporter(EventReporter eventReporter, ITerminal terminal, ISecurityServices securityService, IActivityTemplate activityTemplate)
+        public IncidentReporter(EventReporter eventReporter, ITerminal terminal, ISecurityServices securityService)
         {
-            _activityTemplate = activityTemplate;
             _eventReporter = eventReporter;
             _terminal = terminal;
             _sercurity = securityService;
@@ -42,34 +36,13 @@ namespace Hub.Managers
             EventManager.AlertResponseReceived += AlertManagerOnAlertResponseReceived;
             EventManager.AlertUserRegistrationError += ReportUserRegistrationError;
             EventManager.TerminalIncidentReported += LogTerminalIncident;
-            EventManager.UnparseableNotificationReceived += LogUnparseableNotificationIncident;
-            EventManager.IncidentDocuSignFieldMissing += IncidentDocuSignFieldMissing;
             EventManager.IncidentOAuthAuthenticationFailed += OAuthAuthenticationFailed;
-            EventManager.IncidentMissingFieldInPayload += IncidentMissingFieldInPayload;
-            EventManager.ExternalEventReceived += LogExternalEventReceivedIncident;
             EventManager.KeyVaultFailure += KeyVaultFailure;
             EventManager.EventAuthTokenSilentRevoke += AuthTokenSilentRevoke;
             EventManager.EventContainerFailed += ContainerFailed;
             EventManager.EventUnexpectedError += UnexpectedError;
             EventManager.PlanActivationFailedEvent += PlanActivationFailed;
-            EventManager.EventMultipleMonitorAllDocuSignEventsPlansPerAccountArePresent += EventManager_EventMultipleMonitorAllDocuSignEventsPlansPerAccountArePresent;
-        }
-
-        public void EventManager_EventMultipleMonitorAllDocuSignEventsPlansPerAccountArePresent(string external_email)
-        {
-            var incident = new IncidentDO
-            {
-                Fr8UserId = _sercurity.GetCurrentUser(),
-                Data = string.Join(
-                   "Multiple Monitor_All_DocuSign_Events plans were created for one DocuSign account: ", external_email
-               ),
-                PrimaryCategory = "Error",
-                SecondaryCategory = "Unexpected",
-                Component = "Terminal",
-                Activity = "Unexpected Error"
-            };
-
-            SaveAndLogIncident(incident);
+            EventManager.EventTokenValidationFailed += TokenValidationFailed;
         }
 
         private void UnexpectedError(Exception ex)
@@ -165,7 +138,7 @@ namespace Hub.Managers
                     Environment.NewLine,
                     "Container failure.",
                     "PlanName: " + (plan != null ? plan.Name : "unknown"),
-                    "PlanId: "+ (plan != null ? plan.Id.ToString() : "unknown"),
+                    "PlanId: " + (plan != null ? plan.Id.ToString() : "unknown"),
                     ex.Message,
                     ex.StackTrace ?? ""
                 ),
@@ -179,13 +152,13 @@ namespace Hub.Managers
             SaveAndLogIncident(incident);
         }
 
-        private void ProcessIncidentTerminalActivityActivationFailed(string terminalUrl, string curActionDTO, string objectId)
+        private void ProcessIncidentTerminalActivityActivationFailed(string terminalUrl, string additionalData, string objectId)
         {
             var incident = new IncidentDO
             {
                 Fr8UserId = _sercurity.GetCurrentUser(),
-                Data = terminalUrl + "      " + curActionDTO,
-                ObjectId = objectId,
+                Data = terminalUrl + " [ " + additionalData  + " ] ",
+                ObjectId = objectId, // in this case objectId is ActivityId
                 PrimaryCategory = "Action",
                 SecondaryCategory = "Activation",
                 Activity = "Completed"
@@ -205,7 +178,7 @@ namespace Hub.Managers
 
         private void SaveIncident(IncidentDO curIncident)
         {
-            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 uow.IncidentRepository.Add(curIncident);
                 uow.SaveChanges();
@@ -218,13 +191,13 @@ namespace Hub.Managers
             //_eventReporter.LogFactInformation(curIncident, curIncident.SecondaryCategory + " " + curIncident.Activity, EventReporter.EventType.Error);
         }
 
-        private void ProcessIncidentTerminalConfigureFailed(string curTerminalUrl, string curAction, string errorMessage, string objectId)
+        private void ProcessIncidentTerminalConfigureFailed(string curTerminalUrl, string additionalData, string errorMessage, string objectId)
         {
             var incident = new IncidentDO
             {
                 Fr8UserId = _sercurity.GetCurrentUser(),
-                Data = curTerminalUrl + "      " + curAction + " " + errorMessage,
-                ObjectId = objectId,
+                Data = curTerminalUrl + "[" + additionalData+" ] " + errorMessage,
+                ObjectId = objectId, // in this case objectId is ActivityId
                 PrimaryCategory = "Terminal",
                 SecondaryCategory = "Configure",
                 Component = "Hub",
@@ -233,13 +206,13 @@ namespace Hub.Managers
             SaveAndLogIncident(incident);
         }
 
-        private void ProcessIncidentTerminalInternalFailureOccurred(string curTerminalUrl, string curAction, Exception e, string objectId)
+        private void ProcessIncidentTerminalInternalFailureOccurred(string curTerminalUrl, string additionalData, Exception e, string objectId)
         {
             var incident = new IncidentDO
             {
                 Fr8UserId = _sercurity.GetCurrentUser(),
-                Data = curTerminalUrl + "      " + curAction + " " + e.Message + " \r\nStack trace: \r\n" + e.StackTrace,
-                ObjectId = objectId,
+                Data = curTerminalUrl + $"[ {additionalData} ]  Message =  [ {e} ]",
+                ObjectId = objectId, // in this case objectId is ActivityId
                 PrimaryCategory = "Terminal",
                 SecondaryCategory = "Internal",
                 Component = "Terminal",
@@ -251,13 +224,13 @@ namespace Hub.Managers
             LogIncident(incident);
         }
 
-        private void ProcessIncidentTerminalRunFailed(string curTerminalUrl, string curAction, string errorMessage, string objectId)
+        private void ProcessIncidentTerminalRunFailed(string curTerminalUrl, string additionalData, string errorMessage, string objectId)
         {
             var incident = new IncidentDO
             {
                 Fr8UserId = _sercurity.GetCurrentUser(),
-                Data = curTerminalUrl + "      " + curAction + " " + errorMessage,
-                ObjectId = objectId,
+                Data = curTerminalUrl + " [ " + additionalData+ " ] " + errorMessage,
+                ObjectId = objectId, // in this case objectId is ActivityId
                 PrimaryCategory = "Terminal",
                 SecondaryCategory = "Run",
                 Component = "Hub",
@@ -280,7 +253,7 @@ namespace Hub.Managers
             SaveAndLogIncident(incident);
         }
 
-        private void LogTerminalIncident(LoggingDataCm incidentItem)
+        private void LogTerminalIncident(LoggingDataCM incidentItem)
         {
             var currentIncident = new IncidentDO
             {
@@ -295,51 +268,9 @@ namespace Hub.Managers
             SaveAndLogIncident(currentIncident);
         }
 
-        private void LogUnparseableNotificationIncident(string curNotificationUrl, string curNotificationPayload)
-        {
-            var currentIncident = new IncidentDO
-            {
-                ObjectId = curNotificationPayload,
-                Fr8UserId = _sercurity.GetCurrentUser(),
-                Data = curNotificationUrl,
-                PrimaryCategory = "Event",
-                SecondaryCategory = "External",
-                Activity = "Unparseble Notification"
-            };
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.IncidentRepository.Add(currentIncident);
-                uow.SaveChanges();
-
-                GenerateLogData(currentIncident);
-            }
-        }
-
-        private void LogExternalEventReceivedIncident(string curEventPayload)
-        {
-            var currentIncident = new IncidentDO
-            {
-                ObjectId = "EventController",
-                Fr8UserId = _sercurity.GetCurrentUser(),
-                Data = curEventPayload,
-                PrimaryCategory = "Event",
-                SecondaryCategory = "External",
-                Activity = "Received"
-            };
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.IncidentRepository.Add(currentIncident);
-                uow.SaveChanges();
-
-                GenerateLogData(currentIncident);
-            }
-        }
-
         private void GenerateLogData(HistoryItemDO currentIncident)
         {
-            string logData = string.Format("{0} {1} {2}:" + " ObjectId: {3} CustomerId: {4}",
+            var logData = string.Format("{0} {1} {2}:" + " ObjectId: {3} CustomerId: {4}",
                 currentIncident.PrimaryCategory,
                 currentIncident.SecondaryCategory,
                 currentIncident.Activity,
@@ -350,33 +281,15 @@ namespace Hub.Managers
             Logger.LogInfo(logData);
         }
 
-        private void ProcessAttendeeUnresponsivenessThresholdReached(int expectedResponseId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var expectedResponseDO = uow.ExpectedResponseRepository.GetByKey(expectedResponseId);
-                if (expectedResponseDO == null)
-                    throw new EntityNotFoundException<ExpectedResponseDO>(expectedResponseId);
-                IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "Negotiation";
-                incidentDO.SecondaryCategory = "ClarificationRequest";
-                incidentDO.Fr8UserId = expectedResponseDO.UserID;
-                incidentDO.ObjectId = expectedResponseId.ToString();
-                incidentDO.Activity = "UnresponsiveAttendee";
-                uow.IncidentRepository.Add(incidentDO);
-                uow.SaveChanges();
-            }
-        }
-
-        private void AlertManagerOnAlertResponseReceived(int bookingRequestId, string userID, string customerID)
+        private void AlertManagerOnAlertResponseReceived(int bookingRequestId, string userId, string customerId)
         {
             using (var _uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IncidentDO incidentDO = new IncidentDO
+                var incidentDO = new IncidentDO
                 {
                     PrimaryCategory = "BookingRequest",
                     SecondaryCategory = "Response Received",
-                    Fr8UserId = customerID,
+                    Fr8UserId = customerId,
                     ObjectId = bookingRequestId.ToString(),
                     Activity = "Response Recieved"
                 };
@@ -389,7 +302,7 @@ namespace Hub.Managers
         {
             using (var _uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IncidentDO incidentDO = new IncidentDO
+                var incidentDO = new IncidentDO
                 {
                     Fr8UserId = _sercurity.GetCurrentUser(),
                     PrimaryCategory = "Email",
@@ -403,12 +316,12 @@ namespace Hub.Managers
                 _uow.SaveChanges();
             }
         }
-        
+
         private void ProcessEmailSendFailure(int emailId, string message)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IncidentDO incidentDO = new IncidentDO
+                var incidentDO = new IncidentDO
                 {
                     Fr8UserId = _sercurity.GetCurrentUser(),
                     PrimaryCategory = "Email",
@@ -420,19 +333,13 @@ namespace Hub.Managers
                 uow.IncidentRepository.Add(incidentDO);
                 uow.SaveChanges();
             }
-            Email _email = ObjectFactory.GetInstance<Email>();
-            //_email.SendAlertEmail("Alert! Kwasant Error Reported: EmailSendFailure",
-            //			    string.Format(
-            //				  "EmailID: {0}\r\n" +
-            //				  "Message: {1}",
-            //				  emailId, message));
         }
 
         public void ReportUserRegistrationError(Exception ex)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IncidentDO incidentDO = new IncidentDO
+                var incidentDO = new IncidentDO
                 {
                     PrimaryCategory = "Fr8Account",
                     SecondaryCategory = "Error",
@@ -450,7 +357,7 @@ namespace Hub.Managers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IncidentDO incidentDO = new IncidentDO
+                var incidentDO = new IncidentDO
                 {
                     PrimaryCategory = "BookingRequest",
                     SecondaryCategory = "BookerAction",
@@ -458,7 +365,7 @@ namespace Hub.Managers
                     ObjectId = originalBRId.ToString()
                 };
 
-                string logData = string.Format("{0} {1} {2}: ",
+                var logData = string.Format("{0} {1} {2}: ",
                         incidentDO.PrimaryCategory,
                         incidentDO.SecondaryCategory,
                         incidentDO.Activity);
@@ -476,44 +383,19 @@ namespace Hub.Managers
             }
         }
 
-        public void IncidentDocuSignFieldMissing(string envelopeId, string fieldName)
+        private void TokenValidationFailed(string token, string errorMessage)
         {
-            using (var _uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            var incident = new IncidentDO
             {
-                IncidentDO incidentDO = new IncidentDO
-                {
-                    Fr8UserId = _sercurity.GetCurrentUser(),
-                    PrimaryCategory = "Envelope",
-                    SecondaryCategory = "",
-                    ObjectId = envelopeId,
-                    Activity = "Action processing",
-                    Data =
-                        String.Format("IncidentDocuSignFieldMissing: Envelope id: {0}, Field name: {1}", envelopeId,
-                            fieldName)
-                };
-                _uow.IncidentRepository.Add(incidentDO);
-                //Logger.GetLogger().Warn(incidentDO.Data);
-                Logger.LogWarning(incidentDO.Data);
-                _uow.SaveChanges();
-            }
-        }
-
-        public void IncidentMissingFieldInPayload(string fieldKey, ActivityDO activity, string curUserId)
-        {
-            var template = _activityTemplate.GetByKey(activity.ActivityTemplateId);
-
-            IncidentDO incidentDO = new IncidentDO
-            {
-                PrimaryCategory = "Process Execution",
-                SecondaryCategory = "Action",
-                ObjectId = activity.Id.ToString(),
-                Activity = "Occured",
-                Fr8UserId = curUserId,
-                Data =
-                    String.Format("MissingFieldInPayload: ActionName: {0}, Field name: {1}, ActionId {2}",
-                        template?.Name, fieldKey, activity.Id)
+                Fr8UserId = _sercurity.GetCurrentUser(),
+                Data = "Token validation failed with error: " + errorMessage,
+                ObjectId = _sercurity.GetCurrentUser(),
+                PrimaryCategory = "Terminal",
+                SecondaryCategory = "Authentication",
+                Activity = "Token Validation Failed"
             };
-            LogIncident(incidentDO);
+            Logger.LogError(errorMessage);
+            SaveAndLogIncident(incident);
         }
     }
 }

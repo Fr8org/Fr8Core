@@ -1,13 +1,36 @@
-﻿<div ng-controller="PlanDetailsController">
-    <h2>{{ptvm.plan.name}} 
-        <md-button class="md-icon-button" ui-sref="^.planBuilder({ id: id })">
-            <md-icon md-font-icon="fa-edit" class="fa fa-lg" style="margin-top:15px"></md-icon>
-            <md-tooltip md-direction="top">
-                Edit
-            </md-tooltip>
-        </md-button>
-    </h2>
-    
-    
-    <pre>{{ptvm | json}}</pre>
+﻿<div style="margin-top:25px"></div>
+<div ng-controller="PlanDetailsController" style="padding-top:20px">
+    <div fill-height footer-element-id="footer" additional-padding="70">
+        <div class="page-head designer-header row">
+            <div class="designer-header-title page-title" ng-class="{'design-header-title-editing': descriptionEditing}">
+                <h4>
+                    <b>Description:  </b>
+                    <div class="route-name" ng-click="descriptionEditing = !descriptionEditing">{{current.plan.description}}</div>
+                    <input style="width:initial" class="design-header-title-editField" type="text" ng-model="current.plan.description" ng-blur="onTitleChange()" input-focus="descriptionEditing" />
+                </h4>
+            </div>
+            <md-button class="md-icon-button" ng-click="descriptionEditing = !descriptionEditing" style="margin-top: 8px">
+                <md-icon md-font-icon="glyphicon-pencil" class="glyphicon glyphicon-pencil"></md-icon>
+                <md-tooltip md-direction="top">
+                    Edit Description
+                </md-tooltip>
+            </md-button>
+        </div>
+
+        <h4>
+            <md-radio-group layout="row">
+                <b style="padding-right:10px">Publish to Public Directory</b>
+                <md-radio-button ng-click="sharePlan()" value="Share" class="md-primary">Yes</md-radio-button>
+                <md-radio-button ng-click="unpublishPlan()" value="Unpublish"> No </md-radio-button>
+            </md-radio-group>
+        </h4>
+
+        <div layout="row">
+            <h4><b>Plan JSON</b></h4>
+            <a class="md-raised md-button" ng-click="download($event)" download='{{current.plan.name}}.json' type='application/json' style="margin-top:2px">
+                Download
+            </a>
+        </div>
+        <pre><json-formatter json=current.plan open="1"></json-formatter></pre>
+    </div>
 </div>

@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Hub.Managers.APIManagers.Transmitters.Restful;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
 
 namespace Hub.Managers.APIManagers.Transmitters.Terminal
 {
@@ -19,6 +17,11 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
         /// <param name="terminalId"></param>
         /// <param name="terminalSecret"></param>
         /// <returns></returns>
-        Task<TResponse> CallActivityAsync<TResponse>(string actionType, Fr8DataDTO dataDTO, string correlationId);
+        Task<TResponse> CallActivityAsync<TResponse>(
+            string actionType,
+            IEnumerable<KeyValuePair<string, string>> parameters,
+            Fr8DataDTO dataDTO,
+            string correlationId
+        );
     }
 }

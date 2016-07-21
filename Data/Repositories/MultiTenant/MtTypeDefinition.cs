@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Data.Crates;
+using Fr8.Infrastructure.Data.Crates;
 
 namespace Data.Repositories.MultiTenant
 {

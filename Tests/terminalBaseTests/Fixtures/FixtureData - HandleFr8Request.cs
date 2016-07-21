@@ -1,9 +1,5 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace terminalTests.Fixtures
 {
@@ -24,7 +20,7 @@ namespace terminalTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "terminalActivityMock",
+                Name = "ExplicitTerminalActivityMock",
                 Version = "1"
             };
         }

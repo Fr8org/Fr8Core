@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Data.Entities;
 using Data.Infrastructure.StructureMap;
-using Data.Repositories.MultiTenant;
 using Data.Repositories.Security.Entities;
 using Data.Repositories.SqlBased;
-using Data.States;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using StructureMap;
 
 namespace Data.Repositories.Security.StorageImpl
@@ -28,7 +24,7 @@ namespace Data.Repositories.Security.StorageImpl
             editRolePrivilegeID = Guid.Parse("7cb466dc-8fed-4791-a1ba-09f9135416db");
         }
 
-        public int InsertObjectRolePermission(string dataObjectId, Guid rolePrivilegeId, string dataObjectType,
+        public int InsertObjectRolePermission(string currentUserId, string dataObjectId, Guid rolePrivilegeId, string dataObjectType,
             string propertyName = null)
         {
             lock (ObjectRolePermissions)
@@ -66,7 +62,7 @@ namespace Data.Repositories.Security.StorageImpl
             throw new NotImplementedException();
         }
 
-        public void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType)
+        public void SetDefaultObjectSecurity(string currentUserId, string dataObjectId, string dataObjectType, Guid rolePermissionId, int? organizationId)
         {
             lock (ObjectRolePermissions)
             {
@@ -110,9 +106,24 @@ namespace Data.Repositories.Security.StorageImpl
             throw new NotImplementedException();
         }
 
-        public List<int> GetObjectBasedPermissionSetForObject(string dataObjectId, string dataObjectType, List<string> roleNames)
+        public List<PermissionDTO> GetAllPermissionsForUser(Guid profileId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<int> GetObjectBasedPermissionSetForObject(string dataObjectId, string dataObjectType, Guid profileId)
         {
             return new List<int>();
+        }
+
+        public void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType, Guid rolePermissionId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public RolePermission GetRolePermission(string roleName, Guid permissionSetId)
+        {
+            throw new NotImplementedException();
         }
 
         public ObjectRolePermissionsWrapper GetRecordBasedPermissionSetForObject(string dataObjectId)

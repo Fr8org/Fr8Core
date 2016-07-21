@@ -1,58 +1,65 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using TerminalBase.Infrastructure;
+using terminalDocuSign.Services.New_Api;
 
-namespace terminalDocuSign.Actions
+namespace terminalDocuSign.Activities
 {
     public class Get_DocuSign_Template_v1 : BaseDocuSignActivity
     {
-
-
-        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            if (CheckAuthentication(curActivityDO, authTokenDO))
+            Id = new Guid("5E92E326-06E3-4C5B-A1F9-7542E8CD7C07"),
+            Version = "1",
+            Name = "Get_DocuSign_Template",
+            Label = "Get DocuSign Template",
+            Category = ActivityCategory.Receivers,
+            NeedsAuthentication = true,
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
             {
-                return curActivityDO;
+                ActivityCategories.Receive,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
             }
-
-            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
-        }
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
         protected override string ActivityUserFriendlyName => "Get DocuSign Template";
 
-        protected internal override async Task<PayloadDTO> RunInternal(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+
+        public Get_DocuSign_Template_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+            : base(crateManager, docuSignManager)
         {
-            var payloadCrates = await GetPayload(activityDO, containerId);
+        }
+
+        public override async Task Run()
+        {
             //Get template Id
-            var control = (DropDownList)FindControl(CrateManager.GetStorage(activityDO), "Available_Templates");
+            var control = GetControl<DropDownList>("Available_Templates");
             string selectedDocusignTemplateId = control.Value;
             if (selectedDocusignTemplateId == null)
             {
-                return Error(payloadCrates, "No Template was selected at design time", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                RaiseError("No Template was selected at design time", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                return;
             }
-
-            var config = DocuSignManager.SetUp(authTokenDO);
+            var config = DocuSignManager.SetUp(AuthorizationToken);
             //lets download specified template from user's docusign account
             var downloadedTemplate = DocuSignManager.DownloadDocuSignTemplate(config, selectedDocusignTemplateId);
             //and add it to payload
             var templateCrate = CreateDocuSignTemplateCrateFromDto(downloadedTemplate);
-            using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
-            {
-                crateStorage.Add(templateCrate);
-            }
-            return Success(payloadCrates);
+            Payload.Add(templateCrate);
+            Success();
         }
 
         private Crate CreateDocuSignTemplateCrateFromDto(JObject template)
@@ -65,53 +72,37 @@ namespace terminalDocuSign.Actions
                 Status = template.Property("Name").SelectToken("status").Value<string>()
             };
 
-            return Data.Crates.Crate.FromContent("DocuSign Template", manifest);
+            return Crate.FromContent("DocuSign Template", manifest);
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public override Task Initialize()
         {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
+            Storage.Clear();
+
+            CreateControlsCrate();
+            FillDocuSignTemplateSource("Available_Templates");
+            
+            return Task.FromResult(0);
+        }
+
+        public override Task FollowUp()
+        {
+            return Task.FromResult(0);
+        }
+
+        protected override Task Validate()
+        {
+            var templateList = GetControl<DropDownList>("Available_Templates");
+
+            if (ValidationManager.ValidateControlExistance(templateList))
             {
-                return ConfigurationRequestType.Initial;
+                ValidationManager.ValidateTemplateList(templateList);
             }
 
-            return ConfigurationRequestType.Followup;
+            return Task.FromResult(0);
         }
 
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            var configurationCrate = CreateControlsCrate();
-            FillDocuSignTemplateSource(configurationCrate, "Available_Templates", authTokenDO);
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.Clear();
-                crateStorage.Add(configurationCrate);
-            }
-            return await Task.FromResult(curActivityDO);
-        }
-
-        protected internal override ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
-        {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                var configControls = GetConfigurationControls(crateStorage);
-                if (configControls == null)
-                {
-                    return new ValidationResult(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
-                }
-                var templateList = configControls.Controls.OfType<DropDownList>().First();
-                templateList.ErrorMessage =
-                    DocuSignValidationUtils.AtLeastOneItemExists(templateList)
-                        ? DocuSignValidationUtils.ItemIsSelected(templateList)
-                              ? string.Empty
-                              : DocuSignValidationUtils.TemplateIsNotSelectedErrorMessage
-                        : DocuSignValidationUtils.NoTemplateExistsErrorMessage;
-                return string.IsNullOrEmpty(templateList.ErrorMessage) ? ValidationResult.Success : new ValidationResult(templateList.ErrorMessage);
-            }
-        }
-
-        private Crate CreateControlsCrate()
+        private void CreateControlsCrate()
         {
             var availableTemplates = new DropDownList
             {
@@ -121,7 +112,8 @@ namespace terminalDocuSign.Actions
                 Source = null,
                 Events = new List<ControlEvent> { ControlEvent.RequestConfig },
             };
-            return PackControlsCrate(availableTemplates);
+
+            AddControl(availableTemplates);
         }
     }
 }

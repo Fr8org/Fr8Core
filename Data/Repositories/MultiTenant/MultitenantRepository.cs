@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Data.Crates;
 using Data.Interfaces;
-using Data.Interfaces.Manifests;
 using Data.Repositories.MultiTenant.Ast;
 using Data.Repositories.MultiTenant.Queryable;
 using Data.Repositories.SqlBased;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace Data.Repositories.MultiTenant
 {
@@ -39,6 +39,11 @@ namespace Data.Repositories.MultiTenant
             return _typeStorageProvider.FindTypeReference(_connectionProvider, typeId);
         }
 
+        public MtTypeReference FindTypeReference(string alias)
+        {
+            return _typeStorageProvider.FindTypeReference(_connectionProvider, alias);
+        }
+
         private bool IsManifest(Type clrType)
         {
             CrateManifestType dummy;
@@ -58,7 +63,7 @@ namespace Data.Repositories.MultiTenant
 
         public void Add(Manifest instance, string fr8AccountId)
         {
-            if (instance == null)
+            if (instance == null || string.IsNullOrWhiteSpace(fr8AccountId))
             {
                 return;
             }
@@ -173,6 +178,30 @@ namespace Data.Repositories.MultiTenant
             {
                 result.Add((T)_converter.ConvertToObject(mtObj));
             }
+
+            return result;
+        }
+
+        public int Count<T>(string fr8AccountId, Expression<Func<T, bool>> where)
+            where T : Manifest
+        {
+            var mtType = _typeStorage.ResolveType(_connectionProvider, typeof(T), _typeStorageProvider, false);
+
+            if (mtType == null)
+            {
+                return 0;
+            }
+
+            return _mtObjectsStorage.QueryScalar(_connectionProvider, fr8AccountId, mtType, ConvertToAst(where, mtType));
+        }
+
+        public int? GetObjectId<T>(string fr8AccountId, Expression<Func<T, bool>> where)
+            where T : Manifest
+        {
+            var mtType = _typeStorage.ResolveType(_connectionProvider, typeof(T), _typeStorageProvider, false);
+
+            var result = _mtObjectsStorage
+                .GetObjectId(_connectionProvider, fr8AccountId, mtType, ConvertToAst(where, mtType));
 
             return result;
         }

@@ -1,28 +1,27 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
-using TerminalBase.BaseClasses;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.TerminalBase.Services;
 using terminalYammer.Interfaces;
 using terminalYammer.Services;
 
 namespace terminalYammer.Controllers
 {
     [RoutePrefix("authentication")]
-    public class AuthenticationController : BaseTerminalController
+    public class AuthenticationController : ApiController
     {
-        private const string curTerminal = "terminalYammer";
-
         private readonly IYammer _yammerIntegration;
+        private readonly IHubLoggerService _loggerService;
 
-
-        public AuthenticationController()
+        public AuthenticationController(Yammer yammer, IHubLoggerService loggerService)
         {
-            _yammerIntegration = new Yammer();
+            _yammerIntegration = yammer;
+            _loggerService = loggerService;
         }
 
         [HttpPost]
-        [Route("initial_url")]
+        [Route("request_url")]
         public ExternalAuthUrlDTO GenerateOAuthInitiationURL()
         {
             var externalStateToken = Guid.NewGuid().ToString();
@@ -66,7 +65,7 @@ namespace terminalYammer.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerminal, ex,externalAuthDTO.Fr8UserId);
+                await _loggerService.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {

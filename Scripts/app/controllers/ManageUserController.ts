@@ -31,17 +31,17 @@
 
         private Submit(isValid) {
             if (isValid) {
-                this.UserService.updatePassword({
+                this.UserService.update({
                     oldPassword: this.$scope.CurrentPassword,
                     newPassword: this.$scope.NewPassword,
                     confirmPassword: this.$scope.ConfirmNewPassword
                 }).$promise.then(
-                (result) => {
-                    this.$scope.Message = "Password Changed.";
-                },
-                (failResponse) => {
+                    (result) => {
+                        this.$scope.Message = "Password Changed.";
+                    },
+                    (failResponse) => {
                         this.$scope.Message = failResponse.data.details.exception.Message;
-                });
+                    });
             } else {
                 this.$scope.Message = "There are still invalid fields below";
             }

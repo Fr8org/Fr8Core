@@ -1,53 +1,47 @@
 ﻿using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
-using TerminalBase.BaseClasses;
 using Newtonsoft.Json;
 using terminalAtlassian.Services;
-using StructureMap;
-using System;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using terminalAtlassian.Helpers;
+using System.Threading.Tasks;
+using terminalAtlassian.Interfaces;
 
 namespace terminalAtlassian.Controllers
 {
     [RoutePrefix("authentication")]
-    public class AuthenticationController : BaseTerminalController
+    public class AuthenticationController : ApiController
     {
-        private readonly AtlassianService _atlassianService;
-        private const string curTerminal = "terminalAtlassian";
+        private readonly IAtlassianService _atlassianService;
 
-        public AuthenticationController()
+        public AuthenticationController(AtlassianService atlassianService)
         {
-            _atlassianService = ObjectFactory.GetInstance<AtlassianService>();
+            _atlassianService = atlassianService;
         }
 
         [HttpPost]
-        [Route("internal")]
-        public  AuthorizationTokenDTO GenerateInternalOAuthToken(CredentialsDTO curCredential)
+        [Route("token")]
+        public async Task<AuthorizationTokenDTO> GenerateInternalOAuthToken(CredentialsDTO credentials)
         {
-            try
+            credentials = credentials.EnforceDomainSchema();
+            if (!await _atlassianService.CheckDomain(credentials.Domain))
             {
-                if (_atlassianService.IsValidUser(curCredential))
-                {
-                    return new AuthorizationTokenDTO()
-                    {
-                        Token = JsonConvert.SerializeObject(curCredential),
-                        ExternalAccountId = curCredential.Username
-                    };
-                }
                 return new AuthorizationTokenDTO()
                 {
-                    Error = "Unable to authenticate in Atlassian service, invalid domain,login name or password."
+                    Error = "The form of the domain is generally [yourprojectname].atlassian.net"
                 };
             }
-            catch (Exception ex)
+            if (await _atlassianService.CheckAuthenticationAsync(credentials))
             {
-                ReportTerminalError(curTerminal, ex,curCredential.Fr8UserId);
-
                 return new AuthorizationTokenDTO()
                 {
-                    Error = "An error occurred while trying to authorize, please try again later."
+                    Token = JsonConvert.SerializeObject(credentials),
+                    ExternalAccountId = credentials.Username
                 };
             }
-
+            return new AuthorizationTokenDTO()
+            {
+                Error = "Unable to authenticate in Atlassian service, invalid domain, login name or password."
+            };
         }
     }
 }

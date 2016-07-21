@@ -7,14 +7,14 @@ using NUnit.Framework;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using HealthMonitor.Utility;
-using HealthMonitorUtility;
+using Fr8.Testing.Integration;
 using terminalDocuSign.Services.New_Api;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using AutoMapper;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Models;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -24,8 +24,10 @@ namespace terminalDocuSignTests.Integration
     {
         // private const string UserAccountName = "y.gnusin@gmail.com";
         private const string UserAccountName = "integration_test_runner@fr8.company";
+
         private const int MaxAwaitPeriod = 300000;
         private const int SingleAwaitPeriod = 10000;
+        private const int MadseCreationPeriod = 30000;
 
         private const string templateId = "b0c8eb61-ff16-410d-be0b-6a2feec57f4c"; // "392f63c3-cabb-4b21-b331-52dabf1c2993"; // "SendEnvelopeIntegrationTest" template
 
@@ -87,13 +89,14 @@ namespace terminalDocuSignTests.Integration
                     .Count();
 
                 //Set up DS
-                var authToken = await Authenticate();
-                var authTokenDO = new AuthorizationTokenDO() { Token = authToken.Token };
+                var token = await Authenticate();
+                var authToken = new AuthorizationToken() { Token = token.Token };
+                var authTokenDO = new AuthorizationTokenDO() { Token = token.Token };
                 var docuSignManager = new DocuSignManager();
-                var loginInfo = docuSignManager.SetUp(authTokenDO);
+                var loginInfo = docuSignManager.SetUp(authToken);
 
                 //let's wait 10 seconds to ensure that MADSE plan was created/activated by re-authentication
-                await Task.Delay(SingleAwaitPeriod);
+                await Task.Delay(MadseCreationPeriod);
 
                 //send envelope
                 SendDocuSignTestEnvelope(docuSignManager, loginInfo, authTokenDO);
@@ -124,8 +127,8 @@ namespace terminalDocuSignTests.Integration
             Fr8AccountDO account, TerminalDO docuSignTerminal)
         {
             Console.WriteLine($"Reauthorizing tokens for {account.EmailAddress.Address}");
-            var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
-                _baseUrl + "manageauthtoken/"
+            var tokens = await HttpGetAsync<IEnumerable<AuthenticationTokenTerminalDTO>>(
+                _baseUrl + "authentication/tokens"
             );
 
             if (tokens != null)
@@ -136,7 +139,7 @@ namespace terminalDocuSignTests.Integration
                     foreach (var token in docusignTokens.AuthTokens)
                     {
                         await HttpPostAsync<string>(
-                            _baseUrl + "manageauthtoken/revoke?id=" + token.Id.ToString(),
+                            _baseUrl + "authentication/tokens/revoke?id=" + token.Id.ToString(),
                             null
                         );
                     }
@@ -171,12 +174,12 @@ namespace terminalDocuSignTests.Integration
                 IsDemoAccount = true
             };
 
-            string endpoint = GetTerminalUrl() + "/authentication/internal";
+            string endpoint = GetTerminalUrl() + "/authentication/token";
             var jobject = await HttpPostAsync<CredentialsDTO, JObject>(endpoint, creds);
             var docuSignToken = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(jobject.ToString());
             Assert.IsTrue(
                 string.IsNullOrEmpty(docuSignToken.Error),
-                $"terminalDocuSign call to /authentication/internal has failed with following error: {docuSignToken.Error}"
+                $"terminalDocuSign call to /authentication/token has failed with following error: {docuSignToken.Error}"
             );
 
             return docuSignToken;
@@ -184,15 +187,15 @@ namespace terminalDocuSignTests.Integration
 
         private  void SendDocuSignTestEnvelope(DocuSignManager docuSignManager, DocuSignApiConfiguration loginInfo, AuthorizationTokenDO authTokenDO)
         {
-            var rolesList = new List<FieldDTO>()
+            var rolesList = new List<KeyValueDTO>()
             {
-                new FieldDTO()
+                new KeyValueDTO()
                 {
                     Tags = "recipientId:1",
                     Key = "role name",
                     Value = ToEmail
                 },
-                new FieldDTO()
+                new KeyValueDTO()
                 {
                     Tags = "recipientId:1",
                     Key = "role email",
@@ -200,33 +203,33 @@ namespace terminalDocuSignTests.Integration
                 }
             };
 
-            var fieldsList = new List<FieldDTO>()
+            var fieldsList = new List<KeyValueDTO>()
             {
-                new FieldDTO()
+                new KeyValueDTO()
                 {
                     Tags = "recipientId:1",
                     Key="companyTabs",
                     Value="test"
                 },
-                new FieldDTO()
+                new KeyValueDTO()
                 {
                     Tags = "recipientId:1",
                     Key="textTabs",
                     Value="test"
                 },
-                new FieldDTO()
+                new KeyValueDTO()
                 {
                     Tags = "recipientId:1",
                     Key="noteTabs",
                     Value="test"
                 },
-                new FieldDTO()
+                new KeyValueDTO()
                 {
                     Tags = "recipientId:1",
                     Key="checkboxTabs",
                     Value="Radio 1"
                 },
-                new FieldDTO()
+                new KeyValueDTO()
                 {
                     Tags = "recipientId:1",
                     Key="listTabs",

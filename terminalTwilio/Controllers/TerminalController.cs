@@ -1,61 +1,13 @@
-using System.Collections.Generic;
-using System.Web.Http;
-using System.Web.Http.Description;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
-using Utilities.Configuration.Azure;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 
 namespace terminalTwilio.Controllers
 {
-    [RoutePrefix("terminals")]
-    public class TerminalController : ApiController
+    public class TerminalController : DefaultTerminalController
     {
-        [HttpGet]
-        [Route("discover")]
-        [ResponseType(typeof(StandardFr8TerminalCM))]
-        public IHttpActionResult DiscoverTerminals()
+        public TerminalController(IActivityStore activityStore, IHubDiscoveryService hubDiscovery)
+            : base(activityStore, hubDiscovery)
         {
-            var terminal = new TerminalDTO
-            {
-                Name = "terminalTwilio",
-                Label = "Twilio",
-                TerminalStatus = TerminalStatus.Active,
-                Endpoint = CloudConfigurationManager.GetSetting("terminalTwilio.TerminalEndpoint"),
-                Version = "1",
-                AuthenticationType = AuthenticationType.None
-            };
-
-	        var webService = new WebServiceDTO
-	        {
-		        Name = "Twilio",
-                IconPath = "/Content/icons/web_services/twilio-icon-64x64.png"
-            };
-
-            var sendViaTwilioTemplate = new ActivityTemplateDTO
-            {
-                Name = "Send_Via_Twilio",
-                Label = "Send SMS",
-                Tags = "Twillio,Notifier",
-                Category = ActivityCategory.Forwarders,
-                Version = "1",
-                Terminal = terminal,
-                MinPaneWidth = 330,
-                WebService = webService
-            };
-
-            var actionList = new List<ActivityTemplateDTO>
-            {
-                sendViaTwilioTemplate
-            };
-
-            StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM
-            {
-                Definition = terminal,
-                Activities = actionList
-            };
-
-            return Json(curStandardFr8TerminalCM);
         }
     }
 }

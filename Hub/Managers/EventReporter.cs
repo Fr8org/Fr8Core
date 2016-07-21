@@ -1,30 +1,22 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using StructureMap;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
 using Hub.Interfaces;
-using Hub.Managers.APIManagers.Packagers;
-using Hub.Services;
-using Utilities;
-using Utilities.Logging;
 using System.Data.Entity.Infrastructure;
-using System.Web.Mvc;
-using Data.Constants;
-using Utilities.Interfaces;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Logging;
 
 //NOTES: Do NOT put Incidents here. Put them in IncidentReporter
-
-
 namespace Hub.Managers
 {
     public class EventReporter
@@ -56,7 +48,6 @@ namespace Hub.Managers
             EventManager.AlertTokenObtained += OnAlertTokenObtained;
             EventManager.AlertTokenRevoked += OnAlertTokenRevoked;
 
-            EventManager.EventDocuSignNotificationReceived += LogDocuSignNotificationReceived;
             EventManager.EventContainerLaunched += LogEventProcessLaunched;
             EventManager.EventCriteriaEvaluationStarted += LogEventCriteriaEvaluationStarted;
             EventManager.EventCriteriaEvaluationFinished += LogEventCriteriaEvaluationFinished;
@@ -97,7 +88,6 @@ namespace Hub.Managers
             EventManager.AlertTokenObtained -= OnAlertTokenObtained;
             EventManager.AlertTokenRevoked -= OnAlertTokenRevoked;
 
-            EventManager.EventDocuSignNotificationReceived -= LogDocuSignNotificationReceived;
             EventManager.EventContainerLaunched -= LogEventProcessLaunched;
             EventManager.EventCriteriaEvaluationStarted -= LogEventCriteriaEvaluationStarted;
             EventManager.EventCriteriaEvaluationFinished -= LogEventCriteriaEvaluationFinished;
@@ -126,77 +116,23 @@ namespace Hub.Managers
 
         private void ActivityResponseReceived(ActivityDO activityDo, ActivityResponse responseType)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+           var template = _activityTemplate.GetByKey(activityDo.ActivityTemplateId);
+
+            var factDO = new FactDO()
             {
-                var template = _activityTemplate.GetByKey(activityDo.ActivityTemplateId);
+                PrimaryCategory = "Container",
+                SecondaryCategory = "Activity",
+                Activity = "Process Execution",
+                Status = responseType.ToString(),
+                ObjectId = activityDo.Id.ToString(),
+                Fr8UserId = _security.GetCurrentUser(),
+                CreatedByID = _security.GetCurrentUser(),
+                Data = string.Join(Environment.NewLine, "Activity Name: " + template?.Name)
+            };
 
-                var factDO = new FactDO()
-                {
-                    PrimaryCategory = "Container",
-                    SecondaryCategory = "Activity",
-                    Activity = "Process Execution",
-                    Status = responseType.ToString(),
-                    ObjectId = activityDo.Id.ToString(),
-                    Fr8UserId = _security.GetCurrentUser(),
-                    CreatedByID = _security.GetCurrentUser(),
-                    Data = string.Join(
-                    Environment.NewLine,
-                    "Activity Name: " + template?.Name)
-                };
-
-                LogHistoryItem(factDO);
-
-                uow.FactRepository.Add(factDO);
-                uow.MultiTenantObjectRepository.Add(factDO.ToFactCM(), _security.GetCurrentUser());
-                uow.SaveChanges();
-            }
+            SaveAndLogFact(factDO);
         }
-        /*
-        private void JumpToPlanRequested(PlanDO targetPlanDO, ContainerDO containerDO)
-        {
-            try
-            {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    var factDO = new FactDO()
-                    {
-                        PrimaryCategory = "Container",
-                        SecondaryCategory = "Plan",
-                        Activity = "Plan Launch",
-                        Status = "Plan Launch Initiating",
-                        ObjectId = targetPlanDO.Id.ToString(),
-                        Fr8UserId = _security.GetCurrentUser(),
-                        CreatedByID = _security.GetCurrentUser(),
-                        Data = string.Join(
-                            Environment.NewLine,
-                            "Plan Name: " + targetPlanDO?.Name
-                        )
-                    };
 
-                    uow.FactRepository.Add(factDO);
-                    uow.SaveChanges();
-                }
-
-                
-                //create user notifications
-                var pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
-
-                string pusherChannel = string.Format("fr8pusher_{0}", targetPlanDO.Fr8Account.UserName);
-                pusherNotifier.Notify(pusherChannel, "fr8pusher_activity_execution_info",
-                    new
-                    {
-                        ActivityName = activityDo.Label,
-                        PlanName = containerDO.Name,
-                        ContainerId = containerDO.Id.ToString(),
-                    });
-                    
-            }
-            catch (Exception exception)
-            {
-                EventManager.UnexpectedError(exception);
-            }
-        }
-*/
         private void ActivityRunRequested(ActivityDO activityDo, ContainerDO containerDO)
         {
             try
@@ -216,36 +152,27 @@ namespace Hub.Managers
                         ObjectId = activityDo.Id.ToString(),
                         Fr8UserId = _security.GetCurrentUser(),
                         CreatedByID = _security.GetCurrentUser(),
-                        Data = string.Join(
-                            Environment.NewLine,
-                            "Activity Name: " + template?.Name
-                        )
+                        Data = string.Join( Environment.NewLine, "Activity Name: " + template?.Name)
                     };
 
-                    LogHistoryItem(factDO);
-
-                    uow.FactRepository.Add(factDO);
-                    uow.MultiTenantObjectRepository.Add(factDO.ToFactCM(), _security.GetCurrentUser());
-
                     var planDO = uow.PlanRepository.GetById<PlanDO>(activityDo.RootPlanNodeId);
-                    uow.SaveChanges();
                     planId = planDO.Id;
                     planLastUpdated = planDO.LastUpdated;
+
+                    SaveAndLogFact(factDO);
                 }
 
                 //create user notifications
-                var pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
-
-                string pusherChannel = string.Format("fr8pusher_{0}", activityDo.Fr8Account.UserName);
-                pusherNotifier.Notify(pusherChannel, "fr8pusher_activity_execution_info",
-                    new
-                    {
-                        ActivityName = activityDo.Label,
-                        PlanName = containerDO.Name,
-                        ContainerId = containerDO.Id.ToString(),
-                        PlanId = planId,
-                        PlanLastUpdated = planLastUpdated,
-                    });
+                var _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
+                _pusherNotifier.NotifyUser(new
+                {
+                    ActivityName = activityDo.Name,
+                    PlanName = containerDO.Name,
+                    Collapsed = true,
+                    ContainerId = containerDO.Id.ToString(),
+                    PlanId = planId,
+                    PlanLastUpdated = planLastUpdated,
+                }, NotificationType.GenericInfo, activityDo.Fr8Account.Id);
             }
             catch (Exception exception)
             {
@@ -255,30 +182,18 @@ namespace Hub.Managers
 
         private void ContainerExecutionCompleted(ContainerDO containerDO)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            var factDO = new FactDO()
             {
-                var factDO = new FactDO()
-                {
-                    PrimaryCategory = "Container Execution",
-                    SecondaryCategory = "Container",
-                    Activity = "Launched",
-                    ObjectId = containerDO.Id.ToString(),
-                    Fr8UserId = _security.GetCurrentUser(),
-                    CreatedByID = _security.GetCurrentUser(),
-                    Data = string.Join(
-                        Environment.NewLine,
-                        "Container Id: " + containerDO.Id,
-                        "Plan Id: " + containerDO.PlanId
-                    ),
-                };
+                PrimaryCategory = "Container Execution",
+                SecondaryCategory = "Container",
+                Activity = "Launched",
+                ObjectId = containerDO.Id.ToString(),
+                Fr8UserId = _security.GetCurrentUser(),
+                CreatedByID = _security.GetCurrentUser(),
+                Data = string.Join( Environment.NewLine, "Container Id: " + containerDO.Id, "Plan Id: " + containerDO.PlanId )
+            };
 
-                LogHistoryItem(factDO);
-
-                uow.FactRepository.Add(factDO);
-                uow.MultiTenantObjectRepository.Add(factDO.ToFactCM(), _security.GetCurrentUser());
-
-                uow.SaveChanges();
-            }
+            SaveAndLogFact(factDO);
         }
 
         private FactDO CreatedPlanFact(Guid planId, string state)
@@ -291,83 +206,56 @@ namespace Hub.Managers
                 ObjectId = planId.ToString(),
                 Fr8UserId = _security.GetCurrentUser(),
                 CreatedByID = _security.GetCurrentUser(),
-                Data = string.Join(
-                Environment.NewLine,
-                    "Plan State: " + state
-                )
+                Data = string.Join( Environment.NewLine, "Plan State: " + state )
             };
-
             return factDO;
         }
 
         private void PlanDeactivated(Guid planId)
         {
-            using (var uowFact = ObjectFactory.GetInstance<IUnitOfWork>())
+            PlanDO planDO = null;
+            using (var uowPlan = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                PlanDO planDO = null;
-                using (var uowPlan = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    planDO = uowPlan.PlanRepository.GetById<PlanDO>(planId);
-                }
-                if (planDO != null)
-                {
-                    var factDO = CreatedPlanFact(planId, "Deactivated");
+                planDO = uowPlan.PlanRepository.GetById<PlanDO>(planId);
+            }
 
-                    LogHistoryItem(factDO);
-                    uowFact.FactRepository.Add(factDO);
-                    uowFact.MultiTenantObjectRepository.Add(factDO.ToFactCM(), _security.GetCurrentUser());
-
-                    uowFact.SaveChanges();
-                }
+            if (planDO != null)
+            {
+                var factDO = CreatedPlanFact(planId, "Deactivated");
+                SaveAndLogFact(factDO);
             }
         }
 
         private void PlanActivated(Guid planId)
         {
-            using (var uowFact = ObjectFactory.GetInstance<IUnitOfWork>())
+            PlanDO planDO = null;
+            using (var uowPlan = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                PlanDO planDO = null;
-                using (var uowPlan = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    planDO = uowPlan.PlanRepository.GetById<PlanDO>(planId);
-                }
-                if (planDO != null)
-                {
-                    var factDO = CreatedPlanFact(planId, "Activated");
+                planDO = uowPlan.PlanRepository.GetById<PlanDO>(planId);
+            }
 
-                    LogHistoryItem(factDO);
-                    uowFact.FactRepository.Add(factDO);
-                    uowFact.MultiTenantObjectRepository.Add(factDO.ToFactCM(), _security.GetCurrentUser());
-
-                    uowFact.SaveChanges();
-                }
+            if (planDO != null)
+            {
+                var factDO = CreatedPlanFact(planId, "Activated");
+                SaveAndLogFact(factDO);
             }
         }
 
         private void ProcessingTerminatedPerActivityResponse(ContainerDO containerDO, ActivityResponse resposneType)
         {
-            using (var uowFact = ObjectFactory.GetInstance<IUnitOfWork>())
+            var factDO = new FactDO()
             {
-                var factDO = new FactDO()
-                {
-                    PrimaryCategory = "Container Execution",
-                    SecondaryCategory = "Container",
-                    Activity = "Terminated",
-                    Status = resposneType.ToString(),
-                    ObjectId = containerDO.Id.ToString(),
-                    CreatedByID = _security.GetCurrentUser(),
-                    Fr8UserId = _security.GetCurrentUser(),
-                    Data = string.Join(
-                    Environment.NewLine,
-                   "Container Id: " + containerDO.Name)
-                };
+                PrimaryCategory = "Container Execution",
+                SecondaryCategory = "Container",
+                Activity = "Terminated",
+                Status = resposneType.ToString(),
+                ObjectId = containerDO.Id.ToString(),
+                CreatedByID = _security.GetCurrentUser(),
+                Fr8UserId = _security.GetCurrentUser(),
+                Data = string.Join( Environment.NewLine, "Container Id: " + containerDO.Name)
+            };
 
-                LogHistoryItem(factDO);
-                uowFact.FactRepository.Add(factDO);
-                uowFact.MultiTenantObjectRepository.Add(factDO.ToFactCM(), _security.GetCurrentUser());
-
-                uowFact.SaveChanges();
-            }
+            SaveAndLogFact(factDO);
         }
 
         private string FormatTerminalName(AuthorizationTokenDO authorizationToken)
@@ -384,102 +272,73 @@ namespace Hub.Managers
 
         private void AuthTokenCreated(AuthorizationTokenDO authToken)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var factDO = new FactDO();
-                factDO.PrimaryCategory = "AuthToken";
-                factDO.SecondaryCategory = "Created";
-                factDO.Activity = "AuthToken Created";
-                factDO.ObjectId = null;
-                factDO.CreatedByID = _security.GetCurrentUser();
-                factDO.Data = string.Join(
-                    Environment.NewLine,
-                    "AuthToken method: Created",
-                    "User Id: " + authToken.UserID.ToString(),
-                    "Terminal name: " + FormatTerminalName(authToken),
-                    "External AccountId: " + authToken.ExternalAccountId
-                );
+            var factDO = new FactDO();
+            factDO.PrimaryCategory = "AuthToken";
+            factDO.SecondaryCategory = "Created";
+            factDO.Activity = "AuthToken Created";
+            factDO.ObjectId = null;
+            factDO.CreatedByID = _security.GetCurrentUser();
+            factDO.Data = string.Join(
+                Environment.NewLine,
+                "AuthToken method: Created",
+                "User Id: " + authToken.UserID.ToString(),
+                "Terminal name: " + FormatTerminalName(authToken),
+                "External AccountId: " + authToken.ExternalAccountId
+            );
 
-                LogHistoryItem(factDO);
-                uow.FactRepository.Add(factDO);
-                uow.MultiTenantObjectRepository.Add(factDO.ToFactCM(), _security.GetCurrentUser());
-
-                uow.SaveChanges();
-            }
+            SaveAndLogFact(factDO);
         }
 
         private void AuthTokenRemoved(AuthorizationTokenDO authToken)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            var newFactDO = new FactDO
             {
-                var newFactDO = new FactDO
-                {
-                    PrimaryCategory = "AuthToken",
-                    SecondaryCategory = "Removed",
-                    Activity = "AuthToken Removed",
-                    ObjectId = null,
-                    CreatedByID = _security.GetCurrentUser(),
-                    Data = string.Join(
-                        Environment.NewLine,
-                        "AuthToken method: Removed",
-                        "User Id: " + authToken.UserID.ToString(),
-                        "Terminal name: " + FormatTerminalName(authToken),
-                        "External AccountId: " + authToken.ExternalAccountId
-                    )
-                };
+                PrimaryCategory = "AuthToken",
+                SecondaryCategory = "Removed",
+                Activity = "AuthToken Removed",
+                ObjectId = null,
+                CreatedByID = _security.GetCurrentUser(),
+                Data = string.Join(
+                    Environment.NewLine,
+                    "AuthToken method: Removed",
+                    "User Id: " + authToken.UserID.ToString(),
+                    "Terminal name: " + FormatTerminalName(authToken),
+                    "External AccountId: " + authToken.ExternalAccountId
+                )
+            };
 
-                LogHistoryItem(newFactDO);
-                uow.FactRepository.Add(newFactDO);
-                uow.MultiTenantObjectRepository.Add(newFactDO.ToFactCM(), _security.GetCurrentUser());
-
-                uow.SaveChanges();
-            }
+            SaveAndLogFact(newFactDO);
         }
 
-        private void TrackablePropertyUpdated(string entityName, string propertyName, object id,
-            object value)
+        private void TrackablePropertyUpdated(string entityName, string propertyName, object id, object value)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            var newFactDO = new FactDO
             {
-                var newFactDO = new FactDO
-                {
-                    PrimaryCategory = entityName,
-                    SecondaryCategory = propertyName,
-                    Activity = "PropertyUpdated",
-                    ObjectId = id != null ? id.ToString() : null,
-                    CreatedByID = _security.GetCurrentUser(),
-                    Status = value != null ? value.ToString() : null,
-                };
+                PrimaryCategory = entityName,
+                SecondaryCategory = propertyName,
+                Activity = "PropertyUpdated",
+                ObjectId = id != null ? id.ToString() : null,
+                CreatedByID = _security.GetCurrentUser(),
+                Status = value != null ? value.ToString() : null,
+            };
 
-                LogHistoryItem(newFactDO);
-                uow.FactRepository.Add(newFactDO);
-                uow.MultiTenantObjectRepository.Add(newFactDO.ToFactCM(), _security.GetCurrentUser());
-
-                uow.SaveChanges();
-            }
+            SaveAndLogFact(newFactDO);
         }
 
         private void EntityStateChanged(string entityName, object id, string stateName, string stateValue)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            var newFactDO = new FactDO
             {
-                var newFactDO = new FactDO
-                {
-                    PrimaryCategory = entityName,
-                    SecondaryCategory = stateName,
-                    Fr8UserId = _security.GetCurrentUser(),
-                    Activity = "StateChanged",
-                    ObjectId = id != null ? id.ToString() : null,
-                    CreatedByID = _security.GetCurrentUser(),
-                    Status = stateValue,
-                };
+                PrimaryCategory = entityName,
+                SecondaryCategory = stateName,
+                Fr8UserId = _security.GetCurrentUser(),
+                Activity = "StateChanged",
+                ObjectId = id != null ? id.ToString() : null,
+                CreatedByID = _security.GetCurrentUser(),
+                Status = stateValue,
+            };
 
-                LogHistoryItem(newFactDO);
-                uow.FactRepository.Add(newFactDO);
-                uow.MultiTenantObjectRepository.Add(newFactDO.ToFactCM(), _security.GetCurrentUser());
-
-                uow.SaveChanges();
-            }
+            SaveAndLogFact(newFactDO);
         }
 
         private void EventManagerOnEventProcessRequestReceived(ContainerDO containerDO)
@@ -571,27 +430,6 @@ namespace Hub.Managers
         }
 
         /// <summary>
-        /// The method logs the fact of receiving a notification from DocuSign.      
-        /// </summary>
-        /// <param name="userId">UserId received from DocuSign.</param>
-        /// <param name="envelopeId">EnvelopeId received from DocuSign.</param>
-        public void DocusignNotificationReceived(string userId, string envelopeId)
-        {
-            FactDO fact = new FactDO
-            {
-                PrimaryCategory = "Notification",
-                SecondaryCategory = null,
-                Activity = "Received",
-                Fr8UserId = userId,
-                ObjectId = null,
-                Data = string.Format("EnvelopeId: {0}.",
-                        envelopeId)
-            };
-            
-            SaveAndLogFact(fact);
-        }
-
-        /// <summary>
         /// The method logs the fact of Process Template creation.      
         /// </summary>
         /// <param name="userId">UserId received from DocuSign.</param>
@@ -605,36 +443,10 @@ namespace Hub.Managers
                 Activity = "Created",
                 Fr8UserId = userId,
                 ObjectId = "0",
-                Data = string.Format("Plan Name: {0}.",
-                        planName)
+                Data = string.Format("Plan Name: {0}.", planName)
             };
             
             SaveAndLogFact(fact);
-        }
-
-        /// <summary>
-        /// The method logs the fact of receiving a notification from DocuSign.      
-        /// </summary>
-        /// <param name="userId">UserId received from DocuSign.</param>
-        /// <param name="envelopeId">EnvelopeId received from DocuSign.</param>
-        public void ImproperDocusignNotificationReceived(string message)
-        {
-            var fact = new IncidentDO
-            {
-                Fr8UserId = _security.GetCurrentUser(),
-                PrimaryCategory = "Notification",
-                Activity = "Received",
-                Data = message
-            };
-
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.IncidentRepository.Add(fact);
-                uow.SaveChanges();
-            }
-
-            LogHistoryItem(fact,EventType.Warning);
         }
 
         /// <summary>
@@ -652,9 +464,6 @@ namespace Hub.Managers
                 Data = message
             };
 
-            LogHistoryItem(incidentDO);
-            
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 uow.IncidentRepository.Add(incidentDO);
@@ -665,8 +474,16 @@ namespace Hub.Managers
                 {
                     uow.SaveChanges();
                 }
-                catch { }
+                catch(Exception exp)
+                {
+                    Logger.LogError($"Can`t add incident to repository. Exception = [{exp}]");
+                }
+                finally
+                {
+                    LogHistoryItem(incidentDO,EventType.Error);
+                }
             }
+            
         }
 
         /// <summary>
@@ -684,21 +501,19 @@ namespace Hub.Managers
                 Activity = "Processed",
                 Fr8UserId = userId,
                 ObjectId = null,
-                Data = string.Format("A notification from DocuSign is processed. UserId: {0}, EnvelopeId: {1}, ContainerDO id: {2}.",
-                        userId,
-                        envelopeId,
-                        containerId)
+                Data = string.Format("A notification from DocuSign is processed. UserId: {0}, EnvelopeId: {1}, ContainerDO id: {2}.", userId,
+                        envelopeId, containerId)
             };
 
             SaveAndLogFact(fact); 
         }
 
-        private void SaveFact(FactDO curAction)
+        private void SaveFact(FactDO curFact)
         {
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.FactRepository.Add(curAction);
-                uow.MultiTenantObjectRepository.Add(curAction.ToFactCM(), _security.GetCurrentUser());
+                uow.FactRepository.Add(curFact);
+                uow.MultiTenantObjectRepository.Add(curFact.ToFactCM(), _security.GetCurrentUser());
 
                 uow.SaveChanges();
             }
@@ -712,27 +527,18 @@ namespace Hub.Managers
 
         public void UserRegistered(Fr8AccountDO curUser)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            FactDO curFactDO = new FactDO
             {
-                FactDO curFactDO = new FactDO
-                {
-                    PrimaryCategory = "User",
-                    SecondaryCategory = "",
-                    Activity = "Registered",
-                    Fr8UserId = curUser.Id,
-                    ObjectId = null,
-                    Data = string.Format("User registrated with :{0},", curUser.EmailAddress.Address)
-                    //Data = "User registrated with " + curUser.EmailAddress.Address
-                };
+                PrimaryCategory = "User",
+                SecondaryCategory = "",
+                Activity = "Registered",
+                Fr8UserId = curUser.Id,
+                ObjectId = null,
+                Data = string.Format("User registrated with :{0},", curUser.EmailAddress.Address)
+                //Data = "User registrated with " + curUser.EmailAddress.Address
+            };
 
-                LogHistoryItem(curFactDO);
-
-
-                uow.FactRepository.Add(curFactDO);
-                uow.MultiTenantObjectRepository.Add(curFactDO.ToFactCM(), _security.GetCurrentUser());
-
-                uow.SaveChanges();
-            }
+            SaveAndLogFact(curFactDO);
         }
 
         public void ActivityTemplatesSuccessfullyRegistered(int count)
@@ -749,15 +555,7 @@ namespace Hub.Managers
                     //Data = "User registrated with " + curUser.EmailAddress.Address
                 };
 
-                //Logger.GetLogger().Info(curFactDO.Data);
-                LogHistoryItem(curFactDO);
-
-
-
-                uow.FactRepository.Add(curFactDO);
-                uow.MultiTenantObjectRepository.Add(curFactDO.ToFactCM(), _security.GetCurrentUser());
-
-                uow.SaveChanges();
+                SaveAndLogFact(curFactDO);
             }
         }
 
@@ -772,8 +570,6 @@ namespace Hub.Managers
             };
 
             //Logger.GetLogger().Error(message);
-            LogHistoryItem(incidentDO,EventType.Error);
-
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -785,7 +581,14 @@ namespace Hub.Managers
                 {
                     uow.SaveChanges();
                 }
-                catch { }
+                catch(Exception exp)
+                {
+                    Logger.LogError($"Can`t add incident to repository. Exception = [{exp}]");
+                }
+                finally
+                {
+                    LogHistoryItem(incidentDO, EventType.Error);
+                }
             }
         }
 
@@ -802,11 +605,7 @@ namespace Hub.Managers
                     Fr8UserId = userId,
                 };
 
-                LogHistoryItem(factDO);
-                uow.FactRepository.Add(factDO);
-                uow.MultiTenantObjectRepository.Add(factDO.ToFactCM(), _security.GetCurrentUser());
-
-                uow.SaveChanges();
+                SaveAndLogFact(factDO);
             }
         }
 
@@ -828,12 +627,13 @@ namespace Hub.Managers
                 historyItem.Fr8UserId = (historyItem as FactDO).CreatedByID;
             }
 
-            var message = $"{itemType}: {historyItem.PrimaryCategory} " +
-                              $"{historyItem.SecondaryCategory}" +
-                              $"{historyItem.Activity}, " +
-                              $"Data = {substring}, " +
-                              $"Fr8User = {historyItem.Fr8UserId}, " +
-                              $"ObjectId = {historyItem.ObjectId}";
+            var message =     $"HistoryItemId = [{historyItem.Id}]; "+
+                              $"[{itemType}]: [{historyItem.PrimaryCategory}] " +
+                              $"[{historyItem.SecondaryCategory}]" +
+                              $"[{historyItem.Activity}], " +
+                              $"Data = [{substring}], " +
+                              $"Fr8User = [{historyItem.Fr8UserId}], " +
+                              $"ObjectId = [{historyItem.ObjectId}]";
 
             return message;
         }
@@ -862,21 +662,6 @@ namespace Hub.Managers
         private void OnAlertTokenRevoked(string userId)
         {
             AddFactOnToken(userId, "Revoked");
-        }
-
-        private void LogDocuSignNotificationReceived()
-        {
-            var fact = new FactDO
-            {
-                Fr8UserId = null,
-                Data = "DocuSign Notificaiton Received",
-                ObjectId = null,
-                PrimaryCategory = "External Event",
-                SecondaryCategory = "DocuSign",
-                Activity = "Received"
-            };
-
-            SaveAndLogFact(fact);
         }
 
         private void LogEventProcessLaunched(ContainerDO launchedContainer)
@@ -994,7 +779,7 @@ namespace Hub.Managers
             SaveAndLogFact(fact);
         }
 
-        private void LogTerminalEvent(LoggingDataCm eventDataCm)
+        private void LogTerminalEvent(LoggingDataCM eventDataCm)
         {
             var fact = new FactDO
             {
@@ -1051,12 +836,7 @@ namespace Hub.Managers
             //In the GetByKey I make use of dictionary datatype: https://msdn.microsoft.com/en-us/data/jj592677.aspx
             var curContainerDO = uow.ContainerRepository.GetByKey(currentValues[currentValues.PropertyNames.First()]);
             CreateContainerFact(curContainerDO, "StateChanged");
-
-
         }
-
-        
-
 
         private void CreateContainerFact(ContainerDO containerDO, string activity, ActivityDO activityDO = null)
         {
@@ -1072,29 +852,27 @@ namespace Hub.Managers
                     SecondaryCategory = "Operations",
                     Activity = activity
                 };
+
                 if (activityDO != null)
                 {
                     var activityTemplate = _activityTemplate.GetByKey(activityDO.ActivityTemplateId);
                     curFact.Data = string.Format("Terminal: {0} - Action: {1}.", activityTemplate.Terminal.Name, activityTemplate.Name);
                 }
-
-                LogHistoryItem(curFact);
-                
                 //LogFactInformation(curFact, curFact.Data);
-                uow.FactRepository.Add(curFact);
-                uow.MultiTenantObjectRepository.Add(curFact.ToFactCM(), _security.GetCurrentUser());
 
-                uow.SaveChanges();
+                SaveAndLogFact(curFact);
             }
         }
 
         private static async Task PostToTerminalEventsEndPoint(string userId, TerminalDO authenticatedTerminal, AuthorizationTokenDTO authToken)
         {
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
-            await
-                restClient.PostAsync<object>(
-                    new Uri(authenticatedTerminal.Endpoint + "/terminals/" + authenticatedTerminal.Name + "/events"), new { fr8_user_id = userId, auth_token = authToken });
-        }
+            var terminalService = ObjectFactory.GetInstance<ITerminal>();
 
+            var headers = terminalService.GetRequestHeaders(authenticatedTerminal, userId);
+
+            await restClient.PostAsync<object>(
+                    new Uri(authenticatedTerminal.Endpoint + "/terminals/" + authenticatedTerminal.Name + "/events"), new { fr8_user_id = userId, auth_token = authToken }, null, headers);
+        }
     }
 }

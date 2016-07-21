@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using System.Globalization;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace terminalQuickBooksTests.Fixtures
 {
@@ -16,14 +13,15 @@ namespace terminalQuickBooksTests.Fixtures
         {
             return new AuthorizationTokenDTO()
             {
-                Token = "lvprdLxfSv3vtByicAac86nlzDiuYnoTA5KxB5roJzCcSpbw;;;;;;;f2TY1CkAtXm1kwXGwcUTCQyiwOAKwJeAvbhLDeFw;;;;;;;1429888620"
+                Token = "qyprdCEtrUuHBA7TbmvyGJyHNTTSXF1mG028g3Ld3oRvb7lu;;;;;;;f1pHxtkM325nRAufGL7KCZWxW3Rlfp8t2ow5DrFx;;;;;;;1429888620;;;;;;;12/12/2016 00:00:00"
             };
         }
+
         public static AuthorizationTokenDO QuickBooks_AuthTokenDO()
         {
             return new AuthorizationTokenDO()
             {
-                Token = "lvprdLxfSv3vtByicAac86nlzDiuYnoTA5KxB5roJzCcSpbw;;;;;;;f2TY1CkAtXm1kwXGwcUTCQyiwOAKwJeAvbhLDeFw;;;;;;;1429888620"
+                Token = "qyprdCEtrUuHBA7TbmvyGJyHNTTSXF1mG028g3Ld3oRvb7lu;;;;;;;f1pHxtkM325nRAufGL7KCZWxW3Rlfp8t2ow5DrFx;;;;;;;1429888620"
             };
         }
 
@@ -121,19 +119,19 @@ namespace terminalQuickBooksTests.Fixtures
                 {
                     new TableCellDTO()
                     {
-                        Cell = new FieldDTO("1", "Date")
+                        Cell = new KeyValueDTO("1", "Date")
                     },
                     new TableCellDTO()
                     {
-                        Cell = new FieldDTO("2", "Description")
+                        Cell = new KeyValueDTO("2", "Description")
                     },
                     new TableCellDTO()
                     {
-                        Cell = new FieldDTO("3", "Phone")
+                        Cell = new KeyValueDTO("3", "Phone")
                     },
                     new TableCellDTO()
                     {
-                        Cell = new FieldDTO("4", "Travelling")
+                        Cell = new KeyValueDTO("4", "Travelling")
                     }
                 }
             };
@@ -143,19 +141,19 @@ namespace terminalQuickBooksTests.Fixtures
                 {
                     new TableCellDTO()
                     {
-                        Cell = new FieldDTO("5", "30-Dec-2015")
+                        Cell = new KeyValueDTO("5", "30-Dec-2015")
                     },
                     new TableCellDTO()
                     {
-                        Cell = new FieldDTO("6", "Trip to Samarkand")
+                        Cell = new KeyValueDTO("6", "Trip to Samarkand")
                     },
                     new TableCellDTO()
                     {
-                        Cell = new FieldDTO("7", "70")
+                        Cell = new KeyValueDTO("7", "70")
                     },
                     new TableCellDTO()
                     {
-                        Cell = new FieldDTO("8", "90")
+                        Cell = new KeyValueDTO("8", "90")
                     }
                 }
             };

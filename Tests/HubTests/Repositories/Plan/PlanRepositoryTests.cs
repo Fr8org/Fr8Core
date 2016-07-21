@@ -1,22 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories.Plan;
 using Data.States;
-using DayPilot.Web.Mvc.Events.Navigator;
+using Fr8.Infrastructure.Data.States;
 using Hub.StructureMap;
 using NUnit.Framework;
 using StructureMap;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
+using Fr8.Testing.Unit;
 
 namespace HubTests.Repositories.Plan
 {
-
     class PlanStorageProviderMonitor : IPlanStorageProvider
     {
         private PlanNodeDO _planNode;
@@ -124,7 +121,7 @@ namespace HubTests.Repositories.Plan
             {
                 Id = NewGuid(13),
                 Name = "Plan",
-                PlanState = PlanState.Active,
+                PlanState = PlanState.Running,
                 Description = "PlanDesc",
                 Fr8Account = new Fr8AccountDO()
                 {

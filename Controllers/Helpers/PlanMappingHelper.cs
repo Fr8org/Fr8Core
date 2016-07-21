@@ -1,10 +1,8 @@
-﻿
-using System.Data.Entity;
-using System.Linq;
+﻿using System.Linq;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace HubWeb.Controllers.Helpers
 {
@@ -13,12 +11,12 @@ namespace HubWeb.Controllers.Helpers
         // Manual mapping method to resolve DO-1164.
         public static PlanDTO MapPlanToDto(IUnitOfWork uow, PlanDO curPlanDO)
         {
-            var subPlanDTOList = curPlanDO.ChildNodes.OfType<SubPlanDO>()
+            var subPlanDTOList = curPlanDO.ChildNodes.OfType<SubplanDO>()
                 .OrderBy(x => x.Ordering)
                 .ToList()
-                .Select((SubPlanDO x) =>
+                .Select((SubplanDO x) =>
                 {
-                    var pntDTO = Mapper.Map<FullSubPlanDTO>(x);
+                    var pntDTO = Mapper.Map<FullSubplanDto>(x);
 
                     pntDTO.Activities = x.ChildNodes.OrderBy(y => y.Ordering).Select(Mapper.Map<ActivityDTO>).ToList();
 

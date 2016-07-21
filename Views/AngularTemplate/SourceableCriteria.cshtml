@@ -1,25 +1,25 @@
 ﻿<div>
     <!--TextBlock control main container-->
-        <div class="form-group form-group-sourceable">
-            <label>if</label>
-            <!--Dropdownlistbox control main container-->
-            <ui-select style="padding-left: 20px;" ng-model="selectedItem" theme="bootstrap" search-enabled="false" on-select="setSelectedItem($item)" stop-click-propagation append-to-body="true">
-                <ui-select-match placeholder="field list...">{{$select.selected.key || select.selected.Key || $select.selected}}</ui-select-match>
-                <ui-select-choices repeat="listItem in field.fieldList">
-                    <span ng-bind-html="listItem.key || listItem.Key"></span>
-                </ui-select-choices>
-            </ui-select>
-        </div>
-        <div class="form-group form-group-sourceable">
-            <label>is</label>
-            <!--Dropdownlistbox control main container-->
-            <ui-select style="padding-left: 20px;" ng-model="selectedItem" theme="bootstrap" search-enabled="false" on-select="setSelectedItem($item)" stop-click-propagation append-to-body="true">
-                <ui-select-match placeholder="comparator list...">{{$select.selected.key || select.selected.Key || $select.selected}}</ui-select-match>
-                <ui-select-choices repeat="listItem in field.comparatorList">
-                    <span ng-bind-html="listItem.key || listItem.Key"></span>
-                </ui-select-choices>
-            </ui-select>
-        </div>
+    <div class="form-group form-group-sourceable">
+        <label>if</label>
+        <!--Dropdownlistbox control main container-->
+        <ui-select style="padding-left: 20px;" ng-model="selectedItem" theme="bootstrap" search-enabled="false" on-select="setSelectedItem($item)" stop-click-propagation>
+            <ui-select-match placeholder="field list...">{{$select.selected.key || select.selected.Key || $select.selected}}</ui-select-match>
+            <ui-select-choices repeat="listItem in field.fieldList">
+                <span ng-bind-html="listItem.key || listItem.Key"></span>
+            </ui-select-choices>
+        </ui-select>
+    </div>
+    <div class="form-group form-group-sourceable">
+        <label>is</label>
+        <!--Dropdownlistbox control main container-->
+        <ui-select style="padding-left: 20px;" ng-model="selectedItem" theme="bootstrap" search-enabled="false" on-select="setSelectedItem($item)" stop-click-propagation>
+            <ui-select-match placeholder="comparator list...">{{$select.selected.key || select.selected.Key || $select.selected}}</ui-select-match>
+            <ui-select-choices repeat="listItem in field.comparatorList">
+                <span ng-bind-html="listItem.key || listItem.Key"></span>
+            </ui-select-choices>
+        </ui-select>
+    </div>
     <div style="padding-left: 20px;" class="form-inline">
         <div class="label-than">than:</div>
         <input ng-click="onChange(field.name)" ng-focus="onFocus(field.name)" name="pca_chk_ts_{{uniqueDirectiveId}}" type="radio" ng-model="field.valueSource" id="pca__chk{{field.$$hashKey}}__value{{uniqueDirectiveId}}" value="specific" ng-click="field.value=''" stop-click-propagation />

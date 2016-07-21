@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace terminalTwilioTests.Fixture
 {
@@ -44,6 +39,7 @@ namespace terminalTwilioTests.Fixture
 
             return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
+
         public ActivityDTO Send_Via_Twilio_v1_Preconfigured_Crate_With_No_SMS_Number()
         {
             var dataDTO = Send_Via_Twilio_v1_InitialConfiguration_Fr8DataDTO();
@@ -54,11 +50,11 @@ namespace terminalTwilioTests.Fixture
             }
             return dataDTO.ActivityDTO;
         }
+
         public Crate No_SMS_Number_Controls()
         {
-            var fieldsDTO = new List<ControlDefinitionDTO>()
-            {
-                new TextSource()
+            var controls = new StandardConfigurationControlsCM(
+                new TextSource
                 {
                     UpstreamSourceLabel = "Upstream Terminal-Provided Fields",
                     InitialLabel = "SMS Number",
@@ -66,16 +62,17 @@ namespace terminalTwilioTests.Fixture
                     Value = "15005550006",
                     Label = "SMS Number"
                 },
-                new TextSource()
+
+                new TextSource
                 {
                     UpstreamSourceLabel = "Upstream Terminal-Provided Fields",
                     InitialLabel = "SMS Body",
                     Name = "SMS_Body",
                     Value = "That is the message that we are sending",
                     Label = "SMS Body"
-                }
-            };
-            return CrateManager.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
+                });
+            
+            return Crate.FromContent("Configuration_Controls", controls);
         }
 
         public TextSource GetUpstreamCrate()

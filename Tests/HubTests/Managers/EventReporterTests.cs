@@ -8,7 +8,7 @@ using Hub.Interfaces;
 using Hub.Managers;
 using NUnit.Framework;
 using StructureMap;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace HubTests.Managers
 {
@@ -29,7 +29,7 @@ namespace HubTests.Managers
         [Test]
         public void Should_trim_long_Data_in_historyItemDO_when_composing_string()
         {
-            var historyItem = UtilitiesTesting.Fixtures.FixtureData.TestFactDO();
+            var historyItem = Fr8.Testing.Unit.Fixtures.FixtureData.TestFactDO();
             historyItem.Data = new String('s',257);
 
             //act
@@ -45,7 +45,7 @@ namespace HubTests.Managers
         {
             var message1 = _eventReporter.ComposeOutputString(null);
 
-            var historyItem = UtilitiesTesting.Fixtures.FixtureData.TestFactDO();
+            var historyItem = Fr8.Testing.Unit.Fixtures.FixtureData.TestFactDO();
             historyItem.Data = null;
             historyItem.CreatedBy = null;
 
@@ -58,7 +58,7 @@ namespace HubTests.Managers
         [Test]
         public void Should_replace_Fr8UserId_with_CreatedById_for_FactDO()
         {
-            var factDO = UtilitiesTesting.Fixtures.FixtureData.TestFactDO();
+            var factDO = Fr8.Testing.Unit.Fixtures.FixtureData.TestFactDO();
             var id = "1234";
             factDO.Fr8UserId = null;
             factDO.CreatedByID = id;

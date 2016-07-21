@@ -4,6 +4,8 @@
         parentPlanNodeId: string;
         id: string;
         label: string;
+        name: string;
+        authTokenId: string;
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;
         activityTemplate: ActivityTemplate;
@@ -12,6 +14,8 @@
         height: number = 300;
         ordering: number;
         documentation: string;
+        showAdvisoryPopup: boolean;
+        advisoryMessages: model.AdvisoryMessages;
         constructor(
             rootPlanNodeId: string,
             parentPlanNodeId: string,
@@ -21,6 +25,7 @@
             this.parentPlanNodeId = parentPlanNodeId;
             this.id = id;
             this.configurationControls = new ControlsList();
+            this.showAdvisoryPopup = false;
         }
 
         toActionVM(): interfaces.IActionVM {
@@ -48,6 +53,7 @@
             result.configurationControls = dataObject.configurationControls;
             result.id = dataObject.id;
             result.label = dataObject.label;
+            result.name = dataObject.name;
             result.parentPlanNodeId = dataObject.parentPlanNodeId;
             result.ordering = dataObject.ordering;
             return result;

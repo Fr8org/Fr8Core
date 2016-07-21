@@ -2,24 +2,44 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.Interfaces.Manifests.Helpers;
-using Data.States;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.Manifests.Helpers;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Infrastructure;
+using Google.GData.Client;
 using Newtonsoft.Json;
-using StructureMap;
+using terminalGoogle.Actions;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
-using TerminalBase.BaseClasses;
 
-namespace terminalGoogle.Actions
+namespace terminalGoogle.Activities
 {
     public class Save_To_Google_Sheet_v1 : BaseGoogleTerminalActivity<Save_To_Google_Sheet_v1.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Id = new Guid("120110db-b8dd-41ca-b88e-9865db315528"),
+            Name = "Save_To_Google_Sheet",
+            Label = "Save To Google Sheet",
+            Version = "1",
+            Category = ActivityCategory.Forwarders,
+            Terminal = TerminalData.TerminalDTO,
+            NeedsAuthentication = true,
+            MinPaneWidth = 300,
+            WebService = TerminalData.GooogleWebServiceDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.GooogleWebServiceDTO.Name, TerminalData.GooogleWebServiceDTO.IconPath)
+            }
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public CrateChooser UpstreamCrateChooser { get; set; }
@@ -132,118 +152,128 @@ namespace terminalGoogle.Actions
         private const string SelectedSpreadsheetCrateLabel = "Selected Spreadsheet";
 
         private readonly IGoogleSheet _googleSheet;
-
-        public Save_To_Google_Sheet_v1()
-        {
-            _googleSheet = ObjectFactory.GetInstance<IGoogleSheet>();
-            ActivityName = "Save To Google Sheet";
-        }
-
-        private GoogleAuthDTO GetGoogleAuthToken(AuthorizationTokenDO authTokenDO = null)
-        {
-            return JsonConvert.DeserializeObject<GoogleAuthDTO>((authTokenDO ?? AuthorizationToken).Token);
-        }
-
-        public override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
-        {
-            if (base.NeedsAuthentication(authTokenDO))
-            {
-                return true;
-            }
-            var token = GetGoogleAuthToken(authTokenDO);
-            // we may also post token to google api to check its validity
-            return token.Expires - DateTime.Now < TimeSpan.FromMinutes(5) && string.IsNullOrEmpty(token.RefreshToken);
-        }
-
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
-        {
-            ConfigurationControls.ExistingSpreadsheetsList.ListItems = (await _googleSheet.GetSpreadsheets(GetGoogleAuthToken())).Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
-        }
-
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
-        {
-            //If different existing spreadsheet is selected then we have to load worksheet list for it
-            if (ConfigurationControls.UseExistingSpreadsheetOption.Selected && !string.IsNullOrEmpty(ConfigurationControls.ExistingSpreadsheetsList.Value))
-            {
-                var previousSpreadsheet = SelectedSpreadsheet;
-                if (string.IsNullOrEmpty(previousSpreadsheet) || !string.Equals(previousSpreadsheet, ConfigurationControls.ExistingSpreadsheetsList.Value))
-                {
-                    ConfigurationControls.ExistingWorksheetsList.ListItems = (await _googleSheet.GetWorksheets(ConfigurationControls.ExistingSpreadsheetsList.Value, GetGoogleAuthToken()))
-                        .Select(x => new ListItem { Key = x.Value, Value = x.Key })
-                        .ToList();
-                    var firstWorksheet = ConfigurationControls.ExistingWorksheetsList.ListItems.First();
-                    ConfigurationControls.ExistingWorksheetsList.SelectByValue(firstWorksheet.Value);
-                }
-                SelectedSpreadsheet = ConfigurationControls.ExistingSpreadsheetsList.Value;
-            }
-            else
-            {
-                ConfigurationControls.ExistingWorksheetsList.ListItems.Clear();
-                ConfigurationControls.ExistingWorksheetsList.selectedKey = string.Empty;
-                ConfigurationControls.ExistingWorksheetsList.Value = string.Empty;
-                SelectedSpreadsheet = string.Empty;
-            }
-        }
-
+        
         private string SelectedSpreadsheet
         {
             get
             {
-                var storedValue = CurrentActivityStorage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == SelectedSpreadsheetCrateLabel);
-                return storedValue?.Content.Fields.First().Key;
+                var storedValue = Storage.FirstCrateOrDefault<KeyValueListCM>(x => x.Label == SelectedSpreadsheetCrateLabel);
+                return storedValue?.Content.Values.First().Key;
             }
             set
             {
-                CurrentActivityStorage.RemoveByLabel(SelectedSpreadsheetCrateLabel);
+                Storage.RemoveByLabel(SelectedSpreadsheetCrateLabel);
                 if (string.IsNullOrEmpty(value))
                 {
                     return;
                 }
-                CurrentActivityStorage.Add(Crate<FieldDescriptionsCM>.FromContent(SelectedSpreadsheetCrateLabel, new FieldDescriptionsCM(new FieldDTO(value)), AvailabilityType.Configuration));
+                Storage.Add(Crate<KeyValueListCM>.FromContent(SelectedSpreadsheetCrateLabel, new KeyValueListCM(new KeyValueDTO(value, value))));
             }
         }
 
-        protected override async Task RunCurrentActivity()
+        public Save_To_Google_Sheet_v1(ICrateManager crateManager, IGoogleIntegration googleIntegration, IGoogleSheet googleSheet)
+            : base(crateManager, googleIntegration)
         {
-            if (!ConfigurationControls.UpstreamCrateChooser.CrateDescriptions.Any(x => x.Selected))
+            _googleSheet = googleSheet;
+        }
+
+        private GoogleAuthDTO GetGoogleAuthToken()
+        {
+            return JsonConvert.DeserializeObject<GoogleAuthDTO>(AuthorizationToken.Token);
+        }
+
+        public override async Task Initialize()
+        {
+            ActivityUI.ExistingSpreadsheetsList.ListItems = (await _googleSheet.GetSpreadsheets(GetGoogleAuthToken())).Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
+        }
+
+        public override async Task FollowUp()
+        {
+            //If different existing spreadsheet is selected then we have to load worksheet list for it
+            if (ActivityUI.UseExistingSpreadsheetOption.Selected && !string.IsNullOrEmpty(ActivityUI.ExistingSpreadsheetsList.Value))
             {
-                throw new ActivityExecutionException($"Failed to run {ActivityName} because upstream crate is not selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                var previousSpreadsheet = SelectedSpreadsheet;
+                if (string.IsNullOrEmpty(previousSpreadsheet) || !string.Equals(previousSpreadsheet, ActivityUI.ExistingSpreadsheetsList.Value))
+                {
+                    ActivityUI.ExistingWorksheetsList.ListItems = (await _googleSheet.GetWorksheets(ActivityUI.ExistingSpreadsheetsList.Value, GetGoogleAuthToken()))
+                        .Select(x => new ListItem { Key = x.Value, Value = x.Key })
+                        .ToList();
+                    var firstWorksheet = ActivityUI.ExistingWorksheetsList.ListItems.First();
+                    ActivityUI.ExistingWorksheetsList.SelectByValue(firstWorksheet.Value);
+                }
+                SelectedSpreadsheet = ActivityUI.ExistingSpreadsheetsList.Value;
+                ActivityUI.ExistingSpreadsheetsList.ListItems = (await _googleSheet.GetSpreadsheets(GetGoogleAuthToken())).Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
             }
-            if ((ConfigurationControls.UseNewSpreadsheetOption.Selected && string.IsNullOrWhiteSpace(ConfigurationControls.NewSpreadsheetName.Value))
-                || (ConfigurationControls.UseExistingSpreadsheetOption.Selected && string.IsNullOrEmpty(ConfigurationControls.ExistingSpreadsheetsList.Value)))
+            else
             {
-                throw new ActivityExecutionException($"Failed to run {ActivityName} because spreadsheet name is not specified", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                ActivityUI.ExistingWorksheetsList.ListItems.Clear();
+                ActivityUI.ExistingWorksheetsList.selectedKey = string.Empty;
+                ActivityUI.ExistingWorksheetsList.Value = string.Empty;
+                SelectedSpreadsheet = string.Empty;
             }
-            if ((ConfigurationControls.UseNewWorksheetOption.Selected && string.IsNullOrWhiteSpace(ConfigurationControls.NewWorksheetName.Value))
-                || (ConfigurationControls.UseExistingWorksheetOption.Selected && string.IsNullOrEmpty(ConfigurationControls.ExistingWorksheetsList.Value)))
+        }
+
+        protected override Task Validate()
+        {
+            ValidationManager.ValidateCrateChooserNotEmpty(ActivityUI.UpstreamCrateChooser, "upstream crate is not selected");
+
+            if ((ActivityUI.UseNewSpreadsheetOption.Selected && string.IsNullOrWhiteSpace(ActivityUI.NewSpreadsheetName.Value))
+                || (ActivityUI.UseExistingSpreadsheetOption.Selected && string.IsNullOrEmpty(ActivityUI.ExistingSpreadsheetsList.Value)))
             {
-                throw new ActivityExecutionException($"Failed to run {ActivityName} because worksheet name is not specified", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                ValidationManager.SetError("Spreadsheet name is not specified", ActivityUI.SpreadsheetSelectionGroup);
             }
+
+            if ((ActivityUI.UseNewWorksheetOption.Selected && string.IsNullOrWhiteSpace(ActivityUI.NewWorksheetName.Value))
+                || (ActivityUI.UseExistingWorksheetOption.Selected && string.IsNullOrEmpty(ActivityUI.ExistingWorksheetsList.Value)))
+            {
+                ValidationManager.SetError("Worksheet name is not specified", ActivityUI.WorksheetSelectionGroup);
+            }
+
+            return Task.FromResult(0);
+        }
+        
+        public override async Task Run()
+        {
             var crateToProcess = FindCrateToProcess();
+
             if (crateToProcess == null)
             {
-                throw new ActivityExecutionException($"Failed to run {ActivityName} because specified upstream crate was not found in payload");
+                throw new ActivityExecutionException($"Failed to run {ActivityPayload.Name} because specified upstream crate was not found in payload");
             }
+
             var tableToSave = StandardTableDataCMTools.ExtractPayloadCrateDataToStandardTableData(crateToProcess);
-            var spreadsheetUri = await GetOrCreateSpreadsheet();
-            var worksheetUri = await GetOrCreateWorksheet(spreadsheetUri);
-            await _googleSheet.WriteData(spreadsheetUri, worksheetUri, tableToSave, GetGoogleAuthToken());
+
+            try
+            {
+                var spreadsheetUri = await GetOrCreateSpreadsheet();
+                var worksheetUri = await GetOrCreateWorksheet(spreadsheetUri);
+                await _googleSheet.WriteData(spreadsheetUri, worksheetUri, tableToSave, GetGoogleAuthToken());
+            }
+            catch (GDataRequestException ex)
+            {
+                if (ex.InnerException.Message.IndexOf("(401) Unauthorized") > -1)
+                {
+                    throw new AuthorizationTokenExpiredOrInvalidException();
+                }
+
+                throw;
+            }
         }
 
         private async Task<string> GetOrCreateWorksheet(string spreadsheetUri)
         {
-            if (ConfigurationControls.UseExistingSpreadsheetOption.Selected && ConfigurationControls.UseExistingWorksheetOption.Selected)
+            if (ActivityUI.UseExistingSpreadsheetOption.Selected && ActivityUI.UseExistingWorksheetOption.Selected)
             {
-                return ConfigurationControls.ExistingWorksheetsList.Value;
+                return ActivityUI.ExistingWorksheetsList.Value;
             }
             var authToken = GetGoogleAuthToken();
             var existingWorksheets = await _googleSheet.GetWorksheets(spreadsheetUri, authToken);
             //If this is a new spreadsheet and user specified to use existing then we just use the first one (as there is only one existing worksheet in new spreadsheet)
-            if (ConfigurationControls.UseExistingWorksheetOption.Selected)
+            if (ActivityUI.UseExistingWorksheetOption.Selected)
             {
                 return existingWorksheets.First().Key;
             }
-            var existingWorksheet = existingWorksheets.Where(x => string.Equals(x.Value.Trim(), ConfigurationControls.NewWorksheetName.Value.Trim(), StringComparison.InvariantCultureIgnoreCase))
+            var existingWorksheet = existingWorksheets.Where(x => string.Equals(x.Value.Trim(), ActivityUI.NewWorksheetName.Value.Trim(), StringComparison.InvariantCultureIgnoreCase))
                                                       .Select(x => x.Key)
                                                       .FirstOrDefault();
             //If user entered exactly the name of existing worksheet we return it
@@ -252,9 +282,9 @@ namespace terminalGoogle.Actions
                 return existingWorksheet;
             }
             //Anyway create a new worksheet
-            var result = await _googleSheet.CreateWorksheet(spreadsheetUri, authToken, ConfigurationControls.NewWorksheetName.Value);
+            var result = await _googleSheet.CreateWorksheet(spreadsheetUri, authToken, ActivityUI.NewWorksheetName.Value);
             //If this is a new name and new worksheet we delete the default one (as there is no sense in keeping it)
-            if (ConfigurationControls.UseNewSpreadsheetOption.Selected && ConfigurationControls.UseNewWorksheetOption.Selected)
+            if (ActivityUI.UseNewSpreadsheetOption.Selected && ActivityUI.UseNewWorksheetOption.Selected)
             {
                 await _googleSheet.DeleteWorksheet(spreadsheetUri, existingWorksheets.First().Key, authToken);
             }
@@ -263,26 +293,26 @@ namespace terminalGoogle.Actions
 
         private async Task<string> GetOrCreateSpreadsheet()
         {
-            if (ConfigurationControls.UseExistingSpreadsheetOption.Selected)
+            if (ActivityUI.UseExistingSpreadsheetOption.Selected)
             {
-                return ConfigurationControls.ExistingSpreadsheetsList.Value;
+                return ActivityUI.ExistingSpreadsheetsList.Value;
             }
             var authToken = GetGoogleAuthToken();
             var existingSpreadsheets = await _googleSheet.GetSpreadsheets(authToken);
-            var existingSpreadsheet = existingSpreadsheets.Where(x => string.Equals(x.Value.Trim(), ConfigurationControls.NewSpreadsheetName.Value.Trim(), StringComparison.InvariantCultureIgnoreCase))
+            var existingSpreadsheet = existingSpreadsheets.Where(x => string.Equals(x.Value.Trim(), ActivityUI.NewSpreadsheetName.Value.Trim(), StringComparison.InvariantCultureIgnoreCase))
                                                           .Select(x => x.Key)
                                                           .FirstOrDefault();
             if (!string.IsNullOrEmpty(existingSpreadsheet))
             {
                 return existingSpreadsheet;
             }
-            return await _googleSheet.CreateSpreadsheet(ConfigurationControls.NewSpreadsheetName.Value, authToken);
+            return await _googleSheet.CreateSpreadsheet(ActivityUI.NewSpreadsheetName.Value, authToken);
         }
 
         private Crate FindCrateToProcess()
         {
-            var desiredCrateDescription = ConfigurationControls.UpstreamCrateChooser.CrateDescriptions.Single(x => x.Selected);
-            return CurrentPayloadStorage.FirstOrDefault(x => x.Label == desiredCrateDescription.Label && x.ManifestType.Type == desiredCrateDescription.ManifestType);
+            var desiredCrateDescription = ActivityUI.UpstreamCrateChooser.CrateDescriptions.Single(x => x.Selected);
+            return Payload.FirstOrDefault(x => x.Label == desiredCrateDescription.Label && x.ManifestType.Type == desiredCrateDescription.ManifestType);
         }
     }
 }

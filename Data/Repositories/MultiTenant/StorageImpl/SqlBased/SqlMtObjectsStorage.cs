@@ -8,7 +8,7 @@ using Data.Repositories.SqlBased;
 
 namespace Data.Repositories.MultiTenant.Sql
 {
-    public class SqlMtObjectsStorage : IMtObjectsStorage
+    public partial class SqlMtObjectsStorage : IMtObjectsStorage
     {
         private readonly string _connectionString;
         private readonly IMtObjectConverter _converter;
@@ -26,7 +26,7 @@ namespace Data.Repositories.MultiTenant.Sql
             connection.Open();
             return connection;
         }
-        
+
         private int Upsert(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtObject obj, AstNode @where, bool allowUpdate, bool allowInsert)
         {
             var fields = new List<string>
@@ -119,7 +119,7 @@ namespace Data.Repositories.MultiTenant.Sql
 
                     var affectedRows = command.ExecuteNonQuery();
 
-                  
+
 
                     return affectedRows;
                 }
@@ -142,10 +142,44 @@ namespace Data.Repositories.MultiTenant.Sql
 
             return affectedRows;
         }
-        
+
         public int Update(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtObject obj, AstNode @where)
         {
             return Upsert(connectionProvider, fr8AccountId, obj, @where, true, false);
+        }
+
+        public int QueryScalar(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode @where)
+        {
+            using (var connection = OpenConnection(connectionProvider))
+            {
+                using (var command = new SqlCommand())
+                {
+                    command.Connection = connection;
+                    command.Parameters.AddWithValue("@type", type.Id);
+                    command.Parameters.AddWithValue("@account", fr8AccountId);
+                    command.Parameters.AddWithValue("@isDeleted", false);
+
+                    string whereTemplate = string.Empty;
+
+                    if (where != null)
+                    {
+                        var astConverter = new AstToSqlConverter(type, _converter, "[md]");
+
+                        astConverter.Convert(@where);
+
+                        whereTemplate = " and " + astConverter.SqlCommand;
+
+                        for (int index = 0; index < astConverter.Constants.Count; index++)
+                        {
+                            command.Parameters.AddWithValue("@param" + index, astConverter.Constants[index]);
+                        }
+                    }
+
+                    command.CommandText = string.Format(MtSelectScalarTemplate, whereTemplate);
+
+                    return (int)Convert.ChangeType(command.ExecuteScalar(), typeof(int));
+                }
+            }
         }
 
         public IEnumerable<MtObject> Query(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode @where)
@@ -170,7 +204,8 @@ namespace Data.Repositories.MultiTenant.Sql
                 fields.Add("Value" + (mtPropertyInfo.Index + 1));
             }
 
-            var tableDefintion = string.Join(", ", fields);
+            var tableDefintionOuter = string.Join(", ", fields.Select(x => "tmp." + x));
+            var tableDefintionInner = string.Join(", ", fields.Select(x => "[md]." + x));
 
             using (var connection = OpenConnection(connectionProvider))
             {
@@ -181,15 +216,15 @@ namespace Data.Repositories.MultiTenant.Sql
                     command.Parameters.AddWithValue("@account", fr8AccountId);
                     command.Parameters.AddWithValue("@isDeleted", false);
 
-                    string cmd = string.Format("select {0} from MtData where Type=@type and fr8AccountId=@account and IsDeleted = @isDeleted", tableDefintion);
+                    string whereTemplate = string.Empty;
 
                     if (where != null)
                     {
-                        var astConverter = new AstToSqlConverter(type, _converter);
+                        var astConverter = new AstToSqlConverter(type, _converter, "[md]");
 
                         astConverter.Convert(@where);
 
-                        cmd += " and " + astConverter.SqlCommand;
+                        whereTemplate = " and " + astConverter.SqlCommand;
 
                         for (int index = 0; index < astConverter.Constants.Count; index++)
                         {
@@ -197,8 +232,9 @@ namespace Data.Repositories.MultiTenant.Sql
                         }
                     }
 
-                    command.CommandText = cmd;
-                    
+                    command.CommandText = string.Format(MtSelectQueryTemplate, tableDefintionOuter, tableDefintionInner, whereTemplate);
+                    command.CommandTimeout = 120;
+
                     var result = new List<MtObject>();
 
                     using (var reader = command.ExecuteReader())
@@ -209,11 +245,11 @@ namespace Data.Repositories.MultiTenant.Sql
 
                             foreach (var mtPropertyInfo in type.Properties)
                             {
-                                var val = reader["Value" + (mtPropertyInfo.Index+1)];
+                                var val = reader["Value" + (mtPropertyInfo.Index + 1)];
 
                                 if (val != DBNull.Value)
                                 {
-                                    obj.Values[mtPropertyInfo.Index] = (string) val;
+                                    obj.Values[mtPropertyInfo.Index] = (string)val;
                                 }
                             }
 
@@ -228,7 +264,72 @@ namespace Data.Repositories.MultiTenant.Sql
 
         public int Delete(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode @where)
         {
-            throw new System.NotImplementedException();
+            if (where == null)
+            {
+                throw new ApplicationException("Where clause must be provided.");
+            }
+
+            using (var connection = OpenConnection(connectionProvider))
+            {
+                using (var command = new SqlCommand())
+                {
+                    command.Connection = connection;
+
+                    var astConverter = new AstToSqlConverter(type, _converter);
+                    astConverter.Convert(where);
+
+                    var sqlCommand = @"delete FROM [dbo].[MtData] WHERE fr8AccountId = @accountId and Type = @type and " + astConverter.SqlCommand;
+
+                    command.Parameters.AddWithValue("@type", type.Id);
+                    command.Parameters.AddWithValue("@accountId", fr8AccountId);
+
+                    command.CommandText = sqlCommand;
+
+                    for (int index = 0; index < astConverter.Constants.Count; index++)
+                    {
+                        command.Parameters.AddWithValue("@param" + index, astConverter.Constants[index]);
+                    }
+
+                    return command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public int? GetObjectId(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode where)
+        {
+            if (where == null)
+            {
+                throw new ApplicationException("Where clause must be provided.");
+            }
+
+            using (var connection = OpenConnection(connectionProvider))
+            {
+                using (var command = new SqlCommand())
+                {
+                    command.Connection = connection;
+
+                    var astConverter = new AstToSqlConverter(type, _converter);
+                    astConverter.Convert(where);
+
+                    var sqlCommand = @"SELECT [Id] FROM [dbo].[MtData] WHERE " + astConverter.SqlCommand;
+                    command.CommandText = sqlCommand;
+
+                    for (int index = 0; index < astConverter.Constants.Count; index++)
+                    {
+                        command.Parameters.AddWithValue("@param" + index, astConverter.Constants[index]);
+                    }
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (!reader.Read())
+                        {
+                            return null;
+                        }
+
+                        return reader.GetInt32(0);
+                    }
+                }
+            }
         }
     }
 }

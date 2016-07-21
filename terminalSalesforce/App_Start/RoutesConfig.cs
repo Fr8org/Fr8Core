@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using Fr8.TerminalBase.BaseClasses;
 using StructureMap;
-using Hub.StructureMap;
-using TerminalBase.BaseClasses;
 
 namespace terminalSalesforce
 {

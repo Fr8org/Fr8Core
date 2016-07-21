@@ -1,22 +1,21 @@
 ﻿using System;
 using NUnit.Framework;
-using Utilities.Interfaces;
 using StructureMap;
 using System.IO;
-using Utilities;
 using System.Linq;
-using Data.Repositories;
 using Data.Infrastructure;
 using Data.Interfaces;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 using Microsoft.WindowsAzure;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using terminalUtilities.Excel;
 
 namespace HubTests
 {
-    [TestFixture,Ignore]
+    [TestFixture]
     [Category("ExcelUtils")]
     public class ExcelUtilsTests : BaseTest
     {
@@ -283,7 +282,7 @@ namespace HubTests
                 catch { }
             }
         }
-        [Test]
+        [Test] //this test requires internet connection
         public void GetColumnHeadersTest()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

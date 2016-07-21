@@ -12,7 +12,7 @@
         terminal: TerminalDTO;
         needsAuthentication: boolean;
         webService: WebServiceDTO; 
-
+        showDocumentation : ActivityResponseDTO;
         constructor(
             id: string,
             name: string,
@@ -21,7 +21,8 @@
             label?: string,
             minPaneWidth?: number,
             type?: string,
-            webService?: WebServiceDTO) {
+            webService?: WebServiceDTO,
+            showDocumentation? : ActivityResponseDTO) {
 
             this.id = id;
             this.name = name;
@@ -30,6 +31,7 @@
             this.category = category;
             this.type = type;
             this.webService = webService;
+            this.showDocumentation = showDocumentation;
             //this.parentPluginRegistration = parentPluginRegistration;  the client shouldn't know anything about plugins
         }
 
@@ -42,7 +44,8 @@
                 this.category,
                 this.minPaneWidth,
                 this.type,
-                this.webService
+                this.webService,
+                this.showDocumentation
             // this.parentPluginRegistration
                 );
 

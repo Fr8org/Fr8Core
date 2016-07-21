@@ -220,6 +220,8 @@ namespace Data.Repositories.Plan
 
                 foreach (var update in changes.Update)
                 {
+                    bool approveUpdate = false;
+
                     foreach (var changedProperty in update.ChangedProperties)
                     {
                         CacheItem originalCacheItem;
@@ -246,14 +248,19 @@ namespace Data.Repositories.Plan
                             original.RemoveFromParent();
                             parent.ChildNodes.Add(original);
                             original.ParentPlanNode = parent;
-
-                            validChanges.Update.Add(update);
+                          
+                            approveUpdate = true;
                         }
                         else
                         {
-                            validChanges.Update.Add(update);
+                            approveUpdate = true;
                             changedProperty.SetValue(original, changedProperty.GetValue(update.Node));
                         }
+                    }
+
+                    if (approveUpdate)
+                    {
+                        validChanges.Update.Add(update);
                     }
                 }
             }

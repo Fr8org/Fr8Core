@@ -1,20 +1,7 @@
-﻿using System;
-using System.Web.Http;
-using Microsoft.Owin.Hosting;
+﻿using Fr8.Infrastructure.StructureMap;
 using Moq;
-using Owin;
 using StructureMap;
-using StructureMap.Configuration.DSL;
-using Data.Infrastructure;
-using Data.Interfaces;
-using Hub.Interfaces;
-using Hub.Services;
-using Hub.StructureMap;
-using Utilities;
 using terminalSalesforce.Infrastructure;
-using terminalSalesforce.Services;
-
-
 
 namespace terminalSalesforce
 {
@@ -31,10 +18,10 @@ namespace terminalSalesforce
              switch (type)
              {
                  case DependencyType.TEST:
-                     ObjectFactory.Initialize(x => x.AddRegistry<TestMode>()); 
+                     ObjectFactory.Configure(x => x.AddRegistry<TestMode>()); 
                      break;
                  case DependencyType.LIVE:
-                     ObjectFactory.Initialize(x => x.AddRegistry<LiveMode>());
+                     ObjectFactory.Configure(x => x.AddRegistry<LiveMode>());
                      break;
              }
          }

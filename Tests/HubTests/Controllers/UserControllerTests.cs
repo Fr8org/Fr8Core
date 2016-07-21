@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http.Results;
-using System.Web.Mvc;
 using NUnit.Framework;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Hub.Services;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using HubWeb.Controllers;
-using HubWeb.ViewModels;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit.Fixtures;
 using HubTests.Controllers.Api;
 
 namespace HubTests.Controllers
@@ -36,7 +31,7 @@ namespace HubTests.Controllers
         [Test]
         public void Get()
         {
-            var controller = CreateController<UserController>();
+            var controller = CreateController<UsersController>();
 
             var result = controller.Get() as OkNegotiatedContentResult<List<UserDTO>>;
                 
@@ -53,9 +48,9 @@ namespace HubTests.Controllers
         [Test]
         public void GetById()
         {
-            var controller = CreateController<UserController>();
+            var controller = CreateController<UsersController>();
 
-            var result = controller.Get(_testAccount2.Id) as OkNegotiatedContentResult<UserDTO>;
+            var result = controller.UserData(_testAccount2.Id) as OkNegotiatedContentResult<UserDTO>;
 
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Content);

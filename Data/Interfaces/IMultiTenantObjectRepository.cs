@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using Data.Interfaces.Manifests;
 using Data.Repositories.MultiTenant;
 using Data.Repositories.MultiTenant.Queryable;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace Data.Interfaces
 {
@@ -11,6 +11,8 @@ namespace Data.Interfaces
     {
         MtTypeReference FindTypeReference(Type clrType);
         MtTypeReference FindTypeReference(Guid typeId);
+        MtTypeReference FindTypeReference(string alias);
+
         MtTypeReference[] ListTypeReferences();
         MtTypePropertyReference[] ListTypePropertyReferences(Guid typeId);
 
@@ -32,6 +34,12 @@ namespace Data.Interfaces
             where T : Manifest;
 
         List<T> Query<T>(string fr8AccountId, Expression<Func<T, bool>> @where)
+            where T : Manifest;
+
+        int Count<T>(string fr8AccountId, Expression<Func<T, bool>> where)
+            where T : Manifest;
+
+        int? GetObjectId<T>(string fr8AccountId, Expression<Func<T, bool>> where)
             where T : Manifest;
     }
 }

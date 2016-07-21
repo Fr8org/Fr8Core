@@ -1,21 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-
 using StructureMap;
-using Data.Infrastructure;
-using Data.Interfaces;
-using Data.Interfaces.Manifests;
-using Data.Repositories;
-using Hub.Interfaces;
 using terminalUtilities.Excel;
-using Utilities;
 
 namespace terminalExcel.Fixtures
 {
     public partial class TerminalFixtureData
     {
-        public static byte[] TestExcelData()
+       /* public static byte[] TestExcelData()
         {
             var cloudFileManager = ObjectFactory.GetInstance<CloudFileManager>();
             var blobUrl = "https://yardstore1.blob.core.windows.net/default-container-dev/SampleFile1.xlsx";
@@ -27,7 +20,7 @@ namespace terminalExcel.Fixtures
             finally
             {
             }
-        }
+        }*/
 
         public static string[] TestColumnHeaders()
         {

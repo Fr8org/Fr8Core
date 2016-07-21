@@ -2,8 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Data.Infrastructure.StructureMap;
 using Data.Repositories.MultiTenant.Ast;
 using Data.Repositories.SqlBased;
+using Data.States;
 
 namespace Data.Repositories.MultiTenant.InMemory
 {
@@ -92,6 +94,28 @@ namespace Data.Repositories.MultiTenant.InMemory
                     yield return obj;
                 }
             }
+        }
+        
+        public int QueryScalar(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode @where)
+        {
+            int count = 0;
+            
+            for (int index = 0; index < _mtObjects.Count; index++)
+            {
+                var obj = _mtObjects[index];
+                var eval = new AstEvaluator(obj, _converter);
+                if (eval.Evaluate(@where))
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        public int? GetObjectId(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode where)
+        {
+            return null;
         }
 
         public int Delete(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode @where)

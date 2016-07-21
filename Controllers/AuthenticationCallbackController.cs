@@ -1,18 +1,15 @@
 ﻿using System;
+using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
 using StructureMap;
 using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
-using Hub.Services;
 using HubWeb.ViewModels;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace HubWeb.Controllers
 {
@@ -72,7 +69,16 @@ namespace HubWeb.Controllers
 
             if (string.IsNullOrEmpty(response.Error))
             {
-                return View(response);
+                dynamic model = new ExpandoObject();
+                model.AuthorizationTokenId = response.AuthorizationToken.Id;
+                model.TerminalId = response.AuthorizationToken.TerminalID;
+                model.TerminalName = terminal.Name;
+
+                if (response.AuthorizationToken.ExternalAccountId == "ga_admin@fr8.co")
+                {
+                    EventManager.TerminalAuthenticationCompleted(response.AuthorizationToken.UserId, terminal, response.AuthorizationToken);
+                }
+                return View(model);
             }
             else
             {

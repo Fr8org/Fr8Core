@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.Script.v1;
 using Google.Apis.Script.v1.Data;
 using Google.Apis.Services;
 using terminalGoogle.DataTransferObjects;
-using Utilities.Configuration.Azure;
+using terminalGoogle.Services.Authorization;
 
 namespace terminalGoogle.Services
 {

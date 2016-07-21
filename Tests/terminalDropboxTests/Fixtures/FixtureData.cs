@@ -1,10 +1,10 @@
 ﻿using System;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
-using Newtonsoft.Json;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Models;
 using Ploeh.AutoFixture;
 
 namespace terminalDropboxTests.Fixtures
@@ -21,29 +21,41 @@ namespace terminalDropboxTests.Fixtures
             Fixture.Behaviors.Add(new OmitOnRecursionBehavior());
         }
 
-        public static AuthorizationTokenDO DropboxAuthorizationToken()
+        public static AuthorizationToken DropboxAuthorizationToken()
         {
-            return Fixture.Build<AuthorizationTokenDO>()
+            return Fixture.Build<AuthorizationToken>()
                 .With(x => x.Token, "bLgeJYcIkHAAAAAAAAAAFf6hjXX_RfwsFNTfu3z00zrH463seBYMNqBaFpbfBmqf")
                 .OmitAutoProperties()
                 .Create();
         }
 
-        public static ActivityDO GetFileListActivityDO()
+        public static ActivityContext GetFileListActivityDO()
         {
-            ActivityTemplateDO activityTemplateDO = Fixture.Build<ActivityTemplateDO>()
-                 .With(x => x.Id)
+            var terminalDTO = Fixture.Build<TerminalDTO>()
                  .With(x => x.Name)
                  .With(x => x.Version)
                  .OmitAutoProperties()
                  .Create();
-            ActivityDO activityDO = Fixture.Build<ActivityDO>()
+
+            ActivityTemplateDTO activityTemplateDTO = Fixture.Build<ActivityTemplateDTO>()
+                 .With(x => x.Id)
+                 .With(x => x.Name)
+                 .With(x => x.Version)
+                 .With(x => x.Terminal, terminalDTO)
+                 .OmitAutoProperties()
+                 .Create();
+            ActivityPayload activityPayload = Fixture.Build<ActivityPayload>()
                 .With(x => x.Id)
-                .With(x => x.ActivityTemplate, activityTemplateDO)
-                .With(x => x.CrateStorage, string.Empty)
+                .With(x => x.ActivityTemplate, activityTemplateDTO)
+                .With(x => x.CrateStorage, new CrateStorage())
                 .OmitAutoProperties()
                 .Create();
-            return activityDO;
+            ActivityContext activityContext = Fixture.Build<ActivityContext>()
+                .With(x => x.ActivityPayload, activityPayload)
+                .With(x => x.AuthorizationToken, DropboxAuthorizationToken())
+                .OmitAutoProperties()
+                .Create();
+            return activityContext;
         }
 
         public static Guid TestContainerGuid()

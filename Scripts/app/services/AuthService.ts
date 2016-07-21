@@ -1,6 +1,7 @@
 ﻿module dockyard.services {
     export class AuthService {
-        private _pendingActionIds: any;
+        private _pendingActivities: { [key: string]: model.ActivityDTO };
+        private _canceledActivities: { [key: string]: boolean };
         private _authDialogDisplayed: boolean;
         private _currentPlan: interfaces.IPlanVM;
 
@@ -13,8 +14,10 @@
 
             var self = this;
 
-            self._pendingActionIds = {};
+            self._pendingActivities = {};
             self._authDialogDisplayed = false;
+            self._canceledActivities = {};
+
             self.$interval(function () {
                 self.intervalHandler();
             }, 1000);
@@ -22,33 +25,44 @@
 
         private intervalHandler() {
             if (!this.ConfigureTrackerService.hasPendingConfigureAuthCalls()) {
-                var actionIds: Array<string> = [];
+                var activities: Array<model.ActivityDTO> = [];
                 var key;
-                for (key in this._pendingActionIds) {
-                    if (!this._pendingActionIds.hasOwnProperty(key)) {
+                for (key in this._pendingActivities) {
+                    if (!this._pendingActivities.hasOwnProperty(key) || this._canceledActivities[key]) {
                         continue;
                     }
 
-                    actionIds.push(key);
+                    activities.push(this._pendingActivities[key]);
                 }
 
-                if (actionIds.length > 0 && !this._authDialogDisplayed) {
-                    this.startAuthentication(actionIds);
+                if (activities.length > 0 && !this._authDialogDisplayed) {
+                    this.startAuthentication(activities);
                 }
             }
         }
 
         public setCurrentPlan(plan: interfaces.IPlanVM) {
             this._currentPlan = plan;
+            this._canceledActivities = {};
         }
 
         public clear() {
-            this._pendingActionIds = {};
+            this._pendingActivities = {};
         }
 
-        public enqueue(actionId: string) {
-            if (!(actionId in this._pendingActionIds)) {
-                this._pendingActionIds[actionId] = actionId;
+        public enableAuthentication(activityId: string) {
+            if (this._canceledActivities[activityId]) {
+                delete this._canceledActivities[activityId];
+            }
+        }
+
+        public isAuthenticationCanceled(activityId: string) {
+            return !!this._canceledActivities[activityId];
+        }
+
+        public enqueue(activity: model.ActivityDTO) {
+            if (!(activity.id in this._pendingActivities)) {
+                this._pendingActivities[activity.id] = activity;
             }
         }
 
@@ -77,11 +91,11 @@
             return false;
         }
 
-        public startAuthentication(actionIds: Array<string>) {
+        public startAuthentication(activities: Array<model.ActivityDTO>) {
             var self = this;
 
-            var modalScope = <any>self.$rootScope.$new(true);
-            modalScope.actionIds = actionIds;
+            var modalScope = <controllers.IAuthenticationDialogScope>self.$rootScope.$new(true);
+            modalScope.activities = activities;
 
             self._authDialogDisplayed = true;
 
@@ -94,10 +108,10 @@
             .result
             .then(() => {
                 if (!this.isSolutionBasedPlan()) {
-                    angular.forEach(actionIds, it => {
+                    angular.forEach(activities, it => {
                         self.$rootScope.$broadcast(
                             dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthCompleted],
-                            new dockyard.directives.paneConfigureAction.AuthenticationCompletedEventArgs(<interfaces.IActivityDTO>({ id: it }))
+                            new dockyard.directives.paneConfigureAction.AuthenticationCompletedEventArgs(<interfaces.IActivityDTO>({ id: it.id }))
                         );
                     });
                 }
@@ -115,17 +129,23 @@
                 }
             })
             .catch((result) => {
-                angular.forEach(actionIds, it => {
+                angular.forEach(activities, function (a) {
+                    if (!self._canceledActivities[a.id]) {
+                        self._canceledActivities[a.id] = true;
+                    }
+                });
+
+                angular.forEach(activities, it => {
                     self.$rootScope.$broadcast(
                         dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthFailure],
-                        new dockyard.directives.paneConfigureAction.ActionAuthFailureEventArgs(it)
+                        new dockyard.directives.paneConfigureAction.ActionAuthFailureEventArgs(it.id)
                     );
                 });
             })
             .finally(() => {
-                    this._authDialogDisplayed = false;
-                    this.clear();
-                });
+                this._authDialogDisplayed = false;
+                this.clear();
+            });
         }
     }
 }

@@ -9,7 +9,7 @@
         public getAvailableData(activityId: string, availability: string) {
             var defer = this.$q.defer();
 
-            var url = '/api/plannodes/available_data/?id=' + activityId
+            var url = '/api/plan_nodes/signals/?id=' + activityId
                 + '&availability=' + availability;
 
             this.$http.get(url)

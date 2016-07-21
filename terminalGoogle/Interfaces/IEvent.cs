@@ -1,12 +1,11 @@
-﻿using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Linq;
-namespace terminalGoogle.Infrastructure
+﻿using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.Crates;
+using StructureMap;
+
+namespace terminalGoogle.Interfaces
 {
     public interface IEvent
     {
-        Task<Crate> Process(string externalEventPayload);
+        Task<Crate> Process(IContainer container, string externalEventPayload);
     }
 }

@@ -1,17 +1,13 @@
-﻿using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Web;
+using Fr8.TerminalBase.Models;
 
 namespace terminalDropbox.Interfaces
 {
     public interface IDropboxService
     {
-        Task<List<string>> GetFileList(AuthorizationTokenDO authorizationTokenDO);
+        Task<List<string>> GetFileList(AuthorizationToken authorizationToken);
 
-        string GetFileSharedUrl(AuthorizationTokenDO authorizationTokenDO, string path);
+        string GetFileSharedUrl(AuthorizationToken authorizationToken, string path);
     }
 }

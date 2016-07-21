@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using Data.Crates;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
+using StructureMap;
 
 namespace terminalTwilio.Tests.Fixtures
 {
@@ -15,24 +17,27 @@ namespace terminalTwilio.Tests.Fixtures
             return new Guid("A1C11E86-9B54-42D4-AA91-605BF46E68E9");
         }
 
-        public static ActivityDO ConfigureTwilioActivity()
+        public static ActivityContext ConfigureTwilioActivity()
         {
             var actionTemplate = TwilioActivityTemplateDTO();
 
-            var activityDO = new ActivityDO
+            var activityPayload = new ActivityPayload
             {
                 Id = TestGuid_Id_57(),
-                ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
-                CrateStorage = ""
+                CrateStorage = new CrateStorage()
             };
-
-            return activityDO;
+            var activityContext = new ActivityContext
+            {
+                ActivityPayload = activityPayload,
+                AuthorizationToken = AuthTokenDOTest1()
+            };
+            return activityContext;
         }
 
-        public static ActivityTemplateDO TwilioActivityTemplateDTO()
+        public static ActivityTemplateDTO TwilioActivityTemplateDTO()
         {
-            return new ActivityTemplateDO
+            return new ActivityTemplateDTO
             {
                 Id = Guid.NewGuid(),
                 Name = "Send_Via_Twilio",
@@ -50,26 +55,15 @@ namespace terminalTwilio.Tests.Fixtures
             return Crate.FromContent("Configuration_Controls", confControls);
         }
 
-        public static AuthorizationTokenDO AuthTokenDOTest1()
+        public static AuthorizationToken AuthTokenDOTest1()
         {
-            return new AuthorizationTokenDO
+            return new AuthorizationToken
             {
                 Token =
                     @"{""Email"":""docusign_developer@dockyard.company"",""ApiPassword"":""VIXdYMrnnyfmtMaktD+qnD4sBdU=""}",
                 ExternalAccountId = "docusign_developer@dockyard.company",
-                UserID = "0addea2e-9f27-4902-a308-b9f57d811c0a"
+                UserId = "0addea2e-9f27-4902-a308-b9f57d811c0a"
 
-            };
-        }
-
-        public static FieldDescriptionsCM TestFields()
-        {
-            return new FieldDescriptionsCM
-            {
-                Fields = new List<FieldDTO>
-                {
-                    new FieldDTO("key", "value")
-                }
             };
         }
     }

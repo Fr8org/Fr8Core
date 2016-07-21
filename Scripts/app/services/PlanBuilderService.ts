@@ -5,16 +5,20 @@
 */
 module dockyard.services {
     export interface IPlanService extends ng.resource.IResourceClass<interfaces.IPlanFullDTO> {
-        getbystatus: (id: { id: number; status: number; category?: string }) => Array<interfaces.IPlanVM>;
+        getbystatus: (id: { id: number; status: number; category?: string; orderBy: string; }) => Array<interfaces.IPlanVM>;
         getByQuery: (query: model.PlanQueryDTO) => interfaces.IPlanResultDTO;
         getFull: (id: Object) => interfaces.IPlanFullDTO;
         getByActivity: (id: { id: string }) => interfaces.IPlanVM;
         execute: (id: { id: number }, payload: { payload: string }, success: any, error: any) => void;
-        activate: (data: { planId: string, planBuilderActivate: boolean }) => any;
+        create: (args: { activityTemplateId: number, name: string, label: string, parentNodeId: number }) => ng.resource.IResource<model.PlanDTO>;
+        createSolution: (args: { solutionName: string }) => ng.resource.IResource<model.PlanFullDTO>;
         deactivate: (data: { planId: string }) => ng.resource.IResource<string>;
-        update: (data: { id: string, name: string }) => interfaces.IPlanVM;
+        update: (data: { id: string, name: string, description: string }) => interfaces.IPlanVM;
         run: (id: string) => ng.IPromise<model.ContainerDTO>;
         runAndProcessClientAction: (id: string) => ng.IPromise<model.ContainerDTO>;
+        share: (id: string) => ng.IPromise<any>;
+        unpublish: (id: string) => ng.IPromise<any>;
+        createTemplate: (id: string) => ng.IPromise<any>;
     }
 
     export interface ISubPlanService extends ng.resource.IResourceClass<interfaces.ISubPlanVM> {
@@ -25,12 +29,10 @@ module dockyard.services {
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
         configure: (action: interfaces.IActivityDTO) => ng.resource.IResource<interfaces.IActionVM>;
         getByPlan: (id: Object) => ng.resource.IResource<Array<interfaces.IActionVM>>;
-        create: (args: { actionTemplateId: number, name: string, label: string, parentNodeId: number, createPlan: boolean }) => ng.resource.IResource<model.PlanDTO | model.ActivityDTO>;
-        createSolution: (args: { solutionName: string }) => ng.resource.IResource<model.PlanFullDTO>
+        create: (args: { activityTemplateId: number, name: string, label: string, parentNodeId: number }) => ng.resource.IResource<model.ActivityDTO>;
         //TODO make resource class do this operation
-        deleteById: (id: { id: string; confirmed: boolean }) => ng.resource.IResource<string>
-        batchSave: (actionList: interfaces.IActivityDTO[]) => ng.resource.IResource<interfaces.IActionVM>
-        //getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
+        deleteById: (id: { id: string }) => ng.resource.IResource<string>;
+        batchSave: (actionList: interfaces.IActivityDTO[]) => ng.resource.IResource<interfaces.IActionVM>;
     }
 
     export interface IDocuSignTemplateService extends ng.resource.IResourceClass<interfaces.IDocuSignTemplateVM> { }
@@ -76,12 +78,14 @@ module dockyard.services {
         '$q',
         '$location',
         'ngToast',
+        '$rootScope',
         function (
             $resource: ng.resource.IResourceService,
             $http: ng.IHttpService,
             $q: ng.IQService,
             $location: ng.ILocationService,
-            ngToast: any
+            ngToast: any,
+            $rootScope: ng.IScope
         ): IPlanService {
 
             var resource = <IPlanService>$resource(
@@ -95,29 +99,31 @@ module dockyard.services {
                     'getFull': {
                         method: 'GET',
                         isArray: false,
-                        url: '/api/plans/full/:id',
+                        url: '/api/plans?id=:id&include_children=true',
                         params: {
                             id: '@id'
                         }
                     },
                     'getbystatus': {
                         method: 'GET',
-                        isArray: true,
-                        url: '/api/plans/status?status=:status&category=:category',
+                        isArray: false,
+                        url: '/api/plans/query?status=:status&category=:category&orderBy=:orderBy',
                         params: {
                             status: '@status',
-                            category: '@category'
+                            category: '@category',
+                            orderBy : '@orderBy'
                         }
                     },
                     'getByQuery': {
                         method: 'GET',
                         isArray: false,
-                        url: '/api/plans/getByQuery'
+                        //url: '/api/plans/getByQuery'
+                        url: '/api/plans/query'
                     },
                     'getByActivity': {
                         method: 'GET',
                         isArray: false,
-                        url: '/api/plans/getByActivity/:id',
+                        url: '/api/plans?activity_id=:id',
                         params: {
                             id: '@id'
                         }
@@ -130,13 +136,17 @@ module dockyard.services {
                             id: '@id'
                         }
                     },
-                    'activate': {
+                    
+                    //'create': {
+                    //    method: 'POST',
+                    //    url: '/api/plans/create'
+                    //},
+                    'createSolution': {
                         method: 'POST',
-                        isArray: false,
-                        url: '/api/plans/activate/',
+                        //url: '/api/plans/createSolution',
+                        url: '/api/plans/',
                         params: {
-                            planId: '@planId',
-                            planBuilderActivate: '@planBuilderActivate'
+                            solution_name: '@solutionName'
                         }
                     },
                     'deactivate': {
@@ -155,6 +165,52 @@ module dockyard.services {
                         }
                     }
                 });
+
+            resource.share = (id: string): ng.IPromise<any> => {
+                var url = '/api/plans/share?planId=' + id;
+                var d = $q.defer();
+
+                $http.post(url, null)
+                    .then((res: any) => {
+                        d.resolve();
+                    })
+                    .catch((err: any) => {
+                        d.reject(err);
+                    });
+
+                return d.promise;
+            };
+
+            resource.unpublish = (id: string): ng.IPromise<any> => {
+                var url = '/api/plans/unpublish?planId=' + id;
+                var d = $q.defer();
+
+                $http.post(url, null)
+                    .then((res: any) => {
+                        d.resolve();
+                    })
+                    .catch((err: any) => {
+                        d.reject(err);
+                    });
+
+                return d.promise;
+            };
+
+            resource.createTemplate = (id: string): ng.IPromise<any> => {
+                
+                var url = '/api/plans/Templates?planId=' + id;
+                var d = $q.defer();
+
+                $http.post(url, null)
+                    .then((template: any) => {
+                        d.resolve(template.data);
+                    })
+                    .catch((err: any) => {
+                        d.reject(err);
+                    });
+
+                return d.promise;
+            };
 
             resource.run = (id: string): ng.IPromise<model.ContainerDTO> => {
                 var url = '/api/plans/run?planId=' + id;
@@ -199,6 +255,21 @@ module dockyard.services {
                                 messageToShow += "Terminal: " + container.error.currentTerminal + "<br/>";
                                 messageToShow += "Message: " + container.error.message;
                                 ngToast.danger(messageToShow);
+                            }
+
+                            $rootScope.$broadcast(
+                                directives.paneConfigureAction.MessageType[directives.paneConfigureAction.MessageType.PaneConfigureAction_ResetValidationMessages],
+                                new directives.paneConfigureAction.ResetValidationMessagesEventArgs()
+                            );
+
+                            // if we have validation errors, send them to activities
+                            if (container && container.validationErrors != null) {
+                                for (var key in container.validationErrors) {
+                                    $rootScope.$broadcast(
+                                        directives.paneConfigureAction.MessageType[directives.paneConfigureAction.MessageType.PaneConfigureAction_UpdateValidationMessages],
+                                        new directives.paneConfigureAction.UpdateValidationMessagesEventArgs(key, container.validationErrors[key])
+                                    );
+                                }
                             }
 
                             d.resolve(container);
@@ -246,12 +317,12 @@ module dockyard.services {
     ]);
 
     app.factory('ActionTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IActionService =>
-        <IActionService>$resource('/api/actiontemplates/', null,
+        <IActionService>$resource('/api/activity_templates/', null,
             {
                 'available': {
                     method: 'GET',
                     isArray: true,
-                    url: '/api/plannodes/available',
+                    url: '/api/activity_templates?tag=:tag',
                     params: {
                         tag: '@tag'
                     }
@@ -277,13 +348,6 @@ module dockyard.services {
                         suppressSpinner: true // Do not show page-level spinner since we have one within the Configure Action pane
                     }
                 },
-                //'get': {
-                //    transformResponse: function (data) {
-                //        //Map a proto-action object to an actual ActionDesignDTO instance so that we can access methods 
-                //        var dataObject: interfaces.IActionDesignDTO = angular.fromJson(data);
-                //        return model.ActionDesignDTO.create(dataObject);
-                //    }
-                //},
                 'delete': { method: 'DELETE' },
                 'configure': {
                     method: 'POST',
@@ -299,18 +363,11 @@ module dockyard.services {
                 },
                 'deleteById': {
                     method: 'DELETE',
-                    url: '/api/activities?id=:id&confirmed=:confirmed'
+                    url: '/api/activities?id=:id'
                 },
                 'create': {
                     method: 'POST',
                     url: '/api/activities/create'
-                },
-                'createSolution': {
-                    method: 'POST',
-                    url: '/api/activities/create',
-                    params: {
-                        solutionName: '@solutionName'
-                    }
                 },
                 'params': {
                     id: 'id'
@@ -359,11 +416,11 @@ module dockyard.services {
     ]);
 
     app.factory('ActivityTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IActivityTemplateService =>
-        <IActivityTemplateService>$resource('/api/activityTemplates/:id', { id: '@id' },
+        <IActivityTemplateService>$resource('/api/activity_templates/:id', { id: '@id' },
             {
                 'getAvailableActivities': {
                     method: 'GET',
-                    url: '/api/plannodes/available/',
+                    url: '/api/activity_templates',
                     isArray: true
                 }
             })

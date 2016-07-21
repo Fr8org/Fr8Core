@@ -1,12 +1,11 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using HealthMonitor.Utility;
+﻿using System.Linq;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
-using System;
-using System.Linq;
 using System.Threading.Tasks;
-using Data.Crates;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
 using terminalDropboxTests.Fixtures;
 
 namespace terminalDropboxTests.Integration
@@ -50,7 +49,7 @@ namespace terminalDropboxTests.Integration
             // Add initial configuretion controls
             using (var crateStorage = Crate.GetUpdatableStorage(dataDto.ActivityDTO))
             {
-                crateStorage.Add(Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls"));
+                crateStorage.Add("Configuration_Controls", new StandardConfigurationControlsCM());
             }
 
             //Act
@@ -75,7 +74,7 @@ namespace terminalDropboxTests.Integration
             // Add initial configuretion controls
             using (var crateStorage = Crate.GetUpdatableStorage(dataDto.ActivityDTO))
             {
-                crateStorage.Add(Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls"));
+                crateStorage.Add("Configuration_Controls", new StandardConfigurationControlsCM());
             }
             // Add operational state crate
             AddOperationalStateCrate(dataDto, new OperationalStateCM());

@@ -3,6 +3,7 @@ using System.Data.Entity;
 using StructureMap.Configuration.DSL;
 using Data.Interfaces;
 using Data.Repositories;
+using Data.Repositories.Authorization;
 using Data.Repositories.Cache;
 using Data.Repositories.Encryption;
 using Data.Repositories.Encryption.Impl;
@@ -21,6 +22,7 @@ namespace Data.Infrastructure
             For<DbContext>().Use<DockyardDbContext>();
             For<IDBContext>().Use<DockyardDbContext>();
             For<IAuthorizationTokenRepository>().Use<AuthorizationTokenRepositoryStub>();
+            For<IAuthorizationTokenStorageProvider>().Use<EfAuthorizationTokenStorageProvider>();
             For<IUnitOfWork>().Use<UnitOfWork>();
             For<IPlanCache>().Use<PlanCache>().Singleton();
             For<IMultiTenantObjectRepository>().Use<MultitenantRepository>();

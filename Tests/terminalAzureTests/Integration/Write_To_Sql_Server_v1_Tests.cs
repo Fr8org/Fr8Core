@@ -1,17 +1,14 @@
 ﻿using System.Linq;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using HealthMonitor.Utility;
-using Hub.Managers;
-using Hub.StructureMap;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
-using StructureMap;
 using terminalAzureTests.Fixtures;
-using UtilitiesTesting.Fixtures;
-using System.Collections.Generic;
+using Fr8.Testing.Unit.Fixtures;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace terminalAzureTests.Integration
 {
@@ -127,8 +124,8 @@ namespace terminalAzureTests.Integration
 
             AssertConfigureControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
 
-            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Sql Table Columns"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count());
+            Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count(x => x.Label == "Sql Table Columns"));
         }
 
         /// <summary>
@@ -200,16 +197,16 @@ namespace terminalAzureTests.Integration
 
             AddPayloadCrate(fr8DataDTO,
                new StandardPayloadDataCM(
-                    new FieldDTO("Field1", "[Customer].[Physician]"),
-                    new FieldDTO("Field2", "[Customer].[CurrentMedicalCondition]")
+                    new KeyValueDTO("Field1", "[Customer].[Physician]"),
+                    new KeyValueDTO("Field2", "[Customer].[CurrentMedicalCondition]")
                ),
                "MappedFields"
             );
 
             AddPayloadCrate(fr8DataDTO,
                 new StandardPayloadDataCM(
-                    new FieldDTO("Field1", "test physician"),
-                    new FieldDTO("Field2", "teststring")
+                    new KeyValueDTO("Field1", "test physician"),
+                    new KeyValueDTO("Field2", "teststring")
                 ),
                "TableData"
             );

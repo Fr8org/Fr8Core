@@ -1,56 +1,13 @@
-using System.Collections.Generic;
-using System.Web.Http;
-using Data.Entities;
-using Data.States;
-using Utilities.Configuration.Azure;
-using System.Web.Http.Description;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 
 namespace terminalPapertrail.Controllers
 {
-    [RoutePrefix("terminals")]
-    public class TerminalController : ApiController
+    public class TerminalController : DefaultTerminalController
     {
-        [HttpGet]
-        [Route("discover")]
-        [ResponseType(typeof (StandardFr8TerminalCM))]
-        public IHttpActionResult DiscoverTerminals()
+        public TerminalController(IActivityStore activityStore, IHubDiscoveryService hubDiscovery)
+            : base(activityStore, hubDiscovery)
         {
-            var terminal = new TerminalDTO()
-            {
-                Name = "terminalPapertrail",
-                Label = "Papertrail",
-                TerminalStatus = TerminalStatus.Active,
-                Endpoint = CloudConfigurationManager.GetSetting("terminalPapertrail.TerminalEndpoint"),
-                Version = "1"
-            };
-
-            var webService = new WebServiceDTO
-            {
-                Name = "Papertrail",
-                IconPath = "/Content/icons/web_services/papertrail-icon-64x64.png"
-            };
-
-            var writeToLogActionTemplate = new ActivityTemplateDTO()
-            {
-                Version = "1",
-                Name = "Write_To_Log",
-                Label = "Write To Log",
-                Category = ActivityCategory.Forwarders,
-                Terminal = terminal,
-                MinPaneWidth = 330,
-                WebService = webService
-                
-            };
-
-            var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
-            {
-                Definition = terminal,
-                Activities = new List<ActivityTemplateDTO> {writeToLogActionTemplate}
-            };
-
-            return Json(curStandardFr8TerminalCM);
         }
     }
 }

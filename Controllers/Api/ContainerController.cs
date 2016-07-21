@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using AutoMapper;
-using HubWeb.Infrastructure;
-using Microsoft.AspNet.Identity;
+using Hub.Infrastructure;
 using StructureMap;
 // This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
-using InternalInterface = Hub.Interfaces;
 using Data.Entities;
-using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Hub.Interfaces;
+using HubWeb.Infrastructure_HubWeb;
 using Newtonsoft.Json;
+using System.Web.Http.Description;
 
 namespace HubWeb.Controllers
 {
@@ -23,19 +23,26 @@ namespace HubWeb.Controllers
     // [Fr8ApiAuthorize]
     public class ContainersController : ApiController
     {
-        private readonly InternalInterface.IContainer _container;
+        private readonly IContainerService _containerService;
         private readonly ISecurityServices _security;
 
         public ContainersController()
         {
-            _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
+            _containerService = ObjectFactory.GetInstance<IContainerService>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
         }
-
+        /// <summary>
+        /// Retrieves crate storage of the container with specified Id
+        /// </summary>
+        /// <param name="id">Id of the container</param>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <response code="200">Container's crate storage</response>
+        /// <response code="403">Unathorized request</response>
         [HttpGet]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         [ActionName("payload")]
+        [ResponseType(typeof(PayloadDTO))]
         public IHttpActionResult GetPayload(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -53,28 +60,50 @@ namespace HubWeb.Controllers
                 return Ok(curPayloadDTO);
             }
         }
-
+        /// <summary>
+        /// Retrieves all containers belong to plans of current user
+        /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <response code="200">Collection of containers. Can be empty</response>
+        /// <response code="403">Unathorized request</response>
         [Fr8ApiAuthorize]
         [HttpGet]
-        public IHttpActionResult GetIdsByName(string name)
+        [ResponseType(typeof(IEnumerable<ContainerDTO>))]
+        public IHttpActionResult Get()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var containerIds = uow.ContainerRepository.GetQuery().Where(x => x.Name == name).Select(x => x.Id).ToArray();
+                IList<ContainerDO> curContainer = _containerService
+                    .GetByFr8Account(
+                        uow,
+                        _security.GetCurrentAccount(uow),
+                        _security.IsCurrentUserHasRole(Roles.Admin),
+                        null
+                    );
 
-                return Json(containerIds);
+                if (curContainer.Any())
+                {
+                    return Ok(curContainer.Select(Mapper.Map<ContainerDTO>));
+                }
+                return Ok();
             }
         }
 
-        // Return the Containers accordingly to ID given
+        /// <summary>
+        /// Retrieves container with specified Id
+        /// </summary>
+        /// <param name="id">Id of the container</param>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <response code="200">Container with specified Id. Can be empty</response>
+        /// <response code="403">Unathorized request</response>
         [Fr8ApiAuthorize]
-        //[Route("get/{id:guid?}")]
+        [ResponseType(typeof(ContainerDTO))]
         [HttpGet]
-        public IHttpActionResult Get(Guid? id = null)
+        public IHttpActionResult Get(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IList<ContainerDO> curContainer = _container
+                IList<ContainerDO> curContainer = _containerService
                     .GetByFr8Account(
                         uow,
                         _security.GetCurrentAccount(uow),
@@ -84,119 +113,13 @@ namespace HubWeb.Controllers
 
                 if (curContainer.Any())
                 {
-                    if (id.HasValue)
-                    {
-                        return Ok(Mapper.Map<ContainerDTO>(curContainer.First()));
-                    }
-
-                    return Ok(curContainer.Select(Mapper.Map<ContainerDTO>));
+                    return Ok(Mapper.Map<ContainerDTO>(curContainer.First()));
                 }
                 return Ok();
             }
         }
-
       
         //NOTE: IF AND WHEN THIS CLASS GETS USED, IT NEEDS TO BE FIXED TO USE OUR 
         //STANDARD UOW APPROACH, AND NOT CONTACT THE DATABASE TABLE DIRECTLY.
-
-        //private DockyardDbContext db = new DockyardDbContext();
-        // GET: api/Process
-        //public IQueryable<ProcessDO> Get()
-        //{
-        //    return db.Processes;
-        //}
-
-        //// GET: api/Process/5
-        //[ResponseType(typeof(ProcessDO))]
-        //public IHttpActionResult GetProcess(int id)
-        //{
-        //    ProcessDO processDO = db.Processes.Find(id);
-        //    if (processDO == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return Ok(processDO);
-        //}
-
-        //// PUT: api/Process/5
-        //[ResponseType(typeof(void))]
-        //public IHttpActionResult PutProcess(int id, ProcessDO processDO)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-
-        //    if (id != processDO.Id)
-        //    {
-        //        return BadRequest();
-        //    }
-
-        //    db.Entry(processDO).State = EntityState.Modified;
-
-        //    try
-        //    {
-        //        db.SaveChanges();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        //        if (!ProcessDOExists(id))
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
-
-        //    return StatusCode(HttpStatusCode.NoContent);
-        //}
-
-        //// POST: api/Process
-        //[ResponseType(typeof(ProcessDO))]
-        //public IHttpActionResult PostProcessDO(ProcessDO processDO)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-
-        //    db.Processes.Add(processDO);
-        //    db.SaveChanges();
-
-        //    return CreatedAtPlan("DefaultApi", new { id = processDO.Id }, processDO);
-        //}
-
-        //// DELETE: api/Process/5
-        //[ResponseType(typeof(ProcessDO))]
-        //public IHttpActionResult DeleteProcessDO(int id)
-        //{
-        //    ProcessDO processDO = db.Processes.Find(id);
-        //    if (processDO == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    db.Processes.Remove(processDO);
-        //    db.SaveChanges();
-
-        //    return Ok(processDO);
-        //}
-
-        //protected override void Dispose(bool disposing)
-        //{
-        //    if (disposing)
-        //    {
-        //        db.Dispose();
-        //    }
-        //    base.Dispose(disposing);
-        //}
-
-        //private bool ProcessDOExists(int id)
-        //{
-        //    return db.Processes.Count(e => e.Id == id) > 0;
-        //}
     }
 }

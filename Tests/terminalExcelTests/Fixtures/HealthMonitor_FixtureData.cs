@@ -1,5 +1,5 @@
 ﻿using System;
-using Data.Interfaces.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace terminalExcelTests.Fixtures
 {
@@ -18,6 +18,11 @@ namespace terminalExcelTests.Fixtures
             return "https://yardstore1.blob.core.windows.net/default-container-dev/EmailList.xlsx";
         }
 
+        public static string GetFilePath_OneRowWithWithHeader()
+        {
+            return "https://yardstore1.blob.core.windows.net/default-container-dev/OneRow_WithHeader.xlsx";
+        }
+
         public static ActivityTemplateDTO Load_Table_Data_v1_ActivityTemplate()
         {
             return new ActivityTemplateDTO()
@@ -28,7 +33,7 @@ namespace terminalExcelTests.Fixtures
             };
         }
 
-        public static Fr8DataDTO Load_Table_Data_v1_InitialConfiguration_Fr8DataDTO(Guid guid)
+        public static Fr8DataDTO Load_Excel_File_v1_InitialConfiguration_Fr8DataDTO(Guid guid)
         {
             var activityTemplate = Load_Table_Data_v1_ActivityTemplate();
 

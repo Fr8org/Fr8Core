@@ -1,8 +1,8 @@
 ﻿
 module dockyard.services {
     export interface ISolutionDocumentationService extends ng.resource.IResourceClass<interfaces.ISolutionDocumentationVM> {
-        getSolutionDocumentationList: (terminalName: { terminalName:string }) => Array<string>
-        getSolutionDTO: (action: interfaces.IActivityDTO) => ng.resource.IResource<model.SolutionDTO>
+        getSolutionDocumentationList: (terminalName: { terminalName:string }) => Array<string>;
+        getDocumentationResponseDTO: (action: interfaces.IActivityDTO) => ng.resource.IResource<model.DocumentationResponseDTO>;
     }
 
     app.factory("SolutionDocumentationService", ["$resource", ($resource: ng.resource.IResourceService): ISolutionDocumentationService =>
@@ -13,10 +13,10 @@ module dockyard.services {
                     isArray: true,
                     url: "/api/activities/getDocusignsolutionlist"
                 },
-                'getSolutionDTO': {
+                'getDocumentationResponseDTO': {
                     method: "POST",
                     isArray: false,
-                    url: "/api/activities/documentation",
+                    url: "/api/documentation/activity"
                 }
             })
     ]);

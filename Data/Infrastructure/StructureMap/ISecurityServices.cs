@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
-using System.Net.Http;
 using System.Security.Claims;
 using Data.States;
 
@@ -21,6 +19,8 @@ namespace Data.Infrastructure.StructureMap
         void Logout();
         ClaimsIdentity GetIdentity(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO);
         void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType);
+        void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType);
         bool AuthorizeActivity(PermissionType permissionType, string curObjectId, string curObjectType, string propertyName = null);
+        bool UserHasPermission(PermissionType permissionType, string objectType);
     }
 }

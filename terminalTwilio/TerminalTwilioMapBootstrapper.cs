@@ -1,6 +1,6 @@
-﻿using Hub.StructureMap;
+﻿using Fr8.Infrastructure.StructureMap;
 using StructureMap;
-using terminalTwilio.Services;
+using terminalUtilities.Twilio;
 
 namespace terminalTwilio
 {

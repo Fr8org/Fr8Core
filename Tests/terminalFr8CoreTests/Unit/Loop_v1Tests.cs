@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using Data.Crates;
-using Data.Interfaces.Manifests;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.Manifests;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using terminalFr8Core.Actions;
+using terminalFr8Core.Activities;
 
 namespace terminalTests.Unit
 {

@@ -3,12 +3,10 @@ using Data.Entities;
 using NUnit.Framework;
 using StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 using Hub.Interfaces;
-using HubWeb.Controllers;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
-using Data.Interfaces.Manifests;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace HubTests.Entities
 {
@@ -26,14 +24,14 @@ namespace HubTests.Entities
 
                 plan.ChildNodes.Add(subPlan);
                 uow.PlanRepository.Add(plan);
-                plan.StartingSubPlan = subPlan;
+                plan.StartingSubplan = subPlan;
 
                 uow.SaveChanges();
 
                 var result = uow.PlanRepository.GetById<PlanDO>(plan.Id);//.SingleOrDefault(pt => pt.StartingSubPlanId == subPlan.Id);
 
-                Assert.AreEqual(subPlan.Id, result.StartingSubPlan.Id);
-                Assert.AreEqual(subPlan.Name, result.StartingSubPlan.Name);
+                Assert.AreEqual(subPlan.Id, result.StartingSubplan.Id);
+                Assert.AreEqual(subPlan.Name, result.StartingSubplan.Name);
             }
         }
 

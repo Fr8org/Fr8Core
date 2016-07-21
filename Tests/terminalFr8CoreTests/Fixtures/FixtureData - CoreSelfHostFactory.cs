@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using System.Web.Http.Routing;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
 using Microsoft.Owin.Hosting;
 using Owin;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
-using Data.Entities;
 
 namespace terminalFr8CoreTests.Fixtures
 {
@@ -88,7 +84,7 @@ namespace terminalFr8CoreTests.Fixtures
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Label = "ConnectToSql Fr8Core",
+                Label = "Connect_To_Sql Fr8Core",
                 ActivityTemplate = activityTemplate
             };
 
@@ -100,11 +96,11 @@ namespace terminalFr8CoreTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "ConnectToSql_TEST",
+                Name = "Connect_To_Sql_TEST",
                 Version = "1"
             };
         }
-        
+
         public static Fr8DataDTO ExecuteSql_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = ExecuteSql_ActivityTemplate();
@@ -112,7 +108,7 @@ namespace terminalFr8CoreTests.Fixtures
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Label = "ExecuteSql Fr8Core",
+                Label = "Execute_Sql Fr8Core",
                 ActivityTemplate = activityTemplate
             };
 
@@ -124,7 +120,7 @@ namespace terminalFr8CoreTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "ExecuteSql_TEST",
+                Name = "Execute_Sql_TEST",
                 Version = "1"
             };
         }
@@ -136,7 +132,7 @@ namespace terminalFr8CoreTests.Fixtures
             var activityDTO = new ActivityDTO()
             {
                 Id = Guid.NewGuid(),
-                Label = "ExecuteSql Fr8Core",
+                Label = "Execute_Sql Fr8Core",
                 ActivityTemplate = activityTemplate
             };
 
@@ -148,7 +144,7 @@ namespace terminalFr8CoreTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "SaveToFr8Warehouse_TEST",
+                Name = "Save_To_Fr8_Warehouse_TEST",
                 Version = "1"
             };
         }
@@ -175,5 +171,80 @@ namespace terminalFr8CoreTests.Fixtures
             };
         }
 
+        public static Fr8DataDTO Loop_InitialConfiguration_ActivityDTO()
+        {
+            var activityTemplate = Loop_ActivityTemplate();
+
+            var activityDTO = new ActivityDTO()
+            {
+                Id = Guid.NewGuid(),
+                Label = "Loop",
+                ActivityTemplate = activityTemplate
+            };
+            return new Fr8DataDTO() { ActivityDTO = activityDTO };
+        }
+
+        private static ActivityTemplateDTO Loop_ActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Loop_TEST",
+                Version = "1"
+            };
+        }
+
+        public static StandardTableDataCM StandardTableData_Test1()
+        {
+            var headerRow = new TableRowDTO()
+            {
+                Row = new List<TableCellDTO>()
+                {
+                    new TableCellDTO()
+                    {
+                        Cell = new KeyValueDTO("1", "Date")
+                    },
+                    new TableCellDTO()
+                    {
+                        Cell = new KeyValueDTO("2", "Description")
+                    },
+                    new TableCellDTO()
+                    {
+                        Cell = new KeyValueDTO("3", "Phone")
+                    },
+                    new TableCellDTO()
+                    {
+                        Cell = new KeyValueDTO("4", "Travelling")
+                    }
+                }
+            };
+            var dataRow1 = new TableRowDTO()
+            {
+                Row = new List<TableCellDTO>()
+                {
+                    new TableCellDTO()
+                    {
+                        Cell = new KeyValueDTO("5", "30-Dec-2015")
+                    },
+                    new TableCellDTO()
+                    {
+                        Cell = new KeyValueDTO("6", "Trip to Samarkand")
+                    },
+                    new TableCellDTO()
+                    {
+                        Cell = new KeyValueDTO("7", "70")
+                    },
+                    new TableCellDTO()
+                    {
+                        Cell = new KeyValueDTO("8", "90")
+                    }
+                }
+            };
+            return new StandardTableDataCM
+            {
+                FirstRowHeaders = true,
+                Table = new List<TableRowDTO> { headerRow, dataRow1 }
+            };
+        }
     }
 }

@@ -1,18 +1,18 @@
 ﻿using System;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Data.Interfaces.DataTransferObjects;
 using System.Linq;
 using System.Collections.Generic;
-using Hub.Managers;
-using Data.Interfaces.Manifests;
-using Data.Crates;
-using Data.Control;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using terminalSalesforce.Actions;
 using Data.Entities;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace terminalSalesforceTests.Intergration
 {
@@ -38,7 +38,7 @@ namespace terminalSalesforceTests.Intergration
                 initialPlanId = await CreatePlan_GetSalesforceDataIntoSendEmail(authTokenDO);
 
                 //get the full plan which is created
-                var plan = await HttpGetAsync<PlanDTO>(_baseUrl + "Plans/full?id=" + initialPlanId.ToString());
+                var plan = await HttpGetAsync<PlanDTO>(_baseUrl + "Plans?include_children=true&id=" + initialPlanId.ToString());
                 Debug.WriteLine("Created plan with all activities.");
 
                 //make get salesforce data to get Lead
@@ -54,8 +54,6 @@ namespace terminalSalesforceTests.Intergration
                 (configControls.Content.Controls.Single(c => c.Name.Equals(nameof(Get_Data_v1.ActivityUi.SalesforceObjectFilter))) as QueryBuilder).Value = JsonConvert.SerializeObject(conditionQuery);
                 }
                 getData = await ConfigureActivity(getData);
-            Assert.IsTrue(getData.CrateStorage.Crates.Any(c => c.Label.Equals(Get_Data_v1.SalesforceObjectFieldsCrateLabel)), 
-                              "Follow up configuration is not getting any Salesforce Object Fields");
                 Debug.WriteLine("Get Lead using condition is successful in the Follow Up Configure");
 
                 //prepare the send email activity controls.
@@ -96,9 +94,9 @@ namespace terminalSalesforceTests.Intergration
         private async Task<Guid> CreatePlan_GetSalesforceDataIntoSendEmail(AuthorizationTokenDO authToken)
         {
             //get required activity templates
-            var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(_baseUrl + "plannodes/available");
+            var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(_baseUrl + "activity_templates");
             var getData = activityTemplates.Single(at => at.Name.Equals("Receivers")).Activities.Single(a => a.Name.Equals("Get_Data"));
-            var sendEmail = activityTemplates.Single(at => at.Name.Equals("Forwarders")).Activities.Single(a => a.Name.Equals("SendEmailViaSendGrid"));
+            var sendEmail = activityTemplates.Single(at => at.Name.Equals("Forwarders")).Activities.Single(a => a.Name.Equals("Send_Email_Via_SendGrid"));
             Assert.IsNotNull(getData, "Get Salesforce Data activity is not available");
             Assert.IsNotNull(sendEmail, "Send Email activity is not available");
             Debug.WriteLine("Got required activity templates.");
@@ -111,7 +109,7 @@ namespace terminalSalesforceTests.Intergration
             Debug.WriteLine("Created initial plan without actions");
 
             string mainUrl = _baseUrl + "activities/create";
-            var postUrl = "?actionTemplateId={0}&createPlan=false";
+            var postUrl = "?activityTemplateId={0}&createPlan=false";
             var formattedPostUrl = string.Format(postUrl, getData.Id);
             formattedPostUrl += "&parentNodeId=" + initialPlan.Plan.StartingSubPlanId;
             formattedPostUrl += "&authorizationTokenId=" + authToken.Id.ToString();
@@ -141,7 +139,7 @@ namespace terminalSalesforceTests.Intergration
 
             if (authTokenDO != null)
             {
-                await HttpPostAsync<string>(_baseUrl + "manageauthtoken/revoke?id=" + authTokenDO.Id.ToString(), null);
+                await HttpPostAsync<string>(_baseUrl + "authentication/tokens/revoke?id=" + authTokenDO.Id.ToString(), null);
             }
         }
     }

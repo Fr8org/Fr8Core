@@ -90,6 +90,25 @@ namespace Hub.Services
             return GetFile(fileId, null);
         }
 
+        public FileDO GetFile(string filePath, string dockyardAccountId)
+        {
+            FileDO file = null;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                file = uow.FileRepository.GetQuery().FirstOrDefault(f => f.CloudStorageUrl == filePath);
+                if (file != null)
+                {
+                    if (dockyardAccountId != null && file.DockyardAccountID != dockyardAccountId)
+                    {
+                        return null;
+                    }
+                }
+
+                return file;
+            }
+        }
+
         public FileDO GetFile(int fileId, string dockyardAccountId)
         {
             FileDO file = null;

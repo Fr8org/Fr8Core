@@ -9,12 +9,12 @@ module dockyard {
         (input : number): string => {
             switch (input)
             {
-            case model.PlanState.Active:
-                return "Active";
-            case model.PlanState.Inactive:
-                return "Inactive";
-            default:
-                return "Inactive";
+                case model.PlanState.Running:
+                    return "Running";
+                case model.PlanState.Inactive:
+                    return "Inactive";
+                default:
+                    return "Inactive";
             }
         });
 }

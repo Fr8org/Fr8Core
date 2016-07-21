@@ -1,18 +1,22 @@
-﻿
-using Data.Entities;
+﻿using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
 using Salesforce.Common;
 using StructureMap;
 using System;
 using System.Threading.Tasks;
-using terminalSalesforce.Infrastructure;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Interfaces;
+using Moq;
+using Newtonsoft.Json;
 
 namespace terminalSalesforceTests.Fixtures
 {
     public static class HealthMonitor_FixtureData
     {
+        private static readonly CrateManager CrateManager = new CrateManager();
         public static async Task<AuthorizationTokenDTO> Salesforce_AuthToken()
         {
             var auth = new AuthenticationClient();
@@ -24,9 +28,20 @@ namespace terminalSalesforceTests.Fixtures
 
             return new AuthorizationTokenDTO()
             {
-                Token = auth.AccessToken,
-                AdditionalAttributes = string.Format("refresh_token=;instance_url={0};api_version={1}", auth.InstanceUrl, auth.ApiVersion)
+                ExternalAccountId = "611998545425677937",
+                Token = JsonConvert.SerializeObject(new { AccessToken = auth.AccessToken }),
+                AdditionalAttributes = string.Format("instance_url={0};api_version={1}", auth.InstanceUrl, auth.ApiVersion)
             };                                                                                                                            
+        }
+        public static void ConfigureHubToReturnEmptyPayload()
+        {
+            var result = new PayloadDTO(Guid.Empty);
+            using (var storage = CrateManager.GetUpdatableStorage(result))
+            {
+                storage.Add(Crate.FromContent(string.Empty, new OperationalStateCM()));
+            }
+            ObjectFactory.Container.GetInstance<Mock<IHubCommunicator>>().Setup(x => x.GetPayload(It.IsAny<Guid>()))
+                               .Returns(Task.FromResult(result));
         }
 
         public static async Task<AuthorizationTokenDO> CreateSalesforceAuthToken()
@@ -41,11 +56,11 @@ namespace terminalSalesforceTests.Fixtures
 
                 var tokenDO = new AuthorizationTokenDO()
                 {
+                    ExternalAccountId = tokenDTO.ExternalAccountId,
                     Token = tokenDTO.Token,
                     TerminalID = terminalId,
-                    UserDO = userDO,
+                    UserID = userDO.Id,
                     AdditionalAttributes = tokenDTO.AdditionalAttributes,
-                    ExpiresAt = DateTime.Today.AddMonths(1)
                 };
 
                 uow.AuthorizationTokenRepository.Add(tokenDO);

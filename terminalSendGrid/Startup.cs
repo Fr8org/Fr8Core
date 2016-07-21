@@ -1,20 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
 using Microsoft.Owin;
-using Newtonsoft.Json;
 using Owin;
-using TerminalBase;
-using TerminalBase.BaseClasses;
 using System.Web.Http.Dispatcher;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
+using terminalSendGrid.Activities;
 
 [assembly: OwinStartup("SendGridStartup", typeof(terminalSendGrid.Startup))]
 namespace terminalSendGrid
 {
     public class Startup : BaseConfiguration
     {
+        public Startup()
+            : base(TerminalData.TerminalDTO)
+        {
+        }
+
         public void Configuration(IAppBuilder app)
         {
             Configuration(app, false);
@@ -23,6 +25,7 @@ namespace terminalSendGrid
         public void Configuration(IAppBuilder app, bool selfHost)
         {
             ConfigureProject(selfHost, TerminalSendGridStructureMapBootstrapper.LiveConfiguration);
+            SwaggerConfig.Register(_configuration);
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
 
@@ -30,7 +33,7 @@ namespace terminalSendGrid
 
             if (!selfHost)
             {
-                StartHosting("terminalSendGrid");
+                StartHosting();
             }
         }
 
@@ -40,6 +43,10 @@ namespace terminalSendGrid
                     typeof(Controllers.ActivityController),
                     typeof(Controllers.TerminalController)
                 };
+        }
+        protected override void RegisterActivities()
+        {
+            ActivityStore.RegisterActivity<Send_Email_Via_SendGrid_v1>(Send_Email_Via_SendGrid_v1.ActivityTemplateDTO);
         }
     }
 }

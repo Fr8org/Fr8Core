@@ -166,22 +166,6 @@ namespace Data.Repositories.Security.StorageImpl.Cache
             }
         }
 
-        private void DropCachedPermissionSetObject(string id)
-        {
-            lock (_sync)
-            {
-                _cachedPermissionSetObjects.Remove(id);
-            }
-        }
-
-        private void DropCachedProfileObject(string id)
-        {
-            lock (_sync)
-            {
-                _cachedProfileObjects.Remove(id);
-            }
-        }
-
         private void RemoveExpiredPermissionSets()
         {
             lock (_sync)

@@ -5,12 +5,14 @@ module dockyard.controllers.NotifierController {
     
     export class Fr8InternalEvent {
         data: any;
-        type: string;
+        type: dockyard.directives.NotificationType;
     }
     export interface INotifierControllerScope extends ng.IScope {
         eventList: Array<Fr8InternalEvent>;
+        planIsRunning: Boolean;
     }
 
+    import designHeaderEvents = dockyard.Fr8Events.DesignerHeader;
 
     class NotifierController {
         // $inject annotation.
@@ -25,8 +27,6 @@ module dockyard.controllers.NotifierController {
             '$scope'
         ];
 
-        
-
         constructor(
             private UserService: services.IUserService,
             private PusherNotifierService: services.IPusherNotifierService,
@@ -34,60 +34,60 @@ module dockyard.controllers.NotifierController {
             private $mdSidenav: any,
             private $scope: INotifierControllerScope) {
 
+            // liner-progress-bar controll
+            $scope.planIsRunning = false;
+
+            this.$scope.$on(<any>designHeaderEvents.PLAN_EXECUTION_STARTED,
+                (event: ng.IAngularEvent) => {
+                    $scope.planIsRunning = true;
+                });
+
+            this.$scope.$on(<any>designHeaderEvents.PLAN_EXECUTION_STOPPED,
+                (event: ng.IAngularEvent) => {
+                    $scope.planIsRunning = false;
+                });
+
             UserService.getCurrentUser().$promise.then(data => {
                 $scope.eventList = [];
-                
-                PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, dockyard.services.pusherNotifierSuccessEvent, (data: any) => {
-                    /*this.$mdSidenav('right')
-                        .toggle()
-                        .then(function () {
-                        });*/
+
+                var channel: string = data.id;
+
+                PusherNotifierService.bindEventToChannel(channel, dockyard.directives.NotificationType[dockyard.directives.NotificationType.GenericSuccess], (data: any) => {
                     var event = new Fr8InternalEvent();
-                    event.type = event.type = dockyard.services.pusherNotifierSuccessEvent;
+                    event.type = dockyard.directives.NotificationType.GenericSuccess;
                     event.data = data;
                     this.$scope.eventList.splice(0,0,event);
-                    //ngToast.create(data);
-
                 });
 
-                PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, dockyard.services.pusherNotifierTerminalEvent, (data: any) => {
+                PusherNotifierService.bindEventToChannel(channel, dockyard.directives.NotificationType[dockyard.directives.NotificationType.GenericFailure], (data: any) => {
                     var event = new Fr8InternalEvent();
-                    event.type = dockyard.services.pusherNotifierTerminalEvent;
+                    event.type = dockyard.directives.NotificationType.GenericFailure;
                     event.data = data;
                     this.$scope.eventList.splice(0, 0, event);
                 });
 
-                PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, dockyard.services.pusherNotifierExecutionEvent, (data: any) => {
-                   /* this.$mdSidenav('right')
-                        .toggle()
-                        .then(function () {
-                        });*/
-                    //var contentTemplate = "<label class='toast-activity-info'>Executing Activity: " + data.ActivityName + "</label><label class='toast-activity-info'>For Plan: " + data.PlanName + "</label> <label class='toast-activity-info'>Container: " + data.ContainerId +"</label>";
+                PusherNotifierService.bindEventToChannel(channel, dockyard.directives.NotificationType[dockyard.directives.NotificationType.GenericInfo], (data: any) => {
                     var event = new Fr8InternalEvent();
-                    event.type = dockyard.services.pusherNotifierExecutionEvent;
+                    event.type = dockyard.directives.NotificationType.GenericInfo;
                     event.data = data;
                     this.$scope.eventList.splice(0, 0, event);
-                    //ngToast.create({
-                    //    className : "success",
-                    //    content : contentTemplate
-                    //});
                 });
 
-                PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, dockyard.services.pusherNotifierFailureEvent, (data: any) => {
-                    /*this.$mdSidenav('right')
-                        .toggle()   
-                        .then(function () {
-                        });*/
+                PusherNotifierService.bindEventToChannel(channel, dockyard.directives.NotificationType[dockyard.directives.NotificationType.TerminalEvent], (data: any) => {
                     var event = new Fr8InternalEvent();
-                    event.type = dockyard.services.pusherNotifierFailureEvent;
+                    event.type = dockyard.directives.NotificationType.TerminalEvent;
                     event.data = data;
                     this.$scope.eventList.splice(0, 0, event);
-                    //ngToast.danger(data);
+                });
+
+                PusherNotifierService.bindEventToChannel(channel, dockyard.directives.NotificationType[dockyard.directives.NotificationType.ExecutionStopped], (data: any) => {
+                    var event = new Fr8InternalEvent();
+                    event.type = dockyard.directives.NotificationType.ExecutionStopped;
+                    event.data = data;
+                    this.$scope.eventList.splice(0, 0, event);
                 });
             });
         }
     }
-
     app.controller('NotifierController', NotifierController);
-   
 }

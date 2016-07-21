@@ -1,17 +1,16 @@
-﻿using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using HealthMonitor.Utility;
+﻿using Fr8.Testing.Integration;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using Hub.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Data.States;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -34,7 +33,7 @@ namespace terminalDocuSignTests.Integration
 
             string baseUrl = GetHubApiBaseUrl();
 
-            var solutionCreateUrl = baseUrl + "activities/create?solutionName=Extract_Data_From_Envelopes";
+            var solutionCreateUrl = baseUrl + "plans?solution_name=Extract_Data_From_Envelopes";
 
             //
             // Create solution
@@ -73,30 +72,30 @@ namespace terminalDocuSignTests.Integration
             _solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "activities/configure?id=" + _solution.Id, _solution);
             _crateStorage = Crate.FromDto(_solution.CrateStorage);
             Assert.AreEqual(2, _solution.ChildrenActivities.Count(), "Solution child activities failed to create.");
-            Assert.True(_solution.ChildrenActivities.Any(a => a.Label == "Monitor DocuSign Envelope Activity" && a.Ordering == 1),
+            Assert.True(_solution.ChildrenActivities.Any(a => a.Name == "Monitor DocuSign Envelope Activity" && a.Ordering == 1),
                 "Failed to detect Monitor DocuSign Envelope Activity as the first child activity");
-            Assert.True(_solution.ChildrenActivities.Any(a => a.Label == "Send DocuSign Envelope" && a.Ordering == 2),
+            Assert.True(_solution.ChildrenActivities.Any(a => a.Name == "Send DocuSign Envelope" && a.Ordering == 2),
                 "Failed to detect Send DocuSign Envelope as the second child activity");
 
 
             var monitorDocuSignEnvelopeActivity = _solution.ChildrenActivities
-                .Single(x => x.Label == "Monitor DocuSign Envelope Activity");
+                .Single(x => x.Name == "Monitor DocuSign Envelope Activity");
 
             //
             // Apply auth-token to child MonitorDocuSignEvnelope activity.
             //
             if (monitorDocuSignEnvelopeActivity.ActivityTemplate.NeedsAuthentication)
             {
-                var applyToken = new ManageAuthToken_Apply()
+                var applyToken = new AuthenticationTokenGrantDTO()
                 {
                     ActivityId = monitorDocuSignEnvelopeActivity.Id,
                     AuthTokenId = authTokenId,
                     IsMain = false
                 };
 
-                await HttpPostAsync<ManageAuthToken_Apply[], string>(
-                    _baseUrl + "ManageAuthToken/apply",
-                    new ManageAuthToken_Apply[] { applyToken }
+                await HttpPostAsync<AuthenticationTokenGrantDTO[], string>(
+                    _baseUrl + "authentication/tokens/grant",
+                    new AuthenticationTokenGrantDTO[] { applyToken }
                 );
             }
 
@@ -161,20 +160,20 @@ namespace terminalDocuSignTests.Integration
             //
             // Configure Send DocuSign Envelope action
             //
-            var sendEnvelopeAction = _solution.ChildrenActivities.Single(a => a.Label == "Send DocuSign Envelope");
+            var sendEnvelopeAction = _solution.ChildrenActivities.Single(a => a.Name == "Send DocuSign Envelope");
 
             if (sendEnvelopeAction.ActivityTemplate.NeedsAuthentication)
             {
-                var applyToken = new ManageAuthToken_Apply()
+                var applyToken = new AuthenticationTokenGrantDTO()
                 {
                     ActivityId = sendEnvelopeAction.Id,
                     AuthTokenId = authTokenId,
                     IsMain = false
                 };
 
-                await HttpPostAsync<ManageAuthToken_Apply[], string>(
-                    _baseUrl + "ManageAuthToken/apply",
-                    new ManageAuthToken_Apply[] { applyToken }
+                await HttpPostAsync<AuthenticationTokenGrantDTO[], string>(
+                    _baseUrl + "authentication/tokens/grant",
+                    new AuthenticationTokenGrantDTO[] { applyToken }
                 );
             }
 
@@ -182,41 +181,38 @@ namespace terminalDocuSignTests.Integration
                 _baseUrl + "activities/configure?id=" + sendEnvelopeAction.Id,
                 sendEnvelopeAction
             );
-
-            _crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
-            controlsCrate = _crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
-
-            docuSignTemplate = controlsCrate.Content.Controls.OfType<DropDownList>().First();
-            docuSignTemplate.Value = "9a4d2154-5b18-4316-9824-09432e62f458";
-            docuSignTemplate.selectedKey = "Medical_Form_v1";
-            docuSignTemplate.ListItems.Add(new ListItem() { Value = "9a4d2154-5b18-4316-9824-09432e62f458", Key = "Medical_Form_v1" });
+           
 
             using (var updatableStorage = Crate.GetUpdatableStorage(sendEnvelopeAction))
             {
-                updatableStorage.Remove<StandardConfigurationControlsCM>();
-                updatableStorage.Add(controlsCrate);
+                controlsCrate = updatableStorage.CratesOfType<StandardConfigurationControlsCM>().First();
+
+                docuSignTemplate = controlsCrate.Content.Controls.OfType<DropDownList>().First();
+                docuSignTemplate.Value = "9a4d2154-5b18-4316-9824-09432e62f458";
+                docuSignTemplate.selectedKey = "Medical_Form_v1";
+                docuSignTemplate.ListItems.Add(new ListItem() { Value = "9a4d2154-5b18-4316-9824-09432e62f458", Key = "Medical_Form_v1" });
             }
 
             sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", sendEnvelopeAction);
             sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", sendEnvelopeAction);
 
             // Follow-up Configuration
-            _crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
-            controlsCrate = _crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
-            var emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role email");
-            emailField.ValueSource = "specific";
-            emailField.Value = TestEmail;
-            emailField.TextValue = TestEmail;
 
-            var emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role name");
-            emailNameField.ValueSource = "specific";
-            emailNameField.Value = TestEmailName;
-            emailNameField.TextValue = TestEmailName;
+            TextSource emailField;
+            TextSource emailNameField;
 
             using (var updatableStorage = Crate.GetUpdatableStorage(sendEnvelopeAction))
             {
-                updatableStorage.Remove<StandardConfigurationControlsCM>();
-                updatableStorage.Add(controlsCrate);
+                controlsCrate = updatableStorage.CratesOfType<StandardConfigurationControlsCM>().First();
+                emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "freight testing role email");
+                emailField.ValueSource = "specific";
+                emailField.Value = TestEmail;
+                emailField.TextValue = TestEmail;
+
+                emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "freight testing role name");
+                emailNameField.ValueSource = "specific";
+                emailNameField.Value = TestEmailName;
+                emailNameField.TextValue = TestEmailName;
             }
 
             sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", sendEnvelopeAction);
@@ -228,11 +224,11 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual("9a4d2154-5b18-4316-9824-09432e62f458", docuSignTemplate.Value, "Selected DocuSign Template did not save on Send DocuSign Envelope action.");
             Assert.AreEqual("Medical_Form_v1", docuSignTemplate.selectedKey, "Selected DocuSign Template did not save on Send DocuSign Envelope action.");
 
-            emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role email");
+            emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "freight testing role email");
             Assert.AreEqual(TestEmail, emailField.Value, "Email did not save on Send DocuSign Envelope action.");
             Assert.AreEqual(TestEmail, emailField.TextValue, "Email did not save on Send DocuSign Envelope action.");
 
-            emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role name");
+            emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "freight testing role name");
             Assert.AreEqual(TestEmailName, emailNameField.Value, "Email Name did not save on Send DocuSign Envelope action.");
             Assert.AreEqual(TestEmailName, emailNameField.TextValue, "Email Name did not save on Send DocuSign Envelope action.");
 
@@ -240,14 +236,14 @@ namespace terminalDocuSignTests.Integration
             await HttpDeleteAsync(_baseUrl + "activities?id=" + _solution.ChildrenActivities[0].Id);
 
             // Add Add Payload Manually action
-            var activityCategoryParam = new ActivityCategory[] { ActivityCategory.Processors };
-            var activityTemplates = await HttpPostAsync<ActivityCategory[], List<WebServiceActivitySetDTO>>(_baseUrl + "webservices/activities", activityCategoryParam);
-            var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == "AddPayloadManually");
+            var activityCategoryParam =(int)ActivityCategory.Processors;
+            var activityTemplates = await HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseUrl + "webservices?id="+ activityCategoryParam);
+            var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == "Add_Payload_Manually");
 
             var apmAction = new ActivityDTO()
             {
                 ActivityTemplate = apmActivityTemplate,
-                Label = apmActivityTemplate.Label,
+                Name = apmActivityTemplate.Label,
                 ParentPlanNodeId = _solution.Id,
                 RootPlanNodeId = plan.Plan.Id
             };
@@ -301,8 +297,8 @@ namespace terminalDocuSignTests.Integration
             if (stAuthCrate != null)
             {
                 var terminalsAndTokens =
-                    await HttpGetAsync<ManageAuthToken_Terminal[]>(
-                        _baseUrl + "manageauthtoken/"
+                    await HttpGetAsync<AuthenticationTokenTerminalDTO[]>(
+                        _baseUrl + "authentication/tokens"
                     );
 
                 var terminalDocuSign = terminalsAndTokens
@@ -342,16 +338,16 @@ namespace terminalDocuSignTests.Integration
 
             if (solution.ActivityTemplate.NeedsAuthentication)
             {
-                var applyToken = new ManageAuthToken_Apply()
+                var applyToken = new AuthenticationTokenGrantDTO()
                 {
                     ActivityId = solution.Id,
                     AuthTokenId = tokenGuid.Value,
                     IsMain = false
                 };
 
-                await HttpPostAsync<ManageAuthToken_Apply[], string>(
-                    _baseUrl + "ManageAuthToken/apply",
-                    new ManageAuthToken_Apply[] { applyToken }
+                await HttpPostAsync<AuthenticationTokenGrantDTO[], string>(
+                    _baseUrl + "authentication/tokens/grant",
+                    new AuthenticationTokenGrantDTO[] { applyToken }
                 );
             }
 

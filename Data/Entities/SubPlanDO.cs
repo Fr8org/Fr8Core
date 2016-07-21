@@ -4,21 +4,21 @@ using System.Reflection;
 
 namespace Data.Entities
 {
-    public class SubPlanDO : PlanNodeDO
+    public class SubplanDO : PlanNodeDO
     {
         private static readonly PropertyInfo[] TrackingProperties =
         {
-            typeof (SubPlanDO).GetProperty(nameof(Name)),
-            typeof (SubPlanDO).GetProperty(nameof(StartingSubPlan)),
-            typeof (SubPlanDO).GetProperty(nameof(NodeTransitions)),
+            typeof (SubplanDO).GetProperty(nameof(Name)),
+            typeof (SubplanDO).GetProperty(nameof(StartingSubPlan)),
+            typeof (SubplanDO).GetProperty(nameof(NodeTransitions)),
         };
 
-        public SubPlanDO(bool startingSubPlan)
+        public SubplanDO(bool startingSubPlan)
         {
             StartingSubPlan = startingSubPlan;
         }
 
-        public SubPlanDO()
+        public SubplanDO()
             : this(false)
         {
         }
@@ -73,12 +73,12 @@ namespace Data.Entities
 
         protected override PlanNodeDO CreateNewInstance()
         {
-            return new SubPlanDO();
+            return new SubplanDO();
         }
 
         protected override void CopyProperties(PlanNodeDO source)
         {
-            var subPlan = (SubPlanDO)source;
+            var subPlan = (SubplanDO)source;
 
             base.CopyProperties(source);
             Name = subPlan.Name;

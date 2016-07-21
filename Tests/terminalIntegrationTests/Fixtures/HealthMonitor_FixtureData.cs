@@ -1,27 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.DataTransferObjects.Helpers;
-using Data.Interfaces.Manifests;
 using Data.States;
-using Hub.Interfaces;
-using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
 using Salesforce.Common;
-using HealthMonitor.Utility;
+using Fr8.Testing.Integration;
 
 namespace terminalIntegrationTests.Fixtures
 {
@@ -43,14 +31,14 @@ namespace terminalIntegrationTests.Fixtures
                 Id = Guid.NewGuid(),
                 Description = name,
                 Name = name,
-                PlanState = PlanState.Active,
+                PlanState = PlanState.Running,
             };
             return curPlanDO;
         }
 
-        public static SubPlanDO TestSubPlanHealthDemo(Guid parentNodeId)
+        public static SubplanDO TestSubPlanHealthDemo(Guid parentNodeId)
         {
-            var SubPlanDO = new SubPlanDO
+            var SubPlanDO = new SubplanDO
             {
                 Id = Guid.NewGuid(),
                 ParentPlanNodeId = parentNodeId,
@@ -81,8 +69,8 @@ namespace terminalIntegrationTests.Fixtures
 
             return new AuthorizationTokenDTO()
             {
-                Token = auth.AccessToken,
-                AdditionalAttributes = string.Format("refresh_token=;instance_url={0};api_version={1}", auth.InstanceUrl, auth.ApiVersion)
+                Token = JsonConvert.SerializeObject(new { AccessToken = auth.AccessToken }),
+                AdditionalAttributes = string.Format("instance_url={0};api_version={1}", auth.InstanceUrl, auth.ApiVersion)
             };
         }
 
@@ -100,9 +88,8 @@ namespace terminalIntegrationTests.Fixtures
                 {
                     Token = tokenDTO.Token,
                     TerminalID = terminalId,
-                    UserDO = userDO,
+                    UserID = userDO.Id,
                     AdditionalAttributes = tokenDTO.AdditionalAttributes,
-                    ExpiresAt = DateTime.Today.AddMonths(1)
                 };
 
                 uow.AuthorizationTokenRepository.Add(tokenDO);
@@ -120,7 +107,7 @@ namespace terminalIntegrationTests.Fixtures
                 IsDemoAccount = true
             };
 
-            string endpoint = integrationTest.GetTerminalUrl() + "/authentication/internal";
+            string endpoint = integrationTest.GetTerminalUrl() + "/authentication/token";
             var jobject = await integrationTest.HttpPostAsync<CredentialsDTO, JObject>(endpoint, creds);
             var result = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(jobject.ToString());
             Assert.IsNullOrEmpty(result.Error, "Failed to aquire DocuSign auth token");

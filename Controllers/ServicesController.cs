@@ -1,12 +1,9 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using Hub.Interfaces;
+﻿using Hub.Interfaces;
 using StructureMap;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace HubWeb.Controllers
 {
@@ -17,7 +14,7 @@ namespace HubWeb.Controllers
         {
             _terminal = ObjectFactory.GetInstance<ITerminal>();
         }
-        private async Task<List<SolutionPageDTO>> getDocumentationSolutionList(string terminalName)
+        private async Task<List<DocumentationResponseDTO>> getDocumentationSolutionList(string terminalName)
         {
             var solutionNameList = await _terminal.GetSolutionDocumentations(terminalName);
             return solutionNameList;

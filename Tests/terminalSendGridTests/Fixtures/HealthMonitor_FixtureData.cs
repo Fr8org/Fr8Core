@@ -1,13 +1,5 @@
-﻿using Data.Crates;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
-using Hub.Managers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace terminalSendGridTests.Fixtures
 {
@@ -18,7 +10,7 @@ namespace terminalSendGridTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "SendEmailViaSendGrid_TEST",
+                Name = "Send_Email_Via_SendGrid_TEST",
                 Version = "1"
             };
         }

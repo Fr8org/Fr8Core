@@ -5,10 +5,8 @@ using Data.States.Templates;
 using System.Linq;
 using System;
 using System.Reflection;
-using Data.Infrastructure.StructureMap;
-using StructureMap;
-using Data.Interfaces;
 using Data.States;
+using Fr8.Infrastructure.Data.States;
 
 namespace Data.Entities
 {
@@ -45,7 +43,7 @@ namespace Data.Entities
         {
             get
             {
-                var startingSubPlan = ChildNodes.OfType<SubPlanDO>()
+                var startingSubPlan = ChildNodes.OfType<SubplanDO>()
                     .SingleOrDefault(pnt => pnt.StartingSubPlan == true);
                 if (null != startingSubPlan)
                 {
@@ -60,7 +58,7 @@ namespace Data.Entities
         }
 
         [NotMapped]
-        public SubPlanDO StartingSubPlan
+        public SubplanDO StartingSubplan
         {
             get
             {
@@ -99,11 +97,11 @@ namespace Data.Entities
         public string Category { get; set; }
 
         [NotMapped]
-        public IEnumerable<SubPlanDO> SubPlans
+        public IEnumerable<SubplanDO> SubPlans
         {
             get
             {
-                return ChildNodes.OfType<SubPlanDO>();
+                return ChildNodes.OfType<SubplanDO>();
             }
         }
 
@@ -138,39 +136,5 @@ namespace Data.Entities
             Category = plan.Category;
             LastUpdated = plan.LastUpdated;
         }
-
-        public bool IsOngoingPlan()
-        {
-            bool isOngoingPlan = false;
-            var initialActivity = this.StartingSubPlan.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault() as ActivityDO;
-            if (initialActivity != null)
-            {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    var activityTemplate = uow.ActivityTemplateRepository.GetByKey(initialActivity.ActivityTemplateId);
-                    if (activityTemplate.Category == ActivityCategory.Solution)
-                    {
-                        // Handle solutions
-                        initialActivity = initialActivity.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault() as ActivityDO;
-                        if (initialActivity != null)
-                        {
-                            activityTemplate = uow.ActivityTemplateRepository.GetByKey(initialActivity.ActivityTemplateId);
-                        }
-                        else
-                        {
-                            return isOngoingPlan;
-                        }
-                    }
-
-                    if (activityTemplate != null && activityTemplate.Category == ActivityCategory.Monitors)
-                    {
-                        isOngoingPlan = true;
-                    }
-                }
-            }
-            return isOngoingPlan;
-        }
-
-
     }
 }

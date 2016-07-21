@@ -1,11 +1,18 @@
 ﻿<label class="control-label" ng-if="field.label">{{::field.label}}</label>
 <p class="input-group">
-    <input type="text" class="form-control form-control-focus" datepicker-popup="{{dateFormat}}"
-            ng-model="fieldValue" datepicker-append-to-body="true"
-            ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 } }"
-            is-open="opened" date-picker-options="dateOptions" ng-required="field.required"
-            data-field-name="{{::field.name}}" id="pca__txt__{{::field.name | validId}}"
-            stop-click-propagation />
+    <input
+        type="text" 
+        class="form-control form-control-focus"
+        id="pca__txt__{{::field.name | validId}}"
+        datepicker-popup="{{dateFormat}}"
+        datepicker-append-to-body="true"
+        ng-model="fieldValue"
+        ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 } }"
+        is-open="opened"
+        date-picker-options="dateOptions" 
+        ng-required="field.required"
+        data-field-name="{{::field.name}}"
+        stop-click-propagation />
     <span class="input-group-btn">
         <button type="button" class="btn btn-default" ng-click="open()" title="Click to show popup"><i class="glyphicon glyphicon-calendar"></i></button>
     </span>

@@ -9,7 +9,7 @@
 /// <reference path="interfaces/iquerybuilderwidgetscope.ts" />
 /// <reference path="interfaces/iplanbuilder.ts" />
 /// <reference path="interfaces/iuser.ts" />
-
+/// <reference path="interfaces/iprofile.ts" />
 
 /*
     MODEL
@@ -23,6 +23,7 @@
 /// <reference path="model/controlslist.ts" />
 /// <reference path="model/planbuilderstate.ts" />
 /// <reference path="model/user.ts" />
+/// <reference path="model/Profile.ts" />
 /// <reference path="model/WebServiceActionSetDTO.ts" />
 
 /*
@@ -49,14 +50,11 @@
 /// <reference path="directives/paneworkflowdesigner/messages.ts" />
 /// <reference path="directives/paneworkflowdesigner/paneworkflowdesigner.ts" />
 
-/// <reference path="directives/querybuilderwidget.ts" />
-
 
 /*
     CONTROLLERS
 */
 /// <reference path="controllers/planbuildercontroller.ts" />
-/// <reference path="controllers/planformcontroller.ts" />
 /// <reference path="controllers/planlistcontroller.ts" />
 /// <reference path="controllers/managefilelistcontroller.ts" />
 
@@ -64,7 +62,7 @@
 /*
     LIBRARIES    
 */
-/// <reference path="../typings/jquery/jquery.d.ts" />
+// <reference path="../typings/jquery/jquery.d.ts" />
 
 
 

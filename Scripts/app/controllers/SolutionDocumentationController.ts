@@ -4,8 +4,8 @@ module dockyard.controllers {
     'use strict';
 
     export interface ISolutionDocumentationScope extends ng.IScope {
-        solutionDTO: ng.resource.IResource<model.SolutionDTO>;
-        solutionDTOList: Array<model.SolutionDTO>;
+        solutionDTO: ng.resource.IResource<model.DocumentationResponseDTO>;
+        solutionDTOList: Array<model.DocumentationResponseDTO>;
         solutionNameList: Array<string>;
         terminalName: string;
     }
@@ -26,7 +26,7 @@ module dockyard.controllers {
             private SolutionDocumentationService: services.ISolutionDocumentationService
         ) {
 
-            $scope.solutionDTOList = Array<model.SolutionDTO>();
+            $scope.solutionDTOList = Array<model.DocumentationResponseDTO>();
 
             SolutionDocumentationService.getSolutionDocumentationList({ terminalName: $scope.terminalName }).$promise.then(function (data) {
                 $scope.solutionNameList = data;
@@ -40,11 +40,11 @@ module dockyard.controllers {
                     activityDTO.documentation = "MainPage";
                     activityDTO.activityTemplate = activityTemplate;
 
-                    SolutionDocumentationService.getSolutionDTO(activityDTO).$promise.then(data=> {
+                    SolutionDocumentationService.getDocumentationResponseDTO(activityDTO).$promise.then(data=> {
                         var activityName = activityDTO.activityTemplate.name;
 
                         if (data) {
-                            var solutionDTO = new dockyard.model.SolutionDTO(data.name, data.version, data.terminal, data.body, activityName);
+                            var solutionDTO = new dockyard.model.DocumentationResponseDTO(data.name, data.version, data.terminal, data.body, activityName);
                             $scope.solutionDTOList.push(solutionDTO);
                         }
                     });

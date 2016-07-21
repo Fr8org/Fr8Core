@@ -5,8 +5,7 @@ module dockyard.controllers {
 
     export interface IManifestRegistryListScope extends ng.IScope {
         manifestRegistry: Array<interfaces.IManifestRegistryVM>;
-        showAddManifestDescriptionModal: () => void;
-        showModalWithPopulatedValues: (manifestDescription: interfaces.IManifestRegistryVM) => void;
+        goToManifestSubmissionForm:() => void;
     }
 
     class ManifestRegistryListController {
@@ -18,61 +17,29 @@ module dockyard.controllers {
         public static $inject = [
             '$scope',
             'ManifestRegistryService',
-            '$modal'
+            '$modal',
+            '$http'
         ];
 
         constructor(
             private $scope: IManifestRegistryListScope,
             private ManifestRegistryService: services.IManifestRegistryService,
-            private $modal: any) {
+            private $modal: any,
+            private $http: any) {
 
-            $scope.showAddManifestDescriptionModal = <() => void> angular.bind(this, this.showAddManifestDescriptionModal);
-            $scope.showModalWithPopulatedValues = <(manifestDescription: interfaces.IManifestRegistryVM) => void> angular.bind(this, this.showModalWithPopulatedValues);
+            $scope.goToManifestSubmissionForm = function () {
+                $http.get('/api/manifestregistries/submit')
+                     .then(result => {
+                         window.open(result.data);
+                    });
+            };
 
+            
             ManifestRegistryService.query().$promise.then(data => {
                     $scope.manifestRegistry = data;
             });
 
         }
-
-        private showAddManifestDescriptionModal() {
-            
-            this.$modal.open({
-                animation: true,
-                templateUrl: 'manifestDescriptionFormModal',
-                controller: 'ManifestRegistryFormController',
-                resolve: {
-                    descriptionName: function () {
-                        return undefined;
-                    }
-                }
-            })
-                .result.then(manifestDescription => {
-                    this.$scope.manifestRegistry.push(manifestDescription);
-                });
-        }
-
-        private showModalWithPopulatedValues(manifestDescription: interfaces.IManifestRegistryVM) {
-            var descriptionName = { value: manifestDescription.name };
-
-            this.$modal.open({
-                animation: true,
-                templateUrl: 'manifestDescriptionFormModal',
-                controller: 'ManifestRegistryFormController',
-                resolve: {
-                    descriptionName: function () {
-                        return descriptionName;
-                    }
-                }
-            })
-                .result.then(manifestDescription => {
-                    this.$scope.manifestRegistry.push(manifestDescription);
-                    this.ManifestRegistryService.query().$promise.then(data => {
-                        this.$scope.manifestRegistry = data;
-                    });
-                });
-        }
-
     }
 
     app.controller('ManifestRegistryListController', ManifestRegistryListController);

@@ -1,35 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Threading;
+using System.Net;
+using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
-using Hub.Exceptions;
-using Hub.Infrastructure;
 using HubWeb.Controllers.Helpers;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Interfaces;
 using System.Threading.Tasks;
-using HubWeb.ViewModels;
+using System.Web;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Newtonsoft.Json;
-using Hub.Managers;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects.Helpers;
-using Utilities.Interfaces;
-using HubWeb.Infrastructure;
-using Data.Interfaces.Manifests;
-using System.Text;
-using Data.Constants;
-using Data.Infrastructure;
-using Hangfire;
-using System.Web.Http.Results;
+using Hub.Infrastructure;
+using HubWeb.Infrastructure_HubWeb;
+using HubWeb.ViewModels.RequestParameters;
+using Newtonsoft.Json.Linq;
+using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
 {
@@ -37,45 +39,100 @@ namespace HubWeb.Controllers
     [Fr8ApiAuthorize]
     public class PlansController : ApiController
     {
-        private const string PUSHER_EVENT_GENERIC_SUCCESS = "fr8pusher_generic_success";
-        private const string PUSHER_EVENT_GENERIC_FAILURE = "fr8pusher_generic_failure";
 
-        private readonly Hub.Interfaces.IPlan _plan;
-        private readonly IFindObjectsPlan _findObjectsPlan;
+        private readonly IPlan _plan;
+
+        private readonly IActivityTemplate _activityTemplate;
+        private readonly IActivity _activity;
         private readonly ISecurityServices _security;
         private readonly ICrateManager _crate;
         private readonly IPusherNotifier _pusherNotifier;
+        private readonly IPlanTemplates _planTemplates;
+
 
         public PlansController()
         {
             _plan = ObjectFactory.GetInstance<IPlan>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
-            _findObjectsPlan = ObjectFactory.GetInstance<IFindObjectsPlan>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
+            _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
+            _activity = ObjectFactory.GetInstance<IActivity>();
+            _planTemplates = ObjectFactory.GetInstance<IPlanTemplates>();
         }
 
-        //[HttpGet]
-        //public async Task<IHttpActionResult> Clone(Guid id)
-        //{
-        //    //let's clone the plan and redirect user to that cloned plan url
-        //    var clonedPlan = await _plan.Clone(id);
-        //    var baseUri = Request.RequestUri.GetLeftPart(UriPartial.Authority);
-        //    var clonedPlanUrl = baseUri + "/dashboard/plans/" + clonedPlan.Id + "/builder?viewMode=kiosk&view=Collection";
-        //    return Redirect(clonedPlanUrl);
-        //}
-
-
-        [Fr8HubWebHMACAuthenticate]
+        /// <summary>
+        /// Creates or updates plan. If parameters contain name of solution, creates plan with solution with given name
+        /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <param name="planDto">Description of plan to create or update</param>
+        /// <param name="solution_name">Name of solution to create if specified</param>
+        /// <param name="update_registrations">Deprecated</param>
+        /// <response code="200">Created or updated plan</response>
+        /// <response code="403">Unauthorized request</response>
+        [Fr8TerminalAuthentication]
+        [Fr8ApiAuthorize]
+        [HttpPost]
         [ResponseType(typeof(PlanDTO))]
-        public IHttpActionResult Post(PlanEmptyDTO planDto, bool updateRegistrations = false)
+        public async Task<IHttpActionResult> Post([FromBody] PlanEmptyDTO planDto, [FromUri] PlansPostParams parameters = null)
+        {
+            parameters = parameters ?? new PlansPostParams();
+
+            if (!parameters.solution_name.IsNullOrEmpty())
+            {
+                return await CreateSolution(parameters.solution_name);
+            }
+
+            return await Post(planDto);
+        }
+
+        [HttpPost]
+        [NonAction]
+        private async Task<IHttpActionResult> CreateSolution(string solutionName)
+        {
+            var userId = User.Identity.GetUserId();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                ActivityTemplateDO activityTemplate;
+
+                var activityTemplateInfo = _activityTemplate.GetActivityTemplateInfo(solutionName);
+
+                if (!string.IsNullOrEmpty(activityTemplateInfo.Version))
+                {
+                    activityTemplate = _activityTemplate.GetQuery()
+                        .Where(x => x.Name == activityTemplateInfo.Name && x.Version == activityTemplateInfo.Version)
+                        .FirstOrDefault();
+                }
+                else
+                {
+                    activityTemplate = _activityTemplate.GetQuery()
+                        .Where(x => x.Name == solutionName)
+                        .AsEnumerable()
+                        .OrderByDescending(x => int.Parse(x.Version))
+                        .FirstOrDefault();
+                }
+                if (activityTemplate == null)
+                {
+                    throw new ArgumentException($"actionTemplate (solution) name {solutionName} is not found in the database.");
+                }
+                ObjectFactory.GetInstance<ITracker>().Track(_security.GetCurrentAccount(uow), "Loaded Solution", new Segment.Model.Properties().Add("Solution Name", solutionName));
+                var result = await _activity.CreateAndConfigure(
+                    uow,
+                    userId,
+                    activityTemplate.Id,
+                    name: activityTemplate.Label,
+                    createPlan: true);
+                return Ok(PlanMappingHelper.MapPlanToDto(uow, (PlanDO)result));
+            }
+        }
+
+        [Fr8TerminalAuthentication]
+        [ResponseType(typeof(PlanDTO))]
+        [NonAction]
+        private async Task<IHttpActionResult> Post(PlanEmptyDTO planDto)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (string.IsNullOrEmpty(planDto.Name))
-                {
-                    ModelState.AddModelError("Name", "Name cannot be null");
-                }
 
                 if (!ModelState.IsValid)
                 {
@@ -83,35 +140,95 @@ namespace HubWeb.Controllers
                 }
                 var curPlanDO = Mapper.Map<PlanEmptyDTO, PlanDO>(planDto, opts => opts.Items.Add("ptid", planDto.Id));
 
-                _plan.CreateOrUpdate(uow, curPlanDO, updateRegistrations);
+                _plan.CreateOrUpdate(uow, curPlanDO);
 
                 uow.SaveChanges();
-                var result = PlanMappingHelper.MapPlanToDto(uow, uow.PlanRepository.GetById<PlanDO>(curPlanDO.Id));
+                var result = PlanMappingHelper.MapPlanToDto(uow, _plan.GetFullPlan(uow, curPlanDO.Id));
                 return Ok(result);
             }
         }
-
+        /// <summary>
+        /// Retrieves collections of plans filtered by specified parameters
+        /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <param name="planQuery">Query parameters</param>
+        /// <response code="200">Filtered collection of plans</response>
+        /// <response code="403">Unauthorized request</response>
         [Fr8ApiAuthorize]
-        //[Route("full/{id:guid}")]
-        [ActionName("full")]
-        [ResponseType(typeof(PlanDTO))]
         [HttpGet]
-        public IHttpActionResult GetFullPlan(Guid id)
+        [ResponseType(typeof(PlanResultDTO))]
+        public IHttpActionResult Query([FromUri] PlanQueryDTO planQuery)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plan = uow.PlanRepository.GetById<PlanDO>(id);
+                var planResult = _plan.GetForUser(
+                    uow,
+                    _security.GetCurrentAccount(uow),
+                    planQuery,
+                    _security.IsCurrentUserHasRole(Roles.Admin)
+                );
+                return Ok(planResult);
+            }
+        }
+
+        /// <summary>
+        /// Retrieves specific plans based on query parameters
+        /// </summary>
+        /// <remarks>
+        /// If id is defined - retrieves plan by Id, also retrieves plan with child nodes if include_children is defined. <br/>
+        /// If activity_id is defined - retrieves plan that contains activity with specified Id. <br/>
+        /// If name is defined - retrieves plan by its name. <br />
+        /// Fr8 authentication headers must be provided
+        /// </remarks>
+        /// <param name="parameters">Query parameters</param>
+        [Fr8ApiAuthorize]
+        [Fr8TerminalAuthentication]
+        [HttpGet]
+        [SwaggerResponse(HttpStatusCode.OK, "Plan satysfying query parameters", typeof(PlanDTO))]
+        [SwaggerResponse(HttpStatusCode.OK, "Collection of plans queried by name", typeof(List<PlanDTO>))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "Multiple query parameters are defined")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        public IHttpActionResult Get([FromUri] PlansGetParams parameters)
+        {
+            if ((!parameters.name.IsNullOrEmpty() && parameters.id.HasValue)
+                || (parameters.activity_id.HasValue && parameters.id.HasValue)
+                || (parameters.activity_id.HasValue && !parameters.name.IsNullOrEmpty()))
+            {
+                return BadRequest("Multiple parameters are defined");
+            }
+            if (parameters.include_children && parameters.id.HasValue)
+            {
+                return GetFullPlan((Guid)parameters.id);
+            }
+            if (parameters.activity_id.HasValue)
+            {
+                return GetByActivity((Guid)parameters.activity_id);
+            }
+            if (!parameters.name.IsNullOrEmpty())
+            {
+                return GetByName(parameters.name, parameters.visibility);
+            }
+            return Get(parameters.id);
+        }
+
+        [ResponseType(typeof(PlanDTO))]
+        [HttpGet]
+        [NonAction]
+        private IHttpActionResult GetFullPlan(Guid id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var plan = _plan.GetFullPlan(uow, id);
                 var result = PlanMappingHelper.MapPlanToDto(uow, plan);
 
                 return Ok(result);
             };
         }
 
-        //[Route("getByAction/{id:guid}")]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [ResponseType(typeof(PlanDTO))]
-        [HttpGet]
-        public IHttpActionResult GetByActivity(Guid id)
+        [NonAction]
+        private IHttpActionResult GetByActivity(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -123,40 +240,10 @@ namespace HubWeb.Controllers
         }
 
         [Fr8ApiAuthorize]
-        [ActionName("getByQuery")]
-        [HttpGet]
-        public IHttpActionResult GetByQuery([FromUri] PlanQueryDTO planQuery)
-        {
-            //i want to leave md-data-tables related logic inside controller
-            //that is why this operation is done here - our backend service shouldn't know anything
-            //about frontend libraries
-            if (planQuery != null && planQuery.OrderBy.StartsWith("-"))
-            {
-                planQuery.IsDescending = true;
-            }
-            else if (planQuery != null && !planQuery.OrderBy.StartsWith("-"))
-            {
-                planQuery.IsDescending = false;
-            }
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var planResult = _plan.GetForUser(
-                    uow,
-                    _security.GetCurrentAccount(uow),
-                    planQuery,
-                    _security.IsCurrentUserHasRole(Roles.Admin)
-                );
-
-                return Ok(planResult);
-            }
-        }
-
-        [Fr8ApiAuthorize]
-        [Fr8HubWebHMACAuthenticate]
-        [HttpGet]
-        [ResponseType(typeof(IEnumerable<PlanDTO>))]
-        public IHttpActionResult GetByName(string name, PlanVisibility visibility = PlanVisibility.Standard)
+        [Fr8TerminalAuthentication]
+        [ResponseType(typeof(List<PlanDTO>))]
+        [NonAction]
+        private IHttpActionResult GetByName(string name, PlanVisibility visibility = PlanVisibility.Standard)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -168,43 +255,15 @@ namespace HubWeb.Controllers
 
         }
 
-        [Fr8ApiAuthorize]
-        //[Route("copy")]
-        [HttpPost]
-        public IHttpActionResult Copy(Guid id, string name)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curPlanDO = uow.PlanRepository.GetById<PlanDO>(id);
-                if (curPlanDO == null)
-                {
-                    throw new ApplicationException("Unable to find plan with specified id.");
-                }
-
-                var plan = _plan.Copy(uow, curPlanDO, name);
-                uow.SaveChanges();
-
-                return Ok(new { id = plan.Id });
-            }
-        }
-
-        // GET api/<controller>
-        /// <summary>
-        /// TODO this function shouldn't exist
-        /// inspect it's usage and remove this from project
-        /// Get should use PlanQueryDTO
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [Fr8ApiAuthorize]
-        public IHttpActionResult Get(Guid? id = null)
+        [NonAction]
+        private IHttpActionResult Get(Guid? id = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var planResult = _plan.GetForUser(
                     uow,
                     _security.GetCurrentAccount(uow),
-                    new PlanQueryDTO() {Id = id}, 
+                    new PlanQueryDTO() { Id = id },
                     _security.IsCurrentUserHasRole(Roles.Admin)
                 );
 
@@ -225,394 +284,220 @@ namespace HubWeb.Controllers
             //DO-840 Return empty view as having empty process templates are valid use case.
             return Ok();
         }
-
-        [HttpPost]
-        [ActionName("activity")]
-        [Fr8ApiAuthorize]
-        public IHttpActionResult PutActivity(ActivityDTO activityDto)
-        {
-            //A stub until the functionaltiy is ready
-            return Ok();
-        }
-
-
-
+        /// <summary>
+        /// Deletes plan with specified Id
+        /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <param name="id">Id of plan to delete</param>
+        /// <response code="200">Id of deleted plan</response>
+        /// <response code="403">Unauthorized request</response>
         [HttpDelete]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         public IHttpActionResult Delete(Guid id)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                _plan.Delete(uow, id);
+            _plan.Delete(id);
 
-                uow.SaveChanges();
-                return Ok(id);
-            }
+            return Ok(id);
         }
-
-
-        [ActionName("triggersettings"), ResponseType(typeof(List<ExternalEventDTO>))]
-        [Fr8ApiAuthorize]
-        public IHttpActionResult GetTriggerSettings()
-        {
-            return Ok("This is no longer used due to V2 Event Handling mechanism changes.");
-        }
-
-        [HttpPost]
-        [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
-        [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Activate(Guid planId, bool planBuilderActivate = false)
-        {
-            string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);
-
-            try
-            {
-                var activateDTO = await _plan.Activate(planId, planBuilderActivate);
-
-                //check if the response contains any error message and show it to the user 
-                if (activateDTO != null && !string.IsNullOrEmpty(activateDTO.ErrorMessage))
-                {
-                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, activateDTO.ErrorMessage);
-                }
-
-                EventManager.PlanActivated(planId);
-
-                return Ok(activateDTO);
-            }
-            catch (ApplicationException ex)
-            {
-                _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, ex.Message);
-                throw;
-            }
-            catch (Exception)
-            {
-                _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, "There is a problem with activating this plan. Please try again later.");
-                throw;
-            }
-        }
-
+        /// <summary>
+        /// Deactivates monitoring plan with specified Id
+        /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <param name="planId">Id of plan to deactivate</param>
         [HttpPost]
         [Fr8ApiAuthorize]
+        [SwaggerResponse(HttpStatusCode.OK, "Plan was successfully deactivated")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponseRemoveDefaults]
         public async Task<IHttpActionResult> Deactivate(Guid planId)
         {
-            string activityDTO = await _plan.Deactivate(planId);
-            EventManager.PlanDeactivated(planId);
+            await _plan.Deactivate(planId);
 
-            return Ok(activityDTO);
+            return Ok();
         }
-
+        /// <summary>
+        /// Uploads file with plan template and create plan from it. 
+        /// </summary>
+        /// <remarks>
+        /// Fr8 authentication headers must be provided
+        /// </remarks>
+        /// <param name="planName">Name to assign to plan that will be created</param>
+        /// <response code="200">Uploaded plan</response>
+        /// <response code="403">Unauthorized request</response>
+        /// <response code="500">Bad format of plan file</response>
         [HttpPost]
         [Fr8ApiAuthorize]
-        public IHttpActionResult CreateFindObjectsPlan()
+        [ResponseType(typeof(PlanEmptyDTO))]
+        public async Task<IHttpActionResult> Upload(string planName)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            IHttpActionResult result = InternalServerError();
+            await Request.Content.ReadAsMultipartAsync(new MultipartMemoryStreamProvider()).ContinueWith((tsk) =>
             {
-                var account = uow.UserRepository.GetByKey(User.Identity.GetUserId());
-                var plan = _findObjectsPlan.CreatePlan(uow, account);
+                MultipartMemoryStreamProvider prvdr = tsk.Result;
 
-                uow.SaveChanges();
+                foreach (HttpContent ctnt in prvdr.Contents)
+                {
+                    Stream stream = ctnt.ReadAsStreamAsync().Result;
 
-                return Ok(new { id = plan.Id });
-            }
+                    var content = new StreamReader(stream).ReadToEnd();
+
+                    var planTemplateDTO = JsonConvert.DeserializeObject<PlanTemplateDTO>(content);
+                    planTemplateDTO.Name = planName;
+
+                    result = Load(planTemplateDTO);
+                }
+            });
+
+            return result;
         }
 
-        // method for plan execution continuation from URL
-        [Fr8ApiAuthorize("Admin", "Customer")]
-        [HttpGet]
-        public Task<IHttpActionResult> Run(Guid planId, Guid? containerId = null)
-        {
-            return Run(planId, null, containerId);
-        }
-
-        [Fr8ApiAuthorize("Admin", "Customer")]
-        [HttpPost]
-        public async Task<IHttpActionResult> Run(Guid planId, [FromBody]PayloadVM model, Guid? containerId = null)
-        {
-            string currentPlanType = string.Empty;
-
-            //ACTIVATE - activate route if its inactive
-
-            bool inActive = false;
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
-
-                if (planDO.PlanState == PlanState.Inactive)
-                {
-                    inActive = true;
-                }
-            }
-
-            string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);
-
-            if (inActive)
-            {
-                var activateDTO = await _plan.Activate(planId, false);
-
-                if (activateDTO != null && activateDTO.Status == "validation_error")
-                {
-                    //this container holds wrapped inside the ErrorDTO
-                    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                    {
-                        var routeDO = uow.PlanRepository.GetById<PlanDO>(planId);
-                        activateDTO.Container.CurrentPlanType = routeDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
-                    }
-
-                    return Ok(activateDTO.Container);
-                }
-
-            }
-
-            //RUN
-            Crate curPayload = null;
-
-            // there is no reason to check for payload if we have continerId passed because this indicates execution continuation scenario.
-            if (model != null && containerId == null)
-            {
-                try
-                {
-                    var curCrateDto = JsonConvert.DeserializeObject<CrateDTO>(model.Payload);
-                    curPayload = _crate.FromDto(curCrateDto);
-                }
-                catch
-                {
-                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, "Your payload is invalid. Make sure that it represents a valid crate object JSON.");
-
-                    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                    {
-                        var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
-                        currentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing.ToString() : Data.Constants.PlanType.RunOnce.ToString();
-                    }
-                    return BadRequest(currentPlanType);
-                }
-            }
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                ContainerDO container;
-                var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
-
-                // it container id was passed validate it
-                if (containerId != null)
-                {
-                    container = uow.ContainerRepository.GetByKey(containerId.Value);
-
-                    // we didn't find contaier or found container belong to the other plan.
-                    if (container == null || container.PlanId != planId)
-                    {
-                        // that's bad. Reset containerId to run plan with new container
-                        containerId = null;
-                    }
-                }
-
-                try
-                {
-                    if (planDO != null)
-                    {
-
-                        if (containerId == null)
-                        {
-                            container = await _plan.Run(planDO, curPayload);
-                            _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, $"Launching a new Container for Plan \"{planDO.Name}\"");
-                        }
-                        else
-                        {
-                            container = await _plan.Continue(containerId.Value);
-                            _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, $"Continue execution of the supsended Plan \"{planDO.Name}\"");
-                        }
-
-                        if (!planDO.IsOngoingPlan())
-                        {
-                            await _plan.Deactivate(planId);
-                        }
-
-                        var response = _crate.GetContentType<OperationalStateCM>(container.CrateStorage);
-                        var responseMsg = GetResponseMessage(response);
-
-                        string message = String.Format("Complete processing for Plan \"{0}\".{1}", planDO.Name, responseMsg);
-
-                        _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
-                        EventManager.ContainerLaunched(container);
-
-                        var containerDTO = Mapper.Map<ContainerDTO>(container);
-                        containerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
-
-                        EventManager.ContainerExecutionCompleted(container);
-
-                        return Ok(containerDTO);
-                    }
-
-                    currentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing.ToString() : Data.Constants.PlanType.RunOnce.ToString();
-                    return BadRequest(currentPlanType);
-                }
-                catch (ActivityExecutionException exception)
-                {
-                    //this response contains details about the error that happened on some terminal and need to be shown to client
-                    if (exception.ContainerDTO != null)
-                    {
-                        exception.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
-                    }
-
-                    NotifyWithErrorMessage(exception, planDO, pusherChannel, exception.ErrorMessage);
-
-                    throw;
-                }
-                catch (Exception e)
-                {
-                    var errorMessage = "An internal error has occured. Please, contact the administrator.";
-                    NotifyWithErrorMessage(e, planDO, pusherChannel, errorMessage);
-                    throw;
-                }
-                finally
-                {
-                    if (!planDO.IsOngoingPlan())
-                    {
-                        await _plan.Deactivate(planId);
-                    }
-                }
-            }
-        }
-
-
-        private string GetResponseMessage(OperationalStateCM response)
-        {
-            string responseMsg = "";
-            ResponseMessageDTO responseMessage;
-            if (response != null && response.CurrentActivityResponse != null && response.CurrentActivityResponse.TryParseResponseMessageDTO(out responseMessage))
-            {
-                if (responseMessage != null && !string.IsNullOrEmpty(responseMessage.Message))
-                {
-                    responseMsg = "\n" + responseMessage.Message;
-                }
-            }
-
-            return responseMsg;
-        }
-
-        private void NotifyWithErrorMessage(Exception exception, PlanDO planDO, string pusherChannel, string errorMessage = "")
-        {
-            var messageToNotify = string.Empty;
-            if (!string.IsNullOrEmpty(errorMessage))
-            {
-                messageToNotify = errorMessage;
-            }
-
-            var message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, messageToNotify);
-            _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
-
-        }
-
+        /// <summary>
+        /// Executes plan with specified Id passing specific payload to it
+        /// </summary>
+        /// <remarks>
+        /// Fr8 authentication headers must be provided
+        /// </remarks>
+        /// <param name="planId">Id of plan to execute</param>
+        /// <param name="payload">Payload to provide to plan during execution</param>
+        /// <response code="200">Container creating during successful plan execution</response>
+        /// <response code="403">Unauthorized request</response>
+        /// <response code="400">Plan with specified Id doesn't exist</response>
         [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [HttpPost]
-        public async Task<IHttpActionResult> RunWithPayload(Guid planId, [FromBody]List<CrateDTO> payload)
+        [ResponseType(typeof(ContainerDTO))]
+        public async Task<IHttpActionResult> Run(Guid planId, [FromBody] CrateDTO[] payload)
         {
-            string currentPlanType = string.Empty;
-
-            //ACTIVATE - activate route if its inactive
-
-            bool inActive = false;
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            Crate[] crates = null;
+            if (payload != null)
             {
-                var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
-
-                if (planDO.PlanState == PlanState.Inactive)
-                    inActive = true;
+                crates = payload.Select(c => _crate.FromDto(c)).ToArray();
             }
-
-            string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);
-
-            if (inActive)
+            var result = await _plan.Run(planId, crates, null);
+            if (result == null)
             {
-                var activateDTO = await _plan.Activate(planId, false);
-
-                if (activateDTO != null && activateDTO.Status == "validation_error")
-                {
-                    //this container holds wrapped inside the ErrorDTO
-                    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                    {
-                        var routeDO = uow.PlanRepository.GetById<PlanDO>(planId);
-                        activateDTO.Container.CurrentPlanType = routeDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
-                    }
-
-                    return Ok(activateDTO.Container);
-                }
-
+                return BadRequest();
             }
-
-            //RUN
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
-                try
-                {
-                    if (planDO != null)
-                    {
-                        _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, $"Launching a new Container for Plan \"{planDO.Name}\"");
-
-                        var crates = payload.Select(c => _crate.FromDto(c)).ToArray();
-                        var containerDO = await _plan.Run(uow, planDO, crates);
-                        if (!planDO.IsOngoingPlan())
-                        {
-                            await _plan.Deactivate(planId);
-                        }
-
-                        var response = _crate.GetContentType<OperationalStateCM>(containerDO.CrateStorage);
-
-                        var responseMsg = "";
-
-                        ResponseMessageDTO responseMessage;
-                        if (response?.CurrentActivityResponse != null
-                            && response.CurrentActivityResponse.TryParseResponseMessageDTO(out responseMessage)
-                            && !string.IsNullOrEmpty(responseMessage?.Message))
-                        {
-                            responseMsg = "\n" + responseMessage.Message;
-                        }
-
-                        var message = $"Complete processing for Plan \"{planDO.Name}\".{responseMsg}";
-
-                        _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
-                        EventManager.ContainerLaunched(containerDO);
-
-                        var containerDTO = Mapper.Map<ContainerDTO>(containerDO);
-                        containerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
-
-                        EventManager.ContainerExecutionCompleted(containerDO);
-
-                        return Ok(containerDTO);
-                    }
-
-                    currentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing.ToString() : Data.Constants.PlanType.RunOnce.ToString();
-                    return BadRequest(currentPlanType);
-                }
-                catch (ActivityExecutionException exception)
-                {
-                    if (exception.ContainerDTO != null)
-                    {
-                        exception.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
-                    }
-
-                    NotifyWithErrorMessage(exception, planDO, pusherChannel, exception.ErrorMessage);
-                    throw;
-                }
-                catch (Exception ex)
-                {
-                    var errorMessage = "An internal error has occurred. Please, contact the administrator.";
-                    NotifyWithErrorMessage(ex, planDO, pusherChannel, errorMessage);
-                    throw;
-                }
-                finally
-                {
-                    if (!planDO.IsOngoingPlan())
-                    {
-                        await _plan.Deactivate(planId);
-                    }
-                }
-            }
+            return Ok(result);
         }
+        /// <summary>
+        /// Builds plan template based on the plan with specified Id
+        /// </summary>
+        /// <param name="planId">Id of plan to build template from</param>
+        /// <remarks>
+        /// Fr8 authentication headers must be provided
+        /// </remarks>
+        /// <response code="200">Plan template was built successfully</response>
+        /// <response code="403">Unauthorized request</response>
+        [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
+        [Fr8TerminalAuthentication]
+        [ResponseType(typeof(PlanTemplateDTO))]
+        [HttpPost]
+        public async Task<IHttpActionResult> Templates(Guid planId)
+        {
+            var planTemplateDTO = _planTemplates.GetPlanTemplate(planId, User.Identity.GetUserId());
+            return Ok(planTemplateDTO);
+        }
+        /// <summary>
+        /// Shares plan with specified Id in plan directory so it will be available to other users
+        /// </summary>
+        /// <param name="planId">Id of plan to share</param>
+        /// <remarks>
+        /// Fr8 authentication headers must be provided
+        /// </remarks>
+        [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
+        [Fr8TerminalAuthentication]
+        [HttpPost]
+        [SwaggerResponse(HttpStatusCode.OK, "Plan was successfully shared")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponseRemoveDefaults]
+        public async Task<IHttpActionResult> Share(Guid planId)
+        {
+            var planTemplateDTO = _planTemplates.GetPlanTemplate(planId, User.Identity.GetUserId());
 
+            var hmacService = ObjectFactory.GetInstance<IHMACService>();
+            var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+
+            var dto = new PublishPlanTemplateDTO()
+            {
+                Name = planTemplateDTO.Name,
+                Description = planTemplateDTO.Description,
+                ParentPlanId = planId,
+                PlanContents = JsonConvert.DeserializeObject<JToken>(JsonConvert.SerializeObject(planTemplateDTO))
+            };
+
+            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/plan_templates/");
+            var headers = await hmacService.GenerateHMACHeader(
+                uri,
+                "PlanDirectory",
+                CloudConfigurationManager.GetSetting("PlanDirectorySecret"),
+                User.Identity.GetUserId(),
+                dto
+            );
+
+            await client.PostAsync(uri, dto, headers: headers);
+
+            // Notify user with directing him to PlanDirectory with related search query
+            var url = CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/#?planSearch=" + HttpUtility.UrlEncode(dto.Name);
+            _pusherNotifier.NotifyUser(new
+            {
+                Message = $"Plan Shared. To view, click on " + url,
+                Collapsed = false
+            }, NotificationType.GenericSuccess, User.Identity.GetUserId());
+
+            return Ok();
+        }
+        /// <summary>
+        /// Removes plan with specified Id from the plan directory so it will be no longer available to other users
+        /// </summary>
+        /// <param name="planId">Id of plan to remove from plan directory</param>
+        /// <remarks>
+        /// Fr8 authentication headers must be provided
+        /// </remarks>
+        [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
+        [Fr8TerminalAuthentication]
+        [HttpPost]
+        [SwaggerResponse(HttpStatusCode.OK, "Plan was successfully removed from plan directory")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponseRemoveDefaults]
+        public async Task<IHttpActionResult> Unpublish(Guid planId)
+        {
+            var planTemplateDTO = _planTemplates.GetPlanTemplate(planId, User.Identity.GetUserId());
+
+            var hmacService = ObjectFactory.GetInstance<IHMACService>();
+            var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+
+            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/plan_templates/?id=" + planId.ToString());
+            var headers = await hmacService.GenerateHMACHeader(
+                uri,
+                "PlanDirectory",
+                CloudConfigurationManager.GetSetting("PlanDirectorySecret"),
+                User.Identity.GetUserId()
+            );
+
+            await client.DeleteAsync(uri, headers: headers);
+
+            return Ok();
+        }
+        /// <summary>
+        /// Builds a plan from specified plan template
+        /// </summary>
+        /// <param name="dto">Plan template to build a plan from</param>
+        /// <remarks>
+        /// Fr8 authentication headers must be provided
+        /// </remarks>
+        /// <response code="200">Plan was successfully built from template</response>
+        /// <response code="403">Unauthorized request</response>
+        [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
+        [Fr8TerminalAuthentication]
+        [Fr8PlanDirectoryAuthentication]
+        [HttpPost]
+        [ResponseType(typeof(PlanEmptyDTO))]
+        public IHttpActionResult Load(PlanTemplateDTO dto)
+        {
+            var planDO = _planTemplates.LoadPlan(dto, User.Identity.GetUserId());
+            return Ok(Mapper.Map<PlanEmptyDTO>(planDO));
+        }
     }
 }

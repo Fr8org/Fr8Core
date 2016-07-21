@@ -1,23 +1,13 @@
-﻿using System;
-﻿using System.Threading.Tasks;
-using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
+﻿using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 
 namespace terminalTwilio.Controllers
-{    
-    [RoutePrefix("activities")]
-    public class ActivityController : BaseTerminalController
+{
+    public class ActivityController : DefaultActivityController
     {
-        private const string curTerminal = "terminalTwilio";
-
-        [HttpPost]
-        [fr8TerminalHMACAuthenticate(curTerminal)]
-        [Authorize]
-        public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
+        public ActivityController(IActivityExecutor activityExecutor)
+            : base(activityExecutor)
         {
-            return HandleFr8Request(curTerminal, actionType, curDataDTO);
         }
     }
 }

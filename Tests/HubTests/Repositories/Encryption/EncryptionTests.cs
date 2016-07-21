@@ -7,11 +7,13 @@ using Data.Interfaces;
 using Data.Repositories.Encryption;
 using Data.Repositories.Plan;
 using Data.States;
+using Fr8.Infrastructure.Data.States;
 using Hub.StructureMap;
 using NUnit.Framework;
 using StructureMap;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
+
 
 namespace HubTests.Repositories.Encryption
 {
@@ -74,7 +76,7 @@ namespace HubTests.Repositories.Encryption
             {
                 Id = NewGuid(13),
                 Name = "Plan",
-                PlanState = PlanState.Active,
+                PlanState = PlanState.Running,
                 Description = "PlanDesc",
                 Fr8Account = new Fr8AccountDO()
                 {

@@ -1,28 +1,23 @@
 ﻿using System;
 using NUnit.Framework;
-using Data.Interfaces.DataTransferObjects;
-using HealthMonitor.Utility;
-using System.Net.Http;
 using System.Threading.Tasks;
-using System.Text;
-using System.Net;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using Data.Constants;
-using Hub.Managers;
-using Data.Interfaces.Manifests;
-using terminalDocuSignTests.Fixtures;
-using Newtonsoft.Json.Linq;
-using Data.Crates;
-using Data.Control;
 using Data.States;
-using Data.Entities;
 using DocuSign.eSign.Api;
-using terminaBaselTests.Tools.Activities;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Models;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Integration.Tools.Activities;
+using Fr8.Testing.Integration;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -39,8 +34,8 @@ namespace terminalDocuSignTests.Integration
 
         private ActivityDTO solution;
         private ICrateStorage crateStorage;
-        private terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalDocuSign _terminalDocuSignTestTools;
-        private IntegrationTestTools_terminalDocuSign _docuSignActivitiesTestTools;
+        private Fr8.Testing.Integration.Tools.Terminals.IntegrationTestTools_terminalDocuSign _terminalDocuSignTestTools;
+        private Fr8.Testing.Integration.Tools.Activities.IntegrationTestTools_terminalDocuSign _docuSignActivitiesTestTools;
 
         public override string TerminalName
         {
@@ -51,8 +46,8 @@ namespace terminalDocuSignTests.Integration
 
         public Mail_Merge_Into_DocuSign_v1_EndToEnd_Tests()
         {
-            _terminalDocuSignTestTools = new terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalDocuSign(this);
-            _docuSignActivitiesTestTools = new IntegrationTestTools_terminalDocuSign(this);
+            _terminalDocuSignTestTools = new Fr8.Testing.Integration.Tools.Terminals.IntegrationTestTools_terminalDocuSign(this);
+            _docuSignActivitiesTestTools = new Fr8.Testing.Integration.Tools.Activities.IntegrationTestTools_terminalDocuSign(this);
         }
 
         [Test]
@@ -91,14 +86,14 @@ namespace terminalDocuSignTests.Integration
             await HttpDeleteAsync(_baseUrl + "activities?id=" + this.solution.ChildrenActivities[0].Id);
 
             // Add Add Payload Manually action
-            var activityCategoryParam = new ActivityCategory[] { ActivityCategory.Processors };
-            var activityTemplates = await HttpPostAsync<ActivityCategory[], List<WebServiceActivitySetDTO>>(_baseUrl + "webservices/activities", activityCategoryParam);
-            var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == "AddPayloadManually");
+            var activityCategoryParam = (int)ActivityCategory.Processors;
+            var activityTemplates = await HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseUrl + "webservices?id=" + activityCategoryParam);
+            var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == "Add_Payload_Manually");
 
             var apmAction = new ActivityDTO()
             {
                 ActivityTemplate = apmActivityTemplate,
-                Label = apmActivityTemplate.Label,
+                Name = apmActivityTemplate.Label,
                 ParentPlanNodeId = this.solution.Id,
                 RootPlanNodeId = plan.Plan.Id
             };
@@ -129,18 +124,13 @@ namespace terminalDocuSignTests.Integration
             apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", apmAction);
             Assert.AreEqual(1, apmAction.Ordering, "Failed to reoder the action Add Payload Manually");
 
-            var fr8CoreLoop = this.solution.ChildrenActivities.Single(a => a.Label.Equals("loop", StringComparison.InvariantCultureIgnoreCase));
+            var fr8CoreLoop = this.solution.ChildrenActivities.Single(a => a.Name.Equals("loop", StringComparison.InvariantCultureIgnoreCase));
 
             using (var updatableStorage = Crate.UpdateStorage(() => fr8CoreLoop.CrateStorage))
             {
-                var chooser = (CrateChooser)updatableStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First().Controls.FirstOrDefault(c => c.Name == "Available_Crates");
-
-                if (chooser?.CrateDescriptions != null)
-                {
-                    chooser.CrateDescriptions = new List<CrateDescriptionDTO>();
-                }
+                updatableStorage.Clear();
             }
-            
+
             fr8CoreLoop = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", fr8CoreLoop);
             //we should update fr8Core loop to loop through manually added payload
             var fr8CoreLoopCrateStorage = Crate.FromDto(fr8CoreLoop.CrateStorage);
@@ -150,11 +140,15 @@ namespace terminalDocuSignTests.Integration
 
             Assert.NotNull(crateChooser, "Crate chooser was not found");
 
-            var payloadDataCrate = crateChooser.CrateDescriptions.SingleOrDefault(c => c.ManifestId == (int)MT.StandardPayloadData);
+            var firstActivityCrates = Crate.GetStorage(apmAction.CrateStorage).CrateContentsOfType<CrateDescriptionCM>().FirstOrDefault();
 
-            Assert.NotNull(payloadDataCrate, "StandardPayloadData was not found in rateChooser.CrateDescriptions. Available crate descriptions are: " + string.Join("\n", crateChooser.CrateDescriptions.Select(x=> $"{x.Label} of type {x.ManifestType}")));
+            crateChooser.CrateDescriptions = firstActivityCrates?.CrateDescriptions;
 
-            payloadDataCrate.Selected = true;
+            var tableDescription = crateChooser.CrateDescriptions?.FirstOrDefault(c => c.ManifestId == (int)MT.StandardPayloadData);
+            Assert.NotNull(tableDescription, "StandardPayloadData was not found in crateChooser.CrateDescriptions. Available crate descriptions are: " + string.Join("\n", crateChooser.CrateDescriptions?.Select(x => $"{x.Label} of type {x.ManifestType}") ?? new string[0]));
+            
+            tableDescription.Selected = true;
+    
             using (var updatableStorage = Crate.GetUpdatableStorage(fr8CoreLoop))
             {
                 updatableStorage.Remove<StandardConfigurationControlsCM>();
@@ -168,7 +162,7 @@ namespace terminalDocuSignTests.Integration
             //
 
             // Initial Configuration
-            var sendEnvelopeAction = fr8CoreLoop.ChildrenActivities.Single(a => a.Label == "Send DocuSign Envelope");
+            var sendEnvelopeAction = fr8CoreLoop.ChildrenActivities.Single(a => a.Name == "Send DocuSign Envelope");
 
             crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
             controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
@@ -191,12 +185,12 @@ namespace terminalDocuSignTests.Integration
             // Follow-up Configuration
             crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
             controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
-            var emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role email");
+            var emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "freight testing role email");
             emailField.ValueSource = "specific";
             emailField.Value = TestEmail;
             emailField.TextValue = TestEmail;
 
-            var emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role name");
+            var emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "freight testing role name");
             emailNameField.ValueSource = "specific";
             emailNameField.Value = TestEmailName;
             emailNameField.TextValue = TestEmailName;
@@ -216,11 +210,11 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual("9a4d2154-5b18-4316-9824-09432e62f458", docuSignTemplate.Value, "Selected DocuSign Template did not save on Send DocuSign Envelope action.");
             Assert.AreEqual("Medical_Form_v1", docuSignTemplate.selectedKey, "Selected DocuSign Template did not save on Send DocuSign Envelope action.");
 
-            emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role email");
+            emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "freight testing role email");
             Assert.AreEqual(TestEmail, emailField.Value, "Email did not save on Send DocuSign Envelope action.");
             Assert.AreEqual(TestEmail, emailField.TextValue, "Email did not save on Send DocuSign Envelope action.");
 
-            emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role name");
+            emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "freight testing role name");
             Assert.AreEqual(TestEmailName, emailNameField.Value, "Email Name did not save on Send DocuSign Envelope action.");
             Assert.AreEqual(TestEmailName, emailNameField.TextValue, "Email Name did not save on Send DocuSign Envelope action.");
 
@@ -252,8 +246,8 @@ namespace terminalDocuSignTests.Integration
             //
             await RevokeTokens();
 
-            var terminalGoogleTestTools = new terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalGoogle(this);
-            var googleActivityTestTools = new terminaBaselTests.Tools.Activities.IntegrationTestTools_terminalGoogle(this);
+            var terminalGoogleTestTools = new Fr8.Testing.Integration.Tools.Terminals.IntegrationTestTools_terminalGoogle(this);
+            var googleActivityTestTools = new Fr8.Testing.Integration.Tools.Activities.IntegrationTestTools_terminalGoogle(this);
             var googleAuthTokenId = await terminalGoogleTestTools.ExtractGoogleDefaultToken();
 
             string spreadsheetName = Guid.NewGuid().ToString();
@@ -269,21 +263,21 @@ namespace terminalDocuSignTests.Integration
             // Create solution
             //
             var parameters = await _docuSignActivitiesTestTools.CreateAndConfigure_MailMergeIntoDocuSign_Solution("Get_Google_Sheet_Data",
-                    "Get Google Sheet Data", "a439cedc-92a8-49ad-ab31-e2ee7964b468", "Fr8 Fromentum Registration Form",false);
+                    "Get Google Sheet Data", "a439cedc-92a8-49ad-ab31-e2ee7964b468", "Fr8 Fromentum Registration Form", false);
             this.solution = parameters.Item1;
             var plan = parameters.Item2;
             var tokenGuid = parameters.Item3;
-            
+
             //
             // configure Get_Google_Sheet_Data activity
             //
-            var googleSheetActivity = this.solution.ChildrenActivities.Single(a=>a.Label.Equals("get google sheet data", StringComparison.InvariantCultureIgnoreCase));
+            var googleSheetActivity = this.solution.ChildrenActivities.Single(a => a.Name.Equals("get google sheet data", StringComparison.InvariantCultureIgnoreCase));
             await googleActivityTestTools.ConfigureGetFromGoogleSheetActivity(googleSheetActivity, spreadsheetName, false, worksheetName);
-            
+
             //
             // configure Loop activity
             //
-            var loopActivity = this.solution.ChildrenActivities.Single(a => a.Label.Equals("loop", StringComparison.InvariantCultureIgnoreCase));
+            var loopActivity = this.solution.ChildrenActivities.Single(a => a.Name.Equals("loop", StringComparison.InvariantCultureIgnoreCase));
             var terminalFr8CoreTools = new IntegrationTestTools_terminalFr8(this);
             loopActivity = await terminalFr8CoreTools.ConfigureLoopActivity(loopActivity, "Standard Table Data", "Table Generated From Google Sheet Data");
 
@@ -294,7 +288,7 @@ namespace terminalDocuSignTests.Integration
             //
             // Initial Configuration
             //
-            var sendEnvelopeAction = loopActivity.ChildrenActivities.Single(a => a.Label == "Send DocuSign Envelope");
+            var sendEnvelopeAction = loopActivity.ChildrenActivities.Single(a => a.Name == "Send DocuSign Envelope");
 
             crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
             var controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
@@ -302,7 +296,7 @@ namespace terminalDocuSignTests.Integration
             var docuSignTemplate = controlsCrate.Content.Controls.OfType<DropDownList>().First();
             docuSignTemplate.Value = "a439cedc-92a8-49ad-ab31-e2ee7964b468";
             docuSignTemplate.selectedKey = "Fr8 Fromentum Registration Form";
-  
+
             using (var updatableStorage = Crate.GetUpdatableStorage(sendEnvelopeAction))
             {
                 updatableStorage.Remove<StandardConfigurationControlsCM>();
@@ -318,32 +312,32 @@ namespace terminalDocuSignTests.Integration
             //chosen "Fr8 Fromentum Registration Form" contains 7 specific DocuSign tabs that will be configured with upstream values 
             crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
             controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
-            var emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingLead role email");
+            var emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "Lead role email");
             emailField.ValueSource = "upstream";
             emailField.Value = "emailaddress";
-            emailField.selectedKey= "emailaddress";
+            emailField.selectedKey = "emailaddress";
 
-            var emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingLead role name");
+            var emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "Lead role name");
             emailNameField.ValueSource = "upstream";
             emailNameField.Value = "name";
             emailNameField.selectedKey = "name";
 
-            var phoneField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "MappingPhone(Lead)");
+            var phoneField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "Phone(Lead)");
             phoneField.ValueSource = "upstream";
             phoneField.Value = "phone";
             phoneField.selectedKey = "phone";
 
-            var titleField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "MappingTitle(Lead)");
+            var titleField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "Title(Lead)");
             titleField.ValueSource = "upstream";
             titleField.Value = "title";
             titleField.selectedKey = "title";
 
-            var companyField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "MappingCompany(Lead)");
+            var companyField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "Company(Lead)");
             companyField.ValueSource = "upstream";
             companyField.Value = "companyname";
             companyField.selectedKey = "companyname";
 
-            var radioGroup = controlsCrate.Content.Controls.OfType<RadioButtonGroup>().First(f=>f.GroupName == "RadioGroupMappingRegistration Type(Lead)");
+            var radioGroup = controlsCrate.Content.Controls.OfType<RadioButtonGroup>().First(f => f.GroupName == "Registration Type(Lead)");
             foreach (var radios in radioGroup.Radios)
             {
                 //reset all preselected radioButtons
@@ -352,10 +346,10 @@ namespace terminalDocuSignTests.Integration
             var radioButton = radioGroup.Radios.FirstOrDefault(x => x.Name == "Buy 2, Get 3rd Free");
             radioButton.Selected = true;
 
-            var checkboxField = controlsCrate.Content.Controls.OfType<CheckBox>().First(f => f.Name == "CheckBoxMappingGovernmentEntity?(Lead)");
+            var checkboxField = controlsCrate.Content.Controls.OfType<CheckBox>().First(f => f.Name == "CheckBoxFields_GovernmentEntity?(Lead)");
             checkboxField.Selected = true;
 
-            var dropdownField = controlsCrate.Content.Controls.OfType<DropDownList>().First(f => f.Name == "DropDownMappingSize of Company(Lead)");
+            var dropdownField = controlsCrate.Content.Controls.OfType<DropDownList>().First(f => f.Name == "DropDownListFields_Size of Company(Lead)");
             dropdownField.Value = "Medium (51-250)";
             dropdownField.selectedKey = "Medium (51-250)";
 
@@ -379,19 +373,23 @@ namespace terminalDocuSignTests.Integration
             //
             var container = await HttpPostAsync<string, ContainerDTO>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
             Assert.AreEqual(container.State, State.Completed, "Container state is not equal to completed on Mail_Merge e2e test");
-            
+
             //
             // Assert 
             //
-
-            var configuration =  new DocuSignManager().SetUp(_terminalDocuSignTestTools.GetDocuSignAuthToken(tokenGuid));
+            var authorizationTokenDO = _terminalDocuSignTestTools.GetDocuSignAuthToken(tokenGuid);
+            var authorizationToken = new AuthorizationToken()
+            {
+                Token = authorizationTokenDO.Token,
+            };
+            var configuration = new DocuSignManager().SetUp(authorizationToken);
             //find the envelope on the Docusign Account
-            var folderItems = DocuSignFolders.GetFolderItems(configuration, new DocusignQuery()
-            {       
+            var folderItems = DocuSignFolders.GetFolderItems(configuration, new DocuSignQuery()
+            {
                 Status = "sent",
                 SearchText = spreadsheetKeyWord
             });
-            
+
             var envelope = folderItems.FirstOrDefault();
             Assert.IsNotNull(envelope, "Cannot find created Envelope in sent folder of DocuSign Account");
             var envelopeApi = new EnvelopesApi(configuration.Configuration);
@@ -401,11 +399,11 @@ namespace terminalDocuSignTests.Integration
             //get the tabs for the envelope that this recipient received
             var tabs = envelopeApi.ListTabs(configuration.AccountId, envelope.EnvelopeId, envelopeSigner.RecipientId);
             Assert.IsNotNull(tabs, "Envelope does not contain any tabs. Check for problems in DocuSignManager and HandleTemplateData");
-            
+
             //check all tabs and their values for received envelope, and compare them to those from the google sheet configured into Mail_Merge_Into_Docusign solution 
             var titleRecipientTab = tabs.TextTabs.FirstOrDefault(x => x.TabLabel == "Title");
             Assert.IsNotNull(titleRecipientTab, "Envelope does not contain Title tab. Check for problems in DocuSignManager and HandleTemplateData");
-            Assert.AreEqual(tableFixtureData.Table[1].Row.FirstOrDefault(x=>x.Cell.Key == "title").Cell.Value, titleRecipientTab.Value, "Provided value for Title in document for recipient after finishing mail merge plan is incorrect");
+            Assert.AreEqual(tableFixtureData.Table[1].Row.FirstOrDefault(x => x.Cell.Key == "title").Cell.Value, titleRecipientTab.Value, "Provided value for Title in document for recipient after finishing mail merge plan is incorrect");
 
             var companyRecipientTab = tabs.TextTabs.FirstOrDefault(x => x.TabLabel == "Company");
             Assert.IsNotNull(companyRecipientTab, "Envelope does not contain Company tab. Check for problems in DocuSignManager and HandleTemplateData");
@@ -422,10 +420,10 @@ namespace terminalDocuSignTests.Integration
             var checkboxRecipientTab = tabs.CheckboxTabs.FirstOrDefault(x => x.TabLabel == "GovernmentEntity?");
             Assert.IsNotNull(checkboxRecipientTab, "Envelope does not contain Checkbox for Goverment Entity tab. Check for problems in DocuSignManager and HandleTemplateData");
             Assert.AreEqual("true", checkboxRecipientTab.Selected, "Provided value for GovernmentEntity? in document for recipient after finishing mail merge plan is incorrect");
-            
+
             var radioButtonGroupTab = tabs.RadioGroupTabs.FirstOrDefault(x => x.GroupName == "Registration Type");
             Assert.IsNotNull(radioButtonGroupTab, "Envelope does not contain RadioGroup tab for registration. Check for problems in DocuSignManager and HandleTemplateData");
-            Assert.AreEqual("Buy 2, Get 3rd Free", radioButtonGroupTab.Radios.FirstOrDefault(x=>x.Selected == "true").Value, "Provided value for Registration Type in document for recipient after finishing mail merge plan is incorrect");
+            Assert.AreEqual("Buy 2, Get 3rd Free", radioButtonGroupTab.Radios.FirstOrDefault(x => x.Selected == "true").Value, "Provided value for Registration Type in document for recipient after finishing mail merge plan is incorrect");
 
             // Verify that test email has been received
             EmailAssert.EmailReceived("dse_demo@docusign.net", "Test Message from Fr8");
@@ -436,7 +434,7 @@ namespace terminalDocuSignTests.Integration
 
             //delete spreadsheet
             await terminalGoogleTestTools.DeleteSpreadSheet(googleAuthTokenId, spreadsheetId);
-            
+
             //
             // Deactivate plan
             //
@@ -452,8 +450,8 @@ namespace terminalDocuSignTests.Integration
         {
             var errorMessage = $"Authorization token for Google is not found for the integration testing user {TestUserEmail}. Please go to the target instance of fr8 and log in with the integration testing user credentials. Then add a Google action to any plan and be sure to set the \"Use for all Activities\" checkbox on the Authorize Accounts dialog while authenticating. Reason: ";
 
-            var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
-                _baseUrl + "manageauthtoken/"
+            var tokens = await HttpGetAsync<IEnumerable<AuthenticationTokenTerminalDTO>>(
+                _baseUrl + "authentication/tokens"
             );
 
             Assert.NotNull(tokens, errorMessage + "No auth-tokens found");

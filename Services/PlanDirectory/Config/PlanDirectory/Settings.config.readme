@@ -1,0 +1,24 @@
+﻿<?xml version="1.0"?>
+
+<!--- 
+====================================
+terminalDocuSign Configuration File
+====================================
+
+Add your own configuration settings in this file and remove the ".readme" extension from filename.
+
+You may also need to modify settings in the appSettings section of web.config. 
+
+Note that all the settings defined in this file cannot take advantage of XML transformation. 
+If you need a setting to be able to change depending on build configuration (Debug/Release/etc),
+define it in web.config. 
+-->
+
+<appSettings>
+  <add key="PlanDirectorySecret" value="specify a GUID-based secret here" />
+  
+  <!-- Specify your Azure Search details below -->
+  <add key="AzureSearchServiceName" value="" />
+  <add key="AzureSearchApiKey" value="" />
+  <add key="AzureSearchIndexName" value="" />
+</appSettings>

@@ -12,15 +12,35 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
 using Hub.Security;
-using Utilities;
 using System.Web;
 using System.Net.Http;
 using System.Security.Claims;
+using Fr8.Infrastructure.Utilities;
+using Hub.Interfaces;
+using RazorEngine.Templating;
 
 namespace Hub.Services
 {
     public class Fr8Account
     {
+        private readonly IUnitOfWorkFactory _uowFactory;
+
+        private readonly IConfigRepository _configRepository;
+
+        public Fr8Account(IUnitOfWorkFactory uowFactory, IConfigRepository configRepository)
+        {
+            if (uowFactory == null)
+            {
+                throw new ArgumentNullException(nameof(uowFactory));
+            }
+            if (configRepository == null)
+            {
+                throw new ArgumentNullException(nameof(configRepository));
+            }
+            _uowFactory = uowFactory;
+            _configRepository = configRepository;
+        }
+
         public void UpdatePassword(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO, string password)
         {
             if (dockyardAccountDO != null)
@@ -68,17 +88,17 @@ namespace Hub.Services
             var roles =
                 uow.AspNetRolesRepository.GetQuery().Where(r => roleIds.Contains(r.Id)).Select(r => r.Name).ToList();
 
-            String[] acceptableRoles = {};
+            String[] acceptableRoles = { };
             switch (minAuthLevel)
             {
                 case "Customer":
-                    acceptableRoles = new[] {"Customer", "Booker", "Admin"};
+                    acceptableRoles = new[] { "Customer", "Booker", "Admin" };
                     break;
                 case "Booker":
-                    acceptableRoles = new[] {"Booker", "Admin"};
+                    acceptableRoles = new[] { "Booker", "Admin" };
                     break;
                 case "Admin":
-                    acceptableRoles = new[] {"Admin"};
+                    acceptableRoles = new[] { "Admin" };
                     break;
             }
             //if any of the roles that this user belongs to are contained in the current set of acceptable roles, return true
@@ -100,7 +120,7 @@ namespace Hub.Services
         //else if we have a first name only, use that
         //else if we have just an email address, use the portion preceding the @ unless there's a name
         //else throw
-        public static string GetDisplayName(Fr8AccountDO curDockyardAccount)
+        public string GetDisplayName(Fr8AccountDO curDockyardAccount)
         {
             string firstName = curDockyardAccount.FirstName;
             string lastName = curDockyardAccount.LastName;
@@ -116,8 +136,8 @@ namespace Hub.Services
             if (curEmailAddress.Name != null)
                 return curEmailAddress.Name;
 
-            RegexUtilities.ValidateEmailAddress(curEmailAddress.Address);
-            return curEmailAddress.Address.Split(new[] {'@'})[0];
+            RegexUtilities.ValidateEmailAddress(_configRepository, curEmailAddress.Address);
+            return curEmailAddress.Address.Split(new[] { '@' })[0];
         }
 
         public void Create(IUnitOfWork uow, Fr8AccountDO submittedDockyardAccountData)
@@ -153,8 +173,7 @@ namespace Hub.Services
 
         public Fr8AccountDO GetExisting(IUnitOfWork uow, string emailAddress)
         {
-            Fr8AccountDO existingDockyardAccount =
-                uow.UserRepository.GetQuery().Where(e => e.EmailAddress.Address == emailAddress).FirstOrDefault();
+            Fr8AccountDO existingDockyardAccount = uow.UserRepository.GetQuery().FirstOrDefault(e => e.EmailAddress.Address == emailAddress);
             return existingDockyardAccount;
         }
 
@@ -194,6 +213,22 @@ namespace Hub.Services
             }
         }
 
+        public Fr8AccountDO GetSystemUser()
+        {
+            try
+            {
+                var systemUserEmail = _configRepository.Get("SystemUserEmail");
+                using (var uow = _uowFactory.Create())
+                {
+                    return uow.UserRepository.GetQuery().FirstOrDefault(x => x.EmailAddress.Address == systemUserEmail);
+                }
+            }
+            catch (ConfigurationException)
+            {
+                return null;
+            }
+        }
+
         /// <summary>
         /// Returns the list of all processes to run for the specified user.
         /// </summary>
@@ -210,12 +245,14 @@ namespace Hub.Services
         /// <summary>
         /// Register account
         /// </summary>
+        /// <param name="uow"></param>
         /// <param name="email"></param>
         /// <param name="password"></param>
         /// <param name="organizationDO">organization where the user belongs</param>
         /// <param name="isNewOrganization">In case of new created organization, make user admin of that organization</param>
+        /// <param name="anonimousId"></param>
         /// <returns></returns>
-        public RegistrationStatus ProcessRegistrationRequest(IUnitOfWork uow, string email, string password, OrganizationDO organizationDO, bool isNewOrganization)
+        public RegistrationStatus ProcessRegistrationRequest(IUnitOfWork uow, string email, string password, OrganizationDO organizationDO, bool isNewOrganization, string anonimousId)
         {
             RegistrationStatus curRegStatus;
             Fr8AccountDO newFr8Account = null;
@@ -232,7 +269,7 @@ namespace Hub.Services
                     if (existingUserDO.PasswordHash == null)
                     {
                         //this is an existing implicit user, who sent in a request in the past, had a DockyardAccountDO created, and now is registering. Add the password
-                        new Fr8Account().UpdatePassword(uow, existingUserDO, password);
+                        UpdatePassword(uow, existingUserDO, password);
                         existingUserDO.Organization = organizationDO;
 
                         curRegStatus = RegistrationStatus.Successful;
@@ -255,9 +292,16 @@ namespace Hub.Services
                 curRegStatus = RegistrationStatus.Successful;
             }
 
-            if (organizationDO != null && newFr8Account != null)
+            if (newFr8Account != null)
             {
-                AssingRolesToUserBasedOnOrganization(uow, newFr8Account.Id, organizationDO.Name, isNewOrganization);
+                if (organizationDO != null)
+                {
+                    AssingRolesAndProfilesBasedOnOrganization(uow, newFr8Account, organizationDO.Name, isNewOrganization);
+                }
+                else
+                {
+                    AssignProfileToUser(uow, newFr8Account, DefaultProfiles.StandardUser);
+                }
             }
 
             uow.SaveChanges();
@@ -265,35 +309,37 @@ namespace Hub.Services
             if (newFr8Account != null)
             {
                 EventManager.UserRegistration(newFr8Account);
+                ObjectFactory.GetInstance<ITracker>().Registered(anonimousId, newFr8Account);
             }
 
             return curRegStatus;
         }
 
-        public Task<LoginStatus> ProcessLoginRequest(string username, string password, bool isPersistent, HttpRequestMessage request = null)
+        public Task<Tuple<LoginStatus, string>> ProcessLoginRequest(string username, string password, bool isPersistent, HttpRequestMessage request = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 LoginStatus curLoginStatus;
-
-                Fr8AccountDO dockyardAccountDO = uow.UserRepository.FindOne(x => x.UserName == username);
-                if (dockyardAccountDO != null)
+                string userId;
+                Fr8AccountDO fr8AccountDO = uow.UserRepository.FindOne(x => x.UserName == username);
+                if (fr8AccountDO != null)
                 {
-                    if (string.IsNullOrEmpty(dockyardAccountDO.PasswordHash))
+                    userId = fr8AccountDO.Id;
+                    if (string.IsNullOrEmpty(fr8AccountDO.PasswordHash))
                     {
                         curLoginStatus = LoginStatus.ImplicitUser;
                     }
                     else
                     {
-                        curLoginStatus = Login(uow, dockyardAccountDO, password, isPersistent);
+                        curLoginStatus = Login(uow, fr8AccountDO, password, isPersistent);
                     }
                 }
                 else
                 {
                     curLoginStatus = LoginStatus.UnregisteredUser;
+                    userId = "";
                 }
-
-                return Task.FromResult(curLoginStatus);
+                return Task.FromResult(Tuple.Create(curLoginStatus, userId));
             }
         }
 
@@ -310,18 +356,36 @@ namespace Hub.Services
             return userDO;
         }
 
-        private void AssingRolesToUserBasedOnOrganization(IUnitOfWork uow, string newFr8AccountId, string organizationName, bool isNewOrganization)
+        private void AssingRolesAndProfilesBasedOnOrganization(IUnitOfWork uow, Fr8AccountDO newFr8Account, string organizationName, bool isNewOrganization)
         {
-            //New Fr8Account need to be linked with roles based on organization 
-            var orgMemberRoleName = Organization.MemberOfOrganizationRoleName(organizationName);
-            //every new user that registers inside some organization must have role that is member of that organization
-            uow.AspNetUserRolesRepository.AssignRoleToUser(orgMemberRoleName, newFr8AccountId);
-
             //in case when the new user is the one that created this new organization, add to user role as admin of new organization
             if (isNewOrganization)
             {
                 var orgAdminRoleName = Organization.AdminOfOrganizationRoleName(organizationName);
-                uow.AspNetUserRolesRepository.AssignRoleToUser(orgAdminRoleName, newFr8AccountId);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(orgAdminRoleName, newFr8Account.Id);
+                //this user need to have system administrator profile assigned to him
+                AssignProfileToUser(uow, newFr8Account, DefaultProfiles.SystemAdministrator);
+            }
+            else
+            {
+                //every new user that registers inside some organization must have role that is member of that organization
+                var orgMemberRoleName = Organization.MemberOfOrganizationRoleName(organizationName);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(orgMemberRoleName, newFr8Account.Id);
+                //this user need to have standard user profile assigned to him
+                AssignProfileToUser(uow, newFr8Account, DefaultProfiles.StandardUser);
+            }
+        }
+
+        private void AssignProfileToUser(IUnitOfWork uow, Fr8AccountDO fr8Account, string profileName)
+        {
+            var profile = uow.ProfileRepository.GetQuery().FirstOrDefault(x => x.Name == profileName);
+            if (profile != null)
+            {
+                fr8Account.ProfileId = profile.Id;
+            }
+            else
+            {
+                throw new ApplicationException($"Profile '{profileName}' not found for User");
             }
         }
 
@@ -377,10 +441,10 @@ namespace Hub.Services
                 emailDO.HTMLText = htmlText;
 
                 uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, configRepository.Get("ForgotPassword_template"),
-                    new Dictionary<string, object>() {{"-callback_url-", callbackUrl}});
+                    new Dictionary<string, object>() { { "-callback_url-", callbackUrl } });
                 uow.SaveChanges();
-                
-               await ObjectFactory.GetInstance<IEmailPackager>().Send(new EnvelopeDO {Email = emailDO});
+
+                await ObjectFactory.GetInstance<IEmailPackager>().Send(new EnvelopeDO { Email = emailDO });
             }
         }
 
@@ -413,11 +477,11 @@ namespace Hub.Services
             }
         }
 
-		  //public DocuSignAccount LoginToDocuSign()
-		  //{
-		  //	 var packager = new DocuSignPackager();
-		  //	 return packager.Login();
-		  //}
+        //public DocuSignAccount LoginToDocuSign()
+        //{
+        //	 var packager = new DocuSignPackager();
+        //	 return packager.Login();
+        //}
 
         public IEnumerable<PlanDO> GetActivePlans(string userId)
         {
@@ -427,7 +491,7 @@ namespace Hub.Services
                 var planQuery = unitOfWork.PlanRepository.GetPlanQueryUncached().Include(i => i.Fr8Account);
 
                 planQuery
-                    .Where(pt => pt.PlanState == PlanState.Active)//1.
+                    .Where(pt => pt.PlanState == PlanState.Running)//1.
                     .Where(id => id.Fr8Account.Id == userId);//2
 
                 activePlans = planQuery.ToList();
@@ -435,7 +499,7 @@ namespace Hub.Services
             return activePlans;
         }
 
-        public Task<LoginStatus> CreateAuthenticateGuestUser()
+        public Task<Tuple<LoginStatus, string>> CreateAuthenticateGuestUser()
         {
             Guid guid = Guid.NewGuid();
             string guestUserEmail = guid + "@fr8.co";
@@ -443,10 +507,11 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 // Register a guest user 
-               Fr8AccountDO fr8AccountDO = Register(uow, guestUserEmail, guestUserEmail, guestUserEmail, guestUserPassword, Roles.Guest);
-               uow.SaveChanges();
-
-               return Task.FromResult(Login(uow, fr8AccountDO, guestUserPassword, false));
+                Fr8AccountDO fr8AccountDO = Register(uow, guestUserEmail, guestUserEmail, guestUserEmail, guestUserPassword, Roles.Guest);
+                uow.SaveChanges();
+                var loginStatus = Login(uow, fr8AccountDO, guestUserPassword, false);
+                var userId = fr8AccountDO.Id;
+                return Task.FromResult(Tuple.Create(loginStatus, userId));
             }
         }
 
@@ -479,16 +544,16 @@ namespace Hub.Services
             {
                 var existingUserDO =
                     uow.UserRepository.GetQuery().FirstOrDefault(u => u.EmailAddressID == guestUserexistingEmailAddressDO.Id);
-                    
+
                 // Update Email
                 uow.UserRepository.UpdateUserCredentials(existingUserDO, email, password);
-                    
+
                 // update organization
                 if (organizationDO != null)
                 {
                     existingUserDO.Organization = organizationDO;
                 }
-                    
+
                 guestUserexistingEmailAddressDO.Address = email;
 
                 uow.AspNetUserRolesRepository.RevokeRoleFromUser(Roles.Guest, existingUserDO.Id);

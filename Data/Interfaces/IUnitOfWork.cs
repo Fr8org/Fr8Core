@@ -2,6 +2,7 @@
 using Data.Repositories;
 using Data.Repositories.Plan;
 using StructureMap;
+using Data.Repositories.PlanDescriptions;
 
 namespace Data.Interfaces
 {
@@ -43,18 +44,22 @@ namespace Data.Interfaces
         UserStatusRepository UserStatusRepository { get; }
         //NegotiationAnswerEmailRepository NegotiationAnswerEmailRepository { get; }
         ExpectedResponseRepository ExpectedResponseRepository { get; }
-        
+        EnvelopeRepository EnvelopeRepository { get; }
+
         SlipRepository SlipRepository { get; }
         //ActivityRepository ActivityRepository { get; }
         ActivityTemplateRepository ActivityTemplateRepository { get; }
     
-        ICriteriaRepository CriteriaRepository { get; }
+        IActivityDescriptionRepository ActivityDescriptionRepository { get; }
+        INodeTransitionRepository NodeTransitionRepository { get; }
+        IPlanTemplateRepository PlanTemplateRepository { get; }
+        IPlanNodeDescriptionsRepository PlanNodeDescriptionsRepository { get; }
 
         IFileRepository FileRepository { get; }
         IProfileRepository ProfileRepository { get; }
         IPermissionSetRepository PermissionSetRepository { get; }
 
-
+        
         IPlanRepository PlanRepository { get; }
         IMultiTenantObjectRepository MultiTenantObjectRepository { get; }
 
@@ -69,7 +74,14 @@ namespace Data.Interfaces
         
         IOrganizationRepository OrganizationRepository { get; }
 
-	    /// <summary>
+        IPageDefinitionRepository PageDefinitionRepository { get; }
+
+        TerminalRegistrationRepository TerminalRegistrationRepository { get; }
+
+        IActivityCategoryRepository ActivityCategoryRepository { get; }
+        IActivityCategorySetRepository ActivityCategorySetRepository { get; }
+
+        /// <summary>
         /// Call this to commit the unit of work
         /// </summary>
         void Commit();
@@ -79,11 +91,7 @@ namespace Data.Interfaces
         /// </summary>
         IDBContext Db { get; }
 
-        RemoteServiceProviderRepository RemoteServiceProviderRepository { get; }
-        RemoteServiceAuthDataRepository RemoteServiceAuthDataRepository { get; }
-        //RemoteCalendarLinkRepository RemoteCalendarLinkRepository { get; }
         HistoryRepository HistoryRepository { get; }
-        EnvelopeRepository EnvelopeRepository { get; }
 
         /// <summary>
         /// Starts a transaction on this unit of work

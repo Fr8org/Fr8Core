@@ -2,20 +2,37 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Control;
-using Data.Crates;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
-using TerminalBase.Infrastructure;
+using terminalDocuSign.Services.New_Api;
 
-namespace terminalDocuSign.Actions
+namespace terminalDocuSign.Activities
 {
     public class Extract_Data_From_Envelopes_v1 : BaseDocuSignActivity
     {
+
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Id = new Guid("9676dd67-519d-4492-ad25-b5f55f9b4804"),
+            Name = "Extract_Data_From_Envelopes",
+            Label = "Extract Data From Envelopes",
+            Version = "1",
+            Category = ActivityCategory.Solution,
+            MinPaneWidth = 380,
+            NeedsAuthentication = true,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[] { ActivityCategories.Solution }
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
+
         private const string SolutionName = "Extract Data From Envelopes";
         private const double SolutionVersion = 1.0;
         private const string TerminalName = "DocuSign";
@@ -52,72 +69,76 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public Extract_Data_From_Envelopes_v1(ICrateManager crateManager, IDocuSignManager docuSignManager)
+            : base(crateManager, docuSignManager)
         {
-            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public override async Task Initialize()
         {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
+            Storage.Clear();
 
-            return ConfigurationRequestType.Followup;
+            AddControls(new ActivityUi().Controls);
+
+            await FillFinalActionsListSource("FinalActionsList");
         }
 
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivtyDO, AuthorizationTokenDO authTokenDO)
+        protected async Task<ActivityTemplateDTO> GetActivityTemplateByName(string activityTemplateName)
         {
-            var configurationCrate = PackControls(new ActivityUi());
-            await FillFinalActionsListSource(configurationCrate, "FinalActionsList");
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivtyDO))
-            {
-                crateStorage.Clear();
-                crateStorage.Add(configurationCrate);              
-            }
-            return curActivtyDO;
-        }      
+            var allActivityTemplates = await HubCommunicator.GetActivityTemplates();
+            var foundActivity = allActivityTemplates.FirstOrDefault(a => a.Name == activityTemplateName);
 
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+            if (foundActivity == null)
+            {
+                throw new Exception($"ActivityTemplate was not found. ActivitiyTemplateName: {activityTemplateName}");
+            }
+
+            return foundActivity;
+        }
+
+        public override async Task FollowUp()
         {
             var actionUi = new ActivityUi();
-
-            actionUi.ClonePropertiesFrom(CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First());
+            actionUi.ClonePropertiesFrom(ConfigurationControls);
 
             //don't add child actions until a selection is made
             if (string.IsNullOrEmpty(actionUi.FinalActionsList.Value))
             {
-                return curActivityDO;
+                return;
             }
 
-            curActivityDO.ChildNodes = new List<PlanNodeDO>();
+            //Removing children activities when configuring solution after returning to Solution Introduction
+            if(ActivityPayload.ChildrenActivities.Count()> 0)
+            {
+                ActivityPayload.ChildrenActivities.RemoveAll(a => true);
+            }
 
             // Always use default template for solution
             const string firstTemplateName = "Monitor_DocuSign_Envelope_Activity";
-            var monitorDocusignTemplate = await GetActivityTemplate("terminalDocuSign", firstTemplateName);
+            var monitorDocusignTemplate = await HubCommunicator.GetActivityTemplate("terminalDocuSign", firstTemplateName);
             Guid secondActivityTemplateGuid;
             ActivityTemplateDTO secondActivityTemplate;
             if (Guid.TryParse(actionUi.FinalActionsList.Value, out secondActivityTemplateGuid))
             {
-                secondActivityTemplate = await GetActivityTemplate(Guid.Parse(actionUi.FinalActionsList.Value));
+                secondActivityTemplate = await HubCommunicator.GetActivityTemplate(Guid.Parse(actionUi.FinalActionsList.Value));
             }
             else
             {
                 secondActivityTemplate = await GetActivityTemplateByName(actionUi.FinalActionsList.Value);
             }
 
-            var firstActivity = await AddAndConfigureChildActivity(curActivityDO, monitorDocusignTemplate);
-            var secondActivity = await AddAndConfigureChildActivity(curActivityDO, secondActivityTemplate, "Final activity");
+            var firstActivity = await HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, monitorDocusignTemplate);
+            var secondActivity = await HubCommunicator.AddAndConfigureChildActivity(ActivityPayload, secondActivityTemplate, "Final activity");
 
-            return curActivityDO;
+            return;
         }
 
         protected override string ActivityUserFriendlyName => SolutionName;
 
-        protected internal override async Task<PayloadDTO> RunInternal(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public override async Task Run()
         {
-            return Success(await GetPayload(activityDO, containerId));
+            Success();
+            await Task.Yield();
         }
     
         /// <summary>
@@ -128,35 +149,35 @@ namespace terminalDocuSign.Actions
         /// <param name="activityDO"></param>
         /// <param name="curDocumentation"></param>
         /// <returns></returns>
-        public dynamic Documentation(ActivityDO activityDO, string curDocumentation)
+        protected override Task<DocumentationResponseDTO> GetDocumentation(string curDocumentation)
         {
             if (curDocumentation.Contains("MainPage"))
             {
-                var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
+                var curSolutionPage = new DocumentationResponseDTO(SolutionName, SolutionVersion, TerminalName, SolutionBody);
                 return Task.FromResult(curSolutionPage);
             }
             if (curDocumentation.Contains("HelpMenu"))
             {
                 if (curDocumentation.Contains("ExplainExtractData"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution work with DocuSign envelops"));
+                    return Task.FromResult(new DocumentationResponseDTO(@"This solution work with DocuSign envelops"));
                 }
                 if (curDocumentation.Contains("ExplainService"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                    return Task.FromResult(new DocumentationResponseDTO(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
                 }
-                return Task.FromResult(GenerateErrorRepsonse("Unknown contentPath"));
+                return Task.FromResult(new DocumentationResponseDTO("Unknown contentPath"));
             }
             return
                 Task.FromResult(
-                    GenerateErrorRepsonse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
+                    new DocumentationResponseDTO("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
 
         #region Private Methods
-        private async Task FillFinalActionsListSource(Crate configurationCrate, string controlName)
+        private async Task FillFinalActionsListSource(string controlName)
         {
-            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
-            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            var control = ConfigurationControls.FindByNameNested<DropDownList>(controlName);
+
             if (control != null)
             {
                 control.ListItems = await GetFinalActionListItems();
@@ -165,9 +186,11 @@ namespace terminalDocuSign.Actions
 
         private async Task<List<ListItem>> GetFinalActionListItems()
         {
-            var templates = await HubCommunicator.GetActivityTemplates(ActivityCategory.Forwarders, CurrentFr8UserId);
-            return templates.Select(x => new ListItem() { Key = x.Label, Value = x.Id.ToString() }).ToList();
+            var templates = await HubCommunicator.GetActivityTemplates(ActivityCategory.Forwarders, true);
+            return templates.OrderBy(x => x.Label).Select(x => new ListItem { Key = x.Label, Value = x.Id.ToString() }).ToList();
         }
         #endregion
+
+        
     }
 }

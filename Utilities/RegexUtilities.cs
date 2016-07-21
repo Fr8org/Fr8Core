@@ -10,17 +10,16 @@ namespace Utilities
     {
         public static void ValidateEmailAddress(String emailAddress)
         {
-            var ru = new RegexUtilities();
-            if (!ru.IsValidEmailAddress(emailAddress))
+            if (!IsValidEmailAddress(emailAddress))
                 throw new ValidationException(new [] { new ValidationFailure("emailAddress", "Invalid email address: '" + emailAddress + "'")});
         }
 
-        public bool IsValidEmailAddress(String emailAddress)
+        public static bool IsValidEmailAddress(String emailAddress)
         {
             return ExtractFromString(emailAddress, true, true).Count == 1;
         }
 
-        public List<ParsedEmailAddress> ExtractFromString(String textToSearch, bool includeReserved = false, bool strict = false)
+        public static List<ParsedEmailAddress> ExtractFromString(String textToSearch, bool includeReserved = false, bool strict = false)
         {
             if (String.IsNullOrEmpty(textToSearch))
                 return new List<ParsedEmailAddress>();

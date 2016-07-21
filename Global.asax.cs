@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Data.Entity;
 using System.Linq;
-using System.Net;
 using System.Security.Claims;
 using System.Threading;
 using System.Web;
@@ -9,22 +7,19 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
-using Data.Interfaces;
+using Fr8.Infrastructure.Utilities;
 using FluentValidation.WebApi;
 using Hub.Infrastructure;
-using Hub.Managers;
 using Hub.ModelBinders;
-using Hub.StructureMap;
 using HubWeb.App_Start;
 using HubWeb.ExceptionHandling;
 using LogentriesCore.Net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Segment;
-using StructureMap;
-using Utilities;
-using Logger = Utilities.Logging.Logger;
-using HubWeb.Infrastructure;
+using Microsoft.ApplicationInsights.Extensibility;
+using Logger = Fr8.Infrastructure.Utilities.Logging.Logger;
+using System.Globalization;
 
 namespace HubWeb
 {
@@ -35,6 +30,10 @@ namespace HubWeb
 
         protected void Application_Start()
         {
+            if (CultureInfo.CurrentCulture.Parent.LCID != 9)
+            {
+                Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo(1033);
+            }
             Init(false);
         }
 
@@ -60,45 +59,20 @@ namespace HubWeb
             //Register global Exception Filter for WebAPI 
             GlobalConfiguration.Configuration.Filters.Add(new WebApiExceptionFilterAttribute());
 
-            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
-            ObjectFactory.GetInstance<AutoMapperBootStrapper>().ConfigureAutoMapper();
-
-            var db = ObjectFactory.GetInstance<DbContext>();
-            db.Database.Initialize(true);
-
-            Utilities.Server.IsProduction = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsProduction");
-            Utilities.Server.IsDevMode = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsDev", true);
-
             if (!selfHostMode)
             {
-                Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
-                var segmentWriteKey = new ConfigRepository().Get("SegmentWriteKey");
-                Analytics.Initialize(segmentWriteKey);
+                Fr8.Infrastructure.Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
+                var segmentWriteKey =
+                    Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey");
+                if (!segmentWriteKey.IsNullOrEmpty())
+                    Analytics.Initialize(segmentWriteKey);
             }
-
-            EventReporter curReporter = ObjectFactory.GetInstance<EventReporter>();
-            curReporter.SubscribeToAlerts();
-
-            IncidentReporter incidentReporter = ObjectFactory.GetInstance <IncidentReporter>();
-            incidentReporter.SubscribeToAlerts();
 
             ModelBinders.Binders.Add(typeof(DateTimeOffset), new KwasantDateBinder());
 
-            var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                //THIS IS CURRENTLY CAUSING AN EXCEPTION
-                //uow.RemoteServiceProviderRepository.CreateRemoteServiceProviders(configRepository);
-                uow.SaveChanges();
-            }
-
-            SetServerUrl();
-
-            //Logger.GetLogger().Warn("Dockyard  starting...");
             Logger.LogWarning("Dockyard  starting...");
 
             ConfigureValidationEngine();
-            StartupMigration.CreateSystemUser();
         }
 
         private void ConfigureValidationEngine()
@@ -127,15 +101,14 @@ namespace HubWeb
             Logger.LogError($"{exception}");
         }
 
-        private readonly object _initLocker = new object();
-
         //Optimization. Even if running in DEBUG mode, this will only execute once.
         //But on production, there is no need for this call
         protected void Application_BeginRequest(object sender, EventArgs e)
         {
 
 #if DEBUG
-            SetServerUrl(HttpContext.Current);
+            //SetServerUrl(HttpContext.Current);
+            TelemetryConfiguration.Active.DisableTelemetry = true;
 #endif
             NormalizeUrl();
             RewriteAngularRequests();
@@ -151,9 +124,9 @@ namespace HubWeb
         /// Make sure that User is accessing the website using correct and secure URL
         /// </summary>
         private void NormalizeUrl()
-        {  
+        {
             // Ignore requests to dev and API since API clients usually cannot process 301 redirects
-            if (Request.Url.PathAndQuery.ToLower().StartsWith("/api") 
+            if (Request.Url.PathAndQuery.ToLower().StartsWith("/api")
                 || Request.Url.PathAndQuery.ToLower().StartsWith("/authenticationcallback")
                 || Request.Url.Host.ToLower().Contains("dev"))
                 return;
@@ -186,7 +159,7 @@ namespace HubWeb
             Response.AddHeader("Location", path);
         }
 
-        private void SetServerUrl(HttpContext context = null)
+        /*private void SetServerUrl(HttpContext context = null)
         {
             if (!_IsInitialised)
             {
@@ -204,10 +177,10 @@ namespace HubWeb
 
                         if (!String.IsNullOrWhiteSpace(domainName) && !String.IsNullOrWhiteSpace(serverProtocol) && domainPort.HasValue)
                         {
-                            Utilities.Server.ServerUrl = String.Format("{0}{1}{2}/", serverProtocol, domainName,
+                            Fr8.Infrastructure.Utilities.Server.ServerUrl = String.Format("{0}{1}{2}/", serverProtocol, domainName,
                                 domainPort.Value == 80 ? String.Empty : (":" + domainPort.Value));
 
-                            Utilities.Server.ServerHostName = domainName;
+                            Fr8.Infrastructure.Utilities.Server.ServerHostName = domainName;
                         }
                         else
                         {
@@ -228,15 +201,15 @@ namespace HubWeb
                                 protocol = "https://";
 
                             // *** Figure out the base Url which points at the application's root
-                            Utilities.Server.ServerHostName = context.Request.ServerVariables["SERVER_NAME"];
+                            Fr8.Infrastructure.Utilities.Server.ServerHostName = context.Request.ServerVariables["SERVER_NAME"];
                             string url = protocol + context.Request.ServerVariables["SERVER_NAME"] + port + context.Request.ApplicationPath;
-                            Utilities.Server.ServerUrl = url;
+                            Fr8.Infrastructure.Utilities.Server.ServerUrl = url;
                         }
                         _IsInitialised = true;
                     }
                 }
             }
-        }
+        }*/
 
         public void Application_End()
         {

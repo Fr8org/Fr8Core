@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Data.Interfaces;
-using Data.Interfaces.Manifests;
-using Data.Repositories;
+using Fr8.Infrastructure.Data.Manifests;
 using Hub.StructureMap;
 using NUnit.Framework;
 using StructureMap;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace HubTests.Repositories
 {

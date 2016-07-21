@@ -25,8 +25,12 @@ module dockyard.directives.paneConfigureAction {
         currentAction: interfaces.IActionVM;
         field: model.ControlDefinitionDTO;
         plan: any;
+        subPlan: any;
+        //change made for MetaControlContainer with delayed control
+        change: any;
         onChange: (radio: model.ControlDefinitionDTO) => void;
         onClick: (event: any) => void;
+        isDisabled: boolean;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -37,7 +41,11 @@ module dockyard.directives.paneConfigureAction {
         public scope = {
             currentAction: '=',
             field: '=',
-            plan: '='
+            plan: '=',
+            subPlan: '=',
+            change: '=',
+            isDisabled: '='
+
         };
         public templateUrl = '/AngularTemplate/ConfigurationControl';
         public restrict = 'E';
@@ -56,6 +64,12 @@ module dockyard.directives.paneConfigureAction {
                 
                 $scope.onChange = (event: any) => {
 
+                    // we need this thing ↓ because of delayed controls
+                    if ($scope.change) {
+                        $scope.change({ target : true});
+                        return;
+                    }
+
                     var field: model.ControlDefinitionDTO;
                     if (!!event.target === true) {
                         // If called by DOM event (for standard fields), get field from scope
@@ -65,7 +79,9 @@ module dockyard.directives.paneConfigureAction {
                         // If called by custom field, it is assumed that field is supplied as the argument
                         field = event;
                     }
-                    
+                    // Resetting validation errors on client side. If there is error, it will arise with follow-up configuration
+                    field.errorMessage = null;
+
                     $scope.$emit("onChange", new ChangeEventArgs(field));
                 };
 
@@ -73,12 +89,11 @@ module dockyard.directives.paneConfigureAction {
                     var field: model.ControlDefinitionDTO;
 
                     if (!!event.target === true) {
-                        // If called by DOM event (for standard fields), get field
-                        // Get field that received the event
+                        // If called by DOM event (for standard fields), get field that received the event
                         field = $scope.field;
                     }
                     else {
-                        // If called by custom field, it is assumed that field name is suppied as the argument
+                        // If called by custom field, it is assumed that field name is supplied as the argument
                         field = event;
                     }
 

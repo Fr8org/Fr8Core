@@ -1,11 +1,8 @@
-﻿using Data.Interfaces.Manifests;
-using HealthMonitor.Utility;
+﻿using System.Linq;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace terminalSendGridTests.Integration
 {
@@ -33,7 +30,7 @@ namespace terminalSendGridTests.Integration
             Assert.AreEqual("terminalSendGrid", terminalDiscoverResponse.Definition.Name, "Definition terminalSendGrid not found.");
             Assert.AreEqual("SendGrid", terminalDiscoverResponse.Definition.Label, "Definition Label for terminalSendGrid not found.");
 
-            Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == "SendEmailViaSendGrid"), true, "Action " + "SendEmailViaSendGrid" + " was not loaded");
+            Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == "Send_Email_Via_SendGrid"), true, "Action " + "Send_Email_Via_SendGrid" + " was not loaded");
         }
     }
 }

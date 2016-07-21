@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Newtonsoft.Json;
-using Segment;
 using Segment.Model;
 using StructureMap;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Hub.Interfaces;
-using Hub.Services;
 
 namespace HubWeb.Controllers
 {
@@ -23,11 +20,18 @@ namespace HubWeb.Controllers
 		    _time = ObjectFactory.GetInstance<ITime>();
 	    }
 
-        public ActionResult Index(String token)
+        public ActionResult Index(string token)
         {
+            Guid tokenId;
+
+            if (!Guid.TryParse(token, out tokenId))
+            {
+                throw new HttpException(500, "Invalid token Id.");
+            }
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var validToken = uow.AuthorizationTokenRepository.FindTokenById(token);
+                var validToken = uow.AuthorizationTokenRepository.FindTokenById(tokenId);
                 
 				if (validToken == null)
                     throw new HttpException(404, "Authorization token not found.");

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -6,27 +7,34 @@ using AutoMapper;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Interfaces;
+using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
 {
-    [Fr8ApiAuthorize]
-    public class SubPlansController : ApiController
+    //[Fr8ApiAuthorize]
+    public class SubplansController : ApiController
     {
-        private readonly ISubPlan _subPlan;
+        private readonly ISubplan _subplan;
 
-        public SubPlansController()
+        public SubplansController()
         {
-            _subPlan = ObjectFactory.GetInstance<ISubPlan>();
+            _subplan = ObjectFactory.GetInstance<ISubplan>();
         }
-
-        [ResponseType(typeof(SubPlanDTO))]
-        public IHttpActionResult Post(SubPlanDTO subPlanDTO)
+        /// <summary>
+        /// Creates new subplan using specified values
+        /// </summary>
+        /// <param name="subplanDto">Subplan data to create subplan from</param>
+        /// <response code="200">Subplan was successfully created</response>
+        /// <response code="400">Specified data is not valid</response>
+        [ResponseType(typeof(SubplanDTO))]
+        public IHttpActionResult Post(SubplanDTO subplanDto)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (string.IsNullOrEmpty(subPlanDTO.Name))
+                if (string.IsNullOrEmpty(subplanDto.Name))
                 {
                     ModelState.AddModelError("Name", "Name cannot be null");
                 }
@@ -38,29 +46,34 @@ namespace HubWeb.Controllers
 
                 //TODO invalid mappings prevent this line from running
                 //fix invalid automapper configurations
-                //var curSubPlanDO = Mapper.Map<SubrouteDTO, SubrouteDO>(subPlanDTO);
-                var curSubPlanDO = new SubPlanDO(false)
+                //var curSubPlanDO = Mapper.Map<SubrouteDTO, SubrouteDO>(SubplanDTO);
+                var curSubPlanDO = new SubplanDO(false)
                 {
                     Id = Guid.Empty,
-                    ParentPlanNodeId = subPlanDTO.ParentId,
-                    RootPlanNodeId = subPlanDTO.PlanId,
-                    Name = subPlanDTO.Name,
-                    Runnable = subPlanDTO.Runnable
+                    ParentPlanNodeId = subplanDto.ParentId,
+                    RootPlanNodeId = subplanDto.PlanId,
+                    Name = subplanDto.Name,
+                    Runnable = subplanDto.Runnable
                 };
 
-                _subPlan.Create(uow, curSubPlanDO);
+                _subplan.Create(uow, curSubPlanDO);
                 uow.SaveChanges();
 
-                return Ok(Mapper.Map<SubPlanDO, SubPlanDTO>(curSubPlanDO));
+                return Ok(Mapper.Map<SubplanDO, SubplanDTO>(curSubPlanDO));
             }
         }
-
-        [ResponseType(typeof(SubPlanDTO))]
-        public IHttpActionResult Put(SubPlanDTO subPlanDTO)
+        /// <summary>
+        /// Updates subplan with specified values
+        /// </summary>
+        /// <param name="subplanDto">Values used to updates subplan</param>
+        /// <response code="200">Subplan was successfully updated</response>
+        /// <response code="400">Specified data is not valid</response>
+        [ResponseType(typeof(SubplanDTO))]
+        public IHttpActionResult Put(SubplanDTO subplanDto)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (string.IsNullOrEmpty(subPlanDTO.Name))
+                if (string.IsNullOrEmpty(subplanDto.Name))
                 {
                     ModelState.AddModelError("Name", "Name cannot be null");
                 }
@@ -71,49 +84,71 @@ namespace HubWeb.Controllers
                 }
                 //TODO invalid mappings prevent this line from running
                 //fix invalid automapper configurations
-                //var curSubPlanDO = Mapper.Map<SubrouteDTO, SubrouteDO>(subPlanDTO);
-                var curSubPlanDO = new SubPlanDO(false)
+                //var curSubPlanDO = Mapper.Map<SubrouteDTO, SubrouteDO>(SubplanDTO);
+                var curSubPlanDO = new SubplanDO(false)
                 {
-                    Id = subPlanDTO.SubPlanId.Value,
-                    ParentPlanNodeId = subPlanDTO.PlanId,
-                    RootPlanNodeId = subPlanDTO.PlanId,
-                    Name = subPlanDTO.Name
+                    Id = subplanDto.SubPlanId.Value,
+                    ParentPlanNodeId = subplanDto.PlanId,
+                    RootPlanNodeId = subplanDto.PlanId,
+                    Name = subplanDto.Name
                 };
-                _subPlan.Update(uow, curSubPlanDO);
+                _subplan.Update(uow, curSubPlanDO);
                 uow.SaveChanges();
-                return Ok(Mapper.Map<SubPlanDO, SubPlanDTO>(curSubPlanDO));
+                return Ok(Mapper.Map<SubplanDO, SubplanDTO>(curSubPlanDO));
             }
         }
-
-        [ResponseType(typeof(SubPlanDTO))]
+        /// <summary>
+        /// Deletes subplan with specified Id
+        /// </summary>
+        /// <param name="id">Id of subplan to delete</param>
         [HttpDelete]
+        [SwaggerResponse(HttpStatusCode.OK, "Subplan was successfully deleted")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "Subplan with specified Id doesn't exist")]
+        [SwaggerResponseRemoveDefaults]
         public async Task<IHttpActionResult> Delete(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var subPlan = uow.PlanRepository.GetById<SubPlanDO>(id);
+                var subPlan = uow.PlanRepository.GetById<SubplanDO>(id);
                 if (subPlan == null)
                 {
                     return BadRequest();
                 }
-
-                await _subPlan.Delete(uow, id);
-
-                uow.SaveChanges();
-
+                try
+                {
+                    await _subplan.Delete(uow, id);
+                    uow.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    return InternalServerError(ex);
+                }
                 return Ok();
             }
         }
-
-        [ActionName("first_activity")]
+        /// <summary>
+        /// Retrieves the first activity of the subplan with specified Id
+        /// </summary>
+        /// <param name="id">Id of subplan</param>
+        /// <param name="filter">Deprecated</param>
+        /// <response code="200">First activity of the subplan with specified Id. Can be empty</response>
+        [ActionName("activities")]
         [ResponseType(typeof(ActivityDTO))]
         [HttpPost]
-        public async Task<IHttpActionResult> FirstActivity(Guid id)
+        public async Task<IHttpActionResult> FirstActivity(Guid id, string filter = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activity = await _subPlan.GetFirstActivity(uow, id);
-                return Ok(Mapper.Map<ActivityDTO>(activity));
+                try
+                {
+                    var activity = _subplan.GetFirstActivity(uow, id);
+                    return Ok(Mapper.Map<ActivityDTO>(activity));
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex.Message);
+                    return InternalServerError(ex);
+                }
             }
         }
     }

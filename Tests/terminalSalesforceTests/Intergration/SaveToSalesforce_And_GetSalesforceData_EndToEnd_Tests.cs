@@ -1,19 +1,20 @@
-﻿using Data.Control;
-using Data.Crates;
-using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using HealthMonitor.Utility;
-using Hub.Managers;
+﻿using Data.Entities;
+using Fr8.Testing.Integration;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Helpers;
+using Fr8.TerminalBase.Models;
+using StructureMap;
 using terminalSalesforce.Actions;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
@@ -22,28 +23,37 @@ namespace terminalSalesforceTests.Intergration
 {
     [Explicit]
     [Category("terminalSalesforceTests.Integration")]
-    public class SaveToSalesforce_And_GetSalesforceData_EndToEnd_Tests : BaseHubIntegrationTest
+    public class SaveToSalesforce_And_GetSalesforceData_EndToEnd_Tests : BaseSalesforceIntegrationTest
     {
         public override string TerminalName
         {
             get { return "terminalSalesforce"; }
         }
-
+        
         [Test]
         public async Task SaveToSalesforce_And_GetSalesforceData_EndToEnd()
-        {
+        {            
             AuthorizationTokenDO authTokenDO = null;
+            AuthorizationToken authorizationToken = null;
             Guid initialPlanId = Guid.Empty;
             string newLeadId = string.Empty;
             try
             {
                 authTokenDO = await Fixtures.HealthMonitor_FixtureData.CreateSalesforceAuthToken();
-
+                authorizationToken = new AuthorizationToken
+                {
+                    UserId = authTokenDO.UserID,
+                    ExternalAccountId = authTokenDO.ExternalAccountId,
+                    ExternalDomainId = authTokenDO.ExternalDomainId,
+                    AdditionalAttributes = authTokenDO.AdditionalAttributes,
+                    Token = authTokenDO.Token,
+                    Id = authTokenDO.Id.ToString()
+                };
                 //Create the required plan with all initial activities initial config
                 initialPlanId = await CreatePlan_SaveAndGetDataFromSalesforce(authTokenDO);
 
                 //get the full plan which is created
-                var plan = await HttpGetAsync<PlanDTO>(_baseUrl + "Plans/full?id=" + initialPlanId.ToString());
+                var plan = await HttpGetAsync<PlanDTO>(_baseUrl + "Plans?include_children=true&id=" + initialPlanId.ToString());
                 Debug.WriteLine("Created plan with all activities.");
 
                 //prepare the two activities with their follow up config
@@ -62,7 +72,7 @@ namespace terminalSalesforceTests.Intergration
                 //Assert
                 Debug.WriteLine("Asserting initial payload.");
                 var payloadList = Crate.GetUpdatableStorage(payload).CratesOfType<StandardPayloadDataCM>().ToList();
-                Assert.AreEqual(1, payloadList.Count, "The payload does not contian all activities payload");
+                Assert.AreEqual(1, payloadList.Count, "The payload does not contain all activities payload");
                 Assert.IsTrue(payloadList.Any(pl => pl.Label.Equals("Lead is saved in Salesforce.com")), "Save Data is Failed to save the lead.");
 
                 Debug.WriteLine("Asserting Save To Salesforce payload.");
@@ -74,24 +84,25 @@ namespace terminalSalesforceTests.Intergration
                 Debug.WriteLine("Newly created Lead ID is " + newLeadId);
 
                 Debug.WriteLine("Deleting newly created lead with " + newLeadId);
-                var isDeleted = await new SalesforceManager().Delete(SalesforceObjectType.Lead, newLeadId, authTokenDO);
+                var isDeleted = await _container.GetInstance<SalesforceManager>().Delete(SalesforceObjectType.Lead, newLeadId, authorizationToken);
                 Assert.IsTrue(isDeleted, "The newly created Lead for integration test purpose is not deleted.");
                 newLeadId = string.Empty;
 
                 Debug.WriteLine("Cleaning up.");
-                await CleanUp(authTokenDO, initialPlanId, newLeadId);
+                await CleanUp(authorizationToken, initialPlanId, newLeadId);
                 Debug.WriteLine("Cleaning up Successful.");
             }
             finally
             {
-                await CleanUp(authTokenDO, initialPlanId, newLeadId);
+                await CleanUp(authorizationToken, initialPlanId, newLeadId);
             }
+            
         }
 
         private async Task<Guid> CreatePlan_SaveAndGetDataFromSalesforce(AuthorizationTokenDO authToken)
         {
             //get required activity templates
-            var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(_baseUrl + "plannodes/available");
+            var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(_baseUrl + "activity_templates");
             var atSave = activityTemplates.Single(at => at.Name.Equals("Forwarders")).Activities.Single(a => a.Name.Equals("Save_To_SalesforceDotCom"));
             var atGet = activityTemplates.Single(at => at.Name.Equals("Receivers")).Activities.Single(a => a.Name.Equals("Get_Data"));
             Assert.IsNotNull(atSave, "Save to Salesforce.com activity is not available");
@@ -106,7 +117,7 @@ namespace terminalSalesforceTests.Intergration
             Debug.WriteLine("Created initial plan without actions");
 
             string mainUrl = _baseUrl + "activities/create";
-            var postUrl = "?actionTemplateId={0}&createPlan=false";
+            var postUrl = "?activityTemplateId={0}&createPlan=false";
             var formattedPostUrl = string.Format(postUrl, atSave.Id);
             formattedPostUrl += "&parentNodeId=" + initialPlan.Plan.StartingSubPlanId;
             formattedPostUrl += "&authorizationTokenId=" + authToken.Id.ToString();
@@ -117,7 +128,7 @@ namespace terminalSalesforceTests.Intergration
             Debug.WriteLine("Create and Initial Configure of Save to Salesforce activity is successful.");
 
             mainUrl = _baseUrl + "activities/create";
-            postUrl = "?actionTemplateId={0}&createPlan=false";
+            postUrl = "?activityTemplateId={0}&createPlan=false";
             formattedPostUrl = string.Format(postUrl, atGet.Id);
             formattedPostUrl += "&parentNodeId=" + initialPlan.Plan.StartingSubPlanId;
             formattedPostUrl += "&authorizationTokenId=" + authToken.Id.ToString();
@@ -130,22 +141,22 @@ namespace terminalSalesforceTests.Intergration
             return initialPlan.Plan.Id;
         }
 
-        private async Task CleanUp(AuthorizationTokenDO authTokenDO, Guid initialPlanId, string newLeadId)
+        private async Task CleanUp(AuthorizationToken authToken, Guid initialPlanId, string newLeadId)
         {
             if(!string.IsNullOrEmpty(newLeadId))
             {
-                var isDeleted = await new SalesforceManager().Delete(SalesforceObjectType.Lead, newLeadId, authTokenDO);
+                var isDeleted = await _container.GetInstance<SalesforceManager>().Delete(SalesforceObjectType.Lead, newLeadId, authToken);
                 Assert.IsTrue(isDeleted, "The newly created Lead for integration test purpose is not deleted.");
             }
 
             if (initialPlanId != Guid.Empty)
             {
-                await HttpDeleteAsync(_baseUrl + "Plans/Delete?id=" + initialPlanId.ToString());
+                await HttpDeleteAsync(_baseUrl + "Plans/Delete?id=" + initialPlanId);
             }
 
-            if (authTokenDO != null)
+            if (authToken != null)
             {
-                await HttpPostAsync<string>(_baseUrl + "manageauthtoken/revoke?id=" + authTokenDO.Id.ToString(), null);
+                await HttpPostAsync<string>(_baseUrl + "authentication/tokens/revoke?id=" + authToken.Id, null);
             }
         }
 
@@ -185,17 +196,24 @@ namespace terminalSalesforceTests.Intergration
         {
             var getDataActivity = plan.Plan.SubPlans.First().Activities.Last();
             //set lead and do the follow up config
-            getDataActivity.UpdateControls<Get_Data_v1.ActivityUi>(x =>
+            using (var crateStorage = Crate.GetUpdatableStorage(getDataActivity))
             {
-                x.SalesforceObjectSelector.selectedKey = SalesforceObjectType.Lead.ToString();
-            });
+                crateStorage.UpdateControls<Get_Data_v1.ActivityUi>(x =>
+                {
+                    x.SalesforceObjectSelector.selectedKey = SalesforceObjectType.Lead.ToString();
+                });
+            }
             getDataActivity = await ConfigureActivity(getDataActivity);
             Debug.WriteLine("Get Data Follow up config is successfull with Lead selected");
             //set the lead required fields.
-            getDataActivity.UpdateControls<Get_Data_v1.ActivityUi>(x =>
+            using (var crateStorage = Crate.GetUpdatableStorage(getDataActivity))
             {
-                x.SalesforceObjectFilter.Value = JsonConvert.SerializeObject(new List <FilterConditionDTO> { new FilterConditionDTO { Field = "LastName", Operator = "eq", Value = "Unit" } });
-            });
+                crateStorage.UpdateControls<Get_Data_v1.ActivityUi>(x =>
+                {
+                    x.SalesforceObjectFilter.Value = JsonConvert.SerializeObject(new List<FilterConditionDTO> {new FilterConditionDTO {Field = "LastName", Operator = "eq", Value = "Unit"}});
+                });
+            }
+
             getDataActivity = await ConfigureActivity(getDataActivity);
             Debug.WriteLine("Get Data Follow up config is successfull with selection query fields set.");
             plan.Plan.SubPlans.First().Activities[1] = getDataActivity;

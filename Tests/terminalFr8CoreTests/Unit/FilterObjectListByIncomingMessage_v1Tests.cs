@@ -1,20 +1,20 @@
-﻿using Data.Constants;
-using Data.Crates;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
 using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TerminalBase.Infrastructure;
-using terminalFr8Core.Actions;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Helpers;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Models;
+using terminalFr8Core.Activities;
 using terminalTests.Fixtures;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace terminalTests.Integration
 {
@@ -42,12 +42,15 @@ namespace terminalTests.Integration
             base.SetUp();
             var hubMock = new Mock<IHubCommunicator>();
             //hubMock.Setup(x => x.DeleteExistingChildNodesFromActivity(It.IsAny<Guid>(), It.IsAny<string>())).Verifiable();
-            hubMock.Setup(x => x.GetActivityTemplates(It.IsAny<string>()))
+            hubMock.Setup(x => x.GetActivityTemplates(It.IsAny<bool>()))
                    .Returns(Task.FromResult(ActivityTemplates));
-            hubMock.Setup(x => x.GetActivityTemplates(It.IsAny<string>(), It.IsAny<string>()))
-                   .Returns<string, string>((tags, user) => Task.FromResult(ActivityTemplates.Where(x => x.Tags.Contains(tags)).ToList()));
-            hubMock.Setup(x => x.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
-                   .Returns<ActivityDO, Guid, string>((act, contId, user) => Task.FromResult(HealthMonitor_FixtureData.PayloadWithOnlyOperationalState()));
+
+            hubMock.Setup(x => x.GetActivityTemplates(It.IsAny<string>(), It.IsAny<bool>()))
+                   .Returns<string, bool>((tags, getLatest) => Task.FromResult(ActivityTemplates.Where(x => x.Tags.Contains(tags)).ToList()));
+
+            hubMock.Setup(x => x.CreateAndConfigureActivity(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid?>(), It.IsAny<bool>(), It.IsAny<Guid?>()))
+                .Returns(() => Task.FromResult(new ActivityPayload() { ActivityTemplate = ActivityTemplates[0], Ordering = 1 }));
+                
             ObjectFactory.Container.Inject(hubMock);
             ObjectFactory.Container.Inject(hubMock.Object);
         }
@@ -55,26 +58,44 @@ namespace terminalTests.Integration
         [Test]
         public async Task Configure_AfterInitialConfiguration_DataSourceSelectorContainsTableDataGenerators()
         {
-            var activity = new FilterObjectListByIncomingMessage_v1();
+            var activity = New<Filter_Object_List_By_Incoming_Message_v1>();
+            var activityContext = new ActivityContext
+            {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage()
+
+                },
+                AuthorizationToken = new AuthorizationToken { Token = "1" }
+            };
             //Initial config
-            var activityDO = await activity.Configure(new ActivityDO(), new AuthorizationTokenDO { Token = "1" });
-            Assert.AreEqual(1, activityDO.GetReadonlyActivityUi<FilterObjectListByIncomingMessage_v1.ActivityUi>().DataSourceSelector.ListItems.Count, "Data source list is not properly populated");
+            await activity.Configure(activityContext);
+            Assert.AreEqual(1, activityContext.ActivityPayload.CrateStorage.GetReadonlyActivityUi<Filter_Object_List_By_Incoming_Message_v1.ActivityUi>().DataSourceSelector.ListItems.Count, "Data source list is not properly populated");
         }
 
         [Test]
         public async Task Configure_WhenDataSourceIsChanged_RemoveAndReconfigureChildActivity()
         {
-            var authToken = new AuthorizationTokenDO { Token = "1" };
-            var activity = new FilterObjectListByIncomingMessage_v1();
+            var authToken = new AuthorizationToken { Token = "1" };
+            var activity = New<Filter_Object_List_By_Incoming_Message_v1>();
+            var activityContext = new ActivityContext
+            {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage(),
+                    ChildrenActivities = new List<ActivityPayload>()
+                },
+                AuthorizationToken = authToken
+            };
             //Initial config
-            var activityDO = await activity.Configure(new ActivityDO(), authToken);
-            activityDO.UpdateControls<FilterObjectListByIncomingMessage_v1.ActivityUi>(x => x.DataSourceSelector.Value = ActivityTemplates[0].Id.ToString());
-            activityDO = await activity.Configure(activityDO, authToken);
+            await activity.Configure(activityContext);
+            activityContext.ActivityPayload.CrateStorage.UpdateControls<Filter_Object_List_By_Incoming_Message_v1.ActivityUi>(x => x.DataSourceSelector.Value = ActivityTemplates[0].Id.ToString());
+            await activity.Configure(activityContext);
             var hubMock = ObjectFactory.GetInstance<Mock<IHubCommunicator>>();
-            hubMock.Verify(x => x.DeleteExistingChildNodesFromActivity(activityDO.Id, It.IsAny<string>()),
-                           Times.Exactly(1),
-                           "Child activities were not deleted after data source was selected");
-            hubMock.Verify(x => x.CreateAndConfigureActivity(ActivityTemplates[0].Id, It.IsAny<string>(), It.IsAny<string>(), 1, activityDO.Id, It.IsAny<bool>(), It.IsAny<Guid?>()),
+
+            hubMock.Verify(x => x.CreateAndConfigureActivity(ActivityTemplates[0].Id, It.IsAny<string>(), 1, activityContext.ActivityPayload.Id, It.IsAny<bool>(), It.IsAny<Guid?>()),
                            Times.Exactly(1),
                            "Child activity was not created and confgured");
         }
@@ -82,16 +103,33 @@ namespace terminalTests.Integration
         [Test]
         public async Task Run_WhenNoDataIsCahced_RunsChildActivitiy()
         {
-            var authToken = new AuthorizationTokenDO { Token = "1" };
-            var activity = new FilterObjectListByIncomingMessage_v1();
+            var authToken = new AuthorizationToken { Token = "1" };
+            var activity = New<Filter_Object_List_By_Incoming_Message_v1>();
+            var activityContext = new ActivityContext
+            {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage(),
+                    ChildrenActivities = new List<ActivityPayload>()
+                },
+                AuthorizationToken = authToken
+            };
+            var containerExecutionContext = HealthMonitor_FixtureData.ExecutionContextWithOnlyOperationalState();
             //Initial and followup config
-            var activityDO = await activity.Configure(new ActivityDO(), authToken);
-            activityDO.UpdateControls<FilterObjectListByIncomingMessage_v1.ActivityUi>(x => x.DataSourceSelector.Value = ActivityTemplates[0].Id.ToString());
-            activityDO = await activity.Configure(activityDO, authToken);
-            activityDO.AddChild(new ActivityDO { ActivityTemplateId = ActivityTemplates[0].Id }, 1);
+            await activity.Configure(activityContext);
+            activityContext.ActivityPayload.CrateStorage.UpdateControls<Filter_Object_List_By_Incoming_Message_v1.ActivityUi>(x => x.DataSourceSelector.Value = ActivityTemplates[0].Id.ToString());
+            await activity.Configure(activityContext);
+            
+            // var childActivity = new ActivityPayload
+            // {
+            //     ActivityTemplate = ActivityTemplates[0]
+            // };
+            // AddChild(activityContext.ActivityPayload, childActivity, 1);
+            
             //Run
-            var result = await activity.Run(activityDO, Guid.NewGuid(), authToken);
-            var operationalState = new CrateManager().GetStorage(result).FirstCrate<OperationalStateCM>().Content;
+            await activity.Run(activityContext, containerExecutionContext);
+            var operationalState = containerExecutionContext.PayloadStorage.FirstCrate<OperationalStateCM>().Content;
             Assert.AreEqual(ActivityResponse.Success.ToString(), operationalState.CurrentActivityResponse.Type, "Child activities should be ran during normal execution flow");
         }
 
@@ -99,54 +137,63 @@ namespace terminalTests.Integration
         public async Task Run_Always_FiltersDataAndSkipsChildActivities()
         {
             //Setup
-            var hubMock = ObjectFactory.GetInstance<Mock<IHubCommunicator>>();
-            var payload = HealthMonitor_FixtureData.PayloadWithOnlyOperationalState();
-            using (var storage = new CrateManager().GetUpdatableStorage(payload))
+            var containerExecutionContext = HealthMonitor_FixtureData.ExecutionContextWithOnlyOperationalState();
+            containerExecutionContext.PayloadStorage.Add(Crate<KeyValueListCM>.FromContent("Message is here", new KeyValueListCM(new KeyValueDTO("Message", "This message should be checked for keywords"))));
+            var authToken = new AuthorizationToken { Token = "1" };
+            var activity = New<Filter_Object_List_By_Incoming_Message_v1>();
+            var activityContext = new ActivityContext
             {
-                storage.Add(Crate<FieldDescriptionsCM>.FromContent("Message is here", new FieldDescriptionsCM(new FieldDTO("Message", "This message should be checked for keywords"))));
-            }
-            hubMock.Setup(x => x.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
-                    .Returns<ActivityDO, Guid, string>((act, contId, user) => Task.FromResult(payload));
-
-            var authToken = new AuthorizationTokenDO { Token = "1" };
-            var activity = new FilterObjectListByIncomingMessage_v1();
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage(),
+                    ChildrenActivities = new List<ActivityPayload>()
+                },
+                AuthorizationToken = authToken
+            };
             //Initial and followup config
-            var activityDO = await activity.Configure(new ActivityDO(), authToken);
-            activityDO.UpdateControls<FilterObjectListByIncomingMessage_v1.ActivityUi>(x =>
+            await activity.Configure(activityContext);
+            activityContext.ActivityPayload.CrateStorage.UpdateControls<Filter_Object_List_By_Incoming_Message_v1.ActivityUi>(x =>
             {
                 x.DataSourceSelector.Value = ActivityTemplates[0].Id.ToString();
                 x.IncomingTextSelector.selectedKey = "Message";
             });
-            activityDO = await activity.Configure(activityDO, authToken);
-
-            using (var storage = new CrateManager().GetUpdatableStorage(activityDO))
-            {
-                var configurationValues = storage.FirstCrate<FieldDescriptionsCM>(x => x.Label == "Configuration Values");
-                configurationValues.Content.Fields.First(x => x.Key == "Cache Created At").Value = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
-                storage.Add(Crate<StandardTableDataCM>.FromContent("Cached table",
+            await activity.Configure(activityContext);
+            var crateStorage = activityContext.ActivityPayload.CrateStorage;
+            var configurationValues = crateStorage.FirstCrate<KeyValueListCM>(x => x.Label == "Configuration Values");
+                configurationValues.Content.Values.First(x => x.Key == "Cache Created At").Value = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
+            crateStorage.Add(Crate<StandardTableDataCM>.FromContent("Cached table",
                     new StandardTableDataCM
                     {
                         FirstRowHeaders = true,
                         Table = new List<TableRowDTO>
                         {
-                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new FieldDTO("Header", "Header") } } },
+                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new KeyValueDTO("Header", "Header") } } },
                             //Will pass filter
-                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new FieldDTO("Header", "message") } } },
-                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO {  Cell = new FieldDTO("Header", "checked") } } },
+                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new KeyValueDTO("Header", "message") } } },
+                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO {  Cell = new KeyValueDTO("Header", "checked") } } },
                             //Won't pass filter
-                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new FieldDTO("Header", "nothing") } } },
-                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new FieldDTO("Header", "anything") } } }
+                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new KeyValueDTO("Header", "nothing") } } },
+                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new KeyValueDTO("Header", "anything") } } }
                         }
                     }));
-            }
-            activityDO = await activity.Configure(activityDO, authToken);
-            activityDO.AddChild(new ActivityDO { ActivityTemplateId = ActivityTemplates[0].Id }, 1);
+            await activity.Configure(activityContext);
+            var childActivity = new ActivityPayload
+            {
+                ActivityTemplate = ActivityTemplates[0]
+            };
+            AddChild(activityContext.ActivityPayload, childActivity,1) ;
             //Run
-            var result = await activity.Run(activityDO, Guid.NewGuid(), authToken);
-            var operationalState = new CrateManager().GetStorage(result).FirstCrate<OperationalStateCM>().Content;
+            await activity.Run(activityContext, containerExecutionContext);
+            var operationalState = containerExecutionContext.PayloadStorage.FirstCrate<OperationalStateCM>().Content;
             Assert.AreEqual(ActivityResponse.SkipChildren.ToString(), operationalState.CurrentActivityResponse.Type, "Child activities should be skipped during normal execution flow");
-            var filteredData = new CrateManager().GetStorage(result).FirstCrate<StandardTableDataCM>().Content;
+            var filteredData = containerExecutionContext.PayloadStorage.FirstCrate<StandardTableDataCM>().Content;
             Assert.AreEqual(3, filteredData.Table.Count, "Filtered data doesn't contain proper row count");
+        }
+        private void AddChild(ActivityPayload parent, ActivityPayload child, int? ordering)
+        {
+            child.Ordering = ordering ?? (parent.ChildrenActivities.Count > 0 ? parent.ChildrenActivities.Max(x => x.Ordering) + 1 : 1);
+            parent.ChildrenActivities.Add(child);
         }
     }
 }

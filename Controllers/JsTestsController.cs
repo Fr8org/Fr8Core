@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 
 namespace HubWeb.Controllers
 {
@@ -19,6 +15,12 @@ namespace HubWeb.Controllers
         {
             ViewBag.TestType = "integration";
             return View("tests");
+        }
+
+        public ActionResult Endpoints()
+        {
+            ViewBag.TestType = "endpoints";
+            return View("endpoints");
         }
     }
 }

@@ -75,9 +75,13 @@ namespace Hub.Security
             foreach (var parameter in MapParameters(invocation.Arguments, invocation.Method.GetParameters(), authorizeAttribute.ParamType))
             {
                 string objectId;
-                if (parameter is Guid || parameter is string)
+                if (parameter is Guid)
                 {
-                    objectId = (string)parameter;
+                    objectId = parameter.ToString();
+                }
+                else if (parameter is string)
+                {
+                    objectId = (string) parameter;
                 }
                 else
                 {
@@ -85,7 +89,7 @@ namespace Hub.Security
                     var property = parameter.GetType().GetProperty("Id");
                     objectId = property.GetValue(parameter).ToString();
                 }
-               
+
                 if (_securityServices.AuthorizeActivity(authorizeAttribute.Permission, objectId, authorizeAttribute.TargetType.Name))
                 {
                     invocation.Proceed();

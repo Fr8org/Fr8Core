@@ -1,10 +1,9 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using HealthMonitor.Utility;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
 using terminalQuickBooksTests.Fixtures;
 
@@ -18,10 +17,8 @@ namespace terminalQuickBooksTests.Integration
     [Explicit]
     internal class Create_Journal_Entry_v1_Tests : BaseTerminalIntegrationTest
     {
-        public override string TerminalName
-        {
-            get { return "terminalQuickBooks"; }
-        }
+        public override string TerminalName => "terminalQuickBooks";
+
         [Test, Category("Integration.terminalQuickBooks")]
         public async Task Create_Journal_Entry_Configuration_Check_With_No_Upstream_Crate()
         {
@@ -41,32 +38,8 @@ namespace terminalQuickBooksTests.Integration
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            var curTextBlock = (TextBlock)crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0];
-            Assert.AreEqual("Create a Journal Entry", curTextBlock.Label);
-            Assert.AreEqual(curMessage, curTextBlock.Value);
-            Assert.AreEqual("alert alert-warning", curTextBlock.CssClass);
-        }
-        [Test, Category("Integration.terminalQuickBooks")]
-        public async Task Create_Journal_Entry_Configuration_Check_With_Upstream_Crate()
-        {
-            //Arrange
-            var configureUrl = GetTerminalConfigureUrl();
-            var dataDTO = HealthMonitor_FixtureData.Activity_Create_Journal_Entry_v1_InitialConfiguration_Fr8DataDTO();
-            var curStandAccTransCrate = HealthMonitor_FixtureData.GetAccountingTransactionCM();
-            AddUpstreamCrate(dataDTO, curStandAccTransCrate);
-            //Act
-            var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
-                    configureUrl,
-                    dataDTO
-                );
-            //Assert
-            Assert.NotNull(responseActionDTO);
-            Assert.NotNull(responseActionDTO.CrateStorage);
-            var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            var curTextBlock = (TextBlock)crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0];
-            Assert.AreEqual("Create a Journal Entry", curTextBlock.Label);
-            Assert.AreEqual("This Action doesn't require any configuration.", curTextBlock.Value);
-            Assert.AreEqual("well well-lg", curTextBlock.CssClass);
+            var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls;
+            Assert.AreEqual(0, controls.Count);
         }
     }
 }

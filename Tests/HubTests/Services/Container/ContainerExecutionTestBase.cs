@@ -1,17 +1,17 @@
 ﻿using System.Collections.Generic;
-using HubTests.Services.Container;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.Managers;
 using NUnit.Framework;
 using StructureMap;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
+
 
 namespace HubTests.Services.Container
 {
     public class ContainerExecutionTestBase : BaseTest
     {
         protected ActivityServiceMock ActivityService;
-        protected Hub.Interfaces.IContainer Container;
+        protected Hub.Interfaces.IContainerService ContainerService;
         protected ICrateManager CrateManager;
         protected Hub.Interfaces.IPlan Plan;
 
@@ -21,15 +21,20 @@ namespace HubTests.Services.Container
         {
             base.SetUp();
 
+            InitializeContainer();
+            
             CrateManager = ObjectFactory.GetInstance<ICrateManager>();
             ActivityService = new ActivityServiceMock(ObjectFactory.GetInstance<Hub.Interfaces.IActivity>());
             ObjectFactory.Container.Inject(typeof(Hub.Interfaces.IActivity), ActivityService);
-            Container = ObjectFactory.GetInstance<Hub.Interfaces.IContainer>();
+            ContainerService = ObjectFactory.GetInstance<Hub.Interfaces.IContainerService>();
             Plan = ObjectFactory.GetInstance<Hub.Interfaces.IPlan>();
 
             FixtureData.AddTestActivityTemplate();
         }
 
+        protected virtual void InitializeContainer()
+        {
+        }
 
         protected void AssertExecutionSequence(ActivityExecutionCall[] expected, List<ActivityExecutionCall> actual)
         {

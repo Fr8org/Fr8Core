@@ -1,6 +1,6 @@
 ﻿using System;
-using Data.Constants;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Managers;
 
 namespace HubTests.Services.Container
 {

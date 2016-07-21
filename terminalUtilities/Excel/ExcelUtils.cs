@@ -5,20 +5,29 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Data.Crates;
 using Excel;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.States;
+using Fr8.Infrastructure.Interfaces;
 using StructureMap;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
-using Hub.Interfaces;
-using Hub.Managers;
+using RestSharp.Extensions;
 
 namespace terminalUtilities.Excel
 {
-    public static class ExcelUtils
+    public class ExcelUtils
     {
+        private readonly IRestfulServiceClient _restfulServiceClient;
+        private readonly ICrateManager _crateManager;
+
+        public ExcelUtils(IRestfulServiceClient restfulServiceClient, ICrateManager crateManager)
+        {
+            _restfulServiceClient = restfulServiceClient;
+            _crateManager = crateManager;
+        }
+
         public static void ConvertToCsv(string pathToExcel, string pathToCsv)
         {
             if (pathToExcel == null)
@@ -83,11 +92,12 @@ namespace terminalUtilities.Excel
             }
         }
 
-        public static string[] GetColumnHeaders(string filePath)
+        public async Task<string[]> GetColumnHeaders(string filePath)
         {
             var extension = Path.GetExtension(filePath);
-            var file = RetrieveFile(filePath);
-            return GetColumnHeaders(file, extension);
+            var file = await RetrieveFile(filePath);
+            file.Position = 0;
+            return GetColumnHeaders(file.ReadAsBytes(), extension);
 
         }
 
@@ -131,6 +141,61 @@ namespace terminalUtilities.Excel
                         columnHeaders[i] = table.Columns[i].ColumnName;
                     }
                     return columnHeaders;
+                }
+            }
+        }
+
+        public static bool DetectContainsHeader(byte[] fileBytes, string extension, string sheetName = null)
+        {
+            IExcelDataReader excelReader = null;
+            using (var byteStream = new MemoryStream(fileBytes))
+            {
+                if (extension == ".xls")
+                    excelReader = ExcelReaderFactory.CreateBinaryReader(byteStream);
+                else
+                    excelReader = ExcelReaderFactory.CreateOpenXmlReader(byteStream);
+
+                using (excelReader)
+                {
+                    excelReader.IsFirstRowAsColumnNames = false;
+                    var dataSet = excelReader.AsDataSet();
+
+                    DataTable table;
+                    if (string.IsNullOrEmpty(sheetName))
+                    {
+                        table = dataSet.Tables[0];
+                    }
+                    else
+                    {
+                        table = null;
+
+                        for (var i = 0; i < dataSet.Tables.Count; ++i)
+                        {
+                            if (dataSet.Tables[i].TableName == sheetName)
+                            {
+                                table = dataSet.Tables[i];
+                                break;
+                            }
+                        }
+
+                        if (table == null)
+                        {
+                            throw new ApplicationException("Specified Sheet was not found.");
+                        }
+                    }
+
+                    if (table.Rows.Count > 0)
+                    {
+                        foreach (var item in table.Rows[0].ItemArray)
+                        {
+                            if (item is DBNull || (item is string && string.IsNullOrEmpty((string)item)))
+                            {
+                                return false;
+                            }
+                        }
+                    }
+
+                    return true;
                 }
             }
         }
@@ -195,15 +260,16 @@ namespace terminalUtilities.Excel
             return excelRows;
         }
 
-        public static byte[] GetExcelFileAsByteArray(string selectedFilePath)
+        public async Task<byte[]> GetExcelFileAsByteArray(string selectedFilePath)
         {
-            var fileAsByteArray = RetrieveFile(selectedFilePath);
-            return fileAsByteArray;
+            var fileAsByteArray = await RetrieveFile(selectedFilePath);
+            fileAsByteArray.Position = 0;
+            return fileAsByteArray.ReadAsBytes();
         }
 
-        public static StandardTableDataCM GetExcelFile(string selectedFilePath, bool isFirstRowAsColumnNames = true)
+        public async Task<StandardTableDataCM> GetExcelFile(string selectedFilePath, bool isFirstRowAsColumnNames = true)
         {
-            var fileAsByteArray = GetExcelFileAsByteArray(selectedFilePath);
+            var fileAsByteArray = await GetExcelFileAsByteArray(selectedFilePath);
             return GetExcelFile(fileAsByteArray, selectedFilePath, isFirstRowAsColumnNames);
         }
 
@@ -236,10 +302,10 @@ namespace terminalUtilities.Excel
             }
         }
 
-        public static StandardTableDataCM GetExcelFile(byte[] fileAsByteArray, string selectedFilePath, bool isFirstRowAsColumnNames = true, string sheetName = null)
+
+        public StandardTableDataCM GetExcelFile(byte[] fileAsByteArray, string selectedFilePath, bool isFirstRowAsColumnNames = true, string sheetName = null)
         {
             var ext = Path.GetExtension(selectedFilePath);
-            var crateManager = ObjectFactory.GetInstance<ICrateManager>();
             // Read file from repository
             // Fetch column headers in Excel file
             var headersArray = GetColumnHeaders(fileAsByteArray, ext, sheetName);
@@ -254,7 +320,7 @@ namespace terminalUtilities.Excel
                 var rows = CreateTableCellPayloadObjects(rowsDictionary, headersArray, isFirstRowAsColumnNames);
                 if (rows != null && rows.Count > 0)
                 {
-                    curExcelPayloadRowsCrateDTO = crateManager.CreateStandardTableDataCrate("Excel Payload Rows", isFirstRowAsColumnNames, rows.ToArray());
+                    curExcelPayloadRowsCrateDTO = Crate.FromContent("Excel Payload Rows", new StandardTableDataCM(isFirstRowAsColumnNames, rows.ToArray()));
                 }
             }
 
@@ -265,16 +331,14 @@ namespace terminalUtilities.Excel
             return curStandardTableDataMS;
         }
 
-        private static byte[] RetrieveFile(string filePath)
+        private async Task<Stream> RetrieveFile(string filePath)
         {
             var ext = Path.GetExtension(filePath);
             if (ext != ".xls" && ext != ".xlsx")
             {
                 throw new ArgumentException("Expected '.xls' or '.xlsx'", "selectedFile");
             }
-            var curFileDO = new FileDO { CloudStorageUrl = filePath };
-            var file = ObjectFactory.GetInstance<IFile>();
-            return file.Retrieve(curFileDO);
+            return await _restfulServiceClient.DownloadAsync(new Uri(filePath));
         }
 
         public static List<TableRowDTO> CreateTableCellPayloadObjects(Dictionary<string, List<Tuple<string, string>>> rowsDictionary, string[] headersArray = null, bool includeHeadersAsFirstRow = false)
@@ -282,16 +346,15 @@ namespace terminalUtilities.Excel
             var listOfRows = new List<TableRowDTO>();
             if (includeHeadersAsFirstRow)
             {
-                listOfRows.Add(new TableRowDTO { Row = headersArray.Select(x => new TableCellDTO { Cell = new FieldDTO(x, x) }).ToList() });
+                listOfRows.Add(new TableRowDTO { Row = headersArray.Select(x => new TableCellDTO { Cell = new KeyValueDTO(x, x) }).ToList() });
             }
             // Process each item in the dictionary and add it as an item in List<TableRowDTO>
             foreach (var row in rowsDictionary)
             {
                 var listOfCells = row.Value.Select(x => new TableCellDTO
                 {
-                    Cell = new FieldDTO
+                    Cell = new KeyValueDTO
                     {
-
                         Key = headersArray != null ? headersArray[int.Parse(x.Item1) - 1] : x.Item1, // Column header
                         Value = x.Item2 // Column/cell value
                     }
@@ -300,13 +363,7 @@ namespace terminalUtilities.Excel
             }
             return listOfRows;
         }
-
-        public static FieldDescriptionsCM GetColumnHeadersData(string uploadFilePath)
-        {
-            var columnHeaders = GetColumnHeaders(uploadFilePath);
-            return new FieldDescriptionsCM(columnHeaders.Select(col => new FieldDTO { Key = col, Value = col, Availability = AvailabilityType.RunTime }));
-        }
-
+        
         private static DataTable ToDataTable(StandardTableDataCM tableCM)
         {
             if (tableCM == null || tableCM.Table == null || tableCM.Table.Count == 0)
@@ -357,8 +414,7 @@ namespace terminalUtilities.Excel
             }
         }
 
-        public static byte[] RewriteSheetForFile(
-            byte[] existingFile,
+        public static byte[] RewriteSheetForFile(byte[] existingFile,
             StandardTableDataCM tableCM,
             string sheetName)
         {

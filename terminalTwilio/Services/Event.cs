@@ -1,10 +1,9 @@
-﻿using Hub.Managers;
-using StructureMap;
-
+﻿
 namespace terminalTwilio.Services
 {
     public class Event : IEvent
     {
+        /*
         private readonly EventReporter _alertReporter;
         private readonly ICrateManager _crate;
 
@@ -13,7 +12,7 @@ namespace terminalTwilio.Services
             _alertReporter = ObjectFactory.GetInstance<EventReporter>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
-
+        */
         public void Process(string curExternalEventPayload)
         {
             //parse the external event xml payload

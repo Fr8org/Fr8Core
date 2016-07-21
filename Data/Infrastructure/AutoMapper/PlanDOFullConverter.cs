@@ -1,9 +1,8 @@
-﻿using System.Data.Entity;
-using System.Linq;
+﻿using System.Linq;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace Data.Infrastructure.AutoMapper
 {
@@ -26,10 +25,10 @@ namespace Data.Infrastructure.AutoMapper
                 return null;
             }
 
-            var subPlanDTOList = uow.PlanRepository.GetById<PlanDO>(plan.Id).ChildNodes.OfType<SubPlanDO>()
+            var subPlanDTOList = uow.PlanRepository.GetById<PlanDO>(plan.Id).ChildNodes.OfType<SubplanDO>()
                 .Select(x =>
                 {
-                    var pntDTO = Mapper.Map<FullSubPlanDTO>(x);
+                    var pntDTO = Mapper.Map<FullSubplanDto>(x);
                     pntDTO.Activities = x.ChildNodes.OfType<ActivityDO>().Select(Mapper.Map<ActivityDTO>).ToList();
                     return pntDTO;
                 }).ToList();

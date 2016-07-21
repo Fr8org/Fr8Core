@@ -1,56 +1,101 @@
-﻿using System;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
+﻿using System.Net;
 using System.Web.Http;
-using AutoMapper;
-using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Hub.Interfaces;
-using HubWeb.Controllers.Helpers;
-using HubWeb.Infrastructure;
-using Microsoft.AspNet.Identity;
 using StructureMap;
-using Hub.Managers;
-using Data.Interfaces.Manifests;
-using System.Collections.Generic;
-using Data.Crates;
+using Microsoft.AspNet.Identity;
+using Data.Interfaces;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Hub.Infrastructure;
+using Hub.Services;
+using HubWeb.Infrastructure_HubWeb;
+using System.Web.Http.Description;
+using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
 {
-
     [Fr8ApiAuthorize]
     public class WarehouseController : ApiController
     {
-        private ICrateManager _crateManager;
-
-        public WarehouseController()
-        {
-            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
-        }
-
-        [Fr8HubWebHMACAuthenticate]
+        /// <summary>
+        /// Retrieves objects from Fr8 warehouse based on filter specified
+        /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <param name="query">Query filter</param>
+        /// <response code="200">Collection of queried objects</response>
+        /// <response code="403">Unauthorized request</response>
+        [Fr8TerminalAuthentication(true)]
         [HttpPost]
-        public async Task<IHttpActionResult> Post(string userId, List<CrateDTO> crates)
+        [ResponseType(typeof(object[]))]
+        public IHttpActionResult Query(QueryDTO query)
         {
-            var result = new List<CrateDTO>();
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                foreach (var crate in crates)
+                var mtTypeRef = uow.MultiTenantObjectRepository.FindTypeReference(query.Name);
+                var queryBuilder = MTSearchHelper.CreateQueryProvider(mtTypeRef.ClrType);
+                var foundObjects = queryBuilder.Query(
+                    uow,
+                    User.Identity.GetUserId(),
+                    query.Criteria
+                )
+                .ToArray();
+
+                return Ok(foundObjects);
+            }
+        }
+        /// <summary>
+        /// Deletes objects from Fr8 warehouse based on filter specified
+        /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <param name="query">Query filter</param>
+        [Fr8TerminalAuthentication(true)]
+        [HttpPost]
+        [SwaggerResponse(HttpStatusCode.OK, "Objects were succesfully deleted")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponseRemoveDefaults]
+        public IHttpActionResult Delete(QueryDTO query)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var mtTypeRef = uow.MultiTenantObjectRepository.FindTypeReference(query.Name);
+                var queryBuilder = MTSearchHelper.CreateQueryProvider(mtTypeRef.ClrType);
+                queryBuilder.Delete(
+                    uow,
+                    User.Identity.GetUserId(),
+                    query.Criteria
+                    );
+                uow.SaveChanges();
+                return Ok();
+            }
+        }
+        /// <summary>
+        /// Saves specified crates into Fr8 warehouse
+        /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <param name="crateStorageDto">Crates to store in Fr8 warehouse</param>
+        [Fr8TerminalAuthentication(true)]
+        [HttpPost]
+        [SwaggerResponse(HttpStatusCode.OK, "Objects were succesfully saved")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
+        [SwaggerResponseRemoveDefaults]
+        public IHttpActionResult Post(CrateStorageDTO crateStorageDto)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var crateStorage = CrateStorageSerializer.Default.ConvertFromDto(crateStorageDto);
+                var userId = User.Identity.GetUserId();
+
+                foreach (var crate in crateStorage)
                 {
-                    DocuSignEnvelopeCM_v2 manifest = (DocuSignEnvelopeCM_v2)_crateManager.FromDto(crate).Get();
-                    //TODO: allow specifying manifest type as string and make MT aware of primary keys
-                    var recordOfEnvelopeEvents = uow.MultiTenantObjectRepository.Query<DocuSignEnvelopeCM_v2>(userId, a => a.EnvelopeId == manifest.EnvelopeId);
-                    foreach (var stored_manifest in recordOfEnvelopeEvents)
+                    if (crate.IsKnownManifest)
                     {
-                        result.Add(_crateManager.ToDto(Data.Crates.Crate.FromContent("RecordedEnvelope", stored_manifest, Data.States.AvailabilityType.RunTime)));
+                        uow.MultiTenantObjectRepository.AddOrUpdate(userId, (Manifest) crate.Get());
                     }
                 }
+
+                uow.SaveChanges();
             }
-            return Ok(result);
+            return Ok();
         }
     }
 }

@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using UtilitiesTesting;
+using Fr8.Testing.Unit;
 
 namespace HubTests.Services
 {

@@ -2,19 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Crates;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using HealthMonitor.Utility;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Testing.Integration;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
-using terminaBaselTests.Tools.Activities;
-using terminaBaselTests.Tools.Plans;
+using Fr8.Testing.Integration.Tools.Activities;
+using Fr8.Testing.Integration.Tools.Plans;
+using terminalFr8Core.Actions;
+using terminalFr8Core.Activities;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services;
+using terminalGoogle.Services.Authorization;
 
 namespace terminalIntegrationTests.EndToEnd
 {
@@ -38,11 +40,12 @@ namespace terminalIntegrationTests.EndToEnd
         [Test, Category("Integration.terminalGoogle")]
         public async Task GoogleIntoGoogleEndToEnd()
         {
-            var googleAuthTokenId = await new terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalGoogle(this).ExtractGoogleDefaultToken();
+
+            var googleAuthTokenId = await new Fr8.Testing.Integration.Tools.Terminals.IntegrationTestTools_terminalGoogle(this).ExtractGoogleDefaultToken();
             var defaultGoogleAuthToken = GetGoogleAuthToken(googleAuthTokenId);
 
             //create a new plan
-            var googleSheetApi = new GoogleSheet(new GoogleIntegration());
+            var googleSheetApi = new GoogleSheet(new GoogleIntegration(ObjectFactory.GetInstance<IRestfulServiceClient>()), new GoogleDrive());
             var sourceSpreadsheetUri = string.Empty;
             var destinationSpreadsheetUri = string.Empty;
             var sourceSpreadsheetName = Guid.NewGuid().ToString();
@@ -61,7 +64,7 @@ namespace terminalIntegrationTests.EndToEnd
                 //Configure Save_To_Google activity to save this message into new test spreadsheet
                 destinationSpreadsheetUri = await googleSheetApi.CreateSpreadsheet(destinationSpreadsheetName, defaultGoogleAuthToken);
 
-                await _googleActivityConfigurator.AddAndConfigureSaveToGoogleSheet(thePlan, 3, "Standard Payload Data", "Build Message", destinationSpreadsheetName);
+                await _googleActivityConfigurator.AddAndConfigureSaveToGoogleSheet(thePlan, 3, "Standard Payload Data", Build_Message_v1.RuntimeCrateLabel, destinationSpreadsheetName);
                 //run the plan
                 await _plansHelper.RunPlan(thePlan.Plan.Id);
 
@@ -92,6 +95,7 @@ namespace terminalIntegrationTests.EndToEnd
                     await googleSheetApi.DeleteSpreadSheet(destinationSpreadsheetUri, defaultGoogleAuthToken);
                 }
             }
+
         }
 
         private StandardTableDataCM GetTestSpreadsheetContent()
@@ -105,18 +109,18 @@ namespace terminalIntegrationTests.EndToEnd
                     {
                         Row = new List<TableCellDTO>
                         {
-                            new TableCellDTO { Cell = new FieldDTO("email", "email") },
-                            new TableCellDTO { Cell = new FieldDTO("subject", "subject") },
-                            new TableCellDTO { Cell = new FieldDTO("body", "body") }
+                            new TableCellDTO { Cell = new KeyValueDTO("email", "email") },
+                            new TableCellDTO { Cell = new KeyValueDTO("subject", "subject") },
+                            new TableCellDTO { Cell = new KeyValueDTO("body", "body") }
                         }
                     },
                     new TableRowDTO
                     {
                         Row = new List<TableCellDTO>
                         {
-                            new TableCellDTO { Cell = new FieldDTO("email", "fake@fake.com") },
-                            new TableCellDTO { Cell = new FieldDTO("subject", "Fake Subject") },
-                            new TableCellDTO { Cell = new FieldDTO("body", "Fake Body") }
+                            new TableCellDTO { Cell = new KeyValueDTO("email", "fake@fake.com") },
+                            new TableCellDTO { Cell = new KeyValueDTO("subject", "Fake Subject") },
+                            new TableCellDTO { Cell = new KeyValueDTO("body", "Fake Body") }
                         }
                     }
 

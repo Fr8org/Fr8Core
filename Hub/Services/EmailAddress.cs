@@ -4,9 +4,8 @@ using System.Linq;
 using System.Net.Mail;
 using Data.Entities;
 using Data.Interfaces;
-using Data.States;
+using Fr8.Infrastructure.Utilities;
 using Hub.Interfaces;
-using Utilities;
 
 namespace Hub.Services
 {
@@ -38,8 +37,7 @@ namespace Hub.Services
         
         public List<ParsedEmailAddress> ExtractFromString(String textToSearch)
         {
-            var ru = new RegexUtilities();
-            return ru.ExtractFromString(textToSearch);
+            return RegexUtilities.ExtractEmailFromString(_configRepository, textToSearch);
         }
 
         public List<EmailAddressDO> GetEmailAddresses(IUnitOfWork uow, params string[] textToSearch)

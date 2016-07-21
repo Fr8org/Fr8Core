@@ -1,18 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
+﻿using System.Net;
 using System.Web.Http;
-using System.Xml;
+using System.Web.Http.Description;
+using Swashbuckle.Swagger.Annotations;
 using WebApi.OutputCache.V2;
 
 namespace HubWeb.Controllers.Api
 {
     public class ConfigurationController : ApiController
     {
-        [ActionName("appinsights"), CacheOutput(ServerTimeSpan = 600, ClientTimeSpan = 600, ExcludeQueryStringFromCacheKey = true)]
-        public IHttpActionResult GetAppInsightsInstrKey()
+        /// <summary>
+        /// Returns instrumentation key for the telemetry service 
+        /// </summary>
+        [ActionName("instrumentation-key"), CacheOutput(ServerTimeSpan = 600, ClientTimeSpan = 600, ExcludeQueryStringFromCacheKey = true)]
+        [SwaggerResponse(HttpStatusCode.OK, "String containing instrumentation key", typeof(string))]
+        public IHttpActionResult GetTelemetryInstrumentationKey()
         {
             string fileName = "~/ApplicationInsights.config";
             var configDoc = new System.Xml.XmlDocument();

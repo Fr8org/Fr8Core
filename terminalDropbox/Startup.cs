@@ -7,10 +7,10 @@ using System.Web.Http;
 using Microsoft.Owin;
 using Newtonsoft.Json;
 using Owin;
-using TerminalBase;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 using System.Web.Http.Dispatcher;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
+using terminalDropbox.Actions;
 
 [assembly: OwinStartup(typeof(terminalDropbox.Startup))]
 
@@ -18,6 +18,11 @@ namespace terminalDropbox
 {
     public class Startup : BaseConfiguration
     {
+        public Startup()
+            : base(TerminalData.TerminalDTO)
+        {
+        }
+
         public void Configuration(IAppBuilder app)
         {
             Configuration(app, false);
@@ -27,17 +32,9 @@ namespace terminalDropbox
         {
             ConfigureProject(selfHost, TerminalDropboxStructureMapBootstrapper.LiveConfiguration);
 
-            RoutesConfig.Register(_configuration);
-            //if (selfHost)
-            //{
-            //    // Web API routes
-            //    configuration.Services.Replace(
-            //        typeof(IHttpControllerTypeResolver),
-            //        new PluginControllerTypeResolver()
-            //    );
-            //}
+            SwaggerConfig.Register(_configuration);
 
-            //DataAutoMapperBootStrapper.ConfigureAutoMapper();
+            RoutesConfig.Register(_configuration);
 
             ConfigureFormatters();
 
@@ -45,7 +42,7 @@ namespace terminalDropbox
 
             if (!selfHost)
             {
-                StartHosting("terminalAzure");
+                StartHosting();
             }
         }
 
@@ -57,5 +54,10 @@ namespace terminalDropbox
                     typeof(Controllers.TerminalController)
                 };
         }
+        protected override void RegisterActivities()
+        {
+            ActivityStore.RegisterActivity<Get_File_List_v1>(Get_File_List_v1.ActivityTemplateDTO);
+        }
+
     }
 }

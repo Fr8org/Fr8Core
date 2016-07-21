@@ -1,12 +1,11 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using HealthMonitor.Utility;
-using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
-using Hub.StructureMap;
+using Fr8.Infrastructure.Communication;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Testing.Integration;
 using NUnit.Framework;
 using terminalYammerTests.Fixtures;
 
@@ -56,11 +55,10 @@ namespace terminalYammerTests.Integration
 
         private void AssertCrateTypes(ICrateStorage crateStorage)
         {
-            Assert.AreEqual(3, crateStorage.Count);
+            Assert.AreEqual(2, crateStorage.Count);
 
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(x => x.Label == "Configuration_Controls"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Available Fields"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Available Groups"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count(x => x.Label == "Available Groups"));
         }
 
         [Test]
@@ -78,13 +76,14 @@ namespace terminalYammerTests.Integration
         }
 
         [Test]
-        [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException)
-        )]
         public async Task Post_To_Yammer_v1_Initial_Configuration_Check_Crate_Structure_NoAuth()
         {
             // Act
-            var responseActionDTO = await ConfigureInitial(false);
+            var response = await ConfigureInitial(false);
+            Assert.NotNull(response);
+            Assert.NotNull(response.CrateStorage);
+            Assert.NotNull(response.CrateStorage.Crates);
+            Assert.True(response.CrateStorage.Crates.Any(x => x.ManifestType == "Standard Authentication"));
         }
 
 
@@ -113,7 +112,7 @@ namespace terminalYammerTests.Integration
             AddPayloadCrate(
                 dataDTO,
                 new StandardPayloadDataCM(
-                    new FieldDTO("message", "Hello")
+                    new KeyValueDTO("message", "Hello")
                 ),
                 "Payload crate"
             );

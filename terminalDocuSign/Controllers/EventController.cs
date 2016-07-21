@@ -3,20 +3,29 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
-using TerminalBase.Infrastructure;
+using System.Net;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.TerminalBase.Interfaces;
+using Fr8.TerminalBase.Services;
+using StructureMap;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace terminalDocuSign.Controllers
 {
     [RoutePrefix("terminals/terminalDocuSign")]
     public class EventController : ApiController
     {
-        private IEvent _event;
-        private BaseTerminalEvent _baseTerminalEvent;
+        private readonly IEvent _event;
+        private readonly IHubEventReporter _reporter;
+        private readonly DocuSignPolling _polling;
+        private readonly IContainer _container;
 
-        public EventController()
+        public EventController(IEvent @event, IHubEventReporter reporter, DocuSignPolling polling, IContainer container)
         {
-            _event = new Event();
-            _baseTerminalEvent = new BaseTerminalEvent();
+            _event = @event;
+            _reporter = reporter;
+            _polling = polling;
+            _container = container;
         }
 
         [HttpPost]
@@ -25,8 +34,17 @@ namespace terminalDocuSign.Controllers
         {
             string eventPayLoadContent = await Request.Content.ReadAsStringAsync();
             Debug.WriteLine($"Processing event request {eventPayLoadContent}");
-            await _baseTerminalEvent.Process(eventPayLoadContent, _event.Process);
+
+            await _reporter.Broadcast(await _event.Process(_container, eventPayLoadContent));
+
             return Ok("Processed DocuSign event notification successfully.");
+        }
+
+        [HttpPost]
+        [Route("polling_notifications")]
+        public async Task<PollingDataDTO> ProcessPollingRequest(PollingDataDTO pollingData)
+        {
+            return await _polling.Poll(pollingData);
         }
     }
 }

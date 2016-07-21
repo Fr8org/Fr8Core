@@ -4,21 +4,26 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.Interfaces.Manifests.Helpers;
-using Data.States;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
+using Fr8.Infrastructure.Data.Manifests.Helpers;
+using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Services;
 using terminalUtilities.Excel;
-using TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Infrastructure;
 
 namespace terminalExcel.Actions
 {
-    public class Save_To_Excel_v1 : EnhancedTerminalActivity<Save_To_Excel_v1.ActivityUi>
+    public class Save_To_Excel_v1 : TerminalActivity<Save_To_Excel_v1.ActivityUi>
     {
+        private readonly ExcelUtils _excelUtils;
+        private readonly IPushNotificationService _pushNotificationService;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public CrateChooser UpstreamCrateChooser { get; set; }
@@ -47,138 +52,134 @@ namespace terminalExcel.Actions
             {
                 UpstreamCrateChooser = builder.CreateCrateChooser(
                         "Available_Crates",
-                        "This Loop will process the data inside of",
+                        "Save which data:",
                         true,
                         requestConfig: true
                     );
 
                 Controls.Add(UpstreamCrateChooser);
                 NewSpreadsheetName = new TextBox
-                {
-                    Value = $"NewFr8Data{DateTime.Now.Date:dd-MM-yyyy}",
-                    Name = nameof(NewSpreadsheetName)
-                };
+                                     {
+                                         Value = $"NewFr8Data{DateTime.Now.Date:dd-MM-yyyy}",
+                                         Name = nameof(NewSpreadsheetName)
+                                     };
                 ExistingSpreadsheetsList = new DropDownList
-                {
-                    Name = nameof(ExistingSpreadsheetsList),
-                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
-                };
+                                           {
+                                               Name = nameof(ExistingSpreadsheetsList),
+                                               Events = new List<ControlEvent> { ControlEvent.RequestConfig }
+                                           };
                 UseNewSpreadsheetOption = new RadioButtonOption
-                {
-                    Selected = true,
-                    Name = nameof(UseNewSpreadsheetOption),
-                    Value = "Store in a new Excel Spreadsheet",
-                    Controls = new List<ControlDefinitionDTO> { NewSpreadsheetName }
-                };
+                                          {
+                                              Selected = true,
+                                              Name = nameof(UseNewSpreadsheetOption),
+                                              Value = "Store in a new Excel Spreadsheet",
+                                              Controls = new List<ControlDefinitionDTO> { NewSpreadsheetName }
+                                          };
                 UseExistingSpreadsheetOption = new RadioButtonOption()
-                {
-                    Selected = false,
-                    Name = nameof(UseExistingSpreadsheetOption),
-                    Value = "Store in an existing Spreadsheet",
-                    Controls = new List<ControlDefinitionDTO> { ExistingSpreadsheetsList }
-                };
+                                               {
+                                                   Selected = false,
+                                                   Name = nameof(UseExistingSpreadsheetOption),
+                                                   Value = "Store in an existing Spreadsheet",
+                                                   Controls = new List<ControlDefinitionDTO> { ExistingSpreadsheetsList }
+                                               };
                 SpreadsheetSelectionGroup = new RadioButtonGroup
-                {
-                    GroupName = nameof(SpreadsheetSelectionGroup),
-                    Name = nameof(SpreadsheetSelectionGroup),
-                    Events = new List<ControlEvent> { ControlEvent.RequestConfig },
-                    Radios = new List<RadioButtonOption>
+                                            {
+                                                GroupName = nameof(SpreadsheetSelectionGroup),
+                                                Name = nameof(SpreadsheetSelectionGroup),
+                                                Events = new List<ControlEvent> { ControlEvent.RequestConfig },
+                                                Radios = new List<RadioButtonOption>
                                                          {
                                                              UseNewSpreadsheetOption,
                                                              UseExistingSpreadsheetOption
                                                          }
-                };
+                                            };
                 Controls.Add(SpreadsheetSelectionGroup);
                 NewWorksheetName = new TextBox
-                {
-                    Value = "Sheet1",
-                    Name = nameof(NewWorksheetName)
-                };
+                                   {
+                                       Value = "Sheet1",
+                                       Name = nameof(NewWorksheetName)
+                                   };
                 ExistingWorksheetsList = new DropDownList
-                {
-                    Name = nameof(ExistingWorksheetsList),
-                };
+                                         {
+                                             Name = nameof(ExistingWorksheetsList),
+                                         };
                 UseNewWorksheetOption = new RadioButtonOption()
-                {
-                    Selected = true,
-                    Name = nameof(UseNewWorksheetOption),
-                    Value = "A new Sheet (Pane)",
-                    Controls = new List<ControlDefinitionDTO> { NewWorksheetName }
-                };
+                                        {
+                                            Selected = true,
+                                            Name = nameof(UseNewWorksheetOption),
+                                            Value = "A new Sheet (Pane)",
+                                            Controls = new List<ControlDefinitionDTO> { NewWorksheetName }
+                                        };
                 UseExistingWorksheetOption = new RadioButtonOption()
-                {
-                    Selected = false,
-                    Name = nameof(UseExistingWorksheetOption),
-                    Value = "Existing Pane",
-                    Controls = new List<ControlDefinitionDTO> { ExistingWorksheetsList }
-                };
+                                             {
+                                                 Selected = false,
+                                                 Name = nameof(UseExistingWorksheetOption),
+                                                 Value = "Existing Pane",
+                                                 Controls = new List<ControlDefinitionDTO> { ExistingWorksheetsList }
+                                             };
                 WorksheetSelectionGroup = new RadioButtonGroup()
-                {
-                    Label = "Inside the spreadsheet, store in",
-                    GroupName = nameof(WorksheetSelectionGroup),
-                    Name = nameof(WorksheetSelectionGroup),
-                    Radios = new List<RadioButtonOption>
+                                          {
+                                              Label = "Inside the spreadsheet, store in",
+                                              GroupName = nameof(WorksheetSelectionGroup),
+                                              Name = nameof(WorksheetSelectionGroup),
+                                              Radios = new List<RadioButtonOption>
                                                        {
                                                            UseNewWorksheetOption,
                                                            UseExistingWorksheetOption
                                                        }
-                };
+                                          };
                 Controls.Add(WorksheetSelectionGroup);
             }
         }
 
         private const string SelectedSpreadsheetCrateLabel = "Selected Spreadsheet";
 
-
-        public Save_To_Excel_v1() : base(true)
+        public Save_To_Excel_v1(ICrateManager crateManager, ExcelUtils excelUtils, IPushNotificationService pushNotificationService)
+            : base(crateManager)
         {
-            ActivityName = "Save To Excel";
+            _excelUtils = excelUtils;
+            _pushNotificationService = pushNotificationService;
         }
 
-        public override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
+        public override async Task Initialize()
         {
-            return false;
+            CrateSignaller.MarkAvailableAtRuntime<StandardFileDescriptionCM>("StoredFile");
+            ActivityUI.ExistingSpreadsheetsList.ListItems = await GetCurrentUsersFiles();
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        public override async Task FollowUp()
         {
-            ConfigurationControls.ExistingSpreadsheetsList.ListItems = await GetCurrentUsersFiles();
-        }
-
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
-        {
-
             //If different existing spreadsheet is selected then we have to load worksheet list for it
-            if (ConfigurationControls.UseExistingSpreadsheetOption.Selected && !string.IsNullOrEmpty(ConfigurationControls.ExistingSpreadsheetsList.Value))
+            if (ActivityUI.UseExistingSpreadsheetOption.Selected && !string.IsNullOrEmpty(ActivityUI.ExistingSpreadsheetsList.Value))
             {
                 var previousSpreadsheet = SelectedSpreadsheet;
-                if (string.IsNullOrEmpty(previousSpreadsheet) || !string.Equals(previousSpreadsheet, ConfigurationControls.ExistingSpreadsheetsList.Value))
+                if (string.IsNullOrEmpty(previousSpreadsheet) || !string.Equals(previousSpreadsheet, ActivityUI.ExistingSpreadsheetsList.Value))
                 {
-                    ConfigurationControls.ExistingWorksheetsList.ListItems = (
+                    ActivityUI.ExistingWorksheetsList.ListItems = (
                         await GetWorksheets(
-                            int.Parse(ConfigurationControls.ExistingSpreadsheetsList.Value),
-                            ConfigurationControls.ExistingSpreadsheetsList.selectedKey)
+                            int.Parse(ActivityUI.ExistingSpreadsheetsList.Value),
+                            ActivityUI.ExistingSpreadsheetsList.selectedKey)
                         )
                         .Select(x => new ListItem { Key = x.Value, Value = x.Key })
                         .ToList();
-                    var firstWorksheet = ConfigurationControls.ExistingWorksheetsList.ListItems.First();
-                    ConfigurationControls.ExistingWorksheetsList.SelectByValue(firstWorksheet.Value);
+                    var firstWorksheet = ActivityUI.ExistingWorksheetsList.ListItems.First();
+                    ActivityUI.ExistingWorksheetsList.SelectByValue(firstWorksheet.Value);
                 }
-                SelectedSpreadsheet = ConfigurationControls.ExistingSpreadsheetsList.Value;
+                SelectedSpreadsheet = ActivityUI.ExistingSpreadsheetsList.Value;
             }
             else
             {
-                ConfigurationControls.ExistingWorksheetsList.ListItems.Clear();
-                ConfigurationControls.ExistingWorksheetsList.selectedKey = string.Empty;
-                ConfigurationControls.ExistingWorksheetsList.Value = string.Empty;
+                ActivityUI.ExistingWorksheetsList.ListItems.Clear();
+                ActivityUI.ExistingWorksheetsList.selectedKey = string.Empty;
+                ActivityUI.ExistingWorksheetsList.Value = string.Empty;
                 SelectedSpreadsheet = string.Empty;
             }
         }
 
         private async Task<List<ListItem>> GetWorksheets(int fileId, string fileName)
         {
-            //let's download this file
-            Stream file = await HubCommunicator.DownloadFile(fileId, CurrentFr8UserId);
+            // Let's download this file
+            Stream file = await HubCommunicator.DownloadFile(fileId);
             var fileBytes = ExcelUtils.StreamToByteArray(file);
 
             //TODO: Optimize this to retrieve spreadsheet list only. Now it reads and loads into memory whole file. 
@@ -190,40 +191,64 @@ namespace terminalExcel.Actions
         {
             get
             {
-                var storedValue = CurrentActivityStorage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == SelectedSpreadsheetCrateLabel);
-                return storedValue?.Content.Fields.First().Key;
+                var storedValue = Storage.FirstCrateOrDefault<KeyValueListCM>(x => x.Label == SelectedSpreadsheetCrateLabel);
+                return storedValue?.Content.Values.First().Key;
             }
             set
             {
-                CurrentActivityStorage.RemoveByLabel(SelectedSpreadsheetCrateLabel);
+                Storage.RemoveByLabel(SelectedSpreadsheetCrateLabel);
                 if (string.IsNullOrEmpty(value))
                 {
                     return;
                 }
-                CurrentActivityStorage.Add(Crate<FieldDescriptionsCM>.FromContent(SelectedSpreadsheetCrateLabel, new FieldDescriptionsCM(new FieldDTO(value)), AvailabilityType.Configuration));
+                Storage.Add(Crate<KeyValueListCM>.FromContent(SelectedSpreadsheetCrateLabel, new KeyValueListCM(new KeyValueDTO(value, value)), AvailabilityType.Configuration));
             }
         }
 
-        protected override async Task RunCurrentActivity()
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            if (!ConfigurationControls.UpstreamCrateChooser.CrateDescriptions.Any(x => x.Selected))
+            Id = new Guid("f3c99f97-e6e2-4343-b592-6674ac5b4c16"),
+            Name = "Save_To_Excel",
+            Label = "Save to Excel",
+            Version = "1",
+            Category = ActivityCategory.Forwarders,
+            Terminal = TerminalData.TerminalDTO,
+            MinPaneWidth = 300,
+            WebService = TerminalData.WebServiceDTO,
+            Categories = new[]
             {
-                throw new ActivityExecutionException($"Failed to run {ActivityName} because upstream crate is not selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
             }
-            if ((ConfigurationControls.UseNewSpreadsheetOption.Selected && string.IsNullOrWhiteSpace(ConfigurationControls.NewSpreadsheetName.Value))
-                || (ConfigurationControls.UseExistingSpreadsheetOption.Selected && string.IsNullOrEmpty(ConfigurationControls.ExistingSpreadsheetsList.Value)))
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
+        protected override Task Validate()
+        {
+            ValidationManager.ValidateCrateChooserNotEmpty(ActivityUI.UpstreamCrateChooser, "A selection must be made.");
+            return Task.FromResult(0);
+        }
+
+        public override async Task Run()
+        {
+            if (!ActivityUI.UpstreamCrateChooser.CrateDescriptions.Any(x => x.Selected))
             {
-                throw new ActivityExecutionException($"Failed to run {ActivityName} because spreadsheet name is not specified", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                RaiseError($"Failed to run {ActivityTemplateDTO.Name} because upstream crate is not selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
-            if ((ConfigurationControls.UseNewWorksheetOption.Selected && string.IsNullOrWhiteSpace(ConfigurationControls.NewWorksheetName.Value))
-                || (ConfigurationControls.UseExistingWorksheetOption.Selected && string.IsNullOrEmpty(ConfigurationControls.ExistingWorksheetsList.Value)))
+            if ((ActivityUI.UseNewSpreadsheetOption.Selected && string.IsNullOrWhiteSpace(ActivityUI.NewSpreadsheetName.Value))
+                || (ActivityUI.UseExistingSpreadsheetOption.Selected && string.IsNullOrEmpty(ActivityUI.ExistingSpreadsheetsList.Value)))
             {
-                throw new ActivityExecutionException($"Failed to run {ActivityName} because worksheet name is not specified", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                RaiseError($"Failed to run {ActivityTemplateDTO.Name} because spreadsheet name is not specified", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+            }
+            if ((ActivityUI.UseNewWorksheetOption.Selected && string.IsNullOrWhiteSpace(ActivityUI.NewWorksheetName.Value))
+                || (ActivityUI.UseExistingWorksheetOption.Selected && string.IsNullOrEmpty(ActivityUI.ExistingWorksheetsList.Value)))
+            {
+                RaiseError($"Failed to run {ActivityTemplateDTO.Name} because worksheet name is not specified", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
             var crateToProcess = FindCrateToProcess();
             if (crateToProcess == null)
             {
-                throw new ActivityExecutionException($"Failed to run {ActivityName} because specified upstream crate was not found in payload");
+                RaiseError($"Failed to run {ActivityTemplateDTO.Name} because specified upstream crate was not found in payload");
             }
 
             var tableToSave = StandardTableDataCMTools
@@ -237,20 +262,19 @@ namespace terminalExcel.Actions
             byte[] fileData;
             string fileName;
 
-            if (ConfigurationControls.UseNewSpreadsheetOption.Selected)
+            if (ActivityUI.UseNewSpreadsheetOption.Selected)
             {
                 fileData = ExcelUtils.CreateExcelFile(
                     tableToSave,
-                    ConfigurationControls.NewWorksheetName.Value
+                    ActivityUI.NewWorksheetName.Value
                 );
 
-                fileName = ConfigurationControls.NewSpreadsheetName.Value;
+                fileName = ActivityUI.NewSpreadsheetName.Value;
             }
             else
             {
                 var existingFileStream = await HubCommunicator.DownloadFile(
-                    Int32.Parse(ConfigurationControls.ExistingSpreadsheetsList.Value),
-                    CurrentFr8UserId
+                    Int32.Parse(ActivityUI.ExistingSpreadsheetsList.Value)
                 );
 
                 byte[] existingFileBytes;
@@ -260,17 +284,17 @@ namespace terminalExcel.Actions
                     existingFileBytes = memStream.ToArray();
                 }
 
-                fileName = ConfigurationControls.ExistingSpreadsheetsList.selectedKey;
+                fileName = ActivityUI.ExistingSpreadsheetsList.selectedKey;
 
-                var worksheetName = ConfigurationControls.UseNewWorksheetOption.Selected
-                    ? ConfigurationControls.NewWorksheetName.Value
-                    : ConfigurationControls.ExistingWorksheetsList.selectedKey;
+                var worksheetName = ActivityUI.UseNewWorksheetOption.Selected
+                    ? ActivityUI.NewWorksheetName.Value
+                    : ActivityUI.ExistingWorksheetsList.selectedKey;
 
                 StandardTableDataCM dataToInsert;
-                if (ConfigurationControls.UseExistingWorksheetOption.Selected
-                    || ConfigurationControls.ExistingWorksheetsList.ListItems.Any(x => x.Key == ConfigurationControls.NewWorksheetName.Value))
+                if (ActivityUI.UseExistingWorksheetOption.Selected
+                    || ActivityUI.ExistingWorksheetsList.ListItems.Any(x => x.Key == ActivityUI.NewWorksheetName.Value))
                 {
-                    var existingData = ExcelUtils.GetExcelFile(existingFileBytes, fileName, true, worksheetName);
+                    var existingData = _excelUtils.GetExcelFile(existingFileBytes, fileName, true, worksheetName);
 
                     StandardTableDataCMTools.AppendToStandardTableData(existingData, tableToSave);
                     dataToInsert = existingData;
@@ -294,38 +318,33 @@ namespace terminalExcel.Actions
                     fileName += ".xlsx";
                 }
 
-                var file = await HubCommunicator.SaveFile(fileName, stream, CurrentFr8UserId);
-                return file.CloudStorageUrl;
+                var file = await HubCommunicator.SaveFile(fileName, stream);
+                Payload.Add(Crate.FromContent("StoredFile", new StandardFileDescriptionCM
+                {
+                    Filename = file.Id.ToString(), // dirty hack
+                    TextRepresentation = file.OriginalFileName, // another hack
+                    Filetype = ".xlsx"
+                }));
+				return file.CloudStorageUrl;
             }
         }
 
         private async Task<List<ListItem>> GetCurrentUsersFiles()
         {
-            var curAccountFileList = await HubCommunicator.GetFiles(CurrentFr8UserId);
+            var curAccountFileList = await HubCommunicator.GetFiles();
             //TODO where tags == Docusign files
             return curAccountFileList.Select(c => new ListItem() { Key = c.OriginalFileName, Value = c.Id.ToString(CultureInfo.InvariantCulture) }).ToList();
         }
 
         private Crate FindCrateToProcess()
         {
-            var desiredCrateDescription = ConfigurationControls.UpstreamCrateChooser.CrateDescriptions.Single(x => x.Selected);
-            return CurrentPayloadStorage.FirstOrDefault(x => x.Label == desiredCrateDescription.Label && x.ManifestType.Type == desiredCrateDescription.ManifestType);
+            var desiredCrateDescription = ActivityUI.UpstreamCrateChooser.CrateDescriptions.Single(x => x.Selected);
+            return Payload.FirstOrDefault(x => x.Label == desiredCrateDescription.Label && x.ManifestType.Type == desiredCrateDescription.ManifestType);
         }
 
         private async Task PushLaunchURLNotification(string url)
         {
-            await PushUserNotification(new TerminalNotificationDTO
-            {
-                Type = "Success",
-                ActivityName = "Save_To_Excel",
-                ActivityVersion = "1",
-                TerminalName = "terminalFr8Core",
-                TerminalVersion = "1",
-                Message = $"The Excel file can be downloaded by navigating to this URL: {url}",
-                //"api/v1/plans/clone?id=" + curActivityDO.RootPlanNodeId,
-                Subject = "Excel File"
-            });
+            await _pushNotificationService.PushUserNotification(MyTemplate, "Success", "Excel File URL Generated", $"The Excel file can be downloaded by navigating to this URL: {new Uri(url).AbsoluteUri}");
         }
-
     }
 }
