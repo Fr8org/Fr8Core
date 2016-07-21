@@ -15,9 +15,9 @@ namespace Fr8.Infrastructure.Utilities.Logging
         public override void ActivateOptions()
         {
             IgnoresException = false;
-            InfoColor = InfoColor.IsNullOrEmpty() ? "\x1b[36m" : "\x1b[" + InfoColor;
-            WarnColor = WarnColor.IsNullOrEmpty() ? "\x1b[33m" : "\x1b[" + WarnColor;
-            ErrorColor = ErrorColor.IsNullOrEmpty() ? "\x1b[31m" : "\x1b[" + ErrorColor;
+            InfoColor = InfoColor.IsNullOrEmpty() ? "\x1b[36m" :  InfoColor;
+            WarnColor = WarnColor.IsNullOrEmpty() ? "\x1b[33m" :  WarnColor;
+            ErrorColor = ErrorColor.IsNullOrEmpty() ? "\x1b[31m" : ErrorColor;
         }
 
         static string WrapColor(string message, string color)
