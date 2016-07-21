@@ -60,8 +60,26 @@ module dockyard.controllers.NotifierController {
                     this.$scope.eventList.splice(0, 0, event);
                 });
 
+                uiNotificationService.notify("Title 1", "Message 1", dockyard.enums.UINotificationStatus.Success, null);
+                uiNotificationService.notify("Title 2", "Message 2", dockyard.enums.UINotificationStatus.Error, null);
+                uiNotificationService.notify("Title 3", "Message 3", dockyard.enums.UINotificationStatus.Info, null);
+                uiNotificationService.notify("Title 4", "Message 4", dockyard.enums.UINotificationStatus.Alert, null);
+
                 PusherNotifierService.bindEventToChannel(channel, dockyard.enums.NotificationArea[dockyard.enums.NotificationArea.Toast], (data: any) => {
-                    // TODO Toast messages
+                    switch (data.NotificationType) {
+                        case dockyard.enums.NotificationType.GenericSuccess:
+                            uiNotificationService.notify(data.Subject, data.Message, dockyard.enums.UINotificationStatus.Success, null);
+                            break;
+                        case dockyard.enums.NotificationType.GenericFailure:
+                            uiNotificationService.notify(data.Subject, data.Message, dockyard.enums.UINotificationStatus.Error, null);
+                            break;
+                        case dockyard.enums.NotificationType.GenericInfo:
+                            uiNotificationService.notify(data.Subject, data.Message, dockyard.enums.UINotificationStatus.Info, null);
+                            break;
+                        default:
+                            uiNotificationService.notify(data.Subject, data.Message, dockyard.enums.UINotificationStatus.Alert, null);
+                            break;
+                    }
                 });
             });
         }

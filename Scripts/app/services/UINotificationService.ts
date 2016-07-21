@@ -10,15 +10,19 @@ module dockyard.services {
         notify: (title: string, message: string, status: dockyard.enums.UINotificationStatus, options: any) => void
     }
 
+    declare var noty: any;
+
     class UINotificationService implements IUINotificationService {
-        constructor(private ngToast: any) {
+        constructor(private noty: any) {
         }
 
         public notify(title: string, message: string, status: dockyard.enums.UINotificationStatus, options: any) {
             // Determines notification type and add necessary attributes
             switch (status) {
                 case dockyard.enums.UINotificationStatus.Success:
-
+                    var n = noty({
+                        text: message
+                        });
                     break;
                 case dockyard.enums.UINotificationStatus.Info:
 
@@ -29,9 +33,11 @@ module dockyard.services {
                 case dockyard.enums.UINotificationStatus.Error:
 
                     break;
+                case dockyard.enums.UINotificationStatus.Alert:
+                    break
             }
         }
     }
 
-    app.factory('UINotificationService', ['ngToast', (ngToast: any): IUINotificationService => new UINotificationService(ngToast)]);
+    //app.factory('UINotificationService', [IUINotificationService => new UINotificationService()]);
 }
