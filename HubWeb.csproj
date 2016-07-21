@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -4460,19 +4460,19 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('packages\Fr8.PrivateSettings.1.2016.202.12957-prerelease\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fr8.PrivateSettings.1.2016.202.12957-prerelease\build\net40\Fr8.PrivateSettings.targets'))" />
+    <Error Condition="!Exists('packages\Fr8.PrivateSettings.1.2016.202.9\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fr8.PrivateSettings.1.2016.202.9\build\net40\Fr8.PrivateSettings.targets'))" />
   </Target>
   <PropertyGroup>
     <CopyAllFilesToSingleFolderForPackageDependsOn>
-      CustomCollectFiles;
+      CustomCollectFilesHub;
       $(CopyAllFilesToSingleFolderForPackageDependsOn);
     </CopyAllFilesToSingleFolderForPackageDependsOn>
     <CopyAllFilesToSingleFolderForMsdeployDependsOn>
-      CustomCollectFiles;
+      CustomCollectFilesHub;
       $(CopyAllFilesToSingleFolderForPackageDependsOn);
     </CopyAllFilesToSingleFolderForMsdeployDependsOn>
   </PropertyGroup>
-  <Target Name="CustomCollectFiles">
+  <Target Name="CustomCollectFilesHub">
     <ItemGroup>
       <_CustomFiles Include=".\bower_components\**\*" />
       <FilesForPackagingFromProject Include="%(_CustomFiles.Identity)">
@@ -4546,5 +4546,5 @@
   <Target Name="BeforeBuild">
     <RestoreSettingsTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)" ProjectName="$(ProjectName)" />
   </Target>
-  <Import Project="packages\Fr8.PrivateSettings.1.2016.202.12957-prerelease\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.202.12957-prerelease\build\net40\Fr8.PrivateSettings.targets')" />
+  <Import Project="packages\Fr8.PrivateSettings.1.2016.202.9\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.202.9\build\net40\Fr8.PrivateSettings.targets')" />
 </Project>
