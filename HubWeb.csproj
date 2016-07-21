@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -859,6 +859,7 @@
     <Content Include="_PowerShellScripts\Run-DBMigration.ps1" />
     <Content Include="Views\Shared\CDN\_AngularAppScripts.cshtml" />
     <Content Include="Views\AngularTemplate\PlanBuilder_SimpleKioskMode.cshtml" />
+    <Content Include="Views\AngularTemplate\ActivityHeader.cshtml" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <Content Include="_PowerShellScripts\Update-HostnameInTerminalRegistration.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
@@ -894,6 +895,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\ActivityResize.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\fillHeight.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ModalResizable.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\ActivityHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\SubplanHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Validators\ManifestDescriptionValidators.ts" />
     <TypeScriptCompile Include="Scripts\app\enums\NotificationArea.ts" />
