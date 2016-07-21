@@ -8,6 +8,7 @@ using Data.Entities;
 using Data.Repositories;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Utilities.Logging;
 using Fr8.TerminalBase.Interfaces;
 using Microsoft.AspNet.Identity;
 using StructureMap;
@@ -143,6 +144,48 @@ namespace PlanDirectory.Controllers.Api
                         + "/dashboard/plans/" + plan.Id.ToString() + "/builder?viewMode=plan"
                 }
             );
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> GeneratePages()
+        {
+            var searchRequest = new SearchRequestDTO()
+            {
+                Text = string.Empty,
+                PageStart = 0,
+                PageSize = 0
+            };
+
+            var searchResult = await _searchProvider.Search(searchRequest);
+
+            var fr8AccountId = User.Identity.GetUserId();
+
+            foreach (var searchItemDto in searchResult.PlanTemplates)
+            {
+                var planTemplateDto = await _planTemplate.GetPlanTemplateDTO(fr8AccountId, searchItemDto.ParentPlanId);
+                if (planTemplateDto == null)
+                {
+                    continue;
+                }
+                var planTemplateCm = await _planTemplate.CreateOrUpdate(fr8AccountId, planTemplateDto);
+                var storage = await _tagGenerator.GetTags(planTemplateCm, fr8AccountId);
+                await _searchProvider.CreateOrUpdate(planTemplateCm);
+
+                var pageDefinitions = new List<PageDefinitionDO>();
+                foreach (var tag in storage.WebServiceTemplateTags)
+                {
+                    var pd = new PageDefinitionDO()
+                    {
+                        Title = tag.Title,
+                        Tags = tag.TagsWithIcons.Select(x => x.Key),
+                        Type = "WebService"
+                    };
+                    pageDefinitions.Add(pd);
+                }
+                await _pageGenerator.Generate(storage, planTemplateCm, pageDefinitions, fr8AccountId);
+            }
+            
+            return Ok();
         }
 
         // TODO: remove this.
