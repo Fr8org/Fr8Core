@@ -27,20 +27,5 @@ namespace Fr8.Infrastructure.Data.Managers
         string EmptyStorageAsStr();
         string CrateStorageAsStr(ICrateStorage storage);
         string CrateStorageAsStr(CrateStorageDTO storageDTO);
-        Crate CreateAuthenticationCrate(string label, AuthenticationMode mode, bool revocation);
-        Crate<KeyValueListCM> CreateDesignTimeFieldsCrate(string label, params KeyValueDTO[] fields);
-        Crate<KeyValueListCM> CreateDesignTimeFieldsCrate(string label, List<KeyValueDTO> fields);
-        Crate<StandardConfigurationControlsCM> CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls);
-        Crate CreateStandardEventReportCrate(string label, EventReportCM eventReport);
-        Crate CreateStandardEventSubscriptionsCrate(string label, string manufacturer, params string[] subscriptions);
-        Crate CreateStandardTableDataCrate(string label, bool firstRowHeaders, params TableRowDTO[] table);
-        Crate CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS);
-        Crate CreateOperationalStatusCrate(string label, OperationalStateCM eventReport);
-        StandardPayloadDataCM TransformStandardTableDataToStandardPayloadData(string curObjectType, StandardTableDataCM tableDataMS);
-        string GetFieldByKey<T>(CrateStorageDTO curCrateStorage, string findKey) where T : Manifest;
-        T GetByManifest<T>(PayloadDTO payloadDTO) where T : Manifest;
-        IEnumerable<KeyValueDTO> GetFields(IEnumerable<Crate> crates);
-        IEnumerable<string> GetLabelsByManifestType(IEnumerable<Crate> crates, string manifestType);
-        T GetContentType<T>(string crate) where T : class;
     }
 }

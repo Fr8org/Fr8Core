@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -48,6 +48,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\HubWeb.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DeployOnBuild Condition=" '$(DeployHub)'!='' ">$(DeployHub)</DeployOnBuild>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Analytics.NET, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -536,7 +539,7 @@
     <Content Include="Content\icons\web_services\basecamp2-icon-64x64.png" />
     <Content Include="Content\icons\web_services\Box-logo_64x64.png" />
     <Content Include="Content\icons\web_services\fr8-demo-icon-64x64.png" />
-	<Content Include="Content\icons\web_services\facebook-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\facebook-icon-64x64.png" />
     <Content Include="Content\icons\web_services\gmail-icon-64x64.png" />
     <Content Include="Content\icons\web_services\instagram-icon-64x64.png" />
     <Content Include="Content\icons\web_services\statX-icon-64x64.png" />
@@ -809,53 +812,8 @@
     <Content Include="Views\AngularTemplate\AdvisoryMessagesPopup.cshtml" />
     <Content Include="Views\AngularTemplate\PhoneNumberAuthentication.cshtml" />
     <Content Include="Views\AngularTemplate\ActionPickerPanel.cshtml" />
-    <Content Include="Config\terminalYammer\Settings.Release.config" />
-    <Content Include="Config\terminalYammer\Settings.Dev.config" />
-    <Content Include="Config\terminalYammer\Settings.Demo.config" />
-    <Content Include="Config\terminalYammer\Settings.config" />
-    <Content Include="Config\terminalTwilio\Settings.config" />
-    <Content Include="Config\terminalTelegram\Settings.Release.config" />
-    <Content Include="Config\terminalTelegram\Settings.Dev.config" />
-    <Content Include="Config\terminalTelegram\Settings.Demo.config" />
-    <Content Include="Config\terminalTelegram\Settings.config" />
-    <Content Include="Config\terminalStatX\Settings.config" />
-    <Content Include="Config\terminalSlack\Settings.Release.config" />
-    <Content Include="Config\terminalSlack\Settings.Dev.config" />
-    <Content Include="Config\terminalSlack\Settings.Demo.config" />
-    <Content Include="Config\terminalSlack\Settings.config" />
-    <Content Include="Config\terminalSendGrid\Settings.config" />
-    <Content Include="Config\terminalSalesforce\Settings.Release.config" />
-    <Content Include="Config\terminalSalesforce\Settings.Dev.config" />
-    <Content Include="Config\terminalSalesforce\Settings.Demo.config" />
-    <Content Include="Config\terminalSalesforce\Settings.config" />
-    <Content Include="Config\terminalQuickBooks\Settings.config" />
-    <Content Include="Config\terminalPapertrail\Settings.config" />
-    <Content Include="Config\terminalInstagram\Settings.config" />
-    <Content Include="Config\terminalGoogle\Settings.config" />
-    <Content Include="Config\terminalFr8Core\Settings.config" />
-    <Content Include="Config\terminalFacebook\Settings.Release.config" />
-    <Content Include="Config\terminalFacebook\Settings.Dev.config" />
-    <Content Include="Config\terminalFacebook\Settings.Demo.config" />
-    <Content Include="Config\terminalFacebook\Settings.config" />
-    <Content Include="Config\terminalDropbox\Settings.config" />
-    <Content Include="Config\terminalDocuSign\Settings.config" />
-    <Content Include="Config\terminalCloudService\ServiceConfiguration.Release.cscfg" />
-    <Content Include="Config\terminalCloudService\ServiceConfiguration.Dev.cscfg" />
-    <Content Include="Config\terminalCloudService\ServiceConfiguration.Demo.cscfg" />
-    <Content Include="Config\terminalBox\Settings.config" />
-    <Content Include="Config\terminalBasecamp2\Settings.Release.config" />
-    <Content Include="Config\terminalBasecamp2\Settings.Dev.config" />
-    <Content Include="Config\terminalBasecamp2\Settings.Demo.config" />
-    <Content Include="Config\terminalBasecamp2\Settings.config" />
-    <Content Include="Config\terminalAzure\Settings.config" />
-    <Content Include="Config\terminalAtlassian\Settings.config" />
-    <Content Include="Config\terminalAsana\Settings.Release.config" />
-    <Content Include="Config\terminalAsana\Settings.Dev.config" />
-    <Content Include="Config\terminalAsana\Settings.config" />
-    <Content Include="Config\PlanDirectory\Settings.Release.config" />
-    <Content Include="Config\PlanDirectory\Settings.config" />
-    <Content Include="Config\HubWeb\Settings.config" />
-    <Content Include="Config\HealthMonitor\Settings.config.src" />
+    <Content Include="Views\AngularTemplate\HeaderNav.cshtml" />
+    <Content Include="Config\HubWeb\Settings.config.readme" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="_PowerShellScripts\HM-job-run.cmd" />
@@ -4498,18 +4456,19 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+    <Error Condition="!Exists('packages\Fr8.PrivateSettings.1.2016.202.9\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fr8.PrivateSettings.1.2016.202.9\build\net40\Fr8.PrivateSettings.targets'))" />
   </Target>
   <PropertyGroup>
     <CopyAllFilesToSingleFolderForPackageDependsOn>
-      CustomCollectFiles;
+      CustomCollectFilesHub;
       $(CopyAllFilesToSingleFolderForPackageDependsOn);
     </CopyAllFilesToSingleFolderForPackageDependsOn>
     <CopyAllFilesToSingleFolderForMsdeployDependsOn>
-      CustomCollectFiles;
+      CustomCollectFilesHub;
       $(CopyAllFilesToSingleFolderForPackageDependsOn);
     </CopyAllFilesToSingleFolderForMsdeployDependsOn>
   </PropertyGroup>
-  <Target Name="CustomCollectFiles">
+  <Target Name="CustomCollectFilesHub">
     <ItemGroup>
       <_CustomFiles Include=".\bower_components\**\*" />
       <FilesForPackagingFromProject Include="%(_CustomFiles.Identity)">
@@ -4580,6 +4539,8 @@
   </Target>
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
   <Import Project="packages\Microsoft.ApplicationInsights.Agent.Intercept.0.17.0\build\Microsoft.ApplicationInsights.Agent.Intercept.targets" Condition="Exists('packages\Microsoft.ApplicationInsights.Agent.Intercept.0.17.0\build\Microsoft.ApplicationInsights.Agent.Intercept.targets')" />
-  <Import Project="packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets" Condition="Exists('packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" />
-  <Import Project="targets\Fr8.NugetContentRestore.targets" Condition="Exists('targets\Fr8.NugetContentRestore.targets')" />
+  <Target Name="BeforeBuild">
+    <RestoreSettingsTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)" ProjectName="$(ProjectName)" />
+  </Target>
+  <Import Project="packages\Fr8.PrivateSettings.1.2016.202.9\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.202.9\build\net40\Fr8.PrivateSettings.targets')" />
 </Project>

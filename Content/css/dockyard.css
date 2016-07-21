@@ -163,10 +163,14 @@
 }
 
 .route-name {
-    display: inline-block;
+   
     vertical-align: top;
     color: #697882;
     font-weight: 400;
+    /*max-width: 500px;*/
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .designer-header-status {
@@ -1053,7 +1057,11 @@ div[dnd-list].dndDragover {
 }
 
 .upstream-field-chooser span{
-    margin-left:10px;
+    margin-left:0;
+}
+
+.upstream-field-chooser button {
+    margin-bottom:2px;
 }
 
 .upstream-field-chooser-modal  th[title]{
@@ -1393,6 +1401,14 @@ i.activity-stream-font {
     padding: 6px 0 0 0;
 }
 
+.fr8-text-source-panel input[type="radio"]{
+    vertical-align: text-top;
+}
+
+.fr8-text-source-panel div:last-child label {
+    margin-top:5px;
+}
+
 .fr8-config-pane-padding {
     padding-left: 8px;
 }
@@ -1492,6 +1508,18 @@ footer p {
 .menu-logo {
     height:50px;
     padding:7px 15px 0 0;
+}
+
+md-radio-button{
+    outline:none;
+}
+
+md-radio-button .md-off{
+    border-radius:50% !important;
+}
+
+md-radio-button .md-on{
+    border-radius:50% !important;
 }
 
 md-checkbox.md-checked.green .md-icon {

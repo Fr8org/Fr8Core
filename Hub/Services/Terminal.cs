@@ -208,29 +208,6 @@ namespace Hub.Services
             return standardFr8TerminalCM.Activities.Select(Mapper.Map<ActivityTemplateDO>).ToList();
         }
 
-        public async Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId)
-        {
-            Initialize();
-
-            lock (_terminals)
-            {
-                return _terminals.Values.FirstOrDefault(t => t.PublicIdentifier == terminalId);
-            }
-        }
-
-        public async Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId)
-        {
-            Initialize();
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var subscription = await uow.TerminalSubscriptionRepository.GetQuery()
-                    .FirstOrDefaultAsync(s => s.Terminal.PublicIdentifier == terminalId && s.UserDO.Id == userId);
-                return subscription != null;
-            }
-
-        }
-
         public async Task<List<DocumentationResponseDTO>> GetSolutionDocumentations(string terminalName)
         {
             var _activity = ObjectFactory.GetInstance<IActivity>();
