@@ -482,11 +482,11 @@ namespace Hub.Services
 
         public static async Task LaunchPlanCallback(Guid planId, params CrateDTO[] curPayload)
         {
-            Logger.LogInfo($"Starting executing plan {planId} as a reaction to external event");
+            Logger.GetLogger().Info($"Starting executing plan {planId} as a reaction to external event");
 
             if (planId == default(Guid))
             {
-                Logger.LogError("Can't lanunch plan with empty id");
+                Logger.GetLogger().Error("Can't lanunch plan with empty id");
             }
 
             // we "eat" this exception to make Hangfire thinks that everthying is good and job is completed
@@ -501,7 +501,7 @@ namespace Hub.Services
 
                     if (plan == null)
                     {
-                        Logger.LogError($"Unable to find plan: {planId}");
+                        Logger.GetLogger().Error($"Unable to find plan: {planId}");
                         return;
                     }
 
@@ -525,7 +525,7 @@ namespace Hub.Services
                 if (monitoringPlan != null)
                 {
                     await planService.Deactivate(planId);
-                    Logger.LogError($"Plan {planId} was deactivated due to authentication problems.");
+                    Logger.GetLogger().Error($"Plan {planId} was deactivated due to authentication problems.");
                     await planService.ReportAuthDeactivation(monitoringPlan, ex);
                 }
             }
@@ -533,7 +533,7 @@ namespace Hub.Services
             {
             }
 
-            Logger.LogInfo($"Finished executing plan {planId} as a reaction to external event");
+            Logger.GetLogger().Info($"Finished executing plan {planId} as a reaction to external event");
         }
 
         private async Task<ContainerDO> Run(IUnitOfWork uow, PlanDO plan, Crate[] curPayload)
@@ -547,7 +547,7 @@ namespace Hub.Services
 
             if (activationResults.ValidationErrors.Count > 0)
             {
-                Logger.LogError($"Failed to run {plan.Name}:{plan.Id} plan due to activation errors.");
+                Logger.GetLogger().Error($"Failed to run {plan.Name}:{plan.Id} plan due to activation errors.");
 
                 return new ContainerDO
                 {
@@ -702,7 +702,7 @@ namespace Hub.Services
                     if (currentPlanType == PlanType.Monitoring)
                     {
                         await Deactivate(planId);
-                        Logger.LogError($"Plan {planId} was deactivated due to authentication problems.");
+                        Logger.GetLogger().Error($"Plan {planId} was deactivated due to authentication problems.");
                         ReportAuthDeactivation(plan, exception);
                     }
 
@@ -949,7 +949,7 @@ namespace Hub.Services
                     await ObjectFactory.GetInstance<IEmailPackager>().Send(new EnvelopeDO { Email = emailDO });
                 }
 
-                catch { Logger.LogError($"Couldn't send email to user {account.Id} to notify him about plan deactivation"); }
+                catch { Logger.GetLogger().Error($"Couldn't send email to user {account.Id} to notify him about plan deactivation"); }
             }
         }
     }

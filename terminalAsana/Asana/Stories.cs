@@ -50,7 +50,7 @@ namespace terminalAsana.Asana
             }
             catch (Exception exp)
             {
-                Logger.LogError($"terminalAsana error = {exp.Message}");
+                Logger.GetLogger().Error($"terminalAsana error = {exp.Message}");
                 throw;
             }
         }

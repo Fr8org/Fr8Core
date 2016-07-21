@@ -73,7 +73,7 @@ namespace terminalGoogle.Actions
                 catch (Exception exception)
                 {
                     var message = "Token is invalid and refresh failed with exception: " + exception.Message;
-                    Logger.LogError(message);
+                    Logger.GetLogger().Error(message);
                     return false;
                 }
             }
