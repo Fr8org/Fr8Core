@@ -12,6 +12,7 @@ using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Errors;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace terminalFr8Core.Activities
 {
@@ -77,6 +78,19 @@ namespace terminalFr8Core.Activities
             {
                 RequestSkipChildren();
                 return;
+            }
+
+            string label = GetCrateName(crateDescriptionToProcess);
+            if (crateDescriptionToProcess.ManifestId == (int)MT.StandardTableData)
+            {
+                var table = crateToProcess.Get<StandardTableDataCM>();
+                var rowOfData = table.DataRows.ElementAt(table.HasDataRows ? loopData.Index + 1 : loopData.Index);
+                var extractedCrate = new StandardTableDataCM(false, new List<TableRowDTO>() { rowOfData });
+                Payload.Add(Crate.FromContent(label, extractedCrate, AvailabilityType.RunTime));
+            }
+            else
+            {
+
             }
 
             Success();
@@ -168,7 +182,7 @@ namespace terminalFr8Core.Activities
         {
             //build a controls crate to render the pane
             CreateControls();
-            SelectTheOnlyCrate();
+            SelectTheCrateIfThereIsOnlyOne();
         }
 
         public override async Task FollowUp()
@@ -179,19 +193,37 @@ namespace terminalFr8Core.Activities
                 var selected = crateChooser.CrateDescriptions.FirstOrDefault(x => x.Selected);
                 if (selected != null)
                 {
-                    SelectTheOnlyCrate();
+                    SelectTheCrateIfThereIsOnlyOne();
+                    SignalRowCrate(selected);
                 }
                 else
                 {
                     Storage.Clear();
                     CreateControls();
-                    SelectTheOnlyCrate();
+                    SelectTheCrateIfThereIsOnlyOne();
                 }
             }
         }
-        
 
-        private void SelectTheOnlyCrate()
+        private string GetCrateName(CrateDescriptionDTO selected)
+        {
+            return $"Row of \"{selected.Label}\"";
+        }
+
+        private void SignalRowCrate(CrateDescriptionDTO selected)
+        {
+
+            if (selected.ManifestId == (int)MT.StandardTableData)
+            {
+                CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(GetCrateName(selected), true).AddFields(selected.Fields);
+            }
+            else
+            {
+                CrateSignaller.MarkAvailableWithoutSignalling(selected, AvailabilityType.Always, GetCrateName(selected)).AddFields(selected.Fields);
+            }
+        }
+
+        private void SelectTheCrateIfThereIsOnlyOne()
         {
             var crateChooser = ConfigurationControls.Controls.OfType<CrateChooser>().Single();
             if (crateChooser.CrateDescriptions?.Count == 1)
