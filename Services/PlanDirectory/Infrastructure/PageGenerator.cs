@@ -100,12 +100,6 @@ namespace PlanDirectory.Infrastructure
                 template.Initialize();
 
                 string pageContent = template.TransformText();
-
-                if (!Directory.Exists(path))
-                {
-                    Directory.CreateDirectory(path);
-                }
-
                 File.WriteAllText(path + "\\" + fileName, pageContent);
             }
             return Task.FromResult(0);

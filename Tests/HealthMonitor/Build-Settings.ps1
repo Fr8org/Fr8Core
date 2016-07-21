@@ -12,7 +12,7 @@ $includeNodesToDelete = New-Object System.Collections.ArrayList
 $healthMonitorPath = Split-Path -parent $PSCommandPath
 $configPath = "$healthMonitorPath\Config\HealthMonitor\Settings.config.src"
 $solutionRootPath = Split-Path -parent (Split-Path -parent $configPath)
-$ignoredSettings = @('HubApiVersion', 'TerminalSecret', 'TerminalId', 'owin:AutomaticAppStartup', 'DefaultHubUrl')
+$ignoredSettings = @('HubApiVersion', 'TerminalSecret', 'TerminalId', 'owin:AutomaticAppStartup', 'CoreWebServerUrl')
 [string[]] $only
 
 if(-not (Test-Path $configPath)) {

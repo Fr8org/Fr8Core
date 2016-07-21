@@ -22,7 +22,7 @@ namespace terminalStatXTests.Integration
 
         public override string TerminalName => "terminalStatX";
 
-        [Test, Ignore("Being resolved in FR-4846")]
+        [Test]
         public async Task Create_Stat_Initial_Configuration_Check_Crate_Structure()
         {
             var responseDTO = await CompleteInitialConfiguration();
