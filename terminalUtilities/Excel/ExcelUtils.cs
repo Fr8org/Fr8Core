@@ -145,6 +145,61 @@ namespace terminalUtilities.Excel
             }
         }
 
+        public static bool DetectContainsHeader(byte[] fileBytes, string extension, string sheetName = null)
+        {
+            IExcelDataReader excelReader = null;
+            using (var byteStream = new MemoryStream(fileBytes))
+            {
+                if (extension == ".xls")
+                    excelReader = ExcelReaderFactory.CreateBinaryReader(byteStream);
+                else
+                    excelReader = ExcelReaderFactory.CreateOpenXmlReader(byteStream);
+
+                using (excelReader)
+                {
+                    excelReader.IsFirstRowAsColumnNames = false;
+                    var dataSet = excelReader.AsDataSet();
+
+                    DataTable table;
+                    if (string.IsNullOrEmpty(sheetName))
+                    {
+                        table = dataSet.Tables[0];
+                    }
+                    else
+                    {
+                        table = null;
+
+                        for (var i = 0; i < dataSet.Tables.Count; ++i)
+                        {
+                            if (dataSet.Tables[i].TableName == sheetName)
+                            {
+                                table = dataSet.Tables[i];
+                                break;
+                            }
+                        }
+
+                        if (table == null)
+                        {
+                            throw new ApplicationException("Specified Sheet was not found.");
+                        }
+                    }
+
+                    if (table.Rows.Count > 0)
+                    {
+                        foreach (var item in table.Rows[0].ItemArray)
+                        {
+                            if (item is DBNull || (item is string && string.IsNullOrEmpty((string)item)))
+                            {
+                                return false;
+                            }
+                        }
+                    }
+
+                    return true;
+                }
+            }
+        }
+
         /// <summary>
         /// Fetches rows from the excel byte stream and returns as a Dictionary. 
         /// </summary>
