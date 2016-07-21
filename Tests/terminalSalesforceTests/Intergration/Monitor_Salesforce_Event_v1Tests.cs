@@ -57,6 +57,28 @@ namespace terminalSalesforceTests.Intergration
         [Test]
         public async void Monitor_Salesforce_Event_Local_Payload_Processed()
         {
+            var objectTypes = new[]
+            {
+                "Account",
+                "Case",
+                "Contact",
+                "Contract",
+                "Document",
+                "Lead",
+                "Opportunity",
+                "Product2"
+            };
+
+            foreach (var objectType in objectTypes)
+            {
+                await RunTest(objectType);
+            }
+        }
+
+        private async Task RunTest(string objectType)
+        {
+            Debug.WriteLine("Testing monitoring for ObjectType = " + objectType);
+
             PlanDTO plan = null;
             try
             {
@@ -64,7 +86,7 @@ namespace terminalSalesforceTests.Intergration
                 plan = await CreateMonitoringPlan(authToken.Id);
                 await _plansHelper.RunPlan(plan.Plan.Id);
 
-                await HttpPostAsync<string>(GetTerminalEventsUrl(), new StringContent(SalesforcePayload));
+                await HttpPostAsync<string>(GetTerminalEventsUrl(), new StringContent(string.Format(SalesforcePayload, objectType)));
 
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
