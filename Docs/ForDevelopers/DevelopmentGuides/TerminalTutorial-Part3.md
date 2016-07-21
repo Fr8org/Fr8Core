@@ -18,7 +18,7 @@ We recommend using the Fr8 Visual Studio Project Template. Add *New Project* and
 
 Enter a name of the terminal you want to build (it could look like terminal%ServiceName%). This will generate:
 
-![Fr8 terminal](./Images/3_tdg_terminalProject.PNG "Fr8 terminal")
+![Fr8 terminal](./Images/10_tdg2_Project.PNG "Fr8 terminal")
 
 ## Step 2 - Fill terminal information
 The main difference here from the previous tutorial is that- [*AuthenticationType* property is set to *External*](/Docs/ForDevelopers/OperatingConcepts/Authorization/AuthOverview.md). That means the Hub will initiate an OAuth process when users try to use this Terminal, unless the Hub already has a valid authentication token.
@@ -272,7 +272,7 @@ In this Terminal most of the OAuth is handled by this AsanaOAuthService. Most of
 
 We add a couple of helper methods like *public bool IsTokenExpired()* which duplicates interface method, but uses internal token object. Constructor takes interfaces for parameters and REST client. 
 
-The AsanaParametersservice stores all neccessary constants and variables meaningful for asana interaction.
+The AsanaParametersService stores all neccessary constants and variables meaningful for asana interaction.
 
 ---
     using Fr8.Infrastructure.Utilities.Configuration;
@@ -391,8 +391,8 @@ The Fr8 **Hub** stores and recives user secrets from third party services. First
 
 In order to proceed successful request we need to pass redirect url. In the example picture we pass 
 `https://dev.fr8.co/AuthenticationCallback/ProcessSuccessfulOAuthResponse?terminalName=terminalAsana&terminalVersion=1`
-but for local development usually using Hub at *http://localhost:30643/*
-THe Hub's AuthenticationCallback controller determine terminal and its version and passes returned query string to our terminal.
+but for local development usually using Hub at *http://localhost:30643/* &nbsp;
+The Hub's AuthenticationCallback controller determine terminal and its version and passes returned query string to our terminal.
 
 #### d) Process returned token values
 At this point, the user has see our asana oauth dialog box and  confirmed access. The Hub has received a request from the Client with token data in query string and wants to  pass it to our terminal.
@@ -540,7 +540,7 @@ Here we define a Crate containing a List of Asana Tasks, and a Crate containing 
 *MT.AsanaTask* here is an int value obtained by registering the Manifests with a Manifest Registry such as the one at [fr8.co](https://fr8.co/manifest_registry)
 
 
-## Step 6 - Add "Get Tasks" Activity
+## Step 5 - Add "Get Tasks" Activity
 
 To make activities development easy for the Terminal we add the AsanaOAuthBaseActivity  class to the **Activities** folder.
 The purpose of this class is to handle token interaction. This frees Activity code from having to deal with token issues.
@@ -874,6 +874,33 @@ As well as in previous terminal all we need here is register our Activity, to ma
         }
 ---
 
+## Step 7 - Register your terminal and try your activity in action
+
+In case of local or your private hub you can change Data.Migrations.MigrationConfiguration.RegisterTerminals() function in Data project, it will automatically add your terminal to hub's publically avaliable terminals.
+If you use public hub or don`t want to do this add your terminal in 'Manage Terminals List' page inside 'Developers' menu.
+
+![Terminal registration](./Images/14_tdg2_TerminalReg.PNG "AuthenticationController")  
+
+Then we create a plan and add activity, inside plan builder activities list you should see logo which you specified at first step as **IconPath** and your activity when you clicked on logo.
+
+![Terminal registration](./Images/15_tdg2_ActivityList.PNG "AuthenticationController")
+
+After you configured and run plan you will see messages in Activity stream
+
+![Terminal registration](./Images/16_tdg2_PlanRunning.PNG "AuthenticationController")
+
+## Troubleshooting
+General flow usually looks like: create a plan, add activity, if it require authorization you will see auth modal dialog window, add account for authorization, in our case it will be another browser windows with oAuth url, which shows request of external service app to your account in that service, after you confirm access you will see your username from external service, when you select it and activity pane will be avaliable for configuration, you configure it and other activities, press run button to trigger plan execution and see validation errors reported in Activity Stream, if everything have valid configuration you see messages about plan execution. Keep this process in mind when you have to do troubleshooting.
+
+If You don't see your terminals in plan builder's activities list, first look at registered terminals list. If your terminal not in list repeat step 7, if it is there try to call terminal `/discover` endpoint and see if there will be valid JSON in the response. 
+This JSON data should contain list of registered activities for your terminals. 
+- if it`s not, check step 6.c)
+- if it has activities, ensure they have not empty Id`s and at least one category in Categories list, otherwise check code from step 5 
+- if instead of JSON you see error response follow instruction in it`s descrption.
+
+Authentication problem can appears when you see error in second browser window, it means that `/request_url` endpoint returned invalid value. Or after confirmation  you got an error calling '/token' enpoint. Another common problem could be outdated token, so don`t forget to provide refreshing mechanics. If you faced with problems of that kind look closely what we did at third step.
+ 
+If your activity works but downstream activities don`t see data produced by it, make sure you are using standard crate manifest types, signaled about the data at initialization or follow up step and put the data into Payload at run step. 
 
 ## Additional Design Ideas - Create SDK for external service
 Here we build additional services into the Terminal. This makes life easier for Activity builders and enhancers that may follow you. Of course, if there's already an SDK for your platform, much of this won't be necessary or add value.
