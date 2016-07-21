@@ -28,7 +28,6 @@ namespace terminalSalesforceTests.Fixtures
 
             return new AuthorizationTokenDTO()
             {
-                ExternalAccountId = "611998545425677937",
                 Token = JsonConvert.SerializeObject(new { AccessToken = auth.AccessToken }),
                 AdditionalAttributes = string.Format("instance_url={0};api_version={1}", auth.InstanceUrl, auth.ApiVersion)
             };                                                                                                                            
@@ -56,7 +55,6 @@ namespace terminalSalesforceTests.Fixtures
 
                 var tokenDO = new AuthorizationTokenDO()
                 {
-                    ExternalAccountId = tokenDTO.ExternalAccountId,
                     Token = tokenDTO.Token,
                     TerminalID = terminalId,
                     UserID = userDO.Id,

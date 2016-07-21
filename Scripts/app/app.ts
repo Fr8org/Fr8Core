@@ -26,8 +26,7 @@ var app = angular.module("app", [
     "angularResizable",
     "mdColorPicker",
     "md.data.table",
-    "popoverToggle",
-    'jsonFormatter'
+    "popoverToggle"
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */
@@ -109,7 +108,7 @@ app.controller('HeaderController', ['$scope', '$http', '$window', '$state', 'Ter
 
         result.$promise
             .then(() => {
-                $state.go('plan.builder', { id: result.plan.id });
+                $state.go('planBuilder', { id: result.plan.id });
                 //window.location.href = 'plans/' + result.plan.id + '/builder';
             });
     };
@@ -188,12 +187,10 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                 return config;
             },
             responseError: (config) => {
-                //Andrei Chaplygin: not applicable as this is a valid response from methods signalling that user is authorized but doesn't have sufficient priviligies
-                //All unauthorized requests are handled (and redirected to login page) by built-in functionality (authorize attributes)
-                //if (config.status === 403) {
-                //    $window.location.href = $window.location.origin + '/DockyardAccount'
-                //        + '?returnUrl=/dashboard' + encodeURIComponent($windoFw.location.hash);
-                //}
+                if (config.status === 403) {
+                    $window.location.href = $window.location.origin + '/DockyardAccount'
+                        + '?returnUrl=/dashboard' + encodeURIComponent($window.location.hash);
+                }
                 Metronic.stopPageLoading();
                 return $q.reject(config);
             }
@@ -335,48 +332,20 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             data: { pageTitle: 'Plans', pageSubTitle: 'This page displays all Plans' }
         })
 
-        .state('plan',
+        // Plan Builder framework
+        .state('planBuilder',
         {
-            abstract: true,
-            url: "/plans/{id}/",
+            url: "/plans/{id}/builder?viewMode&view",
             views: {
-                'header@': {
-                    templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
-                        if ($stateParams['viewMode'] === 'kiosk') {
-                            return "/AngularTemplate/KioskModeOrganizationHeader";
-                        }
-                        return "/AngularTemplate/MiniHeader";
-                    }
-                },
                 'maincontainer@': {
                     templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
                         if ($stateParams['viewMode'] === 'kiosk') {
                             return "/AngularTemplate/MainContainer";
                         }
                         return "/AngularTemplate/MainContainer_AS";
-                    },
-                    controller: 'PlanBuilderController',
-                }
-            }
-        })
-
-        .state('plan.details',
-        {
-            url: "details",
-            views: {
-                '@plan': {
-                    templateUrl: "/AngularTemplate/PlanDetails"
-                }
-            },
-            data: { pageTitle: 'Plan Details', pageSubTitle: '' }
-        })
-
-        // Plan Builder framework
-        .state('plan.builder',
-        {
-            url: "builder?viewMode&view",
-            views: {
-                '@plan': {
+                    }
+                },
+                '@planBuilder': {
                     templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
                         if ($stateParams['viewMode'] === 'kiosk') {
                             return "/AngularTemplate/PlanBuilder_SimpleKioskMode";
@@ -390,6 +359,14 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                             return "/AngularTemplate/KioskModeOrganizationHeader";
                         }
                         return "/AngularTemplate/MiniHeader";
+                    }
+                },
+                'footer@': {
+                    templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
+                        if ($stateParams['viewMode'] === 'kiosk') {
+                            return "/AngularTemplate/Empty";
+                        }
+                        return "/AngularTemplate/Footer";
                     }
                 }
             },
@@ -408,7 +385,12 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             templateUrl: "/AngularTemplate/ShowFacts",
             data: { pageTitle: 'Facts', pageSubTitle: 'This page displays all facts' },
         })
-
+        .state('planDetails',
+        {
+            url: "/plans/{id}/details",
+            templateUrl: "/AngularTemplate/PlanDetails",
+            data: { pageTitle: 'Plan Details', pageSubTitle: '' }
+        })
 
         // Manage files
         .state('managefiles',
@@ -444,7 +426,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
         .state('configureSolution',
         {
             url: "/solution/{solutionName}",
-            controller: 'PlanBuilderController',
             templateUrl: "/AngularTemplate/PlanBuilder",
             data: { pageTitle: 'Create a Solution', pageSubTitle: '' }
         })

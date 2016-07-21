@@ -24,7 +24,7 @@
   <!-- Common settings (these are not copied from the terminal configuration 
 files for predictability) -->
   <add key="HubApiVersion" value="v1" />
-  <add key="DefaultHubUrl" value="http://localhost:30643/" />
+  <add key="CoreWebServerUrl" value="http://localhost:30643/" />
 
   <!-- Terminal Secret-Id -->
   <add key="terminalAtlassianTerminalSecret" value="f747e49c-63a8-4a1b-8347-dd2e436c3b36" />
