@@ -22,7 +22,7 @@ namespace terminalStatXTests.Integration
 
         public override string TerminalName => "terminalStatX";
 
-        [Test]
+        [Test, Ignore("Being resolved in FR-4846")]
         public async Task Create_Stat_Initial_Configuration_Check_Crate_Structure()
         {
             var responseDTO = await CompleteInitialConfiguration();
@@ -39,7 +39,7 @@ namespace terminalStatXTests.Integration
             Assert.AreEqual("StatXGroupsSelectionGroup", crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0].Name, "Invalid Name on control");
         }
 
-        [Test]
+        [Test, Ignore ("Being resolved in FR-4846")]
         public async Task Create_Stat_FollowUp_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
