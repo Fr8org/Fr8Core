@@ -11,11 +11,18 @@ of the Plan.
 To do this, we defined the following mechanism:
 The Client has some pieces of functionality that are considered Client Actions. These are published in documentation. Any Activity that wants
 to trigger one of these Client Actions can generate an [Activity Response](/Docs/ForDevelopers/Objects/Activities/ActivityResponses.md) of ExecuteClientAction. When it responds to the Hub with this ActivityResponse,
-the Hub changes the ContainerState to Pending and passes the response on to the Client, and the Client executes the associated functionality.
+the Hub changes the ContainerState to Pending and passes the response on to the Client.
+The Client looks for a property of ActivityResponse called CurrentClientActivityName and executes the procedure associated with the value of that property. 
 
-As of this writing, we don't have much defined. The first Client Action is "Show Table Report". 
+Currently supported values for CurrentClientActivityName
+
+Value |	What the Hub Does |	Notes
+------ | -------- | ------------------
+Show Table Report |	Look in the Payload for Table Data and render it in a new window on screen
+RunImmediately |	Immediately Execute the current Plan. See ["Run Triggers"](/Docs/ForDevelopers/OperatingConcepts/RunTriggers.md)
 
 
 When the client has completed executing the client code it should again post to the Hub to run the container, and the Hub should continue execution. If the Client Action is the final action in the route, then the Hub will just carry out normal end of Plan processing. 
-The Hub will need to know whether or not the client action was successfully completed.
-This is a good use case for the Logging Crate mechanism we've built but not really used yet. The client should add a Log entry to the Logging Crate that's part of the payload. Then the Hub can inspect this and take appropriate action
+
+
+

@@ -12,4 +12,9 @@ Fr8 Operating Concepts Home
 * [Solutions](/Docs/ForDevelopers/OperatingConcepts/Solutions)
 * [Warehouse (Data Storage)](/Docs/ForDevelopers/OperatingConcepts/Fr8Warehouse.md)
 
+Advanced Concepts
+------------------
+* [Client-Driven Actions](/Docs/ForDevelopers/OperatingConcepts/Client-DrivenActions.md)
+* [Run Triggers](/Docs/ForDevelopers/OperatingConcepts/RunTriggers.md)
+
 [Back](/Docs/Home.md)
