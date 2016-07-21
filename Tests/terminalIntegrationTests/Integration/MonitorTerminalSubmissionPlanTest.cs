@@ -58,7 +58,7 @@ namespace terminalIntegrationTests.Integration
 
         
 
-        [Test]
+        [Test, Ignore("Is being resolved with 4692")]
         public async Task MonitorTerminalSubmissionPlan()
         {
             AutoMapperBootstrapper.ConfigureAutoMapper();
