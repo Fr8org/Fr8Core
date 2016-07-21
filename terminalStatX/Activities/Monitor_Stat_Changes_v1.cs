@@ -170,10 +170,9 @@ namespace terminalStatX.Activities
                 }
                 SelectedStat= ActivityUI.ExistingGroupStats.Value;
 
-                Storage.Remove<EventSubscriptionCM>();
-                Storage.Add(CrateManager.CreateStandardEventSubscriptionsCrate(
-                    "Standard Event Subscriptions",
-                    "StatX", "StatXValueChange_" + SelectedStat.Substring(0, 18)));
+                EventSubscriptions.Subscriptions.Clear();
+                EventSubscriptions.Manufacturer = "StatX";
+                EventSubscriptions.Add("StatXValueChange_" + SelectedStat.Substring(0, 18));
             }
             else
             {

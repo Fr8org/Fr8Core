@@ -49,7 +49,7 @@ namespace terminalDropboxTests.Integration
             // Add initial configuretion controls
             using (var crateStorage = Crate.GetUpdatableStorage(dataDto.ActivityDTO))
             {
-                crateStorage.Add(Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls"));
+                crateStorage.Add("Configuration_Controls", new StandardConfigurationControlsCM());
             }
 
             //Act
@@ -74,7 +74,7 @@ namespace terminalDropboxTests.Integration
             // Add initial configuretion controls
             using (var crateStorage = Crate.GetUpdatableStorage(dataDto.ActivityDTO))
             {
-                crateStorage.Add(Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls"));
+                crateStorage.Add("Configuration_Controls", new StandardConfigurationControlsCM());
             }
             // Add operational state crate
             AddOperationalStateCrate(dataDto, new OperationalStateCM());

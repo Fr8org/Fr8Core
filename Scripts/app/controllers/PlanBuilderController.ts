@@ -12,9 +12,14 @@ module dockyard.controllers {
         current: ng.ui.IState;
     }
 
-    export interface IPlanBuilderScope extends ng.IScope {
-        isPlanBuilderScope: boolean;
+    export interface IMainPlanScope extends ng.IScope {
         planId: string;
+        current: model.PlanBuilderState;
+    }
+
+    export interface IPlanBuilderScope extends IMainPlanScope {
+        isPlanBuilderScope: boolean;
+
         subPlans: Array<model.SubPlanDTO>;
         fields: Array<model.Field>;
         //currentSubroute: model.SubrouteDTO;
@@ -23,14 +28,12 @@ module dockyard.controllers {
         //curNodeId: number;
         //// Flag, that indicates if currently edited processNodeTemplate has temporary identity.
         //curNodeIsTempId: boolean;
-        current: model.PlanBuilderState;
         actionGroups: model.ActionGroup[];
         processedSubPlans: any[];
 
         addAction(group: model.ActionGroup): void;
         deleteAction: (action: model.ActivityDTO) => void;
         reConfigureAction: (action: model.ActivityDTO) => void;
-        openAddLabelModal: (action: model.ActivityDTO) => void;
         isReConfiguring: boolean;
         chooseAuthToken: (action: model.ActivityDTO) => void;
         selectAction(action): void;
@@ -41,12 +44,10 @@ module dockyard.controllers {
         solutionName: string;
         curAggReloadingActions: Array<string>;
         addSubPlan: () => void;
-        openMenu: ($mdOpenMenu: any, ev: any) => void;
         view: string;
         viewMode: string;
         hasAnyActivity: (pSubPlan: any) => boolean;
-        hasHelpMenuItem: (activity: model.ActivityDTO) => boolean;
-        showActivityHelpDocumentation: (activity: model.ActivityDTO) => void;
+        state: string;
     }
 
 
@@ -142,33 +143,6 @@ module dockyard.controllers {
                 });
             };
 
-            this.$scope.hasHelpMenuItem = (activity) => {
-                if (activity.activityTemplate.showDocumentation != null) {
-                    if (activity.activityTemplate.showDocumentation.body.displayMechanism != undefined &&
-                        activity.activityTemplate.showDocumentation.body.displayMechanism.contains("HelpMenu")) {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-
-            this.$scope.showActivityHelpDocumentation = (activity) => {
-
-                var activityDTO = new model.ActivityDTO("", "", "");
-                activityDTO.toActionVM();
-                activityDTO.documentation = "HelpMenu";
-                activityDTO.activityTemplate = activity.activityTemplate;
-
-                documentationService.getDocumentationResponseDTO(activityDTO).$promise.then(data => {
-
-                    if (data) {
-                        var newWindow = this.$window.open();
-                        newWindow.document.writeln(data.body);
-                    }
-                });
-            }
-
             this.$scope.isBusy = () => {
                 return this._longRunningActionsCounter > 0 || this._loading;
             };
@@ -177,30 +151,11 @@ module dockyard.controllers {
 
             $scope.deleteAction = <() => void>angular.bind(this, this.deleteAction);
             $scope.addSubPlan = <() => void>angular.bind(this, this.addSubPlan);
-            $scope.openMenu = ($mdOpenMenu, ev) => {
-                $mdOpenMenu(ev);
-            };
             $scope.reConfigureAction = (action: model.ActivityDTO) => {
                 var actionsArray = new Array<model.ActivityDTO>();
                 actionsArray.push(action);
                 this.reConfigure(actionsArray);
             };
-
-            $scope.openAddLabelModal = (action: model.ActivityDTO) => {
-
-                var modalInstance = $modal.open({
-                    animation: true,
-                    templateUrl: '/AngularTemplate/ActivityLabelModal',
-                    controller: 'ActivityLabelModalController',
-                    resolve: {
-                        label: () => action.label
-                    }
-                })
-                modalInstance.result.then(function (label: string) {
-                    action.label = label;
-                    ActionService.save(action);
-                });
-            }
 
             this.$scope.chooseAuthToken = (action: model.ActivityDTO) => {
                 this.chooseAuthToken(action);
@@ -274,18 +229,18 @@ module dockyard.controllers {
                 });
 
             };
-
+            $scope.state = $state.current.name;
             this.processState($state);
         }
 
         private handleBackButton(event, toState, toParams, fromState, fromParams, options) {
 
-            if (fromParams.viewMode === "plan" && toParams.viewMode === undefined && fromState.name === "planBuilder" && toState.name === "planBuilder") {
+            if (fromParams.viewMode === "plan" && toParams.viewMode === undefined && fromState.name === "plan.builder" && toState.name === "plan.builder") {
                 event.preventDefault();
                 this.$state.go("planList");
             }
 
-            if (toParams.viewMode === "plan" && fromParams.viewMode === undefined && fromState.name === "planBuilder" && toState.name === "planBuilder") {
+            if (toParams.viewMode === "plan" && fromParams.viewMode === undefined && fromState.name === "plan.builder" && toState.name === "plan.builder") {
                 this.reloadFirstActions();
             }
         }
@@ -482,7 +437,9 @@ module dockyard.controllers {
                 this.setAdvancedEditingMode();
             }
             this.renderPlan(<interfaces.IPlanVM>curPlan.plan);
-            this.$state.go('planBuilder', { id: curPlan.plan.id, viewMode: mode });
+            if (this.$state.current.name != 'plan.details') {
+                this.$state.go('plan.builder', { id: curPlan.plan.id, viewMode: mode });
+            }
         }
 
         /*

@@ -11,6 +11,8 @@
         openModal: (historyItem: model.HistoryItemDTO) => void;
         orderBy: string;
         selected: any;
+        isAllowedToSeeResults: boolean;
+        canSeeOtherUserIncidents: boolean;
     }
 
     class ReportIncidentController {
@@ -22,7 +24,11 @@
         ];
 
         constructor(private $scope: IReportIncidentListScope, private $modal: any, private ReportService: services.IReportService) {
-
+            $scope.canSeeOtherUserIncidents = false;
+            ReportService.canSeeOtherUserHistory()
+                .$promise.then((result) => {
+                    $scope.canSeeOtherUserIncidents = result.hasManageUserPrivilege;
+                });
             $scope.selected = [];
 
             $scope.query = new model.HistoryQueryDTO();
@@ -30,8 +36,9 @@
             $scope.query.page = 1;
             $scope.orderBy = "-createdDate";
             $scope.query.isCurrentUser = true;
-            
 
+            $scope.isAllowedToSeeResults = true;
+            
             $scope.filter = {
                 options: {
                     debounce: 500
@@ -66,7 +73,7 @@
                 size: 'lg',
                 resolve: {
                     historyItem: () => historyItem
-            }
+                }
             });
         }
 
@@ -84,9 +91,14 @@
             }
             this.$scope.promise = this.ReportService.getIncidentsByQuery(this.$scope.query).$promise;
             this.$scope.promise.then((data: model.HistoryResultDTO<model.IncidentDTO>) => {
+                this.$scope.isAllowedToSeeResults = true;
                 this.$scope.result = data;
+            }, (reason) => {
+                if (reason.status === 403) {
+                    this.$scope.isAllowedToSeeResults = false;
+                }
             });
-        }     
+        }
     }
 
     app.controller('ReportIncidentController', ReportIncidentController);
