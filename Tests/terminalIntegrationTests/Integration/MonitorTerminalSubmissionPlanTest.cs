@@ -58,7 +58,7 @@ namespace terminalIntegrationTests.Integration
 
         
 
-        [Test, Ignore ("Being resolved in FR-4692")]
+        [Test]
         public async Task MonitorTerminalSubmissionPlan()
         {
             AutoMapperBootstrapper.ConfigureAutoMapper();
