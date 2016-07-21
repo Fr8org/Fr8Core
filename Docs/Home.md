@@ -1,13 +1,12 @@
-#Fr8  
+#Fr8 for Developers
 
-[Fr8 User Guide](/Docs/ForUsers/Fr8ForUsers.md)  
-=============================
-
-Fr8 For Developers  
-===================
 [Part 1 - Introduction](/Docs/ForDevelopers/Introduction.md)   
 [Part 2 - Understanding the Fr8 Architectural Model](/Docs/ForDevelopers/ArchitecturalModel.md)   
 [Part 3 - The Fr8 Data Model](/Docs/ForDevelopers/DataModel.md)  
+
+General Resources
+-------------------
+[Fr8 User Guide](/Docs/ForUsers/Fr8ForUsers.md)  
 [Video Gallery](/Docs/ForDevelopers/VideoGallery.md)
     
 [Operating Concepts](/Docs/ForDevelopers/OperatingConceptsHome.md)
