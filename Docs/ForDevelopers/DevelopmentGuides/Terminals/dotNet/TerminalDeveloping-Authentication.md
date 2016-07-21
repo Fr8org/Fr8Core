@@ -1,6 +1,6 @@
 # Adding OAuth Support to a Terminal
 
-Not all Terminal Activities require authentication, but if you need access to a user's accounts from some Web Service, you probably need to support the OAuth process in your Terminal.
+Not all Terminal Activities require authentication, but if you need access to a user's accounts from some Web Service, you probably need to support the OAuth process in your Terminal. Put another way: if you respond to a /discover request from the Hub with at least one ActivityTemplate that indicates Authentication is required, then your Terminal will need to support the [two /authentication endpoints](http://dev-terminals.fr8.co:25923/swagger/ui/index#/Authentication).
 
 This material assumes you've got a good basic understanding of OAuth. If you need to learn, we recommend [this](https://aaronparecki.com/articles/2012/07/29/1/oauth2-simplified).
 
