@@ -859,6 +859,7 @@
     <Content Include="_PowerShellScripts\Run-DBMigration.ps1" />
     <Content Include="Views\Shared\CDN\_AngularAppScripts.cshtml" />
     <Content Include="Views\AngularTemplate\PlanBuilder_SimpleKioskMode.cshtml" />
+    <Content Include="Views\AngularTemplate\ActivityHeader.cshtml" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <Content Include="_PowerShellScripts\Update-HostnameInTerminalRegistration.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
@@ -894,6 +895,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\ActivityResize.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\fillHeight.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ModalResizable.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\ActivityHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\SubplanHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Validators\ManifestDescriptionValidators.ts" />
     <TypeScriptCompile Include="Scripts\app\events\Fr8Events.ts" />
