@@ -42,6 +42,17 @@ namespace HubWeb.Controllers
             if (!string.IsNullOrEmpty(requestQueryString) && requestQueryString[0] == '?')
             {
                 requestQueryString = requestQueryString.Substring(1);
+                var queryDictionary = System.Web.HttpUtility.ParseQueryString(requestQueryString);
+                if (queryDictionary["error"] != null && queryDictionary["error"] == "access_denied")
+                {
+                    //user has denied access for our app, so close the window
+                    dynamic model = new ExpandoObject();
+                    model.AuthorizationTokenId = string.Empty;
+                    model.TerminalId = 0;
+                    model.TerminalName = string.Empty;
+
+                    return View(model);
+                }
             }
 
             TerminalDO terminal = _terminal.GetAll().FirstOrDefault(x => x.Name == terminalName && x.Version == terminalVersion);

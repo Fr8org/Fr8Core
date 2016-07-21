@@ -8,6 +8,11 @@ Building and Running Fr8
 
 *Note*: most Terminals are associated intimately with a web service like Salesforce.com or SendGrid. To get them to work locally, you're going to need to obtain a developer key, or api token (it varies from service to service) and update the configuration of the Terminal, usually in its web.config. For more information, see "Configuring Terminals"). Importantly, you can use Terminals without running your own local version of them. You simply point your Hub at the Terminals operated by Fr8.co or some other operator. For more information on this, see "Incorporating Public Terminals into your Development Environment").
 
+*Note*: each Terminal has a setting in its Web.config file that specifies the address of the terminal. It looks like this:
+`  <add key="terminalName.TerminalEndpoint" value="http://localhost:8888" />`
+We don't store port settings in the repository, so once you open the solution for the first time Visual Studio will assign random port numbers for all web applications.
+If you are using IIS express you can either manually change the address in Web section of project properties for each terminal you are about to run. Or you can use Fr8Core\PortSetter utillity application, that will try to do it for you for all the terminals. 
+
 3. Run Fr8. 
 
 What you should see:
