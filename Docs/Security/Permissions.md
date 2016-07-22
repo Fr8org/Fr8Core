@@ -5,6 +5,7 @@ Permissions are generally associated with Users via Profiles. The Standard Fr8 U
 permission on all objects they create.
 
 Fr8 currently supports these permissions:
+
 1. Create Object
 2. Read Object
 3. Edit Object
