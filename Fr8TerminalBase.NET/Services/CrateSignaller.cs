@@ -137,6 +137,23 @@ namespace Fr8.TerminalBase.Services
             return MarkAvailable<TManifest>(label, AvailabilityType.Always, suppressFieldDiscovery);
         }
 
+        public FieldConfigurator MarkAvailableWithoutSignalling(CrateDescriptionDTO crateDescription, AvailabilityType availabilityType, string label)
+        {
+            EnsureAvailableDataCrate();
+            var fields = new List<FieldDTO>();
+            _availableData.AddOrUpdate(new CrateDescriptionDTO
+            {
+                Label = label,
+                ManifestId = crateDescription.ManifestId,
+                ManifestType = crateDescription.ManifestType,
+                ProducedBy = _owner,
+                Fields = fields
+            });
+
+            return new FieldConfigurator(fields, label, new CrateManifestType(crateDescription.ManifestType, crateDescription.ManifestId), _sourceActivityId, availabilityType);
+        }
+
+
         public FieldConfigurator MarkAvailable<TManifest>(string label, AvailabilityType availabilityType, bool suppressFieldDiscovery = false)
             where TManifest : Manifest
         {
