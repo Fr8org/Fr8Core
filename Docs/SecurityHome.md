@@ -3,9 +3,9 @@ Security Home
 
 [Overview](/Docs/Security/SecurityOverview.md)
 
-[Profiles](/Docs/Security/Profiles.md)
-
 [Permissions](/Docs/Security/Permissions.md)
+
+[Profiles and PermissionSets](/Docs/Security/Profiles.md)
 
 [Internals](/Docs/Security/SecurityInternals.md)
 
