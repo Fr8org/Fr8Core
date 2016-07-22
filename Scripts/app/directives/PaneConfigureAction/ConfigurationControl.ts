@@ -131,7 +131,7 @@ module dockyard.directives.paneConfigureAction {
                 path = ConfigurationControlController.getRelativeXPath(<HTMLElement>node.parentNode, path);
             }
             if (node.previousSibling) {
-                var count = 1;
+                var count: number = 1;
                 var sibling = node.previousSibling;
                 do {
                     if (sibling.nodeType === 1 && sibling.nodeName === node.nodeName) { count++; }
@@ -141,11 +141,11 @@ module dockyard.directives.paneConfigureAction {
             } else if (node.nextSibling) {
                 var sibling = node.nextSibling;
                 do {
-                    if (sibling.nodeType == 1 && sibling.nodeName == node.nodeName) {
-                        var count = 1;
+                    var count: number = 0;
+                    if (sibling.nodeType === 1 && sibling.nodeName === node.nodeName) {
+                        count = 1;
                         sibling = null;
                     } else {
-                        var count = null;
                         sibling = sibling.previousSibling;
                     }
                 } while (sibling);
