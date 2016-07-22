@@ -28,6 +28,9 @@ Specifications
         * [Fr8 Hub Specification](/Docs/ForDevelopers/Specifications/Fr8HubSpecification.md)  
         * [Terminal Specification](/Docs/ForDevelopers/Specifications/TerminalSpecification.md)  
         
+[Services](/Docs/ForDevelopers/ServicesHome.md)
+-----------------------------------------------
+
 [Development Guides](ForDevelopers/DevGuideHome.md)  
 -----------------------------
 
