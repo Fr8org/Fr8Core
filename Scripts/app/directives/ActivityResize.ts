@@ -27,7 +27,7 @@ module dockyard.directives {
                     return curHeight > defaultHeight ? curHeight : defaultHeight;
                 };
 
-                // Setting title-bar styles
+                // Setting title-bar style
                 function setTitleSize(width) {
                     var titleObj = $(elem).find(".ellipsis h2");
                     var titleStr = $(titleObj).html();
