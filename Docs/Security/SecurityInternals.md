@@ -57,6 +57,7 @@ As an example: when a User creates an object or loads an object that they're the
 
 Direct record access is controlled by creating tuples that relate an ObjectId to a Role to a Permission. These are stored in a join table called ObjectRolePermissions that associates RolePermissions with ObjectIds
 
+In the .NET Hub implementation, Roles are implemented using ASP Identity 2.0 Roles.
 
 #### Profiles
 A user always belongs to a single Profile. 
