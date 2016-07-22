@@ -351,13 +351,14 @@ namespace Hub.Services
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    // Create new WebService entity or update reference to existing WebService entity.
                     if (activityTemplateDo.WebService != null)
                     {
                         var existingWebService = uow.WebServiceRepository.FindOne(x => x.Name == activityTemplateDo.WebService.Name);
 
+                        // Update existing WebService entity.
                         if (existingWebService != null)
                         {
+                            existingWebService.IconPath = activityTemplateDo.WebService.IconPath;
                             activityTemplateDo.WebServiceId = existingWebService.Id;
                             activityTemplateDo.WebService = existingWebService;
                         }
