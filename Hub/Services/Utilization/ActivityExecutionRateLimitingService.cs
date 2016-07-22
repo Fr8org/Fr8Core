@@ -139,7 +139,7 @@ namespace Hub.Services
             {
                 _pusherNotifier.NotifyUser( new NotificationMessageDTO
                 {
-                    NotificationType  = NotificationType.GenericFailure,
+                    NotificationType = NotificationType.GenericFailure,
                     NotificationArea = NotificationArea.ActivityStream,
                     Message = "You are running more Activities than your capacity right now. " +
                             $"This Account will be prevented from processing Activities for the next {Math.Ceiling(_userBanTime.TotalSeconds / 60.0f)} minutes. " +
