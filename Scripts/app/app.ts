@@ -109,7 +109,7 @@ app.controller('HeaderController', ['$scope', '$http', '$window', '$state', 'Ter
 
         result.$promise
             .then(() => {
-                $state.go('plan.builder', { id: result.plan.id });
+                $state.go('plan', { id: result.plan.id });
                 //window.location.href = 'plans/' + result.plan.id + '/builder';
             });
     };
