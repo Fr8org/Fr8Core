@@ -59,7 +59,8 @@ if (([System.String]::IsNullOrEmpty($connectionString) -ne $true) -and ([System.
 }
 
 $RootDir = Split-Path -parent (Split-Path -parent $MyInvocation.MyCommand.Path)
-$ConfigPath = $RootDir+"\terminalCloudService\Config\terminalCloudService\ServiceConfiguration.Release.cscfg"
+$ConfigPath = $RootDir+"\terminalCloudService"
+$ConfigFile = $ConfigPath+"\Config\terminalCloudService\ServiceConfiguration.Release.cscfg"
 $epConfigFile = $ConfigPath+"\ServiceDefinition.csdef"
 
 if ($updateService -or (-not $inheritEndpoints) -or $requiresCloudService)
