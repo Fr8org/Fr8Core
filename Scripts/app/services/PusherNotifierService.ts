@@ -117,7 +117,6 @@ module dockyard.services {
         public frontendSuccess(message: string) {
             this.frontendEvent(message, dockyard.enums.NotificationType.GenericSuccess);// pusherNotifierSuccessEvent);
         }
-
     }
 
     app.factory('PusherNotifierService', ['$pusher', 'UserService','$timeout', ($pusher: any, UserService:IUserService, $timeout:ng.ITimeoutService): IPusherNotifierService =>

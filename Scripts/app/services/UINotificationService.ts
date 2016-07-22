@@ -7,10 +7,10 @@
 module dockyard.services {
 
     export interface IUINotificationService {
-        notify: (message: string, status: dockyard.enums.UINotificationStatus, options: any) => void
+        notify: (message: string, status: dockyard.enums.UINotificationStatus, options: any) => any
     }
 
-    declare var noty: any;
+    declare var noty: Noty;
 
     class UINotificationService implements IUINotificationService {
         public notify(message: string, status: dockyard.enums.UINotificationStatus, options: any) {
@@ -48,7 +48,7 @@ module dockyard.services {
                     options['type'] = 'alert';
                     break
             }
-            noty(options);
+            return noty(options);
         }
     }
 
