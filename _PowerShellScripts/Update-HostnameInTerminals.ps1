@@ -15,14 +15,17 @@ param(
 	[string]$slot,
 
 	[Parameter(Mandatory = $false)]
-	[string]$overrideDbName
+	[string]$overrideDbName,
+
+	[Parameter(Mandatory = $false)]
+	[string]$csdef = "\terminalCloudService\ServiceDefinition.csdef"
+
 )
 
 $ErrorActionPreference = 'Stop'
 
 $rootDir = Split-Path -parent (Split-Path -parent $MyInvocation.MyCommand.Path)
-$configPath = $rootDir+"\terminalCloudService"
-$defFile = $configPath+"\ServiceDefinition.csdef"
+$defFile = [System.IO.Path]::Combine($rootDir, $csdef)
 
 if ([System.String]::IsNullOrEmpty($overrideDbName) -ne $true) {
 	$builder = new-object system.data.SqlClient.SqlConnectionStringBuilder($connectionString)

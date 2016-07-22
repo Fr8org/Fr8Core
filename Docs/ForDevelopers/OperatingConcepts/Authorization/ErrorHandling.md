@@ -1,3 +1,6 @@
+Token Considerations
+====================
+
 Most of terminals use third-party cloud services like Dropbox, Google and Slack. 
 Most of these services rely of OAuth-based security which means that after authorizing Fr8, they return
 a string called authorization token. Fr8 saves this string in the secure store and provides it to the service on subsequent requests. 
@@ -9,4 +12,4 @@ Fr8 should be able to handle such cases gracefully in runtime and do not present
 The Hub has the logic to report authentication and authorization problems in terminals. You only need to add minimum amount of code to enable that for your terminal action. 
 
 More Information:
---[from the .NET SDK](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/SDK/.NET/Services/Authorization.md)
+--[from the .NET SDK](/Docs/ForDevelopers/SDK/.NET/Services/Authorization.md)

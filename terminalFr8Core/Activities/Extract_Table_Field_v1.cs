@@ -304,9 +304,17 @@ namespace terminalFr8Core.Activities
                 .Where(c => !string.IsNullOrEmpty(c.Value) && !double.TryParse(c.Value, out temp));
 
             var tempChosenCellList = GetControl<ControlList>("extractor_list");
-            //TODO do this with a more efficient way
-            //all dropdowns should use same data
-            var listItems = tableFields.Where(c => c.Key.Equals(c.Value)).Select(c => new ListItem { Key = c.Key, Value = c.Value }).ToList();
+
+            List<ListItem> listItems;
+            if (table.FirstRowHeaders)
+            {
+                listItems = tableFields.Where(c => c.Key.Equals(c.Value)).Select(c => new ListItem { Key = c.Key, Value = c.Value }).ToList();
+            }
+            else
+            {
+                listItems = tableFields.Select(c => new ListItem { Key = c.Value, Value = c.Value }).ToList();
+            }
+
             foreach (var cGroup in tempChosenCellList.ControlGroups)
             {
                 var chosenCellDd = (DropDownList)cGroup.First();

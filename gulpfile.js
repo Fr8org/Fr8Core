@@ -27,7 +27,7 @@ gulp.task('concattemplates', function () {
         .pipe(templateCache('templateCache.js', {
             module: 'templates',
             standalone: true,
-            transformUrl: function(url) {
+            transformUrl: function (url) {
                 //remove .cshtml extension and /AngularTemplate/ prefix
                 return '/AngularTemplate/' + url.slice(0, -7);
             }
@@ -103,6 +103,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/PaneSelectAction/PaneSelectAction.js',
         'Scripts/app/directives/DesignerHeader/DesignerHeader.js',
         'Scripts/app/directives/SubplanHeader.js',
+        'Scripts/app/directives/ActivityHeader.js',
         'Scripts/app/services/SubordinateSubplanService.js',
         'Scripts/app/directives/Controls/FilePicker.js',
         'Scripts/app/directives/Controls/RadioButtonGroup.js',
@@ -303,7 +304,7 @@ gulp.task('cdnizer-js', ['bower'], function () {
             },
             {
                 file: '~/bower_components/angular-animate/angular-animate.js',
-                package: 'angular',                
+                package: 'angular',
                 cdn: '//ajax.googleapis.com/ajax/libs/angularjs/${ version }/angular-animate.min.js'
             },
             {
@@ -404,14 +405,14 @@ gulp.task('cdnizer-js', ['bower'], function () {
         .pipe(gulp.dest('./Views/Shared/CDN'));
 });
 
-function getProtractorBinary(binaryName){
-    var winExt = /^win/.test(process.platform)? '.cmd' : '';
+function getProtractorBinary(binaryName) {
+    var winExt = /^win/.test(process.platform) ? '.cmd' : '';
     var pkgPath = require.resolve('protractor');
     var protractorDir = path.resolve(path.join(path.dirname(pkgPath), '..', '..', '.bin'));
-    return path.join(protractorDir, '/'+binaryName+winExt);
+    return path.join(protractorDir, '/' + binaryName + winExt);
 }
 
-gulp.task('update-web-driver', function(done){
+gulp.task('update-web-driver', function (done) {
     return child_process.spawnSync(getProtractorBinary('webdriver-manager'), ['update'], {
         stdio: 'inherit'
     });
@@ -419,7 +420,7 @@ gulp.task('update-web-driver', function(done){
 
 gulp.task('protractor-run', function (done) {
     gutil.log('Using base url: ' + argv.baseUrl);
-    var result = child_process.spawnSync(getProtractorBinary('protractor'),  ['--baseUrl='+argv.baseUrl, 'Scripts\\tests\\e2e\\conf.js'] ,{
+    var result = child_process.spawnSync(getProtractorBinary('protractor'), ['--baseUrl=' + argv.baseUrl, 'Scripts\\tests\\e2e\\conf.js'], {
         stdio: 'inherit'
     });
 
