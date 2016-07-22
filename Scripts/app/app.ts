@@ -332,7 +332,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
         {
             url: "/plans",
             templateUrl: "/AngularTemplate/PlanList",
-            data: { pageTitle: 'Plans', pageSubTitle: 'This page displays all Plans' }
+            data: { pageTitle: 'Plans', pageSubTitle: 'This page displays all Plans'}
         })
 
         .state('plan',
