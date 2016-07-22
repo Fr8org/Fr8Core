@@ -95,7 +95,7 @@ namespace terminalFr8Core.Activities
             if (crateDescriptionToProcess.ManifestId == (int)MT.StandardTableData)
             {
                 var table = crateToProcess.Get<StandardTableDataCM>();
-                var rowOfData = table.DataRows.ElementAt(table.HasDataRows ? loopData.Index + 1 : loopData.Index);
+                var rowOfData = table.DataRows.ElementAt(loopData.Index);
                 var extractedCrate = new StandardTableDataCM(false, new List<TableRowDTO>() { rowOfData });
                 Payload.Add(Crate.FromContent(label, extractedCrate, AvailabilityType.RunTime));
             }
