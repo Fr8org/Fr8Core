@@ -56,45 +56,24 @@ app.directive('blockIf', function () {
     };
 });
 
-app.directive('fr8Click', ['$parse', '$timeout',($parse: ng.IParseService, $timeout: ng.ITimeoutService) => {
+
+
+app.directive('fr8Click', ['$parse', '$timeout',($parse: ng.IParseService) => {
     return {
         restrict: 'A',
-        require: '^paneConfigureAction',
+        require: '^configurationControl',
         compile: ($element: ng.IAugmentedJQuery, attr) => {
             var fn = $parse(attr['fr8Click']);
-            return (scope, element, attr, pca) => {
+            return (scope, element: ng.IAugmentedJQuery, attr, cc: dockyard.directives.paneConfigureAction.IConfigurationControlController) => {
                 element.on('click', (event) => {
-
-                    var simulateClick = () => {
-                        var x = event.clientX;
-                        var y = event.clientY;
-                        var ev = document.createEvent("MouseEvent");
-                        var el = document.elementFromPoint(x, y);
-                        ev.initMouseEvent(
-                            "click",
-                            true /* bubble */, true /* cancelable */,
-                            window, null,
-                            x, y, 0, 0, /* coordinates */
-                            false, false, false, false, /* modifier keys */
-                            0 /*left*/, null
-                        );
-                        el.dispatchEvent(ev);
-                    };
-                    var callCallback = () => {
+                    if (cc.isThereOnGoingConfigRequest()) {
+                        cc.queueClick(element);
+                    } else {
+                        //lets call callback function immediately
                         scope.$apply(() => {
                             fn(scope, { $event: event });
                         });
-                    };
-                    var checkConfigStatus = () => {
-                        
-                        if (pca.isThereOnGoingConfigRequest()) {
-                            //we need to wait for this to end
-                            pca.notifyOnConfigureEnd(simulateClick);
-                        } else {
-                            callCallback();
-                        }
-                    };
-                    checkConfigStatus();
+                    }
                 });
             };
         }
