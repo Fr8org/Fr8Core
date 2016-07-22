@@ -106,11 +106,13 @@ namespace terminalDocuSign.Activities
 
         public override Task Initialize()
         {
-            var configurationCrate = PackControls(new ActivityUi());
-            FillFolderSource(configurationCrate, "Folder");
-            FillStatusSource(configurationCrate, "Status");
             Storage.Clear();
-            Storage.Add(configurationCrate);
+
+            AddControls(new ActivityUi().Controls);
+
+            FillFolderSource("Folder");
+            FillStatusSource("Status");
+            
             Storage.Add(GetAvailableRunTimeTableCrate(RunTimeCrateLabel));
             return Task.FromResult(0);
         }
@@ -135,10 +137,9 @@ namespace terminalDocuSign.Activities
             return availableRunTimeCrates;
         }
 
-        private void FillFolderSource(Crate configurationCrate, string controlName)
+        private void FillFolderSource(string controlName)
         {
-            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
-            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            var control = ConfigurationControls.FindByNameNested<DropDownList>(controlName);
             if (control != null)
             {
                 var conf = DocuSignManager.SetUp(AuthorizationToken);
@@ -148,10 +149,9 @@ namespace terminalDocuSign.Activities
             }
         }
 
-        private void FillStatusSource(Crate configurationCrate, string controlName)
+        private void FillStatusSource(string controlName)
         {
-            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
-            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            var control = ConfigurationControls.FindByNameNested<DropDownList>(controlName);
             if (control != null)
             {
                 control.ListItems = DocuSignQuery.Statuses

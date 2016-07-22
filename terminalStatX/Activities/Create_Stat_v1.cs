@@ -30,6 +30,7 @@ namespace terminalStatX.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("28ea95d8-7d57-4be3-a2c5-bf6f1c5f4386"),
             Name = "Create_Stat",
             Label = "Create Stat",
             Version = "1",
@@ -55,8 +56,6 @@ namespace terminalStatX.Activities
 
         public class ActivityUi : StandardConfigurationControlsCM
         {
-            public DropDownList StatTypesList { get; set; }
-
             public RadioButtonOption UseNewStatXGroupOption { get; set; }
 
             public TextBox NewStatXGroupName { get; set; }
@@ -67,6 +66,8 @@ namespace terminalStatX.Activities
 
             public RadioButtonGroup StatXGroupsSelectionGroup { get; set; }
 
+            public DropDownList StatTypesList { get; set; }
+
             [DynamicControls]
             public List<TextSource> AvailableStatProperties { get; set; }
 
@@ -75,13 +76,6 @@ namespace terminalStatX.Activities
 
             public ActivityUi()
             {
-                StatTypesList = new DropDownList
-                {
-                    Label = "Choose a Stat Type",
-                    Name = nameof(StatTypesList),
-                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
-                };
-
                 NewStatXGroupName = new TextBox
                 {
                     Value = "New StatX Group",
@@ -96,35 +90,43 @@ namespace terminalStatX.Activities
 
                 UseNewStatXGroupOption = new RadioButtonOption
                 {
-                    Selected = true,
+                    Selected = false,
                     Name = nameof(UseNewStatXGroupOption),
-                    Value = "Create Stat in a new Group",
+                    Value = "in a new Group",
                     Controls = new List<ControlDefinitionDTO> { NewStatXGroupName }
                 };
 
                 UseExistingStatXGroupOption = new RadioButtonOption()
                 {
-                    Selected = false,
+                    Selected = true,
                     Name = nameof(UseExistingStatXGroupOption),
-                    Value = "Create Stat in an existing Group",
+                    Value = "in an existing Group",
                     Controls = new List<ControlDefinitionDTO> { ExistingStatGroupList }
                 };
 
                 StatXGroupsSelectionGroup = new RadioButtonGroup
                 {
+                    Label = "Create Stat",
                     GroupName = nameof(StatXGroupsSelectionGroup),
                     Name = nameof(StatXGroupsSelectionGroup),
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig },
                     Radios = new List<RadioButtonOption>
                             {
                                 UseNewStatXGroupOption,
-                                UseExistingStatXGroupOption
+                                UseExistingStatXGroupOption,
                             }
                 };
 
+                StatTypesList = new DropDownList
+                {
+                    Label = "Choose a Stat Type",
+                    Name = nameof(StatTypesList),
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
+                };
+
+                Controls = new List<ControlDefinitionDTO>() { StatXGroupsSelectionGroup, StatTypesList};
                 AvailableStatProperties = new List<TextSource>();
                 AvailableStatItemsList = new List<FieldList>();
-                Controls = new List<ControlDefinitionDTO>() { StatTypesList, StatXGroupsSelectionGroup };
             }
 
             public void ClearDynamicFields()
@@ -155,14 +157,7 @@ namespace terminalStatX.Activities
                             t.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IList<>)))
                         {
                             //render corresponding FieldList control for properties that are collections
-                            var fieldlistPane = new FieldList
-                            {
-                                Label = "Add Multiple Stat Items",
-                                Name = "Selected_Fields",
-                                Required = true,
-                                Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
-                            };
-                            ActivityUI.AvailableStatItemsList.Add( fieldlistPane);
+                            ActivityUI.AvailableStatItemsList.Add(CreateFieldListBasedOnStatType());
                         }
                         else
                         {
@@ -205,6 +200,51 @@ namespace terminalStatX.Activities
             await _statXIntegration.CreateStat(StatXUtilities.GetStatXAuthToken(AuthorizationToken), groupId, statDTO);
             
             Success();
+        }
+
+        private FieldList CreateFieldListBasedOnStatType()
+        {
+            switch (ActivityUI.StatTypesList.Value)
+            {
+                case StatTypes.CheckList:
+                    return new FieldList
+                    {
+                        Label = "Add Checkboxes",
+                        Name = "Selected_Fields",
+                        Required = true,
+                        FieldLabel = "Label",
+                        ValueLabel = "Value",
+                        Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
+                    };
+                case StatTypes.HorizontalBars:
+                    return new FieldList
+                    {
+                        Label = "Add Horizontal Bar Items",
+                        Name = "Selected_Fields",
+                        FieldLabel = "Label",
+                        ValueLabel = "Value",
+                        Required = true,
+                        Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
+                    };
+                case StatTypes.PickList:
+                    return new FieldList
+                    {
+                        Label = "Add Picklist Items",
+                        Name = "Selected_Fields",
+                        FieldLabel = "Label",
+                        ValueLabel = "Color",
+                        Required = true,
+                        Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
+                    };
+                default:
+                    return new FieldList
+                    {
+                        Label = "Add Multiple Stat Items",
+                        Name = "Selected_Fields",
+                        Required = true,
+                        Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
+                    };
+            }
         }
     }
 }

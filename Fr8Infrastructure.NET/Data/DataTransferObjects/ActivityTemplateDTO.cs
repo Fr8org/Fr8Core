@@ -8,6 +8,27 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
     public class ActivityTemplateDTO
     {
+        private sealed class IdEqualityComparer : IEqualityComparer<ActivityTemplateDTO>
+        {
+            public bool Equals(ActivityTemplateDTO x, ActivityTemplateDTO y)
+            {
+                if (ReferenceEquals(x, y)) return true;
+                if (ReferenceEquals(x, null)) return false;
+                if (ReferenceEquals(y, null)) return false;
+                if (x.GetType() != y.GetType()) return false;
+                return x.Id.Equals(y.Id);
+            }
+
+            public int GetHashCode(ActivityTemplateDTO obj)
+            {
+                return obj.Id.GetHashCode();
+            }
+        }
+
+        private static readonly IEqualityComparer<ActivityTemplateDTO> IdComparerInstance = new IdEqualityComparer();
+
+        public static IEqualityComparer<ActivityTemplateDTO> IdComparer => IdComparerInstance;
+
         public ActivityTemplateDTO()
         {
             Type = ActivityType.Standard;

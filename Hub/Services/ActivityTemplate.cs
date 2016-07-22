@@ -351,13 +351,14 @@ namespace Hub.Services
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    // Create new WebService entity or update reference to existing WebService entity.
                     if (activityTemplateDo.WebService != null)
                     {
                         var existingWebService = uow.WebServiceRepository.FindOne(x => x.Name == activityTemplateDo.WebService.Name);
 
+                        // Update existing WebService entity.
                         if (existingWebService != null)
                         {
+                            existingWebService.IconPath = activityTemplateDo.WebService.IconPath;
                             activityTemplateDo.WebServiceId = existingWebService.Id;
                             activityTemplateDo.WebService = existingWebService;
                         }
@@ -378,10 +379,11 @@ namespace Hub.Services
                     // We're creating new ActivityTemplate.
                     if (activity == null)
                     {
-                        if (activityTemplateDo.Id == null)
+                        if (activityTemplateDo.Id == Guid.Empty)
                         {
                             throw new ApplicationException("ActivityTemplate Id not specified");
                         }
+
                         activity = activityTemplateDo;
                         activityTemplateDo.Categories = null;
 
@@ -395,8 +397,8 @@ namespace Hub.Services
                     {
                         if (activity.Id != activityTemplateDo.Id)
                         {
-                            throw new InvalidOperationException("Existent activity with same Name and Version that we passed "
-                            + "has different Id. Changing of activity template Id is not possible. If you need to have another Id please update the version number or create new activity template");
+                            throw new InvalidOperationException($"Existent activity with same Name ({activity.Name}) and Version ({activity.Version}) that we passed "
+                            + $"has different Id. (ExistentId = {activity.Id}. Passed Id = {activityTemplateDo.Id}. Changing of activity template Id is not possible. If you need to have another Id please update the version number or create new activity template");
                         }
                         // This is for updating activity template
                         CopyPropertiesHelper.CopyProperties(activityTemplateDo, activity, false, x => x.Name != "Id");

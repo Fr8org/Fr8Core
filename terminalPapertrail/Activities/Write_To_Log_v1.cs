@@ -55,9 +55,7 @@ namespace terminalPapertrail.Actions
                 Required = true
             };
 
-            var curControlsCrate = PackControlsCrate(targetUrlTextBlock);
-
-            Storage.Add(curControlsCrate);
+            AddControls(targetUrlTextBlock);
         }
 
         public override async Task Run()

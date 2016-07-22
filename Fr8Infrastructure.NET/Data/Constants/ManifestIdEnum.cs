@@ -138,6 +138,12 @@ namespace Fr8.Infrastructure.Data.Constants
 
         [Display(Name = "Instagram User Event")]
         InstagramUserEvent = 46,
+
+        [Display(Name = "Asana task")]
+        AsanaTask = 47,
+
+        [Display(Name = "Asana tasks list")]
+        AsanaTaskList = 48,
     }
 }
 

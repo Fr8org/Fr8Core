@@ -170,10 +170,9 @@ namespace terminalStatX.Activities
                 }
                 SelectedStat= ActivityUI.ExistingGroupStats.Value;
 
-                Storage.Remove<EventSubscriptionCM>();
-                Storage.Add(CrateManager.CreateStandardEventSubscriptionsCrate(
-                    "Standard Event Subscriptions",
-                    "StatX", "StatXValueChange_" + SelectedStat.Substring(0, 18)));
+                EventSubscriptions.Subscriptions?.Clear();
+                EventSubscriptions.Manufacturer = "StatX";
+                EventSubscriptions.Add("StatXValueChange_" + SelectedStat.Substring(0, 18));
             }
             else
             {
@@ -214,7 +213,14 @@ namespace terminalStatX.Activities
 
             if (stat.StatValueItems.Any())
             {
-                fields.AddRange(stat.StatValueItems.Select(item => new FieldDTO(item.Name, AvailabilityType.RunTime)));
+                if (stat.VisualType == StatTypes.PickList)
+                {
+                    fields.Add(new FieldDTO("Current Index", AvailabilityType.RunTime));
+                }
+                else
+                {
+                    fields.AddRange(stat.StatValueItems.Select(item => new FieldDTO(item.Name, AvailabilityType.RunTime)));
+                }
             }
             else
             {
@@ -230,7 +236,16 @@ namespace terminalStatX.Activities
 
             if (stat.StatValueItems.Any())
             {
-                fields.AddRange(stat.StatValueItems.Select(item => new KeyValueDTO(item.Name, item.Value)));
+                if (stat.VisualType == StatTypes.PickList)
+                {
+                    fields.Add(new KeyValueDTO("Current Index", stat.CurrentIndex.ToString()));
+                }
+                else
+                {
+                    fields.AddRange(stat.VisualType == StatTypes.CheckList
+                        ? stat.StatValueItems.Select(item => new KeyValueDTO(item.Name, item.Checked.ToString()))
+                        : stat.StatValueItems.Select(item => new KeyValueDTO(item.Name, item.Value)));
+                }
             }
             else
             {

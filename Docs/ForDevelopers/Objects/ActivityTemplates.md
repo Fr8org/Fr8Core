@@ -5,10 +5,20 @@
 ActivityTemplates are provided by Terminals in response to requests by Hubs. They instruct the Hub as to each Activity that a Terminal is capable of processing.
 ```javascript
  "template": {
-        "id": "12345678-90ab-cdef-1234-567890abcdef"
-	"name": "ConnectToSql",
+        "id": "12345678-90ab-cdef-1234-567890abcdef",
+        "name": "ConnectToSql",
         "label": "Connect To Sql",
         "version": "1",
+        "categories": [
+            {
+                "iconPath": "/Content/icons/forward-icon-64x64.png", 
+                "name": "Forward"
+            }, 
+            {
+                "iconPath": "/Content/icons/web_services/twitter-icon-64x64.png", 
+                "name": "Twitter"
+            }
+        ],
         "webService": {
             "id": 1,
             "name": "Built-In Services",
@@ -45,9 +55,24 @@ Pretty printed name of this activity template. This part is used as a header on 
 
 Activity template version
 
+##### categories
+
+Categories field specifies a list of Activity Categories to which current Activity belongs to.
+
+By default, following four categories are available:
+Category |	Description | JSON sample	
+--- | --- | ---
+Monitors |	Activities that wait for an external event notification to arrive |	{ "iconPath": "/Content/icons/monitor-icon-64x64.png", "name": "Monitor" }
+Receivers |	Also known as “Getters”. Activities that attempt to load or acquire a piece of data from an external source | { "iconPath": "/Content/icons/get-icon-64x64.png", "name": "Get" } 	
+Processors |	Activities that focus on processing and transforming Container data at run-time. They are not forbidden from connecting to external sources, but they’re encouraged to focus on carrying out a single transform of the payload data | { "iconPath": "/Content/icons/process-icon-64x64.png", "name": "Process" }
+Senders |	Activities that push or send data to an external service or another Fr8 Container/Plan | { "iconPath": "/Content/icons/forward-icon-64x64.png", "name": "Forward" } 
+
+However, it is possible to specify more than one Category for single Activity.
+
 ##### webService
 
 WebService shows us which external service does this activity belongs to.
+Please note, this attribute might get replaced with "categories" attribute in nearest future.
 
 ##### terminal
 
@@ -69,7 +94,7 @@ This property is used to display activity on PlanBuilder. It defines minimun wid
 
 This property shows PlanBuilder if this activity needs to be authenticated to the 3rd party system before using it.
 
-##### Category
+##### category
 
 There are four defined categories for Activities. These are used to divide Activities into logical groupings that make sense to users. The four categories are:
 
@@ -78,8 +103,11 @@ Category |	Description
 Monitors |	Activities that wait for an external event notification to arrive	
 Receivers |	Also known as “Getters”. Activities that attempt to load or acquire a piece of data from an external source	
 Processors |	Activities that focus on processing and transforming Container data at run-time. They are not forbidden from connecting to external sources, but they’re encouraged to focus on carrying out a single transform of the payload data	
-Senders |	Activities that push or send data to an external service or another Fr8 Container/Plan	
-## Tags
+Senders |	Activities that push or send data to an external service or another Fr8 Container/Plan
+
+Please note, this attribute might get replaced with "categories" attribute in nearest future.
+
+##### tags
 
 the Tags element is processed as a comma-delimited string. The following values are used by The Fr8 standard:
 

@@ -194,7 +194,7 @@ namespace HubWeb.Controllers
         [SwaggerResponseRemoveDefaults]
         public IHttpActionResult RenewToken([FromBody]AuthorizationTokenDTO token)
         {
-            _authorization.RenewToken(Guid.Parse(token.Id), token.ExternalAccountId, token.Token, token.ExpiresAt);
+            _authorization.RenewToken(token);
             return Ok();
         }
 

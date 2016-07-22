@@ -47,7 +47,7 @@ namespace terminalAzure.Activities
         public override Task Initialize()
         {
             Storage.Clear();
-            Storage.Add(CreateControlsCrate());
+            CreateControls();
             return Task.FromResult(0);
         }
 
@@ -62,7 +62,7 @@ namespace terminalAzure.Activities
                 var contentsList = GetFieldMappings();
                 Storage.RemoveByLabel("Sql Table Columns");
                 //this needs to be updated to hold Crates instead of FieldDefinitionDTO
-                Storage.Add(CrateManager.CreateDesignTimeFieldsCrate("Sql Table Columns", contentsList.Select(col => new KeyValueDTO() { Key = col, Value = col }).ToArray()));
+                Storage.Add("Sql Table Columns", new KeyValueListCM(contentsList.Select(col => new KeyValueDTO { Key = col, Value = col })));
             }
             catch
             {
@@ -72,29 +72,24 @@ namespace terminalAzure.Activities
             return Task.FromResult(0);
         }
 
-        private Crate CreateControlsCrate()
+        private void CreateControls()
         {
-            var controls = new ControlDefinitionDTO[]{
-                new TextBox
+            AddControls(new TextBox
+            {
+                Label = "SQL Connection String",
+                Name = "connection_string",
+                Required = true
+            },
+            new Button
+            {
+                Label = "Continue",
+                Name = "Continue",
+                Events = new List<ControlEvent>()
                 {
-                    Label = "SQL Connection String",
-                    Name = "connection_string",
-                    Required = true
-                },
-                new Button
-                {
-                    Label = "Continue",
-                    Name = "Continue",
-                    Events = new List<ControlEvent>()
-                    {
-                        new ControlEvent("onClick", "requestConfig")
-                    }
+                    new ControlEvent("onClick", "requestConfig")
                 }
-            };
-            return PackControlsCrate(controls);
+            });
         }
-
-        
 
         //===============================================================================================
         //Specialized Methods (Only found in this Action class)

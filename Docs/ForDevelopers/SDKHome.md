@@ -1,9 +1,9 @@
 ## Current SDK's
 
-[.NET](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/SDK/.NET/Home.md)
+[.NET](/Docs/ForDevelopers/SDK/.NET/Home.md)
 
-[Ruby](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/SDK/Ruby/Home.md)
+[Ruby](https://github.com/Fr8org/Fr8.Ruby/blob/master/README.md)
 
-Java
+[Python] (https://github.com/Fr8org/Fr8.Python/blob/master/readme.md)
 
-Python
+[Java](https://github.com/Fr8org/Fr8.Java/blob/master/README.md)

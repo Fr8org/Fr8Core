@@ -11,6 +11,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using System;
+using ServiceStack.Text;
 
 namespace terminalSlack.Actions
 {
@@ -74,8 +75,6 @@ namespace terminalSlack.Actions
 
         public const string ResultPayloadCrateLabel = "Slack Message";
 
-        public const string EventSubscriptionsCrateLabel = "Standard Event Subscriptions";
-
         private readonly ISlackIntegration _slackIntegration;
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
@@ -103,14 +102,7 @@ namespace terminalSlack.Actions
         {
             _slackIntegration = slackIntegration;
         }
-        
-        private Crate CreateEventSubscriptionCrate()
-        {
-            return CrateManager.CreateStandardEventSubscriptionsCrate(EventSubscriptionsCrateLabel, 
-                                                                      "Slack", 
-                                                                      new string[] { "Slack Outgoing Message" });
-        }
-
+      
         public override Task Run()
         {
             var incomingMessageContents = ExtractIncomingMessageContentFromPayload();
@@ -152,7 +144,10 @@ namespace terminalSlack.Actions
                 .OrderBy(x => x.Key)
                 .Select(x => new ListItem { Key = $"#{x.Key}", Value = x.Value })
                 .ToList();
-            Storage.Add(CreateEventSubscriptionCrate());
+
+            EventSubscriptions.Manufacturer = "Slack";
+            EventSubscriptions.Add("Slack Outgoing Message");
+
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel)
                  .AddField("token")
                 .AddField("team_id")

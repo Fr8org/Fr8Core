@@ -164,7 +164,7 @@ namespace terminalFr8Core.Activities
                 });
             }
 
-        private async Task<Crate> CreateControlsCrate()
+        private void CreateControls()
         {
             var crateChooser = UiBuilder.CreateCrateChooser("TableChooser", "Select Upstream Data", true, true);
             //this cell's list items will be filled on followup configuration
@@ -205,7 +205,7 @@ namespace terminalFr8Core.Activities
                 Events = new List<ControlEvent> { ControlEvent.RequestConfig }
             };
 
-            return PackControlsCrate(crateChooser, controlList);
+            AddControls(crateChooser, controlList);
         }
 
         public Extract_Table_Field_v1(ICrateManager crateManager)
@@ -270,8 +270,7 @@ namespace terminalFr8Core.Activities
         public override async Task Initialize()
         {
             //build a controls crate to render the pane
-            var configurationControlsCrate = await CreateControlsCrate();
-            Storage.Add(configurationControlsCrate);
+            CreateControls();
         }
 
         public override async Task FollowUp()
@@ -305,9 +304,17 @@ namespace terminalFr8Core.Activities
                 .Where(c => !string.IsNullOrEmpty(c.Value) && !double.TryParse(c.Value, out temp));
 
             var tempChosenCellList = GetControl<ControlList>("extractor_list");
-            //TODO do this with a more efficient way
-            //all dropdowns should use same data
-            var listItems = tableFields.Where(c => c.Key.Equals(c.Value)).Select(c => new ListItem { Key = c.Key, Value = c.Value }).ToList();
+
+            List<ListItem> listItems;
+            if (table.FirstRowHeaders)
+            {
+                listItems = tableFields.Where(c => c.Key.Equals(c.Value)).Select(c => new ListItem { Key = c.Key, Value = c.Value }).ToList();
+            }
+            else
+            {
+                listItems = tableFields.Select(c => new ListItem { Key = c.Value, Value = c.Value }).ToList();
+            }
+
             foreach (var cGroup in tempChosenCellList.ControlGroups)
             {
                 var chosenCellDd = (DropDownList)cGroup.First();

@@ -93,7 +93,7 @@ namespace terminalBox.Actions
             }
             var downloadLink = service.GetFileLink(fileId).Result;
 
-            await _pushNotificationService.PushUserNotification(MyTemplate, "Success", "File download URL", "File was upload to Box. You can download it using this url: " + downloadLink);
+            await _pushNotificationService.PushUserNotification(MyTemplate, "Success", "File Download URL Generated", "File was upload to Box. You can download it using this url: " + downloadLink);
         }
 
         /// <summary>

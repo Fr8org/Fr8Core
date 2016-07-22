@@ -98,7 +98,7 @@ namespace terminalYammer.Actions
             var groups = await _yammer.GetGroupsList(oauthToken);
             var crateAvailableGroups = CreateAvailableGroupsCrate(groups);
             Storage.Clear();
-            Storage.Add(PackControls(new ActivityUi()));
+            AddControls(new ActivityUi().Controls);
             Storage.Add(crateAvailableGroups);
         }
 
@@ -125,13 +125,7 @@ namespace terminalYammer.Actions
 
         private Crate CreateAvailableGroupsCrate(IEnumerable<KeyValueDTO> groups)
         {
-            var crate =
-                CrateManager.CreateDesignTimeFieldsCrate(
-                    "Available Groups",
-                    groups.ToArray()
-                );
-
-            return crate;
+            return Crate.FromContent("Available Groups", new KeyValueListCM(groups));
         }
 
         private  GroupMessage GetGroupMessageFields(StandardConfigurationControlsCM ui, ICrateStorage payload)

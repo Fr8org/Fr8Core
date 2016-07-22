@@ -299,9 +299,6 @@ namespace Hub.Services
                     case ActivityResponse.ExecuteClientActivity:
                         break;
 
-                    case ActivityResponse.ShowDocumentation:
-                        break;
-
                     case ActivityResponse.LaunchAdditionalPlan:
                         LoadAndRunPlan(ExtractGuidParameter(activityResponse));
                         break;

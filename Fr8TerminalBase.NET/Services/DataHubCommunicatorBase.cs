@@ -223,7 +223,7 @@ namespace Fr8.TerminalBase.Services
             throw new NotImplementedException();
         }
 
-        public Task RunPlan(Guid planId, List<CrateDTO> payload)
+        public Task RunPlan(Guid planId, IEnumerable<Crate> payload)
         {
             throw new NotImplementedException();
         }

@@ -76,8 +76,6 @@ namespace terminalSalesforce.Actions
 
         public const string PayloadDataCrateLabel = "Payload from Salesforce Get Data";
 
-        public const string CountObjectsCrateLabel = "Count of Objects from Salesforce Get Data";
-
         public const string CountObjectsFieldLabel = "Count of Objects";
 
         private readonly ISalesforceManager _salesforceManager;
@@ -95,7 +93,6 @@ namespace terminalSalesforce.Actions
                 .Select(x => new ListItem() { Key = x.Name, Value = x.Name })
                 .ToList();
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel, true);
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(CountObjectsCrateLabel, true);
 
             return Task.FromResult(true);
         }
@@ -127,9 +124,7 @@ namespace terminalSalesforce.Actions
             this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
             //Publish information for downstream activities
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel, true)
-                          .AddFields(selectedObjectProperties);
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(CountObjectsCrateLabel, true)
-                          .AddField(CountObjectsFieldLabel);
+                          .AddFields(selectedObjectProperties).AddField(CountObjectsFieldLabel);
         }
 
         public override async Task Run()
@@ -172,15 +167,6 @@ namespace terminalSalesforce.Actions
                         AvailabilityType.RunTime
                     )
                 );
-
-            Payload.Add(
-                Crate<StandardPayloadDataCM>
-                    .FromContent(
-                        CountObjectsCrateLabel,
-                        new StandardPayloadDataCM(new KeyValueDTO(CountObjectsFieldLabel, resultObjects.DataRows.Count().ToString())),
-                        AvailabilityType.RunTime
-                    )
-            );
         }
     }
 }

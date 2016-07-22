@@ -37,7 +37,7 @@ namespace terminalFr8Core.Actions
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        private Crate CreateControlsCrate()
+        private void CreateControls()
         {
             var fileSelectionDropdown = new DropDownList
             {
@@ -46,14 +46,14 @@ namespace terminalFr8Core.Actions
                 Source = null
             };
 
-            return PackControlsCrate(fileSelectionDropdown);
+            AddControls(fileSelectionDropdown);
         }
 
         #region Fill Source
-        private async Task FillFileSelectorSource(Crate configurationCrate, string controlName)
+        private async Task FillFileSelectorSource(string controlName)
         {
-            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
-            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            var control = ConfigurationControls.FindByNameNested<DropDownList>(controlName);
+
             if (control != null)
             {
                 control.ListItems = await GetCurrentUsersFiles();
@@ -109,10 +109,8 @@ namespace terminalFr8Core.Actions
         public override async Task Initialize()
         {
             //build a controls crate to render the pane
-            var configurationCrate = CreateControlsCrate();
-            await FillFileSelectorSource(configurationCrate, "FileSelector");
-            configurationCrate.Availability = AvailabilityType.Always;
-            Storage.Add(configurationCrate);
+            CreateControls();
+            await FillFileSelectorSource("FileSelector");
         }
 
         public override Task FollowUp()

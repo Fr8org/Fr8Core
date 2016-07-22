@@ -139,7 +139,8 @@ namespace terminalDocuSign.Activities
         public override async Task Initialize()
         {
             Storage.Clear();
-            Storage.Add(PackControls(new ActivityUi()));
+            
+            AddControls(new ActivityUi().Controls);
             Storage.Add(PackAvailableTemplates());
             Storage.Add(await PackAvailableHandlers());
             Storage.Add(PackAvailableRecipientEvents());
@@ -388,9 +389,9 @@ namespace terminalDocuSign.Activities
         {
             var conf = DocuSignManager.SetUp(AuthorizationToken);
             var fields = DocuSignManager.GetTemplatesList(conf);
-            var crate = CrateManager.CreateDesignTimeFieldsCrate(
-                "AvailableTemplates",
-               fields.ToArray());
+
+            var crate = Crate.FromContent("AvailableTemplates", new KeyValueListCM(fields));
+
             return crate;
         }
 
@@ -398,24 +399,14 @@ namespace terminalDocuSign.Activities
         {
             var events = new[] { "Taken Delivery", "Signed" };
 
-            var availableRecipientEventsCrate =
-                CrateManager.CreateDesignTimeFieldsCrate(
-                    "AvailableRecipientEvents", events.Select(x => new KeyValueDTO(x, x)).ToArray()
-                );
-
-            return availableRecipientEventsCrate;
+            return Crate.FromContent("AvailableRecipientEvents", new KeyValueListCM(events.Select(x => new KeyValueDTO(x, x))));
         }
 
         private Crate PackAvailableRunTimeDataFields()
         {
             var events = new[] { "ActionBeingTracked", "DelayTime" };
 
-            var availableRecipientEventsCrate =
-                CrateManager.CreateDesignTimeFieldsCrate(
-                    "AvailableRunTimeDataFields", events.Select(x => new KeyValueDTO(x, x)).ToArray()
-                );
-
-            return availableRecipientEventsCrate;
+            return Crate.FromContent("AvailableRunTimeDataFields", new KeyValueListCM(events.Select(x => new KeyValueDTO(x, x))));
         }
 
         private async Task<Crate> PackAvailableHandlers()
@@ -423,13 +414,7 @@ namespace terminalDocuSign.Activities
             var templates = await HubCommunicator.GetActivityTemplates(true);
             var taggedTemplates = templates.Where(x => x.Tags != null && x.Tags.Contains("Notifier"));
 
-            var availableHandlersCrate =
-                CrateManager.CreateDesignTimeFieldsCrate(
-                    "AvailableHandlers",
-                    taggedTemplates.Select(x => new KeyValueDTO(x.Label, x.Id.ToString())).ToArray()
-                );
-
-            return availableHandlersCrate;
+            return Crate.FromContent("AvailableHandlers", new KeyValueListCM(taggedTemplates.Select(x => new KeyValueDTO(x.Label, x.Id.ToString()))));
         }
 
         protected override string ActivityUserFriendlyName => SolutionName;
