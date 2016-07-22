@@ -5,6 +5,7 @@
 </ul>
 
 <!-- MAIN CONTENT -->
+<!-- ng-controller="PlanBuilderController" is moved to app.ts to state called 'plan' -->
 <div class="margin-top-25" block-if="isBusy()" event-planbuilder>
     <div ng-if="editingMode == 'advanced'" class="col-md-12" style="border-bottom: 1px solid; margin-bottom: 10px;"></div>
     <div class="plan-loading-message" block-if="current.plan"></div>
