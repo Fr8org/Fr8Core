@@ -66,8 +66,9 @@ The *Endpoint* value specifies the URL where the Hub will attempt to contact you
     </appSettings>
 
  *DefaultHubURL* is the Hub url that the Terminal will attempt to contact. <br/>
- *TerminalId* is a GUID.<br/>
+ *TerminalId* is a GUID for identify this terminal (also in case of many Hubs registrations)<br/>
 
+All sensitive information like *ApiKey* and different *ClientSecret* should not be stored in public repositories, use external private settings package for this.  
 Once this step is complete, you essentially have a complete response to any /discover call arriving from a Hub.
 
 ## Step 4 - Define the ActivityTemplate
@@ -79,19 +80,21 @@ Activities are responsible for generating an ActivityTemplate that will be hande
      {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("7cd268c9-95b6-491d-bd92-388ea4b6ab09"),
             Name = "Get_Weather",
-            Label = "Get Weather",
-            Category = ,
+            Label = "Get Weather",            
             Version = "1",
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[] {
+                ActivityCategories.Receive,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
         private const string RunTimeCrateLabel = "Weather in the City";
         .....        
-*Category*  is deprecated. <br/>
-
 
 ## Step 5 - Specify the UI that the User Should See
 
@@ -249,4 +252,4 @@ You should see updates in the Activity Stream bar at right side of your screen a
  
 ![Fr8 plan result](./Images/9_tdg_SlackResult.PNG "Fr8 plan result")
 
-Continue to [Part 3](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/TerminalTutorial-Part3.md).
+Continue to [Part 3](./TerminalTutorial-Part3.md).
