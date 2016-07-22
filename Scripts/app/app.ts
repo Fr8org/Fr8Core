@@ -332,13 +332,12 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
         {
             url: "/plans",
             templateUrl: "/AngularTemplate/PlanList",
-            data: { pageTitle: 'Plans', pageSubTitle: 'This page displays all Plans' }
+            data: { pageTitle: 'Plans', pageSubTitle: 'This page displays all Plans'}
         })
 
         .state('plan',
         {
-            abstract: true,
-            url: "/plans/{id}/",
+            url: "/plans/{id}/builder?viewMode&view",
             views: {
                 'header@': {
                     templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
@@ -356,26 +355,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                         return "/AngularTemplate/MainContainer_AS";
                     },
                     controller: 'PlanBuilderController',
-                }
-            }
-        })
-
-        .state('plan.details',
-        {
-            url: "details",
-            views: {
-                '@plan': {
-                    templateUrl: "/AngularTemplate/PlanDetails"
-                }
-            },
-            data: { pageTitle: 'Plan Details', pageSubTitle: '' }
-        })
-
-        // Plan Builder framework
-        .state('plan.builder',
-        {
-            url: "builder?viewMode&view",
-            views: {
+                },
                 '@plan': {
                     templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
                         if ($stateParams['viewMode'] === 'kiosk') {
@@ -384,18 +364,28 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                         return "/AngularTemplate/PlanBuilder";
                     }
                 },
-                'header@': {
+                'footer@': {
                     templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
                         if ($stateParams['viewMode'] === 'kiosk') {
-                            return "/AngularTemplate/KioskModeOrganizationHeader";
+                            return "/AngularTemplate/Empty";
                         }
-                        return "/AngularTemplate/MiniHeader";
+                        return "/AngularTemplate/Footer";
                     }
                 }
-            },
-
-            data: { pageTitle: '' }
+            }
         })
+
+        .state('plan.details',
+        {
+            url: "/details",
+            views: {
+                '@plan': {
+                    templateUrl: "/AngularTemplate/PlanDetails"
+                }
+            },
+            data: { pageTitle: 'Plan Details', pageSubTitle: '' }
+        })
+
         .state('showIncidents',
         {
             url: "/showIncidents",
