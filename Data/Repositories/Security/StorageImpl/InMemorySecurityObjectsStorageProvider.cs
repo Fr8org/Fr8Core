@@ -101,6 +101,12 @@ namespace Data.Repositories.Security.StorageImpl
             }
         }
 
+        public void SetRecordBasedPermissionsForObject(string roleName, string dataObjectId, string dataObjectType,
+            Guid rolePermissionId, int? organizationId)
+        {
+            throw new NotImplementedException();
+        }
+
         public int UpdateRolePermission(RolePermission rolePermissions)
         {
             throw new NotImplementedException();

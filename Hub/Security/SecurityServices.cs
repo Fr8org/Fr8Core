@@ -119,6 +119,7 @@ namespace Hub.Security
             return identity;
         }
 
+        #region Permissions Related Methods
 
         /// <summary>
         /// For every new created object setup default security with permissions for Read Object, Edit Object, Delete Object 
@@ -153,6 +154,11 @@ namespace Hub.Security
             }
 
             _securityObjectStorageProvider.SetDefaultObjectSecurity(currentUserId, dataObjectId.ToString(), dataObjectType, Guid.Empty, organizationId);
+        }
+
+        public void SetRecordBasedSecurityForObject(string roleName, string dataObjectId, string dataObjectType)
+        {
+                
         }
 
         /// <summary>
@@ -389,5 +395,7 @@ namespace Hub.Security
 
             return false;
         }
+
+        #endregion
     }
 }

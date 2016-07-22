@@ -214,6 +214,37 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
+        public void SetDefaultObjectSecurity(string currentUserId, string dataObjectId, string dataObjectType, Guid rolePermissionId, int? organizationId = null)
+        {
+            using (var connection = OpenConnection(_sqlConnectionProvider))
+            {
+                using (var insertCommand = new SqlCommand())
+                {
+                    insertCommand.Connection = connection;
+
+                    insertCommand.Parameters.Clear();
+                    insertCommand.Parameters.AddWithValue("@objectId", dataObjectId);
+                    insertCommand.Parameters.AddWithValue("@rolePermissionId", rolePermissionId);
+                    insertCommand.Parameters.AddWithValue("@fr8AccountId", currentUserId);
+                    insertCommand.Parameters.AddWithValue("@organizationId", (organizationId.HasValue) ? (object)organizationId.Value : DBNull.Value);
+                    insertCommand.Parameters.AddWithValue("@type", dataObjectType);
+                    insertCommand.Parameters.AddWithValue("@propertyName", DBNull.Value);
+                    insertCommand.Parameters.AddWithValue("@createDate", DateTimeOffset.UtcNow);
+                    insertCommand.Parameters.AddWithValue("@lastUpdated", DateTimeOffset.UtcNow);
+
+                    var cmdText = InsertObjectRolePermissionCommand;
+
+                    insertCommand.CommandText = cmdText;
+                    var affectedRows = insertCommand.ExecuteNonQuery();
+
+                    if (affectedRows == 0)
+                    {
+                        throw new Exception("Problem with Inserting new ObjectRolePermission");
+                    }
+                }
+            }
+        }
+
         public int InsertObjectRolePermission(string currentUserId, string dataObjectId, Guid rolePermissionId, string dataObjectType, string propertyName = null)
         {
             using (var connection = OpenConnection(_sqlConnectionProvider))

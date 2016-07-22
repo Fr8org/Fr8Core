@@ -144,6 +144,33 @@ namespace Data.Repositories.Security.StorageImpl.Cache
             InvokeCacheUpdate(dataObjectId);
         }
 
+        public void SetRecordBasedPermissionsForObject(string currentUserId, string roleName, string dataObjectId, string dataObjectType,
+            Guid rolePermissionId, int? organizationId)
+        {
+            if (rolePermissionId == Guid.Empty)
+            {
+                var permissionSet = GetOrCreateDefaultSecurityPermissionSet(dataObjectType);
+
+                if (permissionSet == null)
+                {
+                    throw new NullReferenceException("System failed to find a permission set for default security.");
+                }
+
+                var rolePermission = GetRolePermission(roleName, permissionSet.Id);
+                if (rolePermission == null)
+                {
+                    InsertRolePermission(new RolePermission() { PermissionSet = permissionSet, Role = new RoleDO { RoleName = roleName } });
+                    rolePermission = GetRolePermission(Roles.OwnerOfCurrentObject, permissionSet.Id);
+                }
+                rolePermissionId = rolePermission.Id;
+            }
+
+            //dedicate one permission set for a dataType and OwnerOfCurrent   
+            _securityObjectStorageProvider.SetDefaultObjectSecurity(currentUserId, dataObjectId, dataObjectType, rolePermissionId, organizationId);
+
+            InvokeCacheUpdate(dataObjectId);
+        }
+        
         public RolePermission GetRolePermission(string roleName, Guid permissionSetId)
         {
             return _securityObjectStorageProvider.GetRolePermission(roleName, permissionSetId);

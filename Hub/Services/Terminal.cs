@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Utility;
 using Fr8.Infrastructure.Data.DataTransferObjects;
@@ -22,6 +23,7 @@ namespace Hub.Services
     /// </summary>
     public class Terminal : ITerminal
     {
+        private readonly ISecurityServices _securityServices;
         private readonly Dictionary<int, TerminalDO> _terminals = new Dictionary<int, TerminalDO>();
         private bool _isInitialized;
         private string _serverUrl;
@@ -32,8 +34,9 @@ namespace Hub.Services
             private set;
         }
 
-        public Terminal(IConfigRepository configRepository)
+        public Terminal(IConfigRepository configRepository, ISecurityServices securityServices)
         {
+            _securityServices = securityServices;
             IsATandTCacheDisabled = string.Equals(CloudConfigurationManager.GetSetting("DisableATandTCache"), "true", StringComparison.InvariantCultureIgnoreCase);
 
             var serverProtocol = configRepository.Get("ServerProtocol", String.Empty);
@@ -135,6 +138,8 @@ namespace Hub.Services
 
             lock (_terminals)
             {
+                var isRegisterTerminal = false;
+                TerminalDO terminal;
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     var existingTerminal = uow.TerminalRepository.FindOne(x => x.Name == terminalDo.Name);
@@ -143,6 +148,7 @@ namespace Hub.Services
                     {
                         terminalDo.Id = 0;
                         uow.TerminalRepository.Add(existingTerminal = terminalDo);
+                        isRegisterTerminal = true;
                     }
                     else
                     {
@@ -152,11 +158,17 @@ namespace Hub.Services
 
                     uow.SaveChanges();
 
-                    var terminal = Clone(existingTerminal);
+                    terminal = Clone(existingTerminal);
                     _terminals[existingTerminal.Id] = terminal;
-
-                    return terminal;
                 }
+
+                if (isRegisterTerminal)
+                {
+                    //create default permission settings for the new terminal visibility
+                    _securityServices.SetDefaultObjectSecurity(terminal.Id.ToString(), nameof(TerminalDO));
+                }
+
+                return terminal;
             }
         }
 
