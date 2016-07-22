@@ -314,6 +314,9 @@ namespace terminalFr8Core.Activities
                 var submitButton = collectionControls.FindByName<Button>("submit_button");
                 if (submitButton.Clicked)
                 {
+                    // Push toast message to front-end
+                    _pushNotificationService.PushUserNotification(MyTemplate, NotificationArea.Toast, "App Builder Submit Button", "Your information has been submitted.");
+
                     if (ActivityContext.ActivityPayload.RootPlanNodeId == null)
                     {
                         throw new Exception($"Activity with id \"{ActivityId}\" has no owner plan");
