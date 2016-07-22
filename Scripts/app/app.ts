@@ -386,23 +386,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             data: { pageTitle: 'Plan Details', pageSubTitle: '' }
         })
 
-        // Plan Builder framework
-        .state('plan.builder',
-        {
-            url: "",
-            views: {
-                '@plan': {
-                    templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
-                        if ($stateParams['viewMode'] === 'kiosk') {
-                            return "/AngularTemplate/PlanBuilder_SimpleKioskMode";
-                        }
-                        return "/AngularTemplate/PlanBuilder";
-                    }
-                },
-            },
-
-            data: { pageTitle: '' }
-        })
         .state('showIncidents',
         {
             url: "/showIncidents",
