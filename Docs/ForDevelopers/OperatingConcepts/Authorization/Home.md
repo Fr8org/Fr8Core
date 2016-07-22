@@ -1,10 +1,10 @@
 # Security
 
-[Return Home](/Docs/Home.md)  
+
 
 
 Operational Security
-====================
+------------------
 
 [Authorization and Authentication Overview](./AuthOverview.md)
 
@@ -15,5 +15,8 @@ Operational Security
 
 
 Administrative Security
-=======================
+------------------
 [Administrative Security Home](/Docs/SecurityHome.md)
+
+
+[Return Home](/Docs/Home.md)  
