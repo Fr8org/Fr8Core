@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories.Utilization;
+using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
@@ -70,12 +71,12 @@ namespace HubTests.Utilization
                 throw new NotImplementedException();
             }
 
-            public void Notify(string channelName, string eventName, object message)
+            public void Notify(string channelName, NotificationType notificationType, object message)
             {
                 Notifications.Add(message.ToString());
             }
 
-            public void NotifyUser(object message, string eventName, string userId)
+            public void NotifyUser(object message, NotificationType notificationType, string userId)
             {
                 Notifications.Add(message.ToString());
             }

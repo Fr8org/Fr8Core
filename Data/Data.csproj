@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -727,6 +727,22 @@
     <Compile Include="Migrations\201607041029473_ActivityCategory.Designer.cs">
       <DependentUpon>201607041029473_ActivityCategory.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201607151938218_UpdateActivityTemplateIds.cs" />
+    <Compile Include="Migrations\201607151938218_UpdateActivityTemplateIds.Designer.cs">
+      <DependentUpon>201607151938218_UpdateActivityTemplateIds.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607170250191_IsFr8OwnTerminal_Property.cs" />
+    <Compile Include="Migrations\201607170250191_IsFr8OwnTerminal_Property.Designer.cs">
+      <DependentUpon>201607170250191_IsFr8OwnTerminal_Property.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607181342049_AddPlanTemplatesReferenceToPageDefinitions.cs" />
+    <Compile Include="Migrations\201607181342049_AddPlanTemplatesReferenceToPageDefinitions.Designer.cs">
+      <DependentUpon>201607181342049_AddPlanTemplatesReferenceToPageDefinitions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607190941340_RemovedTerminalIdentifierFromTerminalTable.cs" />
+    <Compile Include="Migrations\201607190941340_RemovedTerminalIdentifierFromTerminalTable.Designer.cs">
+      <DependentUpon>201607190941340_RemovedTerminalIdentifierFromTerminalTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -846,7 +862,6 @@
     <Compile Include="States\ActivityTemplateState.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
     <Compile Include="States\DefaultProfiles.cs" />
-    <Compile Include="States\NotificationChannel.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
     <Compile Include="Entities\EnvelopeDO.cs" />
@@ -1004,47 +1019,6 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Config\HealthMonitor\Settings.config.src" />
-    <None Include="Config\HubWeb\Settings.config" />
-    <None Include="Config\PlanDirectory\Settings.config" />
-    <None Include="Config\PlanDirectory\Settings.Release.config" />
-    <None Include="Config\terminalAtlassian\Settings.config" />
-    <None Include="Config\terminalAzure\Settings.config" />
-    <None Include="Config\terminalBasecamp2\Settings.config" />
-    <None Include="Config\terminalBasecamp2\Settings.Demo.config" />
-    <None Include="Config\terminalBasecamp2\Settings.Dev.config" />
-    <None Include="Config\terminalBasecamp2\Settings.Release.config" />
-    <None Include="Config\terminalBox\Settings.config" />
-    <None Include="Config\terminalDocuSign\Settings.config" />
-    <None Include="Config\terminalDropbox\Settings.config" />
-    <None Include="Config\terminalFacebook\Settings.config" />
-    <None Include="Config\terminalFacebook\Settings.Demo.config" />
-    <None Include="Config\terminalFacebook\Settings.Dev.config" />
-    <None Include="Config\terminalFacebook\Settings.Release.config" />
-    <None Include="Config\terminalFr8Core\Settings.config" />
-    <None Include="Config\terminalGoogle\Settings.config" />
-    <None Include="Config\terminalInstagram\Settings.config" />
-    <None Include="Config\terminalPapertrail\Settings.config" />
-    <None Include="Config\terminalQuickBooks\Settings.config" />
-    <None Include="Config\terminalSalesforce\Settings.config" />
-    <None Include="Config\terminalSalesforce\Settings.Demo.config" />
-    <None Include="Config\terminalSalesforce\Settings.Dev.config" />
-    <None Include="Config\terminalSalesforce\Settings.Release.config" />
-    <None Include="Config\terminalSendGrid\Settings.config" />
-    <None Include="Config\terminalSlack\Settings.config" />
-    <None Include="Config\terminalSlack\Settings.Demo.config" />
-    <None Include="Config\terminalSlack\Settings.Dev.config" />
-    <None Include="Config\terminalSlack\Settings.Release.config" />
-    <None Include="Config\terminalStatX\Settings.config" />
-    <None Include="Config\terminalTelegram\Settings.config" />
-    <None Include="Config\terminalTelegram\Settings.Demo.config" />
-    <None Include="Config\terminalTelegram\Settings.Dev.config" />
-    <None Include="Config\terminalTelegram\Settings.Release.config" />
-    <None Include="Config\terminalTwilio\Settings.config" />
-    <None Include="Config\terminalYammer\Settings.config" />
-    <None Include="Config\terminalYammer\Settings.Demo.config" />
-    <None Include="Config\terminalYammer\Settings.Dev.config" />
-    <None Include="Config\terminalYammer\Settings.Release.config" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -1386,6 +1360,18 @@
     <EmbeddedResource Include="Migrations\201607041029473_ActivityCategory.resx">
       <DependentUpon>201607041029473_ActivityCategory.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607151938218_UpdateActivityTemplateIds.resx">
+      <DependentUpon>201607151938218_UpdateActivityTemplateIds.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607170250191_IsFr8OwnTerminal_Property.resx">
+      <DependentUpon>201607170250191_IsFr8OwnTerminal_Property.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607181342049_AddPlanTemplatesReferenceToPageDefinitions.resx">
+      <DependentUpon>201607181342049_AddPlanTemplatesReferenceToPageDefinitions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607190941340_RemovedTerminalIdentifierFromTerminalTable.resx">
+      <DependentUpon>201607190941340_RemovedTerminalIdentifierFromTerminalTable.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj">
@@ -1405,6 +1391,8 @@
   <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
     <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
     <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
+  </Target>
+  <Target Name="BeforeBuild">
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

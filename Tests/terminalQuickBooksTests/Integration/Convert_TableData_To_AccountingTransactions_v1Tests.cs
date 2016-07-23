@@ -71,7 +71,7 @@ namespace terminalQuickBooksTests.Integration
                 dataDTO.ActivityDTO.AuthToken = HealthMonitor_FixtureData.QuickBooks_AuthTokenDTO();
             }
             var payloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
-            AssertControls(Crate.GetByManifest<StandardAccountingTransactionCM>(payloadDTO));
+            AssertControls(Crate.GetStorage(payloadDTO).FirstCrateContentOrDefault<StandardAccountingTransactionCM>());
         }
 
         private void AssertControls(StandardAccountingTransactionCM transactionCrate)

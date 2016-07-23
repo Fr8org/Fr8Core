@@ -142,7 +142,7 @@ module dockyard.controllers {
 
                     result.$promise
                         .then(() => {
-                            $state.go('planBuilder', { id: result.plan.id });
+                            $state.go('plan', { id: result.plan.id });
                             //window.location.href = 'plans/' + result.plan.id + '/builder';
                         });
 
@@ -162,20 +162,15 @@ module dockyard.controllers {
                 if (!!newValue && !!oldValue) {
                     this.getActivePlans();
                 }
-            });
-            
+            });      
 
-                UserService.getCurrentUser().$promise.then(data => {
-                                     PusherNotifierService.bindEventToChannel(data.emailAddress, dockyard.services.pusherNotifierExecutionEvent, (data: any) => {
-                                             this.updatePlanLastUpdated(data.PlanId, data.PlanLastUpdated);
-                                     })
-                    if (angular.isNumber(data.organizationId)) {
-                        $scope.doesOrganizationExists = true;
-                    }
-                    else {
-                        $scope.doesOrganizationExists = false;
-                    }                                         ;
+            UserService.getCurrentUser().$promise.then(data => {
+                PusherNotifierService.bindEventToChannel(data.emailAddress, dockyard.directives.NotificationType[dockyard.directives.NotificationType.GenericInfo], (data: any) => {
+                    this.updatePlanLastUpdated(data.PlanId, data.PlanLastUpdated);
                 });
+
+                $scope.doesOrganizationExists = angular.isNumber(data.organizationId);
+            });
         }
 
         private removeInactiveFilter() {
@@ -321,11 +316,11 @@ module dockyard.controllers {
 
 
         private goToPlanPage(planId) {
-            this.$state.go('planBuilder', { id: planId });
+            this.$state.go('plan', { id: planId });
         }
 
         private goToPlanDetailsPage(planId) {
-            this.$state.go('planDetails', { id: planId });
+            this.$state.go('plan.details', { id: planId });
         }
 
         private deletePlan(planId: string, isActive: number) {

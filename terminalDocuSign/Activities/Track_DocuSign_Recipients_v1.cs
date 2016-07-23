@@ -11,6 +11,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Models;
 using Fr8.TerminalBase.Services;
 using Hub.Services.MT;
@@ -25,6 +26,7 @@ namespace terminalDocuSign.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("4202F427-CD6F-497A-B852-4223B7F109E6"),
             Name = "Track_DocuSign_Recipients",
             Label = "Track DocuSign Recipients",
             Version = "1",
@@ -137,7 +139,8 @@ namespace terminalDocuSign.Activities
         public override async Task Initialize()
         {
             Storage.Clear();
-            Storage.Add(PackControls(new ActivityUi()));
+            
+            AddControls(new ActivityUi().Controls);
             Storage.Add(PackAvailableTemplates());
             Storage.Add(await PackAvailableHandlers());
             Storage.Add(PackAvailableRecipientEvents());
@@ -206,12 +209,12 @@ namespace terminalDocuSign.Activities
             // var notifierActivity = notifierActivityTask.Result;
             if (specificRecipientOption.Selected)
             {
-                ControlHelper.SetControlValue(monitorDocuSignAction, "TemplateRecipientPicker.recipient.RecipientValue", specificRecipientOption.Controls[0].Value);
+                ActivityConfigurator.SetControlValue(monitorDocuSignAction, "TemplateRecipientPicker.recipient.RecipientValue", specificRecipientOption.Controls[0].Value);
             }
             else if (specificTemplateOption.Selected)
             {
                 var ddlbTemplate = (specificTemplateOption.Controls[0] as DropDownList);
-                ControlHelper.SetControlValue(monitorDocuSignAction, "TemplateRecipientPicker.template.UpstreamCrate",
+                ActivityConfigurator.SetControlValue(monitorDocuSignAction, "TemplateRecipientPicker.template.UpstreamCrate",
                    ddlbTemplate.ListItems.Single(a => a.Key == ddlbTemplate.selectedKey));
             }
 
@@ -219,8 +222,8 @@ namespace terminalDocuSign.Activities
             {
                 var buildMessageActivity = buildMessageActivityTask.Result;
 
-                ControlHelper.SetControlValue(buildMessageActivity, "Body", MessageBody);
-                ControlHelper.SetControlValue(buildMessageActivity, "Name", "NotificationMessage");
+                ActivityConfigurator.SetControlValue(buildMessageActivity, "Body", MessageBody);
+                ActivityConfigurator.SetControlValue(buildMessageActivity, "Name", "NotificationMessage");
 
                 buildMessageActivity = await HubCommunicator.ConfigureActivity(buildMessageActivity);
             }
@@ -233,14 +236,14 @@ namespace terminalDocuSign.Activities
                 await HubCommunicator.ConfigureActivity(notifierActivity);
             }
 
-            ControlHelper.SetControlValue(monitorDocuSignAction, "EnvelopeSent", "true");
+            ActivityConfigurator.SetControlValue(monitorDocuSignAction, "EnvelopeSent", "true");
             //let's make followup configuration for monitorDocuSignEventAction
             //followup call places EventSubscription crate in storage
             var configureMonitorDocusignTask = HubCommunicator.ConfigureActivity(monitorDocuSignAction);
 
 
             var durationControl = (Duration)ConfigurationControls.FindByName("TimePeriod");
-            ControlHelper.SetControlValue(setDelayAction, "Delay_Duration", durationControl.Value);
+            ActivityConfigurator.SetControlValue(setDelayAction, "Delay_Duration", durationControl.Value);
             await SetQueryFr8WarehouseActivityFields(queryFr8WarehouseAction, specificRecipientOption.Controls[0].Value);
             //let's make a followup configuration to fill criteria fields
             var configureQueryMTTask = HubCommunicator.ConfigureActivity(queryFr8WarehouseAction);
@@ -256,34 +259,28 @@ namespace terminalDocuSign.Activities
 
         private void SetNotifierActivityBody(ActivityPayload notifierActivity)
         {
+            var activityConfigurator = new ActivityConfigurator(notifierActivity);
+
             if (notifierActivity.ActivityTemplate.Name == "Send_Email_Via_SendGrid")
             {
-                var configControls = ControlHelper.GetConfigurationControls(notifierActivity.CrateStorage);
-                var emailBodyField = ControlHelper.GetControl<TextSource>(configControls, "EmailBody", ControlTypes.TextSource);
+                var emailBodyField = activityConfigurator.GetControl<TextSource>("EmailBody", ControlTypes.TextSource);
                 emailBodyField.ValueSource = "upstream";
                 emailBodyField.Value = "NotificationMessage";
                 emailBodyField.selectedKey = "NotificationMessage";
-                var emailSubjectField = ControlHelper.GetControl<TextSource>(configControls, "EmailSubject", ControlTypes.TextSource);
+                var emailSubjectField = activityConfigurator.GetControl<TextSource>("EmailSubject", ControlTypes.TextSource);
                 emailSubjectField.ValueSource = "specific";
                 emailSubjectField.TextValue = "Fr8 Notification Message";
             }
             else if (notifierActivity.ActivityTemplate.Name == "Send_Via_Twilio")
             {
-                var configControls = ControlHelper.GetConfigurationControls(notifierActivity.CrateStorage);
-                var emailBodyField = ControlHelper.GetControl<TextSource>(configControls, "SMS_Body", ControlTypes.TextSource);
+                var emailBodyField = activityConfigurator.GetControl<TextSource>("SMS_Body", ControlTypes.TextSource);
                 emailBodyField.ValueSource = "upstream";
                 emailBodyField.Value = "NotificationMessage";
                 emailBodyField.selectedKey = "NotificationMessage";
             }
             else if (notifierActivity.ActivityTemplate.Name == "Publish_To_Slack")
             {
-                var configControls = ControlHelper.GetConfigurationControls(notifierActivity.CrateStorage);
-                if (configControls == null)
-                {
-                    //user is not authenticated yet - there is nothing we can do now
-                    return;
-                }
-                var messageField = ControlHelper.GetControl<TextSource>(configControls, "Select_Message_Field", ControlTypes.TextSource);
+                var messageField = activityConfigurator.GetControl<TextSource>("Select_Message_Field", ControlTypes.TextSource);
                 if (messageField == null)
                 {
                     //user is not authenticated yet - there is nothing we can do now
@@ -330,7 +327,7 @@ namespace terminalDocuSign.Activities
         {
             //update action's duration value
             var crateStorage = queryFr8Warehouse.CrateStorage;
-            var configControlCM = ControlHelper.GetConfigurationControls(crateStorage);
+            var configControlCM = ActivityConfigurator.GetConfigurationControls(queryFr8Warehouse);
             var radioButtonGroup = (configControlCM.Controls.First() as RadioButtonGroup);
             radioButtonGroup.Radios[0].Selected = false;
             radioButtonGroup.Radios[1].Selected = true;
@@ -392,9 +389,9 @@ namespace terminalDocuSign.Activities
         {
             var conf = DocuSignManager.SetUp(AuthorizationToken);
             var fields = DocuSignManager.GetTemplatesList(conf);
-            var crate = CrateManager.CreateDesignTimeFieldsCrate(
-                "AvailableTemplates",
-               fields.ToArray());
+
+            var crate = Crate.FromContent("AvailableTemplates", new KeyValueListCM(fields));
+
             return crate;
         }
 
@@ -402,24 +399,14 @@ namespace terminalDocuSign.Activities
         {
             var events = new[] { "Taken Delivery", "Signed" };
 
-            var availableRecipientEventsCrate =
-                CrateManager.CreateDesignTimeFieldsCrate(
-                    "AvailableRecipientEvents", events.Select(x => new KeyValueDTO(x, x)).ToArray()
-                );
-
-            return availableRecipientEventsCrate;
+            return Crate.FromContent("AvailableRecipientEvents", new KeyValueListCM(events.Select(x => new KeyValueDTO(x, x))));
         }
 
         private Crate PackAvailableRunTimeDataFields()
         {
             var events = new[] { "ActionBeingTracked", "DelayTime" };
 
-            var availableRecipientEventsCrate =
-                CrateManager.CreateDesignTimeFieldsCrate(
-                    "AvailableRunTimeDataFields", events.Select(x => new KeyValueDTO(x, x)).ToArray()
-                );
-
-            return availableRecipientEventsCrate;
+            return Crate.FromContent("AvailableRunTimeDataFields", new KeyValueListCM(events.Select(x => new KeyValueDTO(x, x))));
         }
 
         private async Task<Crate> PackAvailableHandlers()
@@ -427,13 +414,7 @@ namespace terminalDocuSign.Activities
             var templates = await HubCommunicator.GetActivityTemplates(true);
             var taggedTemplates = templates.Where(x => x.Tags != null && x.Tags.Contains("Notifier"));
 
-            var availableHandlersCrate =
-                CrateManager.CreateDesignTimeFieldsCrate(
-                    "AvailableHandlers",
-                    taggedTemplates.Select(x => new KeyValueDTO(x.Label, x.Id.ToString())).ToArray()
-                );
-
-            return availableHandlersCrate;
+            return Crate.FromContent("AvailableHandlers", new KeyValueListCM(taggedTemplates.Select(x => new KeyValueDTO(x.Label, x.Id.ToString()))));
         }
 
         protected override string ActivityUserFriendlyName => SolutionName;

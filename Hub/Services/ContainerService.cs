@@ -6,6 +6,7 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
+using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
@@ -19,7 +20,7 @@ namespace Hub.Services
     {
         private readonly IUtilizationMonitoringService _utilizationMonitoringService;
         private readonly IActivityExecutionRateLimitingService _activityRateLimiter;
-        private readonly IPusherNotifier _pusher;
+        private readonly IPusherNotifier _pusherNotifier;
         private readonly IActivity _activity;
         private readonly ICrateManager _crate;
 
@@ -31,7 +32,7 @@ namespace Hub.Services
         {
             _utilizationMonitoringService = utilizationMonitoringService;
             _activityRateLimiter = activityRateLimiter;
-            _pusher = pusher;
+            _pusherNotifier = pusher;
             _activity = activity;
             _crate = crateManager;
         }
@@ -265,7 +266,7 @@ namespace Hub.Services
                 errorMessage += ex.Message;
             }
 
-            _pusher.NotifyUser(errorMessage, NotificationChannel.GenericFailure, user.Id);
+            _pusherNotifier.NotifyUser(errorMessage, NotificationType.GenericFailure, user.Id);
         }
     }
 }

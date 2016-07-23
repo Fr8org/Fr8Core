@@ -219,14 +219,14 @@ namespace Hub.StructureMap
                 _terminal = new Terminal(configRepository);
             }
 
-            public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal)
+            public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal, string userId)
             {
                 return new Dictionary<string, string>();
             }
 
-            public Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId)
+            public Task<TerminalDO> GetByToken(string token)
             {
-                return Task.FromResult(new TerminalDO());
+                return _terminal.GetByToken(token);
             }
 
             public IEnumerable<TerminalDO> GetAll()
@@ -253,13 +253,6 @@ namespace Hub.StructureMap
             {
                 return _terminal.GetByKey(terminalId);
             }
-
-            public Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId)
-            {
-                return _terminal.IsUserSubscribedToTerminal(terminalId, userId);
-
-            }
-
             public Task<List<DocumentationResponseDTO>> GetSolutionDocumentations(string terminalName)
             {
                 return _terminal.GetSolutionDocumentations(terminalName);

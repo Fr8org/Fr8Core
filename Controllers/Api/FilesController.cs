@@ -41,7 +41,7 @@ namespace HubWeb.Controllers
         /// <remarks>Fr8 authentication headers must be provided</remarks>
         /// <response code="200">Returns the description of file that was succesfully uploaded</response>
         /// <response code="403">Unauthorized request</response>
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         [ResponseType(typeof(FileDO))]
         public async Task<IHttpActionResult> Post()
@@ -108,7 +108,10 @@ namespace HubWeb.Controllers
         /// Downloads file with specified Id and owned by current user
         /// </summary>
         /// <param name="id">Id of requested file</param>
-        [Fr8HubWebHMACAuthenticate]
+        /// <response code="200">Contents of specified file as byte array</response>
+        /// <response code="403">Unauthorized request</response>
+        /// <response code="404">File with specified Id doesn't exist</response>
+        [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         [ResponseType(typeof(byte[]))]
         [SwaggerResponse(HttpStatusCode.OK, "Contents of specified file as byte array")]
@@ -142,7 +145,10 @@ namespace HubWeb.Controllers
         /// Downloads file with specified path and owned by current user
         /// </summary>
         /// <param name="path">Path of the requested file</param>
-        [Fr8HubWebHMACAuthenticate]
+        /// <response code="200">Contents of specified file as byte array</response>
+        /// <response code="403">Unauthorized request</response>
+        /// <response code="404">File with specified Id doesn't exist</response>
+        [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         [ActionName("byPath")]
         [SwaggerResponse(HttpStatusCode.OK, "Contents of specified file as byte array")]
@@ -179,7 +185,7 @@ namespace HubWeb.Controllers
         /// <response code="200">Collection of files</response>
         /// <response code="403">Unauthorized request</response>
         [HttpGet]
-        [Fr8HubWebHMACAuthenticate]
+        [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         [ResponseType(typeof(IList<FileDTO>))]
         public IHttpActionResult Get()
@@ -230,7 +236,8 @@ namespace HubWeb.Controllers
         /// Deletes file with specified Id
         /// </summary>
         /// <param name="id">Id of the file specified</param>
-        [Fr8HubWebHMACAuthenticate]
+        /// <response code="204">File was succesfully deleted</response>
+        [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         [SwaggerResponse(HttpStatusCode.NoContent, "File was successfully delete")]
         [SwaggerResponseRemoveDefaults]

@@ -51,6 +51,7 @@ namespace terminalStatX
         {
             ActivityStore.RegisterActivity<Update_Stat_v1>(Update_Stat_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Monitor_Stat_Changes_v1>(Monitor_Stat_Changes_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Create_Stat_v1>(Create_Stat_v1.ActivityTemplateDTO);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace terminalInstagram
         public static WebServiceDTO WebServiceDTO = new WebServiceDTO
         {
             Name = "Instagram",
-            IconPath = "/Content/icons/web_services/instagram.png"
+            IconPath = "/Content/icons/web_services/instagram-icon-64x64.png"
         };
 
         public static TerminalDTO TerminalDTO = new TerminalDTO

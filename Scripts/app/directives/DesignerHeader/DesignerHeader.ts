@@ -16,6 +16,7 @@ module dockyard.directives.designerHeader {
         //sharePlan(): void;
         plan: model.PlanDTO;
         kioskMode: boolean;
+        state: string
     }
 
     //More detail on creating directives in TypeScript: 
@@ -35,7 +36,8 @@ module dockyard.directives.designerHeader {
         public templateUrl = '/AngularTemplate/DesignerHeader';
         public scope = {
             plan: '=',
-            kioskMode: '=?'
+            kioskMode: '=?',
+            state: '='
         };
         public restrict = 'E';
 
@@ -80,17 +82,17 @@ module dockyard.directives.designerHeader {
 
                 $scope.onTitleChange = () => {
                     $scope.editing = false;
-                    var result = PlanService.update({ id: $scope.plan.id, name: $scope.plan.name });
+                    var result = PlanService.update({ id: $scope.plan.id, name: $scope.plan.name, description: null });
                     result.$promise.then(() => { });
                 };
 
                 $scope.runPlan = () => {
-                    // mark plan as Active
+                    // mark plan as Active                  
                     $scope.plan.planState = 2;                   
                     var promise = PlanService.runAndProcessClientAction($scope.plan.id);
                     
                     promise.then((container: model.ContainerDTO) => {
-                        //if we have validation errors - reset plan state to Inactive. Plans with errors can't be activated    
+                        //if we have validation errors - reset plan state to Inactive. Plans with errors can't be activated   
                         if (container.validationErrors && container.validationErrors != null) {
                             for (var key in container.validationErrors) {
                                 if (container.validationErrors.hasOwnProperty(key)) {

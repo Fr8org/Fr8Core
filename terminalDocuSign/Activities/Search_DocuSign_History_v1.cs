@@ -9,6 +9,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Models;
 using Newtonsoft.Json;
 using terminalDocuSign.DataTransferObjects;
@@ -20,6 +21,7 @@ namespace terminalDocuSign.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("c64f4378-f259-4006-b4f1-f7e90709829e"),
             Name = "Search_DocuSign_History",
             Label = "Search DocuSign History",
             Version = "1",
@@ -103,11 +105,12 @@ namespace terminalDocuSign.Activities
         {
             var actionUi = new ActivityUi();
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(AuthorizationToken.Token);           
-            var configurationCrate = PackControls(actionUi);
+            
+            AddControls(actionUi.Controls);
             //commented out by FR-2400
             //_docuSignManager.FillFolderSource(configurationCrate, "Folder", docuSignAuthDTO);
             //_docuSignManager.FillStatusSource(configurationCrate, "Status");
-            Storage.Add(configurationCrate);
+            
             await ConfigureNestedActivities(actionUi);
         }
 
@@ -137,16 +140,18 @@ namespace terminalDocuSign.Activities
             {
                 throw new Exception("Can't find activity template: Query_DocuSign");
             }
-
+            
             var storage = new CrateStorage(Crate.FromContent("Config", config))
             {
-                PackControlsCrate(new TextArea
+                Crate.FromContent(TerminalActivityBase.ConfigurationControlsLabel, new StandardConfigurationControlsCM( 
+                new TextArea
                 {
                     IsReadOnly = true,
                     Label = "",
                     Value = "<p>This activity is managed by the parent activity</p>"
-                })
+                }))
             };
+
             var activity = ActivityPayload.ChildrenActivities.OfType<ActivityPayload>().FirstOrDefault();
 
             if (activity == null)

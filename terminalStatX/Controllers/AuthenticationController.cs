@@ -14,11 +14,11 @@ namespace terminalStatX.Controllers
     public class AuthenticationController : ApiController
     {
         private readonly IStatXIntegration _statXIntegration;
-        private readonly IHubEventReporter _eventReporter;
+        private readonly IHubLoggerService _hubLoggerService;
 
-        public AuthenticationController(IHubEventReporter eventReporter, IStatXIntegration statXIntegration)
+        public AuthenticationController(IHubLoggerService hubLoggerService, IStatXIntegration statXIntegration)
         {
-            _eventReporter = eventReporter;
+            _hubLoggerService = hubLoggerService;
             _statXIntegration = statXIntegration;
         }
 
@@ -43,7 +43,7 @@ namespace terminalStatX.Controllers
             }
             catch (Exception ex)
             {
-                await _eventReporter.ReportTerminalError(ex, credentialsDTO.Fr8UserId);
+                await _hubLoggerService.ReportTerminalError(ex, credentialsDTO.Fr8UserId);
                 credentialsDTO.Error = "An error occurred while trying to send login code, please try again later.";
 
                 return credentialsDTO;
@@ -71,7 +71,7 @@ namespace terminalStatX.Controllers
             }
             catch (Exception ex)
             {
-                await _eventReporter.ReportTerminalError(ex, credentialsDTO.Fr8UserId);
+                await _hubLoggerService.ReportTerminalError(ex, credentialsDTO.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {

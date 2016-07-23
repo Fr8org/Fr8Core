@@ -4,9 +4,7 @@ using System.Web.Http;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.TerminalBase.Services;
 using terminalInstagram.Interfaces;
-using InstaSharp;
 using terminalInstagram.Infrastructure;
-using InstaSharp.Endpoints;
 
 namespace terminalInstagram.Controllers
 {
@@ -14,12 +12,12 @@ namespace terminalInstagram.Controllers
     public class AuthenticationController : ApiController
     {
         private readonly IInstagramIntegration _instagramIntegration;
-        private readonly IHubEventReporter _eventReporter;
+        private readonly IHubLoggerService _loggerService;
 
-        public AuthenticationController(IInstagramIntegration instagramIntegration, IHubEventReporter eventReporter)
+        public AuthenticationController(IInstagramIntegration instagramIntegration, IHubLoggerService loggerService)
         {
+            _loggerService = loggerService;
             _instagramIntegration = instagramIntegration;
-            _eventReporter = eventReporter;
         }
 
         [HttpPost]
@@ -67,7 +65,7 @@ namespace terminalInstagram.Controllers
             }
             catch (Exception ex)
             {
-                await _eventReporter.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
+                await _loggerService.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {

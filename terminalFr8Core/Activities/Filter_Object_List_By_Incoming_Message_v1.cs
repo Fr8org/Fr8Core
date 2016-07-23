@@ -22,6 +22,7 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("36470147-05e3-4f32-94ef-bf203b6c53af"),
             Name = "Filter_Object_List_By_Incoming_Message",
             Label = "Filter Object List by Incoming Message",
             Version = "1",

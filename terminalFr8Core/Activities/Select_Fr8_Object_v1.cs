@@ -23,6 +23,7 @@ namespace terminalFr8Core.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("6238483f-2cef-418e-bd7e-a52ddb1e01e5"),
             Name = "Select_Fr8_Object",
             Label = "Select Fr8 Object",
             Category = ActivityCategory.Processors,
@@ -79,20 +80,20 @@ namespace terminalFr8Core.Activities
                    }
             }.ToArray();
 
-            var createDesignTimeFields = CrateManager.CreateDesignTimeFieldsCrate(
-                "Select Fr8 Object",
-                fields);
+            var createDesignTimeFields = Crate.FromContent("Select Fr8 Object", new KeyValueListCM(fields));
+
             return createDesignTimeFields;
         }
 
         // Get the Design time fields crate.
         private async Task<Crate> GetDesignTimeFieldsCrateOfSelectedFr8Object(string fr8Object)
         {
-            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+            var url = CloudConfigurationManager.GetSetting("DefaultHubUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/manifests?id="
                 + int.Parse(fr8Object);
             var response = await _restfulServiceClient.GetAsync<CrateDTO>(new Uri(url));
-            return CrateManager.FromDto(response);
+
+            return CrateStorageSerializer.Default.ConvertFromDto(response);
 		}
 
         public Select_Fr8_Object_v1(ICrateManager crateManager, IRestfulServiceClient restfulServiceClient)
@@ -111,8 +112,10 @@ namespace terminalFr8Core.Activities
         {
             var crateDesignTimeFields = PackFr8ObjectCrate();
             Storage.Clear();
-            Storage.Add(PackControls(new ActivityUi()));
+
+            AddControls(new ActivityUi().Controls);
             Storage.Add(crateDesignTimeFields);
+
             return Task.FromResult(0);
         }
 
