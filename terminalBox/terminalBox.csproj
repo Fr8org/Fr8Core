@@ -213,7 +213,7 @@
     <Compile Include="Actions\Generate_Table_Activity_v1.cs" />
     <Compile Include="Actions\Save_To_File_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
-    <Compile Include="App_Start\erConfig.cs" />
+    <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="Controllers\ActivityController.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
