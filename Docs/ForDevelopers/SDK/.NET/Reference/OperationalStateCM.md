@@ -11,5 +11,5 @@ Represents information about execution of the container.
 |---------------------------------|------------------------------------------------------------------------------------ |
 | [CallStack]() | Gets the activities Call Stack | 
 | History | Get container execution history |
-| [CurrentActivityResponse]((https://github.com/Fr8org/Fr8Core/blob/dev/Docs/ForDevelopers/Objects/Activities/ActivityResponses.md)) | Gets or sets response from the currently executed activity |
+| [CurrentActivityResponse]((/Docs/ForDevelopers/SDK/.NET/Reference/ActivityCallStack.md)) | Gets or sets response from the currently executed activity |
 
