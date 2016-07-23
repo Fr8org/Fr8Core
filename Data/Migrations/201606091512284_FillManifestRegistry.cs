@@ -448,9 +448,7 @@ VALUES(@ManifestTypeId, SYSDATETIME(), SYSDATETIME(), 'system1@fr8.co', 0, '27',
 				""description"" : ""Description""
 			}
 		],
-		""currentActivityErrorCode"" : 0,
-		""currentActivityErrorMessage"" : """",
-		""currentClientActivityName"" : ""Name"",
+
 		""currentActivityResponse"" : {
 			""type"" : ""Erorr"",
 			""body"" : ""Error Message""
