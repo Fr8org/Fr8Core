@@ -74,7 +74,7 @@ Natural execution flow is the following:
 3. If top frame's **CurrentActivityExecutionPhase**  is **ExecutingChildren** go to step 9
 4. If this is an activity we execute **Run** and read response, otherwise go to step 8
 5. Replace all container's payload storage with crates from the response 
-6. Find [OperationalStateCM]() crate and replace call stack with the call stack we store in memory (to avoid stack corruption by the activity)
+6. Find [OperationalStateCM](/Docs/ForDevelopers/SDK/.NET/Reference/OperationalStateCM.md) crate and replace call stack with the call stack we store in memory (to avoid stack corruption by the activity)
 7. Overwrite **LocalData** for each in-memory stack frame with corresponding **LocalData** from activity response's stack frame (because activity can persist run-time data here). We need this stuff for the current implementation of Loop activity.
 8. Change top stack frame's **CurrentActivityExecutionPhase** to **ExecutingChildren**
 9. Look at the top stack frame's **CurrentChildId**. 
