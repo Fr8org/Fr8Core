@@ -60,7 +60,7 @@ if (([System.String]::IsNullOrEmpty($connectionString) -ne $true) -and ([System.
 
 $RootDir = Split-Path -parent (Split-Path -parent $MyInvocation.MyCommand.Path)
 $ConfigPath = $RootDir+"\terminalCloudService"
-$ConfigFile = $ConfigPath+"\ServiceConfiguration.Release.cscfg"
+$ConfigFile = $ConfigPath+"\Config\terminalCloudService\ServiceConfiguration.Release.cscfg"
 $epConfigFile = $ConfigPath+"\ServiceDefinition.csdef"
 
 if ($updateService -or (-not $inheritEndpoints) -or $requiresCloudService)
@@ -183,7 +183,7 @@ if(Test-Path $ConfigFile)
 }
 else
 {
-    Write-Warning "Azure Service Configuration file wasn't found in the folder $($ConfigFile)"
+    throw "Azure Service Configuration file wasn't found in the folder $($ConfigFile)"
 }
 
 
