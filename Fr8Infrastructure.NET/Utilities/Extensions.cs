@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -16,6 +17,18 @@ namespace Fr8.Infrastructure.Utilities
         }
     }
 
+    public static class JsonExtensions
+    {
+        public static IEnumerable<JToken> WalkTokens(this JToken node)
+        {
+            if (node == null)
+                yield break;
+            yield return node;
+            foreach (var child in node.Children())
+                foreach (var childNode in child.WalkTokens())
+                    yield return childNode;
+        }
+    }
 
 
     public static class StringExtension
