@@ -218,7 +218,7 @@ namespace terminalDocuSignTests.Integration
             );
             Assert.AreEqual(
                 "RunImmediately",
-                state.CurrentClientActivityName
+                state.CurrentActivityResponse.Body
             );
         }
 

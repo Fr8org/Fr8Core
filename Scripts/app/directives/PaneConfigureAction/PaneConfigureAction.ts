@@ -505,7 +505,7 @@ module dockyard.directives.paneConfigureAction {
                     var contents = <any>operationalStatus.contents;
 
                     if (contents.CurrentActivityResponse.type === 'ExecuteClientActivity' 
-                        && (contents.CurrentClientActivityName === 'RunImmediately')) {
+                        && (contents.CurrentActivityResponse.body === 'RunImmediately')) {
                         this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ExecutePlan]);
                     }
                 }
