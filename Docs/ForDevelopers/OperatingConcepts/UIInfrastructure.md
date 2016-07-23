@@ -4,6 +4,7 @@ The Fr8 UI Architecture
 Fr8 UI is based on a couple of fundamental principles:
 
 1) Terminal builders should have access to a rich set of UI elements for purpose of collecting information from the user at design-time, and conveying important status and error messages to the user, But....
+
 2) Terminal builders should not have to deal with any front-end issues, and should be able to declare the UI they want with a minimum of fuss.
 
 To accomplish this, Activities declare the UI they want rendered by creating a Crate of UI Controls and adding it to the Activity container. They
@@ -16,3 +17,7 @@ are handled automatically, in base classes of the SDK. This is most developed, a
 
 
 Example: The .NET SDK approach to declaring UI needs
+Here's the code used to declare the UI for the Get Tasks Activity in the Asana Terminal:
+![](activityUI.png)
+
+
