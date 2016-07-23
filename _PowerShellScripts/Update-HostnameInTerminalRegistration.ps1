@@ -6,7 +6,10 @@
 	[string]$newHostname,
 
 	[Parameter(Mandatory = $false)]
-	[string]$overrideDbName
+	[string]$overrideDbName,
+
+	[Parameter(Mandatory = $false)]
+	[string]$localhostOnly = $false
 )
 
 Write-Host "Update terminal URLs to $newHostname"
@@ -15,8 +18,12 @@ $commandText = "
 	-- Update hostname only if port value is present in endpoint URL and terminal belongs to Fr8
     UPDATE TerminalRegistration SET [Endpoint] = 
 			('$newHostname' + RIGHT ([Endpoint], CHARINDEX (':', REVERSE ([Endpoint]))))
-	WHERE CHARINDEX (':', REVERSE ([Endpoint])) <= 6 AND IsFr8OwnTerminal = 1
-";
+	WHERE CHARINDEX (':', REVERSE ([Endpoint])) <= 6 AND IsFr8OwnTerminal = 1"
+
+if ($localhostOnly)
+{
+	$commandText += " AND [Endpoint] LIKE 'http://localhost:%'" 
+}
 
 Write-Host $commandText
 
