@@ -10,6 +10,7 @@ Fr8 Operating Concepts Home
 * [Security/Authorization](/Docs/ForDevelopers/OperatingConcepts/Authorization/Home.md)
 * [Signaling](/Docs/ForDevelopers/OperatingConcepts/Signaling.md)
 * [Solutions](/Docs/ForDevelopers/OperatingConcepts/Solutions)
+* [Tagging & Categorization](/Docs/ForDevelopers/OperatingConcepts/Tagging.md)
 * [Warehouse (Data Storage)](/Docs/ForDevelopers/OperatingConcepts/Fr8Warehouse.md)
 
 Advanced Concepts
