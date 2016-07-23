@@ -51,6 +51,9 @@ Permission Sets
 ==================
 Like a profile, a permission set is a collection of settings and permissions that determine what a user can do. Permission sets include some of the same permissions and settings you’ll find in profiles.
 
+Permission Sets make it easier to work with sets of permissions. They are a representation of specific group of permissions, grouped by the type of the object that those permissions need to authorize.   
+Permission Sets cannot currently be directly manipulated. They are used internally to form Profiles.
+
 So why profiles and permission sets?
 
 The most significant difference between the two is that users can have only one profile, but they can have many permission sets. This means you can use profiles to grant the minimum permissions and settings that every type of user needs, then use permission sets to grant additional permissions, without changing anyone’s profiles.
