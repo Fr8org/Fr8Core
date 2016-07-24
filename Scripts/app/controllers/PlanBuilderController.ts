@@ -45,6 +45,7 @@ module dockyard.controllers {
         curAggReloadingActions: Array<string>;
         addSubPlan: () => void;
         view: string;
+        displayDeveloperMenu: boolean;
         viewMode: string;
         hasAnyActivity: (pSubPlan: any) => boolean;
         state: string;
@@ -113,6 +114,7 @@ module dockyard.controllers {
 
             this.LayoutService.resetLayout();
 
+            this.$scope.displayDeveloperMenu = false;
             this.$scope.isPlanBuilderScope = true;
             this.$scope.isReConfiguring = false;
 
@@ -235,12 +237,12 @@ module dockyard.controllers {
 
         private handleBackButton(event, toState, toParams, fromState, fromParams, options) {
 
-            if (fromParams.viewMode === "plan" && toParams.viewMode === undefined && fromState.name === "plan.builder" && toState.name === "plan.builder") {
+            if (fromParams.viewMode === "plan" && toParams.viewMode === undefined && fromState.name === "plan" && toState.name === "plan") {
                 event.preventDefault();
                 this.$state.go("planList");
             }
 
-            if (toParams.viewMode === "plan" && fromParams.viewMode === undefined && fromState.name === "plan.builder" && toState.name === "plan.builder") {
+            if (toParams.viewMode === "plan" && fromParams.viewMode === undefined && fromState.name === "plan" && toState.name === "plan") {
                 this.reloadFirstActions();
             }
         }
@@ -438,7 +440,7 @@ module dockyard.controllers {
             }
             this.renderPlan(<interfaces.IPlanVM>curPlan.plan);
             if (this.$state.current.name != 'plan.details') {
-                this.$state.go('plan.builder', { id: curPlan.plan.id, viewMode: mode });
+                this.$state.go('plan', { id: curPlan.plan.id, viewMode: mode });
             }
         }
 
