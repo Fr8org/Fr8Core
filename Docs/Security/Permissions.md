@@ -5,6 +5,7 @@ Permissions are generally associated with Users via Profiles. The Standard Fr8 U
 permission on all objects they create.
 
 Fr8 currently supports these permissions:
+
 1. Create Object
 2. Read Object
 3. Edit Object
@@ -17,5 +18,4 @@ Fr8 currently supports these permissions:
 
 ## Permission Sets
 
-Permission Sets make it easier to work with sets of permissions. They are a representation of specific group of permissions, grouped by the type of the object that those permissions need to authorize.   
-Permission Sets cannot currently be directly manipulated. They are used internally to  form Profiles.
+See [this](/Docs/Security/Profiles.md).

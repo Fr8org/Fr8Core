@@ -138,8 +138,8 @@ namespace terminalStatX.Activities
                     if (firstStat != null)
                     {
                         ActivityUI.ExistingGroupStats.SelectByValue(firstStat.Id);
-                        ActivityUI.StatTitle.Value = firstStat.Title;
-                        ActivityUI.StatNotes.Value = firstStat.Notes;
+                        ActivityUI.StatTitle.TextValue = firstStat.Title;
+                        ActivityUI.StatNotes.TextValue = firstStat.Notes;
                         var statDTO = firstStat as GeneralStatWithItemsDTO;
                         if (statDTO != null)
                         {
@@ -197,8 +197,8 @@ namespace terminalStatX.Activities
                     if (currentStat != null)
                     {
                         ActivityUI.ClearDynamicFields();
-                        ActivityUI.StatTitle.Value = currentStat.Title;
-                        ActivityUI.StatNotes.Value = currentStat.Notes;
+                        ActivityUI.StatTitle.TextValue = currentStat.Title;
+                        ActivityUI.StatNotes.TextValue = currentStat.Notes;
                         var statDTO = currentStat as GeneralStatWithItemsDTO;
                         if (statDTO != null && statDTO.Items.Any())
                         {

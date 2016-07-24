@@ -44,3 +44,22 @@ Activity | yes | yes | yes | yes | yes  | yes  | yes
 Container | yes | yes | yes | yes | yes  | yes  | yes     
 User | yes | yes | yes | yes | yes  | yes  | yes
 Terminal | yes | yes | yes | yes | yes  | yes  | yes
+
+
+
+Permission Sets
+==================
+Like a profile, a permission set is a collection of settings and permissions that determine what a user can do. Permission sets include some of the same permissions and settings you’ll find in profiles.
+
+Permission Sets make it easier to work with sets of permissions. They are a representation of specific group of permissions, grouped by the type of the object that those permissions need to authorize.   
+Permission Sets cannot currently be directly manipulated. They are used internally to form Profiles.
+
+So why profiles and permission sets?
+
+The most significant difference between the two is that users can have only one profile, but they can have many permission sets. This means you can use profiles to grant the minimum permissions and settings that every type of user needs, then use permission sets to grant additional permissions, without changing anyone’s profiles.
+
+There are a couple of ways to use permission sets to your advantage.
+
+To grant access to custom objects or entire apps.
+Let’s say you have many users in your organization with the same fundamental job functions. You can assign them all one profile that grants them all the access they need to do their job. But suppose a few of those users are working on a special project and they need access to an app that no one else uses. And suppose a few other users need access to that app, as well as another app that the first group doesn’t need. If we only had profiles, you’d have to create more profiles that were customized to those few users’ needs, or take your chances and add more access to the original profile, making the apps available to users that don’t need it. Neither of these options is ideal, especially if your organization is growing and your users’ needs change regularly. Permission sets make it easy to grant access to the various apps and custom objects in your organization, and to take away access when it’s no longer needed.
+
