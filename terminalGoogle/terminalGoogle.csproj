@@ -415,6 +415,7 @@
     <EmbeddedResource Include="Template\googleAppScriptFormResponse.json" />
     <Compile Include="Interfaces\IGoogleDrive.cs" />
     <Content Include="Config\terminalGoogle\Settings.config.readme" />
+    <None Include="Properties\PublishProfiles\TEst.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
