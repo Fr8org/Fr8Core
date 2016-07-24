@@ -158,7 +158,7 @@ namespace Fr8.Testing.Integration
             operationalStateCM.CurrentActivityResponse.TryParseErrorDTO(out errorMessage);
 
             Assert.AreEqual(ActivityResponse.Error.ToString(), operationalStateCM.CurrentActivityResponse.Type);
-            Assert.AreEqual(ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID, operationalStateCM.CurrentActivityErrorCode);
+            Assert.AreEqual(ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID.ToString(), errorMessage.ErrorCode);
             Assert.AreEqual("No AuthToken provided.", errorMessage.Message);
         }
 
