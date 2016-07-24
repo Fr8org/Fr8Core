@@ -37,7 +37,10 @@ namespace terminalAsanaTests.Unit
             _hubCommunicator = _hubCommunicatorMock.Object;
 
             _parametersMock = new Mock<IAsanaParameters>();
+            _parametersMock.Setup(x => x.MinutesBeforeTokenRenewal).Returns("10");
+            _parametersMock.Setup(x => x.AsanaOAuthTokenUrl).Returns("http://asana.com");
             _parameters = _parametersMock.Object;
+            
         }
 
         [Test]
@@ -68,7 +71,7 @@ namespace terminalAsanaTests.Unit
 
             var asanaOAuth = await new AsanaOAuthService(_restClient, _parameters).InitializeAsync(new OAuthToken());
 
-            _restClientMock.Verify(x => x.PostAsync(It.IsAny<Uri>(), It.IsAny<object>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()));
+            _restClientMock.Verify(x => x.PostAsync<JObject>(It.IsAny<Uri>(),It.IsAny<HttpContent>(),null,null));
 
             Assert.IsTrue(asanaOAuth.OAuthToken.ExpirationDate > DateTime.UtcNow && asanaOAuth.OAuthToken.ExpirationDate < DateTime.UtcNow.AddSeconds(3601));
             Assert.IsNotEmpty(asanaOAuth.OAuthToken.AccessToken);

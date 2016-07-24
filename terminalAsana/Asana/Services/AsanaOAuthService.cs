@@ -96,8 +96,8 @@ namespace terminalAsana.Asana.Services
         }
 
         public async  Task<OAuthToken> RefreshOAuthTokenAsync(OAuthToken token)
-        {         
-            var url = CloudConfigurationManager.GetSetting("AsanaOAuthTokenUrl");
+        {
+            var url = _parameters.AsanaOAuthTokenUrl; 
             
             var contentDic = new Dictionary<string, string>()
             {
