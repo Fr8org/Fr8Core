@@ -152,8 +152,10 @@ module dockyard.directives {
                             if (serializedConditions.length) {
                                 innitializeConditions(serializedConditions);
                             }
-                            else if ((<any>serializedConditions).conditions.length) {
-                                innitializeConditions((<any>serializedConditions).conditions);    
+                            else if ((<any>serializedConditions).conditions) {
+                                if ((<any>serializedConditions).conditions.length) {
+                                    innitializeConditions((<any>serializedConditions).conditions);        
+                                }
                             }
                             else {
                                 addEmptyCondition();
