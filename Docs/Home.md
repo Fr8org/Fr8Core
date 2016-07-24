@@ -2,7 +2,8 @@
 
 [Part 1 - Introduction](/Docs/ForDevelopers/Introduction.md)   
 [Part 2 - Understanding the Fr8 Architectural Model](/Docs/ForDevelopers/ArchitecturalModel.md)   
-[Part 3 - The Fr8 Data Model](/Docs/ForDevelopers/DataModel.md)  
+[Part 3 - The Fr8 Data Model](/Docs/ForDevelopers/DataModel.md) 
+[Part 4 - The Fr8 UI Infrastructure](/Docs/ForDevelopers/OperatingConcepts/UIInfrastructure.md)
 
 General Resources
 -------------------
@@ -39,11 +40,5 @@ Specifications
    
         
    
-[Security](/Docs/Security/SecurityOverview.md)  
-----------------------------------
 
-[Permissions](/Docs/Security/Permissions.md)
- 
-[Security Internals](/Docs/Security/SecurityInternals.md)
 
-[Profiles](/Docs/Security/Profiles.md)

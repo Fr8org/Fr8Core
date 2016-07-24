@@ -860,6 +860,7 @@
     <Content Include="Views\Shared\CDN\_AngularAppScripts.cshtml" />
     <Content Include="Views\AngularTemplate\PlanBuilder_SimpleKioskMode.cshtml" />
     <Content Include="Views\AngularTemplate\ActivityHeader.cshtml" />
+    <Content Include="_PowerShellScripts\Run-SQL.ps1" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <Content Include="_PowerShellScripts\Update-HostnameInTerminalRegistration.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
