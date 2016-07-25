@@ -31,17 +31,17 @@ A special Fr8-specific data structure used by Activities to provide status with 
 
 
 
-## The Call Stack
-There are few simple rules of how call stack is maintained: 
-1. When activity is being executed, information about this activity is pushed to Call Stack in the form of Stack Frame.
-2. Stack frame for the certain activity is popped from the stack in one of the following cases:
-   1. Activity finished execution and has no children.
-   2. Activity has children and activity with descendants have been executed. That means that parent activity stays in the call stack until all descendants are processed.
-   3. Activity finished execution and requested to **jump to activity or subplan**. Before jumping to the specified activity or subplan current activity is removed from the call stack even if it has children.
+# The Call Stack
+These rules govern the Call Stack:
+1. During Activity Execution, the Hub pushes a Stack Frame of information about the activity to the Call Stack.
+2. A Stack Frame is popped from the stack when execution of an Activity finishes, in one of the following cases:
+   1. The completed Activity has no children.
+   2. The completed Activity has children, and they have all been executed. 
+   3. The completed Activity returned the ActivityResponses Jump To Activity or Jump to Subplan. Before jumping to the specified activity or subplan current activity is removed from the call stack even if it has children.
 
-> **Note:** When activity requests to suspend execution of the container, stack frame related to this activity is not being popped from the call stack. This leads to the fact, that when container execution is resumed, activity is being run once again to give it chance to perform some logic.
+As would be expected, an ActivityResponse of Request Suspend does not pop the stack, so that the returning Activity will be called again, when execution resumes. 
 
-Lets see few examples of **OperationalStateCM** content during the different steps of the container execution. 
+Here are a few examples of **OperationalStateCM** content during the different steps of the container execution. 
 
 ### Linear sequence of activities
 Here is our plan:  
