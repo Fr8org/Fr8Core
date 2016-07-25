@@ -196,7 +196,7 @@ namespace Hub.Services
                 {
                     throw new ApplicationException("Save Jira Issue doesn't contain project selector");
                 }
-                projectSelector.SelectByKey("fr8test");
+                projectSelector.SelectByKey("Fr8");
             }
             saveJiraActivity = Mapper.Map<ActivityDO>(await _activity.Configure(uow, systemUser.Id, saveJiraActivity).ConfigureAwait(false));
             using (var storage = _crateManager.GetUpdatableStorage(saveJiraActivity))
