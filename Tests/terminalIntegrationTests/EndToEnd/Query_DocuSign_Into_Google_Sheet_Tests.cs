@@ -67,8 +67,8 @@ namespace terminalIntegrationTests.EndToEnd
 
                 //find spreadsheet
                 var worksheets = await googleSheetApi.GetWorksheets(spreadSheeturl, defaultGoogleAuthToken);
-                Assert.IsNotNull(worksheets.FirstOrDefault(x => x.Value == "TestSheet"), "Worksheet was not found into newly created google excel file.");
-                var worksheetUri = worksheets.FirstOrDefault(x => x.Value == "TestSheet").Key;
+                Assert.IsNotNull(worksheets.FirstOrDefault(x => x.Value == "Sheet1"), "Worksheet was not found into newly created google excel file.");
+                var worksheetUri = worksheets.FirstOrDefault(x => x.Value == "Sheet1").Key;
                 var dataRows = await googleSheetApi.GetData(spreadSheeturl, worksheetUri, defaultGoogleAuthToken);
 
                 //file should contain 11 envelopes saved
