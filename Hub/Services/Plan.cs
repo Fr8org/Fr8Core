@@ -381,11 +381,13 @@ namespace Hub.Services
             }
 
             // Notify UI for stopped plan
-            _pusherNotifier.NotifyUser(new
+            _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
+                NotificationType = NotificationType.ExecutionStopped,
+                NotificationArea = NotificationArea.ActivityStream,
                 Message = $"\"{planName}\"",
                 Collapsed = false
-            }, NotificationType.ExecutionStopped, _security.GetCurrentUser());
+            }, _security.GetCurrentUser());
 
             EventManager.PlanDeactivated(planId);
         }
@@ -597,9 +599,13 @@ namespace Hub.Services
 
                     var activitiesList = string.Join(", ", failedActivities);
 
-                    _pusherNotifier.NotifyUser($"Validation failed for activities: {activitiesList} from plan \"{plan.Name}\". See activity configuration pane for details.",
-                        NotificationType.GenericFailure,
-                        currentUserId);
+                    _pusherNotifier.NotifyUser(new NotificationMessageDTO
+                    {
+                        NotificationType = NotificationType.GenericFailure,
+                        NotificationArea = NotificationArea.ActivityStream,
+                        Message = $"Validation failed for activities: {activitiesList} from plan \"{plan.Name}\". See activity configuration pane for details.",
+                        Collapsed = false
+                    }, currentUserId);
                 }
 
                 return new ContainerDTO
@@ -641,11 +647,13 @@ namespace Hub.Services
                             // Just return empty container
                             if (currentPlanType == PlanType.Monitoring)
                             {
-                                _pusherNotifier.NotifyUser(new
+                                _pusherNotifier.NotifyUser(new NotificationMessageDTO
                                 {
+                                    NotificationType = NotificationType.GenericSuccess,
+                                    NotificationArea = NotificationArea.ActivityStream,
                                     Message = $"Plan \"{plan.Name}\" activated. It will wait and respond to specified external events.",
                                     Collapsed = false
-                                }, NotificationType.GenericSuccess, currentUserId);
+                                }, currentUserId);
 
                                 return new ContainerDTO
                                 {
@@ -658,11 +666,13 @@ namespace Hub.Services
                         }
                         else
                         {
-                            _pusherNotifier.NotifyUser(new 
+                            _pusherNotifier.NotifyUser(new NotificationMessageDTO
                             {
+                                NotificationType = NotificationType.GenericSuccess,
+                                NotificationArea = NotificationArea.ActivityStream,
                                 Message = $"Continue execution of the suspended Plan \"{plan.Name}\"",
                                 Collapsed = false
-                            }, NotificationType.GenericSuccess, currentUserId);
+                            }, currentUserId);
 
                             await _containerService.Continue(uow, container);
                         }
@@ -672,15 +682,23 @@ namespace Hub.Services
 
                         if (container.State != State.Failed)
                         {
-                            _pusherNotifier.NotifyUser(new
+                            _pusherNotifier.NotifyUser(new NotificationMessageDTO
                             {
+                                NotificationType = NotificationType.GenericSuccess,
+                                NotificationArea = NotificationArea.ActivityStream,
                                 Message = $"Complete processing for Plan \"{plan.Name}\".{responseMsg}",
                                 Collapsed = false
-                            }, NotificationType.GenericSuccess, currentUserId);
+                            }, currentUserId);
                         }
                         else
                         {
-                            _pusherNotifier.NotifyUser($"Failed executing plan \"{plan.Name}\"", NotificationType.GenericFailure, currentUserId);
+                            _pusherNotifier.NotifyUser(new NotificationMessageDTO
+                            {
+                                NotificationType = NotificationType.GenericFailure,
+                                NotificationArea = NotificationArea.ActivityStream,
+                                Message = $"Failed executing plan \"{plan.Name}\"",
+                                Collapsed = false
+                            }, currentUserId);
                         }
 
                         var containerDTO = Mapper.Map<ContainerDTO>(container);
@@ -768,8 +786,13 @@ namespace Hub.Services
                 messageToNotify = errorMessage;
             }
 
-            var message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, messageToNotify);
-            _pusherNotifier.NotifyUser(message, NotificationType.GenericFailure, userId);
+            _pusherNotifier.NotifyUser(new NotificationMessageDTO
+            {
+                NotificationType = NotificationType.GenericFailure,
+                NotificationArea = NotificationArea.ActivityStream,
+                Message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, messageToNotify),
+                Collapsed = false
+            }, userId);
 
         }
 
@@ -800,9 +823,13 @@ namespace Hub.Services
                     return x;
                 }));
 
-                _pusherNotifier.NotifyUser($"Validation of activity '{activityLabel}' from plan \"{planName}\" failed: {errors}",
-                       NotificationType.GenericFailure,
-                       userId);
+                _pusherNotifier.NotifyUser(new NotificationMessageDTO
+                {
+                    NotificationType = NotificationType.GenericFailure,
+                    NotificationArea = NotificationArea.ActivityStream,
+                    Message = $"Validation of activity '{activityLabel}' from plan \"{planName}\" failed: {errors}",
+                    Collapsed = false
+                }, userId);
             }
         }
 
@@ -911,7 +938,13 @@ namespace Hub.Services
                 errorMessage += ex.Message;
             }
 
-            _pusherNotifier.NotifyUser(errorMessage, NotificationType.GenericFailure, user.Id);
+            _pusherNotifier.NotifyUser(new NotificationMessageDTO
+            {
+                NotificationType = NotificationType.GenericFailure,
+                NotificationArea = NotificationArea.ActivityStream,
+                Message = errorMessage,
+                Collapsed = false
+            }, user.Id);
         }
 
         private async Task ReportAuthDeactivation(PlanDO plan, InvalidTokenRuntimeException ex)
@@ -921,7 +954,13 @@ namespace Hub.Services
 
             errorMessage += $"Plan \"{plan.Name}\" which contains failed activity was deactivated.";
 
-            _pusherNotifier.NotifyUser(errorMessage, NotificationType.GenericFailure, plan.Fr8AccountId);
+            _pusherNotifier.NotifyUser(new NotificationMessageDTO
+            {
+                NotificationType = NotificationType.GenericFailure,
+                NotificationArea = NotificationArea.ActivityStream,
+                Message = errorMessage,
+                Collapsed = false
+            }, plan.Fr8AccountId);
 
             //Sending an Email
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

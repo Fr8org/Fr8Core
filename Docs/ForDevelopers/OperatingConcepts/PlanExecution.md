@@ -1,34 +1,49 @@
 # Plan execution
 
-Activities execution in Fr8 is stack based. All the data related to activities execution is stored within **OperationalStateCM** crate of the **Container**'s payload. This manifest is designed to control all main aspects of the container execution:
+Activities execution in Fr8 is stack-based and information related to the stack is stored not in the Hub but in the JSON data of the Payload Container itself. This provides Payload Containers with considerable portability. A Container can be moved from one Hub to another Hub, and the receiving Hub will know exactly where to execute the new Activity. It also enables asynchronicity. An Activity can pause processing of a Payload Container, wait for some real world activity (such as a person responding to an email or sms), and then post an event to the Hub to resume processing, and the Hub will be able to look in the Payload Container and know where processing paused and where to resume.
+
+Stack-related data and other data related to run-time execution of a Plan is stored, like almost all Fr8 data, in a Crate. Here, the special crate is called the Operation State Crate, and it uses the **OperationalStateCM** manifest. 
+
+Operational State Crate
+=====================
+
+This manifest is designed to control all main aspects of the container execution:
 1. It stores activity *Call Stack*. 
 2. It stores activity's *Stack-Local data*
 3. It is used for transferring [Response](/Docs/ForDevelopers/Objects/Activities/ActivityResponses.md) data from the activity that is currently being executed.  
->**Important!**  
-> Don't be confused with activity response and the data that activity is placing into container's payload. These are completely different concepts. Activity response is information about execution status (Success, Fail, etc) and operations that activity wants the Hub to do after execution. It has no direct relations to the data that activity is processing.
-4. It stores container execution *History*. In the current implementation execution history is the chain if containers that have leaded to execution of the current one. If the container execution is initiated by the user directly then history remains empty.
+4. It stores the container execution *History*. Execution History is the chain of containers that have preceded execution of the current one. If the container execution is initiated by the user directly then History remains empty.
 
+Usage Notes
+------------------------
+Since multiple parties, including the Hub, use the same Operational State crate to store data, be careful about making assumptions about what you'll find there. 
 
-> **Note:**  
-> Container must have the only **OperationalStateCM** crate and before any activities are called by the Hub this crate is already inside the Container. 
-> As the activity developer you should not try to add another **OperationalStateCM** crate to the payload.  
+The  **OperationalStateCM** Crate is created when the Container is created. You should avoid creating additional ones. 
 
 > **Important!**  
 >The only thing that can be changed by the activity is **LocalData** property of the stack frame which is related to this activity. All other changes will be discarded by the Hub.
 
 See [Implementation details](/Docs/ForDevelopers/SDK/.NET/ContainerExecutionImpl.md) for in-depth explanations of container execution logic. 
 
-## Call Stack
-There are few simple rules of how call stack is maintained: 
-1. When activity is being executed, information about this activity is pushed to Call Stack in the form of Stack Frame.
-2. Stack frame for the certain activity is popped from the stack in one of the following cases:
-   1. Activity finished execution and has no children.
-   2. Activity has children and activity with descendants have been executed. That means that parent activity stays in the call stack until all descendants are processed.
-   3. Activity finished execution and requested to **jump to activity or subplan**. Before jumping to the specified activity or subplan current activity is removed from the call stack even if it has children.
+Operational State Crate Element: Current ActivityResponse
+-----------------------------------------------------------
+A special Fr8-specific data structure used by Activities to provide status with their responses to Hub requests. [Learn more.](/Docs/ForDevelopers/Objects/Activities/ActivityResponses.md)
 
-> **Note:** When activity requests to suspend execution of the container, stack frame related to this activity is not being popped from the call stack. This leads to the fact, that when container execution is resumed, activity is being run once again to give it chance to perform some logic.
 
-Lets see few examples of **OperationalStateCM** content during the different steps of the container execution. 
+
+
+# The Call Stack
+These rules govern the Call Stack:
+
+1. During Activity Execution, the Hub pushes a Stack Frame of information about the activity to the Call Stack.
+
+2. A Stack Frame is popped from the stack when execution of an Activity finishes, in one of the following cases:
+   1. The completed Activity has no children.
+   2. The completed Activity has children, and they have all been executed. 
+   3. The completed Activity returned the ActivityResponses Jump To Activity or Jump to Subplan. Before jumping to the specified activity or subplan current activity is removed from the call stack even if it has children.
+
+As would be expected, an ActivityResponse of Request Suspend does not pop the stack, so that the returning Activity will be called again, when execution resumes. 
+
+Here are a few examples of **OperationalStateCM** content during the different steps of the container execution. 
 
 ### Linear sequence of activities
 Here is our plan:  

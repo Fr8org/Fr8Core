@@ -165,7 +165,7 @@ module dockyard.controllers {
             });      
 
             UserService.getCurrentUser().$promise.then(data => {
-                PusherNotifierService.bindEventToChannel(data.emailAddress, dockyard.directives.NotificationType[dockyard.directives.NotificationType.GenericInfo], (data: any) => {
+                PusherNotifierService.bindEventToChannel(data.emailAddress, dockyard.enums.NotificationArea[dockyard.enums.NotificationArea.ActivityStream], (data: any) => {
                     this.updatePlanLastUpdated(data.PlanId, data.PlanLastUpdated);
                 });
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Data.Interfaces;
 using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
@@ -136,9 +137,15 @@ namespace Hub.Services
         {
             if (user != null)
             {
-                _pusherNotifier.NotifyUser("You are running more Activities than your capacity right now. " +
-                                           $"This Account will be prevented from processing Activities for the next {Math.Ceiling(_userBanTime.TotalSeconds / 60.0f)} minutes. " +
-                                           "Contact support@fr8.co for assistance", NotificationType.GenericFailure, user);
+                _pusherNotifier.NotifyUser( new NotificationMessageDTO
+                {
+                    NotificationType = NotificationType.GenericFailure,
+                    NotificationArea = NotificationArea.ActivityStream,
+                    Message = "You are running more Activities than your capacity right now. " +
+                            $"This Account will be prevented from processing Activities for the next {Math.Ceiling(_userBanTime.TotalSeconds / 60.0f)} minutes. " +
+                           "Contact support@fr8.co for assistance",
+                    Collapsed = false
+                }, user);
             }
         }
 

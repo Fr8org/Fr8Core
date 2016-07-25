@@ -36,9 +36,9 @@ namespace terminalDocuSign.Activities
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
         protected override string ActivityUserFriendlyName => "Get DocuSign Template";
+        private string crateName = "DocuSign Template";
 
-
-        public Get_DocuSign_Template_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+        public Get_DocuSign_Template_v1(ICrateManager crateManager, IDocuSignManager docuSignManager)
             : base(crateManager, docuSignManager)
         {
         }
@@ -66,13 +66,12 @@ namespace terminalDocuSign.Activities
         {
             var manifest = new DocuSignTemplateCM
             {
-                Body = JsonConvert.SerializeObject(template),
+                Body = template.ToString(),
                 CreateDate = DateTime.UtcNow,
-                Name = template["Name"].ToString(),
-                Status = template.Property("Name").SelectToken("status").Value<string>()
+                Name = template.SelectToken("envelopeTemplateDefinition.name").Value<string>()
             };
 
-            return Crate.FromContent("DocuSign Template", manifest);
+            return Crate.FromContent(crateName, manifest);
         }
 
         public override Task Initialize()
@@ -87,6 +86,8 @@ namespace terminalDocuSign.Activities
 
         public override Task FollowUp()
         {
+            CrateSignaller.MarkAvailable<DocuSignTemplateCM>(crateName, AvailabilityType.RunTime);
+
             return Task.FromResult(0);
         }
 
