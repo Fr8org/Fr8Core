@@ -126,11 +126,11 @@ namespace Data.Repositories.Security.StorageImpl
         {
             throw new NotImplementedException();
         }
-        public ObjectRolePermissionsWrapper GetRecordBasedPermissionSetForObject(string dataObjectId)
+        public ObjectRolePermissionsWrapper GetRecordBasedPermissionSetForObject(string dataObjectId, string dataObjectType)
         {
             lock (ObjectRolePermissions)
             {
-                return ObjectRolePermissions.FirstOrDefault(x => x.ObjectId == dataObjectId);
+                return ObjectRolePermissions.FirstOrDefault(x => x.ObjectId == dataObjectId && x.Type == dataObjectType);
             }
         }
     }

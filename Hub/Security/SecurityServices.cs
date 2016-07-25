@@ -158,12 +158,15 @@ namespace Hub.Security
             if (!IsAuthenticated())
                 return terminals;
 
+            if (Thread.CurrentPrincipal is Fr8Principle)
+                return terminals;
+
             var roles = GetRoleNames().ToList();
 
             var allowedTerminals = new List<TerminalDO>();
             foreach (var terminal in terminals)
             {
-                var objRolePermissionWrapper = _securityObjectStorageProvider.GetRecordBasedPermissionSetForObject(terminal.Id.ToString());
+                var objRolePermissionWrapper = _securityObjectStorageProvider.GetRecordBasedPermissionSetForObject(terminal.Id.ToString(), nameof(TerminalDO));
                 if (!objRolePermissionWrapper.RolePermissions.Any()) continue;
 
                 // first check if this user is the owner of the record
@@ -223,7 +226,7 @@ namespace Hub.Security
 
             //first check Record Based Permission.
             bool? evaluator = null;
-            var objRolePermissionWrapper = _securityObjectStorageProvider.GetRecordBasedPermissionSetForObject(curObjectId);
+            var objRolePermissionWrapper = _securityObjectStorageProvider.GetRecordBasedPermissionSetForObject(curObjectId, curObjectType);
             if (objRolePermissionWrapper.RolePermissions.Any() || objRolePermissionWrapper.Properties.Any())
             {
                 if (string.IsNullOrEmpty(propertyName))

@@ -122,7 +122,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
-        public ObjectRolePermissionsWrapper GetRecordBasedPermissionSetForObject(string dataObjectId)
+        public ObjectRolePermissionsWrapper GetRecordBasedPermissionSetForObject(string dataObjectId, string dataObjectType)
         {
             using (var connection = OpenConnection(_sqlConnectionProvider))
             {
@@ -136,9 +136,10 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                           from dbo.RolePermissions rp          
                           inner join dbo.PermissionSets p on rp.PermissionSetId = p.Id                                                                  
                           inner join dbo.ObjectRolePermissions orp on rp.Id = orp.RolePermissionId                               
-                          inner join dbo.AspNetRoles anr on rp.RoleId = anr.Id where orp.ObjectId = @objectId ";
+                          inner join dbo.AspNetRoles anr on rp.RoleId = anr.Id where orp.ObjectId = @objectId && orp.Type = @objectType ";
 
                     command.Parameters.AddWithValue("@objectId", dataObjectId);
+                    command.Parameters.AddWithValue("@objectType", dataObjectType);
                     command.CommandText = cmd;
 
                     var result = new ObjectRolePermissionsWrapper();
