@@ -37,6 +37,8 @@ module dockyard.controllers.NotifierController {
 
             // liner-progress-bar controll
             $scope.planIsRunning = false;
+            var user = null;
+            var isScopeDestroyed = false;
 
             this.$scope.$on(<any>designHeaderEvents.PLAN_EXECUTION_STARTED,
                 (event: ng.IAngularEvent) => {
@@ -48,10 +50,22 @@ module dockyard.controllers.NotifierController {
                     $scope.planIsRunning = false;
                 });
 
-            UserService.getCurrentUser().$promise.then(data => {
-                $scope.eventList = [];
+            this.$scope.$on('$destroy', (event: ng.IAngularEvent) => {
+                isScopeDestroyed = true;
+                if (user !== null) {
+                    PusherNotifierService.removeAllEvents(user.id);
+                }
+            });
 
+            UserService.getCurrentUser().$promise.then(data => {
+                // Destroyed scope's channel binding can be called late which we prevent it in here
+                if (isScopeDestroyed) {
+                    return;
+                }
+
+                $scope.eventList = [];
                 var channel: string = data.id;
+                user = data;
 
                 // ActivityStream
                 PusherNotifierService.bindEventToChannel(channel, dockyard.enums.NotificationArea[dockyard.enums.NotificationArea.ActivityStream], (data: any) => {
