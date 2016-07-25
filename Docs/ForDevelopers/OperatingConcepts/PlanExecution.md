@@ -8,6 +8,7 @@ Operational State Crate
 =====================
 
 This manifest is designed to control all main aspects of the container execution:
+
 1. It stores activity *Call Stack*. 
 2. It stores activity's *Stack-Local data*
 3. It is used for transferring [Response](/Docs/ForDevelopers/Objects/Activities/ActivityResponses.md) data from the activity that is currently being executed.  
