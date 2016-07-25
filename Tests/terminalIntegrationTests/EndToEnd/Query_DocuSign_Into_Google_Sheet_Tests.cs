@@ -32,7 +32,7 @@ namespace terminalIntegrationTests.EndToEnd
             googleActivityConfigurator = new IntegrationTestTools_terminalGoogle(this);
         }
 
-        [Test, Ignore, Category("Integration.terminalGoogle")]
+        [Test, Category("Integration.terminalGoogle")]
         public async Task Query_DocuSign_Into_Google_Sheet_End_To_End()
         {
            
@@ -67,8 +67,8 @@ namespace terminalIntegrationTests.EndToEnd
 
                 //find spreadsheet
                 var worksheets = await googleSheetApi.GetWorksheets(spreadSheeturl, defaultGoogleAuthToken);
-                Assert.IsNotNull(worksheets.FirstOrDefault(x => x.Value == "Sheet1"), "Worksheet was not found into newly created google excel file.");
-                var worksheetUri = worksheets.FirstOrDefault(x => x.Value == "Sheet1").Key;
+                Assert.IsNotNull(worksheets.FirstOrDefault(x => x.Value == "TestSheet"), "Worksheet was not found into newly created google excel file.");
+                var worksheetUri = worksheets.FirstOrDefault(x => x.Value == "TestSheet").Key;
                 var dataRows = await googleSheetApi.GetData(spreadSheeturl, worksheetUri, defaultGoogleAuthToken);
 
                 //file should contain 11 envelopes saved
