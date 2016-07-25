@@ -374,9 +374,11 @@ namespace Hub.Services
 
         public IEnumerable<ActivityTemplateCategoryDTO> GetActivityTemplatesGroupedByCategories()
         {
+            var availableTerminalIds = _terminal.GetAll().Select(x => x.Id).ToList();
+
             var categories = _activityTemplate
                 .GetQuery()
-                .Where(x => x.Categories != null)
+                .Where(x => availableTerminalIds.Contains(x.TerminalId) && x.Categories != null)
                 .SelectMany(x => x.Categories)
                 .Select(x => new { x.ActivityCategory.Name, x.ActivityCategory.IconPath })
                 .OrderBy(x => x.Name)
