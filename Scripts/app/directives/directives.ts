@@ -41,7 +41,7 @@ app.directive('blockIf', function () {
         restrict: 'A',
         link: function (_scope, _element, attrs) {
             var expr = attrs['blockIf'];
-            _scope.$watch(expr, function (value) {
+            _scope.$watch(expr, (value) => {
                 if (attrs['class'] === "plan-loading-message" && _scope.$eval(expr) == null) {
                     Metronic.blockUI({ target: _element, animate: true });
                 }
@@ -55,6 +55,31 @@ app.directive('blockIf', function () {
         }
     };
 });
+
+
+
+app.directive('fr8Click', ['$parse', '$timeout',($parse: ng.IParseService) => {
+    return {
+        restrict: 'A',
+        require: '^configurationControl',
+        compile: ($element: ng.IAugmentedJQuery, attr) => {
+            var fn = $parse(attr['fr8Click']);
+            return (scope, element: ng.IAugmentedJQuery, attr, cc: dockyard.directives.paneConfigureAction.IConfigurationControlController) => {
+                element.on('click', (event) => {
+                    if (cc.isThereOnGoingConfigRequest()) {
+                        cc.queueClick(element);
+                    } else {
+                        //lets call callback function immediately
+                        scope.$apply(() => {
+                            fn(scope, { $event: event });
+                        });
+                    }
+                });
+            };
+        }
+    };
+}]);
+
 
 app.directive("checkboxGroup", function () {
     return {

@@ -217,8 +217,8 @@
       <HintPath>..\..\packages\libphonenumber-csharp.7.2.5\lib\PhoneNumbers.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="PusherServer, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\PusherServer.2.1.1.0\lib\net35\PusherServer.dll</HintPath>
+    <Reference Include="PusherServer, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\PusherServer.3.0.0\lib\net35\PusherServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL">
@@ -278,8 +278,8 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="YamlDotNet, Version=2.0.1.20271, Culture=neutral, PublicKeyToken=2b53052c5884d7a1, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\YamlDotNet.3.1.1\lib\net35\YamlDotNet.dll</HintPath>
+    <Reference Include="YamlDotNet, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\YamlDotNet.3.8.0\lib\net35\YamlDotNet.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -344,55 +344,7 @@
     <None Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Config\HealthMonitor\Settings.config.src" />
     <None Include="Config\HealthMonitor\Settings.config.src.readme" />
-    <None Include="Config\HubWeb\Settings.config" />
-    <None Include="Config\PlanDirectory\Settings.config" />
-    <None Include="Config\PlanDirectory\Settings.Debug.config" />
-    <None Include="Config\PlanDirectory\Settings.Release.config" />
-    <None Include="Config\terminalAsana\Settings.config" />
-    <None Include="Config\terminalAsana\Settings.Dev.config" />
-    <None Include="Config\terminalAsana\Settings.Release.config" />
-    <None Include="Config\terminalAtlassian\Settings.config" />
-    <None Include="Config\terminalAzure\Settings.config" />
-    <None Include="Config\terminalBasecamp2\Settings.config" />
-    <None Include="Config\terminalBasecamp2\Settings.Demo.config" />
-    <None Include="Config\terminalBasecamp2\Settings.Dev.config" />
-    <None Include="Config\terminalBasecamp2\Settings.Release.config" />
-    <None Include="Config\terminalBox\Settings.config" />
-    <None Include="Config\terminalCloudService\ServiceConfiguration.Demo.cscfg" />
-    <None Include="Config\terminalCloudService\ServiceConfiguration.Dev.cscfg" />
-    <None Include="Config\terminalCloudService\ServiceConfiguration.Release.cscfg" />
-    <None Include="Config\terminalDocuSign\Settings.config" />
-    <None Include="Config\terminalDropbox\Settings.config" />
-    <None Include="Config\terminalFacebook\Settings.config" />
-    <None Include="Config\terminalFacebook\Settings.Demo.config" />
-    <None Include="Config\terminalFacebook\Settings.Dev.config" />
-    <None Include="Config\terminalFacebook\Settings.Release.config" />
-    <None Include="Config\terminalFr8Core\Settings.config" />
-    <None Include="Config\terminalGoogle\Settings.config" />
-    <None Include="Config\terminalInstagram\Settings.config" />
-    <None Include="Config\terminalPapertrail\Settings.config" />
-    <None Include="Config\terminalQuickBooks\Settings.config" />
-    <None Include="Config\terminalSalesforce\Settings.config" />
-    <None Include="Config\terminalSalesforce\Settings.Demo.config" />
-    <None Include="Config\terminalSalesforce\Settings.Dev.config" />
-    <None Include="Config\terminalSalesforce\Settings.Release.config" />
-    <None Include="Config\terminalSendGrid\Settings.config" />
-    <None Include="Config\terminalSlack\Settings.config" />
-    <None Include="Config\terminalSlack\Settings.Demo.config" />
-    <None Include="Config\terminalSlack\Settings.Dev.config" />
-    <None Include="Config\terminalSlack\Settings.Release.config" />
-    <None Include="Config\terminalStatX\Settings.config" />
-    <None Include="Config\terminalTelegram\Settings.config" />
-    <None Include="Config\terminalTelegram\Settings.Demo.config" />
-    <None Include="Config\terminalTelegram\Settings.Dev.config" />
-    <None Include="Config\terminalTelegram\Settings.Release.config" />
-    <None Include="Config\terminalTwilio\Settings.config" />
-    <None Include="Config\terminalYammer\Settings.config" />
-    <None Include="Config\terminalYammer\Settings.Demo.config" />
-    <None Include="Config\terminalYammer\Settings.Dev.config" />
-    <None Include="Config\terminalYammer\Settings.Release.config" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -404,6 +356,10 @@
     <ProjectReference Include="..\..\Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj">
+      <Project>{bba91af2-7636-41b6-87c4-c1575ae8b04b}</Project>
+      <Name>Fr8Infrastructure.NET</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Services\PlanDirectory\PlanDirectory.csproj">
       <Project>{2b78433b-ba79-470b-bef6-dba5c1904865}</Project>
@@ -420,6 +376,10 @@
     <ProjectReference Include="..\..\terminalStatX\terminalStatX.csproj">
       <Project>{5fb0adc8-24c7-4b32-a4d2-afa31b0baaa7}</Project>
       <Name>terminalStatX</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalTelegram\terminalTelegram.csproj">
+      <Project>{fba67d4e-d81a-4b6e-a6fd-464a2a5af9d5}</Project>
+      <Name>terminalTelegram</Name>
     </ProjectReference>
     <ProjectReference Include="..\Fr8.Testing\Fr8.Testing.csproj">
       <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
@@ -591,7 +551,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('..\..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Fr8.PrivateSettings.1.2016.202.9\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Fr8.PrivateSettings.1.2016.202.9\build\net40\Fr8.PrivateSettings.targets'))" />
   </Target>
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
   <Import Project="..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
@@ -602,8 +562,10 @@
   <PropertyGroup>
     <PostBuildEvent>powershell.exe –NonInteractive –ExecutionPolicy Unrestricted –command "&amp; { $(ProjectDir)Build-Settings.ps1 }"</PostBuildEvent>
   </PropertyGroup>
-  <Import Project="..\..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets" Condition="Exists('..\..\packages\MSBuild.NugetContentRestore.0.1.6\build\net40\MSBuild.NugetContentRestore.targets')" />
-  <Import Project="..\..\targets\Fr8.NugetContentRestore.targets" Condition="Exists('..\..\targets\Fr8.NugetContentRestore.targets')" />
+  <Target Name="BeforeBuild">
+    <RestoreSettingsTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)" ProjectName="$(ProjectName)" />
+  </Target>
+  <Import Project="..\..\packages\Fr8.PrivateSettings.1.2016.202.9\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('..\..\packages\Fr8.PrivateSettings.1.2016.202.9\build\net40\Fr8.PrivateSettings.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

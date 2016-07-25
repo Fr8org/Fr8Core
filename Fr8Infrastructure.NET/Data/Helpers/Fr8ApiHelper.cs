@@ -96,32 +96,33 @@ namespace Fr8.Infrastructure.Data.Helpers
         {
             object searchArea;
 
-            if (operationalState != null)
-            {
-                //let's check if we are in a loop
-                //and this is a loop data?
-                //check if this crate is loop related
-                var loopState = operationalState.CallStack.FirstOrDefault(x =>
-                {
-                    if (x.LocalData?.Type == "Loop")
-                    {
-                        var loopStatus = x.LocalData.ReadAs<OperationalStateCM.LoopStatus>();
+            //
+            // Commented out for future references. Loop related extraction logic moved to Loop activity
+            //
+            //let's check if we are in a loop
+            //and this is a loop data?
+            //check if this crate is loop related
+            //var loopState = operationalState.CallStack.FirstOrDefault(x =>
+            //{
+            //    if (x.LocalData?.Type == "Loop")
+            //    {
+            //        var loopStatus = x.LocalData.ReadAs<OperationalStateCM.LoopStatus>();
 
-                        if (loopStatus != null && loopStatus.CrateManifest.CrateDescriptions[0].Label == crate.Label && loopStatus.CrateManifest.CrateDescriptions[0].ManifestType == crate.ManifestType.Type)
-                        {
-                            return true;
-                        }
-                    }
+            //        if (loopStatus != null && loopStatus.CrateManifest.CrateDescriptions[0].Label == crate.Label && loopStatus.CrateManifest.CrateDescriptions[0].ManifestType == crate.ManifestType.Type)
+            //        {
+            //            return true;
+            //        }
+            //    }
 
-                    return false;
-                });
+            //    return false;
+            //});
 
-                if (loopState != null) //this is a loop related data request
-                {
-                    searchArea = GetDataListItem(crate, loopState.LocalData.ReadAs<OperationalStateCM.LoopStatus>().Index);
-                }
-            }
-
+            //if (loopState != null) //this is a loop related data request
+            //{
+            //    searchArea = GetDataListItem(crate, loopState.LocalData.ReadAs<OperationalStateCM.LoopStatus>().Index);
+            //}
+            //else
+            //{
             //hmmm this is a regular data request
             //lets search in complete crate
             searchArea = crate;
@@ -138,7 +139,7 @@ namespace Fr8.Infrastructure.Data.Helpers
                         return row.Row.FirstOrDefault(a => a.Cell.Key == fieldKey)?.Cell;
                 }
             }
-
+            //}
 
             if (searchArea is Crate)
             {

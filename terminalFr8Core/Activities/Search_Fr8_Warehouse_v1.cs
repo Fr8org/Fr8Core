@@ -21,6 +21,9 @@ using StructureMap;
 
 namespace terminalFr8Core.Activities
 {
+    /// <summary>
+    ///  Not in service, but may provide useful ideas and insights
+    /// </summary>
     public class Search_Fr8_Warehouse_v1 : ExplicitTerminalActivity
     {
         private readonly IContainer _container;
@@ -205,8 +208,10 @@ namespace terminalFr8Core.Activities
             var operationalStatus = new OperationalStateCM
             {
                 CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.ExecuteClientActivity),
-                CurrentClientActivityName = "RunImmediately"
             };
+
+            operationalStatus.CurrentActivityResponse.Body = "RunImmediately";
+
             var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
             Storage.Add(operationsCrate);
         }
@@ -305,8 +310,9 @@ namespace terminalFr8Core.Activities
         {
             AddControls(new ActionUi().Controls);
             var designTimefieldLists = GetFr8WarehouseTypes(AuthorizationToken);
-            var availableMtObjects = CrateManager.CreateDesignTimeFieldsCrate("Queryable Objects", designTimefieldLists.ToArray());
-            Storage.Add(availableMtObjects);
+
+            Storage.Add("Queryable Objects", new KeyValueListCM(designTimefieldLists));
+
             return Task.FromResult(0);
         }
 

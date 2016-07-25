@@ -71,17 +71,11 @@ namespace terminalFacebook.Activities
             _fbIntegration = fbIntegration;
         }
 
-        private Crate PackEventSubscriptionsCrate()
-        {
-            return CrateManager.CreateStandardEventSubscriptionsCrate(
-                "Standard Event Subscriptions",
-                "Facebook",
-                new string[] { FacebookFeed });
-        }
-
         public override Task Initialize()
         {
-            Storage.Add(PackEventSubscriptionsCrate());
+            EventSubscriptions.Manufacturer = "Facebook";
+            EventSubscriptions.Add(FacebookFeed);
+            
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeCrateLabel)
                           .AddField(FacebookFeedIdField)
                           .AddField(FacebookFeedMessageField)

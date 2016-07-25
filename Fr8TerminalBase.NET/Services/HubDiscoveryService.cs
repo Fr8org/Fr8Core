@@ -48,7 +48,7 @@ namespace Fr8.TerminalBase.Services
             _activityStore = activityStore;
             _hubDiscoveryRetryPolicy = hubDiscoveryRetryPolicy;
             _apiSuffix = $"/api/{CloudConfigurationManager.GetSetting("HubApiVersion")}";
-            _masterHubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl");
+            _masterHubUrl = CloudConfigurationManager.GetSetting("DefaultHubUrl");
         }
 
         /**********************************************************************************/

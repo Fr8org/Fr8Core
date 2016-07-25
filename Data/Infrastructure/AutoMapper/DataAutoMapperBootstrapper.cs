@@ -189,7 +189,7 @@ namespace Data.Infrastructure.AutoMapper
                 )
                 .ForMember(
                     x => x.CurrentClientActivityName,
-                    x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentClientActivityName))
+                    x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentActivityResponse?.Body))
                 );
             Mapper.CreateMap<AuthorizationTokenDTO, AuthorizationTokenDO>()
                   .ForMember(x => x.UserID, x => x.ResolveUsing(y => y.UserId))

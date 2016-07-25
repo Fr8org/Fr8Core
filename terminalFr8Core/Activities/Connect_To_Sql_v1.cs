@@ -9,6 +9,7 @@ using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using terminalFr8Core.Infrastructure;
 using System;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace terminalFr8Core.Activities
 {
@@ -88,32 +89,12 @@ namespace terminalFr8Core.Activities
                 try
                 {
                     var tableDefinitions = FindObjectHelper.RetrieveColumnDefinitions(connectionString);
-                    var tableDefinitionCrate =
-                        CrateManager.CreateDesignTimeFieldsCrate(
-                            "Sql Table Definitions",
-                            tableDefinitions.ToArray()
-                        );
+                    Storage.Add("Sql Table Definitions", new KeyValueListCM(tableDefinitions));
 
                     var columnTypes = FindObjectHelper.RetrieveColumnTypes(connectionString);
-                    var columnTypesCrate =
-                        CrateManager.CreateDesignTimeFieldsCrate(
-                            "Sql Column Types",
-                            columnTypes.ToArray()
-                        );
+                    Storage.Add("Sql Column Types", new KeyValueListCM(columnTypes));
 
-                    var connectionStringFieldList = new List<KeyValueDTO>()
-                    {
-                        new KeyValueDTO() { Key = connectionString, Value = connectionString }
-                    };
-                    var connectionStringCrate =
-                        CrateManager.CreateDesignTimeFieldsCrate(
-                            "Sql Connection String",
-                            connectionStringFieldList.ToArray()
-                        );
-
-                    Storage.Add(tableDefinitionCrate);
-                    Storage.Add(columnTypesCrate);
-                    Storage.Add(connectionStringCrate);
+                    Storage.Add("Sql Connection String", new KeyValueListCM(new KeyValueDTO (connectionString, connectionString)));
                 }
                 catch
                 {

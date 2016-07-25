@@ -16,6 +16,8 @@ Additional Topics
 
 [Crate Manager](/Docs/ForDevelopers/SDK/.NET/Services/Crate%20Manager.md)
 
+[Supporting OAuth](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/TerminalDeveloping-Authentication.md)
+
 [DI container configuration] (/Docs/ForDevelopers/SDK/.NET/DI%20container%20configuration.md)
 
 [Where to Get Help](./HelpResources.md)

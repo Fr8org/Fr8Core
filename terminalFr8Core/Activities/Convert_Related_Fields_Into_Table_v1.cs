@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Control;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Helpers;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
@@ -85,6 +86,24 @@ namespace terminalFr8Core.Activities
         {
         }
 
+        private IEnumerable<KeyValueDTO> GetFields(IEnumerable<Crate> crates)
+        {
+            var fields = new List<KeyValueDTO>();
+
+            foreach (var crate in crates)
+            {
+                //let's pass unknown manifests for now
+                if (!crate.IsKnownManifest)
+                {
+                    continue;
+                }
+
+                fields.AddRange(Fr8ReflectionHelper.FindFieldsRecursive(crate.Get()));
+            }
+
+            return fields;
+        }
+
         public override async Task Run()
         {
             var upstreamDataChooser = GetControl<UpstreamDataChooser>("Upstream_data_chooser");
@@ -101,7 +120,7 @@ namespace terminalFr8Core.Activities
                 filteredCrates = filteredCrates.Where(s => s.Label == upstreamDataChooser.SelectedLabel);
             }
 
-            var fieldList = CrateManager.GetFields(filteredCrates);
+            var fieldList = GetFields(filteredCrates);
 
 
             if (upstreamDataChooser.SelectedFieldType != null)
@@ -142,8 +161,7 @@ namespace terminalFr8Core.Activities
                     }).ToList()
                 });
 
-            var tableDataCrate = CrateManager.CreateStandardTableDataCrate("AssembledTableData", false, rows.ToArray());
-            Payload.Add(tableDataCrate);
+            Payload.Add("AssembledTableData", new StandardTableDataCM(false, rows.ToArray()));
 
             Success();
         }
