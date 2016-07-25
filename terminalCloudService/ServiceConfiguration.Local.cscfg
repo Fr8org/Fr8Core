@@ -11,6 +11,7 @@
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteForwarder.Enabled" value="true" />
       <Setting name="Fr8.ConnectionString" value="" />
       <Setting name="CoreWebServerUrl" value="" />
+      <Setting name="DefaultHubUrl" value="" />
       <Setting name="HubApiBaseUrl" value="" /> 
       <Setting name="LoggerNamePrefix" value="" />
       <Setting name="terminalAsana.TerminalEndpoint" value="" />
