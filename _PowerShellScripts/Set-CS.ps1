@@ -4,6 +4,8 @@
 	[string]$overrideDbName
 )
 
+$ErrorActionPreference = 'Stop'
+
 if ([System.String]::IsNullOrEmpty($overrideDbName) -ne $true) {
 	$builder = new-object system.data.SqlClient.SqlConnectionStringBuilder($connectionString)
 	$builder["Initial Catalog"] = $overrideDbName
