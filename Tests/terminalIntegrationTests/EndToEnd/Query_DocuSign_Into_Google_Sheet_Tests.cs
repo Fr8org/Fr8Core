@@ -32,7 +32,7 @@ namespace terminalIntegrationTests.EndToEnd
             googleActivityConfigurator = new IntegrationTestTools_terminalGoogle(this);
         }
 
-        [Test, Category("Integration.terminalGoogle")]
+        [Test, Ignore, Category("Integration.terminalGoogle")]
         public async Task Query_DocuSign_Into_Google_Sheet_End_To_End()
         {
            
