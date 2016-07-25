@@ -118,7 +118,7 @@ namespace terminalFr8Core.Activities
             {
                 var crateChooser = GetControl<CrateChooser>("Available_Crates");
 
-                if (!crateChooser.CrateDescriptions.Any(c => c.Selected))
+                if (crateChooser.CrateDescriptions != null && !crateChooser.CrateDescriptions.Any(c => c.Selected))
                 {
                     ValidationManager.SetError("Please select an item from the list", crateChooser);
                 }

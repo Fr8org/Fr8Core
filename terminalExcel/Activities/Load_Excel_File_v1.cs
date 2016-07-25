@@ -150,7 +150,7 @@ namespace terminalExcel.Activities
                 if (rows != null && rows.Count > 0)
                 {
                     tableCrate = Crate.FromContent(RunTimeCrateLabel, new StandardTableDataCM(hasFirstRowHeader, rows));
-                    var fieldsCrate = TabularUtilities.PrepareFieldsForOneRowTable(isFirstRowAsColumnNames, isRunTime, rows, headersArray);
+                    var fieldsCrate = TabularUtilities.PrepareFieldsForOneRowTable(isFirstRowAsColumnNames, rows, headersArray);
                     if (fieldsCrate != null)
                     {
                         crates.Add(fieldsCrate);
