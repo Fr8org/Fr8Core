@@ -65,7 +65,7 @@ namespace HubTests.Utilization
 
         public class PusherMock : IPusherNotifier
         {
-            public readonly List<string> Notifications = new List<string>();
+            public readonly List<NotificationMessageDTO> Notifications = new List<NotificationMessageDTO>();
 
             public string GetChanelMessages(string email)
             {
@@ -74,12 +74,12 @@ namespace HubTests.Utilization
 
             public void Notify(string channelName, NotificationMessageDTO notificationMessage)
             {
-                Notifications.Add(notificationMessage.ToString());
+                Notifications.Add(notificationMessage);
             }
 
             public void NotifyUser(NotificationMessageDTO notificationMessage, string userId)
             {
-                Notifications.Add(notificationMessage.ToString());
+                Notifications.Add(notificationMessage);
             }
         }
 
@@ -175,7 +175,7 @@ namespace HubTests.Utilization
             _timerService.Tick();
 
             Assert.AreEqual(1, pusherMock.Notifications.Count, "Invalid number of push notifications");
-            Assert.IsTrue(pusherMock.Notifications[0].Contains("You are running more Activities than your capacity right now."), "Unexpected notification message");
+            Assert.IsTrue(pusherMock.Notifications[0].Message.Contains("You are running more Activities than your capacity right now."), "Unexpected notification message");
         }
     }
 }
