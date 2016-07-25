@@ -383,6 +383,10 @@ Page Footer
 
 @media (min-width: 992px) {
   /* 992px */
+    .admin-drop-down {
+        position:relative;
+        float:right !important;
+    }
   .page-header {
     /* Page Header Menu */ }
     .page-header .page-header-menu.fixed {
