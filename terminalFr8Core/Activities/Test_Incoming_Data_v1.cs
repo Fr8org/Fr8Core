@@ -51,10 +51,13 @@ namespace terminalFr8Core.Activities
             {
                 curValues.AddRange(valuesCrate.AllValues());
             }
-            foreach (var valuesCrate in valuesTableCrates)
+            var tableCrates = valuesTableCrates.Where(c => c.Table.Count == 1);
+            if(tableCrates != null)
             {
-                var tempPayload = valuesCrate.ToPayloadData();
-                curValues.AddRange(tempPayload.AllValues());
+                foreach (var valuesCrate in tableCrates)
+                {
+                    curValues.AddRange(valuesCrate.ToPayloadData().AllValues());
+                }
             }
             return curValues;
         }
