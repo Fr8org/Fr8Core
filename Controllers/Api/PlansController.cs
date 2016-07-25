@@ -440,11 +440,13 @@ namespace HubWeb.Controllers
 
             // Notify user with directing him to PlanDirectory with related search query
             var url = CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/#?planSearch=" + HttpUtility.UrlEncode(dto.Name);
-            _pusherNotifier.NotifyUser(new
+            _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
+                NotificationType = NotificationType.GenericSuccess,
+                NotificationArea = NotificationArea.ActivityStream,
                 Message = $"Plan Shared. To view, click on " + url,
                 Collapsed = false
-            }, NotificationType.GenericSuccess, User.Identity.GetUserId());
+            }, User.Identity.GetUserId());
 
             return Ok();
         }

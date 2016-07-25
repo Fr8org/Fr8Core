@@ -41,6 +41,7 @@
     "ng-file-upload": "~7.0.17",
     "ng-table": "~0.8.3",
     "ngToast": "ngtoast#~1.5.6",
+    "noty": "^2.3.8",
     "ocLazyLoad": "~1.0.2",
     "pusher": "~3.0.0",
     "pusher-angular": "~0.1.8",

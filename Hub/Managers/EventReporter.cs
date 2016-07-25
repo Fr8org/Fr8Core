@@ -164,15 +164,16 @@ namespace Hub.Managers
 
                 //create user notifications
                 var _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
-                _pusherNotifier.NotifyUser(new
+                _pusherNotifier.NotifyUser(new NotificationPlanDTO
                 {
+                    NotificationType = NotificationType.GenericInfo,
+                    NotificationArea = NotificationArea.ActivityStream,
+                    Message = "For Plan: " + containerDO.Name + "\nContainer: " + containerDO.Id.ToString(),
                     ActivityName = activityDo.Name,
-                    PlanName = containerDO.Name,
-                    Collapsed = true,
-                    ContainerId = containerDO.Id.ToString(),
                     PlanId = planId,
                     PlanLastUpdated = planLastUpdated,
-                }, NotificationType.GenericInfo, activityDo.Fr8Account.Id);
+                    Collapsed = true,
+                }, activityDo.Fr8Account.Id);
             }
             catch (Exception exception)
             {
