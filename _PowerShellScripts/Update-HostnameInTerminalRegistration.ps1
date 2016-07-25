@@ -22,7 +22,7 @@ $commandText = "
 
 if ($localhostOnly)
 {
-	$commandText += " AND [Endpoint] LIKE 'http://localhost:%'" 
+	$commandText += " AND [Endpoint] LIKE 'localhost:%'" 
 }
 
 Write-Host $commandText
