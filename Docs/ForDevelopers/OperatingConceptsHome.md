@@ -3,6 +3,7 @@ Fr8 Operating Concepts Home
 
 * [Activity Validation](/Docs/ForDevelopers/OperatingConcepts/ActivitiesValidation.md)
 * [Apps](/Docs/ForDevelopers/OperatingConcepts/Apps.md)
+* [Configuration of Activities and UI Specification](/Docs/ForDevelopers/OperatingConcepts/UIInfrastructure.md)
 * [Data](/Docs/ForDevelopers/OperatingConcepts/TypesOfFr8.md)   
 * [Events](/Docs/ForDevelopers/OperatingConcepts/Events.md)  
 * [Execution](/Docs/ForDevelopers/OperatingConcepts/PlanExecution.md)
