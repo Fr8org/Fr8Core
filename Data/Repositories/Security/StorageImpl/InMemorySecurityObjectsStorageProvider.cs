@@ -101,12 +101,6 @@ namespace Data.Repositories.Security.StorageImpl
             }
         }
 
-        public void SetRecordBasedPermissionsForObject(string roleName, string dataObjectId, string dataObjectType,
-            Guid rolePermissionId, int? organizationId)
-        {
-            throw new NotImplementedException();
-        }
-
         public int UpdateRolePermission(RolePermission rolePermissions)
         {
             throw new NotImplementedException();
@@ -122,7 +116,8 @@ namespace Data.Repositories.Security.StorageImpl
             return new List<int>();
         }
 
-        public void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType, Guid rolePermissionId)
+        public void SetDefaultRecordBasedSecurityForObject(string currentUserId, string roleName, string dataObjectId,
+            string dataObjectType, Guid rolePermissionId, int? organizationId)
         {
             throw new NotImplementedException();
         }
@@ -131,7 +126,6 @@ namespace Data.Repositories.Security.StorageImpl
         {
             throw new NotImplementedException();
         }
-
         public ObjectRolePermissionsWrapper GetRecordBasedPermissionSetForObject(string dataObjectId)
         {
             lock (ObjectRolePermissions)

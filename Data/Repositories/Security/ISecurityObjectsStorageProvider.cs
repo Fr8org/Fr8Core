@@ -11,11 +11,10 @@ namespace Data.Repositories.Security
         int UpdateRolePermission(RolePermission rolePermission);
         int InsertObjectRolePermission(string currentUserId, string dataObjectId, Guid rolePermissionId, string dataObjectType, string propertyName = null);
         int RemoveObjectRolePermission(string dataObjectId, Guid rolePermissionId, string propertyName = null);
-        ObjectRolePermissionsWrapper GetRecordBasedPermissionSetForObject(string dataObjectId);
+        ObjectRolePermissionsWrapper GetRecordBasedPermissionSetForObject(string dataObjectId, string dataObjectType);
         List<PermissionDTO> GetAllPermissionsForUser(Guid profileId);
         List<int> GetObjectBasedPermissionSetForObject(string dataObjectId, string dataObjectType, Guid profileId);
-        void SetDefaultObjectSecurity(string currentUserId, string dataObjectId, string dataObjectType, Guid rolePermissionId, int? organizationId);
-        void SetRecordBasedPermissionsForObject(string roleName, string dataObjectId, string dataObjectType, Guid rolePermissionId, int? organizationId);
+        void SetDefaultRecordBasedSecurityForObject(string currentUserId, string roleName, string dataObjectId, string dataObjectType, Guid rolePermissionId, int? organizationId);
         RolePermission GetRolePermission(string roleName, Guid permissionSetId);
     }
 }

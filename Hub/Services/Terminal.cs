@@ -7,6 +7,7 @@ using AutoMapper;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using Data.States;
 using Data.Utility;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
@@ -165,7 +166,7 @@ namespace Hub.Services
                 if (isRegisterTerminal)
                 {
                     //create default permission settings for the new terminal visibility
-                    _securityServices.SetDefaultObjectSecurity(terminal.Id.ToString(), nameof(TerminalDO));
+                    _securityServices.SetDefaultRecordBasedSecurityForObject(Roles.OwnerOfCurrentObject, terminal.Id.ToString(), nameof(TerminalDO));
                 }
 
                 return terminal;
@@ -207,7 +208,10 @@ namespace Hub.Services
 
             lock (_terminals)
             {
-                return _terminals.Values.ToArray();
+                var terminals = _terminals.Values.ToArray();
+
+                //filter terminals and show only allowed for current logged user
+                return _securityServices.GetAllowedTerminalsByUser(terminals);
             }
         }
 
