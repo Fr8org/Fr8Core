@@ -119,7 +119,6 @@ namespace Data.Repositories.Security.StorageImpl
         public void SetDefaultRecordBasedSecurityForObject(string currentUserId, string roleName, string dataObjectId,
             string dataObjectType, Guid rolePermissionId, int? organizationId)
         {
-            throw new NotImplementedException();
         }
 
         public RolePermission GetRolePermission(string roleName, Guid permissionSetId)
