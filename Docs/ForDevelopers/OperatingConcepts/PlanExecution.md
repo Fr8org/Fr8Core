@@ -33,6 +33,7 @@ A special Fr8-specific data structure used by Activities to provide status with 
 
 # The Call Stack
 These rules govern the Call Stack:
+
 1. During Activity Execution, the Hub pushes a Stack Frame of information about the activity to the Call Stack.
 
 2. A Stack Frame is popped from the stack when execution of an Activity finishes, in one of the following cases:
