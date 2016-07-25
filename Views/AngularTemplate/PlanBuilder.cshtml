@@ -5,8 +5,8 @@
 </ul>
 
 <!-- MAIN CONTENT -->
-<div ng-controller="PlanBuilderController" class="margin-top-25" block-if="isBusy()" event-planbuilder>
-    <designer-header class="designer-header-fixed" ng-show="current.plan" plan="current.plan"></designer-header>
+<!-- ng-controller="PlanBuilderController" is moved to app.ts to state called 'plan' -->
+<div class="margin-top-25" block-if="isBusy()" event-planbuilder>
     <div ng-if="editingMode == 'advanced'" class="col-md-12" style="border-bottom: 1px solid; margin-bottom: 10px;"></div>
     <div class="plan-loading-message" block-if="current.plan"></div>
     <!-- SUB-PLAN CONTAINER -->
@@ -21,78 +21,18 @@
                         <div ng-show="group.arrowOffsetLeft != 0" class="action-arrow-bottom" ng-style="{top: -group.arrowLength - 60, height: group.arrowLength + 35, left: group.arrowOffsetLeft}"></div>
                         <div dnd-list="group.envelopes" dnd-external-sources="true" dnd-drop="onActionDrop(group, item, index)" style="display: inline-block;">
                             <div ng-repeat="envelope in group.envelopes track by $index">
-                                <div class="action" ng-class="{'solution-action': envelope.activity.activityTemplate.category === 'Solution' && mode !== 'solution'}" 
+                                <div class="action" ng-class="{'solution-action': envelope.activity.activityTemplate.category === 'Solution' && mode !== 'solution'}"
                                      layout-action popover-toggle="envelope.activity.showAdvisoryPopup" popover-template="'/AngularTemplate/AdvisoryMessagesPopup'" popover-placement="right-top">
                                     <div class="ap-resize" activity-resize min-width="{{envelope.activity.activityTemplate.minPaneWidth}}">
-                                        <!-- Activity Header-->
-                                        <md-toolbar dnd-draggable="current.plan.planState==1 ? envelope.activity.id : false" class="action-header solution-action-header handle" dropdown transfer-click-configure-pane>
-                                            <div class="md-toolbar-tools">
-                                                <!-- Icon -->
-                                                <div class="action-header-icon" style="display: flex;">
-                                                    <img ng-src="{{envelope.activity.activityTemplate.webService.iconPath}}" ng-if="envelope.activity.activityTemplate.webService.iconPath"/>
-                                                </div>
-                                                <!-- Main Title -->
-                                                <div class="col-sm-8 ellipsis">
-                                                    <h2 ng-if="!envelope.activity.label"> {{envelope.activity.name}}
-                                                        <md-tooltip>{{envelope.activity.name}}</md-tooltip>
-                                                    </h2>
-                                                    <h2 ng-if="envelope.activity.label !== null"> {{envelope.activity.label}}
-                                                        <md-tooltip>{{envelope.activity.label}}</md-tooltip>
-                                                    </h2>
-                                                    <span flex></span>
-                                                </div>
-                                                <!-- Right Corner Header -->
-                                                <div class="action-reconfigure-status" ng-show="isReConfiguring === true"> updating </div>
-                                                <div class="action-name" ng-show="isReConfiguring === false && envelope.activity.label">
-                                                    {{envelope.activity.name}}
-                                                </div>
-                                                <!-- Options Menu -->
-                                                <md-menu>
-                                                    <md-button class="md-icon-button" aria-label="More" ng-click="openMenu($mdOpenMenu, $event)">
-                                                        <md-icon md-svg-icon="/Content/img/icons/more_vert.svg"></md-icon>
-                                                    </md-button>
-                                                    <md-menu-content width="4" class="sub-plan-options-content">
-                                                        <!-- OPTIONS - Choose Authentication -->
-                                                        <md-menu-item ng-if="envelope.activity.activityTemplate.needsAuthentication">
-                                                            <md-button ng-click="chooseAuthToken(envelope.activity);">
-                                                                <md-icon md-font-icon="fa fa-key" md-menu-align-target></md-icon> Choose authentication
-                                                            </md-button>
-                                                        </md-menu-item>
-                                                        <!-- OPTIONS - Reconfigure -->
-                                                        <md-menu-item>
-                                                            <md-button ng-click="reConfigureAction(envelope.activity);">
-                                                                <md-icon md-font-icon="fa fa-refresh"></md-icon> Reconfigure
-                                                            </md-button>
-                                                        </md-menu-item>
-                                                        <!-- OPTIONS - Label Changes-->
-                                                        <md-menu-item>
-                                                            <md-button ng-click="openAddLabelModal(envelope.activity);">
-                                                                <md-icon md-font-icon="fa fa-pencil"></md-icon>
-                                                                <span ng-if="!envelope.activity.label">Add Label</span>
-                                                                <span ng-if="envelope.activity.label">Change Label</span>
-                                                            </md-button>
-                                                        </md-menu-item>
-                                                        <md-menu-divider></md-menu-divider>
-                                                        <!-- OPTIONS - Delete Action -->
-                                                        <md-menu-item>
-                                                            <md-button ng-click="deleteAction(envelope.activity);">
-                                                                <md-icon md-font-icon="fa fa-trash"></md-icon> Delete
-                                                            </md-button>
-                                                        </md-menu-item>
-                                                        <md-menu-divider ng-if="hasHelpMenuItem(envelope.activity)"></md-menu-divider>
-                                                        <!-- OPTIONS - Help -->
-                                                        <md-menu-item ng-if="hasHelpMenuItem(envelope.activity)">
-                                                            <md-button ng-if="showActivityHelpDocumentation(envelope.activity);">
-                                                                <md-icon md-font-icon="fa fa-info"></md-icon> Help
-                                                            </md-button>
-                                                        </md-menu-item>
-                                                    </md-menu-content>
-                                                </md-menu>
-                                            </div>
-                                        </md-toolbar>
-                                        <!-- Activity Body-->                                            
+                                        <activity-header dnd-draggable="envelope.activity.id"
+                                                         dnd-disable-if="current.plan.planState==2"
+                                                         envelope="envelope"
+                                                         re-configure-action="reConfigureAction"
+                                                         delete-action="deleteAction"
+                                                         choose-auth-token="chooseAuthToken">
+                                        </activity-header>
                                         <pane-configure-action view="{{view}}" plan="current.plan" sub-plan="pSubPlan.subPlan" id="paneConfigureAction"
-                                            current-action="envelope.activity" mode="mode" processing="isReConfiguring"></pane-configure-action>
+                                                               current-action="envelope.activity" mode="mode" processing="isReConfiguring"></pane-configure-action>
                                     </div>
                                 </div>
                                 <div class="jumptarget-wrapper" ng-if="envelope.jumpTargets.length > 0" style="display: inline-block; height: 50px; margin: 84px 10px 0 7px; width: 55px;">
@@ -115,7 +55,7 @@
                     </div>
                 </div>
             </div>
-            <hr class="transition-seperator"/>
+            <hr class="transition-seperator" />
         </div>
     </div>
 

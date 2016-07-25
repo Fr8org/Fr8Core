@@ -1,11 +1,20 @@
-﻿namespace Fr8.Infrastructure.Data.DataTransferObjects
+﻿using Newtonsoft.Json;
+
+namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
     public class DocumentationResponseDTO
     {
+        [JsonProperty("name")]
         public string Name { get; set; }
+
+        [JsonProperty("version")]
         public double Version { get; set; }
+
+        [JsonProperty("terminal")]
         //TODO: To be changed with another type
         public string Terminal { get; set; }
+
+        [JsonProperty("body")]
         //This field is to hold an HTML
         public string Body { get; set; }
 

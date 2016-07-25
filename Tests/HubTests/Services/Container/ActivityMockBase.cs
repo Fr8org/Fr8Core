@@ -84,7 +84,7 @@ namespace HubTests.Services.Container
         protected void RequestClientActivityExecution(string clientActionName)
         {
             SetResponse(ActivityResponse.ExecuteClientActivity);
-            OperationalState.CurrentClientActivityName = clientActionName;
+            OperationalState.CurrentActivityResponse.Body = clientActionName;
         }
 
         /**********************************************************************************/
@@ -148,7 +148,6 @@ namespace HubTests.Services.Container
         protected void Error(string errorMessage = null, ActivityErrorCode? errorCode = null)
         {
             SetResponse(ActivityResponse.Error);
-            OperationalState.CurrentActivityErrorCode = errorCode;
             OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, ErrorType.Generic, errorCode.ToString(), null, null, null));
         }
 

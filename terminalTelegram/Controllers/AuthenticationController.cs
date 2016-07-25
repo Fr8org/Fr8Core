@@ -42,6 +42,7 @@ namespace terminalTelegram.Controllers
             catch (Exception ex)
             {
                 credentialsDTO.Error = "An error occurred while trying to send login code, please try again later.";
+                credentialsDTO.Message = ex.Message + Environment.NewLine + ex.StackTrace;
                 Logger.Error(ex.Message);
                 return credentialsDTO;
             }
@@ -71,6 +72,7 @@ namespace terminalTelegram.Controllers
             catch (Exception ex)
             {
                 Logger.Error(ex.Message);
+                credentialsDTO.Message = ex.Message;
                 return new AuthorizationTokenDTO()
                 {
                     Error = "An error occurred while trying to authorize, please try again later."

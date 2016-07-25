@@ -127,6 +127,7 @@
     <Compile Include="Data\Constants\ActivityErrorCode.cs" />
     <Compile Include="Data\Constants\ActivityExecutionMode.cs" />
     <Compile Include="Data\Constants\ActivityResponse.cs" />
+    <Compile Include="Data\Constants\NotificationArea.cs" />
     <Compile Include="Data\Constants\FieldValidationResult.cs" />
     <Compile Include="Data\Constants\ManifestIdEnum.cs" />
     <Compile Include="Data\Constants\NotificationType.cs" />
@@ -227,7 +228,7 @@
     <Compile Include="Data\DataTransferObjects\SubPlanDTO.cs" />
     <Compile Include="Data\DataTransferObjects\TerminalDiscoveryDTO.cs" />
     <Compile Include="Data\DataTransferObjects\TerminalDTO.cs" />
-    <Compile Include="Data\DataTransferObjects\TerminalNotificationDTO.cs" />
+    <Compile Include="Data\DataTransferObjects\NotificationMessageDTO.cs" />
     <Compile Include="Data\DataTransferObjects\TerminalRegistrationDTO.cs" />
     <Compile Include="Data\DataTransferObjects\TokenResponseDTO.cs" />
     <Compile Include="Data\DataTransferObjects\UrlResponseDTO.cs" />

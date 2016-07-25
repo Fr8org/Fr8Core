@@ -49,7 +49,7 @@ namespace terminalAsana.Asana.Services
             AsanaClientId = CloudConfigurationManager.GetSetting("AsanaClientId");
 
             MinutesBeforeTokenRenewal = CloudConfigurationManager.GetSetting("MinutesBeforeTokenRenewal");
-            AsanaOriginalRedirectUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") + CloudConfigurationManager.GetSetting("AsanaOriginalRedirectUrl");
+            AsanaOriginalRedirectUrl = CloudConfigurationManager.GetSetting("DefaultHubUrl") + CloudConfigurationManager.GetSetting("AsanaOriginalRedirectUrl");
             AsanaOAuthCodeUrl = CloudConfigurationManager.GetSetting("AsanaOAuthCodeUrl").Replace("%ASANA_CLIENT_ID%",AsanaClientId);
             AsanaOAuthTokenUrl = CloudConfigurationManager.GetSetting("AsanaOAuthTokenUrl");
 

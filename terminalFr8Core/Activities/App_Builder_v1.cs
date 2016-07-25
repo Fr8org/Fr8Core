@@ -59,9 +59,9 @@ namespace terminalFr8Core.Activities
 
         private async Task PushLaunchURLNotification()
         {
-            var msg = "This Plan can be launched with the following URL: " + CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+            var msg = "This Plan can be launched with the following URL: " + CloudConfigurationManager.GetSetting("DefaultHubUrl")
                 + "redirect/cloneplan?id=" + ActivityId;
-            await _pushNotificationService.PushUserNotification(MyTemplate, "Success", "App Builder URL Generated", msg);
+            await _pushNotificationService.PushUserNotification(MyTemplate, NotificationArea.ActivityStream, "App Builder URL Generated", msg);
         }
 
         private async Task UpdateMetaControls()
@@ -314,6 +314,9 @@ namespace terminalFr8Core.Activities
                 var submitButton = collectionControls.FindByName<Button>("submit_button");
                 if (submitButton.Clicked)
                 {
+                    // Push toast message to front-end
+                    _pushNotificationService.PushUserNotification(MyTemplate, NotificationArea.Toast, "App Builder Submit Button", "Your information has been submitted.");
+
                     if (ActivityContext.ActivityPayload.RootPlanNodeId == null)
                     {
                         throw new Exception($"Activity with id \"{ActivityId}\" has no owner plan");

@@ -1,6 +1,6 @@
 ﻿namespace Fr8.Infrastructure.Data.Constants
 {
-    // Don't forget to add corresponding type to Fr8Event.ts
+    // Don't forget to add corresponding type to NotificationType.ts
     public enum NotificationType
     {
         GenericSuccess = 1,     // fr8pusher_generic_success
