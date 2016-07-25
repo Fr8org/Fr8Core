@@ -10,6 +10,8 @@ using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities;
 using terminalDocuSign.Services.New_Api;
 using System;
+using Hub.Interfaces;
+using System.Linq;
 
 namespace terminalDocuSign.Activities
 {
@@ -35,11 +37,14 @@ namespace terminalDocuSign.Activities
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
         private const string AllFieldsCrateName = "DocuSign Envelope Fields";
+        private IManifest _manifest;
+        private IDocuSignManager _docusihManager;
 
-
-        public Get_DocuSign_Envelope_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+        public Get_DocuSign_Envelope_v1(ICrateManager crateManager, IDocuSignManager docuSignManager, IManifest _manifest, IDocuSignManager _docusignManager)
             : base(crateManager, docuSignManager)
         {
+            this._manifest = _manifest;
+            this._docusihManager = _docusignManager;
         }
 
         public override Task Initialize()
@@ -51,9 +56,11 @@ namespace terminalDocuSign.Activities
             );
 
             control.Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") };
+
+            var infobox = UiBuilder.GenerateTextBlock("This activity will try to get the envelope with the specified Envelope Id. If an envelope id is known at design-time then this activity will signal envelope tabs", "", "");
             Storage.Clear();
 
-            AddControls(control);
+            AddControls(infobox, control);
 
             return Task.FromResult(0);
         }
@@ -61,9 +68,10 @@ namespace terminalDocuSign.Activities
         public override async Task FollowUp()
         {
             var control = GetControl<TextSource>("EnvelopeIdSelector");
-            string envelopeId = GetEnvelopeId(control);
+            var envelope_crate = CrateSignaller.MarkAvailableAtRuntime<DocuSignEnvelopeCM_v2>(AllFieldsCrateName, false);
 
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(AllFieldsCrateName, true).AddFields(GetTemplateUserDefinedFields(envelopeId));
+            var availlable_crates = await HubCommunicator.GetCratesByDirection(this.ActivityId, CrateDirection.Upstream);
+
         }
 
         protected override string ActivityUserFriendlyName => "Get DocuSign Envelope";
@@ -71,9 +79,8 @@ namespace terminalDocuSign.Activities
         protected override Task Validate()
         {
             var control = GetControl<TextSource>("EnvelopeIdSelector");
-            var envelopeId = GetEnvelopeId(control);
 
-            if (string.IsNullOrEmpty(envelopeId))
+            if (!control.HasValue)
             {
                 ValidationManager.SetError("Envelope Id is not set", control);
             }
@@ -85,35 +92,23 @@ namespace terminalDocuSign.Activities
         {
             //Get envlopeId from configuration
             var control = GetControl<TextSource>("EnvelopeIdSelector");
-            string envelopeId = GetEnvelopeId(control);
-            // if it's not valid, try to search upstream runtime values
-            if (!envelopeId.IsGuid())
-                envelopeId = control.GetValue(Payload);
+            string envelopeId = control.GetValue(Payload);
 
-            if (string.IsNullOrEmpty(envelopeId))
+            if (envelopeId.IsGuid())
             {
-                RaiseError("EnvelopeId is not set", ActivityErrorCode.PAYLOAD_DATA_MISSING);
-                return;
+                try
+            {
+                    var conf = _docusihManager.SetUp(AuthorizationToken.Token);
+                    var envelope = _docusihManager.GetEnvelope(conf, envelopeId);
+                    envelope.ExternalAccountId = AuthorizationToken.ExternalAccountId;
+                    Payload.Add<DocuSignEnvelopeCM_v2>(AllFieldsCrateName, envelope);
+                }
+                catch { RaiseError($"Couldn't find an envelope with id={envelopeId}"); return; }
             }
-
-            List<KeyValueDTO> allFields = new List<KeyValueDTO>();
-            // This has to be re-thinked. TemplateId is neccessary to retrieve fields but is unknown atm
-            // Perhaps it can be received by EnvelopeId
-            allFields.AddRange(GetEnvelopeData(envelopeId, null));
-            // Update all fields crate
-            Payload.Add(AllFieldsCrateName, new StandardPayloadDataCM(allFields));
+            else
+            { RaiseError("EnvelopeId is invalid"); return; }
 
             Success();
-        }
-
-        private string GetEnvelopeId(ControlDefinitionDTO control)
-        {
-            var textSource = (TextSource)control;
-            if (textSource.ValueSource == null)
-            {
-                return null;
-            }
-            return textSource.ValueSource == "specific" ? textSource.TextValue : textSource.Value;
         }
     }
 }
