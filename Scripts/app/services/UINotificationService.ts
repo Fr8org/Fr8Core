@@ -17,7 +17,7 @@ module dockyard.services {
             // For more options please look at noty library
             if (!options) {
                 options = {
-                    //layout: 'topCenter',    // 'bottom', 'bottomCenter', 'bottomLeft', 'bottomRight', 'center', 'centerLeft', centerRight'
+                    layout: 'topCenter',    // 'bottom', 'bottomCenter', 'bottomLeft', 'bottomRight', 'center', 'centerLeft', centerRight'
                                             // 'inline', 'top', 'topCenter', 'topLeft', 'topRight'
                     theme: 'relax',         // 'default' or 'relax'
                     dismissQueue: true,     // If you want to use queue feature set this true
