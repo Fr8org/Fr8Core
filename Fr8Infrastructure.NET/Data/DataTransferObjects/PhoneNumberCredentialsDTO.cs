@@ -4,6 +4,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
     public class PhoneNumberCredentialsDTO
     {
+        [JsonProperty("terminal")]
         public TerminalDTO Terminal { get; set; }
 
         [JsonProperty("phoneNumber")]
@@ -18,7 +19,10 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         [JsonProperty("verificationCode")]
         public string VerificationCode { get; set; }
 
+        [JsonProperty("error")]
         public string Error { get; set; }
+
+        [JsonProperty("fr8UserId")]
         public string Fr8UserId { get; set; }
 
         [JsonProperty("message")]
