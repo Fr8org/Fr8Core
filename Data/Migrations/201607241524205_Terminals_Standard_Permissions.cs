@@ -31,9 +31,9 @@ namespace Data.Migrations
 
                 -- create RolePermissions with given permission set             
                 insert into dbo.RolePermissions(Id, PermissionSetId, RoleId, LastUpdated, CreateDate) 
-                    values ('{guestUserRolePermissionId}', 'd469f8f7-9aeb-4dba-a079-e422987fb2b2', (select top 1 Id from dbo.AspNetRoles where Name= 'Guest'), '2016-07-20 11:11:48.5762342 +02:00', '2016-07-20 11:11:48.5762342 +02:00')
+                    values ('{guestUserRolePermissionId}', {permissionSetId}, (select top 1 Id from dbo.AspNetRoles where Name= 'Guest'), '2016-07-20 11:11:48.5762342 +02:00', '2016-07-20 11:11:48.5762342 +02:00')
                 insert into dbo.RolePermissions(Id, PermissionSetId, RoleId, LastUpdated, CreateDate) 
-                    values ('{standardUserRolePermissionId}', 'd469f8f7-9aeb-4dba-a079-e422987fb2b2', (select top 1 Id from dbo.AspNetRoles where Name= 'Customer'), '2016-07-20 11:11:48.5762342 +02:00', '2016-07-20 11:11:48.5762342 +02:00')
+                    values ('{standardUserRolePermissionId}', {permissionSetId}, (select top 1 Id from dbo.AspNetRoles where Name= 'Customer'), '2016-07-20 11:11:48.5762342 +02:00', '2016-07-20 11:11:48.5762342 +02:00')
 
                 -- create ObjectRolePermissions for all terminals for above defined 2 RolePermissions
                 insert into dbo.ObjectRolePermissions(id, ObjectId, RolePermissionId, Type, LastUpdated, CreateDate, Fr8AccountId)
