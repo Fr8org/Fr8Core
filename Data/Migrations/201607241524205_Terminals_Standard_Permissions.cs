@@ -26,6 +26,8 @@ namespace Data.Migrations
                 -- create permissionset for terminals with use permissions
                 insert into dbo.PermissionSets(Id, Name,  ObjectType,HasFullAccess, LastUpdated, CreateDate) 
                  values('{permissionSetId}', 'Use Terminal Permission Set', 'TerminalDO', 0, '2016-07-20 11:11:48.5762342 +02:00', '2016-07-20 11:11:48.5762342 +02:00')
+                
+                insert into dbo.PermissionSetPermissions(PermissionSetId, PermissionTypeTemplateId) values('{permissionSetId}', 11) 
 
                 -- create RolePermissions with given permission set             
                 insert into dbo.RolePermissions(Id, PermissionSetId, RoleId, LastUpdated, CreateDate) 
