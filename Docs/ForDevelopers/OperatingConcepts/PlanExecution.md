@@ -1,4 +1,4 @@
-# Plan execution
+# Plan Execution
 
 Activities execution in Fr8 is stack-based and information related to the stack is stored not in the Hub but in the JSON data of the Payload Container itself. This provides Payload Containers with considerable portability. A Container can be moved from one Hub to another Hub, and the receiving Hub will know exactly where to execute the new Activity. It also enables asynchronicity. An Activity can pause processing of a Payload Container, wait for some real world activity (such as a person responding to an email or sms), and then post an event to the Hub to resume processing, and the Hub will be able to look in the Payload Container and know where processing paused and where to resume.
 
