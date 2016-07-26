@@ -117,8 +117,7 @@ namespace terminalSalesforce.Actions
                 .GetProperties(selectedObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
             var queryFilterCrate = Crate<FieldDescriptionsCM>.FromContent(
                 QueryFilterCrateLabel,
-                new FieldDescriptionsCM(selectedObjectProperties),
-                AvailabilityType.Configuration);
+                new FieldDescriptionsCM(selectedObjectProperties));
             Storage.ReplaceByLabel(queryFilterCrate);
 
             this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
@@ -163,8 +162,7 @@ namespace terminalSalesforce.Actions
                 Crate<StandardTableDataCM>
                     .FromContent(
                         RuntimeDataCrateLabel,
-                        resultObjects,
-                        AvailabilityType.RunTime
+                        resultObjects
                     )
                 );
         }

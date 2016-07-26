@@ -264,7 +264,7 @@ namespace Fr8.TerminalBase.Services
             return await _restfulServiceClient.PostAsync<PlanDTO>(uri, jsonContent);
         }
 
-        public async Task NotifyUser(TerminalNotificationDTO notificationMessage)
+        public async Task NotifyUser(NotificationMessageDTO notificationMessage)
         {
             var hubUrl = $"{GetHubUrlWithApiVersion()}/notifications";
             var uri = new Uri(hubUrl);
@@ -332,7 +332,7 @@ namespace Fr8.TerminalBase.Services
 
         public async Task<List<CrateDTO>> GetStoredManifests(List<CrateDTO> cratesForMTRequest)
         {
-            var hubUrl = $"{GetHubUrlWithApiVersion()}/warehouse?userId={_userId}";
+            var hubUrl = $"{GetHubUrlWithApiVersion()}/warehouses?userId={_userId}";
             var uri = new Uri(hubUrl);
             return await _restfulServiceClient.PostAsync<List<CrateDTO>, List<CrateDTO>>(uri, cratesForMTRequest);
         }
@@ -376,7 +376,7 @@ namespace Fr8.TerminalBase.Services
         public async Task<List<TManifest>> QueryWarehouse<TManifest>(List<FilterConditionDTO> query)
             where TManifest : Manifest
         {
-            var url = $"{GetHubUrlWithApiVersion()}/warehouse/query";
+            var url = $"{GetHubUrlWithApiVersion()}/warehouses/query";
             var uri = new Uri(url);
 
             var payload = new QueryDTO(ManifestDiscovery.Default.GetManifestType<TManifest>().Type, query);
@@ -386,7 +386,7 @@ namespace Fr8.TerminalBase.Services
 
         public async Task AddOrUpdateWarehouse(params Manifest[] manifests)
         {
-            var url = $"{GetHubUrlWithApiVersion()}/warehouse";
+            var url = $"{GetHubUrlWithApiVersion()}/warehouses";
             var uri = new Uri(url);
 
             var crateStorage = new CrateStorage(manifests.Select(x => Crate.FromContent(null, x)));
@@ -398,7 +398,7 @@ namespace Fr8.TerminalBase.Services
         public async Task DeleteFromWarehouse<TManifest>(List<FilterConditionDTO> query)
             where TManifest : Manifest
         {
-            var url = $"{GetHubUrlWithApiVersion()}/warehouse/delete";
+            var url = $"{GetHubUrlWithApiVersion()}/warehouses/delete";
             var uri = new Uri(url);
             var payload = new QueryDTO(ManifestDiscovery.Default.GetManifestType<TManifest>().Type, query);
 

@@ -36,6 +36,7 @@ namespace Hub.Services
             private readonly OperationalStateCM.ActivityCallStack _callStack;
             private readonly ContainerDO _container;
             private OperationalStateCM _operationalState;
+            private OperationalStateCM.StackLocalData _bypassData;
             private readonly IActivity _activity;
             private readonly ICrateManager _crate;
             private readonly IUtilizationMonitoringService _utilizationMonitoringService;
@@ -98,11 +99,11 @@ namespace Hub.Services
                 {
                     NodeId = nodeId,
                     NodeName = nodeName,
-                    LocalData = _operationalState.BypassData
+                    LocalData = _bypassData
                 };
 
                 _callStack.PushFrame(frame);
-                _operationalState.BypassData = null;
+                _bypassData = null;
             }
 
             /**********************************************************************************/
@@ -388,7 +389,7 @@ namespace Hub.Services
                         if (id == topFrame.NodeId)
                         {
                             // we want to pass current local data (from the topFrame) to the next activity we are calling.
-                            _operationalState.BypassData = topFrame.LocalData;
+                            _bypassData = topFrame.LocalData;
                         }
 
                         // this is root node. Just push new frame

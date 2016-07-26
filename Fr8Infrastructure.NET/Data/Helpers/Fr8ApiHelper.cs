@@ -78,7 +78,7 @@ namespace Fr8.Infrastructure.Data.Helpers
             {
                 filteredCrates = filteredCrates.Where(x => x.ManifestType.Equals(fieldToMatch.SourceCrateManifest));
             }
-            var operationalState = payloadStorage.CrateContentsOfType<OperationalStateCM>().Single();
+            var operationalState = payloadStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
             //iterate through found crates to find the payload
             foreach (var foundCrate in filteredCrates)
             {
@@ -95,53 +95,57 @@ namespace Fr8.Infrastructure.Data.Helpers
         private static KeyValueDTO FindField(OperationalStateCM operationalState, Crate crate, string fieldKey)
         {
             object searchArea;
+
+            //
+            // Commented out for future references. Loop related extraction logic moved to Loop activity
+            //
             //let's check if we are in a loop
             //and this is a loop data?
             //check if this crate is loop related
-            var loopState = operationalState.CallStack.FirstOrDefault(x =>
+            //var loopState = operationalState.CallStack.FirstOrDefault(x =>
+            //{
+            //    if (x.LocalData?.Type == "Loop")
+            //    {
+            //        var loopStatus = x.LocalData.ReadAs<OperationalStateCM.LoopStatus>();
+
+            //        if (loopStatus != null && loopStatus.CrateManifest.CrateDescriptions[0].Label == crate.Label && loopStatus.CrateManifest.CrateDescriptions[0].ManifestType == crate.ManifestType.Type)
+            //        {
+            //            return true;
+            //        }
+            //    }
+
+            //    return false;
+            //});
+
+            //if (loopState != null) //this is a loop related data request
+            //{
+            //    searchArea = GetDataListItem(crate, loopState.LocalData.ReadAs<OperationalStateCM.LoopStatus>().Index);
+            //}
+            //else
+            //{
+            //hmmm this is a regular data request
+            //lets search in complete crate
+            searchArea = crate;
+            //if we have a StandardTableDataCM and we are not in the loop and crate has Headers - we should search next row
+            if (crate.IsOfType<StandardTableDataCM>())
             {
-                if (x.LocalData?.Type == "Loop")
+                var tableCrate = crate.Get<StandardTableDataCM>();
+                if (tableCrate.FirstRowHeaders && tableCrate.Table.Count > 1)
                 {
-                    var loopStatus = x.LocalData.ReadAs<OperationalStateCM.LoopStatus>();
-
-                    if (loopStatus != null && loopStatus.CrateManifest.CrateDescriptions[0].Label == crate.Label && loopStatus.CrateManifest.CrateDescriptions[0].ManifestType == crate.ManifestType.Type)
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
-            });
-
-            if (loopState != null) //this is a loop related data request
-            {
-                searchArea = GetDataListItem(crate, loopState.LocalData.ReadAs<OperationalStateCM.LoopStatus>().Index);
-            }
-            else
-            {
-                //hmmm this is a regular data request
-                //lets search in complete crate
-                searchArea = crate;
-                //if we have a StandardTableDataCM and we are not in the loop and crate has Headers - we should search next row
-                if (crate.IsOfType<StandardTableDataCM>())
-                {
-                    var tableCrate = crate.Get<StandardTableDataCM>();
-                    if (tableCrate.FirstRowHeaders && tableCrate.Table.Count > 1)
-                    {
-                        //TODO it is weird to get just first row of table data while searching for a field
-                        //note: GetDataListItem function skips header
-                        TableRowDTO row = GetDataListItem(crate, 0) as TableRowDTO;
-                        if (row != null)
-                            return row.Row.FirstOrDefault(a => a.Cell.Key == fieldKey)?.Cell;
-                    }
+                    //TODO it is weird to get just first row of table data while searching for a field
+                    //note: GetDataListItem function skips header
+                    TableRowDTO row = GetDataListItem(crate, 0) as TableRowDTO;
+                    if (row != null)
+                        return row.Row.FirstOrDefault(a => a.Cell.Key == fieldKey)?.Cell;
                 }
             }
+            //}
 
             if (searchArea is Crate)
             {
-                if (((Crate) searchArea).IsKnownManifest)
+                if (((Crate)searchArea).IsKnownManifest)
                 {
-                    searchArea = ((Crate) searchArea).Get();
+                    searchArea = ((Crate)searchArea).Get();
                 }
                 else
                 {

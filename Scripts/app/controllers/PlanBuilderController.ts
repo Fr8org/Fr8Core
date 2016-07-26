@@ -17,9 +17,9 @@ module dockyard.controllers {
         current: model.PlanBuilderState;
     }
 
-    export interface IPlanBuilderScope extends IMainPlanScope  {
+    export interface IPlanBuilderScope extends IMainPlanScope {
         isPlanBuilderScope: boolean;
-       
+
         subPlans: Array<model.SubPlanDTO>;
         fields: Array<model.Field>;
         //currentSubroute: model.SubrouteDTO;
@@ -34,7 +34,6 @@ module dockyard.controllers {
         addAction(group: model.ActionGroup): void;
         deleteAction: (action: model.ActivityDTO) => void;
         reConfigureAction: (action: model.ActivityDTO) => void;
-        openAddLabelModal: (action: model.ActivityDTO) => void;
         isReConfiguring: boolean;
         chooseAuthToken: (action: model.ActivityDTO) => void;
         selectAction(action): void;
@@ -45,12 +44,10 @@ module dockyard.controllers {
         solutionName: string;
         curAggReloadingActions: Array<string>;
         addSubPlan: () => void;
-        openMenu: ($mdOpenMenu: any, ev: any) => void;
         view: string;
+        displayDeveloperMenu: boolean;
         viewMode: string;
         hasAnyActivity: (pSubPlan: any) => boolean;
-        hasHelpMenuItem: (activity: model.ActivityDTO) => boolean;
-        showActivityHelpDocumentation: (activity: model.ActivityDTO) => void;
         state: string;
     }
 
@@ -117,6 +114,7 @@ module dockyard.controllers {
 
             this.LayoutService.resetLayout();
 
+            this.$scope.displayDeveloperMenu = false;
             this.$scope.isPlanBuilderScope = true;
             this.$scope.isReConfiguring = false;
 
@@ -147,33 +145,6 @@ module dockyard.controllers {
                 });
             };
 
-            this.$scope.hasHelpMenuItem = (activity) => {
-                if (activity.activityTemplate.showDocumentation != null) {
-                    if (activity.activityTemplate.showDocumentation.body.displayMechanism != undefined &&
-                        activity.activityTemplate.showDocumentation.body.displayMechanism.contains("HelpMenu")) {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-
-            this.$scope.showActivityHelpDocumentation = (activity) => {
-
-                var activityDTO = new model.ActivityDTO("", "", "");
-                activityDTO.toActionVM();
-                activityDTO.documentation = "HelpMenu";
-                activityDTO.activityTemplate = activity.activityTemplate;
-
-                documentationService.getDocumentationResponseDTO(activityDTO).$promise.then(data => {
-
-                    if (data) {
-                        var newWindow = this.$window.open();
-                        newWindow.document.writeln(data.body);
-                    }
-                });
-            }
-
             this.$scope.isBusy = () => {
                 return this._longRunningActionsCounter > 0 || this._loading;
             };
@@ -182,30 +153,11 @@ module dockyard.controllers {
 
             $scope.deleteAction = <() => void>angular.bind(this, this.deleteAction);
             $scope.addSubPlan = <() => void>angular.bind(this, this.addSubPlan);
-            $scope.openMenu = ($mdOpenMenu, ev) => {
-                $mdOpenMenu(ev);
-            };
             $scope.reConfigureAction = (action: model.ActivityDTO) => {
                 var actionsArray = new Array<model.ActivityDTO>();
                 actionsArray.push(action);
                 this.reConfigure(actionsArray);
             };
-
-            $scope.openAddLabelModal = (action: model.ActivityDTO) => {
-
-                var modalInstance = $modal.open({
-                    animation: true,
-                    templateUrl: '/AngularTemplate/ActivityLabelModal',
-                    controller: 'ActivityLabelModalController',
-                    resolve: {
-                        label: () => action.label
-                    }
-                })
-                modalInstance.result.then(function (label: string) {
-                    action.label = label;
-                    ActionService.save(action);
-                });
-            }
 
             this.$scope.chooseAuthToken = (action: model.ActivityDTO) => {
                 this.chooseAuthToken(action);
@@ -285,12 +237,12 @@ module dockyard.controllers {
 
         private handleBackButton(event, toState, toParams, fromState, fromParams, options) {
 
-            if (fromParams.viewMode === "plan" && toParams.viewMode === undefined && fromState.name === "plan.builder" && toState.name === "plan.builder") {
+            if (fromParams.viewMode === "plan" && toParams.viewMode === undefined && fromState.name === "plan" && toState.name === "plan") {
                 event.preventDefault();
                 this.$state.go("planList");
             }
 
-            if (toParams.viewMode === "plan" && fromParams.viewMode === undefined && fromState.name === "plan.builder" && toState.name === "plan.builder") {
+            if (toParams.viewMode === "plan" && fromParams.viewMode === undefined && fromState.name === "plan" && toState.name === "plan") {
                 this.reloadFirstActions();
             }
         }
@@ -442,7 +394,7 @@ module dockyard.controllers {
             } else {
                 this.$scope.planId = $state.params.id;
             }
-            
+
 
             this.loadPlan($state.params.viewMode);
         }
@@ -488,7 +440,7 @@ module dockyard.controllers {
             }
             this.renderPlan(<interfaces.IPlanVM>curPlan.plan);
             if (this.$state.current.name != 'plan.details') {
-                this.$state.go('plan.builder', { id: curPlan.plan.id, viewMode: mode });
+                this.$state.go('plan', { id: curPlan.plan.id, viewMode: mode });
             }
         }
 
@@ -818,7 +770,11 @@ module dockyard.controllers {
 
         private PaneConfigureAction_ReConfigureDownStreamActivities(eventArgs: pca.DownStreamReConfigureEventArgs) {
             var actionsToReconfigure = this.getDownstreamActions(<model.ActivityDTO>eventArgs.action);
-            actionsToReconfigure.splice(0, 0, <model.ActivityDTO>eventArgs.action);
+            for (var i = 0; i < actionsToReconfigure.length; i++) {
+                if (actionsToReconfigure[i].id === eventArgs.action.id) {
+                    actionsToReconfigure.splice(i, 1);
+                }
+            }
             this.reConfigure(actionsToReconfigure);
         }
 

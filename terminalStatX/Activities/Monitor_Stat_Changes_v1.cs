@@ -170,7 +170,7 @@ namespace terminalStatX.Activities
                 }
                 SelectedStat= ActivityUI.ExistingGroupStats.Value;
 
-                EventSubscriptions.Subscriptions.Clear();
+                EventSubscriptions.Subscriptions?.Clear();
                 EventSubscriptions.Manufacturer = "StatX";
                 EventSubscriptions.Add("StatXValueChange_" + SelectedStat.Substring(0, 18));
             }

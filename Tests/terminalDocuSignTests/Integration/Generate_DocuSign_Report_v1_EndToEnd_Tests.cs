@@ -75,7 +75,7 @@ namespace terminalDocuSignTests.Integration
 
         private async Task<PlanDTO> CreateSolution()
         {
-            var solutionCreateUrl = _baseUrl + "plans?solution_name=Generate_DocuSign_Report";
+            var solutionCreateUrl = _baseUrl + "plans?solutionName=Generate_DocuSign_Report";
 
             var plan = await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
 
@@ -218,7 +218,7 @@ namespace terminalDocuSignTests.Integration
             );
             Assert.AreEqual(
                 "RunImmediately",
-                state.CurrentClientActivityName
+                state.CurrentActivityResponse.Body
             );
         }
 

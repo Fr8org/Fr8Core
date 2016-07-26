@@ -42,7 +42,7 @@ namespace terminalSlack.Services
             {
                 if (_disposed)
                 {
-                    Logger.LogWarning($"SlackEventManager: can't subscribe to disposed object. User = {token.ExternalAccountId}, PlanId = {planId}");
+                    Logger.GetLogger().Warn($"SlackEventManager: can't subscribe to disposed object. User = {token.ExternalAccountId}, PlanId = {planId}");
                     return Task.FromResult(0);
                 }
                 Unsubscribe(planId);
@@ -50,7 +50,7 @@ namespace terminalSlack.Services
                 var userName = token.ExternalAccountId;
                 if (!_clientsByUserName.TryGetValue(userName, out client))
                 {
-                    Logger.LogInfo($"SlackEventManager: creating new subscription and opening socket for user {token.ExternalAccountId}");
+                    Logger.GetLogger().Info($"SlackEventManager: creating new subscription and opening socket for user {token.ExternalAccountId}");
                     //This user doesn't have subscription yet - create a new subscription
                     client = new SlackClientWrapper(token.Token, userName);
                     client.MessageReceived += OnMessageReceived;
@@ -58,9 +58,9 @@ namespace terminalSlack.Services
                 }
                 else
                 {
-                    Logger.LogInfo($"SlackEventManager: client for user {token.ExternalAccountId} already exists");
+                    Logger.GetLogger().Info($"SlackEventManager: client for user {token.ExternalAccountId} already exists");
                 }
-                Logger.LogInfo($"SlackEventManager: subscribing Plan {planId} to events from user {token.ExternalAccountId}");
+                Logger.GetLogger().Info($"SlackEventManager: subscribing Plan {planId} to events from user {token.ExternalAccountId}");
                 client.Subscribe(planId);
                 _accountsByPlanId[planId] = userName;
                 var result = client.Connect();
@@ -71,7 +71,7 @@ namespace terminalSlack.Services
 
         private void OnSubscriptionFailed(SlackClientWrapper client, string externalAccountId, AggregateException exception)
         {
-            Logger.LogWarning($"SlackEventManager: subscription fail for user {externalAccountId}. Exception - {exception}");
+            Logger.GetLogger().Warn($"SlackEventManager: subscription fail for user {externalAccountId}. Exception - {exception}");
             lock (_locker)
             {
                 foreach (var planId in client.SubscribedPlans)
@@ -86,7 +86,7 @@ namespace terminalSlack.Services
         public void Unsubscribe(Guid planId)
         {
             //Logger.GetLogger().Info($"SlackEventManager: usubscribing in thread {Thread.CurrentThread.ManagedThreadId}");
-            Logger.LogInfo($"SlackEventManager: usubscribing plan {planId}");
+            Logger.GetLogger().Info($"SlackEventManager: usubscribing plan {planId}");
             lock (_locker)
             {
                 if (_disposed)
@@ -105,7 +105,7 @@ namespace terminalSlack.Services
                     if (client.Unsubsribe(planId))
                     {
                         //Logger.GetLogger().Info("SlackEventManager: unsubscribing closes socket");
-                        Logger.LogInfo($"SlackEventManager: unsubscribing of plan {planId} closes client for user {existingUserName}");
+                        Logger.GetLogger().Info($"SlackEventManager: unsubscribing of plan {planId} closes client for user {existingUserName}");
                         _clientsByUserName.Remove(existingUserName);
                         client.MessageReceived -= OnMessageReceived;
                         client.Dispose();
@@ -117,7 +117,7 @@ namespace terminalSlack.Services
         public void Dispose()
         {
             //Logger.GetLogger().Info("SlackEventManager: Dispose() closes all clients");
-            Logger.LogInfo("SlackEventManager: Dispose() closes all clients");
+            Logger.GetLogger().Info("SlackEventManager: Dispose() closes all clients");
             lock (_locker)
             {
                 if (_disposed)
@@ -135,7 +135,7 @@ namespace terminalSlack.Services
 
         private async void OnMessageReceived(object sender, DataEventArgs<WrappedMessage> e)
         {
-            Logger.LogInfo($"SlackEventManager: message '{e.Data.Text}' is received from {e.Data.UserName}");
+            Logger.GetLogger().Info($"SlackEventManager: message '{e.Data.Text}' is received from {e.Data.UserName}");
             //The naming conventions of message property is for backwards compatibility with existing event processing logic
             var client = (SlackClientWrapper)sender;
             var valuePairs = new List<KeyValuePair<string, string>>
@@ -154,12 +154,12 @@ namespace terminalSlack.Services
             try
             {
                 await _resfultClient.PostAsync(_eventsUri, content: encodedMessage).ConfigureAwait(false);
-                Logger.LogInfo($"SlackEventManager: message was posted to Slack terminal for user's {client.UserName} active plans");
+                Logger.GetLogger().Info($"SlackEventManager: message was posted to Slack terminal for user's {client.UserName} active plans");
             }
             catch (Exception ex)
             {
                 //Logger.GetLogger().Info($"Failed to post event from SlackEventMenager with following payload: {encodedMessage}", ex);
-                Logger.LogError($"SlackEventManager: failed to post event to terminal Slack llowing payload: {encodedMessage}. {ex}");
+                Logger.GetLogger().Error($"SlackEventManager: failed to post event to terminal Slack llowing payload: {encodedMessage}. {ex}");
             }
         }
     }

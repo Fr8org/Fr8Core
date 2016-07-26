@@ -142,7 +142,7 @@ module dockyard.controllers {
 
                     result.$promise
                         .then(() => {
-                            $state.go('plan.builder', { id: result.plan.id });
+                            $state.go('plan', { id: result.plan.id });
                             //window.location.href = 'plans/' + result.plan.id + '/builder';
                         });
 
@@ -165,7 +165,7 @@ module dockyard.controllers {
             });      
 
             UserService.getCurrentUser().$promise.then(data => {
-                PusherNotifierService.bindEventToChannel(data.emailAddress, dockyard.directives.NotificationType[dockyard.directives.NotificationType.GenericInfo], (data: any) => {
+                PusherNotifierService.bindEventToChannel(data.emailAddress, dockyard.enums.NotificationArea[dockyard.enums.NotificationArea.ActivityStream], (data: any) => {
                     this.updatePlanLastUpdated(data.PlanId, data.PlanLastUpdated);
                 });
 
@@ -316,7 +316,7 @@ module dockyard.controllers {
 
 
         private goToPlanPage(planId) {
-            this.$state.go('plan.builder', { id: planId });
+            this.$state.go('plan', { id: planId });
         }
 
         private goToPlanDetailsPage(planId) {

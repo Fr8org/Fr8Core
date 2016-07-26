@@ -12,6 +12,9 @@ using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Errors;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using Fr8.Infrastructure.Utilities;
 
 namespace terminalFr8Core.Activities
 {
@@ -79,7 +82,29 @@ namespace terminalFr8Core.Activities
                 return;
             }
 
+            PopulateRowData(crateDescriptionToProcess, loopData, crateToProcess);
+
             Success();
+        }
+
+        private void PopulateRowData(CrateDescriptionDTO crateDescriptionToProcess, OperationalStateCM.LoopStatus loopData, Crate crateToProcess)
+        {
+            string label = GetCrateName(crateDescriptionToProcess);
+            Payload.RemoveUsingPredicate(a => a.Label == label && a.ManifestType == crateToProcess.ManifestType);
+
+            if (crateDescriptionToProcess.ManifestId == (int)MT.StandardTableData)
+            {
+                var table = crateToProcess.Get<StandardTableDataCM>();
+                var rowOfData = table.DataRows.ElementAt(loopData.Index);
+                var extractedCrate = new StandardTableDataCM(false, new List<TableRowDTO>() { rowOfData });
+                Payload.Add(Crate.FromContent(label, extractedCrate));
+            }
+            else
+            {
+
+                var cloned_crate = CloneCrateAndReplaceArrayWithASingleValue(crateToProcess, "", loopData.Index, GetCrateName(crateDescriptionToProcess));
+                Payload.Add(cloned_crate);
+            }
         }
 
         public override async Task RunChildActivities()
@@ -109,7 +134,7 @@ namespace terminalFr8Core.Activities
             {
                 return tableData.FirstRowHeaders ? Math.Max(0, tableData.Table.Count - 1) : tableData.Table.Count;
             }
-            var array = crateToProcess.IsKnownManifest ? Fr8ReflectionHelper.FindFirstArray(crateToProcess.Get()) : FindFirstArray(crateToProcess.GetRaw());
+            var array = crateToProcess.IsKnownManifest ? Fr8ReflectionHelper.FindFirstArray(crateToProcess.Get()) : Fr8ReflectionHelper.FindFirstArray(crateToProcess.GetRaw());
             return array?.Length;
         }
 
@@ -119,56 +144,16 @@ namespace terminalFr8Core.Activities
             return crateChooser.CrateDescriptions.Single(c => c.Selected);
         }
 
-
         private Crate FindCrateToProcess(CrateDescriptionDTO selectedCrateDescripiton)
         {
             return Payload.FirstOrDefault(c => c.ManifestType.Type == selectedCrateDescripiton.ManifestType && c.Label == selectedCrateDescripiton.Label);
-        }
-
-        /// <summary>
-        /// Helper function that Vladimir wrote to find first array in a JToken
-        /// </summary>
-        /// <param name="token"></param>
-        /// <param name="maxSearchDepth"></param>
-        /// <returns></returns>
-        private static object[] FindFirstArray(JToken token, int maxSearchDepth = 0)
-        {
-            return FindFirstArrayRecursive(token, maxSearchDepth, 0);
-        }
-
-        private static object[] FindFirstArrayRecursive(JToken token, int maxSearchDepth, int depth)
-        {
-            if (maxSearchDepth != 0 && depth > maxSearchDepth)
-            {
-                return null;
-            }
-
-            if (token is JArray)
-            {
-                return ((JArray)token).Values().OfType<object>().ToArray();
-            }
-
-            if (token is JObject)
-            {
-                foreach (var prop in (JObject)token)
-                {
-                    var result = FindFirstArrayRecursive(prop.Value, maxSearchDepth, depth + 1);
-
-                    if (result != null)
-                    {
-                        return result;
-                    }
-                }
-            }
-
-            return null;
         }
 
         public override async Task Initialize()
         {
             //build a controls crate to render the pane
             CreateControls();
-            SelectTheOnlyCrate();
+            SelectTheCrateIfThereIsOnlyOne();
         }
 
         public override async Task FollowUp()
@@ -179,19 +164,37 @@ namespace terminalFr8Core.Activities
                 var selected = crateChooser.CrateDescriptions.FirstOrDefault(x => x.Selected);
                 if (selected != null)
                 {
-                    SelectTheOnlyCrate();
+                    SelectTheCrateIfThereIsOnlyOne();
+                    SignalRowCrate(selected);
                 }
                 else
                 {
                     Storage.Clear();
                     CreateControls();
-                    SelectTheOnlyCrate();
+                    SelectTheCrateIfThereIsOnlyOne();
                 }
             }
         }
-        
 
-        private void SelectTheOnlyCrate()
+        private string GetCrateName(CrateDescriptionDTO selected)
+        {
+            return $"Row of \"{selected.Label}\"";
+        }
+
+        private void SignalRowCrate(CrateDescriptionDTO selected)
+        {
+
+            if (selected.ManifestId == (int)MT.StandardTableData)
+            {
+                CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(GetCrateName(selected), true).AddFields(selected.Fields);
+            }
+            else
+            {
+                CrateSignaller.MarkAvailableWithoutSignalling(selected, AvailabilityType.Always, GetCrateName(selected)).AddFields(selected.Fields);
+            }
+        }
+
+        private void SelectTheCrateIfThereIsOnlyOne()
         {
             var crateChooser = ConfigurationControls.Controls.OfType<CrateChooser>().Single();
             if (crateChooser.CrateDescriptions?.Count == 1)
@@ -216,5 +219,30 @@ namespace terminalFr8Core.Activities
             : base(crateManager)
         {
         }
+
+        public Crate CloneCrateAndReplaceArrayWithASingleValue(Crate crateToProcess, string signalledCrateId, int index, string new_label)
+        {
+            var crate = CrateManager.ToDto(crateToProcess);
+            var rawcrate = crate.Contents;
+
+            var arrayProperties = rawcrate.WalkTokens().OfType<JProperty>().Where(prop => prop.Value.Type == JTokenType.Array);
+            var first_array = arrayProperties.OrderBy(a => a.Path.Length).FirstOrDefault();
+
+            if (first_array == null || first_array.Value.Type != JTokenType.Array)
+                throw new ApplicationException("Manifest doesn't represent a collection of elements. Currently Loop activity is only able to process Manifest with a collection at root level. ");
+
+            var arrayProperty = first_array.Value as JArray;
+            var element = arrayProperty[index];
+            arrayProperty.Clear();
+            arrayProperty.Add(element);
+            crate.Id = Guid.NewGuid().ToString();
+            var result = CrateManager.FromDto(crate);
+            result.Label = new_label;
+
+            return result;
+        }
+
     }
+
+
 }

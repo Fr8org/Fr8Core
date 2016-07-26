@@ -121,7 +121,7 @@ namespace Hub.Services
             if (plan == null)
             {
                 var message = "Subplan with given Id not found. Id=" + subPlanId;
-                Logger.LogError(message);
+                Logger.GetLogger().Error(message);
                 throw new ArgumentException(message);
             }
             return plan.ChildNodes.OfType<ActivityDO>().OrderBy(x => x.Ordering).FirstOrDefault();

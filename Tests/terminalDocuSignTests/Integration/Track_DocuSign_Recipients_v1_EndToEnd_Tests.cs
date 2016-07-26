@@ -75,7 +75,7 @@ namespace terminalDocuSignTests.Integration
 
             string baseUrl = GetHubApiBaseUrl();
 
-            var solutionCreateUrl = baseUrl + "plans?solution_name=Track_DocuSign_Recipients_v1";
+            var solutionCreateUrl = baseUrl + "plans?solutionName=Track_DocuSign_Recipients_v1";
 
 
             //

@@ -113,7 +113,7 @@ namespace terminalExcel.Activities
 
                     // Process table and get the Table and optionally (if one row) fields crate
                     var fileAsByteArray = await _excelUtils.GetExcelFileAsByteArray(ActivityUI.FilePicker.Value);
-                    var tableCrates = GetExcelFileDescriptionCrates(fileAsByteArray, ActivityUI.FilePicker.Value, true, null, false);
+                    var tableCrates = GetExcelFileDescriptionCrates(fileAsByteArray, ActivityUI.FilePicker.Value, null, false);
 
                     foreach (var crate in tableCrates)
                     {
@@ -127,7 +127,7 @@ namespace terminalExcel.Activities
             Storage.Add(Crate.FromContent(FileCrateLabel, new StandardFileDescriptionCM() { Filename = FileCrateLabel }));
         }
 
-        public List<Crate> GetExcelFileDescriptionCrates(byte[] fileAsByteArray, string selectedFilePath, bool isFirstRowAsColumnNames = true, string sheetName = null, bool isRunTime = false)
+        public List<Crate> GetExcelFileDescriptionCrates(byte[] fileAsByteArray, string selectedFilePath, string sheetName = null, bool isRunTime = false)
         {
             var ext = Path.GetExtension(selectedFilePath);
             List<Crate> crates = new List<Crate>();
@@ -135,6 +135,9 @@ namespace terminalExcel.Activities
             // Read file from repository
             // Fetch column headers in Excel file
             var headersArray = ExcelUtils.GetColumnHeaders(fileAsByteArray, ext, sheetName);
+
+            var isFirstRowAsColumnNames = true;
+            var hasFirstRowHeader = ExcelUtils.DetectContainsHeader(fileAsByteArray, ext, sheetName);
 
             // Fetch rows in Excel file
             var rowsDictionary = ExcelUtils.GetTabularData(fileAsByteArray, ext, isFirstRowAsColumnNames, sheetName);
@@ -146,7 +149,7 @@ namespace terminalExcel.Activities
                 var rows = ExcelUtils.CreateTableCellPayloadObjects(rowsDictionary, headersArray, isFirstRowAsColumnNames);
                 if (rows != null && rows.Count > 0)
                 {
-                    tableCrate = Crate.FromContent(RunTimeCrateLabel, new StandardTableDataCM(isFirstRowAsColumnNames, rows));
+                    tableCrate = Crate.FromContent(RunTimeCrateLabel, new StandardTableDataCM(hasFirstRowHeader, rows));
                     var fieldsCrate = TabularUtilities.PrepareFieldsForOneRowTable(isFirstRowAsColumnNames, isRunTime, rows, headersArray);
                     if (fieldsCrate != null)
                     {
@@ -167,7 +170,7 @@ namespace terminalExcel.Activities
             }
 
             var byteArray = await _excelUtils.GetExcelFileAsByteArray(ActivityUI.FilePicker.Value);
-            var tableCrates = GetExcelFileDescriptionCrates(byteArray, ActivityUI.FilePicker.Value, true, null, true);
+            var tableCrates = GetExcelFileDescriptionCrates(byteArray, ActivityUI.FilePicker.Value, null, true);
 
             var fileDescription = new StandardFileDescriptionCM
             {
@@ -179,7 +182,7 @@ namespace terminalExcel.Activities
             {
                 Payload.Add(crate);
             }
-            Payload.Add(Crate.FromContent(FileCrateLabel, fileDescription, AvailabilityType.Always));
+            Payload.Add(Crate.FromContent(FileCrateLabel, fileDescription));
         }
 
         private Crate CreateExternalObjectHandlesCrate()
@@ -196,8 +199,7 @@ namespace terminalExcel.Activities
 
             var crate = Crate.FromContent(
                 ExternalObjectHandlesLabel,
-                new ExternalObjectHandlesCM(externalObjectHandle),
-                AvailabilityType.Always
+                new ExternalObjectHandlesCM(externalObjectHandle)
             );
 
             return crate;

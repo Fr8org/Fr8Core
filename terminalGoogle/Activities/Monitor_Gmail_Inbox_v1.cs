@@ -63,7 +63,7 @@ namespace terminalGoogle.Activities
 
         public override async Task Activate()
         {
-            Logger.LogInfo("Monitor_Gmail_Inbox activty is activated. Sending a request for polling");
+            Logger.GetLogger().Info("Monitor_Gmail_Inbox activty is activated. Sending a request for polling");
             await _gmailPollingService.SchedulePolling(HubCommunicator, AuthorizationToken.ExternalAccountId, true);
         }
 
