@@ -52,5 +52,5 @@ module dockyard.services {
         }
     }
 
-    app.factory('UINotificationService', [IUINotificationService => new UINotificationService()]);
+    app.factory('UINotificationService', [() => new UINotificationService()]);
 }
