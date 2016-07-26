@@ -86,25 +86,20 @@ namespace Hub.Services
 
             return availableData;
         }
-        
+
         public List<CrateDescriptionCM> GetCrateManifestsByDirection(
             Guid activityId,
             CrateDirection direction,
             AvailabilityType availability,
             bool includeCratesFromActivity = true
-                ) 
+                )
         {
             Func<Crate<CrateDescriptionCM>, bool> cratePredicate;
 
-            if (availability == AvailabilityType.NotSet)
-            {
-                //validation errors don't need to be present as available data, so remove Validation Errors
-                cratePredicate = f => f.Label != ValidationErrorsLabel && f.Availability != AvailabilityType.Configuration;
-            }
-            else
-            {
-                cratePredicate = f => (f.Availability & availability) != 0;
-            }
+
+            //validation errors don't need to be present as available data, so remove Validation Errors
+            cratePredicate = f => f.Label != ValidationErrorsLabel;
+
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -144,11 +139,11 @@ namespace Hub.Services
                         return x.Content;
                     })
                     .ToList();
-                            
+
                 return result;
             }
         }
-        
+
         private List<PlanNodeDO> GetActivitiesByDirection(IUnitOfWork uow, CrateDirection direction, PlanNodeDO curActivityDO)
         {
             switch (direction)
@@ -288,7 +283,7 @@ namespace Hub.Services
             foreach (PlanNodeDO child in parent.ChildNodes)
                 TraverseActivity(child, visitAction);
         }
-       
+
         public IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, IFr8AccountDO curAccount)
         {
             IEnumerable<ActivityTemplateDTO> curActivityTemplates;

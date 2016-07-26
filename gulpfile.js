@@ -78,6 +78,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/services/FileDetailsService.js',
         'Scripts/app/services/ContainerService.js',
         'Scripts/app/services/UIHelperService.js',
+        'Scripts/app/services/UINotificationService.js',
         'Scripts/app/services/LayoutService.js',
         'Scripts/app/services/PusherNotifierService.js',
         'Scripts/app/services/UserService.js',
@@ -91,6 +92,9 @@ gulp.task('compile_js', function () {
         'Scripts/app/filters/PlanState.js',
         'Scripts/app/filters/ContainerState.js',
         'Scripts/app/filters/FilterByTag.js',
+        'Scripts/app/enums/NotificationArea.js',
+        'Scripts/app/enums/NotificationType.js',
+        'Scripts/app/enums/UINotificationMessageStatus.js',
         'Scripts/app/directives/EventArgsBase.js',
         'Scripts/app/directives/directives.js',
         'Scripts/app/directives/indiClick.js',
@@ -401,6 +405,11 @@ gulp.task('cdnizer-js', ['bower'], function () {
                 file: '~/bower_components/angular-material/angular-material.js',
                 package: 'angular-material',
                 cdn: '//ajax.googleapis.com/ajax/libs/angular_material/${ version }/angular-material.min.js'
+            },
+            {
+                file: '~/bower_components/noty/js/noty/packaged/jquery.noty.packaged.min.js',
+                package: 'noty',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/jquery-noty/2.3.8/packaged/jquery.noty.packaged.min.js'
             }
         ]))
         .pipe(gulp.dest('./Views/Shared/CDN'));

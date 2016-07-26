@@ -5,6 +5,7 @@ Fr8 Operating Concepts Home
 * [Apps](/Docs/ForDevelopers/OperatingConcepts/Apps.md)
 * [Configuration of Activities and UI Specification](/Docs/ForDevelopers/OperatingConcepts/UIInfrastructure.md)
 * [Data](/Docs/ForDevelopers/OperatingConcepts/TypesOfFr8.md)   
+* [Documentation & Help](/Docs/ForDevelopers/ActivityDevelopmentBuildingDocumentation.md)
 * [Events](/Docs/ForDevelopers/OperatingConcepts/Events.md)  
 * [Execution](/Docs/ForDevelopers/OperatingConcepts/PlanExecution.md)
 * [Manifests](/Docs/ForDevelopers/Objects/CratesManifest.md)

@@ -6,6 +6,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
     public class PlanDTO
     {
+        [JsonProperty("plan")]
         public PlanFullDTO Plan { get; set; }
     }
 

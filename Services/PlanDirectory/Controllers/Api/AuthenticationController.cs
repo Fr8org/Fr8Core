@@ -60,6 +60,16 @@ namespace PlanDirectory.Controllers.Api
         [HttpPost]
         [Fr8ApiAuthorize]
         [PlanDirectoryHMACAuthenticate]
+        public IHttpActionResult LogOut()
+        {
+            var securityServices = ObjectFactory.GetInstance<ISecurityServices>();
+            securityServices.Logout();
+            return Ok(new {Result = true});
+        }
+
+        [HttpPost]
+        [Fr8ApiAuthorize]
+        [PlanDirectoryHMACAuthenticate]
         public IHttpActionResult Token()
         {
             var fr8UserId = User.Identity.GetUserId();

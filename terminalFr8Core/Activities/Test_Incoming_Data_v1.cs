@@ -45,10 +45,19 @@ namespace terminalFr8Core.Activities
         protected List<KeyValueDTO> GetAllPayloadFields()
         {
             var valuesCrates = Payload.CrateContentsOfType<StandardPayloadDataCM>();
+            var valuesTableCrates = Payload.CrateContentsOfType<StandardTableDataCM>();
             var curValues = new List<KeyValueDTO>();
             foreach (var valuesCrate in valuesCrates)
             {
                 curValues.AddRange(valuesCrate.AllValues());
+            }
+            var tableCrates = valuesTableCrates.Where(c => c.Table.Count == 1);
+            if(tableCrates != null)
+            {
+                foreach (var valuesCrate in tableCrates)
+                {
+                    curValues.AddRange(valuesCrate.ToPayloadData().AllValues());
+                }
             }
             return curValues;
         }

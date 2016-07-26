@@ -7,10 +7,10 @@ namespace HubWeb.ViewModels.RequestParameters
         /// <summary>
         /// Name of solution to create if specified
         /// </summary>
-        public string solution_name { get; set; }
+        public string solutionName { get; set; }
         /// <summary>
         /// Deprecated
         /// </summary>
-        public bool update_registrations { get; set; } = false;
+        public bool updateRegistrations { get; set; } = false;
     }
 }

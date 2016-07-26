@@ -48,7 +48,7 @@ namespace Data.Entities
 
                 if (configRepo.Get("LogLevel", String.Empty) == "Verbose")
                     //Logger.GetLogger().Info(Data);
-                    Logger.LogInfo(Data);
+                    Logger.GetLogger().Info(Data);
             }
         }
     }
