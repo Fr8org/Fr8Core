@@ -177,36 +177,24 @@ This is how the Hub response looks like:
           "label": "Full Name",
           "fieldType": null,
           "isRequired": false,
-          "availability": 2,
-          "sourceCrateLabel": "Google Form Payload Data",
-          "sourceActivityId": "94617d96-32f6-4e28-a095-5b9e1d04820e"
         },
         {
           "key": "TR ID",
           "label": "TR ID",
           "fieldType": null,
           "isRequired": false,
-          "availability": 2,
-          "sourceCrateLabel": "Google Form Payload Data",
-          "sourceActivityId": "94617d96-32f6-4e28-a095-5b9e1d04820e"
         },
         {
           "key": "Email Address",
           "label": "Email Address",
           "fieldType": null,
           "isRequired": false,
-          "availability": 2,
-          "sourceCrateLabel": "Google Form Payload Data",
-          "sourceActivityId": "94617d96-32f6-4e28-a095-5b9e1d04820e"
         },
         {
           "key": "Period of Availability",
           "label": "Period of Availability",
           "fieldType": null,
           "isRequired": false,
-          "availability": 2,
-          "sourceCrateLabel": "Google Form Payload Data",
-          "sourceActivityId": "94617d96-32f6-4e28-a095-5b9e1d04820e"
         }
       ]
     }

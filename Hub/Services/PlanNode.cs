@@ -130,12 +130,7 @@ namespace Hub.Services
                     {
                         foreach (var crateDescription in x.Content.CrateDescriptions)
                         {
-                            foreach (var field in crateDescription.Fields)
-                            {
-                                field.Availability = crateDescription.Availability;
-                                field.SourceCrateLabel = crateDescription.Label ?? crateDescription.ProducedBy;
-                                field.SourceActivityId = x.SourceActivityId;
-                            }
+                            crateDescription.Label = crateDescription.Label ?? crateDescription.ProducedBy;
                         }
                         return x.Content;
                     })

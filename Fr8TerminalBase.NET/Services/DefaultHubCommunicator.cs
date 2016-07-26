@@ -107,6 +107,17 @@ namespace Fr8.TerminalBase.Services
             var url = $"{GetHubUrlWithApiVersion()}/plan_nodes/signals?id={activityId}&direction={(int)direction}&availability={(int)availability}";
             var uri = new Uri(url, UriKind.Absolute);
             var availableData = await _restfulServiceClient.GetAsync<IncomingCratesDTO>(uri, null);
+
+            foreach (var availableCrate in availableData.AvailableCrates)
+            {
+                foreach (var fieldDto in availableCrate.Fields)
+                {
+                    fieldDto.SourceCrateLabel = availableCrate.Label;
+                    fieldDto.SourceActivityId = availableCrate.SourceActivityId;
+                    fieldDto.Availability = availableCrate.Availability;
+                }
+            }
+
             return availableData;
         }
 
