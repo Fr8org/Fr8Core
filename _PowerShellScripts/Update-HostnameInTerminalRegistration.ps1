@@ -20,7 +20,7 @@ $commandText = "
 			('$newHostname' + RIGHT ([Endpoint], CHARINDEX (':', REVERSE ([Endpoint]))))
 	WHERE CHARINDEX (':', REVERSE ([Endpoint])) <= 6 AND IsFr8OwnTerminal = 1"
 
-if ($localhostOnly = $true)
+if ($localhostOnly -eq $true)
 {
 	$commandText += " AND [Endpoint] LIKE 'localhost:%'" 
 }
