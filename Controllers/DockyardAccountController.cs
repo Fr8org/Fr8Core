@@ -76,8 +76,9 @@ namespace HubWeb.Controllers
             this.Logout();
 
             var userId = User.Identity.GetUserId();
-            Task.Run(() => _planDirectory.Logout(userId));
-            
+            var result = Task.Run(() => _planDirectory.Logout(userId)).Result;
+            Logger.GetLogger().Debug($"PlanDirectory logout result is {result}");
+
             return RedirectToAction("Index", "DockyardAccount");
         }
 
