@@ -92,7 +92,7 @@ namespace terminalFr8Core.Activities
             if (left is string && right is string)
             {
                 decimal v1;
-                decimal v2; 
+                decimal v2;
                 if (decimal.TryParse((string)left, out v1) && decimal.TryParse((string)right, out v2))
                 {
                     return v1.CompareTo(v2);
@@ -101,7 +101,7 @@ namespace terminalFr8Core.Activities
             }
             return -2;
         }
-        
+
         protected Expression ParseCriteriaExpression(FilterConditionDTO condition, IQueryable<KeyValueDTO> queryableData)
         {
             var curType = typeof(KeyValueDTO);
@@ -166,7 +166,7 @@ namespace terminalFr8Core.Activities
                 Required = true,
                 Source = new FieldSourceDTO
                 {
-                    Label = "Queryable Criteria",
+                    Label = "Upstream Terminal-Provided Fields",
                     ManifestType = CrateManifestTypes.StandardDesignTimeFields,
                     RequestUpstream = true
                 }

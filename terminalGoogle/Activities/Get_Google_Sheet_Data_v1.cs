@@ -188,34 +188,17 @@ namespace terminalGoogle.Activities
                 CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(GetRuntimeCrateLabel(), true)
                     .AddFields(columnHeaders.Select(x => new FieldDTO(x.Key)));
 
-
-                //logic responsible for handling one-row tables
-                var table = await GetSelectedSpreadSheet();
-                var hasHeaderRow = TryAddHeaderRow(table);
-
-                Crate fieldsCrate = null;
-
-                if (table?.Count() > 0)
-                {
-                    fieldsCrate = TabularUtilities.PrepareFieldsForOneRowTable(hasHeaderRow, table, columnHeaders.Select(ch => ch.Key).ToList());
-                }
-
-                if (fieldsCrate != null)
-                {
-                    CrateSignaller.MarkAvailable<StandardPayloadDataCM>(TabularUtilities.ExtractedFieldsCrateLabel, AvailabilityType.Always, true)
-                        .AddFields(fieldsCrate.Get<StandardPayloadDataCM>().AllValues().Select(x => new FieldDTO(x.Key, AvailabilityType.Always)));
-                    Storage.Add(fieldsCrate);
-                }
-                else
-                {
-                    Storage.RemoveByLabel(TabularUtilities.ExtractedFieldsCrateLabel);
-                }
+                //here was logic responsible for handling one-row tables but it was faulty. It's main purpose was to spawn fields like "value immediatly below of" in a StandardPayload. 
+                //You might view TabularUtilities.PrepareFieldsForOneRowTable for reference
             }
         }
 
         private string GetRuntimeCrateLabel()
         {
-            return string.Format("Spreadsheet Data from \"{0}\"", (string.IsNullOrEmpty(ActivityUI.WorksheetList.selectedKey) ? ActivityUI.SpreadsheetList.selectedKey + "-" + ActivityUI.WorksheetList.selectedKey : ActivityUI.SpreadsheetList.selectedKey));
+            return string.Format("Spreadsheet Data from \"{0}\"",
+                ((!ActivityUI.WorksheetList.IsHidden && !string.IsNullOrEmpty(ActivityUI.WorksheetList.selectedKey))
+                ? ActivityUI.SpreadsheetList.selectedKey + "-" + ActivityUI.WorksheetList.selectedKey
+                : ActivityUI.SpreadsheetList.selectedKey));
         }
 
         private async Task<List<TableRowDTO>> GetSelectedSpreadSheet()
@@ -261,12 +244,6 @@ namespace terminalGoogle.Activities
             var table = await GetSelectedSpreadSheet();
             var hasHeaderRow = TryAddHeaderRow(table);
             Payload.Add(Crate.FromContent(GetRuntimeCrateLabel(), new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
-
-            var fieldsCrate = TabularUtilities.PrepareFieldsForOneRowTable(hasHeaderRow, table, null); // assumes that hasHeaderRow is always true
-            if (fieldsCrate != null)
-            {
-                Payload.ReplaceByLabel(fieldsCrate);
-            }
         }
     }
 }
