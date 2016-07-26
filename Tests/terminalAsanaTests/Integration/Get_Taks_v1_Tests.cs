@@ -13,6 +13,8 @@ using NUnit.Framework;
 
 namespace terminalAsanaTests.Integration
 {
+    [Explicit]
+    [Category("Integration.terminalAsana")]
     class Get_Taks_v1_Tests: BaseTerminalIntegrationTest
     {
         public override string TerminalName => "terminalAsana";
@@ -29,7 +31,7 @@ namespace terminalAsanaTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test]
-        public async Task Get_Taks_v1_initial_configuratino_check()
+        public async Task Get_Taks_v1_initial_configuration_check()
         {
             var configureUrl = GetTerminalConfigureUrl();
             var requestDataDTO = Fixtures.FixtureData.Get_Tasks_v1_InitialConfiguration_Fr8DataDTO();
