@@ -74,6 +74,21 @@ namespace HubWeb.Controllers
                 .ToList();
             return Ok(terminals);
         }
+
+        /// <summary>
+        /// Retrieves Terminal registered in the current hub by his identifier
+        /// </summary>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <response code="200">Terminal</response>
+        /// <response code="403">Unauthorized request</response>
+        [HttpGet]
+        [Fr8ApiAuthorize]
+        [ResponseType(typeof(TerminalDTO))]
+        public IHttpActionResult Get(int id)
+        {
+            return Ok(Mapper.Map<TerminalDTO>(_terminal.GetByKey(id)));
+        }
+
         /// <summary>
         /// Registers terminal endpoint in the current hub and performs initial terminal discovery process using this endpoint
         /// </summary>
