@@ -408,7 +408,7 @@ gulp.task('cdnizer-js', ['bower'], function () {
             {
                 file: '~/bower_components/noty/js/noty/packaged/jquery.noty.packaged.min.js',
                 package: 'noty',
-                cdn: '//cdnjs.cloudflare.com/ajax/libs/jquery-noty/2.3.8/jquery.noty.min.js'
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/jquery-noty/2.3.8/packaged/jquery.noty.packaged.min.js'
             }
         ]))
         .pipe(gulp.dest('./Views/Shared/CDN'));
