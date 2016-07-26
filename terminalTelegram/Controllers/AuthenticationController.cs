@@ -30,7 +30,7 @@ namespace terminalTelegram.Controllers
         {
             try
             {
-                return await UpdateCredentialsDto(credentialsDTO);
+                return await CreateTelegramConnection(credentialsDTO);
             }
             catch (Exception ex)
             {
@@ -39,7 +39,7 @@ namespace terminalTelegram.Controllers
                     // Telegram SDK contains a bug, so somethimes we need to send two auth codes to phone number
                     if (ex.Message == "STORE_INVALID_OBJECT_TYPE")
                     {
-                        return await UpdateCredentialsDto(credentialsDTO);
+                        return await CreateTelegramConnection(credentialsDTO);
                     }
                     throw;
                 }
@@ -53,7 +53,7 @@ namespace terminalTelegram.Controllers
             }
         }
 
-        private async Task<PhoneNumberCredentialsDTO> UpdateCredentialsDto(PhoneNumberCredentialsDTO credentialsDTO)
+        private async Task<PhoneNumberCredentialsDTO> CreateTelegramConnection(PhoneNumberCredentialsDTO credentialsDTO)
         {
             await _telegramIntegration.ConnectAsync();
             var hash = await _telegramIntegration.GetHashAsync(credentialsDTO.PhoneNumber);
