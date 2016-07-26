@@ -562,11 +562,11 @@ namespace Hub.Services
             {
                 _pusherNotifier.NotifyUser(new NotificationMessageDTO
                 {
-                    NotificationType = NotificationType.TerminalEvent,
+                    NotificationType = NotificationType.GenericSuccess,
                     NotificationArea = NotificationArea.ActivityStream,
                     Subject = "Monitoring Successful",
                     Message = "Plan execution complete. Monitoring continues."
-                }, _security.GetCurrentUser());
+                }, plan.Fr8AccountId);
             }
 
             return container;
