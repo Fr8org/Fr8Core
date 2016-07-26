@@ -16,13 +16,13 @@ using Swashbuckle.Swagger.Annotations;
 namespace HubWeb.Controllers
 {
     [Fr8ApiAuthorize]
-    public class ReportController : ApiController
+    public class ReportsController : ApiController
     {
         private readonly IReport _report;
         private readonly ISecurityServices _securityService;
         private readonly IUnitOfWorkFactory _uowFactory;
 
-        public ReportController(IReport report, ISecurityServices securityService, IUnitOfWorkFactory uowFactory)
+        public ReportsController(IReport report, ISecurityServices securityService, IUnitOfWorkFactory uowFactory)
         {
             _report = report;
             _securityService = securityService;
