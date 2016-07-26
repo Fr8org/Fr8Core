@@ -66,8 +66,8 @@ namespace HubWeb.Controllers
         /// </summary>
         /// <remarks>Fr8 authentication headers must be provided</remarks>
         /// <param name="planDto">Description of plan to create or update</param>
-        /// <param name="solution_name">Name of solution to create if specified</param>
-        /// <param name="update_registrations">Deprecated</param>
+        /// <param name="solutionName">Name of solution to create if specified</param>
+        /// <param name="updateRegistrations">Deprecated</param>
         /// <response code="200">Created or updated plan</response>
         /// <response code="403">Unauthorized request</response>
         [Fr8TerminalAuthentication]
@@ -78,9 +78,9 @@ namespace HubWeb.Controllers
         {
             parameters = parameters ?? new PlansPostParams();
 
-            if (!parameters.solution_name.IsNullOrEmpty())
+            if (!parameters.solutionName.IsNullOrEmpty())
             {
-                return await CreateSolution(parameters.solution_name);
+                return await CreateSolution(parameters.solutionName);
             }
 
             return await Post(planDto);
@@ -440,11 +440,13 @@ namespace HubWeb.Controllers
 
             // Notify user with directing him to PlanDirectory with related search query
             var url = CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/#?planSearch=" + HttpUtility.UrlEncode(dto.Name);
-            _pusherNotifier.NotifyUser(new
+            _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
+                NotificationType = NotificationType.GenericSuccess,
+                NotificationArea = NotificationArea.ActivityStream,
                 Message = $"Plan Shared. To view, click on " + url,
                 Collapsed = false
-            }, NotificationType.GenericSuccess, User.Identity.GetUserId());
+            }, User.Identity.GetUserId());
 
             return Ok();
         }

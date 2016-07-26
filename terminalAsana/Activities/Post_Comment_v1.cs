@@ -147,18 +147,8 @@ namespace terminalAsana.Activities
 
             ValidationManager.ValidateDropDownListNotEmpty(ActivityUI.Workspaces, "No workspace was selected");
             ValidationManager.ValidateDropDownListNotEmpty(ActivityUI.Tasks, "No task was selected");
-            ValidationManager.ValidateDropDownListNotEmpty(ActivityUI.Comment, "No data was entered for Comment");
+            ValidationManager.ValidateTextSourceNotEmpty(ActivityUI.Comment, "No data was entered for Comment");
 
-            if (ActivityUI.Tasks.selectedKey == null)
-            {
-                ValidationManager.SetError("No task was selected", nameof(ActivityUI.Tasks));
-            }
-
-            if (!ActivityUI.Comment.HasValue)
-            {
-                ValidationManager.SetError("No data was entered for Comment", nameof(ActivityUI.Comment));
-            }
-            
             return Task.FromResult(0);
         }
 

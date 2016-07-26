@@ -1,11 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
 	public class WebServiceActivitySetDTO
 	{
-		public string WebServiceIconPath { get; set; }
-		public List<ActivityTemplateDTO> Activities { get; set; }
+        [JsonProperty("webServiceIconPath")]
+        public string WebServiceIconPath { get; set; }
+
+        [JsonProperty("activities")]
+        public List<ActivityTemplateDTO> Activities { get; set; }
+
+        [JsonProperty("webServiceName")]
         public string WebServiceName { get; set; }
 	}
 }

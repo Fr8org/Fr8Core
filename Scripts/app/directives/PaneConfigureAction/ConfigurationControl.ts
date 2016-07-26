@@ -52,6 +52,16 @@ module dockyard.directives.paneConfigureAction {
         processOperation: (operation: ConfigurationControlOperation) => void;
     }
 
+    class FocusOperation {
+        constructor(relativeXPath: string, caretPosition: number) {
+            this.relativeXPath = relativeXPath;
+            this.caretPosition = caretPosition;
+        }
+
+        relativeXPath: string;
+        caretPosition: number;
+    }
+
     export class ConfigurationControlController implements IConfigurationControlController {
 
         static $inject = ['$scope', '$element', '$attrs'];
@@ -94,6 +104,24 @@ module dockyard.directives.paneConfigureAction {
 
                 $scope.$emit("onClick", new ChangeEventArgs(field));
             };
+
+
+            $scope.$on(MessageType[MessageType.PaneConfigureAction_ConfigureStarting], (event: ng.IAngularEvent) => {
+                this.saveConfigurationControlState();
+            });
+        }
+
+        public saveConfigurationControlState(): void {
+            //let's check if we have a focused element
+            var focused = $(':focus', this.$element);
+            if (focused.length === 0) {
+                //we don't have a focused element
+                return;
+            }
+            var relativeXPath = ConfigurationControlController.getRelativeXPath(focused[0], null).join(" > ");
+            var caretPosition = ConfigurationControlController.doGetCaretPosition(focused[0]);
+            var focusOperation = new FocusOperation(relativeXPath, <number>caretPosition);
+            this.$scope.pca.queueOperation(this.$scope.field.name, new ConfigurationControlOperation("focus", focusOperation));
         }
 
         public isThereOnGoingConfigRequest(): boolean {
@@ -115,14 +143,79 @@ module dockyard.directives.paneConfigureAction {
             switch (operation.type) {
                 case "click":
                     this.processClickOperation(operation);
-                break;
+                    break;
+
+                case "focus":
+                    this.processFocusOperation(operation);
+                    break;
+            }
+        }
+
+        private processFocusOperation(operation: ConfigurationControlOperation) {
+            var focusOperation = <FocusOperation>operation.data;
+            var elementRelativePath = focusOperation.relativeXPath;
+            var elementToFocus = this.$element.find(elementRelativePath);
+            if (elementToFocus.length === 0) {
+                return;
+            }
+            var targetElement = angular.element(elementToFocus)[0];
+            targetElement.focus();
+            if(focusOperation.caretPosition){
+                ConfigurationControlController.setCaretToPos(targetElement, focusOperation.caretPosition);
             }
         }
 
         private processClickOperation(operation: ConfigurationControlOperation) {
             var elementRelativePath = operation.data;
             var elementToClick = this.$element.find(elementRelativePath);
+            if (elementToClick.length === 0) {
+                return;
+            }
             angular.element(elementToClick).triggerHandler('click');
+        }
+
+        private static setSelectionRange(input, selectionStart, selectionEnd) {
+            if (input.setSelectionRange) {
+                input.setSelectionRange(selectionStart, selectionEnd);
+            }
+            else if (input.createTextRange) {
+                var range = input.createTextRange();
+                range.collapse(true);
+                range.moveEnd('character', selectionEnd);
+                range.moveStart('character', selectionStart);
+                range.select();
+            }
+        }
+
+        private static setCaretToPos(input, pos) {
+            ConfigurationControlController.setSelectionRange(input, pos, pos);
+        }
+
+        private static doGetCaretPosition(oField) {
+            try {
+                // Initialize
+                var iCaretPos = 0;
+                // IE Support
+                if ((<any>document).selection) {
+                    // Set focus on the element
+                    oField.focus();
+                    // To get cursor position, get empty selection range
+                    var oSel = (<any>document).selection.createRange();
+                    // Move selection start to 0 position
+                    oSel.moveStart('character', -oField.value.length);
+                    // The caret position is selection length
+                    iCaretPos = oSel.text.length;
+                }
+                // Firefox support
+                else if (oField.selectionStart || oField.selectionStart == '0') {
+                    iCaretPos = oField.selectionStart;
+                }
+                // Return results
+                return iCaretPos;
+            }
+            catch (err) {
+                return 0;
+            }
         }
 
         private static getRelativeXPath(node: HTMLElement, path) {
@@ -152,7 +245,7 @@ module dockyard.directives.paneConfigureAction {
             }
 
             if (node.nodeType === 1) {
-                path.push(node.nodeName.toLowerCase() + (node.id ? "[@id='" + node.id + "']" : count > 0 ? "[" + count + "]" : ''));
+                path.push(node.nodeName.toLowerCase() + (count > 0 ? ":nth-child(" + count + ")" : ''));
             }
             return path;
         }

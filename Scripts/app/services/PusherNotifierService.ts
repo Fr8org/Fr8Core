@@ -12,7 +12,7 @@ module dockyard.services {
         removeAllEvents(channel: string): void;
         disconnect(): void;
 
-        frontendEvent(message: string, eventType: dockyard.directives.NotificationType);
+        frontendEvent(message: string, eventType: dockyard.enums.NotificationType);
         frontendFailure(message: string): void;
         frontendSuccess(message: string): void;
     }
@@ -92,9 +92,7 @@ module dockyard.services {
             return 'fr8pusher_' + encodeURI(email).replace('%', '=');
         }
 
-
-
-        public frontendEvent(message: string, eventType: dockyard.directives.NotificationType) {
+        public frontendEvent(message: string, eventType: dockyard.enums.NotificationType) {
             this.UserService.getCurrentUser().$promise.then(data => {
 
                 let channelName = this.buildChannelName(data.id);
@@ -104,7 +102,7 @@ module dockyard.services {
                 //channel.trigger('client-' + eventType, message);
 
                 // this makes me sick but i can`t see other way now except roundabout call server side notification endpoint to trigger frontend, like loop...
-                let callback = this.client.channels.channels[channelName].callbacks._callbacks["_" + dockyard.directives.NotificationType[eventType]][0];
+                let callback = this.client.channels.channels[channelName].callbacks._callbacks["_" + dockyard.enums.NotificationType[eventType]][0];
 
                 // we don`t want see '$digest already in progress'
                 this.timeout(() => { callback.fn(message);},500,true) ;
@@ -113,13 +111,12 @@ module dockyard.services {
         }
 
         public frontendFailure(message: string) {
-            this.frontendEvent(message, dockyard.directives.NotificationType.GenericFailure);// pusherNotifierFailureEvent);
+            this.frontendEvent(message, dockyard.enums.NotificationType.GenericFailure);// pusherNotifierFailureEvent);
         }
 
         public frontendSuccess(message: string) {
-            this.frontendEvent(message, dockyard.directives.NotificationType.GenericSuccess);// pusherNotifierSuccessEvent);
+            this.frontendEvent(message, dockyard.enums.NotificationType.GenericSuccess);// pusherNotifierSuccessEvent);
         }
-
     }
 
     app.factory('PusherNotifierService', ['$pusher', 'UserService','$timeout', ($pusher: any, UserService:IUserService, $timeout:ng.ITimeoutService): IPusherNotifierService =>

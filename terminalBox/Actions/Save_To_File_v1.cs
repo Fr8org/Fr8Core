@@ -13,6 +13,7 @@ using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
 using terminalBox.Infrastructure;
 using System;
+using Fr8.Infrastructure.Data.Constants;
 
 namespace terminalBox.Actions
 {
@@ -93,7 +94,7 @@ namespace terminalBox.Actions
             }
             var downloadLink = service.GetFileLink(fileId).Result;
 
-            await _pushNotificationService.PushUserNotification(MyTemplate, "Success", "File Download URL Generated", "File was upload to Box. You can download it using this url: " + downloadLink);
+            await _pushNotificationService.PushUserNotification(MyTemplate, NotificationArea.ActivityStream, "File Download URL Generated", "File was upload to Box. You can download it using this url: " + downloadLink);
         }
 
         /// <summary>
