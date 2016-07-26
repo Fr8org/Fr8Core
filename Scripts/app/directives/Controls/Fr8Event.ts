@@ -36,7 +36,7 @@ module dockyard.directives {
                     $scope.icon = 'fa-check';
                     break;
                 case dockyard.enums.NotificationType.GenericFailure:
-                    $scope.eventHeader = 'Failure';
+                    $scope.eventHeader = 'Plan Failed';
                     $scope.eventSubHeader = null;
                     $scope.eventMessage = $scope.event.Message;
                     $scope.color = 'red';

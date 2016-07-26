@@ -143,7 +143,8 @@ namespace Hub.Services
                     NotificationArea = NotificationArea.ActivityStream,
                     Message = "You are running more Activities than your capacity right now. " +
                             $"This Account will be prevented from processing Activities for the next {Math.Ceiling(_userBanTime.TotalSeconds / 60.0f)} minutes. " +
-                           "Contact support@fr8.co for assistance"
+                           "Contact support@fr8.co for assistance",
+                    Collapsed = false
                 }, user);
             }
         }

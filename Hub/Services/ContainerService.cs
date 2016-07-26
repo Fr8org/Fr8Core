@@ -271,7 +271,8 @@ namespace Hub.Services
             {
                 NotificationType = NotificationType.GenericFailure,
                 NotificationArea = NotificationArea.ActivityStream,
-                Message = errorMessage
+                Message = errorMessage,
+                Collapsed = false
             }, user.Id);
         }
     }

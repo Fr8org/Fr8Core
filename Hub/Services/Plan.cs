@@ -611,7 +611,8 @@ namespace Hub.Services
                     {
                         NotificationType = NotificationType.GenericFailure,
                         NotificationArea = NotificationArea.ActivityStream,
-                        Message = $"Validation failed for activities: {activitiesList} from plan \"{plan.Name}\". See activity configuration pane for details."
+                        Message = $"Validation failed for activities: {activitiesList} from plan \"{plan.Name}\". See activity configuration pane for details.",
+                        Collapsed = false
                     }, currentUserId);
                 }
 
@@ -704,6 +705,7 @@ namespace Hub.Services
                                 NotificationType = NotificationType.GenericFailure,
                                 NotificationArea = NotificationArea.ActivityStream,
                                 Message = $"Failed executing plan \"{plan.Name}\"",
+                                Collapsed = false
                             }, currentUserId);
                         }
 
@@ -796,7 +798,8 @@ namespace Hub.Services
             {
                 NotificationType = NotificationType.GenericFailure,
                 NotificationArea = NotificationArea.ActivityStream,
-                Message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, messageToNotify)
+                Message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, messageToNotify),
+                Collapsed = false
             }, userId);
 
         }
@@ -832,7 +835,8 @@ namespace Hub.Services
                 {
                     NotificationType = NotificationType.GenericFailure,
                     NotificationArea = NotificationArea.ActivityStream,
-                    Message = $"Validation of activity '{activityLabel}' from plan \"{planName}\" failed: {errors}"
+                    Message = $"Validation of activity '{activityLabel}' from plan \"{planName}\" failed: {errors}",
+                    Collapsed = false
                 }, userId);
             }
         }
@@ -946,7 +950,8 @@ namespace Hub.Services
             {
                 NotificationType = NotificationType.GenericFailure,
                 NotificationArea = NotificationArea.ActivityStream,
-                Message = errorMessage
+                Message = errorMessage,
+                Collapsed = false
             }, user.Id);
         }
 
@@ -961,7 +966,8 @@ namespace Hub.Services
             {
                 NotificationType = NotificationType.GenericFailure,
                 NotificationArea = NotificationArea.ActivityStream,
-                Message = errorMessage
+                Message = errorMessage,
+                Collapsed = false
             }, plan.Fr8AccountId);
 
             //Sending an Email
