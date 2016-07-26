@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,8 +26,10 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
             Criteria.AddRange(conditions);
         }
 
+        [JsonProperty("name")]
         public string Name { get; set; }
 
+        [JsonProperty("criteria")]
         public List<FilterConditionDTO> Criteria { get; set; }
     }
 }

@@ -131,6 +131,7 @@
     <Compile Include="Interfaces\IPusherNotifier.cs" />
     <Compile Include="JsonPackager.cs" />
     <Compile Include="JsonSettings.cs" />
+    <Compile Include="Logging\Fr8Log4NetLayout.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logging\RemoteSyslogAppender.cs" />
     <Compile Include="MappingEngineExtensions.cs" />

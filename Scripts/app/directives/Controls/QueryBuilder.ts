@@ -53,11 +53,12 @@ module dockyard.directives {
                 isDisabled: '=',
                 addRowText: '@'
             },
-            controller: ['$scope', '$timeout', 'CrateHelper',
+            controller: ['$scope', '$timeout', 'CrateHelper','UpstreamExtractor',
                 function (
                     $scope: IQueryBuilderScope,
                     $timeout: ng.ITimeoutService,
-                    crateHelper: services.CrateHelper
+                    crateHelper: services.CrateHelper,
+                    UpstreamExtractor: services.UpstreamExtractor
                 ) {
                     $scope.operators = [
                         { text: '>', value: 'gt' },
@@ -97,27 +98,66 @@ module dockyard.directives {
                                     });
                                 }
                             }
+                            if ($scope.fields.length === 0 && $scope.requestUpstream) {
+                                loadUpstreamFields();
+                            }
                         }
                     });
+
+                    var loadUpstreamFields = () => {
+                        var availabilityType = 'NotSet';
+
+                        return UpstreamExtractor
+                            .getAvailableData($scope.currentAction.id, availabilityType)
+                            .then((data: model.IncomingCratesDTO) => {
+                                var fields: Array<model.FieldDTO> = [];
+
+                                angular.forEach(data.availableCrates, (ct) => {
+                                    angular.forEach(ct.fields, (f) => {
+                                        var i, j;
+                                        var found = false;
+                                        for (i = 0; i < fields.length; ++i) {
+                                            if (fields[i].key === f.key) {
+                                                found = true;
+                                                break;
+                                            }
+                                        }
+                                        if (!found) {
+                                            fields.push(f);
+                                        }
+                                    });
+                                });
+
+                                fields.sort((x, y) => {
+                                    if (x.key < y.key) {
+                                        return -1;
+                                    }
+                                    else if (x.key > y.key) {
+                                        return 1;
+                                    }
+                                    else {
+                                        return 0;
+                                    }
+                                });
+
+                                $scope.fields = fields;
+                            });
+                    };
 
                     $scope.$watch('field', (newValue: any) => {
                         if (newValue && newValue.value) {
                             var jsonValue = angular.fromJson(newValue.value);
                             var serializedConditions = <Array<ISerializedCondition>>jsonValue;
 
-                            var conditions: Array<IQueryCondition> = [];
-
                             if (serializedConditions.length) {
-                                angular.forEach(serializedConditions, (cond) => {
-                                    conditions.push({
-                                        field: findField(cond.field),
-                                        operator: cond.operator,
-                                        value: cond.value
-                                    });
-                                });
-
-                                $scope.conditions = conditions;
-                            } else {
+                                innitializeConditions(serializedConditions);
+                            }
+                            else if ((<any>serializedConditions).conditions) {
+                                if ((<any>serializedConditions).conditions.length) {
+                                    innitializeConditions((<any>serializedConditions).conditions);        
+                                }
+                            }
+                            else {
                                 addEmptyCondition();
                             }
                         }
@@ -127,6 +167,33 @@ module dockyard.directives {
                             }
                         }
                     });
+
+                    var innitializeConditions = (serializedConditions: Array<ISerializedCondition>) => {
+                        var conditions: Array<IQueryCondition> = [];
+                        if ($scope.requestUpstream) {
+                            loadUpstreamFields().then(() => { //parameter isSilent false, since we want to see error messages
+                                angular.forEach(serializedConditions, (cond) => {
+                                    conditions.push({
+                                        field: findField(cond.field),
+                                        operator: cond.operator,
+                                        value: cond.value
+                                    });
+                                });
+                            });
+
+                        }
+                        else {
+                            angular.forEach(serializedConditions, (cond) => {
+                                conditions.push({
+                                    field: findField(cond.field),
+                                    operator: cond.operator,
+                                    value: cond.value
+                                });
+                            });
+                        }
+
+                        $scope.conditions = conditions;
+                    }
 
                     var addEmptyCondition = () => {
                         if (!$scope.conditions) {
