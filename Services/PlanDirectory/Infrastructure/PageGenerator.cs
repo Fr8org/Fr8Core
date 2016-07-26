@@ -12,6 +12,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
 using PlanDirectory.CategoryPages;
+using PlanDirectory.Interfaces;
 using StructureMap;
 
 namespace PlanDirectory.Infrastructure

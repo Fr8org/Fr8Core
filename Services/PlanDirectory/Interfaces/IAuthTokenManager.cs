@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PlanDirectory.Infrastructure
+namespace PlanDirectory.Interfaces
 {
     public interface IAuthTokenManager
     {

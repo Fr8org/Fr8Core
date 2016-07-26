@@ -10,6 +10,7 @@ using Data.Interfaces;
 using Data.Infrastructure.StructureMap;
 using Hub.Infrastructure;
 using PlanDirectory.Infrastructure;
+using PlanDirectory.Interfaces;
 
 namespace PlanDirectory.Controllers.Api
 {

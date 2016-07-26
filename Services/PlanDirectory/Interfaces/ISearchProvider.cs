@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Manifests;
-using PlanDirectory.Interfaces;
 
-namespace PlanDirectory.Infrastructure
+namespace PlanDirectory.Interfaces
 {
     public interface ISearchProvider
     {

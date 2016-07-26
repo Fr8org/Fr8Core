@@ -220,7 +220,7 @@ namespace Hub.Services
                 var systemUserEmail = _configRepository.Get("SystemUserEmail");
                 using (var uow = _uowFactory.Create())
                 {
-                    return uow.UserRepository.GetQuery().FirstOrDefault(x => x.EmailAddress.Address == systemUserEmail);
+                    return uow.UserRepository.GetQuery().Include(x => x.EmailAddress).FirstOrDefault(x => x.EmailAddress.Address == systemUserEmail);
                 }
             }
             catch (ConfigurationException)

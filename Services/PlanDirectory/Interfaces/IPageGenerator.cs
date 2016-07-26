@@ -2,8 +2,9 @@
 using System.Threading.Tasks;
 using Data.Entities;
 using Fr8.Infrastructure.Data.Manifests;
+using PlanDirectory.Infrastructure;
 
-namespace PlanDirectory.Infrastructure
+namespace PlanDirectory.Interfaces
 {
     public interface IPageGenerator
     {
