@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 using System.Reflection;
 
@@ -13,8 +14,10 @@ namespace Fr8.Infrastructure.Data.Crates
         public static readonly CrateManifestType Any = new CrateManifestType(null, Int32.MinValue);
 
         /**********************************************************************************/
-
+        [JsonProperty("type")]
         public readonly string Type;
+
+        [JsonProperty("id")]
         public readonly int Id;
 
         /**********************************************************************************/
