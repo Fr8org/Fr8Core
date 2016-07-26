@@ -406,9 +406,9 @@ gulp.task('cdnizer-js', ['bower'], function () {
                 cdn: '//ajax.googleapis.com/ajax/libs/angular_material/${ version }/angular-material.min.js'
             },
             {
-                file: '~/bower_components/noty/js/noty/packaged/jquery.noty.packaged.js',
+                file: '~/bower_components/noty/js/noty/packaged/jquery.noty.packaged.min.js',
                 package: 'noty',
-                cdn: '//cdnjs.cloudflare.com/ajax/libs/jquery-noty/2.3.8/jquery.noty.js'
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/jquery-noty/2.3.8/packaged/jquery.noty.packaged.min.js'
             }
         ]))
         .pipe(gulp.dest('./Views/Shared/CDN'));
