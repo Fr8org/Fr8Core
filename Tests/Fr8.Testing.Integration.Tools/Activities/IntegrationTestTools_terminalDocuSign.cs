@@ -149,7 +149,6 @@ namespace Fr8.Testing.Integration.Tools.Activities
             var initialcrateStorage = _baseHubITest.Crate.FromDto(queryDocuSignActivity.CrateStorage);
 
             var stAuthCrate = initialcrateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
-            bool defaultDocuSignAuthTokenExists = stAuthCrate == null;
 
             //if (!defaultDocuSignAuthTokenExists)
             //{
