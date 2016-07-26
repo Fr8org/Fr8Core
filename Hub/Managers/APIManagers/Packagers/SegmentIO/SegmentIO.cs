@@ -54,7 +54,7 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
             foreach (var prop in GetProperties(fr8AccountDO))
                 props.Add(prop.Key, prop.Value);
             Analytics.Client.Identify(fr8AccountDO.Id, GetProperties(fr8AccountDO));
-            Analytics.Client.Track(fr8AccountDO.Id, "User Logged In", props);
+            //Analytics.Client.Track(fr8AccountDO.Id, "User Logged In", props);
         }
         //https://segment.com/docs/integrations/mixpanel/#identify
         //For Mixpanel People, it’s important to identify a user before you call track. 

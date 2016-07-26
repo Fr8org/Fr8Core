@@ -20,7 +20,8 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_DownStreamReconfiguration,
         PaneConfigureAction_UpdateValidationMessages,
         PaneConfigureAction_ResetValidationMessages,
-        PaneConfigureAction_ShowAdvisoryMessages
+        PaneConfigureAction_ShowAdvisoryMessages,
+        PaneConfigureAction_ConfigureStarting
     }
 
     export class ActionReconfigureEventArgs {
@@ -491,6 +492,8 @@ module dockyard.directives.paneConfigureAction {
                 this.$scope.currentAction.id,
                 this.$scope.currentAction.activityTemplate.needsAuthentication
             );
+
+            this.$scope.$broadcast(MessageType[MessageType.PaneConfigureAction_ConfigureStarting]);
     
             this.ActionService.configure(this.$scope.currentAction).$promise
                 .then((res: interfaces.IActionVM) => {
