@@ -21,6 +21,7 @@ using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;
 using System.Web.Http.Description;
 using Fr8.Infrastructure;
+using Hub.Services;
 using Newtonsoft.Json;
 using Swashbuckle.Swagger.Annotations;
 
@@ -170,17 +171,23 @@ namespace HubWeb.Controllers
             var hmacService = ObjectFactory.GetInstance<IHMACService>();
             var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
-            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/authentication/token");
-            var headers =
-                await
-                    hmacService.GenerateHMACHeader(uri, "PlanDirectory",
-                        CloudConfigurationManager.GetSetting("PlanDirectorySecret"), User.Identity.GetUserId());
+            var pdSvc = new PlanDirectoryService(hmacService,client);
 
-            var json = await client.PostAsync<JObject>(uri, headers: headers);
-            var token = json.Value<string>("token");
+            var userId = User.Identity.GetUserId();
+            var token = await pdSvc.GetAuthToken(userId);
+
+            //var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/authentication/token");
+            //var headers =
+            //    await
+            //        hmacService.GenerateHMACHeader(uri, "PlanDirectory",
+            //            CloudConfigurationManager.GetSetting("PlanDirectorySecret"), User.Identity.GetUserId());
+
+            //var json = await client.PostAsync<JObject>(uri, headers: headers);
+            //var token = json.Value<string>("token");
 
             return Ok(new TokenWrapper { Token = token });
         }
+
         /// <summary>
         /// Updates existing authorization token with new values provided
         /// </summary>

@@ -158,7 +158,7 @@ namespace terminalBasecamp2.Activities
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Failed to create new message. Basecamp user - {AuthorizationToken.ExternalAccountName}, Fr8 User Id - {CurrentUserId}, Details - {ex}");
+                Logger.GetLogger().Error($"Failed to create new message. Basecamp user - {AuthorizationToken.ExternalAccountName}, Fr8 User Id - {CurrentUserId}, Details - {ex}");
                 throw;
             }
         }

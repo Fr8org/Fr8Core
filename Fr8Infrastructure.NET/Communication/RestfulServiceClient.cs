@@ -19,13 +19,13 @@ namespace Fr8.Infrastructure.Communication
             public void LogError(string message, Exception ex)
             {
                 //Log.Error(message, ex);
-                Logger.LogError($"{message}. Exception = {ex}");
+                Logger.GetLogger().Error($"{message}. Exception = {ex}");
             }
 
             public void LogError(string errorPath, string errorMessage)
             {
                 //Log.Error(string.Format("{0}: {1}", errorPath, errorMessage))
-                Logger.LogError($"{errorPath}: {errorMessage}");
+                Logger.GetLogger().Error($"{errorPath}: {errorMessage}");
             }
         }
 
