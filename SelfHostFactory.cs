@@ -60,12 +60,12 @@ namespace HubWeb
                     typeof(EventsController),
                     typeof(FilesController),
                     typeof(ManifestsController),
-                    typeof(ReportController),
+                    typeof(ReportsController),
                     typeof(PlanNodesController),
                     typeof(PlansController),
                     typeof(TerminalsController),
                     typeof(UsersController),
-                    typeof(WarehouseController),
+                    typeof(WarehousesController),
                     typeof(WebServicesController)
                 };
         }
