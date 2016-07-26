@@ -165,8 +165,11 @@ namespace Hub.Services
 
                 if (isRegisterTerminal)
                 {
-                    //create default permission settings for the new terminal visibility
+                    //add ownership for this new terminal to current user
                     _securityServices.SetDefaultRecordBasedSecurityForObject(Roles.OwnerOfCurrentObject, terminal.Id.ToString(), nameof(TerminalDO));
+
+                    //make it visible for Fr8 Admins
+                    _securityServices.SetDefaultRecordBasedSecurityForObject(Roles.Admin, terminal.Id.ToString(), nameof(TerminalDO));
                 }
 
                 return terminal;
