@@ -81,6 +81,7 @@ module dockyard.directives {
                     'min-height': getOptimalHeight()
                 }).resizable({ grid: [1, 10000] });
 
+                //listen event of loading finished 
                 scope.$on('titleLoadingFinished', function () {
                     setTitleSize(suspectedWidth);
                 });
