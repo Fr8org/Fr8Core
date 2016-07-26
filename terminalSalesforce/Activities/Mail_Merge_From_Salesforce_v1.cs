@@ -275,8 +275,7 @@ namespace terminalSalesforce.Actions
             var selectedObjectProperties = await _salesforceManager.GetProperties(selectedObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
             var queryFilterCrate = Crate<FieldDescriptionsCM>.FromContent(
                 QueryFilterCrateLabel,
-                new FieldDescriptionsCM(selectedObjectProperties),
-                AvailabilityType.Configuration
+                new FieldDescriptionsCM(selectedObjectProperties)
             );
 
             Storage.ReplaceByLabel(queryFilterCrate);
