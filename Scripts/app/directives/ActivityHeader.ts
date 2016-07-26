@@ -64,7 +64,8 @@ module dockyard.directives.ActivityHeader {
                     console.log('loading header');
                     $scope.$emit('titleLoadingFinished');
                 }, 500);
-            });            
+            });
+            
         }];
 
         return {
