@@ -451,11 +451,15 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             data: { pageTitle: 'Web Services', pageSubTitle: '' }
         })
 
-
         .state('terminals', {
             url: "/terminals",
             templateUrl: "/AngularTemplate/TerminalList",
             data: { pageTitle: 'Terminals', pageSubTitle: '' }
+        })
+        .state("terminalDetails", {
+            url: "/terminals/{id}",
+            templateUrl: "/AngularTemplate/TerminalDetail",
+            data: {pageTitle: 'Terminal Details', pageSubTitle: ''}    
         })
         .state('manifestregistry',
         {
