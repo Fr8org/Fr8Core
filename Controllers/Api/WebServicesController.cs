@@ -52,10 +52,7 @@ namespace HubWeb.Controllers
                     var activityTemplate = _activityTemplate.GetQuery()
                         .Where(x => x.ActivityTemplateState == ActivityTemplateState.Active)
                         .Where(x => id == 0 || category == x.Category)
-                        .Where(x => x.Tags == null || !x.Tags.Contains(Tags.Internal));
-
-                    if (!_fr8Account.IsCurrentUserInAdminRole())
-                        activityTemplate = activityTemplate.Where(x => x.ClientVisibility != false);
+                        .Where(x => x.Tags == null || (!x.Tags.Contains(Tags.Internal) || _fr8Account.IsCurrentUserInAdminRole()));
 
                     webServiceList = activityTemplate
                     .GroupBy(x => x.WebService, x => x, (key, group) => new
