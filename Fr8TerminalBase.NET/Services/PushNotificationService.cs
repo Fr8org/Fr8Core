@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.TerminalBase.Interfaces;
 
@@ -13,11 +14,12 @@ namespace Fr8.TerminalBase.Services
             _hubCommunicator = hubCommunicator;
         }
         
-        public async Task PushUserNotification(ActivityTemplateDTO activityTemplate, string type, string subject, string message)
+        public async Task PushUserNotification(ActivityTemplateDTO activityTemplate, NotificationArea notificationArea, string subject, string message)
         {
-            var notificationMsg = new TerminalNotificationDTO
+            var notificationMsg = new NotificationMessageDTO
             {
-                Type = type,
+                NotificationType = NotificationType.TerminalEvent,
+                NotificationArea = notificationArea,
                 Subject = subject,
                 Message = message,
                 ActivityName = activityTemplate.Name,

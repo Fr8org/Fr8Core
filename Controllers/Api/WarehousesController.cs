@@ -15,7 +15,7 @@ using Swashbuckle.Swagger.Annotations;
 namespace HubWeb.Controllers
 {
     [Fr8ApiAuthorize]
-    public class WarehouseController : ApiController
+    public class WarehousesController : ApiController
     {
         /// <summary>
         /// Retrieves objects from Fr8 warehouse based on filter specified

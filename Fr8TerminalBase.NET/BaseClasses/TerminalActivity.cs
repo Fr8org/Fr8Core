@@ -48,7 +48,7 @@ namespace Fr8.TerminalBase.BaseClasses
             if (configurationRequestType == ConfigurationRequestType.Initial)
             {
                 Storage.Clear();
-                Storage.Add(Crate.FromContent(ConfigurationControlsLabel, ActivityUI, AvailabilityType.Configuration));
+                Storage.Add(Crate.FromContent(ConfigurationControlsLabel, ActivityUI));
             }
 
             return await base.BeforeConfigure(configurationRequestType);
@@ -165,7 +165,7 @@ namespace Fr8.TerminalBase.BaseClasses
             // We do this because ActivityUi can has properties to access specific controls. We don't want those propeties exist in serialized crate.
 
             var configurationControlsToAdd = new StandardConfigurationControlsCM(ActivityUI.Controls);
-            Storage.Add(Crate.FromContent(ConfigurationControlsLabel, configurationControlsToAdd, AvailabilityType.Configuration));
+            Storage.Add(Crate.FromContent(ConfigurationControlsLabel, configurationControlsToAdd));
             ActivityUI.SaveDynamicControlsTo(configurationControlsToAdd);
         }
     }

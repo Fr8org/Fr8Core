@@ -114,8 +114,8 @@ namespace terminalGoogle.Activities
                     Storage.RemoveByLabel(ConfigurationCrateLabel);
                     return;
                 }
-
-                var newValues = Crate.FromContent(ConfigurationCrateLabel, new KeyValueListCM(value), AvailabilityType.Configuration);
+         
+                var newValues = Crate.FromContent(ConfigurationCrateLabel, new KeyValueListCM(value));
                 Storage.ReplaceByLabel(newValues);
             }
         }
@@ -182,7 +182,7 @@ namespace terminalGoogle.Activities
                                                                    ? string.Empty
                                                                    : ActivityUI.WorksheetList.Value);
                 var columnHeaders = await _googleApi.GetWorksheetHeaders(selectedSpreasheetWorksheet.Key, selectedSpreasheetWorksheet.Value, googleAuth);
-
+                
                 StoredSelectedSheet = selectedSpreasheetWorksheet;
 
                 CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(GetRuntimeCrateLabel(), true)
@@ -191,10 +191,10 @@ namespace terminalGoogle.Activities
                 //here was logic responsible for handling one-row tables but it was faulty. It's main purpose was to spawn fields like "value immediatly below of" in a StandardPayload. 
                 //You might view TabularUtilities.PrepareFieldsForOneRowTable for reference
             }
-        }
+                }
 
         private string GetRuntimeCrateLabel()
-        {
+                {
             return string.Format("Spreadsheet Data from \"{0}\"",
                 ((!ActivityUI.WorksheetList.IsHidden && !string.IsNullOrEmpty(ActivityUI.WorksheetList.selectedKey))
                 ? ActivityUI.SpreadsheetList.selectedKey + "-" + ActivityUI.WorksheetList.selectedKey
@@ -240,7 +240,7 @@ namespace terminalGoogle.Activities
                     ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
                 return;
             }
-
+           
             var table = await GetSelectedSpreadSheet();
             var hasHeaderRow = TryAddHeaderRow(table);
             Payload.Add(Crate.FromContent(GetRuntimeCrateLabel(), new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
