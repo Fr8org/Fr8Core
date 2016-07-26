@@ -31,7 +31,7 @@ module dockyard.directives {
                 function setTitleSize(width) {
                     var titleObj = $(elem).find(".ellipsis h2");
                     var titleStr = $(titleObj).html();
-
+                    
                     if (typeof titleStr !== typeof undefined) {
                         titleStr = titleStr.trim();
                         let strnum = titleStr.length;
@@ -81,26 +81,14 @@ module dockyard.directives {
                     'min-height': getOptimalHeight()
                 }).resizable({ grid: [1, 10000] });
 
-                scope.$watch(
-                    function () {
-                        return $(elem).find('.md-toolbar-tools .ellipsis h2').html();
-                    },
-                    function (val) {
-                        if (typeof val !== typeof undefined)
-                            setTitleSize(getOptimalWidth());
-                    }
-                );
+                scope.$on('titleLoadingFinished', function () {
+                    setTitleSize(suspectedWidth);
+                });
 
-                scope.$watch(
-                    function () {
-                        return $(elem).find(".md-toolbar-tools .ellipsis").width();
-                    },
-                    function (newVal, oldVal) {
-                        if (newVal != oldVal) {
-                            setTitleSize(newVal);
-                        }
-                    }
-                );
+                angular.element(window).bind('resize', function () {
+                    var w = $(elem).find(".md-toolbar-tools .ellipsis").width();
+                    setTitleSize(w);
+                });                
             }
         }
     }
@@ -109,6 +97,7 @@ module dockyard.directives {
         callback: any;
         height: number;
         resize: (events, ui) => void;
+        flagOneEmit: boolean;
     }
 
     app.directive('activityResize', dockyard.directives.Resizable);
