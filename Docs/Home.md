@@ -15,16 +15,7 @@ General Resources
        
 [Objects](ForDevelopers/Objects/Objects.md)  
 -----------------------------------------
-* [Activities](/Docs/ForDevelopers/Objects/Activities.md)  
-* [Activity Templates](/Docs/ForDevelopers/Objects/ActivityTemplates.md)  
-* [Crates](/Docs/ForDevelopers/Objects/Fr8Crates.md)  
-* [Fr8 Hubs](/Docs/ForDevelopers/Objects/Fr8Hubs.md)  
-* [Plans](/Docs/ForDevelopers/Objects/Plans.md)  
-* [Plan Templates](/Docs/ForDevelopers/Objects/Plans/PlanTemplates.md)
-* [Subplans](/Docs/ForDevelopers/Objects/Subplans.md)  
-* [Containers](/Docs/ForDevelopers/Objects/Containers.md)  
-* [Container Execution](/Docs/ForDevelopers/Objects/ContainerExecution.md)  
-* [Terminals](/Docs/ForDevelopers/Objects/Terminals.md)        
+
 Specifications  
         * [Fr8 Hub Specification](/Docs/ForDevelopers/Specifications/Fr8HubSpecification.md)  
         * [Terminal Specification](/Docs/ForDevelopers/Specifications/TerminalSpecification.md)  
