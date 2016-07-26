@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Http.Controllers;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
@@ -12,6 +13,7 @@ using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Services;
 using HubWeb.ViewModels;
+using Microsoft.AspNet.Identity;
 using StructureMap;
 
 namespace HubWeb.Controllers
@@ -21,11 +23,13 @@ namespace HubWeb.Controllers
     {
         private readonly Fr8Account _account;
         private readonly IOrganization _organization;
+        private readonly PlanDirectoryService _planDirectory;
 
         public DockyardAccountController()
         {
             _account = ObjectFactory.GetInstance<Fr8Account>();
             _organization = ObjectFactory.GetInstance<IOrganization>();
+            _planDirectory = ObjectFactory.GetInstance<PlanDirectoryService>();
         }
 
         [AllowAnonymous]
@@ -70,6 +74,10 @@ namespace HubWeb.Controllers
         public ActionResult LogOff()
         {
             this.Logout();
+
+            var userId = User.Identity.GetUserId();
+            Task.Run(() => _planDirectory.Logout(userId));
+            
             return RedirectToAction("Index", "DockyardAccount");
         }
 
@@ -280,7 +288,7 @@ Please register first.");
                 catch (Exception ex)
                 {
                     //Logger.GetLogger().Error("ForgotPassword failed.", ex);
-                    Logger.LogError($"ForgotPassword failed. Exception = {ex}");
+                    Logger.GetLogger().Error($"ForgotPassword failed. Exception = {ex}");
                     ModelState.AddModelError("", ex);
                 }
             }
@@ -333,7 +341,7 @@ Please register first.");
                 catch (Exception ex)
                 {
                     //Logger.GetLogger().Error("ResetPassword failed.", ex);
-                    Logger.LogError($"ResetPassword failed. Email = {viewModel.Email}; UserId = {viewModel.UserId} Exception = {ex}");
+                    Logger.GetLogger().Error($"ResetPassword failed. Email = {viewModel.Email}; UserId = {viewModel.UserId} Exception = {ex}");
                     ModelState.AddModelError("", ex);
                 }
             }

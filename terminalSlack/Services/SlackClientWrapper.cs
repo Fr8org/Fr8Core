@@ -89,7 +89,7 @@ namespace terminalSlack.Services
             }
             if (e.Data.IsHidden)
             {
-                Logger.LogInfo($"SlackClientWrapper: hidden message is received for user {UserName} and won't go further");
+                Logger.GetLogger().Info($"SlackClientWrapper: hidden message is received for user {UserName} and won't go further");
                 return;
             }
             MessageReceived?.Invoke(this, new DataEventArgs<WrappedMessage>(new WrappedMessage

@@ -158,7 +158,7 @@ namespace Fr8.TerminalBase.Services
             throw new NotImplementedException("Terminals can't communicate with an unknown hub");
         }
 
-        public Task NotifyUser(TerminalNotificationDTO notificationMessage)
+        public Task NotifyUser(NotificationMessageDTO notificationMessage)
         {
             throw new NotImplementedException("Terminals can't communicate with an unknown hub");
         }

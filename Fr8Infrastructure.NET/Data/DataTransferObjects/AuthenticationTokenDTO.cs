@@ -11,8 +11,8 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 
         [JsonProperty("name")]
         public string Name { get; set; }
-        [JsonProperty("version")]
 
+        [JsonProperty("version")]
         public string Version { get; set; }
 
         [JsonProperty("label")]

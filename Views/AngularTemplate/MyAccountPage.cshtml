@@ -10,7 +10,7 @@
 <!-- END PAGE BREADCRUMB -->
 <!-- BEGIN MAIN CONTENT -->
 
-<div ng-controller="PlanListController" class="margin-top-10" id="nav-tables">
+<div ng-controller="PlanListController" class="margin-top-10" id="nav-tables" event-plandashboard>
     <div class="row" style="margin:10px">
         <md-content>
             <md-tabs md-dynamic-height md-border-bottom>
@@ -41,8 +41,3 @@
     </div>
 </div>
 <!-- END MAIN CONTENT -->
-<script>
-    if (window.analytics != null) {
-        window.analytics.page('Plan Dashboard');
-    }
-</script>

@@ -8,6 +8,7 @@ using Data.Interfaces;
 using Data.States;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Interfaces;
@@ -266,7 +267,13 @@ namespace Hub.Services
                 errorMessage += ex.Message;
             }
 
-            _pusherNotifier.NotifyUser(errorMessage, NotificationType.GenericFailure, user.Id);
+            _pusherNotifier.NotifyUser(new NotificationMessageDTO
+            {
+                NotificationType = NotificationType.GenericFailure,
+                NotificationArea = NotificationArea.ActivityStream,
+                Message = errorMessage,
+                Collapsed = false
+            }, user.Id);
         }
     }
 }

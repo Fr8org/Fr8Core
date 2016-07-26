@@ -8,8 +8,8 @@ namespace HubWeb.Documentation.Swagger
         {
             return new PlansPostParams
             {
-                solution_name = "Track_DocuSign_Recipients",
-                update_registrations = false
+                solutionName = "Track_DocuSign_Recipients",
+                updateRegistrations = false
             };
         }
 

@@ -9,7 +9,6 @@ namespace Fr8.Infrastructure.Data.Manifests
 {
     public class DocuSignTemplateCM : Manifest
     {
-        public string Status { get; set; }
         public DateTime? CreateDate { get; set; }
         public string Body { get; set; }
         public string Name { get; set; }
