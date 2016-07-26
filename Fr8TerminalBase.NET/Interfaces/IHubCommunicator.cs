@@ -42,7 +42,7 @@ namespace Fr8.TerminalBase.Interfaces
         Task DeleteExistingChildNodesFromActivity(Guid curActivityId);
         Task<PlanDTO> GetPlansByActivity(string activityId);
         Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan);
-        Task NotifyUser(TerminalNotificationDTO notificationMessage);
+        Task NotifyUser(NotificationMessageDTO notificationMessage);
         Task RenewToken(AuthorizationTokenDTO token);
         Task SendEvent(Crate eventPayload);
         Task<List<TManifest>> QueryWarehouse<TManifest>(List<FilterConditionDTO> query) where TManifest : Manifest;

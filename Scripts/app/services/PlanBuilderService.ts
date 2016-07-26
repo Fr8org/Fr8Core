@@ -146,7 +146,7 @@ module dockyard.services {
                         //url: '/api/plans/createSolution',
                         url: '/api/plans/',
                         params: {
-                            solution_name: '@solutionName'
+                            solutionName: '@solutionName'
                         }
                     },
                     'deactivate': {
