@@ -78,7 +78,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
             if (string.IsNullOrEmpty(terminal?.Endpoint))
             {
                 //_logger.ErrorFormat("Terminal record not found for activityTemplate: {0}. Throwing exception.", dataDTO.ActivityDTO.ActivityTemplate.Name);
-                Logger.LogError($"Terminal record not found for activityTemplate: {dataDTO.ActivityDTO.ActivityTemplate.Name} Throwing exception.");
+                Logger.GetLogger().Error($"Terminal record not found for activityTemplate: {dataDTO.ActivityDTO.ActivityTemplate.Name} Throwing exception.");
                 throw new Exception("Unknown terminal or terminal endpoint");
             }
 
