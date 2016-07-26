@@ -119,7 +119,7 @@ namespace terminalGoogle.Activities
                     return;
                 }
          
-                var newValues = Crate.FromContent(ConfigurationCrateLabel, new KeyValueListCM(value), AvailabilityType.Configuration);
+                var newValues = Crate.FromContent(ConfigurationCrateLabel, new KeyValueListCM(value));
                 Storage.ReplaceByLabel(newValues);
             }
         }

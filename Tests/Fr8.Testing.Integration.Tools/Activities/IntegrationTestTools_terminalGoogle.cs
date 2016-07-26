@@ -61,7 +61,7 @@ namespace Fr8.Testing.Integration.Tools.Activities
                 activityUi.UpstreamCrateChooser.CrateDescriptions.First(x => x.Label == crateDescriptionLabelToUse && x.ManifestType == manifestTypeToUse).Selected = true;
                 //Set the name of new spreadheet that need to be created
                 activityUi.NewSpreadsheetName.Value = newSpeadsheetName;
-                crateStorage.Add(Crate<StandardConfigurationControlsCM>.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
+                crateStorage.Add(Crate<StandardConfigurationControlsCM>.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray())));
             }
 
             saveToGoogleSheetActivityDTO = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/save", saveToGoogleSheetActivityDTO);
@@ -126,7 +126,7 @@ namespace Fr8.Testing.Integration.Tools.Activities
                 activityUi.SpreadsheetList.selectedKey = spreadsheetName;
                 activityUi.SpreadsheetList.Value = spreadsheetUri;
 
-                crateStorage.Add(Crate<StandardConfigurationControlsCM>.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
+                crateStorage.Add(Crate<StandardConfigurationControlsCM>.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray())));
             }
 
             if (!string.IsNullOrEmpty(worksheetName))
@@ -147,7 +147,7 @@ namespace Fr8.Testing.Integration.Tools.Activities
                     activityUi.WorksheetList.selectedKey = worksheetName;
                     activityUi.WorksheetList.Value = worksheetUri;
 
-                    crateStorage.Add(Crate<StandardConfigurationControlsCM>.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
+                    crateStorage.Add(Crate<StandardConfigurationControlsCM>.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray())));
                 }
             }
 
