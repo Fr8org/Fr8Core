@@ -128,15 +128,13 @@ namespace Hub.Services
                     .SelectMany(x => _crate.GetStorage(x).CratesOfType<CrateDescriptionCM>().Where(cratePredicate))
                     .Select(x =>
                     {
-                        if (x.Content.CrateDescriptions.Count > 0)
+                        foreach (var crateDescription in x.Content.CrateDescriptions)
                         {
-                            foreach (var field in x.Content.CrateDescriptions[0].Fields)
+                            foreach (var field in crateDescription.Fields)
                             {
-                                if (field.SourceCrateLabel == null)
-                                {
-                                    field.SourceCrateLabel = x.Content.CrateDescriptions[0].Label ?? x.Content.CrateDescriptions[0].ProducedBy;
-                                    field.SourceActivityId = x.SourceActivityId;
-                                }
+                                field.Availability = crateDescription.Availability;
+                                field.SourceCrateLabel = crateDescription.Label ?? crateDescription.ProducedBy;
+                                field.SourceActivityId = x.SourceActivityId;
                             }
                         }
                         return x.Content;
