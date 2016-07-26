@@ -101,7 +101,7 @@ namespace terminalAtlassian.Actions
 
         private Crate CrateJiraIssueDetailsPayloadCrate(List<KeyValueDTO> curJiraIssue)
         {
-            return Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(curJiraIssue), AvailabilityType.RunTime);
+            return Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(curJiraIssue));
         }
     }
 }

@@ -87,7 +87,7 @@ namespace terminalDocuSign.Activities
 
         protected override string ActivityUserFriendlyName => "Query DocuSign";
 
-        public Query_DocuSign_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+        public Query_DocuSign_v1(ICrateManager crateManager, IDocuSignManager docuSignManager)
             : base(crateManager, docuSignManager)
         {
         }
@@ -112,7 +112,7 @@ namespace terminalDocuSign.Activities
 
             FillFolderSource("Folder");
             FillStatusSource("Status");
-            
+
             Storage.Add(GetAvailableRunTimeTableCrate(RunTimeCrateLabel));
             return Task.FromResult(0);
         }
@@ -132,8 +132,9 @@ namespace terminalDocuSign.Activities
                         ManifestType = MT.DocuSignEnvelope.GetEnumDisplayName(),
                         Label = descriptionLabel,
                         ManifestId = (int)MT.DocuSignEnvelope,
-                        ProducedBy = "Query_DocuSign_v1"
-                    }), AvailabilityType.RunTime);
+                        ProducedBy = "Query_DocuSign_v1",
+                        Availability = AvailabilityType.RunTime
+                    }));
             return availableRunTimeCrates;
         }
 

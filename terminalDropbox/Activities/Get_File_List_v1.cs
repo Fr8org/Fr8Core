@@ -122,8 +122,7 @@ namespace terminalDropbox.Actions
                 new StandardFileListCM
                 {
                     FileList = descriptionList
-                },
-                AvailabilityType.Always);
+                });
 
         }
     }
