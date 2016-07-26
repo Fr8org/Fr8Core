@@ -355,3 +355,14 @@ app.directive('eventPlanbuilder', ['$timeout', '$window', function ($timeout, $w
         }
     };
 }]);
+
+app.directive('eventPlandashboard', ['$timeout', '$window', function ($timeout, $window) {
+    return {
+        restrict: 'A',
+        link: function (scope, element) {
+            if ($window.analytics != null) {
+                $window.analytics.page("Visited Page - Plan Dashboard");
+            }
+        }
+    };
+}]);

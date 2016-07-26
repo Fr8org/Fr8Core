@@ -169,12 +169,12 @@ namespace HubWeb.Controllers
             catch (ValidationException ex)
             {
                 result = "You need to provide a valid Email Address.";
-                Logger.LogWarning("Invalid email provided: " + emailId);
+                Logger.GetLogger().Warn("Invalid email provided: " + emailId);
             }
             catch (Exception ex)
             {
                 result = "Something went wrong with our effort to send this message. Sorry! Please try emailing your message directly to support@fr8.co";
-                Logger.LogError($"Error processing a home page email form submission. Name = {name}; EmailId = {emailId}; Exception = {ex}");
+                Logger.GetLogger().Error($"Error processing a home page email form submission. Name = {name}; EmailId = {emailId}; Exception = {ex}");
             }
             return Content(result);
         }

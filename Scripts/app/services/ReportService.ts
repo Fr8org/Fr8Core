@@ -7,21 +7,21 @@
     }
 
     app.factory('ReportService', ['$resource', ($resource: ng.resource.IResourceService): IReportService =>
-        <IReportService> $resource('/api/report/getallincidents', null, {
+        <IReportService> $resource('/api/reports/getallincidents', null, {
             'getIncidentsByQuery': {
                 method: 'GET',
                 isArray: false,
-                url: '/api/report/?type=incidents'
+                url: '/api/reports/?type=incidents'
             },
             'getFactsByQuery': {
                 method: 'GET',
                 isArray: false,
-                url: '/api/report/?type=facts'
+                url: '/api/reports/?type=facts'
             },
             'canSeeOtherUserHistory' : {
                 method: 'GET',
                 isArray: false,
-                url: '/api/report/can_see_other_user_history'
+                url: '/api/reports/can_see_other_user_history'
             }
         })
     ]);

@@ -38,10 +38,6 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         [JsonProperty("createTime")]
         [JsonConverter(typeof(CreateTimeConverter))]
         public DateTime CreateTime { get; set; }
-
-        [JsonProperty("availability")]
-        [JsonConverter(typeof(AvailabilityConverter))]
-        public AvailabilityType Availability { get; set; }
         
         [JsonProperty("sourceActivityId")]
         public string SourceActivityId { get; set; }
