@@ -60,23 +60,23 @@ namespace terminalIntegrationTests.EndToEnd
 
             CreateMtDataRecords(mtData);
 
-            var url = GetHubApiBaseUrl() + "warehouse/query";
+            var url = GetHubApiBaseUrl() + "warehouses/query";
             var query = QueryFixture();
 
             var response = await HttpPostAsync<QueryDTO, JToken>(url, query);
-            Assert.NotNull(response, "Response from warehouse/query is null.");
+            Assert.NotNull(response, "Response from warehouses/query is null.");
 
             var searchedData = response.ToObject<List<DocuSignEnvelopeCM>>();
-            Assert.AreEqual(1, searchedData.Count, "Response from warehouse/query contains wrong number of results.");
+            Assert.AreEqual(1, searchedData.Count, "Response from warehouses/query contains wrong number of results.");
 
-            Assert.AreEqual(mtData[1].EnvelopeId, searchedData[0].EnvelopeId, "Response from warehouse/query contains wrong value for EnvelopeId.");
+            Assert.AreEqual(mtData[1].EnvelopeId, searchedData[0].EnvelopeId, "Response from warehouses/query contains wrong value for EnvelopeId.");
         }
 
 
         [Test]
         public async Task WarehouseAdd()
         {
-            var url = GetHubApiBaseUrl() + "warehouse";
+            var url = GetHubApiBaseUrl() + "warehouses";
             var dataToAdd = new ManifestDescriptionCM()
             {
                 Id = Guid.NewGuid().ToString(),
