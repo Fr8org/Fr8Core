@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Interfaces;
 using Newtonsoft.Json.Linq;
 
@@ -37,14 +38,21 @@ namespace Hub.Services
 
         public async Task<bool> Logout(string UserId)
         {
+            var result = false;
             var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/authentication/logout");
             var headers =
                 await
                     _hmacService.GenerateHMACHeader(uri, "PlanDirectory",
                         CloudConfigurationManager.GetSetting("PlanDirectorySecret"), UserId);
-
-            var json = await _client.PostAsync<JObject>(uri, headers: headers);
-            var result = json.Value<bool>("result");
+            try
+            {
+                var json = await _client.PostAsync<JObject>(uri, headers: headers).ConfigureAwait(false);
+                result = json.Value<bool>("result");
+            }
+            catch (Exception exp)
+            {
+                Logger.GetLogger("planDirectoryService").Debug($"Error while logging out from plan directory {exp}");
+            }
 
             return result;
         }
