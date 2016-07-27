@@ -14,6 +14,7 @@ using Microsoft.AspNet.Identity;
 using StructureMap;
 using Hub.Infrastructure;
 using Hub.Interfaces;
+using log4net;
 using PlanDirectory.Infrastructure;
 using PlanDirectory.Interfaces;
 
@@ -28,6 +29,7 @@ namespace PlanDirectory.Controllers.Api
         private readonly ITagGenerator _tagGenerator;
         private readonly IPageDefinition _pageDefinition;
         private readonly IPageGenerator _pageGenerator;
+        private static readonly ILog Logger = LogManager.GetLogger("PlanDirectory");
 
         public PlanTemplatesController()
         {
@@ -159,7 +161,7 @@ namespace PlanDirectory.Controllers.Api
             var searchResult = await _searchProvider.Search(searchRequest);
 
             var fr8AccountId = User.Identity.GetUserId();
-
+            var watch = System.Diagnostics.Stopwatch.StartNew();
             foreach (var searchItemDto in searchResult.PlanTemplates)
             {
                 var planTemplateDto = await _planTemplate.GetPlanTemplateDTO(fr8AccountId, searchItemDto.ParentPlanId);
@@ -184,7 +186,10 @@ namespace PlanDirectory.Controllers.Api
                 }
                 await _pageGenerator.Generate(storage, planTemplateCm, pageDefinitions, fr8AccountId);
             }
-            
+            watch.Stop();
+            var elapsed = watch.Elapsed;
+            Logger.Info($"Page Generator elapsed time: {elapsed.Minutes} minutes, {elapsed.Seconds} seconds");
+
             return Ok();
         }
 
