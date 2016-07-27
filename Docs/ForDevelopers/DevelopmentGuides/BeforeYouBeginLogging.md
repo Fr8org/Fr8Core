@@ -1,4 +1,5 @@
 Before You Begin - Logging and Debugging
+=======================================
 
 
 First, read about the [different logging mechanisms](/Docs/ForDevelopers/OperatingConcepts/LoggingIncidentsFacts.md) supported by Fr8. 
