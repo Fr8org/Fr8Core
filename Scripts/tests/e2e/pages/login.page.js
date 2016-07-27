@@ -1,13 +1,17 @@
-﻿var LoginPage = function () {
+﻿var UIHelpers = require('../shared/uiHelpers.js');
+
+var LoginPage = function () {
     var emailInput = element(by.id('Email'));
     var passwordInput = element(by.id('Password'));
     var loginButton = element(by.xpath('//*[@id="loginform"]/form/div[2]/div/div/button'));
-    var selectDropDownByName = element(by.xpath('/html/body/div[1]/div/div[2]/div[1]/div/div[2]/ul/li/a/span'));
     var logoutButton = element(by.xpath('/html/body/div[1]/div/div[2]/div[1]/div/div[2]/ul/li/ul/li[3]/a'));
+    var accountMenu = element(by.xpath('/html/body/div[1]/div/div[2]/div[1]/div/div[2]/ul/li'));
+
+    var uiHelpers = new UIHelpers();
     
     this.get = function () {
         browser.ignoreSynchronization = true;
-        browser.get(browser.baseUrl + '/DockyardAccount');
+        return browser.get(browser.baseUrl + '/DockyardAccount');
     };
 
     this.setEmail = function (email) {
@@ -18,12 +22,15 @@
         passwordInput.sendKeys(password);
     };
 
-    this.login = function () {
-        return loginButton.click();
+    this.login = function () {       
+        return loginButton;
     };
 
-    this.selectDropDownByName = function () {
-        selectDropDownByName.click();
+    this.accountMenuButton = function () {
+        return accountMenu;
+    };
+    
+    this.logout = function () {
         return logoutButton.click();
     };
 

@@ -2,53 +2,33 @@
 var AccountHelper = require('../shared/accountHelper.js');
 var UIHelpers = require('../shared/uiHelpers.js');
 
-//PROPERTIES
-var uiHelpers = new UIHelpers();
-var loginPage = new LoginPage();
-var accountHelper = new AccountHelper();
-
 describe('login page tests', function () {
 
-    beforeEach(function () {
-        loginPage.get();
-    });
-
-    
-
-    //afterEach(function () {
-    //    accountHelper.logout();
-    //});
+    //PROPERTIES
+    var uiHelpers = new UIHelpers();
+    var accountHelper = new AccountHelper();
+    var loginPage = new LoginPage();
 
     it('should login', function () {
-       return accountHelper.login().then(function () {
+        return accountHelper.login().then(function () {
+            loginPage.setEmail("integration_test_runner@fr8.company");
+            loginPage.setPassword("fr8#s@lt!");
+            return loginPage.login().click().then(function () {
                 expect(browser.getCurrentUrl()).toContain('/Welcome');
-       });
-    });
-
-});
-
-describe('logout test', function () {
-
-    afterEach(function () {
-        browser.ignoreSynchronization = true;
-        browser.get(browser.baseUrl + '/dashboard/myaccount');
-        //accountHelper.logout();
-    });
-
-    //it('should logout', function () {
-    //    return uiHelpers.waitForElementToBePresent(loginPage.selectDropDownByName).then(function () {
-    //        expect(browser.getCurrentUrl()).toContain('/DockyardAccount');
-    //        //return loginPage.logo().then(function () {
-    //        //    expect(element(by.className('Connect Your Cloud Services')));
-    //        //});
-    //    }, function () { });
-    //});
-
-    it('should logout', function () {
-        return loginPage.selectDropDownByName().then(function () {
-            expect(browser.getCurrentUrl()).toContain('/DockyardAccount');
+            });
         });
     });
 
+    describe('should logout', function () {
+
+        var loginPage = new LoginPage();
+
+        it('should logout', function () {
+            return accountHelper.logout().then(function () {
+                expect(browser.getCurrentUrl()).toContain('/DockyardAccount');
+            });
+        });
+    });
+
+
 });
-   

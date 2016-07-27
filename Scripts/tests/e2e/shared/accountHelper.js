@@ -1,35 +1,37 @@
 ﻿var LoginPage = require('../pages/login.page.js');
 //var ContactPage = require('../pages/contact.page.js');
 //var GoogleAuthorizationPage = require('../pages/googleAuthorization.page.js');
-var RegistrationPage = require('../pages/registration.page.js');
-var MyAccountPage = require('../pages/myAccount.page.js');
+//var RegistrationPage = require('../pages/registration.page.js');
+var UIHelpers = require('../shared/uiHelpers.js');
 
 var AccountHelper = function () {
 
     var loginPage = new LoginPage();
-    var logoutPage = new LoginPage();
-    var registrationPage = new RegistrationPage();
-    var myAccountPage = new MyAccountPage();
+    //var registrationPage = new RegistrationPage();
+    var uiHelpers = new UIHelpers();
     //var contactPage = new ContactPage();
 
     this.login = function () {
-        loginPage.setEmail("integration_test_runner@fr8.company");
-        loginPage.setPassword("fr8#s@lt!");
-        return loginPage.login();
-    };
-
-    this.register = function () {
-        registrationPage.setEmail("testuser_00040@fr8.co");
-        registrationPage.setPassword("123qwe");
-        registrationPage.setConfirmPassword("123qwe");
-        registrationPage.setOrganization();
-        return registrationPage.register();
+        return loginPage.get();
     };
 
     this.logout = function () {
-        MyAccountPage();
-        //return myAccountPage.selectDropDownByName();
+        return browser.get(browser.baseUrl + '/DockyardAccount/Logoff');
     };
+
+    this.register = function () {
+        return registrationPage.get();
+    };
+
+    //this.register = function () {
+    //    return registrationPage.get().then(function () {
+    //        registrationPage.setEmail("testuser_00074@fr8.co");
+    //        registrationPage.setPassword("123qwe");
+    //        registrationPage.setConfirmPassword("123qwe");
+    //        registrationPage.setOrganization();
+    //        return registrationPage.register();
+    //    });
+    //};
 
     //this.sendContact = function () {
     //    contactPage.setName("Fr8 Company");
