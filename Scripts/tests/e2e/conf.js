@@ -17,7 +17,7 @@
     framework: 'jasmine',
     specs: ['**/*.spec.js'],
     jasmineNodeOpts: {
-        defaultTimeoutInterval: 30000
+        defaultTimeoutInterval: 50000
     },
     baseUrl: 'http://dev.fr8.co'
 }; 
