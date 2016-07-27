@@ -5,9 +5,6 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
     public class IncomingCratesDTO
     {
-        [JsonProperty("availableFields")]
-        public readonly List<FieldDTO> AvailableFields = new List<FieldDTO>();
-
         [JsonProperty("availableCrates")]
         public readonly List<CrateDescriptionDTO> AvailableCrates = new List<CrateDescriptionDTO>();
     }
