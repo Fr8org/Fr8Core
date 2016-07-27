@@ -14,7 +14,23 @@
 
             this.$http.get(url)
                 .then((res) => {
-                    defer.resolve(res.data);
+
+                    var cratesDescription = <model.IncomingCratesDTO>res.data;
+
+                    for (var i = 0; i < cratesDescription.availableCrates.length; i++) {
+
+                        var crateDescription = cratesDescription.availableCrates[i];
+
+                        for (var j = 0; j < crateDescription.fields.length; j ++) {
+                            var field = cratesDescription.availableCrates[i].fields[j];
+
+                            field.sourceCrateLabel = crateDescription.label;
+                            field.sourceActivityId = crateDescription.sourceActivityId;
+                            field.availability = crateDescription.availability;
+                        }
+                    }
+                  
+                    defer.resolve(cratesDescription);
                 });
 
             return defer.promise;

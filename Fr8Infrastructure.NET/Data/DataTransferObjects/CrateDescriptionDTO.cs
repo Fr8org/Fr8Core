@@ -15,6 +15,9 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         [JsonProperty("label")]
         public string Label{ get; set; }
 
+        [JsonProperty("sourceActivityId", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
+        public string SourceActivityId { get; set; }
+
         [JsonProperty("producedBy")]
         public string ProducedBy { get; set; }
 

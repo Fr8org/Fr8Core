@@ -8,6 +8,7 @@ using Microsoft.Owin.Security;
 using StructureMap;
 using Data.Interfaces;
 using Data.Infrastructure.StructureMap;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Infrastructure;
 using PlanDirectory.Infrastructure;
 using PlanDirectory.Interfaces;
@@ -65,6 +66,7 @@ namespace PlanDirectory.Controllers.Api
         {
             var securityServices = ObjectFactory.GetInstance<ISecurityServices>();
             securityServices.Logout();
+            Logger.GetLogger("PlanDirectory").Debug($"Logging out user {securityServices.GetCurrentUser()}");
             return Ok(new {Result = true});
         }
 

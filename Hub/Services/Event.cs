@@ -64,7 +64,7 @@ namespace Hub.Services
             if (string.IsNullOrWhiteSpace(inboundEvent.ExternalDomainId) && string.IsNullOrWhiteSpace(inboundEvent.ExternalAccountId))
             {
                 Logger.GetLogger().Error($"External event has no information about external account or external domain. Processing is cancelled. Event names - {inboundEvent.EventNames}, " +
-                                $"source - {inboundEvent.Source}, manufacturer - {inboundEvent.Manufacturer} ");
+                                $"manufacturer - {inboundEvent.Manufacturer} ");
                 return;
             }
             // Fetching values from Config file is not working on CI.
