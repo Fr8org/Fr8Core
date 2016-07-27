@@ -29,7 +29,7 @@ module dockyard.directives {
             // Determines notification type and add necessary attributes
             switch ($scope.type) {
                 case dockyard.enums.NotificationType.GenericSuccess:
-                    $scope.eventHeader = 'Success';
+                    $scope.eventHeader = $scope.event.Subject ? $scope.event.Subject : 'Success';
                     $scope.eventSubHeader = null;
                     $scope.eventMessage = $scope.event.Message;
                     $scope.color = 'green';
