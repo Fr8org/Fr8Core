@@ -5,8 +5,11 @@ Logging, Incidents and Facts
 Fr8 provides for several different kinds of analytic data:
 
 1) Activity Stream messages, transient and pushed to the client
+
 2) Standard Logging Output, transient and currently displayed on PaperTrail
+
 3) Facts and Incidents (HistoryItems), persistent business intelligence datapoints and error messages. Posted by Terminals to the Hub, which stores them in the db
+
 4) Run-Time Container Logging, persistent data added to a Container as it undergoes processing. 
 
 Activity Stream
