@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using System.Web.Http;
-using Data.Entities;
-using Data.Repositories;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Interfaces;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Hub.Infrastructure;
-using Hub.Interfaces;
 using PlanDirectory.Infrastructure;
 using PlanDirectory.Interfaces;
 
@@ -24,9 +19,7 @@ namespace PlanDirectory.Controllers.Api
         private readonly IHubCommunicator _hubCommunicator;
         private readonly IPlanTemplate _planTemplate;
         private readonly ISearchProvider _searchProvider;
-        private readonly ITagGenerator _tagGenerator;
-        private readonly IPageDefinition _pageDefinition;
-        private readonly IPageGenerator _pageGenerator;
+        private readonly IWebservicesPageGenerator _webservicesPageGenerator;
 
         public PlanTemplatesController()
         {
@@ -34,9 +27,7 @@ namespace PlanDirectory.Controllers.Api
             _hubCommunicator = factory.Create(User.Identity.GetUserId());
             _planTemplate = ObjectFactory.GetInstance<IPlanTemplate>();
             _searchProvider = ObjectFactory.GetInstance<ISearchProvider>();
-            _tagGenerator = ObjectFactory.GetInstance<ITagGenerator>();
-            _pageGenerator = ObjectFactory.GetInstance<IPageGenerator>();
-            _pageDefinition = ObjectFactory.GetInstance<IPageDefinition>();
+            _webservicesPageGenerator = ObjectFactory.GetInstance<IWebservicesPageGenerator>();
         }
 
         [HttpPost]
@@ -45,27 +36,9 @@ namespace PlanDirectory.Controllers.Api
         public async Task<IHttpActionResult> Post(PublishPlanTemplateDTO dto)
         {
             var fr8AccountId = User.Identity.GetUserId();
-
             var planTemplateCM = await _planTemplate.CreateOrUpdate(fr8AccountId, dto);
-
-            var storage = await _tagGenerator.GetTags(planTemplateCM, fr8AccountId);
-
             await _searchProvider.CreateOrUpdate(planTemplateCM);
-
-            var pageDefinitions = new List<PageDefinitionDO>();
-            foreach (var tag in storage.WebServiceTemplateTags)
-            {
-                var pd = new PageDefinitionDO()
-                {
-                    Title = tag.Title,
-                    Tags = tag.TagsWithIcons.Select(x => x.Key),
-                    Type = "WebService"
-                };
-                pageDefinitions.Add(pd);
-            }
-
-            await _pageGenerator.Generate(storage, planTemplateCM, pageDefinitions, fr8AccountId);
-
+            await _webservicesPageGenerator.Generate(planTemplateCM, fr8AccountId);
             return Ok();
         }
 

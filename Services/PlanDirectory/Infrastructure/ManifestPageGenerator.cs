@@ -8,9 +8,10 @@ using Fr8.Infrastructure.Data.Manifests;
 using Hub.Interfaces;
 using Hub.Services;
 using PlanDirectory.Exceptions;
+using PlanDirectory.Interfaces;
 using PlanDirectory.ManifestPages;
 
-namespace PlanDirectory.Interfaces
+namespace PlanDirectory.Infrastructure
 {
     public class ManifestPageGenerator : IManifestPageGenerator
     {
@@ -20,10 +21,10 @@ namespace PlanDirectory.Interfaces
 
         private readonly ITemplateGenerator _templateGenerator;
         private readonly IPageDefinition _pageDefinitionService;
-        private readonly Fr8Account _fr8AccountService;
+        private readonly IFr8Account _fr8AccountService;
         private readonly IUnitOfWorkFactory _uowFactory;
 
-        public ManifestPageGenerator(ITemplateGenerator templateGenerator, IPageDefinition pageDefinitionService, Fr8Account fr8AccountService, IUnitOfWorkFactory uowFactory)                                           
+        public ManifestPageGenerator(ITemplateGenerator templateGenerator, IPageDefinition pageDefinitionService, IFr8Account fr8AccountService, IUnitOfWorkFactory uowFactory)                                           
         {
             _templateGenerator = templateGenerator;
             _pageDefinitionService = pageDefinitionService;

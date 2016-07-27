@@ -5,8 +5,6 @@ using System.Web.Hosting;
 using Data.Repositories;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
-using Fr8.TerminalBase.Interfaces;
-using Fr8.TerminalBase.Services;
 using Hub.Interfaces;
 using Hub.Services;
 using PlanDirectory.Interfaces;
@@ -21,13 +19,13 @@ namespace PlanDirectory.Infrastructure
         {
             public LiveMode()
             {
-                For<IAuthTokenManager>().Use<AuthTokenManager>();
-                For<IPlanTemplate>().Use<PlanTemplate>();
+                For<IFr8Account>().Use<Fr8Account>().Singleton();
+                For<IAuthTokenManager>().Use<AuthTokenManager>().Singleton();
+                For<IPlanTemplate>().Use<PlanTemplate>().Singleton();
                 For<ISearchProvider>().Use<SearchProvider>();
-                For<ITagGenerator>().Use<TagGenerator>();
-                For<IPageGenerator>().Use<PageGenerator>();
-                For<IPageDefinition>().Use<PageDefinition>();
-                For<IPageDefinitionRepository>().Use<PageDefinitionRepository>();
+                For<ITagGenerator>().Use<TagGenerator>().Singleton();
+                For<IPageDefinition>().Use<PageDefinition>().Singleton();
+                For<IPageDefinitionRepository>().Use<PageDefinitionRepository>().Singleton();
                 For<IHubCommunicatorFactory>().Use(
                     x => new PlanDirectoryHubCommunicatorFactory(
                         ObjectFactory.GetInstance<IRestfulServiceClientFactory>(),
@@ -38,12 +36,19 @@ namespace PlanDirectory.Infrastructure
                 var serverPath = GetServerPath();
                 var planDirectoryUrl = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl"));
                 ConfigureManifestPageGenerator(planDirectoryUrl, serverPath);
+                ConfigurePlanPageGenerator(planDirectoryUrl, serverPath);
+            }
+
+            private void ConfigurePlanPageGenerator(Uri planDirectoryUrl, string serverPath)
+            {
+                var templateGenerator = new TemplateGenerator(new Uri($"{planDirectoryUrl}CategoryPages"), $"{serverPath}/CategoryPages");
+                For<IWebservicesPageGenerator>().Use<WebservicesPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
             }
 
             private void ConfigureManifestPageGenerator(Uri planDirectoryUrl, string serverPath)
             {
-                var templateGenerator = new TemplateGenerator(new Uri($"{planDirectoryUrl}/ManifestPages"), $"{serverPath}/ManifestPages");
-                For<IManifestPageGenerator>().Use<ManifestPageGenerator>().Ctor<ITemplateGenerator>().Is(templateGenerator);
+                var templateGenerator = new TemplateGenerator(new Uri($"{planDirectoryUrl}ManifestPages"), $"{serverPath}/ManifestPages");
+                For<IManifestPageGenerator>().Use<ManifestPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
             }
 
             private static string GetServerPath()

@@ -1,15 +1,16 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
 using PlanDirectory.Interfaces;
+using StructureMap;
 
 namespace PlanDirectory.Controllers.Api
 {
     public class PageGenerationController : ApiController
     {
         private readonly IManifestPageGenerator _manifestPageGenerator;
-        public PageGenerationController(IManifestPageGenerator manifestPageGenerator)
+        public PageGenerationController()
         {
-            _manifestPageGenerator = manifestPageGenerator;
+            _manifestPageGenerator = ObjectFactory.GetInstance<IManifestPageGenerator>();
         }
 
         [HttpPost]

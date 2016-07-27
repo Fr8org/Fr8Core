@@ -338,7 +338,7 @@
     <Compile Include="Infrastructure\HubAuthenticationPDHeaderSignature.cs" />
     <Compile Include="Interfaces\GenerateMode.cs" />
     <Compile Include="Interfaces\IManifestPageGenerator.cs" />
-    <Compile Include="Interfaces\IPageGenerator.cs" />
+    <Compile Include="Interfaces\IWebservicesPageGenerator.cs" />
     <Compile Include="Interfaces\ISearchProvider.cs" />
     <Compile Include="Infrastructure\TagGenerator.cs" />
     <Compile Include="Interfaces\IHubCommunicatorFactory.cs" />
@@ -346,7 +346,7 @@
     <Compile Include="Infrastructure\TemplateTagStorage.cs" />
     <Compile Include="Infrastructure\WebServiceTemplateTag.cs" />
     <Compile Include="Interfaces\ITagGenerator.cs" />
-    <Compile Include="Infrastructure\PageGenerator.cs" />
+    <Compile Include="Infrastructure\WebservicesPageGenerator.cs" />
     <Compile Include="Infrastructure\PlanDirectoryHMACAuthenticateAttribute.cs" />
     <Compile Include="Interfaces\IAuthTokenManager.cs" />
     <Compile Include="Infrastructure\PlanDirectoryAuthorizeAttribute.cs" />
