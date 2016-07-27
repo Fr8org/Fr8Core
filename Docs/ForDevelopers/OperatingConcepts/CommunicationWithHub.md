@@ -1,4 +1,4 @@
-# EVENTS
+# Hub Communication
 
 [Go to Contents](/Docs/Home.md)
 
