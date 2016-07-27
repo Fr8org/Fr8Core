@@ -118,7 +118,7 @@ namespace terminalFr8Core.Activities
             {
                 var crateChooser = GetControl<CrateChooser>("Available_Crates");
 
-                if (!crateChooser.CrateDescriptions.Any(c => c.Selected))
+                if (crateChooser.CrateDescriptions != null && crateChooser.CrateDescriptions.Count > 0 && !crateChooser.CrateDescriptions.Any(c => c.Selected))
                 {
                     ValidationManager.SetError("Please select an item from the list", crateChooser);
                 }
@@ -153,27 +153,67 @@ namespace terminalFr8Core.Activities
         {
             //build a controls crate to render the pane
             CreateControls();
-            SelectTheCrateIfThereIsOnlyOne();
+            await ValidateAndHandleCrateSelection();
         }
 
         public override async Task FollowUp()
         {
+            await ValidateAndHandleCrateSelection();
+        }
+
+        private async Task ValidateAndHandleCrateSelection()
+        {
+            //CrateChooser requests data only on click. So in order to autoselect a single crate - we need to make a request on our own
             var crateChooser = GetControl<CrateChooser>("Available_Crates");
-            if (crateChooser.CrateDescriptions != null)
+
+            var upstreamCrates = await HubCommunicator.GetAvailableData(ActivityId, CrateDirection.Upstream, AvailabilityType.RunTime);
+
+
+            if (crateChooser.CrateDescriptions == null)
             {
-                var selected = crateChooser.CrateDescriptions.FirstOrDefault(x => x.Selected);
-                if (selected != null)
+                crateChooser.CrateDescriptions = upstreamCrates.AvailableCrates;
+            }
+            else
+            {
+                //elements in crate chooser that are not in upstream
+                var inCrateChooser = crateChooser.CrateDescriptions
+                    .Where(y => !upstreamCrates.AvailableCrates.Any(z => z.ManifestId == y.ManifestId && z.SourceActivityId == y.SourceActivityId && z.Label == y.Label));
+                //elements in upstream that are not in crate chooser
+                var inUpstream = upstreamCrates.AvailableCrates
+                  .Where(y => !crateChooser.CrateDescriptions.Any(z => z.ManifestId == y.ManifestId && z.SourceActivityId == y.SourceActivityId && z.Label == y.Label));
+                if (inUpstream.Count() > 0 || inCrateChooser.Count() > 0)
                 {
-                    SelectTheCrateIfThereIsOnlyOne();
-                    SignalRowCrate(selected);
-                }
-                else
-                {
-                    Storage.Clear();
-                    CreateControls();
-                    SelectTheCrateIfThereIsOnlyOne();
+                    //check if selected crate is no more available
+                    var old_selected = crateChooser.CrateDescriptions.FirstOrDefault(x => x.Selected);
+                    if (old_selected != null)
+                    {
+                        var selected_in_upstream = upstreamCrates.AvailableCrates
+                            .Where(a => a.Label == old_selected.Label && a.SourceActivityId == old_selected.SourceActivityId && a.ManifestId == old_selected.ManifestId)
+                            .FirstOrDefault();
+                        if (selected_in_upstream != null)
+                        {
+                            //it is available
+                            selected_in_upstream.Selected = true;
+                        }
+                    }
+
+                    //updated CrateChooser.CrateDescriptions
+                    crateChooser.CrateDescriptions = upstreamCrates.AvailableCrates;
                 }
             }
+
+            var selected = crateChooser.CrateDescriptions.FirstOrDefault(x => x.Selected);
+            if (selected != null)
+            {
+                SignalRowCrate(selected);
+            }
+            else
+            {
+                selected = SelectTheCrateIfThereIsOnlyOne(crateChooser);
+                if (selected != null)
+                    SignalRowCrate(selected);
+            }
+
         }
 
         private string GetCrateName(CrateDescriptionDTO selected)
@@ -183,24 +223,24 @@ namespace terminalFr8Core.Activities
 
         private void SignalRowCrate(CrateDescriptionDTO selected)
         {
-
             if (selected.ManifestId == (int)MT.StandardTableData)
             {
                 CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(GetCrateName(selected), true).AddFields(selected.Fields);
             }
             else
             {
-                CrateSignaller.MarkAvailableWithoutSignalling(selected, AvailabilityType.Always, GetCrateName(selected)).AddFields(selected.Fields);
+                CrateSignaller.MarkAvailable(new CrateManifestType(selected.ManifestType, selected.ManifestId), GetCrateName(selected), AvailabilityType.RunTime).AddFields(selected.Fields);
             }
         }
 
-        private void SelectTheCrateIfThereIsOnlyOne()
+        private CrateDescriptionDTO SelectTheCrateIfThereIsOnlyOne(CrateChooser crateChooser)
         {
-            var crateChooser = ConfigurationControls.Controls.OfType<CrateChooser>().Single();
             if (crateChooser.CrateDescriptions?.Count == 1)
             {
                 crateChooser.CrateDescriptions[0].Selected = true;
+                return crateChooser.CrateDescriptions[0];
             }
+            return null;
         }
 
         private void CreateControls()
@@ -216,7 +256,7 @@ namespace terminalFr8Core.Activities
         }
 
         public Loop_v1(ICrateManager crateManager)
-            : base(crateManager)
+                : base(crateManager)
         {
         }
 

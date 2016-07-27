@@ -47,7 +47,6 @@ namespace terminalGoogle.Services
             var eventReportContent = new EventReportCM
             {
                 EventNames = "Google Form Response",
-                ContainerDoId = "",
                 EventPayload = WrapPayloadDataCrate(payloadFields),
                 ExternalAccountId = externalAccountId.Value,
                 Manufacturer = "Google"

@@ -69,7 +69,6 @@ namespace terminalInstagram.Services
             var eventReportContent = new EventReportCM
             {
                 EventNames = string.Join(",", instagramEventCM.ChangedAspect),
-                ContainerDoId = "",
                 ExternalAccountId = instagramEventCM.UserId,
                 EventPayload = new CrateStorage(Crate.FromContent("Instagram user event", instagramEventCM)),
                 Manufacturer = "Instagram"
