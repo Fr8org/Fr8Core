@@ -36,7 +36,6 @@ namespace terminalSalesforce.Services
                 var eventReportContent = new EventReportCM
                 {
                     EventNames = GetEventNames(curEventEnvelope),
-                    ContainerDoId = "",
                     EventPayload = ExtractEventPayload(curEventEnvelope),
                     ExternalAccountId = accountId,
                     Manufacturer = "Salesforce",

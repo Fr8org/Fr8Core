@@ -1,22 +1,34 @@
 ﻿var LoginPage = require('../pages/login.page.js');
+var AccountHelper = require('../shared/accountHelper.js');
+var UIHelpers = require('../shared/uiHelpers.js');
 
 describe('login page tests', function () {
-    var loginPage;
 
-    beforeEach(function () {
-        loginPage = new LoginPage();
-        loginPage.get();
-    });
+    //PROPERTIES
+    var uiHelpers = new UIHelpers();
+    var accountHelper = new AccountHelper();
+    var loginPage = new LoginPage();
 
     it('should login', function () {
-        loginPage.setEmail("integration_test_runner@fr8.company");
-        loginPage.setPassword("fr8#s@lt!");
-
-        loginPage.login();
-        browser.waitForAngular();
-        expect(browser.getCurrentUrl()).toContain('Welcome');
+        return accountHelper.login().then(function () {
+            loginPage.setEmail("integration_test_runner@fr8.company");
+            loginPage.setPassword("fr8#s@lt!");
+            return loginPage.login().click().then(function () {
+                expect(browser.getCurrentUrl()).toContain('/Welcome');
+            });
+        });
     });
 
+    describe('should logout', function () {
+
+        var loginPage = new LoginPage();
+
+        it('should logout', function () {
+            return accountHelper.logout().then(function () {
+                expect(browser.getCurrentUrl()).toContain('/DockyardAccount');
+            });
+        });
+    });
+
+
 });
- 
-   
