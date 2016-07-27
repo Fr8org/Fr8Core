@@ -354,7 +354,7 @@
     <Compile Include="Infrastructure\SearchProvider.Impl.cs" />
     <Compile Include="Interfaces\CreatePlanDTO.cs" />
     <Compile Include="Interfaces\ITemplateGenerator.cs" />
-    <Compile Include="Interfaces\ManifestPageGenerator.cs" />
+    <Compile Include="Infrastructure\ManifestPageGenerator.cs" />
     <Compile Include="Interfaces\SearchItemDTO.cs" />
     <Compile Include="Interfaces\SearchRequestDTO.cs" />
     <Compile Include="Interfaces\SearchResultDTO.cs" />
