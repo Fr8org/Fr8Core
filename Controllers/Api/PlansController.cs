@@ -188,7 +188,7 @@ namespace HubWeb.Controllers
         [SwaggerResponse(HttpStatusCode.OK, "Collection of plans queried by name", typeof(List<PlanDTO>))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "Multiple query parameters are defined")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
-        public IHttpActionResult Get([FromUri] PlansGetParams parameters)
+        public async Task<IHttpActionResult> Get([FromUri] PlansGetParams parameters)
         {
             if ((!parameters.name.IsNullOrEmpty() && parameters.id.HasValue)
                 || (parameters.activity_id.HasValue && parameters.id.HasValue)
@@ -198,7 +198,7 @@ namespace HubWeb.Controllers
             }
             if (parameters.include_children && parameters.id.HasValue)
             {
-                return GetFullPlan((Guid)parameters.id);
+                return await GetFullPlan((Guid)parameters.id);
             }
             if (parameters.activity_id.HasValue)
             {
@@ -214,12 +214,31 @@ namespace HubWeb.Controllers
         [ResponseType(typeof(PlanDTO))]
         [HttpGet]
         [NonAction]
-        private IHttpActionResult GetFullPlan(Guid id)
+        private async Task<IHttpActionResult> GetFullPlan(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = _plan.GetFullPlan(uow, id);
+
+                var hmacService = ObjectFactory.GetInstance<IHMACService>();
+                var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+
+                var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/plan_templates?id=" + id);
+                var headers = await hmacService.GenerateHMACHeader(
+                    uri,
+                    "PlanDirectory",
+                    CloudConfigurationManager.GetSetting("PlanDirectorySecret"),
+                    User.Identity.GetUserId()
+                );
+
+                var planTemplate =  await client.GetAsync<PublishPlanTemplateDTO>(uri,  headers: headers);
+
                 var result = PlanMappingHelper.MapPlanToDto(uow, plan);
+
+                if (planTemplate != null)
+                {
+                    result.Plan.Visibility.Public = true;
+                }
 
                 return Ok(result);
             };

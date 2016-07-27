@@ -229,7 +229,7 @@ namespace terminalDocuSign.Services
                 Name = "MonitorAllDocuSignEvents",
                 Description = "MonitorAllDocuSignEvents",
                 PlanState = PlanState.Running,
-                Visibility = PlanVisibility.Internal
+                Visibility = new PlanVisibilityDTO() { Hidden = true }
             };
 
             var monitorDocusignPlan = await hubCommunicator.CreatePlan(emptyMonitorPlan);

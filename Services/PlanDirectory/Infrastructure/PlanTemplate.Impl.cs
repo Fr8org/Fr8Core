@@ -103,7 +103,7 @@ namespace PlanDirectory.Infrastructure
                         fr8AccountId,
                         x => x.ParentPlanId == planIdStr
                     );
-
+                uow.SaveChanges();
                 await Task.Yield();
             }
         }
