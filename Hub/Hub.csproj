@@ -317,6 +317,7 @@
     <Compile Include="Interfaces\IPlanDirectory.cs" />
     <Compile Include="Interfaces\IPlanTemplates.cs" />
     <Compile Include="Interfaces\ITimer.cs" />
+    <Compile Include="Interfaces\IUpstreamDataExtractionService.cs" />
     <Compile Include="Managers\APIManagers\Packagers\IEmailPackager.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SendGrid\SendGridPackager.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportFactory.cs" />
@@ -419,6 +420,11 @@
     <Compile Include="Services\TerminalDiscoveryService.cs" />
     <Compile Include="Services\Time.cs" />
     <Compile Include="Services\Timers\Win32Timer.cs" />
+    <Compile Include="Services\UpstreamDataExtractionService.cs" />
+    <Compile Include="Services\UpstreamValueExtractors\IUpstreamValueExtractor.cs" />
+    <Compile Include="Services\UpstreamValueExtractors\TextSourceValueExtractror.cs" />
+    <Compile Include="Services\UpstreamValueExtractors\UpstreamValueExtractorBaseT.cs" />
+    <Compile Include="Services\UpstreamValueExtractors\UpstremFieldChooserValueExtractror.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
     <Compile Include="Interfaces\IActivityExecutionRateLimitingService.cs" />
     <Compile Include="Interfaces\IUtilizationMonitoringService.cs" />

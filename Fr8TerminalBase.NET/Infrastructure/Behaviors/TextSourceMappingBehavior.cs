@@ -58,7 +58,7 @@ namespace Fr8.TerminalBase.Infrastructure.Behaviors
                 string value = null;
                 try
                 {
-                    value = textSource.GetValue(payload ?? _crateStorage);
+                    value = textSource.TextValue;
                 }
                 catch { }
                 result.Add(fieldId, value);

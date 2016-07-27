@@ -13,7 +13,7 @@ using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Data.Interfaces;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.Managers;
 
 namespace terminalSalesforceTests.Intergration
 {

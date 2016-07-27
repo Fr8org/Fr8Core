@@ -124,13 +124,13 @@ namespace terminalDemo.Activities
         protected bool IsValid()
         {
             double argumentOutput;
-            var isRightArgumentValid = double.TryParse(ActivityUI.RightArgument.GetValue(Payload), out argumentOutput);
+            var isRightArgumentValid = double.TryParse(ActivityUI.RightArgument.TextValue, out argumentOutput);
             if (!isRightArgumentValid)
             {
                 ValidationManager.SetError("Invalid data entered for RightArgument", nameof(ActivityUI.RightArgument));
                 return false;
             }
-            var isLeftArgumentValid = double.TryParse(ActivityUI.LeftArgument.GetValue(Payload), out argumentOutput);
+            var isLeftArgumentValid = double.TryParse(ActivityUI.LeftArgument.TextValue, out argumentOutput);
             if (!isLeftArgumentValid)
             {
                 ValidationManager.SetError("Invalid data entered for LeftArgument", nameof(ActivityUI.LeftArgument));
@@ -148,8 +148,8 @@ namespace terminalDemo.Activities
             }
             else
             {
-                var rightArgument = double.Parse(ActivityUI.RightArgument.GetValue(Payload));
-                var leftArgument = double.Parse(ActivityUI.LeftArgument.GetValue(Payload));
+                var rightArgument = double.Parse(ActivityUI.RightArgument.TextValue);
+                var leftArgument = double.Parse(ActivityUI.LeftArgument.TextValue);
                 double result;
                 switch (ActivityUI.Operation.selectedKey)
                 {
