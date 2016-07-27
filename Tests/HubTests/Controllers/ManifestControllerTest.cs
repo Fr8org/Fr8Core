@@ -273,7 +273,6 @@ namespace HubTests.Controllers
             ////Assert
             Assert.NotNull(fieldsList);
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("EventNames")), "EventNames Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("ContainerDoId")), "ContainerDoId Not Found");
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Name.Equals("EventPayload")), "EventPayload Not Found");
         }
 
