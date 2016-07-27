@@ -4,9 +4,14 @@
 
 ## Summary
 
-Terminals can generate events and post them to the Hub. Event data is created using the crate manifest Standard Event Report.  The Terminal then POSTs the Event Report crate to the main event receiving endpoint on the Hub, which is at `/event`. The Hub then inspects all of the running plans to see if any of them are monitoring for this event. To monitor an event, an Activity defines an EventSubscription crate at design-time. When there’s a match, if a plan starts with an action that has a matching EventSubscription crate, that plan will be launched, and the data in the EventReport will be added to the CrateStorage of the Container that is newly created as part of the plan launch.
+Terminals can generate events and post them to the Hub. The primary uses of this are:
 
-Separately, Terminals will often communicate with their corresponding web services and register for events to be sent directly to the Terminal. For example, the DocuSign terminal will register with DocuSign to receive notification of events affecting certain Fr8 users that have DocuSign accounts.
+1) to report loggable facts (analytics) and incidents (problems) so the Hub can provide a centralized view of what's happening
+2) to report events, callbacks, webhooks and other kinds of data that have been received at the Terminal by some external Web Service.
+
+Event data is packaged using the crate manifest Standard Event Report.  The Terminal then POSTs the Event Report crate to the main event receiving endpoint on the Hub, which is at `/event`. The Hub then inspects all of the activated plans to see if any of them are monitoring for this event. To monitor an event, an Activity creates an EventSubscription crate at design-time.  If a Plan starts with an Activity that has a matching EventSubscription crate, then a match is made and that plan will be executed, and the data in the EventReport will be added to the CrateStorage of the Container that is newly created as part of the plan launch, so the Terminals receive the information.
+
+Example: The Monitor DocuSign Activity invites users to create plans that trigger when a DocuSign envelope is sent or signed. When a Plan with this Activity is created, the Activity code creates an Event Subscription crate and adds it to the Activity's CrateStorage. Shortly thereafter, the user clicks Run, and an /activate call is sent to the DocuSign Terminal. It takes steps to make sure that it will learn about these events. In the case of DocuSign, this is relatively complex, because some DocuSign users have service levels that entitle them to real-time webhook notification callbacks, and some do not. For the ones that do not, the DocuSign Terminal has to use a polling solution. The user subsequently sends a DocuSign envelope, and the Terminal detects this, either by receiving a POSTed notification or by using polling. It packages the information received from DocuSign into an Event Report crate and POSTs it to the Hub. The Hub detects that the Plan created by the user has an Event Subscription matching the Event Report, and triggers execution of the Plan, passing it the Event Report data as part of the newly created Payload Container.
 
 ## Facts and Incidents
 
@@ -16,7 +21,7 @@ Facts are supposed to represent data that is useful for business analysis, while
 
 ## At Design-Time
 
-Activities can “subscribe” to an event by adding to themselves a Crate of manifest “Standard Event Subscriptions” and loading it with the names of the events they want to subscribe to.
+Activities can subscribe to an event by adding to themselves a Crate of manifest “Standard Event Subscriptions” and loading it with the names of the events they want to subscribe to.
 
 So, for example, the Create “Wait For DocuSign Event” Trigger Activity for DocuSign Plugin, after receiving the user’s configuration selections and settings, creates a Crate of Class “Standard Event Subscriptions” with strings like “DocuSign Envelope Sent”, and saves the Crate on itself.
 
@@ -37,7 +42,7 @@ Values assigned to `externalDomainId` and `externalAccountId` should match the s
 
 ## Walkthrough
 
-Please read [Activity Development Guide](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/ActivityDevelopmentGuide.md) before this tutorial.
+Before starting: Read [Activity Development Guide](/Docs/ForDevelopers/DevelopmentGuides/ActivityDevelopmentGuide.md)  
 
 ### Listening For Events
 
@@ -153,4 +158,4 @@ After preparing this EventReport, terminal needs to post this crate to /events e
 Generally your monitor activity should extract data from EventPayload and publish this data.
 
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)
+[Go to Contents](h/Docs/Home.md)
