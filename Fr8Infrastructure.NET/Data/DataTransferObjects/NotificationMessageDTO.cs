@@ -41,6 +41,5 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 
         [JsonProperty("planId")]
         public Guid PlanId { get; set; }
-
     }
 }
