@@ -97,7 +97,7 @@ namespace terminalFr8Core.Activities
                 var table = crateToProcess.Get<StandardTableDataCM>();
                 var rowOfData = table.DataRows.ElementAt(loopData.Index);
                 var extractedCrate = new StandardTableDataCM(false, new List<TableRowDTO>() { rowOfData });
-                Payload.Add(Crate.FromContent(label, extractedCrate, AvailabilityType.RunTime));
+                Payload.Add(Crate.FromContent(label, extractedCrate));
             }
             else
             {
@@ -183,14 +183,13 @@ namespace terminalFr8Core.Activities
 
         private void SignalRowCrate(CrateDescriptionDTO selected)
         {
-
             if (selected.ManifestId == (int)MT.StandardTableData)
             {
                 CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(GetCrateName(selected), true).AddFields(selected.Fields);
             }
             else
             {
-                CrateSignaller.MarkAvailableWithoutSignalling(selected, AvailabilityType.Always, GetCrateName(selected)).AddFields(selected.Fields);
+                CrateSignaller.MarkAvailable(new CrateManifestType(selected.ManifestType, selected.ManifestId), GetCrateName(selected), AvailabilityType.RunTime).AddFields(selected.Fields);
             }
         }
 

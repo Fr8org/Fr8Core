@@ -43,10 +43,10 @@ namespace Data.Migrations
 
 
             // Uncomment four following lines to debug Seed method (in case running from NuGet Package Manager Console).
-           /* if (System.Diagnostics.Debugger.IsAttached == false)
-            {
-                System.Diagnostics.Debugger.Launch();
-            }*/
+            /* if (System.Diagnostics.Debugger.IsAttached == false)
+             {
+                 System.Diagnostics.Debugger.Launch();
+             }*/
 
             using (var migrationContainer = new Container())
             {
@@ -68,7 +68,6 @@ namespace Data.Migrations
 
                 AddWebServices(uow);
                 AddTestUser(uow);
-                UpdateTerminalClientVisibility(uow);
                 RenameActivity(uow);
                 RegisterTerminals(uow);
             }
@@ -131,7 +130,7 @@ namespace Data.Migrations
 
             if (uow.TerminalRegistrationRepository.GetAll().FirstOrDefault(x =>
                     string.Equals(ExtractTerminalAuthority(x.Endpoint), terminalEndpoint, StringComparison.OrdinalIgnoreCase) ||
-                    (ExtractPort(x.Endpoint) != null && ExtractPort(terminalEndpoint) !=null && string.Equals(ExtractPort(x.Endpoint), terminalPort, StringComparison.OrdinalIgnoreCase))
+                    (ExtractPort(x.Endpoint) != null && ExtractPort(terminalEndpoint) != null && string.Equals(ExtractPort(x.Endpoint), terminalPort, StringComparison.OrdinalIgnoreCase))
                 ) != null)
             {
                 return;
@@ -152,10 +151,10 @@ namespace Data.Migrations
             {
                 terminalAuthority = "http://" + terminalUrl.TrimStart('\\', '/');
             }
-            
+
             return terminalAuthority.TrimEnd('\\', '/');
         }
-        
+
         private void RenameActivity(UnitOfWork uow)
         {
             var activities = uow.ActivityTemplateRepository.GetAll();
@@ -165,16 +164,6 @@ namespace Data.Migrations
                 activityToRename.Name = "Make_A_Decision";
                 activityToRename.Label = "Make a Decision";
             }
-        }
-
-        private void UpdateTerminalClientVisibility(UnitOfWork uow)
-        {
-            var activities = uow.ActivityTemplateRepository.GetAll();
-            foreach (var activity in activities)
-            {
-                activity.ClientVisibility = activity.Name != "Monitor_DocuSign_Envelope_Activity";
-            }
-            uow.SaveChanges();
         }
 
         //Method to let us seed into memory as well
@@ -267,21 +256,21 @@ namespace Data.Migrations
         {
             var constants = typeof(TConstantsType).GetFields();
             List<TConstantDO> instructionsToAdd;
-            if (typeof (TConstantsType).BaseType == typeof (Enum))
+            if (typeof(TConstantsType).BaseType == typeof(Enum))
             {
                 var enumValues = Enum.GetValues(typeof(TConstantsType)).Cast<TConstantsType>().ToList();
 
                 instructionsToAdd = (from constant in enumValues
-                    let name = constant.ToString()
-                    let value = constant
-                    select creatorFunc(Convert.ToInt32(value), name)).ToList();
+                                     let name = constant.ToString()
+                                     let value = constant
+                                     select creatorFunc(Convert.ToInt32(value), name)).ToList();
             }
             else
             {
                 instructionsToAdd = (from constant in constants
-                                         let name = constant.Name
-                                         let value = constant.GetValue(null)
-                                         select creatorFunc((int)value, name)).ToList();
+                                     let name = constant.Name
+                                     let value = constant.GetValue(null)
+                                     select creatorFunc((int)value, name)).ToList();
             }
             //First, we find rows in the DB that don't exist in our seeding. We delete those.
             //Then, we find rows in our seeding that don't exist in the DB. We create those ones (or update the name).
@@ -346,7 +335,7 @@ namespace Data.Migrations
                               select creatorFunc((string)value, name)).ToList();
 
             var existingRows = new GenericRepository<AspNetRolesDO>(uow).GetAll().ToList();
-            
+
             foreach (var row in rolesToAdd)
             {
                 if (!existingRows.Select(r => r.Name).Contains(row.Name))
@@ -363,7 +352,7 @@ namespace Data.Migrations
         {
             CreateAdmin("alex@edelstein.org", "foobar", unitOfWork);
             CreateAdmin("d1984v@gmail.com", "dmitry123", unitOfWork);
-            CreateAdmin("y.gnusin@gmail.com", "123qwe", unitOfWork);    
+            CreateAdmin("y.gnusin@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("alexavrutin@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("bahadir.bb@gmail.com", "123456ab", unitOfWork);
             CreateAdmin("omer@fr8.co", "123456ab", unitOfWork);
@@ -446,21 +435,21 @@ namespace Data.Migrations
             user.TestAccount = true;
             return user;
         }
-        
+
         private void AddWebServices(IUnitOfWork uow)
         {
             var terminalToWs = new Dictionary<string, string>
-	        {
-	            {"terminalSalesforce", "Salesforce"},
-	            {"terminalFr8Core", "fr8 Core"},
-	            {"terminalDocuSign", "DocuSign"},
-	            {"terminalSlack", "Slack"},
-	            {"terminalTwilio", "Twilio"},
-	            {"terminalAzure", "Microsoft Azure"},
-	            {"terminalExcel", "Excel"},
+            {
+                {"terminalSalesforce", "Salesforce"},
+                {"terminalFr8Core", "fr8 Core"},
+                {"terminalDocuSign", "DocuSign"},
+                {"terminalSlack", "Slack"},
+                {"terminalTwilio", "Twilio"},
+                {"terminalAzure", "Microsoft Azure"},
+                {"terminalExcel", "Excel"},
                 {"terminalGoogle", "Google"},
                 {"terminalPapertrail", "Papertrail"}
-	        };
+            };
 
             var wsToId = new Dictionary<string, int>();
 
@@ -534,14 +523,14 @@ namespace Data.Migrations
                 return;
             }
             var webServiceDO = new WebServiceDO
-                               {
-                                   Name = name,
-                                   IconPath = iconPath
-                               };
+            {
+                Name = name,
+                IconPath = iconPath
+            };
 
             uow.WebServiceRepository.Add(webServiceDO);
         }
-        
+
         private void UpdateRootPlanNodeId(IUnitOfWork uow)
         {
             var anyRootIdFlag = uow.PlanRepository.GetNodesQueryUncached().Any(x => x.RootPlanNodeId != null);
@@ -614,7 +603,7 @@ namespace Data.Migrations
             {
                 fr8AdminProfile.Protected = true;
             }
-            
+
             //create 'System Administrator' Profile 
             var profile = uow.ProfileRepository.GetQuery().FirstOrDefault(x => x.Name == DefaultProfiles.SystemAdministrator);
             if (profile == null)
@@ -665,13 +654,13 @@ namespace Data.Migrations
 
             //default permissions for Users
             fr8AdminProfile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), true, false, true, fr8AdminProfile.Id, "Fr8 Administrator Permission Set", uow));
-            
+
             //default permissions for PageDefinitions
             fr8AdminProfile.PermissionSets.Add(AddPermissionSet(nameof(PageDefinitionDO), true, false, false, fr8AdminProfile.Id, "Fr8 Administrator Permission Set", uow));
 
             profile.PermissionSets.Clear();
             //default permissions for Plans and PlanNodes
-            profile.PermissionSets.Add(AddPermissionSet(nameof(PlanNodeDO), true, false, false, profile.Id,"System Administrator Permission Set", uow));
+            profile.PermissionSets.Add(AddPermissionSet(nameof(PlanNodeDO), true, false, false, profile.Id, "System Administrator Permission Set", uow));
 
             //default permissions for ContainerDO
             profile.PermissionSets.Add(AddPermissionSet(nameof(ContainerDO), true, false, false, profile.Id, "System Administrator Permission Set", uow));
@@ -694,13 +683,13 @@ namespace Data.Migrations
 
             var adminRole = uow.AspNetRolesRepository.GetQuery().FirstOrDefault(x => x.Name == Roles.Admin);
 
-            var userRoles = uow.AspNetUserRolesRepository.GetQuery().Where(x => x.RoleId == adminRole.Id).Select(l=>l.UserId).ToList();
-            var fr8Admins = uow.UserRepository.GetQuery().Where(x=> userRoles.Contains(x.Id)).ToList();
+            var userRoles = uow.AspNetUserRolesRepository.GetQuery().Where(x => x.RoleId == adminRole.Id).Select(l => l.UserId).ToList();
+            var fr8Admins = uow.UserRepository.GetQuery().Where(x => userRoles.Contains(x.Id)).ToList();
             foreach (var user in fr8Admins)
             {
                 user.ProfileId = fr8AdminProfile.Id;
             }
-            
+
             standardProfile.PermissionSets.Clear();
             //default permissions for Plans and PlanNodes
             standardProfile.PermissionSets.Add(AddPermissionSet(nameof(PlanNodeDO), false, false, false, standardProfile.Id, "Standard User Permission Set", uow));
@@ -716,36 +705,36 @@ namespace Data.Migrations
         }
 
         private static PermissionSetDO AddPermissionSet(
-            string objectType, 
-            bool isFullSet, 
-            bool hasManageInternalUsers, 
+            string objectType,
+            bool isFullSet,
+            bool hasManageInternalUsers,
             bool hasManageFr8Users,
-            Guid profileId, 
-            string name, 
+            Guid profileId,
+            string name,
             IUnitOfWork uow)
         {
             var permissionSet = uow.PermissionSetRepository.GetQuery().FirstOrDefault(x => x.Name == name && x.ObjectType == objectType) ?? new PermissionSetDO
-                                                                                                                                            {
-                                                                                                                                                Name = name,
-                                                                                                                                                ProfileId = profileId,
-                                                                                                                                                ObjectType = objectType,
-                                                                                                                                                CreateDate = DateTimeOffset.Now,
-                                                                                                                                                LastUpdated = DateTimeOffset.Now,
-                                                                                                                                                HasFullAccess = isFullSet
-                                                                                                                                            };
+            {
+                Name = name,
+                ProfileId = profileId,
+                ObjectType = objectType,
+                CreateDate = DateTimeOffset.Now,
+                LastUpdated = DateTimeOffset.Now,
+                HasFullAccess = isFullSet
+            };
 
             var repo = new GenericRepository<_PermissionTypeTemplate>(uow);
 
             permissionSet.Permissions.Clear();
-            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x=>x.Id == (int) PermissionType.CreateObject));
-            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.ReadObject));
-            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.EditObject));
-            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.DeleteObject));
-            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.RunObject));
+            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int)PermissionType.CreateObject));
+            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int)PermissionType.ReadObject));
+            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int)PermissionType.EditObject));
+            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int)PermissionType.DeleteObject));
+            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int)PermissionType.RunObject));
             if (isFullSet)
             {
-                permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.ViewAllObjects));
-                permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.ModifyAllObjects));
+                permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int)PermissionType.ViewAllObjects));
+                permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int)PermissionType.ModifyAllObjects));
                 permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int)PermissionType.EditPageDefinitions));
             }
 

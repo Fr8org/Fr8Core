@@ -8,6 +8,7 @@
 * [Crates](Fr8Crates.md)  
 * [Hubs](Fr8Hubs.md)  
 * [Plans](Plans.md)  
+* [Plan Nodes](PlanNodes.md)
 * [Plan Templates](Plans/PlanTemplates.md)
 * [Subplans](Subplans.md)  
 * [Containers](Containers.md)  
