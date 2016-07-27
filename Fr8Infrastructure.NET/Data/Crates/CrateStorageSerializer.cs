@@ -167,7 +167,6 @@ namespace Fr8.Infrastructure.Data.Crates
 
             crate.Label = proxy.Label;
             crate.SourceActivityId = proxy.SourceActivityId;
-            crate.Availability = proxy.Availability;
             return crate;
         }
 
@@ -191,7 +190,6 @@ namespace Fr8.Infrastructure.Data.Crates
                 Label = crate.Label,
                 ManifestId = crate.ManifestType.Id,
                 ManifestType = crate.ManifestType.Type,
-                Availability = crate.Availability,
                 SourceActivityId = crate.SourceActivityId
             };
 

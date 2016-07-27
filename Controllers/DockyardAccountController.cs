@@ -76,8 +76,9 @@ namespace HubWeb.Controllers
             this.Logout();
 
             var userId = User.Identity.GetUserId();
-            Task.Run(() => _planDirectory.Logout(userId));
-            
+            var result = Task.Run(() => _planDirectory.Logout(userId)).Result;
+            Logger.GetLogger().Debug($"PlanDirectory logout result is {result}");
+
             return RedirectToAction("Index", "DockyardAccount");
         }
 
@@ -288,7 +289,7 @@ Please register first.");
                 catch (Exception ex)
                 {
                     //Logger.GetLogger().Error("ForgotPassword failed.", ex);
-                    Logger.LogError($"ForgotPassword failed. Exception = {ex}");
+                    Logger.GetLogger().Error($"ForgotPassword failed. Exception = {ex}");
                     ModelState.AddModelError("", ex);
                 }
             }
@@ -341,7 +342,7 @@ Please register first.");
                 catch (Exception ex)
                 {
                     //Logger.GetLogger().Error("ResetPassword failed.", ex);
-                    Logger.LogError($"ResetPassword failed. Email = {viewModel.Email}; UserId = {viewModel.UserId} Exception = {ex}");
+                    Logger.GetLogger().Error($"ResetPassword failed. Email = {viewModel.Email}; UserId = {viewModel.UserId} Exception = {ex}");
                     ModelState.AddModelError("", ex);
                 }
             }
