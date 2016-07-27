@@ -4,7 +4,6 @@ using System.Web.Routing;
 using Segment;
 using StructureMap;
 using Data.Infrastructure.AutoMapper;
-using PlanDirectory.App_Start;
 using PlanDirectory.Infrastructure;
 
 namespace PlanDirectory
@@ -27,7 +26,6 @@ namespace PlanDirectory
             var segmentWriteKey = Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey");
             if (!string.IsNullOrEmpty(segmentWriteKey))
                 Analytics.Initialize(segmentWriteKey);
-
             await ObjectFactory.GetInstance<ISearchProvider>().Initialize(false);
         }
     }

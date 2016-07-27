@@ -532,6 +532,39 @@ namespace Data.Infrastructure
             }
         }
 
+        private IPageDefinitionRepository _pageDefinitionRepository;
+
+        public IPageDefinitionRepository PageDefinitionRepository => 
+            _pageDefinitionRepository ?? (_pageDefinitionRepository = new PageDefinitionRepository(this));
+
+        private TerminalRegistrationRepository _terminalRegistrationRepository;
+        public TerminalRegistrationRepository TerminalRegistrationRepository
+        {
+            get
+            {
+                return _terminalRegistrationRepository ?? (_terminalRegistrationRepository = new TerminalRegistrationRepository(this));
+            }
+        }
+
+        private IActivityCategoryRepository _activityCategoryRepository;
+        public IActivityCategoryRepository ActivityCategoryRepository
+        {
+            get
+            {
+                return _activityCategoryRepository ?? (_activityCategoryRepository = new ActivityCategoryRepository(this));
+            }
+        }
+
+        private IActivityCategorySetRepository _activityCategorySetRepository;
+        public IActivityCategorySetRepository ActivityCategorySetRepository
+        {
+            get
+            {
+                return _activityCategorySetRepository ?? (_activityCategorySetRepository = new ActivityCategorySetRepository(this));
+            }
+        }
+
+
         public void Save()
         {
             _context.SaveChanges();

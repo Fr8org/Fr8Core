@@ -11,7 +11,8 @@
                        rows="transition.conditions"
                        request-upstream="field.source.requestUpstream"
                        is-disabled="false"
-                       add-row-text="Add Condition">
+                       add-row-text="Add Condition"
+                       field="field">
         </query-builder>
 
         <div>
@@ -21,7 +22,7 @@
 
         <div ng-if="transition._dummySecondaryOperationDD" class="query-builder-add-button">
             <label class="control-label">{{transition._dummySecondaryOperationDD.label}}</label>
-            <drop-down-list-box current-action="currentAction" field="transition._dummySecondaryOperationDD" change="onTargetChange(transition)"></drop-down-list-box>
+            <drop-down-list-box is-disabled="isDisabled" current-action="currentAction" field="transition._dummySecondaryOperationDD" change="onTargetChange(transition)"></drop-down-list-box>
         </div>
         <hr class="transition-seperator"/>
     </div>

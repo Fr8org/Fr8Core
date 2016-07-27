@@ -24,9 +24,10 @@ namespace terminalDocuSignTests.Integration
     {
         // private const string UserAccountName = "y.gnusin@gmail.com";
         private const string UserAccountName = "integration_test_runner@fr8.company";
-        private const int MaxAwaitPeriod = 300000;
 
+        private const int MaxAwaitPeriod = 300000;
         private const int SingleAwaitPeriod = 10000;
+        private const int MadseCreationPeriod = 30000;
 
         private const string templateId = "b0c8eb61-ff16-410d-be0b-6a2feec57f4c"; // "392f63c3-cabb-4b21-b331-52dabf1c2993"; // "SendEnvelopeIntegrationTest" template
 
@@ -95,7 +96,7 @@ namespace terminalDocuSignTests.Integration
                 var loginInfo = docuSignManager.SetUp(authToken);
 
                 //let's wait 10 seconds to ensure that MADSE plan was created/activated by re-authentication
-                await Task.Delay(SingleAwaitPeriod);
+                await Task.Delay(MadseCreationPeriod);
 
                 //send envelope
                 SendDocuSignTestEnvelope(docuSignManager, loginInfo, authTokenDO);
@@ -186,15 +187,15 @@ namespace terminalDocuSignTests.Integration
 
         private  void SendDocuSignTestEnvelope(DocuSignManager docuSignManager, DocuSignApiConfiguration loginInfo, AuthorizationTokenDO authTokenDO)
         {
-            var rolesList = new List<FieldDTO>()
+            var rolesList = new List<KeyValueDTO>()
             {
-                new FieldDTO()
+                new KeyValueDTO()
                 {
                     Tags = "recipientId:1",
                     Key = "role name",
                     Value = ToEmail
                 },
-                new FieldDTO()
+                new KeyValueDTO()
                 {
                     Tags = "recipientId:1",
                     Key = "role email",
@@ -202,33 +203,33 @@ namespace terminalDocuSignTests.Integration
                 }
             };
 
-            var fieldsList = new List<FieldDTO>()
+            var fieldsList = new List<KeyValueDTO>()
             {
-                new FieldDTO()
+                new KeyValueDTO()
                 {
                     Tags = "recipientId:1",
                     Key="companyTabs",
                     Value="test"
                 },
-                new FieldDTO()
+                new KeyValueDTO()
                 {
                     Tags = "recipientId:1",
                     Key="textTabs",
                     Value="test"
                 },
-                new FieldDTO()
+                new KeyValueDTO()
                 {
                     Tags = "recipientId:1",
                     Key="noteTabs",
                     Value="test"
                 },
-                new FieldDTO()
+                new KeyValueDTO()
                 {
                     Tags = "recipientId:1",
                     Key="checkboxTabs",
                     Value="Radio 1"
                 },
-                new FieldDTO()
+                new KeyValueDTO()
                 {
                     Tags = "recipientId:1",
                     Key="listTabs",

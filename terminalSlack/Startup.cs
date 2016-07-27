@@ -27,6 +27,7 @@ namespace terminalSlack
         public void Configuration(IAppBuilder app, bool selfHost)
         {
             ConfigureProject(selfHost, TerminalSlackBootstrapper.ConfigureLive);
+            SwaggerConfig.Register(_configuration);
             WebApiConfig.Register(_configuration);
             app.UseWebApi(_configuration);
             StartHosting();

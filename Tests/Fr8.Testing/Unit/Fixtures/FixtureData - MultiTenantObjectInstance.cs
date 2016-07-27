@@ -28,9 +28,9 @@ namespace Fr8.Testing.Unit.Fixtures
                 {
                     new PayloadObjectDTO()
                     {
-                        PayloadObject = new List<FieldDTO>()
+                        PayloadObject = new List<KeyValueDTO>()
                         {
-                            new FieldDTO()
+                            new KeyValueDTO()
                             {
                                 Key = "Key1",
                                 Value = "Value1"

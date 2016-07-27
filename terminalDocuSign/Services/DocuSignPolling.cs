@@ -8,6 +8,7 @@ using terminalDocuSign.Services.New_Api;
 using terminalDocuSign.Infrastructure;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Interfaces;
@@ -20,7 +21,7 @@ namespace terminalDocuSign.Services
         private readonly IDocuSignManager _docuSignManager;
         private readonly IHubEventReporter _reporter;
 
-        public DocuSignPolling(IDocuSignManager docuSignManager,  IHubEventReporter reporter)
+        public DocuSignPolling(IDocuSignManager docuSignManager, IHubEventReporter reporter)
         {
             _docuSignManager = docuSignManager;
             _reporter = reporter;
@@ -32,18 +33,16 @@ namespace terminalDocuSign.Services
             hubCommunicator.ScheduleEvent(externalAccountId, pollingInterval);
         }
 
-        public async Task<bool> Poll(IHubCommunicator hubCommunicator, string externalAccountId, string pollingInterval)
+        public async Task<PollingDataDTO> Poll(PollingDataDTO pollingData)
         {
-            var authtoken = await hubCommunicator.GetAuthToken(externalAccountId);
-            if (authtoken == null) return false;
-            var config = _docuSignManager.SetUp(authtoken);
+            var config = _docuSignManager.SetUp(pollingData.AuthToken);
             EnvelopesApi api = new EnvelopesApi((Configuration)config.Configuration);
             List<DocuSignEnvelopeCM_v2> changed_envelopes = new List<DocuSignEnvelopeCM_v2>();
 
             // 1. Poll changes
 
             var changed_envelopes_info = api.ListStatusChanges(config.AccountId, new EnvelopesApi.ListStatusChangesOptions()
-            { fromDate = DateTime.UtcNow.AddMinutes(-Convert.ToInt32(pollingInterval)).ToString("o") });
+            { fromDate = DateTime.UtcNow.AddMinutes(-Convert.ToInt32(pollingData.PollingIntervalInMinutes)).ToString("o") });
             foreach (var envelope in changed_envelopes_info.Envelopes)
             {
                 var envelopeCM = new DocuSignEnvelopeCM_v2()
@@ -51,7 +50,7 @@ namespace terminalDocuSign.Services
                     EnvelopeId = envelope.EnvelopeId,
                     Status = envelope.Status,
                     StatusChangedDateTime = DateTime.Parse(envelope.StatusChangedDateTime),
-                    ExternalAccountId = JToken.Parse(authtoken.Token)["Email"].ToString(),
+                    ExternalAccountId = JToken.Parse(pollingData.AuthToken)["Email"].ToString(),
                 };
 
                 changed_envelopes.Add(envelopeCM);
@@ -69,9 +68,10 @@ namespace terminalDocuSign.Services
             // 5. Push envelopes to event controller
             await PushEnvelopesToTerminalEndpoint(envelopesToNotify);
 
-            return true;
+            pollingData.Result = true;
+            return pollingData;
         }
-        
+
         private async Task PushEnvelopesToTerminalEndpoint(IEnumerable<DocuSignEnvelopeCM_v2> envelopesToNotify)
         {
             foreach (var envelope in envelopesToNotify)
@@ -79,12 +79,11 @@ namespace terminalDocuSign.Services
                 var eventReportContent = new EventReportCM
                 {
                     EventNames = DocuSignEventParser.GetEventNames(envelope),
-                    ContainerDoId = "",
                     EventPayload = new CrateStorage(Crate.FromContent("DocuSign Connect Event", envelope)),
                     Manufacturer = "DocuSign",
                     ExternalAccountId = envelope.ExternalAccountId
                 };
-                
+
                 await _reporter.Broadcast(Crate.FromContent("Standard Event Report", eventReportContent));
             }
         }
@@ -132,18 +131,10 @@ namespace terminalDocuSign.Services
         private List<DocuSignEnvelopeCM_v2> FillChangedEnvelopesWithData(DocuSignApiConfiguration config, IEnumerable<DocuSignEnvelopeCM_v2> changed_envelopes)
         {
             var result = new List<DocuSignEnvelopeCM_v2>();
-            EnvelopesApi api = new EnvelopesApi(config.Configuration);
+
             foreach (var envelope in changed_envelopes)
             {
-                //Templates
-                var templates = api.ListTemplates(config.AccountId, envelope.EnvelopeId);
-                var recipients = api.ListRecipients(config.AccountId, envelope.EnvelopeId);
-
-                var filled_envelope = DocuSignEventParser.ParseAPIresponsesIntoCM(envelope, templates, recipients);
-
-                var envelopestatus = api.GetEnvelope(config.AccountId, envelope.EnvelopeId);
-                filled_envelope.CreateDate = DateTime.Parse(envelopestatus.CreatedDateTime);
-                filled_envelope.SentDate = DateTime.Parse(envelopestatus.SentDateTime);
+                var filled_envelope = _docuSignManager.GetEnvelope(config, envelope.EnvelopeId);
 
                 result.Add(filled_envelope);
             }

@@ -78,5 +78,5 @@ $(document).ready(function () {
 });
 
 $(window).resize(function () {
-    someResize();
+    resizePageComponents();
 })

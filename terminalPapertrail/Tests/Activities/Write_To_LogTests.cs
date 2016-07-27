@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -7,10 +6,8 @@ using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
-using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.StructureMap;
 using Fr8.TerminalBase.Infrastructure;
-using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using Moq;
 using NUnit.Framework;
@@ -19,7 +16,6 @@ using terminalPapertrail.Actions;
 using terminalPapertrail.Interfaces;
 using terminalPapertrail.Tests.Infrastructure;
 using Fr8.Testing.Unit;
-using Fr8.Testing.Unit.Fixtures;
 
 namespace terminalPapertrail.Tests.Actions
 {
@@ -190,29 +186,6 @@ namespace terminalPapertrail.Tests.Actions
             Mock<IPapertrailLogger> papertrailLogger = Mock.Get(ObjectFactory.GetInstance<IPapertrailLogger>());
             papertrailLogger.Verify(logger => logger.LogToPapertrail(It.IsAny<string>(), It.IsAny<int>(), "Test Log Message"), Times.Exactly(1));
             papertrailLogger.VerifyAll();
-        }
-
-        private PayloadDTO PreparePayloadDTOWithLogMessages()
-        {
-            var curPayload = FixtureData.PayloadDTO1();
-            var logMessages = new StandardLoggingCM()
-            {
-                Item = new List<LogItemDTO>
-                {
-                    new LogItemDTO
-                    {
-                        Data = "Test Log Message",
-                        IsLogged = false
-                    }
-                }
-            };
-
-            using (var crateStorage = new CrateManager().GetUpdatableStorage(curPayload))
-            {
-                crateStorage.Add(Crate.FromContent("Log Messages", logMessages));
-            }
-
-            return curPayload;
         }
     }
 }

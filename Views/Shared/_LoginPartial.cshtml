@@ -1,47 +1,50 @@
 ﻿@using Microsoft.AspNet.Identity
 
 <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
-	<span class="sr-only">Toggle navigation</span>
-	<span class="icon-bar"></span>
-	<span class="icon-bar"></span>
-	<span class="icon-bar"></span>
+    <span class="sr-only">Toggle navigation</span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
 </button>
 
 @if (Request.IsAuthenticated)
 {
     @*using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))*@
-    using (Html.BeginForm("Index", "Home", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
-    {
-        @Html.AntiForgeryToken()
-  <ul class="pull-right welcomemsg smalltext">
-         <li data-section="2">@Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Manage", "DockyardAccount", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
-  </ul>			 
+using (Html.BeginForm("Index", "Home", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+{
+    @Html.AntiForgeryToken()
+    <ul class="pull-right welcomemsg smalltext">
+        <li data-section="2">@Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Manage", "DockyardAccount", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
+    </ul>
 
-		<nav class="navbar-collapse collapse bs-navbar-collapse mmenu">
-   
+    <nav class="navbar-collapse collapse bs-navbar-collapse mmenu">
 
-            <ul class="nav navbar-nav navbar-right">
-                <li>@*@Html.ActionLink("My Account", "MyAccount", "DockYardAccount", new {id="btnMyAccount"})*@
-                  @Html.ActionLink("My Account", "MyAccount", new { controller = "User"},new {id = "btnMyAccount" })
-                </li>
-                @if (User.IsInRole("Admin")){ 
-                <li>@Html.ActionLink("Dashboard", "Dashboard", new { controller = "Admin" }, new {id="btnDashBoard"})</li>
-                }
-               else if (User.IsInRole("Booker")){ 
-                <li>@Html.ActionLink("Dashboard", "Dashboard", new { controller = "Booker"},new {id="btnDashBoard"})</li>
-                }
-                <li>@Html.ActionLink("Log off", "LogOff", "DockyardAccount", routeValues: null, htmlAttributes: new { id = "logoffLink" })</li>
-            </ul>
-		</nav>
-	}
+
+        <ul class="nav navbar-nav navbar-right">
+            <li>
+                @*@Html.ActionLink("My Account", "MyAccount", "DockYardAccount", new {id="btnMyAccount"})*@
+            @Html.ActionLink("My Account", "MyAccount", new { controller = "User" }, new { id = "btnMyAccount" })
+        </li>
+        @if (User.IsInRole("Admin"))
+        {
+            <li>@Html.ActionLink("Dashboard", "Dashboard", new { controller = "Admin" }, new { id = "btnDashBoard" })</li>
+        }
+        else if (User.IsInRole("Booker"))
+        {
+            <li>@Html.ActionLink("Dashboard", "Dashboard", new { controller = "Booker" }, new { id = "btnDashBoard" })</li>
+        }
+        <li>@Html.ActionLink("Log off", "LogOff", "DockyardAccount", routeValues: null, htmlAttributes: new { id = "logoffLink" })</li>
+    </ul>
+</nav>
+    }
 }
 else
 {
-	<nav class="navbar-collapse collapse bs-navbar-collapse mmenu">
-		<ul class="nav navbar-nav navbar-right">
-			<!--@*<li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>*@-->
+    <nav class="navbar-collapse collapse bs-navbar-collapse mmenu">
+        <ul class="nav navbar-nav navbar-right">
+            <!--@*<li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>*@-->
             <li>@Html.ActionLink("Dashboard", "Dashboard", "Admin", routeValues: null, htmlAttributes: new { id = "dashboardLink" })</li>
-			<li>@Html.ActionLink("Log in", "Index", "DockyardAccount", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>			
-		</ul>
-	</nav>
+            <li>@Html.ActionLink("Log in", "Index", "DockyardAccount", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+        </ul>
+    </nav>
 }

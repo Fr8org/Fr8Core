@@ -10,7 +10,7 @@ namespace terminalSendGridTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "SendEmailViaSendGrid_TEST",
+                Name = "Send_Email_Via_SendGrid_TEST",
                 Version = "1"
             };
         }

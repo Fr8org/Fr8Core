@@ -16,7 +16,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System.Web.Http.Dependencies;
-using StructureMap;
 
 namespace HubWeb.DependencyResolution
 {

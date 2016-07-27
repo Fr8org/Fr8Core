@@ -7,6 +7,10 @@ module dockyard.tests.unit.directives.controls {
 
     var compileTemplate = (localScope, rawTemplate, $compile) => {
         var template = angular.element(rawTemplate);
+        var pcaCtrl = {
+            registerControl: () => { }
+        };
+        template.data('$paneConfigureActionController', pcaCtrl);
         var elem = $compile(template)(localScope);
         localScope.$digest();
         return elem;

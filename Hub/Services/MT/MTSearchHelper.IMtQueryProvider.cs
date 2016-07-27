@@ -12,6 +12,7 @@ namespace Hub.Services
             Type Type { get; }
 
             List<object> Query(IUnitOfWork uow, string accountId, List<FilterConditionDTO> conditions);
+            void Delete(IUnitOfWork uow, string accountId, List<FilterConditionDTO> conditions);
         }
 	}
 }

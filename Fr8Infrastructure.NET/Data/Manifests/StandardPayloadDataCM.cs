@@ -24,15 +24,15 @@ namespace Fr8.Infrastructure.Data.Manifests
             ObjectType = "Unspecified";
         }
 
-        public StandardPayloadDataCM(IEnumerable<FieldDTO> fields)
+        public StandardPayloadDataCM(IEnumerable<KeyValueDTO> fields)
             : this()
         {
             PayloadObjects = new List<PayloadObjectDTO>();
             PayloadObjects.Add(new PayloadObjectDTO(fields));
         }
 
-        public StandardPayloadDataCM(params FieldDTO[] fields)
-            :this((IEnumerable<FieldDTO>)fields)
+        public StandardPayloadDataCM(params KeyValueDTO[] fields)
+            :this((IEnumerable<KeyValueDTO>)fields)
         {
         }
 
@@ -103,7 +103,7 @@ namespace Fr8.Infrastructure.Data.Manifests
             return false;
         }
 
-        public IEnumerable<FieldDTO> AllValues()
+        public IEnumerable<KeyValueDTO> AllValues()
         {
             if (PayloadObjects == null)
             {
@@ -126,20 +126,20 @@ namespace Fr8.Infrastructure.Data.Manifests
 
     public class PayloadObjectDTO
     {
-        public List<FieldDTO> PayloadObject;
+        public List<KeyValueDTO> PayloadObject;
 
 
         public PayloadObjectDTO()
         {
-            PayloadObject = new List<FieldDTO>();
+            PayloadObject = new List<KeyValueDTO>();
         }
 
-        public PayloadObjectDTO(IEnumerable<FieldDTO> fieldData)
+        public PayloadObjectDTO(IEnumerable<KeyValueDTO> fieldData)
         {
-            PayloadObject = new List<FieldDTO>(fieldData);
+            PayloadObject = new List<KeyValueDTO>(fieldData);
         }
 
-        public PayloadObjectDTO(params FieldDTO[] fieldData) : this(fieldData as IEnumerable<FieldDTO>)
+        public PayloadObjectDTO(params KeyValueDTO[] fieldData) : this(fieldData as IEnumerable<KeyValueDTO>)
         {
         }
 

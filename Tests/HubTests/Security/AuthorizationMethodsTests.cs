@@ -91,7 +91,6 @@ namespace HubTests.Security
                 };
                 uow.AuthorizationTokenRepository.Add(tokenDO);
 
-                tokenDO.ExpiresAt = DateTime.UtcNow.AddYears(100);
                 tokenDO.Token = Token;
                 uow.SaveChanges();
 

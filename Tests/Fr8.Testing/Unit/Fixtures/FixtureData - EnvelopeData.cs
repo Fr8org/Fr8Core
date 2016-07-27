@@ -7,17 +7,17 @@ namespace Fr8.Testing.Unit.Fixtures
     {
         public static string TestTeamplateId = "58521204-58AF-4E65-8A77-4F4B51FEF626";
 
-        public static List<FieldDTO> ListFieldMappings
+        public static List<KeyValueDTO> ListFieldMappings
         {
             get
             {
-                return  new List<FieldDTO>(){
-                    new FieldDTO()
+                return  new List<KeyValueDTO>(){
+                    new KeyValueDTO()
                     {
                         Key = "Doctor",
                         Value = "[Customer].physician_string"
                     },
-                    new FieldDTO()
+                    new KeyValueDTO()
                     {
                         Key="Condition",
                         Value = "[Customer].medical_condition"
@@ -25,17 +25,17 @@ namespace Fr8.Testing.Unit.Fixtures
                 };
             }
         }
-        public static List<FieldDTO> ListFieldMappings2
+        public static List<KeyValueDTO> ListFieldMappings2
         {
             get
             {
-                return  new List<FieldDTO>(){
-                    new FieldDTO()
+                return  new List<KeyValueDTO>(){
+                    new KeyValueDTO()
                     {
                         Key = "Physician",
                         Value = "[Customer].physician_string"
                     },
-                    new FieldDTO()
+                    new KeyValueDTO()
                     {
                         Key="Condition",
                         Value = "[Customer].medical_condition"
@@ -59,16 +59,16 @@ namespace Fr8.Testing.Unit.Fixtures
             }
         }
 
-        public static List<FieldDTO> ListFieldMappings3()
+        public static List<KeyValueDTO> ListFieldMappings3()
         {
 
-            return new List<FieldDTO>(){
-                    new FieldDTO()
+            return new List<KeyValueDTO>(){
+                    new KeyValueDTO()
                     {
                         Key = "Physician",
                         Value = "Test1"
                     },
-                    new FieldDTO()
+                    new KeyValueDTO()
                     {
                         Key="Condition",
                         Value = "Test2"
@@ -76,31 +76,31 @@ namespace Fr8.Testing.Unit.Fixtures
                 };
         }
 
-        public static List<FieldDTO> ListFieldMappings4()
+        public static List<KeyValueDTO> ListFieldMappings4()
         {
 
-            return new List<FieldDTO>(){
-                    new FieldDTO()
+            return new List<KeyValueDTO>(){
+                    new KeyValueDTO()
                     {
                         Key = "ID",
                         Value = "10"
                     },
-                    new FieldDTO()
+                    new KeyValueDTO()
                     {
                         Key="ID",
                         Value = "20"
                     },
-                      new FieldDTO()
+                      new KeyValueDTO()
                     {
                         Key="ID",
                         Value = "30"
                     },
-                       new FieldDTO()
+                       new KeyValueDTO()
                     {
                         Key="ID",
                         Value = "30"
                     },
-                       new FieldDTO()
+                       new KeyValueDTO()
                     {
                         Key="ID",
                         Value = "40"
@@ -109,36 +109,36 @@ namespace Fr8.Testing.Unit.Fixtures
                 };
         }
 
-        public static List<FieldDTO> ListFieldMappings5()
+        public static List<KeyValueDTO> ListFieldMappings5()
         {
 
-            return new List<FieldDTO>(){
-                    new FieldDTO()
+            return new List<KeyValueDTO>(){
+                    new KeyValueDTO()
                     {
                         Key = "ID",
                         Value = "10"
                     },
-                    new FieldDTO()
+                    new KeyValueDTO()
                     {
                         Key="ID",
                         Value = "20"
                     },
-                      new FieldDTO()
+                      new KeyValueDTO()
                     {
                         Key="ID",
                         Value = "30"
                     },
-                       new FieldDTO()
+                       new KeyValueDTO()
                     {
                         Key="ID",
                         Value = "30"
                     },
-                       new FieldDTO()
+                       new KeyValueDTO()
                     {
                         Key="ID",
                         Value = "40"
                     },
-                       new FieldDTO()
+                       new KeyValueDTO()
                     {
                         Key="ID",
                         Value = "50"

@@ -198,6 +198,9 @@
         
         private setFieldValidationErrors(field: model.ControlDefinitionDTO, validationResults: model.ValidationResults) {
             for (var j = 0; j < validationResults.validationErrors.length; j++) {
+                if (validationResults.validationErrors[j].controlNames == null) {
+                    continue;
+                }
                 for (var k = 0; k < validationResults.validationErrors[j].controlNames.length; k++) {
                     if (validationResults.validationErrors[j].controlNames[k] === field.name) {
                         field.errorMessage = validationResults.validationErrors[j].errorMessage;

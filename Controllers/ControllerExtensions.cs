@@ -1,7 +1,6 @@
 ﻿using System.Web.Mvc;
 using StructureMap;
 using Data.Infrastructure.StructureMap;
-using Hub.Security;
 
 namespace HubWeb.Controllers
 {

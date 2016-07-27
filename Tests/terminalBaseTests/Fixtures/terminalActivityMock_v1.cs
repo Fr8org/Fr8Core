@@ -9,7 +9,7 @@ using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalBaseTests.Actions
 {
-    public class terminalActivityMock_v1 : BaseTerminalActivity
+    public class terminalActivityMock_v1 : ExplicitTerminalActivity
     {
         public override Task Initialize()
         {
@@ -64,18 +64,12 @@ namespace terminalBaseTests.Actions
         private void AddCrateMethodInvoked(string methodName)
         {
             Storage.Clear();
-            Storage.Add(CreateControlsCrate(methodName));
-        }
 
-        private Crate CreateControlsCrate(string fieldName)
-        {
-            var fieldFilterPane = new TextBox
+            AddControls(new TextBox
             {
-                Label = fieldName,
+                Label = methodName,
                 Name = "InvokedMethod"
-            };
-
-            return PackControlsCrate(fieldFilterPane);
+            });
         }
 
         public terminalActivityMock_v1(ICrateManager crateManager) 

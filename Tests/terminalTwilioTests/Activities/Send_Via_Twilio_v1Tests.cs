@@ -48,11 +48,11 @@ namespace terminalTwilioTests.Activities
             /*
             var activity = FixtureData.ConfigureTwilioActivity();
             
-            var baseTerminalAction = new Mock<BaseTerminalActivity>();
+            var baseTerminalAction = new Mock<ExplicitTerminalActivity>();
             baseTerminalAction
                 .Setup(c => c.GetDesignTimeFields(CrateDirection.Upstream, AvailabilityType.NotSet))
                 .Returns(Task.FromResult(FixtureData.TestFields()));
-            ObjectFactory.Configure(cfg => cfg.For<BaseTerminalActivity>().Use(baseTerminalAction.Object));
+            ObjectFactory.Configure(cfg => cfg.For<ExplicitTerminalActivity>().Use(baseTerminalAction.Object));
             */
             var hubCommunicator = new Mock<IHubCommunicator>();
            /* hubCommunicator.Setup(hc => hc.GetDesignTimeFieldsByDirection(

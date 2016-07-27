@@ -9,11 +9,11 @@ namespace Fr8.Testing.Unit.Fixtures
     {
         public static Crate TestDocuSignEventCrate()
         {
-            var crateFields = new List<FieldDTO>()
+            var crateFields = new List<KeyValueDTO>()
                     {
-                        new FieldDTO () { Key = "EnvelopeId", Value = "36" },
-                        new FieldDTO() { Key = "ExternalEventType", Value = "1" },
-                        new FieldDTO() {Key = "RecipientId", Value = "TestRecipientId" }
+                        new KeyValueDTO () { Key = "EnvelopeId", Value = "36" },
+                        new KeyValueDTO() { Key = "ExternalEventType", Value = "1" },
+                        new KeyValueDTO() {Key = "RecipientId", Value = "TestRecipientId" }
                     };
             
             return Crate.FromJson("Event Data", JToken.FromObject(crateFields));

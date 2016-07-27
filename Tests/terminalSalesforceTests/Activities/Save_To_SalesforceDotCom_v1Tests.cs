@@ -48,13 +48,13 @@ namespace terminalSalesforceTests.Actions
             ObjectFactory.Container.Inject(typeof(IHubCommunicator), hubCommunicatorMock.Object);
 
             Mock<ISalesforceManager> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceManager>());
-            FieldDTO testField = new FieldDTO("Account", "TestAccount");
+            FieldDTO testField = new FieldDTO("Account") {Label = "TestAccount"};
             salesforceIntegrationMock.Setup(
                 s => s.GetProperties(SalesforceObjectType.Account, It.IsAny<AuthorizationToken>(), false, null))
                 .Returns(() => Task.FromResult(new List<FieldDTO> { testField }));
 
             salesforceIntegrationMock.Setup(
-                s => s.Query(SalesforceObjectType.Account, It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationToken>()))
+                s => s.Query(SalesforceObjectType.Account, It.IsAny<IEnumerable<FieldDTO>>(), It.IsAny<string>(), It.IsAny<AuthorizationToken>()))
                 .Returns(() => Task.FromResult(new StandardTableDataCM()));
 
             _saveToSFDotCom_v1 = New<Save_To_SalesforceDotCom_v1>();

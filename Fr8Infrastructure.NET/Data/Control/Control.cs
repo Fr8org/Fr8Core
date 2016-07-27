@@ -396,6 +396,12 @@ namespace Fr8.Infrastructure.Data.Control
 
     public class FieldList : ControlDefinitionDTO
     {
+        [JsonProperty("fieldLabel")]
+        public string FieldLabel { get; set; }
+
+        [JsonProperty("valueLabel")]
+        public string ValueLabel { get; set; }
+
         public FieldList()
         {
             Type = ControlTypes.FieldList;
@@ -446,6 +452,9 @@ namespace Fr8.Infrastructure.Data.Control
         [JsonProperty("valueSource")]
         public string ValueSource;
 
+        [JsonProperty("groupLabelText")]
+        public string GroupLabelText;
+
         [JsonIgnore]
         public FieldDTO UpstreamField => SelectedItem;
 
@@ -454,10 +463,11 @@ namespace Fr8.Infrastructure.Data.Control
             Type = ControlTypes.TextSource;
         }
 
-        public TextSource(string initialLabel, string upstreamSourceLabel, string name) : this()
+        public TextSource(string initialLabel, string upstreamSourceLabel, string name, string groupLabelText = "") : this()
         {
             InitialLabel = initialLabel;
             Name = name;
+            GroupLabelText = groupLabelText;
             Source = new FieldSourceDTO
             {
                 Label = upstreamSourceLabel,

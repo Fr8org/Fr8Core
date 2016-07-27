@@ -10,7 +10,7 @@ module dockyard.services {
         getAll: () => Array<interfaces.IUserDTO>,
         getCurrentUser: () => interfaces.IUserDTO,
         getProfiles: () => Array<interfaces.IProfileDTO>,
-        updateUserProfile: (data: { userId: string, profileId: string, userClass: string }) => any,
+        updateUserProfile: (data: interfaces.IUserDTO) => any,
         update: (data: { oldPassword: string, newPassword: string, confirmPassword: string }) => any;
     }
 
@@ -46,12 +46,7 @@ module dockyard.services {
                 updateUserProfile: {
                     method: 'POST',
                     isArray: false,
-                    url: '/api/users/updateUserProfile/',
-                    params: {
-                        userId: '@userId',
-                        profileId: '@profileId',
-                        userClass: '@userClass'
-                    }
+                    url: '/api/users/updateUserProfile/'
                 }
             })
     ]);

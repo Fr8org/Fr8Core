@@ -262,6 +262,7 @@
         valueSource: string;
         textValue: string;
         isCollapsed: boolean;
+        groupLabelText : string;
     }
 
     export class UpstreamFieldChooser extends DropDownList {

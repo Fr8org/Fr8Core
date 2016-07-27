@@ -11,6 +11,7 @@ namespace Fr8.Infrastructure.Data.Constants
         PAYLOAD_DATA_MISSING,
         PAYLOAD_DATA_INVALID,
         AUTH_TOKEN_NOT_PROVIDED_OR_INVALID,
-        DESIGN_TIME_DATA_MISSING
+        DESIGN_TIME_DATA_MISSING,
+        DESIGN_TIME_DATA_INVALID
     }
 }

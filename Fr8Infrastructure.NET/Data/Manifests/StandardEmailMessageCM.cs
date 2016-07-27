@@ -16,18 +16,17 @@ namespace Fr8.Infrastructure.Data.Manifests
         }
 
         public string MessageID { get; set; }
-
-        public string References { get; set; }
+        
         public string Subject { get; set; }
 
         public string HtmlText { get; set; }
 
         public string PlainText { get; set; }
 
-        public DateTime DateReceived { get; set; }
-
-        public string EmailStatus { get; set; }
-
+        public string DateReceived { get; set; }
+        
         public string EmailFromName { get; set; }
+
+        public string EmailFrom { get; set; }
     }
 }

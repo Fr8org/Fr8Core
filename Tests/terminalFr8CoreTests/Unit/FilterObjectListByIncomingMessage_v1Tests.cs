@@ -58,7 +58,7 @@ namespace terminalTests.Integration
         [Test]
         public async Task Configure_AfterInitialConfiguration_DataSourceSelectorContainsTableDataGenerators()
         {
-            var activity = New<FilterObjectListByIncomingMessage_v1>();
+            var activity = New<Filter_Object_List_By_Incoming_Message_v1>();
             var activityContext = new ActivityContext
             {
                 HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
@@ -71,14 +71,14 @@ namespace terminalTests.Integration
             };
             //Initial config
             await activity.Configure(activityContext);
-            Assert.AreEqual(1, activityContext.ActivityPayload.CrateStorage.GetReadonlyActivityUi<FilterObjectListByIncomingMessage_v1.ActivityUi>().DataSourceSelector.ListItems.Count, "Data source list is not properly populated");
+            Assert.AreEqual(1, activityContext.ActivityPayload.CrateStorage.GetReadonlyActivityUi<Filter_Object_List_By_Incoming_Message_v1.ActivityUi>().DataSourceSelector.ListItems.Count, "Data source list is not properly populated");
         }
 
         [Test]
         public async Task Configure_WhenDataSourceIsChanged_RemoveAndReconfigureChildActivity()
         {
             var authToken = new AuthorizationToken { Token = "1" };
-            var activity = New<FilterObjectListByIncomingMessage_v1>();
+            var activity = New<Filter_Object_List_By_Incoming_Message_v1>();
             var activityContext = new ActivityContext
             {
                 HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
@@ -91,7 +91,7 @@ namespace terminalTests.Integration
             };
             //Initial config
             await activity.Configure(activityContext);
-            activityContext.ActivityPayload.CrateStorage.UpdateControls<FilterObjectListByIncomingMessage_v1.ActivityUi>(x => x.DataSourceSelector.Value = ActivityTemplates[0].Id.ToString());
+            activityContext.ActivityPayload.CrateStorage.UpdateControls<Filter_Object_List_By_Incoming_Message_v1.ActivityUi>(x => x.DataSourceSelector.Value = ActivityTemplates[0].Id.ToString());
             await activity.Configure(activityContext);
             var hubMock = ObjectFactory.GetInstance<Mock<IHubCommunicator>>();
 
@@ -104,7 +104,7 @@ namespace terminalTests.Integration
         public async Task Run_WhenNoDataIsCahced_RunsChildActivitiy()
         {
             var authToken = new AuthorizationToken { Token = "1" };
-            var activity = New<FilterObjectListByIncomingMessage_v1>();
+            var activity = New<Filter_Object_List_By_Incoming_Message_v1>();
             var activityContext = new ActivityContext
             {
                 HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
@@ -118,7 +118,7 @@ namespace terminalTests.Integration
             var containerExecutionContext = HealthMonitor_FixtureData.ExecutionContextWithOnlyOperationalState();
             //Initial and followup config
             await activity.Configure(activityContext);
-            activityContext.ActivityPayload.CrateStorage.UpdateControls<FilterObjectListByIncomingMessage_v1.ActivityUi>(x => x.DataSourceSelector.Value = ActivityTemplates[0].Id.ToString());
+            activityContext.ActivityPayload.CrateStorage.UpdateControls<Filter_Object_List_By_Incoming_Message_v1.ActivityUi>(x => x.DataSourceSelector.Value = ActivityTemplates[0].Id.ToString());
             await activity.Configure(activityContext);
             
             // var childActivity = new ActivityPayload
@@ -138,9 +138,9 @@ namespace terminalTests.Integration
         {
             //Setup
             var containerExecutionContext = HealthMonitor_FixtureData.ExecutionContextWithOnlyOperationalState();
-            containerExecutionContext.PayloadStorage.Add(Crate<FieldDescriptionsCM>.FromContent("Message is here", new FieldDescriptionsCM(new FieldDTO("Message", "This message should be checked for keywords"))));
+            containerExecutionContext.PayloadStorage.Add(Crate<KeyValueListCM>.FromContent("Message is here", new KeyValueListCM(new KeyValueDTO("Message", "This message should be checked for keywords"))));
             var authToken = new AuthorizationToken { Token = "1" };
-            var activity = New<FilterObjectListByIncomingMessage_v1>();
+            var activity = New<Filter_Object_List_By_Incoming_Message_v1>();
             var activityContext = new ActivityContext
             {
                 HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
@@ -153,28 +153,28 @@ namespace terminalTests.Integration
             };
             //Initial and followup config
             await activity.Configure(activityContext);
-            activityContext.ActivityPayload.CrateStorage.UpdateControls<FilterObjectListByIncomingMessage_v1.ActivityUi>(x =>
+            activityContext.ActivityPayload.CrateStorage.UpdateControls<Filter_Object_List_By_Incoming_Message_v1.ActivityUi>(x =>
             {
                 x.DataSourceSelector.Value = ActivityTemplates[0].Id.ToString();
                 x.IncomingTextSelector.selectedKey = "Message";
             });
             await activity.Configure(activityContext);
             var crateStorage = activityContext.ActivityPayload.CrateStorage;
-            var configurationValues = crateStorage.FirstCrate<FieldDescriptionsCM>(x => x.Label == "Configuration Values");
-                configurationValues.Content.Fields.First(x => x.Key == "Cache Created At").Value = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
+            var configurationValues = crateStorage.FirstCrate<KeyValueListCM>(x => x.Label == "Configuration Values");
+                configurationValues.Content.Values.First(x => x.Key == "Cache Created At").Value = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
             crateStorage.Add(Crate<StandardTableDataCM>.FromContent("Cached table",
                     new StandardTableDataCM
                     {
                         FirstRowHeaders = true,
                         Table = new List<TableRowDTO>
                         {
-                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new FieldDTO("Header", "Header") } } },
+                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new KeyValueDTO("Header", "Header") } } },
                             //Will pass filter
-                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new FieldDTO("Header", "message") } } },
-                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO {  Cell = new FieldDTO("Header", "checked") } } },
+                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new KeyValueDTO("Header", "message") } } },
+                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO {  Cell = new KeyValueDTO("Header", "checked") } } },
                             //Won't pass filter
-                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new FieldDTO("Header", "nothing") } } },
-                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new FieldDTO("Header", "anything") } } }
+                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new KeyValueDTO("Header", "nothing") } } },
+                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new KeyValueDTO("Header", "anything") } } }
                         }
                     }));
             await activity.Configure(activityContext);

@@ -7,8 +7,8 @@ namespace Data.Repositories.MultiTenant.Queryable
     public abstract class MtQueryable<T> : IMtQueryable<T>
         where T: Manifest
     {
-        public IMtQueryable<T> Previous { get; private set; }
-        public IMtQueryExecutor<T> Executor { get; private set; }
+        public IMtQueryable<T> Previous { get; }
+        public IMtQueryExecutor<T> Executor { get; }
 
         protected MtQueryable(IMtQueryable<T> prev)
         {

@@ -18,6 +18,7 @@ namespace terminalQuickBooks.Actions
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("8d1d8407-488f-4494-a724-746c1ae4e901"),
             Version = "1",
             Name = "Create_Journal_Entry",
             Label = "Create Journal Entry",
@@ -25,7 +26,12 @@ namespace terminalQuickBooks.Actions
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO
+            WebService = TerminalData.WebServiceDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

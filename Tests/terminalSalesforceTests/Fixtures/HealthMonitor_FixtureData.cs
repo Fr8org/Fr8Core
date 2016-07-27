@@ -10,6 +10,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.TerminalBase.Interfaces;
 using Moq;
+using Newtonsoft.Json;
 
 namespace terminalSalesforceTests.Fixtures
 {
@@ -27,8 +28,9 @@ namespace terminalSalesforceTests.Fixtures
 
             return new AuthorizationTokenDTO()
             {
-                Token = auth.AccessToken,
-                AdditionalAttributes = string.Format("refresh_token=;instance_url={0};api_version={1}", auth.InstanceUrl, auth.ApiVersion)
+                ExternalAccountId = "611998545425677937",
+                Token = JsonConvert.SerializeObject(new { AccessToken = auth.AccessToken }),
+                AdditionalAttributes = string.Format("instance_url={0};api_version={1}", auth.InstanceUrl, auth.ApiVersion)
             };                                                                                                                            
         }
         public static void ConfigureHubToReturnEmptyPayload()
@@ -54,11 +56,11 @@ namespace terminalSalesforceTests.Fixtures
 
                 var tokenDO = new AuthorizationTokenDO()
                 {
+                    ExternalAccountId = tokenDTO.ExternalAccountId,
                     Token = tokenDTO.Token,
                     TerminalID = terminalId,
                     UserID = userDO.Id,
                     AdditionalAttributes = tokenDTO.AdditionalAttributes,
-                    ExpiresAt = DateTime.Today.AddMonths(1)
                 };
 
                 uow.AuthorizationTokenRepository.Add(tokenDO);

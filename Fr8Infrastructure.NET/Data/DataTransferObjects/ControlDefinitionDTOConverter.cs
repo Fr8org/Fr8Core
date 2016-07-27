@@ -20,8 +20,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            Type controlType;
-            var curjObject = JObject.ReadFrom(reader);
+            var curjObject = JToken.ReadFrom(reader);
 
             if (!curjObject.HasValues)
             {
@@ -29,10 +28,10 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
             }
 
             // Create a map of all properties in the field object
-            string fieldTypeName = GetControlTypeName(curjObject);
+            var fieldTypeName = GetControlTypeName(curjObject);
 
             // Determine field .Net type depending on type value 
-            controlType = GetFieldType(fieldTypeName);
+            var controlType = GetFieldType(fieldTypeName);
 
             // Create type
             if (controlType == null)
@@ -49,12 +48,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         private string GetControlTypeName(JToken curjObject)
         {
             var typeProperty = curjObject.Children<JProperty>().FirstOrDefault(p => p.Name == "type");
-            if (typeProperty == null)
-            {
-                return null;
-            }
-
-            return typeProperty.Value.Value<string>();
+            return typeProperty?.Value.Value<string>();
 
         }
 
@@ -62,7 +56,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         {
             try
             {
-                return Type.GetType(string.Format("Fr8.Infrastructure.Data.Control.{0}, Fr8Infrastructure.NET", fieldTypeName));
+                return Type.GetType($"Fr8.Infrastructure.Data.Control.{fieldTypeName}, Fr8Infrastructure.NET");
             }
             catch
             {
@@ -81,8 +75,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            Type controlType;
-            var curjObject = JObject.ReadFrom(reader);
+            var curjObject = JToken.ReadFrom(reader);
 
             if (!curjObject.HasValues)
             {
@@ -90,17 +83,11 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
             }
 
             // Create a map of all properties in the field object
-            string fieldTypeName = GetControlTypeName(curjObject);
+            var fieldTypeName = GetControlTypeName(curjObject);
 
             // Determine field .Net type depending on type value 
-            controlType = GetFieldType(fieldTypeName);
-
+            var controlType = GetFieldType(fieldTypeName) ?? typeof(Generic);
             // Create type
-            if (controlType == null)
-            {
-                controlType = typeof(Generic);
-            }
-
             var control = Activator.CreateInstance(controlType) ?? new Generic();
             serializer.Populate(curjObject.CreateReader(), control);
 
@@ -110,12 +97,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         private string GetControlTypeName(JToken curjObject)
         {
             var typeProperty = curjObject.Children<JProperty>().FirstOrDefault(p => p.Name == "type");
-            if (typeProperty == null)
-            {
-                return null;
-            }
-
-            return typeProperty.Value.Value<string>();
+            return typeProperty?.Value.Value<string>();
 
         }
 
@@ -130,29 +112,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
                 return null;
             }
         }
-
-        private Dictionary<string, string> createPropertyMap(JsonReader reader)
-        {
-            Dictionary<string, string> map = new Dictionary<string, string>();
-            string propName = String.Empty, propValue = String.Empty;
-
-            while (reader.Read())
-            {
-                if (reader.TokenType == JsonToken.PropertyName)
-                {
-                    propName = reader.Value.ToString().ToLower();
-                    // Find field value
-                    if (reader.Read())
-                    {
-                        propValue = reader.Value.ToString().ToLower();
-                        map.Add(propName, propValue);
-                    }
-                }
-            }
-            return map;
-        }
     }
-
 
     public class StandardConfigurationControlsSerializer : IManifestSerializer
     {

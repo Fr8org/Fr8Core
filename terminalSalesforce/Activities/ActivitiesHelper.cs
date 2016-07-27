@@ -28,14 +28,13 @@ namespace terminalSalesforce.Actions
                     new FieldDTO("Document") { Availability = AvailabilityType.Configuration}
                     //new FieldDTO("File") {Availability = AvailabilityType.Configuration}
                 };
-            return fields.Select(x => new ListItem() { Key = x.Key, Value = x.Key }).ToList();
+            return fields.Select(x => new ListItem() { Key = x.Name, Value = x.Name }).ToList();
             
         }
 
-        public static void GetAvailableFields(Crate configurationCrate, string controlName)
+        public static void GetAvailableFields(StandardConfigurationControlsCM configurationControls, string controlName)
         {
-            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
-            GetAvailableFields(configurationControl.FindByNameNested<DropDownList>(controlName));
+            GetAvailableFields(configurationControls.FindByNameNested<DropDownList>(controlName));
         }
 
         public static void GetAvailableFields(DropDownList dropDownControl)
@@ -53,7 +52,7 @@ namespace terminalSalesforce.Actions
             var jsonInputObject = new Dictionary<string, object>();
             fieldsList.ToList().ForEach(field =>
             {
-                var jsonKey = field.Key;
+                var jsonKey = field.Name;
                 var jsonValue = fieldControlsList.Single(ts => ts.Name.Equals(jsonKey)).GetValue(payloadStorage);
 
                 if (!string.IsNullOrEmpty(jsonValue))

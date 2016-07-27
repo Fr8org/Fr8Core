@@ -14,6 +14,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         [JsonProperty("container")]
         public CrateStorageDTO CrateStorage { get; set; }
 
+        [JsonProperty("containerId")]
         public Guid ContainerId { get; set; }
     }
 }

@@ -9,23 +9,23 @@ using Fr8.Infrastructure.Data.States;
 
 namespace Fr8.TerminalBase.Services
 {
+    /// <summary>
+    /// Service for signalling about the crates that should be seen by other activities.
+    /// See https://github.com/Fr8org/Fr8Core/blob/dev/Docs/ForDevelopers/SDK/.NET/Reference/CrateSignaller.md
+    /// </summary>
     public class CrateSignaller
     {
+        /// <summary>
+        /// Allows to configure list of available fields for a certain manifest during the process of available crate signaling. 
+        /// See https://github.com/Fr8org/Fr8Core/blob/dev/Docs/ForDevelopers/SDK/.NET/Reference/CrateSignaller.FieldConfigurator.md
+        /// </summary>
         public class FieldConfigurator
         {
             private readonly List<FieldDTO> _fields;
-            private readonly string _label;
-            private readonly CrateManifestType _manifestType;
-            private readonly Guid _sourceActivityId;
-            private readonly AvailabilityType _availabilityType;
 
-            public FieldConfigurator(List<FieldDTO> fields, string label, CrateManifestType manifestType, Guid sourceActivityId, AvailabilityType availabilityType)
+            public FieldConfigurator(List<FieldDTO> fields)
             {
                 _fields = fields;
-                _label = label;
-                _manifestType = manifestType;
-                _sourceActivityId = sourceActivityId;
-                _availabilityType = availabilityType;
             }
 
             public FieldConfigurator AddFields(IEnumerable<FieldDTO> fields)
@@ -38,26 +38,26 @@ namespace Fr8.TerminalBase.Services
                 return this;
             }
 
+            public FieldConfigurator AddFields(params string[] fields)
+            {
+                foreach (var field in fields)
+                {
+                    AddField(field);
+                }
+
+                return this;
+            }
+
             public FieldConfigurator AddField(FieldDTO field)
             {
                 field = field.Clone();
-                field.SourceCrateLabel = _label;
-                field.SourceCrateManifest = _manifestType;
-                field.SourceActivityId = _sourceActivityId.ToString();
-                field.Availability = _availabilityType;
-
                 _fields.Add(field);
                 return this;
             }
 
             public FieldConfigurator AddField(string name)
             {
-                return AddField(new FieldDTO(name, AvailabilityType.RunTime)
-                {
-                    SourceCrateManifest = _manifestType,
-                    SourceCrateLabel = _label,
-                    SourceActivityId = _sourceActivityId.ToString()
-                });
+                return AddField(new FieldDTO(name));
             }
         }
 
@@ -119,6 +119,26 @@ namespace Fr8.TerminalBase.Services
             return MarkAvailable<TManifest>(label, AvailabilityType.Always, suppressFieldDiscovery);
         }
 
+        public FieldConfigurator MarkAvailable(CrateManifestType manifestType, string label, AvailabilityType availabilityType)
+        {
+            EnsureAvailableDataCrate();
+
+            var fields = new List<FieldDTO>();
+            
+            _availableData.AddOrUpdate(new CrateDescriptionDTO
+            {
+                Availability = availabilityType,
+                Label = label,
+                ManifestId = manifestType.Id,
+                ManifestType = manifestType.Type,
+                ProducedBy = _owner,
+                SourceActivityId = _sourceActivityId.ToString(),
+                Fields = fields
+            });
+
+            return new FieldConfigurator(fields);
+        }
+
         public FieldConfigurator MarkAvailable<TManifest>(string label, AvailabilityType availabilityType, bool suppressFieldDiscovery = false)
             where TManifest : Manifest
         {
@@ -135,24 +155,22 @@ namespace Fr8.TerminalBase.Services
 
                 foreach (var memberAccessor in members)
                 {
-                    fields.Add(new FieldDTO(memberAccessor.Name, AvailabilityType.RunTime)
-                    {
-                        SourceCrateLabel = label,
-                        SourceCrateManifest = manifestType
-                    });
+                    fields.Add(new FieldDTO(memberAccessor.Name));
                 }
             }
 
             _availableData.AddOrUpdate(new CrateDescriptionDTO
             {
+                Availability = availabilityType,
                 Label = label,
                 ManifestId = manifestType.Id,
                 ManifestType = manifestType.Type,
                 ProducedBy = _owner,
+                SourceActivityId = _sourceActivityId.ToString(),
                 Fields = fields
             });
 
-            return new FieldConfigurator(fields, label, manifestType, _sourceActivityId, availabilityType);
+            return new FieldConfigurator(fields);
         }
     }
 }

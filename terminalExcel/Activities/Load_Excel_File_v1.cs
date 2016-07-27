@@ -17,7 +17,7 @@ using terminalUtilities.Excel;
 
 namespace terminalExcel.Activities
 {
-    public class Load_Excel_File_v1 : EnhancedTerminalActivity<Load_Excel_File_v1.ActivityUi>
+    public class Load_Excel_File_v1 : TerminalActivity<Load_Excel_File_v1.ActivityUi>
     {
         private readonly ExcelUtils _excelUtils;
 
@@ -103,21 +103,17 @@ namespace terminalExcel.Activities
                 {
                     Storage.RemoveByLabel(ColumnHeadersCrateLabel);
                     Storage.RemoveByLabel(TabularUtilities.ExtractedFieldsCrateLabel);
-                    var selectedFileDescription = new FieldDTO(ActivityUI.FilePicker.Value, ExtractFileName(ActivityUI.FilePicker.Value));
-                    var columnHeadersCrate = Crate.FromContent(
-                        ColumnHeadersCrateLabel,
-                        await _excelUtils.GetColumnHeadersData(selectedFileDescription.Key),
-                        AvailabilityType.Always
-                    );
-
+                    var selectedFileDescription = new KeyValueDTO(ActivityUI.FilePicker.Value, ExtractFileName(ActivityUI.FilePicker.Value));
+                   
+                    CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel, true)
+                        .AddFields((await _excelUtils.GetColumnHeaders(selectedFileDescription.Key)).Select(x => new FieldDTO(x)));
 
                     ActivityUI.MarkFileAsUploaded(selectedFileDescription.Value, selectedFileDescription.Key);
-                    Storage.ReplaceByLabel(columnHeadersCrate);
                     SelectedFileDescription = selectedFileDescription;
 
                     // Process table and get the Table and optionally (if one row) fields crate
                     var fileAsByteArray = await _excelUtils.GetExcelFileAsByteArray(ActivityUI.FilePicker.Value);
-                    var tableCrates = GetExcelFileDescriptionCrates(fileAsByteArray, ActivityUI.FilePicker.Value, true, null, false);
+                    var tableCrates = GetExcelFileDescriptionCrates(fileAsByteArray, ActivityUI.FilePicker.Value, null, false);
 
                     foreach (var crate in tableCrates)
                     {
@@ -127,12 +123,11 @@ namespace terminalExcel.Activities
                     Storage.ReplaceByLabel(CreateExternalObjectHandlesCrate());
                 }
             }
-
-            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+            
             Storage.Add(Crate.FromContent(FileCrateLabel, new StandardFileDescriptionCM() { Filename = FileCrateLabel }));
         }
 
-        public List<Crate> GetExcelFileDescriptionCrates(byte[] fileAsByteArray, string selectedFilePath, bool isFirstRowAsColumnNames = true, string sheetName = null, bool isRunTime = false)
+        public List<Crate> GetExcelFileDescriptionCrates(byte[] fileAsByteArray, string selectedFilePath, string sheetName = null, bool isRunTime = false)
         {
             var ext = Path.GetExtension(selectedFilePath);
             List<Crate> crates = new List<Crate>();
@@ -141,17 +136,20 @@ namespace terminalExcel.Activities
             // Fetch column headers in Excel file
             var headersArray = ExcelUtils.GetColumnHeaders(fileAsByteArray, ext, sheetName);
 
+            var isFirstRowAsColumnNames = true;
+            var hasFirstRowHeader = ExcelUtils.DetectContainsHeader(fileAsByteArray, ext, sheetName);
+
             // Fetch rows in Excel file
             var rowsDictionary = ExcelUtils.GetTabularData(fileAsByteArray, ext, isFirstRowAsColumnNames, sheetName);
 
-            Crate tableCrate = CrateManager.CreateStandardTableDataCrate(RunTimeCrateLabel, isFirstRowAsColumnNames, new TableRowDTO[] { } ); // default one
+            Crate tableCrate = Crate.FromContent(RunTimeCrateLabel, new StandardTableDataCM(isFirstRowAsColumnNames, new TableRowDTO[0])); // default one
 
             if (rowsDictionary != null && rowsDictionary.Count > 0)
             {
                 var rows = ExcelUtils.CreateTableCellPayloadObjects(rowsDictionary, headersArray, isFirstRowAsColumnNames);
                 if (rows != null && rows.Count > 0)
                 {
-                    tableCrate = CrateManager.CreateStandardTableDataCrate(RunTimeCrateLabel, isFirstRowAsColumnNames, rows.ToArray());
+                    tableCrate = Crate.FromContent(RunTimeCrateLabel, new StandardTableDataCM(hasFirstRowHeader, rows));
                     var fieldsCrate = TabularUtilities.PrepareFieldsForOneRowTable(isFirstRowAsColumnNames, isRunTime, rows, headersArray);
                     if (fieldsCrate != null)
                     {
@@ -172,7 +170,7 @@ namespace terminalExcel.Activities
             }
 
             var byteArray = await _excelUtils.GetExcelFileAsByteArray(ActivityUI.FilePicker.Value);
-            var tableCrates = GetExcelFileDescriptionCrates(byteArray, ActivityUI.FilePicker.Value, true, null, true);
+            var tableCrates = GetExcelFileDescriptionCrates(byteArray, ActivityUI.FilePicker.Value, null, true);
 
             var fileDescription = new StandardFileDescriptionCM
             {
@@ -184,7 +182,7 @@ namespace terminalExcel.Activities
             {
                 Payload.Add(crate);
             }
-            Payload.Add(Crate.FromContent(FileCrateLabel, fileDescription, AvailabilityType.Always));
+            Payload.Add(Crate.FromContent(FileCrateLabel, fileDescription));
         }
 
         private Crate CreateExternalObjectHandlesCrate()
@@ -201,19 +199,18 @@ namespace terminalExcel.Activities
 
             var crate = Crate.FromContent(
                 ExternalObjectHandlesLabel,
-                new ExternalObjectHandlesCM(externalObjectHandle),
-                AvailabilityType.Always
+                new ExternalObjectHandlesCM(externalObjectHandle)
             );
 
             return crate;
         }
 
-        private FieldDTO SelectedFileDescription
+        private KeyValueDTO SelectedFileDescription
         {
             get
             {
-                var storedValues = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == ConfigurationCrateLabel)?.Content;
-                return storedValues?.Fields.First();
+                var storedValues = Storage.FirstCrateOrDefault<KeyValueListCM>(x => x.Label == ConfigurationCrateLabel)?.Content;
+                return storedValues?.Values.First();
             }
             set
             {
@@ -222,12 +219,13 @@ namespace terminalExcel.Activities
                     Storage.RemoveByLabel(ConfigurationCrateLabel);
                     return;
                 }
-                value.Availability = AvailabilityType.Configuration;
-                Storage.ReplaceByLabel(Crate.FromContent(ConfigurationCrateLabel, new FieldDescriptionsCM(value), AvailabilityType.Configuration));
+      
+                Storage.ReplaceByLabel(Crate.FromContent(ConfigurationCrateLabel, new KeyValueListCM(value)));
             }
         }
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("df2df85f-9364-48af-aa97-bb8adccc91d7"),
             Name = "Load_Excel_File",
             Label = "Load Excel File",
             Version = "1",
@@ -235,7 +233,12 @@ namespace terminalExcel.Activities
             Terminal = TerminalData.TerminalDTO,
             Tags = "Table Data Generator,Getter",
             MinPaneWidth = 300,
-            WebService = TerminalData.WebServiceDTO
+            WebService = TerminalData.WebServiceDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Receive,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

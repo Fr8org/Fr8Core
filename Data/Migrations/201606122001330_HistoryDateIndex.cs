@@ -7,12 +7,19 @@ namespace Data.Migrations
     {
         public override void Up()
         {
-            CreateIndex("History", "CreateDate");
+            Sql(@"IF NOT EXISTS(SELECT * FROM sys.indexes WHERE object_id = object_id('dbo.History') AND NAME ='IX_CreateDate')
+begin
+
+    CREATE NONCLUSTERED INDEX[IX_CreateDate] ON[dbo].[History]
+    (
+        [CreateDate] ASC
+    )WITH(PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+end");
         }
         
         public override void Down()
         {
-            DropIndex("History", "CreateDate");
+            Sql("DROP INDEX [IX_CreateDate] ON [dbo].[History]");
         }
     }
 }

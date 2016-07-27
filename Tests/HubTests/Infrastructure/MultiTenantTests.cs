@@ -150,9 +150,9 @@ namespace HubTests.Infrastructure
                 manifest.PayloadObjects.Add(
                     new PayloadObjectDTO()
                     {
-                        PayloadObject = new List<FieldDTO>()
+                        PayloadObject = new List<KeyValueDTO>()
                         {
-                            new FieldDTO()
+                            new KeyValueDTO()
                             {
                                 Key = "Key2",
                                 Value = "Value2"
@@ -175,9 +175,9 @@ namespace HubTests.Infrastructure
                 manifest.PayloadObjects.Add(
                     new PayloadObjectDTO()
                     {
-                        PayloadObject = new List<FieldDTO>()
+                        PayloadObject = new List<KeyValueDTO>()
                         {
-                            new FieldDTO()
+                            new KeyValueDTO()
                             {
                                 Key = "Key3",
                                 Value = "Value3"

@@ -5231,7 +5231,7 @@ padding: 0 10px;
 }
 
 .hero-slides.base-block-white {
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(47, 48, 51, 0.5);
     border-radius: 25px;
 }
 
@@ -5245,11 +5245,13 @@ padding: 0 10px;
 
 .hero-slides .carousel-inner .carousel-content h3 {
     margin-top: 30px;
+    color: #fff;
 }
 
 .hero-slides .carousel-inner .carousel-content p {
     width: 70%;
     margin: auto;
+    color: #fff;
 }
 
 .hero-slides .carousel-indicators {

@@ -5,7 +5,7 @@
     <section id="vision" class="text-block full-height-block company-page-background" data-section="vision">
         <div class="inner-bg full-size-bg"></div>
         <div class="container full-height-block">
-            <div class="inner-wrap cetered">
+            <div class="inner-wrap centered">
                 <div class="base-block-white title-block">
                     <h2>Our Vision</h2>
                     <p>We believe that easy integration of web applications is something that shouldn't require programming knowledge.</p>
@@ -15,7 +15,7 @@
     </section>
     <section id="team" class="text-block full-height-block" data-section="team">
         <div class="container full-height-block">
-            <div class="inner-wrap cetered">
+            <div class="inner-wrap centered">
                 <div class="text-block full-height-block">
                     <h2>Our Team</h2>
                     @* Alex Edelstein *@
@@ -151,7 +151,7 @@
     <section id="location" class="text-block full-height-block" data-section="location">
         <div class="inner-bg full-size-bg"></div>
         <div class="container full-height-block">
-            <div class="inner-wrap cetered">
+            <div class="inner-wrap centered">
                 <div class="base-block-white title-block">
                     <h2>Location</h2>
                     <p>	We're headquartered in San Francisco, California, with teams distributed around the world.</p>
@@ -161,7 +161,7 @@
     </section>
     <section id="jobs" class="text-block full-height-block" data-section="jobs">
         <div class="container full-height-block">
-            <div class="inner-wrap cetered">
+            <div class="inner-wrap centered">
                 <div class="text-block full-height-block">
                     <h3>We are Hiring!</h3>
                     <p>
@@ -223,5 +223,7 @@
     </section>
 </div>
 <script type="text/javascript">
-    window.analytics.page('Visited Page - Company');
+    if (window.analytics != null) {
+        window.analytics.page('Visited Page - Company');
+    }
 </script>

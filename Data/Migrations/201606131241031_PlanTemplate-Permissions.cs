@@ -7,6 +7,31 @@ namespace Data.Migrations
     {
         public override void Up()
         {
+            Sql(@"if not exists (select * from [dbo].[_PermissionTypeTemplate] where [Id] = 1 and [Name] = 'CreateObject')
+                begin
+	                insert into [dbo].[_PermissionTypeTemplate] ([Id], [Name]) values (1, 'CreateObject');
+                end;");
+
+            Sql(@"if not exists (select * from [dbo].[_PermissionTypeTemplate] where [Id] = 2 and [Name] = 'ReadObject')
+                begin
+	                insert into [dbo].[_PermissionTypeTemplate] ([Id], [Name]) values (2, 'ReadObject');
+                end;");
+
+            Sql(@"if not exists (select * from [dbo].[_PermissionTypeTemplate] where [Id] = 3 and [Name] = 'EditObject')
+                begin
+	                insert into [dbo].[_PermissionTypeTemplate] ([Id], [Name]) values (3, 'EditObject');
+                end;");
+
+            Sql(@"if not exists (select * from [dbo].[_PermissionTypeTemplate] where [Id] = 4 and [Name] = 'DeleteObject')
+                begin
+	                insert into [dbo].[_PermissionTypeTemplate] ([Id], [Name]) values (4, 'DeleteObject');
+                end;");
+
+            Sql(@"if not exists (select * from [dbo].[_PermissionTypeTemplate] where [Id] = 5 and [Name] = 'RunObject')
+                begin
+	                insert into [dbo].[_PermissionTypeTemplate] ([Id], [Name]) values (5, 'RunObject');
+                end;");
+
             Sql(@"insert into[dbo].[PermissionSets] (
                     [Id], [Name], [ObjectType], [HasFullAccess], [CreateDate], [LastUpdated])
                 values(

@@ -10,14 +10,14 @@ namespace Fr8.Infrastructure.Data.Helpers
 {
     public class Fr8ReflectionHelper
     {
-        public static IEnumerable<FieldDTO> FindFieldsRecursive(object obj)
+        public static IEnumerable<KeyValueDTO> FindFieldsRecursive(object obj)
         {
-            var result = new List<FieldDTO>();
+            var result = new List<KeyValueDTO>();
             if (obj == null)
             {
                 return result;
             }
-            var fieldDTO = obj as FieldDTO;
+            var fieldDTO = obj as KeyValueDTO;
             if (fieldDTO != null)
             {
                 result.Add(fieldDTO);
@@ -61,7 +61,7 @@ namespace Fr8.Infrastructure.Data.Helpers
 
                 if (IsPrimitiveType(memberAccessor.MemberType))
                 {
-                    result.Add(new FieldDTO(memberAccessor.Name, memberAccessor.GetValue(obj)?.ToString()));
+                    result.Add(new KeyValueDTO(memberAccessor.Name, memberAccessor.GetValue(obj)?.ToString()));
                 }
                 else
                 {

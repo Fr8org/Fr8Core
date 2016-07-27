@@ -17,9 +17,9 @@ namespace Fr8.Testing.Integration.Tools.Plans
             _baseHubITest = baseHubIntegrationTest;
         }
 
-        public async Task<PlanDTO> CreateNewPlan()
+        public async Task<PlanDTO> CreateNewPlan(string planName = "")
         {
-            var newPlan = FixtureData.CreateTestPlanDTO();
+            var newPlan = FixtureData.CreateTestPlanDTO(planName);
 
             var planDTO = await _baseHubITest.HttpPostAsync<PlanEmptyDTO, PlanDTO>(_baseHubITest.GetHubApiBaseUrl() + "plans", newPlan);
 
@@ -34,7 +34,8 @@ namespace Fr8.Testing.Integration.Tools.Plans
             var executionContainer = await _baseHubITest.HttpPostAsync<string, ContainerDTO>(_baseHubITest.GetHubApiBaseUrl() + "plans/run?planId=" + planId, null);
 
             Assert.IsNotNull(executionContainer, "Execution of plan failed. ContainerDTO is missing as a response");
-            Assert.AreEqual(executionContainer.State, State.Completed, "Execution of plan failed. Container state is not completed");
+            if (executionContainer.CurrentPlanType != Infrastructure.Data.Constants.PlanType.Monitoring)
+                Assert.AreEqual(executionContainer.State, State.Completed, "Execution of plan failed. Container state is not completed");
 
             return executionContainer;
         }

@@ -35,9 +35,6 @@ namespace terminalDocuSign.Services
             {
                 var curFr8UserAndToken = ConfirmAuthentication(curExternalEventPayload);
                 var hubCommunicator = container.GetInstance<IHubCommunicator>();
-
-                hubCommunicator.Authorize(curFr8UserAndToken.Item1);
-
                 try
                 {
                     _docuSignPlan.CreateConnect(hubCommunicator, curFr8UserAndToken.Item2);
@@ -76,7 +73,6 @@ namespace terminalDocuSign.Services
             var eventReportContent = new EventReportCM
             {
                 EventNames = DocuSignEventParser.GetEventNames(curDocuSignEnvelopeInfo),
-                ContainerDoId = "",
                 EventPayload = new CrateStorage(Crate.FromContent("DocuSign Connect Event", curDocuSingEnvelopCM)),
                 Manufacturer = "DocuSign",
                 ExternalAccountId = curDocuSignEnvelopeInfo.EnvelopeStatus.Email

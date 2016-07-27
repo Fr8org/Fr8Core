@@ -45,13 +45,18 @@
                 else if (terminal.authenticationType === 3) {
                     _authenticateExternal(terminal);
                 }
+                else if (terminal.authenticationType === 5) {
+                    _authenticateWithPhoneNumber(terminal);
+                }
             };
 
             $scope.apply = () => {
                 if (!$scope.isAllSelected()) {
                     return;
                 } else {
-                    $window['analytics'].track('Auth Dialog Ok');
+                    if ($window['analytics'] != null) {
+                        $window['analytics'].track('Auth Dialog Ok');
+                    }
                 }
 
                 var data = [];
@@ -106,6 +111,38 @@
                     animation: true,
                     templateUrl: '/AngularTemplate/InternalAuthentication',
                     controller: 'InternalAuthenticationController',
+                    scope: modalScope
+                })
+                    .result
+                    .then((data) => {
+                        $scope.isWaitingForResponse = false;
+
+                        var selectedAuthTokens = [];
+                        if (typeof data != 'undefined') {
+                            if (data.terminalId && data.authTokenId) {
+                                selectedAuthTokens.push({
+                                    terminalName: data.terminalName,
+                                    authTokenId: data.authTokenId
+                                });
+                            }
+                        }
+
+                        _reloadTerminals(selectedAuthTokens);
+                    }, () => { $scope.isWaitingForResponse = false; });
+            };
+
+            var _authenticateWithPhoneNumber = (terminal: model.AuthenticationTokenTerminalDTO) => {
+                var modalScope = <any>$scope.$new(true);
+                modalScope.terminal = terminal;
+                modalScope.mode = terminal.authenticationType;
+                modalScope.terminalName = terminal.name;
+
+                $modal.open({
+                    animation: true,
+                    backdrop: 'static',
+                    keyboard: false,
+                    templateUrl: '/AngularTemplate/PhoneNumberAuthentication',
+                    controller: 'PhoneNumberAuthenticationController',
                     scope: modalScope
                 })
                     .result
@@ -237,22 +274,13 @@
                 return result;
             };
 
-            var _reloadTerminals = function (preselectedTokens?: Array<{ terminalName: string, authTokenId: number }>) {
+            var _reloadTerminals = function (preselectedTokens?: Array<{ terminalName: string, authTokenId: number, isMain: boolean }>) {
                 var activities = $scope.activities || [];
                 _activities = activities;
 
                 _loading = true;
 
-                var selectedAuthTokens: Array<{ terminalName: string, authTokenId: number }> = [];
-
-                activities.forEach((it) => {
-                    if (it.authTokenId) {
-                        selectedAuthTokens.push({
-                            terminalName: it.activityTemplate.terminal.name,
-                            authTokenId: <any>it.authTokenId
-                        });
-                    }
-                });
+                var selectedAuthTokens: Array<{ terminalName: string, authTokenId: number, isMain: boolean }> = [];
 
                 // Fill with preselected auth tokens.
                 if (preselectedTokens) {
@@ -263,11 +291,13 @@
 
                 // Save previously selected auth tokens.
                 if ($scope.terminals) {
+                    console.log($scope.terminals);
                     angular.forEach($scope.terminals, function (term) {
-                        if (term.selectedAuthTokenId) {
+                        if (term.authTokens.length !== 0) {
                             selectedAuthTokens.push({
                                 terminalName: term.name,
-                                authTokenId: term.selectedAuthTokenId
+                                authTokenId: term.selectedAuthTokenId,
+                                isMain: (<any>term).isMain
                             });
                         }
                     });
@@ -290,6 +320,7 @@
                                     for (i = 0; i < term.authTokens.length; ++i) {
                                         if (term.authTokens[i].isSelected) {
                                             term.selectedAuthTokenId = term.authTokens[i].id;
+                                            (<any>term).isMain = selectedAuthTokens[i].isMain
                                             break;
                                         }
                                     }
@@ -303,6 +334,7 @@
                                         for (i = 0; i < selectedAuthTokens.length; ++i) {
                                             if (selectedAuthTokens[i].terminalName == term.name) {
                                                 term.selectedAuthTokenId = selectedAuthTokens[i].authTokenId;
+                                                (<any>term).isMain = selectedAuthTokens[i].isMain
                                                 break;
                                             }
                                         }

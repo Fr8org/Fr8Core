@@ -1,43 +1,58 @@
 ﻿using System.Collections.Generic;
 using System;
-using System.Linq;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.States;
 
 namespace Fr8.Testing.Unit.Fixtures
 {
     partial class FixtureData
     {
-
-
-        public static List<Crate<FieldDescriptionsCM>> TestCrateDTO1()
+        public static List<Crate<KeyValueListCM>> TestCrateDTO1()
         {
-            List<FieldDTO> fields = new List<FieldDTO>();
-            fields.Add(new FieldDTO() { Key = "Medical_Form_v1", Value = Guid.NewGuid().ToString() });
-            fields.Add(new FieldDTO() { Key = "Medical_Form_v2", Value = Guid.NewGuid().ToString() });
+            List<KeyValueDTO> fields = new List<KeyValueDTO>();
+            fields.Add(new KeyValueDTO { Key = "Medical_Form_v1", Value = Guid.NewGuid().ToString() });
+            fields.Add(new KeyValueDTO { Key = "Medical_Form_v2", Value = Guid.NewGuid().ToString() });
 
-            return new List<Crate<FieldDescriptionsCM>>() { Crate<FieldDescriptionsCM>.FromContent("Available Templates", new FieldDescriptionsCM() { Fields = fields }) };
+            return new List<Crate<KeyValueListCM>> { Crate<KeyValueListCM>.FromContent("Available Templates", new KeyValueListCM(fields)) };
         }
 
         public static List<Crate> TestCrateDTO2()
         {
-            List<FieldDTO> fields = new List<FieldDTO>();
-            
-            fields.Add(new FieldDTO() { Key = "Text 5", Value = Guid.NewGuid().ToString() });
-            fields.Add(new FieldDTO() { Key = "Text 8", Value = Guid.NewGuid().ToString() });
-            fields.Add(new FieldDTO() { Key = "Doctor", Value = Guid.NewGuid().ToString() });
-            fields.Add(new FieldDTO() { Key = "Condition", Value = Guid.NewGuid().ToString() });
+            List<KeyValueDTO> fields = new List<KeyValueDTO>();
 
-            return new List<Crate>() { Crate.FromContent("DocuSignTemplateUserDefinedFields", new FieldDescriptionsCM() { Fields = fields }), Crate.FromContent("Crate label", new CrateDescriptionCM() { CrateDescriptions = new List<CrateDescriptionDTO>() { new CrateDescriptionDTO()  } }) };
+            fields.Add(new KeyValueDTO { Key = "Text 5", Value = Guid.NewGuid().ToString() });
+            fields.Add(new KeyValueDTO { Key = "Text 8", Value = Guid.NewGuid().ToString() });
+            fields.Add(new KeyValueDTO { Key = "Doctor", Value = Guid.NewGuid().ToString() });
+            fields.Add(new KeyValueDTO { Key = "Condition", Value = Guid.NewGuid().ToString() });
+
+            return new List<Crate> { Crate.FromContent("DocuSignTemplateUserDefinedFields", new KeyValueListCM { Values = fields }) };
 
         }
 
         public static List<Crate> TestCrateDTO3()
         {
-            return new List<Crate>() {
-                Crate.FromContent("CrateId1", new FieldDescriptionsCM()),
+            return new List<Crate>
+            {
+                Crate.FromContent("Crate1", new CrateDescriptionCM
+                {
+                    CrateDescriptions =
+                    {
+                        new CrateDescriptionDTO
+                        {
+                            Label = "Crate2",
+                            Availability = AvailabilityType.Always,
+                            Fields =
+                            {
+                                new FieldDTO("Text 5"),
+                                new FieldDTO("Doctor"),
+                                new FieldDTO("Condition"),
+                            }
+                        }
+                    }
+                }),
                 Crate.FromContent("CrateId2", new StandardConfigurationControlsCM()),
                 Crate.FromContent("CrateId3", new DocuSignRecipientCM()),
                 Crate.FromContent("CrateId4", new EventSubscriptionCM()),
@@ -59,12 +74,12 @@ namespace Fr8.Testing.Unit.Fixtures
         public static Crate CreateStandardConfigurationControls()
         {
             string templateId = "58521204-58af-4e65-8a77-4f4b51fef626";
-            var fieldSelectDocusignTemplate = new DropDownList()
+            var fieldSelectDocusignTemplate = new DropDownList
             {
                 Label = "Select DocuSign Template",
                 Name = "Selected_DocuSign_Template",
                 Required = true,
-                Events = new List<ControlEvent>()
+                Events = new List<ControlEvent>
                 {
                     new ControlEvent("onChange", "requestConfig")
                 },
@@ -76,31 +91,31 @@ namespace Fr8.Testing.Unit.Fixtures
                 Value = templateId
             };
 
-            var fieldEnvelopeSent = new CheckBox()
+            var fieldEnvelopeSent = new CheckBox
             {
                 Label = "Envelope Sent",
                 Name = "Event_Envelope_Sent"
             };
 
-            var fieldEnvelopeReceived = new CheckBox()
+            var fieldEnvelopeReceived = new CheckBox
             {
                 Label = "Envelope Received",
                 Name = "Event_Envelope_Received"
             };
 
-            var fieldRecipientSigned = new CheckBox()
+            var fieldRecipientSigned = new CheckBox
             {
                 Label = "Recipient Signed",
                 Name = "Event_Recipient_Signed"
             };
 
-            var fieldEventRecipientSent = new CheckBox()
+            var fieldEventRecipientSent = new CheckBox
             {
                 Label = "Recipient Sent",
                 Name = "Event_Recipient_Sent"
             };
 
-            
+
             return PackControlsCrate(
                 fieldSelectDocusignTemplate,
                 fieldEnvelopeSent,
@@ -111,14 +126,14 @@ namespace Fr8.Testing.Unit.Fixtures
 
         public static Crate CreateStandardConfigurationControlSelectFr8Object(string selected)
         {
-            var fieldSelectFr8Object = new DropDownList()
+            var fieldSelectFr8Object = new DropDownList
             {
                 Label = "Select Fr8 Object",
                 Name = "Selected_Fr8_Object",
                 Value = selected,
                 Required = true,
-                Events = new List<ControlEvent>()
-                {
+                Events = new List<ControlEvent>
+                         {
                     new ControlEvent("onChange", "requestConfig")
                 },
                 Source = new FieldSourceDTO
@@ -136,52 +151,6 @@ namespace Fr8.Testing.Unit.Fixtures
         private static Crate PackControlsCrate(params ControlDefinitionDTO[] controlsList)
         {
             return Crate.FromContent("Configuration_Controls", new StandardConfigurationControlsCM(controlsList));
-        }
-
-        private static Crate CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls)
-        {
-            return Crate.FromContent(label, new StandardConfigurationControlsCM(controls));
-        }
-
-//        private static CrateDTO Create(string label, string contents, string manifestType = "", int manifestId = 0)
-//        {
-//            var crateDTO = new CrateDTO()
-//            {
-//                Id = Guid.NewGuid().ToString(),
-//                Label = label,
-//                Contents = contents,
-//                ManifestType = manifestType,
-//                ManifestId = manifestId
-//            };
-//            return crateDTO;
-//        }
-
-
-
-        private static Crate CreateEventSubscriptionCrate(StandardConfigurationControlsCM configurationFields)
-        {
-            var subscriptions = new List<string>();
-
-            var eventCheckBoxes = configurationFields.Controls
-                .Where(x => x.Type == "checkboxField" && x.Name.StartsWith("Event_"));
-
-            foreach (var eventCheckBox in eventCheckBoxes)
-            {
-                if (eventCheckBox.Selected)
-                {
-                    subscriptions.Add(eventCheckBox.Label);
-                }
-            }
-
-            return CreateStandardEventSubscriptionsCrate(
-                "Standard Event Subscriptions",
-                subscriptions.ToArray()
-                );
-        }
-
-        private static Crate CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions)
-        {
-            return Crate.FromContent(label, new EventSubscriptionCM() {Subscriptions = subscriptions.ToList()});
         }
 
         #endregion

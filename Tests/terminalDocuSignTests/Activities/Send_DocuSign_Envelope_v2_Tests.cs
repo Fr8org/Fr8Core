@@ -27,16 +27,16 @@ namespace terminalDocuSignTests.Activities
             base.SetUp();
             var docuSignManagerMock = ObjectFactory.GetInstance<Mock<IDocuSignManager>>();
             docuSignManagerMock.Setup(x => x.GetTemplatesList(It.IsAny<DocuSignApiConfiguration>()))
-                         .Returns(new List<FieldDTO> { new FieldDTO("First", "1") });
+                         .Returns(new List<KeyValueDTO> { new KeyValueDTO("First", "1") });
             docuSignManagerMock.Setup(x => x.GetTemplateRecipientsTabsAndDocuSignTabs(It.IsAny<DocuSignApiConfiguration>(), "1"))
-                               .Returns(new Tuple<IEnumerable<FieldDTO>, IEnumerable<DocuSignTabDTO>>(
+                               .Returns(new Tuple<IEnumerable<KeyValueDTO>, IEnumerable<DocuSignTabDTO>>(
                                             new[]
                                             {
-                                                new FieldDTO(DocuSignConstants.DocuSignRoleEmail) { Tags = DocuSignConstants.DocuSignSignerTag },
-                                                new FieldDTO(DocuSignConstants.DocuSignRoleName) { Tags = DocuSignConstants.DocuSignTabTag },
-                                                new FieldDTO("RadioName") { Tags = DocuSignConstants.DocuSignTabTag },
-                                                new FieldDTO("DropDownListName") { Tags = DocuSignConstants.DocuSignTabTag },
-                                                new FieldDTO("CheckBoxName") { Tags = DocuSignConstants.DocuSignTabTag }
+                                                new KeyValueDTO(DocuSignConstants.DocuSignRoleEmail, null) { Tags = DocuSignConstants.DocuSignSignerTag },
+                                                new KeyValueDTO(DocuSignConstants.DocuSignRoleName, null) { Tags = DocuSignConstants.DocuSignTabTag },
+                                                new KeyValueDTO("RadioName", null) { Tags = DocuSignConstants.DocuSignTabTag },
+                                                new KeyValueDTO("DropDownListName", null) { Tags = DocuSignConstants.DocuSignTabTag },
+                                                new KeyValueDTO("CheckBoxName", null) { Tags = DocuSignConstants.DocuSignTabTag }
                                             },
                                             new[]
                                             {
@@ -168,16 +168,16 @@ namespace terminalDocuSignTests.Activities
                                                                                      x.RolesFields[0].TextValue = "xx@xx.xx";
                                                                                      x.TextFields[0].TextValue = "value";
                                                                                  });
-            ObjectFactory.GetInstance<Mock<IDocuSignManager>>().Setup(x => x.SendAnEnvelopeFromTemplate(It.IsAny<DocuSignApiConfiguration>(), It.IsAny<List<FieldDTO>>(), It.IsAny<List<FieldDTO>>(), It.IsAny<string>(), It.IsAny<StandardFileDescriptionCM>()))
-                         .Callback<DocuSignApiConfiguration, List<FieldDTO>, List<FieldDTO>, string, StandardFileDescriptionCM>(AssertEnvelopeParameters);
+            ObjectFactory.GetInstance<Mock<IDocuSignManager>>().Setup(x => x.SendAnEnvelopeFromTemplate(It.IsAny<DocuSignApiConfiguration>(), It.IsAny<List<KeyValueDTO>>(), It.IsAny<List<KeyValueDTO>>(), It.IsAny<string>(), It.IsAny<StandardFileDescriptionCM>()))
+                         .Callback<DocuSignApiConfiguration, List<KeyValueDTO>, List<KeyValueDTO>, string, StandardFileDescriptionCM>(AssertEnvelopeParameters);
             await activity.Run(context, new ContainerExecutionContext() {ContainerId = Guid.NewGuid(), PayloadStorage = new CrateStorage(Crate.FromContent("", new OperationalStateCM()))});
-            ObjectFactory.GetInstance<Mock<IDocuSignManager>>().Verify(x => x.SendAnEnvelopeFromTemplate(It.IsAny<DocuSignApiConfiguration>(), It.IsAny<List<FieldDTO>>(), It.IsAny<List<FieldDTO>>(), It.IsAny<string>(), null),
+            ObjectFactory.GetInstance<Mock<IDocuSignManager>>().Verify(x => x.SendAnEnvelopeFromTemplate(It.IsAny<DocuSignApiConfiguration>(), It.IsAny<List<KeyValueDTO>>(), It.IsAny<List<KeyValueDTO>>(), It.IsAny<string>(), null),
                                                                        Times.Once(),
                                                                        "Run didn't send DocuSign envelope");
 
         }
 
-        private void AssertEnvelopeParameters(DocuSignApiConfiguration loginInfo, List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId, StandardFileDescriptionCM file)
+        private void AssertEnvelopeParameters(DocuSignApiConfiguration loginInfo, List<KeyValueDTO> rolesList, List<KeyValueDTO> fieldList, string curTemplateId, StandardFileDescriptionCM file)
         {
             Assert.AreEqual("xx@xx.xx", rolesList[0].Value, "Incorrect value for role email field");
             Assert.AreEqual("Value", fieldList.First(x => x.Key == "DropDownListName").Value, "Incorrect value for list field");

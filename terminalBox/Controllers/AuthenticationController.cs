@@ -17,11 +17,11 @@ namespace terminalBox.Controllers
     [RoutePrefix("authentication")]
     public class AuthenticationController : ApiController
     {
-        private readonly IHubEventReporter _eventReporter;
+        private readonly IHubLoggerService _loggerService;
 
-        public AuthenticationController(IHubEventReporter eventReporter)
+        public AuthenticationController(IHubLoggerService loggerService)
         {
-            _eventReporter = eventReporter;
+            _loggerService = loggerService;
         }
 
         //https://account.box.com/api/oauth2/authorize?response_type=code&client_id=MY_CLIENT_ID&state=security_token%3DKnhMJatFipTAnM0nHlZA
@@ -94,7 +94,7 @@ namespace terminalBox.Controllers
             }
             catch (Exception ex)
             {
-                await _eventReporter.ReportTerminalError(ex);
+                await _loggerService.ReportTerminalError(ex);
 
                 return await Task.FromResult(
                     new AuthorizationTokenDTO()

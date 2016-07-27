@@ -10,6 +10,8 @@ namespace Fr8.Infrastructure.Communication
             private set;
         }
 
+        public string ResponseMessage { get; private set; }
+
         public RestfulServiceException(int statusCode)
         {
             StatusCode = statusCode;
@@ -21,10 +23,11 @@ namespace Fr8.Infrastructure.Communication
             StatusCode = statusCode;            
         }
 
-        public RestfulServiceException(int statusCode, string message, Exception innerException)
+        public RestfulServiceException(int statusCode, string message, string responseMessage, Exception innerException)
             : base(message, innerException)
         {
             StatusCode = statusCode;
+            ResponseMessage = responseMessage;
         }
     }
 }

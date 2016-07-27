@@ -8,15 +8,12 @@ namespace Hub.Interfaces
     public interface ITerminal
     {
         IEnumerable<TerminalDO> GetAll();
-
         Task<IList<ActivityTemplateDO>> GetAvailableActivities(string uri);
-
         TerminalDO GetByKey(int terminalId);
         TerminalDO GetByNameAndVersion(string name, string version);
         TerminalDO RegisterOrUpdate(TerminalDO terminalDo);
-
-        Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId);
-        Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId);
+        Dictionary<string, string> GetRequestHeaders(TerminalDO terminal, string userId);
+        Task<TerminalDO> GetByToken(string token);
         Task<List<DocumentationResponseDTO>> GetSolutionDocumentations(string terminalName);
     }
 }

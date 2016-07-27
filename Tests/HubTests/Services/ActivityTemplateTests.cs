@@ -38,7 +38,6 @@ namespace HubTests.Services
             return a.NeedsAuthentication == b.NeedsAuthentication &&
                    a.ActivityTemplateState == b.ActivityTemplateState &&
                    a.Category == b.Category &&
-                   a.ComponentActivities == b.ComponentActivities &&
                    a.Description == b.Description &&
                    (skipId || a.Id == b.Id) &&
                    a.Label == b.Label &&
@@ -68,7 +67,6 @@ namespace HubTests.Services
                    (skipId || a.Id == b.Id) &&
                    a.Name == b.Name &&
                    a.Label == b.Label &&
-                   a.PublicIdentifier == b.PublicIdentifier &&
                    a.Secret == b.Secret &&
                    a.TerminalStatus == b.TerminalStatus &&
                    a.Version == b.Version;
@@ -148,14 +146,14 @@ namespace HubTests.Services
             {
                 Id = id,
                 ActivityTemplateState = 1,
-                Category = ActivityCategory.Forwarders,
+                Category = Fr8.Infrastructure.Data.States.ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
-                ComponentActivities = prefix + "ca" + id,
                 Description = prefix + "des" + id,
                 Name = "name" + id,
                 Label = prefix + "label" + id,
                 NeedsAuthentication = true,
                 Tags = prefix + "tags" + id,
+                TerminalId = terminal.Id,
                 Terminal = terminal,
                 Type = ActivityType.Standard,
                 Version = "1",
@@ -255,9 +253,16 @@ namespace HubTests.Services
         [Test]
         public void CanRegister()
         {
-            var template = CreateActivityTemplate(Guid.NewGuid(), CreateTerminal(-234, "new"), CreateWebService(234234, "new"));
-            template.TerminalId = 23444234;
+            var template = CreateActivityTemplate(
+                Guid.NewGuid(),
+                CreateTerminal(-234, "new"),
+                CreateWebService(234234, "new")
+            );
             template.WebServiceId = -2344;
+
+            var terminalService = ObjectFactory.GetInstance<Terminal>();
+            template.Terminal = terminalService.RegisterOrUpdate(template.Terminal);
+            template.TerminalId = template.Terminal.Id;
 
             var service = ObjectFactory.GetInstance<ActivityTemplate>();
             service.RegisterOrUpdate(template);
@@ -267,7 +272,7 @@ namespace HubTests.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                AreEqual(CreateWebService(234234, "new"), uow.WebServiceRepository.GetQuery().Single(), true);
+                AreEqual(CreateWebService(234234, "new"), uow.WebServiceRepository.GetQuery().First(), true);
             }
         }
 
@@ -286,9 +291,13 @@ namespace HubTests.Services
             GenerateSeedData();
 
             var template = CreateActivityTemplate(FixtureData.GetTestGuidById(1), CreateTerminal(-234), CreateWebService(234234));
-            template.TerminalId = 23444234;
+
             template.WebServiceId = -2344;
-            template.Id = Guid.Empty;
+            template.Id  = Guid.NewGuid();
+
+            var terminalService = ObjectFactory.GetInstance<Terminal>();
+            template.Terminal = terminalService.RegisterOrUpdate(template.Terminal);
+            template.TerminalId = template.Terminal.Id;
 
             var service = ObjectFactory.GetInstance<ActivityTemplate>();
 

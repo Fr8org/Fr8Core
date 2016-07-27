@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Configuration;
-using System.Data.SqlClient;
 using System.Linq;
 using NUnit.Core;
 using System.Text;
 using System.Diagnostics;
 using System.Collections.Generic;
-using System.IO;
 
 namespace HealthMonitor
 {
@@ -55,7 +53,7 @@ namespace HealthMonitor
                     }
                     else if (args[i] == "--ensure-startup")
                     {
-                        ensureTerminalsStartup = true;
+                        Console.WriteLine("--ensure-startup argument is no more supported and will be ignored.");
                     }
                     else if (i > 0 && args[i - 1] == "--app-name" && args[i] != null)
                     {
@@ -173,47 +171,6 @@ namespace HealthMonitor
             Environment.Exit(errorCount);
         }
 
-        private void EnsureTerminalsStartUp()
-        {
-            var awaiter = new TerminalStartUpAwaiter();
-            var failedToStart = awaiter.AwaitStartUp();
-
-            if (failedToStart.Count > 0)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Following terminals have failed to start:");
-
-                foreach (var terminalName in failedToStart)
-                {
-                    Console.WriteLine("{0}: {1}", terminalName, ConfigurationManager.AppSettings[terminalName]);
-                }
-
-                Environment.Exit(failedToStart.Count);
-            }
-        }
-
-        private void ReportToConsole(string appName, TestReport report)
-        {
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Application: {0}", appName);
-            Console.WriteLine("Integration tests result: {0} / {1} passed", report.Tests.Count(x => x.Success), report.Tests.Count());
-            Console.ForegroundColor = ConsoleColor.Gray;
-
-            foreach (var test in report.Tests.Where(x => !x.Success))
-            {
-                Console.WriteLine();
-                Console.WriteLine();
-                Console.WriteLine("----------------------------------------");
-
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Integration Test Failure: {0}", test.Name);
-
-                Console.ForegroundColor = ConsoleColor.Gray;
-                Console.WriteLine("Message: {0}", test.Message);
-                Console.WriteLine("StackTrace: {0}", test.StackTrace);
-            }
-        }
-
         private int Run(
             bool ensureTerminalsStartup,
             bool sendEmailReport,
@@ -225,11 +182,6 @@ namespace HealthMonitor
             string smtpPassword)
         {
             CoreExtensions.Host.InitializeService();
-
-            if (ensureTerminalsStartup)
-            {
-                EnsureTerminalsStartUp();
-            }
 
             var testRunner = new NUnitTestRunner(appInsightsInstrumentationKey);
             var report = testRunner.Run(test, skipLocal);
@@ -291,3 +243,4 @@ namespace HealthMonitor
         }
     }
 }
+

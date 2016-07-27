@@ -102,7 +102,7 @@ namespace terminalGoogle.Services.Authorization
                 {
                     var message = "Google access token is expired. Token refresh will be executed";
                     //EventManager.TokenValidationFailed(JsonConvert.SerializeObject(googleAuthDTO), message);
-                    Logger.LogError(message);
+                    Logger.GetLogger().Error(message);
                     return false;
                 }
 
@@ -120,7 +120,7 @@ namespace terminalGoogle.Services.Authorization
                 {
                     var message = "Google token validation fails with error: " + exception.Message;
                     //EventManager.TokenValidationFailed(JsonConvert.SerializeObject(googleAuthDTO), message);
-                    Logger.LogError(message);
+                    Logger.GetLogger().Error(message);
                     return false;
                 }
                 throw;

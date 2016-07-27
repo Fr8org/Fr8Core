@@ -162,7 +162,7 @@ namespace Fr8.Testing.Unit.Fixtures
             return new ActivityTemplateDO()
             {
                 Id = Guid.NewGuid(),
-                Name = "SaveToFr8Warehouse",
+                Name = "Save_To_Fr8_Warehouse",
                 Label = "Save To Fr8 Warehouse",
                 Category = ActivityCategory.Processors,
                 Terminal = TestTerminal_Core(),
@@ -174,7 +174,7 @@ namespace Fr8.Testing.Unit.Fixtures
         {
             return new ActivityTemplateDO()
             {
-                Name = "TestIncomingData",
+                Name = "Test_Incoming_Data",
                 Version = "1",
                 Terminal = TestTerminal_Core()
             };

@@ -21,5 +21,7 @@ namespace Fr8Data.DataTransferObjects
 
         public Guid ProfileId { get; set; }
         public string Class { get; set; }
+
+        public bool CanManagePageDefinitions { get; set; }
     }
 }

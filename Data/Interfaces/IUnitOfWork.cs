@@ -74,7 +74,14 @@ namespace Data.Interfaces
         
         IOrganizationRepository OrganizationRepository { get; }
 
-	    /// <summary>
+        IPageDefinitionRepository PageDefinitionRepository { get; }
+
+        TerminalRegistrationRepository TerminalRegistrationRepository { get; }
+
+        IActivityCategoryRepository ActivityCategoryRepository { get; }
+        IActivityCategorySetRepository ActivityCategorySetRepository { get; }
+
+        /// <summary>
         /// Call this to commit the unit of work
         /// </summary>
         void Commit();

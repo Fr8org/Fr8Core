@@ -18,6 +18,7 @@ namespace terminalDocuSign.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("5E92E326-06E3-4C5B-A1F9-7542E8CD7C07"),
             Version = "1",
             Name = "Get_DocuSign_Template",
             Label = "Get DocuSign Template",
@@ -25,19 +26,24 @@ namespace terminalDocuSign.Activities
             NeedsAuthentication = true,
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Receive,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
         protected override string ActivityUserFriendlyName => "Get DocuSign Template";
+        private string crateName = "DocuSign Template";
 
-
-        public Get_DocuSign_Template_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+        public Get_DocuSign_Template_v1(ICrateManager crateManager, IDocuSignManager docuSignManager)
             : base(crateManager, docuSignManager)
         {
         }
 
-        protected override async Task RunDS()
+        public override async Task Run()
         {
             //Get template Id
             var control = GetControl<DropDownList>("Available_Templates");
@@ -60,26 +66,28 @@ namespace terminalDocuSign.Activities
         {
             var manifest = new DocuSignTemplateCM
             {
-                Body = JsonConvert.SerializeObject(template),
+                Body = template.ToString(),
                 CreateDate = DateTime.UtcNow,
-                Name = template["Name"].ToString(),
-                Status = template.Property("Name").SelectToken("status").Value<string>()
+                Name = template.SelectToken("envelopeTemplateDefinition.name").Value<string>()
             };
 
-            return Crate.FromContent("DocuSign Template", manifest);
+            return Crate.FromContent(crateName, manifest);
         }
 
-        protected override Task InitializeDS()
+        public override Task Initialize()
         {
-            var configurationCrate = CreateControlsCrate();
-            FillDocuSignTemplateSource(configurationCrate, "Available_Templates");
             Storage.Clear();
-            Storage.Add(configurationCrate);
+
+            CreateControlsCrate();
+            FillDocuSignTemplateSource("Available_Templates");
+            
             return Task.FromResult(0);
         }
 
-        protected override Task FollowUpDS()
+        public override Task FollowUp()
         {
+            CrateSignaller.MarkAvailable<DocuSignTemplateCM>(crateName, AvailabilityType.RunTime);
+
             return Task.FromResult(0);
         }
 
@@ -95,7 +103,7 @@ namespace terminalDocuSign.Activities
             return Task.FromResult(0);
         }
 
-        private Crate CreateControlsCrate()
+        private void CreateControlsCrate()
         {
             var availableTemplates = new DropDownList
             {
@@ -105,7 +113,8 @@ namespace terminalDocuSign.Activities
                 Source = null,
                 Events = new List<ControlEvent> { ControlEvent.RequestConfig },
             };
-            return PackControlsCrate(availableTemplates);
+
+            AddControl(availableTemplates);
         }
     }
 }

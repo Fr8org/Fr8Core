@@ -58,7 +58,7 @@ namespace terminalYammerTests.Integration
             Assert.AreEqual(2, crateStorage.Count);
 
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(x => x.Label == "Configuration_Controls"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Available Groups"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<KeyValueListCM>().Count(x => x.Label == "Available Groups"));
         }
 
         [Test]
@@ -112,7 +112,7 @@ namespace terminalYammerTests.Integration
             AddPayloadCrate(
                 dataDTO,
                 new StandardPayloadDataCM(
-                    new FieldDTO("message", "Hello")
+                    new KeyValueDTO("message", "Hello")
                 ),
                 "Payload crate"
             );

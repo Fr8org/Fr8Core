@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Web.Http;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
 using StructureMap;
 using Data.Interfaces;
 using Data.Infrastructure.StructureMap;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Infrastructure;
 using PlanDirectory.Infrastructure;
 
@@ -59,6 +61,17 @@ namespace PlanDirectory.Controllers.Api
         [HttpPost]
         [Fr8ApiAuthorize]
         [PlanDirectoryHMACAuthenticate]
+        public IHttpActionResult LogOut()
+        {
+            var securityServices = ObjectFactory.GetInstance<ISecurityServices>();
+            securityServices.Logout();
+            Logger.GetLogger("PlanDirectory").Debug($"Logging out user {securityServices.GetCurrentUser()}");
+            return Ok(new {Result = true});
+        }
+
+        [HttpPost]
+        [Fr8ApiAuthorize]
+        [PlanDirectoryHMACAuthenticate]
         public IHttpActionResult Token()
         {
             var fr8UserId = User.Identity.GetUserId();
@@ -73,6 +86,21 @@ namespace PlanDirectory.Controllers.Api
         {
             var authenticated = User.Identity.IsAuthenticated;
             return Ok(new { authenticated });
+        }
+
+        [HttpGet]
+        [ActionName("is_privileged")]
+        public IHttpActionResult IsPrivileged()
+        {
+            var identity = User.Identity as ClaimsIdentity;
+            if (identity == null)
+            {
+                return Ok(new { privileged = false });
+            }
+
+            var privileged = identity.HasClaim(ClaimsIdentity.DefaultRoleClaimType, "Admin");
+
+            return Ok(new { privileged });
         }
     }
 }

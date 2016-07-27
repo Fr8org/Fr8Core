@@ -104,14 +104,6 @@ namespace HubTests.Repositories
             ObjectFactory.GetInstance<AuthorizationRepTestSupportService>().Reset();
         }
 
-        private void SetupTester(Dictionary<Guid, string> tokens)
-        {
-            foreach (var token in tokens)
-            {
-                ObjectFactory.GetInstance<AuthorizationRepTestSupportService>().Tokens.Add(token.Key, token.Value);
-            }
-        }
-
         private AuthorizationTokenDO NewToken(IUnitOfWork uow, Guid id, string securePart)
         {
             AuthorizationTokenDO token = new AuthorizationTokenDO

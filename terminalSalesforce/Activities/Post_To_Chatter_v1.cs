@@ -20,6 +20,7 @@ namespace terminalSalesforce.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("E2250022-FA40-4FCF-9CDD-130DF6DD1984"),
             Version = "1",
             Name = "Post_To_Chatter",
             Label = "Post To Salesforce Chatter",
@@ -27,7 +28,12 @@ namespace terminalSalesforce.Actions
             Category = ActivityCategory.Forwarders,
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -135,7 +141,7 @@ namespace terminalSalesforce.Actions
             {
                 throw new ActivityExecutionException("Failed to post to chatter due to Salesforce API error");
             }
-            Payload.Add(Crate.FromContent(PostedFeedCrateLabel, new StandardPayloadDataCM(new FieldDTO("FeedID", result))));
+            Payload.Add(Crate.FromContent(PostedFeedCrateLabel, new StandardPayloadDataCM(new KeyValueDTO("FeedID", result))));
         }
 
         public static string StripHTML(string input)

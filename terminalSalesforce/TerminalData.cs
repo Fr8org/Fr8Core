@@ -8,7 +8,8 @@ namespace terminalSalesforce
     {
         public static WebServiceDTO WebServiceDTO = new WebServiceDTO
         {
-            Name = "Salesforce"
+            Name = "Salesforce",
+            IconPath = "/Content/icons/web_services/salesforce-icon-64x64.png"
         };
 
         public static TerminalDTO TerminalDTO = new TerminalDTO()

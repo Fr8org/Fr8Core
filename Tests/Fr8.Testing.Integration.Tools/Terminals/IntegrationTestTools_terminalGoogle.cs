@@ -50,7 +50,7 @@ namespace Fr8.Testing.Integration.Tools.Terminals
             //Adding header row if possible
             if (dataRows.Count > 0)
             {
-                dataRows.Insert(0, new TableRowDTO { Row = dataRows.First().Row.Select(x => new TableCellDTO { Cell = new FieldDTO(x.Cell.Key, x.Cell.Key) }).ToList() });
+                dataRows.Insert(0, new TableRowDTO { Row = dataRows.First().Row.Select(x => new TableCellDTO { Cell = new KeyValueDTO(x.Cell.Key, x.Cell.Key) }).ToList() });
                 hasHeaderRow = true;
             }
 

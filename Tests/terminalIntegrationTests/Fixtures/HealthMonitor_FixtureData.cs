@@ -69,8 +69,8 @@ namespace terminalIntegrationTests.Fixtures
 
             return new AuthorizationTokenDTO()
             {
-                Token = auth.AccessToken,
-                AdditionalAttributes = string.Format("refresh_token=;instance_url={0};api_version={1}", auth.InstanceUrl, auth.ApiVersion)
+                Token = JsonConvert.SerializeObject(new { AccessToken = auth.AccessToken }),
+                AdditionalAttributes = string.Format("instance_url={0};api_version={1}", auth.InstanceUrl, auth.ApiVersion)
             };
         }
 
@@ -90,7 +90,6 @@ namespace terminalIntegrationTests.Fixtures
                     TerminalID = terminalId,
                     UserID = userDO.Id,
                     AdditionalAttributes = tokenDTO.AdditionalAttributes,
-                    ExpiresAt = DateTime.Today.AddMonths(1)
                 };
 
                 uow.AuthorizationTokenRepository.Add(tokenDO);

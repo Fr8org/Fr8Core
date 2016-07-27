@@ -12,13 +12,15 @@ using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Services;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
+using System;
 
 namespace terminalSlack.Activities
 {
-    public class Publish_To_Slack_v2 : EnhancedTerminalActivity<Publish_To_Slack_v2.ActivityUi>
+    public class Publish_To_Slack_v2 : TerminalActivity<Publish_To_Slack_v2.ActivityUi>
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("0e21b4e8-3f08-41b1-bb6b-399ef4c2b683"),
             Name = "Publish_To_Slack",
             Label = "Publish To Slack",
             Tags = "Notifier",
@@ -27,7 +29,12 @@ namespace terminalSlack.Activities
             NeedsAuthentication = true,
             Version = "2",
             WebService = TerminalData.WebServiceDTO,
-            MinPaneWidth = 330
+            MinPaneWidth = 330,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -39,8 +46,11 @@ namespace terminalSlack.Activities
 
             public ActivityUi(UiBuilder uiBuilder)
             {
-                ChannelSelector = new DropDownList { Label = "Select Slack Channel" };
-                MessageSource = uiBuilder.CreateSpecificOrUpstreamValueChooser("Message", nameof(MessageSource), requestUpstream: true, availability: AvailabilityType.RunTime);
+                ChannelSelector = new DropDownList {
+                    Label = "Select Slack Channel",
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
+                };
+                MessageSource = uiBuilder.CreateSpecificOrUpstreamValueChooser("Message", nameof(MessageSource), addRequestConfigEvent: true, requestUpstream: true, availability: AvailabilityType.RunTime);
                 Controls.Add(ChannelSelector);
                 Controls.Add(MessageSource);
             }
@@ -53,7 +63,6 @@ namespace terminalSlack.Activities
             : base(crateManager)
         {
             _slackIntegration = slackIntegration;
-            DisableValidationOnFollowup = true;
         }
         public override async Task Initialize()
         {

@@ -36,7 +36,7 @@ namespace terminalSlackTests.Activities
             HealthMonitor_FixtureData.ConfigureHubToReturnEmptyPayload();
             var slackIntegrationMock = new Mock<ISlackIntegration>();
             slackIntegrationMock.Setup(x => x.GetChannelList(It.IsAny<string>(), It.IsAny<bool>()))
-                                .Returns(Task.FromResult(new List<FieldDTO> { new FieldDTO("#channel", "1") }));
+                                .Returns(Task.FromResult(new List<KeyValueDTO> { new KeyValueDTO("#channel", "1") }));
             ObjectFactory.Container.Inject(slackIntegrationMock);
             ObjectFactory.Container.Inject(slackIntegrationMock.Object);
             var slackEventManagerMock = new Mock<ISlackEventManager>();
@@ -123,7 +123,7 @@ namespace terminalSlackTests.Activities
             configurationControls.FindByNameNested<RadioButtonOption>("AllChannelsOption").Selected = false;
             
             await activity.Run(activityContext, executionContext);
-            var operationalState = CrateManager.GetOperationalState(executionContext.PayloadStorage);
+            var operationalState = executionContext.PayloadStorage.FirstCrateContentOrDefault<OperationalStateCM>();
 
             Assert.AreEqual(ActivityResponse.Error.ToString(), operationalState.CurrentActivityResponse.Type, "Error response was not produced when no monitor option was selected");
         }
@@ -177,7 +177,7 @@ namespace terminalSlackTests.Activities
                                                                           });
             HealthMonitor_FixtureData.ConfigureHubToReturnPayloadWithChannelMessageEvent();
             await activity.Run(activityContext, executionContext);
-            var operationalState = CrateManager.GetOperationalState(executionContext.PayloadStorage);
+            var operationalState = executionContext.PayloadStorage.FirstCrateContentOrDefault<OperationalStateCM>();
             Assert.AreEqual(ActivityResponse.RequestTerminate.ToString(), operationalState.CurrentActivityResponse.Type, "RequestTerminate response was not produced when event didn't match monitoring options");
         }
 
@@ -205,7 +205,7 @@ namespace terminalSlackTests.Activities
                 x.MonitorChannelsOption.Selected = false;
             });
             await activity.Run(activityContext, executionContext);
-            var operationalState = CrateManager.GetOperationalState(executionContext.PayloadStorage);
+            var operationalState = executionContext.PayloadStorage.FirstCrateContentOrDefault<OperationalStateCM>();
             Assert.AreEqual(ActivityResponse.Success.ToString(), operationalState.CurrentActivityResponse.Type, "RequestTerminate response was not produced when event didn't match monitoring options");
             Assert.IsNotNull(executionContext.PayloadStorage.FirstCrateOrDefault<StandardPayloadDataCM>(), "Activity didn't produce crate with payload data");
         }

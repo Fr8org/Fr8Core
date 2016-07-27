@@ -17,7 +17,7 @@ namespace Hub.Services.MT
                 .OrderBy(x => x.Name)
                 .Select(x => new FieldDTO()
                 {
-                    Key = x.Name,
+                    Name = x.Name,
                     FieldType = GetFieldType(x),
                     Availability = availability
                 })
