@@ -1,13 +1,16 @@
 ﻿using Newtonsoft.Json;
 using System;
+using Fr8.Infrastructure.Data.Constants;
 
 namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
-    public class TerminalNotificationDTO
+    public class NotificationMessageDTO
     {
-        //TODO create type enum for notifications
-        [JsonProperty("type")]
-        public string Type { get; set; }
+        [JsonProperty("notificationType")]
+        public NotificationType NotificationType { get; set; }
+
+        [JsonProperty("notificationArea")]
+        public NotificationArea NotificationArea { get; set; }
 
         [JsonProperty("subject")]
         public string Subject { get; set; }
@@ -29,5 +32,14 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 
         [JsonProperty("collapsed")]
         public bool Collapsed { get; set; }
+    }
+
+    public class NotificationPlanDTO : NotificationMessageDTO
+    {
+        [JsonProperty("planLastUpdated")]
+        public DateTimeOffset PlanLastUpdated { get; set; }
+
+        [JsonProperty("planId")]
+        public Guid PlanId { get; set; }
     }
 }

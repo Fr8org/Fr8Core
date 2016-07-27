@@ -24,9 +24,9 @@ describe("Endpoints hit tests", () => {
     };
 
 
-    it('should CREATE SOLUTION by hit POST /api/v1/plans?solution_name= ', (done) => {
+    it('should CREATE SOLUTION by hit POST /api/v1/plans?solutionName= ', (done) => {
         config.method = "POST";
-        config.params = { solution_name: "none" };
+        config.params = { solutionName: "none" };
 
         checkEndpoint(config,done);
         

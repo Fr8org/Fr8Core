@@ -70,7 +70,7 @@ namespace HubWeb
 
             ModelBinders.Binders.Add(typeof(DateTimeOffset), new KwasantDateBinder());
 
-            Logger.LogWarning("Dockyard  starting...");
+            Logger.GetLogger().Warn("Dockyard  starting...");
 
             ConfigureValidationEngine();
         }
@@ -98,7 +98,7 @@ namespace HubWeb
 
 
             //Logger.GetLogger().Error(errorMessage, exception);
-            Logger.LogError($"{exception}");
+            Logger.GetLogger().Error($"{exception}");
         }
 
         //Optimization. Even if running in DEBUG mode, this will only execute once.
@@ -214,7 +214,7 @@ namespace HubWeb
         public void Application_End()
         {
             //Logger.GetLogger().Info("fr8 web shutting down...");
-            Logger.LogWarning("fr8 web shutting down...");
+            Logger.GetLogger().Warn("fr8 web shutting down...");
 
             // This will give LE background thread some time to finish sending messages to Logentries.
             var numWaits = 3;

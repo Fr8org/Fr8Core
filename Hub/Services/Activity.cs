@@ -192,9 +192,9 @@ namespace Hub.Services
                         {
                             return Mapper.Map<ActivityDTO>(submittedActivity);
                         }
-                        Logger.LogInfo($"Before calling terminal activation of activity (Id - {submittedActivity.Id})");
+                        Logger.GetLogger().Info($"Before calling terminal activation of activity (Id - {submittedActivity.Id})");
                         var activatedActivityDTO = await CallTerminalActivityAsync<ActivityDTO>(uow, "activate", null, submittedActivity, Guid.Empty);
-                        Logger.LogInfo($"Call to terminal activation of activity (Id - {submittedActivity.Id}) completed");
+                        Logger.GetLogger().Info($"Call to terminal activation of activity (Id - {submittedActivity.Id}) completed");
                         var activatedActivityDo = Mapper.Map<ActivityDO>(activatedActivityDTO);
 
                         var storage = _crate.GetStorage(activatedActivityDo);
