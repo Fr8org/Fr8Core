@@ -28,7 +28,6 @@ namespace Fr8.Infrastructure.Data.Manifests
         public class EventReportCMSerializationProxy
         {
             public string EventNames { get; set; }
-            public string ContainerDoId { get; set; }
             public string ExternalAccountId { get; set; }
             public string ExternalDomainId { get; set; }
             public CrateStorageDTO EventPayload { get; set; }
