@@ -110,7 +110,7 @@ With this json response we are creating an EventSubscription crate which is list
 
 It is your terminal's responsiblity to create an endpoint for external system's events and listen to them. Every system has different methods for registering to their events. Most of them use webhooks for this purpose.
 
-Here are some samples to help you understand this concept. [Docusign Event Mechanism](/Docs/ForDevelopers/Samples/DocusignEventGeneration.md).
+Here are some samples to help you understand this concept. [Monitor All Docusign Events Plan](/Docs/ForDevelopers/Samples/MADSEPlan.md).
 
 Assuming that you have correctly configured external system to notify your terminal on events. Terminal needs to parse incoming event data and create an EventReportCM crate according to incoming event.
 
@@ -148,9 +148,9 @@ Below is a sample EventReportCM
 ```
 
 
-After preparing this EventReport, terminal needs to post this crate to /events endpoint of all subscribed hubs. Hub will run related plans but this time it will be different from regular run. When event triggers a plan execution, hub will add EventPayload to the payload of container. Therefore all activities will be able to access event data.
+After preparing this EventReport, terminal needs to post this crate to /events endpoint of all subscribed hubs. Hub will run related plans but this time it will be different from regular run. When event triggers a plan execution, hub will add Standard Event Report crate to the payload of container. Therefore all activities will be able to access event data.
 
-Generally your monitor activity should extract data from EventPayload and publish this data with global CrateManifests.
+Generally your monitor activity should extract data from EventPayload and publish this data.
 
 
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)
