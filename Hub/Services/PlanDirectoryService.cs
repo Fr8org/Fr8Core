@@ -44,14 +44,15 @@ namespace Hub.Services
                 await
                     _hmacService.GenerateHMACHeader(uri, "PlanDirectory",
                         CloudConfigurationManager.GetSetting("PlanDirectorySecret"), UserId);
+            Logger.GetLogger().Debug($"Start sending logout request for user {UserId}");
             try
             {
                 var json = await _client.PostAsync<JObject>(uri, headers: headers).ConfigureAwait(false);
-                result = json.Value<bool>("result");
+                result = json.Value<bool>("Result");
             }
             catch (Exception exp)
             {
-                Logger.GetLogger("planDirectoryService").Debug($"Error while logging out from plan directory {exp}");
+                Logger.GetLogger().Debug($"Error while logging out from plan directory {exp}");
             }
 
             return result;
