@@ -6,11 +6,11 @@
 
 In this tutorial we are going to create Monitor All DocuSign Events Plan. This plan uses Fr8 event mechanism to auto trigger plan executions and Fr8 Warehouse to store data. MADSE plan is built with 2 activities, which are "Prepare DocuSign Events For Storage" and "Save To Fr8 Warehouse".
 
-MADSE Plan is automatically created by terminalDocusign on successful user authorization and is an internal plan. Which means normal users won't be able to see this plan on their plan list. See [Internal Plans](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/InternalPlans.md), [Internal Events](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/InternalEvents.md).
+MADSE Plan is automatically created by terminalDocusign on successful user authorization and is an internal plan. Which means normal users won't be able to see this plan on their plan list. See [Internal Plans](/Docs/ForDevelopers/OperatingConcepts/InternalPlans.md), [Internal Events](/Docs/ForDevelopers/OperatingConcepts/InternalEvents.md).
 
 Upon successful authentication to Docusign, hub generates an internal event. When terminal docusign receives this internal event it tries to create a docusign connect profile for terminal event endpoint. Docusign connect notifies given endpoint when user related events happen. In our case docusign will post new events to events endpoint of terminalDocusign. See [Create Docusign Connect](https://github.com/Fr8org/Fr8Core/blob/dev/terminalDocuSign/Services/DocuSignPlan.cs#L71-L138).
 
-Note: Docusign connect requires a premium account on docusign. If terminalDocusign fails to create a connect profile it uses polling method as a fallback mechanism. See [Polling With Hub](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/PollingWithHub.md)
+Note: Docusign connect requires a premium account on docusign. If terminalDocusign fails to create a connect profile it uses polling method as a fallback mechanism. See [Polling With Hub](/Docs/ForDevelopers/OperatingConcepts/PollingWithHub.md)
 
 ### Prepare DocuSign Events For Storage
 
@@ -25,4 +25,4 @@ On runtime this activity extracts DocuSignEnvelopeCM_v2 from Event Payload and p
 This activity stores selected crate in Fr8 Warehouse.
 
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)
+[Go to Contents](/Docs/Home.md)
