@@ -564,8 +564,9 @@ namespace Hub.Services
                 {
                     NotificationType = NotificationType.GenericSuccess,
                     NotificationArea = NotificationArea.ActivityStream,
-                    Subject = "Monitoring Successful",
-                    Message = "Plan execution complete. Monitoring continues."
+                    Subject = "Trigger Activated",
+                    Message = "Plan execution complete. Monitoring continues.",
+                    Collapsed = false
                 }, plan.Fr8AccountId);
             }
 
