@@ -97,7 +97,6 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.ActivityTemplateStateTemplate,
                     opts => opts.ResolveUsing((ActivityTemplateDTO x) => null))
                 .ForMember(x => x.WebServiceId, opts => opts.ResolveUsing((ActivityTemplateDTO x) => null))
-                .ForMember(x => x.ComponentActivities, opts => opts.Ignore())
                 .ForMember(x => x.ActivityTemplateState, opts => opts.Ignore())
                 .ForMember(x => x.TerminalId, opts => opts.Ignore())
                 .ForMember(x => x.LastUpdated, opts => opts.Ignore())
@@ -189,7 +188,7 @@ namespace Data.Infrastructure.AutoMapper
                 )
                 .ForMember(
                     x => x.CurrentClientActivityName,
-                    x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentClientActivityName))
+                    x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentActivityResponse?.Body))
                 );
             Mapper.CreateMap<AuthorizationTokenDTO, AuthorizationTokenDO>()
                   .ForMember(x => x.UserID, x => x.ResolveUsing(y => y.UserId))

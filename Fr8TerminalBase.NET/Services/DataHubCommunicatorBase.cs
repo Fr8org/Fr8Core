@@ -191,8 +191,7 @@ namespace Fr8.TerminalBase.Services
         {
             var crates = await GetCratesByDirection<CrateDescriptionCM>(activityId, direction);
             var availableData = new IncomingCratesDTO();
-
-            availableData.AvailableFields.AddRange(crates.SelectMany(x => x.Content.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0).SelectMany(x => x.Fields));
+            
             availableData.AvailableCrates.AddRange(crates.SelectMany(x => x.Content.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
 
             return availableData;
@@ -243,7 +242,7 @@ namespace Fr8.TerminalBase.Services
             throw new NotImplementedException();
         }
 
-        public Task NotifyUser(TerminalNotificationDTO notificationMessage)
+        public Task NotifyUser(NotificationMessageDTO notificationMessage)
         {
             return Task.FromResult(0);
         }

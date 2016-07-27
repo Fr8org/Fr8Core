@@ -44,7 +44,7 @@ namespace Fr8.Testing.Integration.Tools.Activities
         public async Task<Tuple<ActivityDTO, PlanDTO, Guid>> CreateAndConfigure_MailMergeIntoDocuSign_Solution(string dataSourceValue,
             string dataSourceSelectedKey, string docuSignTemplateValue, string docuSignTemplateSelectedKey, bool addNewDocuSignTemplate)
         {
-            var solutionCreateUrl = _baseHubITest.GetHubApiBaseUrl() + "plans?solution_name=Mail_Merge_Into_DocuSign";
+            var solutionCreateUrl = _baseHubITest.GetHubApiBaseUrl() + "plans?solutionName=Mail_Merge_Into_DocuSign";
 
             //
             // Create solution
@@ -149,7 +149,7 @@ namespace Fr8.Testing.Integration.Tools.Activities
             var initialcrateStorage = _baseHubITest.Crate.FromDto(queryDocuSignActivity.CrateStorage);
 
             var stAuthCrate = initialcrateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
-            bool defaultDocuSignAuthTokenExists = stAuthCrate == null;
+;
 
             //if (!defaultDocuSignAuthTokenExists)
             //{

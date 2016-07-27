@@ -21,6 +21,9 @@ using StructureMap;
 
 namespace terminalFr8Core.Activities
 {
+    /// <summary>
+    ///  Not in service, but may provide useful ideas and insights
+    /// </summary>
     public class Search_Fr8_Warehouse_v1 : ExplicitTerminalActivity
     {
         private readonly IContainer _container;
@@ -205,8 +208,10 @@ namespace terminalFr8Core.Activities
             var operationalStatus = new OperationalStateCM
             {
                 CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.ExecuteClientActivity),
-                CurrentClientActivityName = "RunImmediately"
             };
+
+            operationalStatus.CurrentActivityResponse.Body = "RunImmediately";
+
             var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
             Storage.Add(operationsCrate);
         }
@@ -341,7 +346,7 @@ namespace terminalFr8Core.Activities
             {
                 // This message will get display in Terminal Activity Response.
                 //Logger.GetLogger().Error("Error while configuring the search Fr8 Warehouse action" + e.Message, e);
-                Logger.LogError($"Error while configuring the search Fr8 Warehouse action {e}");
+                Logger.GetLogger().Error($"Error while configuring the search Fr8 Warehouse action {e}");
                 throw;
             }
         }

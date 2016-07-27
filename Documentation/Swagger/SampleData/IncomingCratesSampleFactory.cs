@@ -16,7 +16,6 @@ namespace HubWeb.Documentation.Swagger
         public IncomingCratesDTO GetSampleData()
         {
             var result = new IncomingCratesDTO();
-            result.AvailableFields.Add(_fieldSampleFactory.GetSampleData());
             result.AvailableCrates.Add(_crateDescriptionSampleFactory.GetSampleData());
             return result;
         }

@@ -61,7 +61,7 @@ namespace terminalFr8Core.Activities
         {
             var msg = "This Plan can be launched with the following URL: " + CloudConfigurationManager.GetSetting("DefaultHubUrl")
                 + "redirect/cloneplan?id=" + ActivityId;
-            await _pushNotificationService.PushUserNotification(MyTemplate, "Success", "App Builder URL Generated", msg);
+            await _pushNotificationService.PushUserNotification(MyTemplate, NotificationArea.ActivityStream, "App Builder URL Generated", msg);
         }
 
         private async Task UpdateMetaControls()
@@ -132,7 +132,7 @@ namespace terminalFr8Core.Activities
         private async Task<byte[]> ProcessExcelFile(string filePath)
         {
             var byteArray = await _excelUtils.GetExcelFileAsByteArray(filePath);
-            var payloadCrate = Crate.FromContent(RuntimeCrateLabelPrefix, _excelUtils.GetExcelFile(byteArray, filePath, false), AvailabilityType.RunTime);
+            var payloadCrate = Crate.FromContent(RuntimeCrateLabelPrefix, _excelUtils.GetExcelFile(byteArray, filePath, false));
             Payload.Add(payloadCrate);
             return byteArray;
         }
@@ -145,7 +145,7 @@ namespace terminalFr8Core.Activities
             foreach (var filepicker in file_pickers)
             {
                 string crate_label = GetFileDescriptionLabel(filepicker, labelless_filepickers);
-                storage.Add(Crate.FromContent(crate_label, new StandardFileDescriptionCM(), AvailabilityType.RunTime));
+                storage.Add(Crate.FromContent(crate_label, new StandardFileDescriptionCM()));
             }
         }
 
@@ -189,7 +189,7 @@ namespace terminalFr8Core.Activities
                     Filetype = Path.GetExtension(uploadFilePath)
                 };
 
-                Payload.Add(Crate.FromContent(crate_label, fileDescription, AvailabilityType.RunTime));
+                Payload.Add(Crate.FromContent(crate_label, fileDescription));
             }
         }
 
@@ -231,7 +231,7 @@ namespace terminalFr8Core.Activities
                 }
             };
             generatedConfigControls.Add(submitButton);
-            return Crate<StandardConfigurationControlsCM>.FromContent(CollectionControlsLabel, new StandardConfigurationControlsCM(generatedConfigControls.ToArray()), AvailabilityType.Configuration);
+            return Crate<StandardConfigurationControlsCM>.FromContent(CollectionControlsLabel, new StandardConfigurationControlsCM(generatedConfigControls.ToArray()));
         }
         protected void CreateInitialControls()
         {
@@ -314,6 +314,9 @@ namespace terminalFr8Core.Activities
                 var submitButton = collectionControls.FindByName<Button>("submit_button");
                 if (submitButton.Clicked)
                 {
+                    // Push toast message to front-end
+                    _pushNotificationService.PushUserNotification(MyTemplate, NotificationArea.Toast, "App Builder Submit Button", "Your information has been submitted.");
+
                     if (ActivityContext.ActivityPayload.RootPlanNodeId == null)
                     {
                         throw new Exception($"Activity with id \"{ActivityId}\" has no owner plan");

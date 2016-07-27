@@ -78,7 +78,7 @@ namespace Fr8.Infrastructure.Data.Helpers
             {
                 filteredCrates = filteredCrates.Where(x => x.ManifestType.Equals(fieldToMatch.SourceCrateManifest));
             }
-            var operationalState = payloadStorage.CrateContentsOfType<OperationalStateCM>().Single();
+            var operationalState = payloadStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
             //iterate through found crates to find the payload
             foreach (var foundCrate in filteredCrates)
             {
@@ -95,6 +95,10 @@ namespace Fr8.Infrastructure.Data.Helpers
         private static KeyValueDTO FindField(OperationalStateCM operationalState, Crate crate, string fieldKey)
         {
             object searchArea;
+
+            //
+            // Commented out for future references. Loop related extraction logic moved to Loop activity
+            //
             //let's check if we are in a loop
             //and this is a loop data?
             //check if this crate is loop related

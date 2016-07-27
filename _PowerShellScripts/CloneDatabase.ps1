@@ -24,7 +24,10 @@ if ($command.ExecuteNonQuery() -ne -1)
 	Write-Host $errorMessage
 	exit 1
 }
-Write-Host "Successfully deleted old target database."
+
+Write-Host "Successfully deleted old target database. 120 sec delay to let the database to delete..."
+
+Start-Sleep -Seconds 120
 
 if ([System.String]::IsNullOrEmpty($serviceObjective) -eq $true) 
 {

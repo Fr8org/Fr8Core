@@ -34,7 +34,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
             Type = ActivityType.Standard;
         }
 
-        //[JsonProperty("id")]
+        [JsonProperty("id")]
         public Guid Id { get; set; }
 
         [JsonProperty("name")]
@@ -58,15 +58,18 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         [JsonProperty("categories")]
         public ActivityCategoryDTO[] Categories { get; set; }
 
+        [JsonProperty("category")]
         [JsonConverter(typeof(StringEnumConverter))]
         public ActivityCategory Category { get; set; }
 
+        [JsonProperty("type")]
         [JsonConverter(typeof(StringEnumConverter))]
         public ActivityType Type { get; set; }
 
         [JsonProperty("minPaneWidth")]
         public int MinPaneWidth { get; set; }
 
+        [JsonProperty("needsAuthentication")]
         public bool NeedsAuthentication { get; set; }
 
         [JsonProperty("showDocumentation")]

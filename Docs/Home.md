@@ -2,7 +2,8 @@
 
 [Part 1 - Introduction](/Docs/ForDevelopers/Introduction.md)   
 [Part 2 - Understanding the Fr8 Architectural Model](/Docs/ForDevelopers/ArchitecturalModel.md)   
-[Part 3 - The Fr8 Data Model](/Docs/ForDevelopers/DataModel.md)  
+[Part 3 - The Fr8 Data Model](/Docs/ForDevelopers/DataModel.md) 
+[Part 4 - The Fr8 UI Infrastructure](/Docs/ForDevelopers/OperatingConcepts/UIInfrastructure.md)
 
 General Resources
 -------------------
@@ -14,16 +15,7 @@ General Resources
        
 [Objects](ForDevelopers/Objects/Objects.md)  
 -----------------------------------------
-* [Activities](/Docs/ForDevelopers/Objects/Activities.md)  
-* [Activity Templates](/Docs/ForDevelopers/Objects/ActivityTemplates.md)  
-* [Crates](/Docs/ForDevelopers/Objects/Fr8Crates.md)  
-* [Fr8 Hubs](/Docs/ForDevelopers/Objects/Fr8Hubs.md)  
-* [Plans](/Docs/ForDevelopers/Objects/Plans.md)  
-* [Plan Templates](/Docs/ForDevelopers/Objects/Plans/PlanTemplates.md)
-* [Subplans](/Docs/ForDevelopers/Objects/Subplans.md)  
-* [Containers](/Docs/ForDevelopers/Objects/Containers.md)  
-* [Container Execution](/Docs/ForDevelopers/Objects/ContainerExecution.md)  
-* [Terminals](/Docs/ForDevelopers/Objects/Terminals.md)        
+
 Specifications  
         * [Fr8 Hub Specification](/Docs/ForDevelopers/Specifications/Fr8HubSpecification.md)  
         * [Terminal Specification](/Docs/ForDevelopers/Specifications/TerminalSpecification.md)  
@@ -42,11 +34,5 @@ Specifications
    
         
    
-[Security](/Docs/Security/SecurityOverview.md)  
-----------------------------------
 
-[Permissions](/Docs/Security/Permissions.md)
- 
-[Security Internals](/Docs/Security/SecurityInternals.md)
 
-[Profiles](/Docs/Security/Profiles.md)

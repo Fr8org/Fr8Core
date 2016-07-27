@@ -82,7 +82,7 @@ namespace terminalBasecamp2.Infrastructure
                 var userInfo = await GetCurrentUserInfo(basecampAuthorizationDTO).ConfigureAwait(false);
                 if (userInfo.Accounts.TrueForAll(x => x.Product != Basecamp2Product))
                 {
-                    Logger.LogError($"Authorized user doesn't have access to Basecamp2. Fr8 User Id - {externalState.Fr8UserId}");
+                    Logger.GetLogger().Error($"Authorized user doesn't have access to Basecamp2. Fr8 User Id - {externalState.Fr8UserId}");
                     return new AuthorizationTokenDTO { Error = "We couldn't authorize you as your account doesn't have access to Basecamp2 product" };
                 }
                 basecampAuthorizationDTO.ExpiresAt = userInfo.ExpiresAt;
@@ -97,7 +97,7 @@ namespace terminalBasecamp2.Infrastructure
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Failed to authorize with Basecamp. Fr8 User Id - {externalState.Fr8UserId}, Details - {ex}");
+                Logger.GetLogger().Error($"Failed to authorize with Basecamp. Fr8 User Id - {externalState.Fr8UserId}, Details - {ex}");
                 return new AuthorizationTokenDTO { Error = "An error occured while trying to authorize you. Please try again later" };
             }
         }
