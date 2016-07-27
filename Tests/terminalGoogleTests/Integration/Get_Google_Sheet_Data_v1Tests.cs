@@ -184,7 +184,6 @@ namespace terminalGoogleTests.Integration
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             Assert.AreEqual(1, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
         }
         /////////////
         /// Followup Configuration End
