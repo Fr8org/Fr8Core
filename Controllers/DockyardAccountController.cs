@@ -71,14 +71,13 @@ namespace HubWeb.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult LogOff()
+        public async Task<ActionResult> LogOff()
         {
-            this.Logout();
-
             var userId = User.Identity.GetUserId();
-            var result = Task.Run(() => _planDirectory.Logout(userId)).Result;
+            var result = await _planDirectory.Logout(userId);
             Logger.GetLogger().Debug($"PlanDirectory logout result is {result}");
 
+            this.Logout();
             return RedirectToAction("Index", "DockyardAccount");
         }
 
