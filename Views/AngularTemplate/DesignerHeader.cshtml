@@ -21,7 +21,7 @@
                 </md-button>
             </div>
         </div>
-        <md-radio-group ng-model="state" layout="row" layout-gt-md="row" layout-align="end center" flex  >
+        <md-radio-group ng-model="state" layout="row" layout-gt-md="row" layout-xs="column" layout-align="end center" layout-align-xs="center" flex  >
             <span>View:</span>
             <a ui-sref="plan({id:plan.id})" style="margin-left:5px">
                 <md-radio-button value="plan">Activities</md-radio-button>
@@ -31,7 +31,7 @@
             </a>
         </md-radio-group>
     </div>
-    <div flex="40" flex-md="35" flex-sm="25">
+    <div flex="40" flex-md="35" >
         <div class="designer-header-status" ng-if="!kioskMode" flex="noshrink">
 
             <span class="h4">
