@@ -82,4 +82,4 @@ echo "Branch has been checked out"
 # Move cloned directory with files to the main working directory (exclude .git folder)
 Robocopy $checkoutDirectory $sourcesDirectory /S /XD .git
 
-exit 0;
+exit 0; 
