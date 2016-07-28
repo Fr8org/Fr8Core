@@ -42,11 +42,15 @@ Values assigned to `externalDomainId` and `externalAccountId` should match the s
 
 ## Walkthrough
 
-Before starting: Read [Activity Development Guide](/Docs/ForDevelopers/DevelopmentGuides/ActivityDevelopmentGuide.md)  
+Before starting: Read [Activity Development Guide](/Docs/ForDevelopers/DevelopmentGuides/ActivityDevelopmentGuide.md)
 
-### Listening For Events
+In this example we are going to show you how to create a Monitoring Activity.
 
-An activity needs to include EventSubscriptionCM inside its CrateStorage on a configure response. With this crate inside activity's storage, activity is telling hub to run containing plan when this event happens. Here is an example configure response to subscribe our activity to events.
+##### Step 1. Listening For Events
+
+- You need to include an EventSubscriptionCM inside your CrateStorage on a configure response.
+
+With this crate inside your activity storage, you are telling hub to run containing plan when this event happens. Here is an example configure response to subscribe your activity to events.
 
 ```javascript
 {
@@ -109,15 +113,15 @@ An activity needs to include EventSubscriptionCM inside its CrateStorage on a co
 }
 ```
 
-With this json response we are creating an EventSubscription crate which is listening for "Event1" and "Event2". Whenever one of those events happens hub will run activated plans which have EventSubscriptionCM and listening to one of those events.
+With this json response you are creating an EventSubscriptionCM crate which is listening for "Event1" and "Event2". Whenever one of those events happens, hub will run activated plans which have EventSubscriptionCM and listening to one of those events.
 
-### Triggering Events
+ ##### Step 2. Triggering Events
 
-It is your terminal's responsiblity to create an endpoint for external system's events and listen to them. Every system has different methods for registering to their events. Most of them use webhooks for this purpose.
+It is your terminal's responsiblity to create an endpoint for external system's events and listen to them. Every system has different methods for registering to their events. Most of them use [Webhooks](https://en.wikipedia.org/wiki/Webhook) for this purpose.
 
 Here are some samples to help you understand this concept. [Monitor All Docusign Events Plan](/Docs/ForDevelopers/Samples/MADSEPlan.md).
 
-Assuming that you have correctly configured external system to notify your terminal on events. Terminal needs to parse incoming event data and create an EventReportCM crate according to incoming event.
+Assuming that you have correctly configured external system to notify your terminal on events, you need to parse incoming event data and create an EventReportCM crate according to incoming event.
 
 Below is a sample EventReportCM
 
@@ -153,9 +157,13 @@ Below is a sample EventReportCM
 ```
 
 
-After preparing this EventReport, terminal needs to post this crate to /events endpoint of all subscribed hubs. Hub will run related plans but this time it will be different from regular run. When event triggers a plan execution, hub will add Standard Event Report crate to the payload of container. Therefore all activities will be able to access event data.
+- After preparing EventReportCM, you need to post this crate to /events endpoint of all subscribed hubs.
 
-Generally your monitor activity should extract data from EventPayload and publish this data.
+Hub will run related plans but this time it will be different from regular run. When event triggers a plan execution, hub will add Standard Event Report crate to the payload of container. Therefore all activities will be able to access event data.
+
+- Generally your monitor activity should extract data from EventPayload and publish this data.
+
+With your published data on container payload, downstream activities will be able to use your event data.
 
 
-[Go to Contents](h/Docs/Home.md)
+[Go to Contents](/Docs/Home.md)
