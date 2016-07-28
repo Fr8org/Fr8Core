@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Interfaces;
@@ -32,10 +33,9 @@ namespace terminalIntegrationTests.EndToEnd
             googleActivityConfigurator = new IntegrationTestTools_terminalGoogle(this);
         }
 
-        [Test, Ignore, Category("Integration.terminalGoogle")]
+        [Test, Category("Integration.terminalGoogle")]
         public async Task Query_DocuSign_Into_Google_Sheet_End_To_End()
         {
-           
             var terminalGoogleTools = new Fr8.Testing.Integration.Tools.Terminals.IntegrationTestTools_terminalGoogle(this);
             var googleAuthTokenId = await terminalGoogleTools.ExtractGoogleDefaultToken();
             var defaultGoogleAuthToken = terminalGoogleTools.GetGoogleAuthToken(googleAuthTokenId);
