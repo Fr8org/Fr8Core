@@ -1,4 +1,5 @@
 Getting your Terminal Deployed at Fr8.co
+=========================================
 
 If you've built a useful Terminal, we'd like to get it deployed and available to Fr8 users. There are two basic ways to do this:
 
