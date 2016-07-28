@@ -135,7 +135,7 @@ module dockyard.directives.paneConfigureAction {
         processing: boolean;
 
         isConfigRequestQueued: boolean;
-        configControlOperationQueue: { [controlName: string]: paneConfigureAction.ConfigurationControlOperation; }
+        configControlOperationQueue: { [controlName: string]: Array<paneConfigureAction.ConfigurationControlOperation>; }
         configControlHandles: { [controlName: string]: paneConfigureAction.IConfigurationControlController; };
 
         configurationWatchUnregisterer: Function;
@@ -307,7 +307,10 @@ module dockyard.directives.paneConfigureAction {
         }
 
         public queueOperation(controlName: string, operation: paneConfigureAction.ConfigurationControlOperation): void {
-            this.$scope.configControlOperationQueue[controlName] = operation;
+            if (!this.$scope.configControlOperationQueue[controlName]) {
+                this.$scope.configControlOperationQueue[controlName] = [];
+            }
+            this.$scope.configControlOperationQueue[controlName].push(operation);
         }
 
         private reloadAction (reloadActionEventArgs: ReloadActionEventArgs): void {
@@ -599,7 +602,10 @@ module dockyard.directives.paneConfigureAction {
                     //nothing to do
                     continue;
                 }
-                controlHandle.processOperation(this.$scope.configControlOperationQueue[controlName]);
+                var operationQueue = this.$scope.configControlOperationQueue[controlName];
+                for (var i = 0; i < operationQueue.length; i++) {
+                    controlHandle.processOperation(operationQueue[i]);
+                }
             }
             this.$scope.configControlOperationQueue = {};
         }
