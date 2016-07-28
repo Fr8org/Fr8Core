@@ -17,8 +17,7 @@ namespace terminalQuickBooks.Services
 {
     public class ServiceWorker : IServiceWorker
     {
-        private static readonly string AppToken =
-            CloudConfigurationManager.GetSetting("QuickBooksAppToken").ToString(CultureInfo.InvariantCulture);
+        private static readonly string AppToken = CloudConfigurationManager.GetSetting("QuickBooksAppToken");
 
         private readonly IAuthenticator _authenticator;
 

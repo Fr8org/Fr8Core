@@ -97,9 +97,9 @@ initialization can be disabled and Layout.init() should be called on page load c
 
 /* Setup Layout Part - Header */
 app.controller('HeaderController', ['$scope', '$http', '$window', '$state', 'TerminalService', 'PlanService', ($scope, $http, $window, $state, TerminalService, PlanService) => {
-    $scope.$on('$includeContentLoaded', () => {
+    //$scope.$on('$includeContentLoaded', () => {
         Layout.initHeader(); // init header
-    });
+    //});
 
     $scope.addPlan = function () {
         var plan = new dockyard.model.PlanDTO();
@@ -125,7 +125,7 @@ app.controller('HeaderController', ['$scope', '$http', '$window', '$state', 'Ter
             });
     };
 
-    $scope.runManifestRegistryMonitoring = () => { $http.post('/api/manifest_registries/runMonitoring', {}); };
+    $scope.runManifestRegistryMonitoring = () => { $http.post('/api/manifest_registry/runMonitoring', {}); };
 }]);
 
 /* Setup Layout Part - Footer */
@@ -459,7 +459,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
         })
         .state('manifestregistry',
         {
-            url: "/manifest_registries",
+            url: "/manifest_registry",
             templateUrl: "/AngularTemplate/ManifestRegistryList",
             data: { pageTitle: 'Manifest Registry', pageSubTitle: '' }
         })

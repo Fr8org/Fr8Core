@@ -8,6 +8,7 @@ var Layout = function () {
     var layoutCssPath = 'admin/layout3/css/';
 
     var resBreakpointMd = Metronic.getResponsiveBreakpoint('md');
+    var resBreakpointSm = Metronic.getResponsiveBreakpoint('sm');
 
     //* BEGIN:CORE HANDLERS *//
     // this function handles responsive layout on screen size resize or mobile device rotate.
@@ -166,38 +167,9 @@ var Layout = function () {
     };
 
     // Handles main menu on window resize
-    var handleMainMenuOnResize = function() {
-        // handle hover dropdown menu for desktop devices only
+    var handleMainMenuOnResize = function () {
         var width = Metronic.getViewPort().width;
-        var menu = $(".page-header-menu");
-            
-        if (width >= resBreakpointMd && menu.data('breakpoint') !== 'desktop') { 
-            // reset active states
-            $('.hor-menu [data-toggle="dropdown"].active').removeClass('open');
-
-            menu.data('breakpoint', 'desktop');
-            $('.hor-menu [data-hover="megamenu-dropdown"]').not('.hover-initialized').each(function() {   
-                $(this).dropdownHover(); 
-                $(this).addClass('hover-initialized'); 
-            });
-            $('.hor-menu .navbar-nav li.open').removeClass('open');
-            $(".page-header-menu").css("display", "block");
-        } else if (width < resBreakpointMd && menu.data('breakpoint') !== 'mobile') {
-            // set active states as open
-            $('.hor-menu [data-toggle="dropdown"].active').addClass('open');
-            
-            menu.data('breakpoint', 'mobile');
-            // disable hover bootstrap dropdowns plugin
-            $('.hor-menu [data-hover="megamenu-dropdown"].hover-initialized').each(function() {   
-                $(this).unbind('hover');
-                $(this).parent().unbind('hover').find('.dropdown-submenu').each(function() {
-                    $(this).unbind('hover');
-                });
-                $(this).removeClass('hover-initialized');    
-            });
-        } else if (width < resBreakpointMd) {
-            //$(".page-header-menu").css("display", "none");  
-        }
+        width >= resBreakpointSm ? $(".page-header-menu").css("display", "block") : resBreakpointSm > width && $(".page-header-menu").css("display", "none")
     };
 
     var handleContentHeight = function() {

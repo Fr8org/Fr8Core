@@ -76,22 +76,9 @@ namespace terminalFr8Core.Activities
             OperationalState.CallStack.StoreLocalData("Branch", currentBranch);
             var containerTransition = (ContainerTransition)ConfigurationControls.Controls.Single();
 
-            /// support for any crate
-            var relevant_fields = new List<KeyValueDTO>();
-            foreach (var transition in containerTransition.Transitions)
-            {
-                foreach (var condition in transition.Conditions)
-                {
-                    var fieldValue = Payload.FindField(condition.Field);
-                    if (fieldValue != null)
-                        relevant_fields.Add(new KeyValueDTO(condition.Field, fieldValue));
-                }
-            }
-            ///
-
             foreach (var containerTransitionField in containerTransition.Transitions)
             {
-                if (CheckConditions(containerTransitionField.Conditions, relevant_fields.AsQueryable()))
+                if (CheckConditions(containerTransitionField.Conditions, containerTransition.ResolvedUpstreamFields.AsQueryable()))
                 {
                     //let's return whatever this one says
                     switch (containerTransitionField.Transition)
