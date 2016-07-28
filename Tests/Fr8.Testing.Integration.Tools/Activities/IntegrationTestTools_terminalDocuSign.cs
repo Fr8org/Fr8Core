@@ -178,14 +178,14 @@ namespace Fr8.Testing.Integration.Tools.Activities
             var controls = controlsCrate.Content.Controls;
             var folderControl = controls.OfType<DropDownList>().FirstOrDefault(c => c.Name == "FolderFilter");
             Assert.IsNotNull(folderControl, "Query_DocuSign: DropDownList control for Folder value selection was not found");
-            folderControl.Value = "Draft";
+            folderControl.Value = null;
             folderControl.selectedKey = "Draft";
 
             //set the value of status to any
             var statusControl = controls.OfType<DropDownList>().FirstOrDefault(c => c.Name == "StatusFilter");
             Assert.IsNotNull(folderControl, "Query_DocuSign: DropDownList control for Status value selection was not found");
             statusControl.Value = null;
-            statusControl.selectedKey = "Any status";
+            statusControl.selectedKey = "Any Folder";
 
             //call followup configuration
             using (var crateStorage = _baseHubITest.Crate.GetUpdatableStorage(queryDocuSignActivity))
