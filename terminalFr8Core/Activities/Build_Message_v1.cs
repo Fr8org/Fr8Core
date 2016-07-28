@@ -1,7 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Control;
 using Fr8.Infrastructure.Data.Crates;
@@ -74,14 +71,6 @@ namespace terminalFr8Core.Activities
         {
         }
 
-        private Crate PackMessageCrate(string body = null)
-        {
-            return Crate.FromContent(RuntimeCrateLabel,
-                                     new StandardPayloadDataCM(new KeyValueDTO(ActivityUI.Name.Value, body)));
-        }
-
-        private static readonly Regex FieldPlaceholdersRegex = new Regex(@"\[.*?\]");
-
         public override Task Initialize()
         {
             return Task.FromResult(0);
@@ -89,64 +78,15 @@ namespace terminalFr8Core.Activities
 
         public override Task FollowUp()
         {
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeCrateLabel, true)
-                               .AddField(ActivityUI.Name.Value);
-
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeCrateLabel, true).AddField(ActivityUI.Name.Value);
             return Task.FromResult(0);
         }
 
-        public override async Task Run()
+        public override Task Run()
         {
-            await Task.Factory.StartNew(RunCurrentActivityImpl);
+            Payload.Add(RuntimeCrateLabel, new StandardPayloadDataCM(new KeyValueDTO(ActivityUI.Name.Value, ActivityUI.Body.Value)));
+            return Task.FromResult(0);
+
         }
-
-        private void RunCurrentActivityImpl()
-        {
-            var availableFields = ExtractAvaialbleFieldsFromPayload();
-            var message = ActivityUI.Body.Value;
-            if (availableFields.Count > 0 && !string.IsNullOrEmpty(message))
-            {
-                var messageBodyBuilder = new StringBuilder(message);
-                //We sort placeholders in reverse order so we can replace them starting from the last that won't break any previous match indices
-                var foundPlaceholders = FieldPlaceholdersRegex.Matches(message).Cast<Match>().OrderByDescending(x => x.Index).ToArray();
-                foreach (var placeholder in foundPlaceholders)
-                {
-                    var replaceWith = availableFields.FirstOrDefault(x => string.Equals(x.Key, placeholder.Value.TrimStart('[').TrimEnd(']')));
-                    if (replaceWith != null)
-                    {
-                        messageBodyBuilder.Replace(placeholder.Value, replaceWith.Value, placeholder.Index, placeholder.Value.Length);
-                    }
-                }
-                message = messageBodyBuilder.ToString();
-            }
-            Payload.Add(PackMessageCrate(message));
-        }
-
-        private List<KeyValueDTO> ExtractAvaialbleFieldsFromPayload()
-        {
-            var result = new List<KeyValueDTO>();
-
-            result.AddRange(Payload.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.AllValues()));
-
-            foreach (var tableCrate in Payload.CratesOfType<StandardTableDataCM>().Select(x => x.Content))
-            {
-                //We should take first row of data only if there is at least one data row. We never take header row if it exists
-                var rowToTake = tableCrate.FirstRowHeaders
-                                    ? tableCrate.Table.Count > 1
-                                          ? 1
-                                          : -1
-                                    : tableCrate.Table.Count > 0
-                                            ? 0
-                                            : -1;
-                if (rowToTake == -1)
-                {
-                    continue;
-                }
-                result.AddRange(tableCrate.Table[rowToTake].Row.Select(x => x.Cell));
-            }
-            return result;
-        }
-
-
     }
 }

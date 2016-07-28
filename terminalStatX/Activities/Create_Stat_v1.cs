@@ -187,7 +187,7 @@ namespace terminalStatX.Activities
             var statProperties = new List<KeyValueDTO>();
             if (ActivityUI.AvailableStatProperties != null && ActivityUI.AvailableStatProperties.Any())
             {
-                statProperties.AddRange(ActivityUI.AvailableStatProperties.Select(x => new KeyValueDTO() { Key = x.Name, Value = x.GetValue(Payload) }).ToList());
+                statProperties.AddRange(ActivityUI.AvailableStatProperties.Select(x => new KeyValueDTO() { Key = x.Name, Value = x.TextValue }).ToList());
             }
 
             var statItemsList = new List<KeyValueDTO>();
