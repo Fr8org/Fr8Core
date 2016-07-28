@@ -20,7 +20,7 @@ namespace PlanDirectory.Infrastructure
     {
         private const string TagsSeparator = "-";
         private const string PageExtension = ".html";
-        private const string CategoryPagesDir = "categorypages";
+        private const string CategoryPagesDir = "category";
 
         private readonly IPageDefinition _pageDefinition;
         private readonly IPlanTemplate _planTemplate;

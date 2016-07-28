@@ -43,7 +43,6 @@ namespace terminalFacebook.Services
                 var eventReportContent = new EventReportCM
                 {
                     EventNames = string.Join(",", fbEventCM.ChangedFields),
-                    ContainerDoId = "",
                     EventPayload = new CrateStorage(Crate.FromContent("Facebook user event", fbEventCM)),
                     Manufacturer = "Facebook",
                     ExternalAccountId = fbEventCM.UserId

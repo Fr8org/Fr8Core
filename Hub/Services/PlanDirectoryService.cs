@@ -22,7 +22,7 @@ namespace Hub.Services
             _client = client;
         }
 
-        public async Task<string> GetAuthToken(string UserId)
+        public async Task<string> GetToken(string UserId)
         {
             var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/authentication/token");
             var headers =
@@ -36,25 +36,10 @@ namespace Hub.Services
             return token;
         }
 
-        public async Task<bool> Logout(string UserId)
+        public string LogOutUrl()
         {
-            var result = false;
-            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/authentication/logout");
-            var headers =
-                await
-                    _hmacService.GenerateHMACHeader(uri, "PlanDirectory",
-                        CloudConfigurationManager.GetSetting("PlanDirectorySecret"), UserId);
-            try
-            {
-                var json = await _client.PostAsync<JObject>(uri, headers: headers).ConfigureAwait(false);
-                result = json.Value<bool>("result");
-            }
-            catch (Exception exp)
-            {
-                Logger.GetLogger("planDirectoryService").Debug($"Error while logging out from plan directory {exp}");
-            }
-
-            return result;
+            return CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/Home/LogoutByToken";
         }
+        
     }
 }
