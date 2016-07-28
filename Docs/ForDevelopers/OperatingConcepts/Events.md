@@ -115,7 +115,7 @@ With this crate inside your activity storage, you are telling hub to run contain
 
 With this json response you are creating an EventSubscriptionCM crate which is listening for "Event1" and "Event2". Whenever one of those events happens, hub will run activated plans which have EventSubscriptionCM and listening to one of those events.
 
- ##### Step 2. Triggering Events
+##### Step 2. Triggering Events
 
 It is your terminal's responsiblity to create an endpoint for external system's events and listen to them. Every system has different methods for registering to their events. Most of them use [Webhooks](https://en.wikipedia.org/wiki/Webhook) for this purpose.
 
@@ -148,7 +148,7 @@ Below is a sample EventReportCM
             "contents": {
               //custom data created by your external system
               //this data will be processed by your monitor activity
-            },
+            }
           }
         ]
     }
