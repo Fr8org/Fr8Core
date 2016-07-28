@@ -59,15 +59,15 @@ if ($LastExitCode -ne 0)
 Echo "Cloning..."
 
 Invoke-Expression  "git clone  $githubUrl $checkoutDirectory" | Out-Host
-cd $checkoutDirectory
-
-Echo "Cloned successfully"
 
 if ($LastExitCode -ne 0)
 {
 	Write-Host ("Failed to clone the repository {0}." -f $currentRepo)
 	exit 1;
 }
+
+Echo "Cloned successfully"
+cd $checkoutDirectory
 
 # Checkout the actual branch: try the specified branch and fallback to master 
 if (-not(Checkout-Branch ($branchName))){
