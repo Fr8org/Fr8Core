@@ -24,15 +24,13 @@ param(
 
 function Checkout-Branch($branchName) {
     # Checkout the specified branch 
-    Invoke-Expression "git checkout $branchName > $tempFileName"
+    Invoke-Expression "git checkout $branchName 2> $tempFileName"
     if ($LastExitCode -ne 0)
     {
 	    return $false;
     }
     return $true;
 }
-
-$ErrorActionPreference = 'Stop'
 
 if (Test-Path $tempDirectory) {
     cd $tempDirectory
@@ -45,7 +43,7 @@ else {
 
 $githubUrl = "https://{0}:{1}@github.com/{2}/{3}.git" -f $github_username, $github_password, $github_account, $github_repo
 
-$tempFileName = [System.IO.Path]::Combine($tempDirectory, "log.txt")
+$tempFileName = [System.IO.Path]::Combine($tempDirectory, "log.txt") 
 $checkoutDirectory = [System.IO.Path]::Combine($tempDirectory, "checkout")
 
 # Prevent git operation from failing (see http://stackoverflow.com/questions/11693074/git-credential-cache-is-not-a-git-command)
@@ -56,10 +54,7 @@ if ($LastExitCode -ne 0)
 }
 
 # Clone open source repo
-Echo "Log file: $tempFileName"
-$command = "git clone  $githubUrl $checkoutDirectory > $tempFileName" 
-Echo "Cloning: $command"
-Invoke-Expression  $command
+Invoke-Expression "git clone  $githubUrl $checkoutDirectory 2> $tempFileName" 
 
 if ($LastExitCode -ne 0)
 {
