@@ -64,7 +64,7 @@ namespace PlanDirectory.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet]        
         public ActionResult LogoutByToken(string token)
         {
             try
@@ -78,6 +78,9 @@ namespace PlanDirectory.Controllers
                 var securityServices = ObjectFactory.GetInstance<ISecurityServices>();
                 Logger.GetLogger("PlanDirectory").Debug($"Logging out user {securityServices.GetCurrentUser()}");
                 securityServices.Logout();
+
+                //really should replace * with certain domains
+                Response.AppendHeader("Access-Control-Allow-Origin", "https://dev.fr8.co ; https://fr8.co");
 
                 return Redirect(VirtualPathUtility.ToAbsolute("~/"));
             }
