@@ -192,17 +192,6 @@
           <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-terminalYammer.fr8.co" />
         </Bindings>
       </Site>
-      <Site name="terminalDemo" physicalDirectory="..\..\..\terminalDemo\azure.publish">
-        <Bindings>
-          <!--<Binding name="Endpoint1" endpointName="terminalDemo" />-->
-          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalDemo.fr8.co" />
-          <Binding name="Endpoint2" endpointName="server80" hostHeader="dev-terminalDemo.fr8.co" />
-          <Binding name="Endpoint2" endpointName="server80" hostHeader="demo-terminalDemo.fr8.co" />
-          <Binding name="Endpoint3" endpointName="server443" hostHeader="terminalDemo.fr8.co" />
-          <Binding name="Endpoint3" endpointName="server443" hostHeader="dev-terminalDemo.fr8.co" />
-          <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-terminalDemo.fr8.co" />
-        </Bindings>
-      </Site>
       <Site name="terminalFacebook" physicalDirectory="..\..\..\terminalFacebook\azure.publish">
         <Bindings>
           <Binding name="Endpoint1" endpointName="terminalFacebook" />
@@ -283,7 +272,6 @@
       <Setting name="terminalSlack.TerminalEndpoint"/>
       <Setting name="terminalTwilio.TerminalEndpoint"/>
       <Setting name="terminalYammer.TerminalEndpoint"/>
-      <Setting name="terminalDemo.TerminalEndpoint"/>
       <Setting name="terminalBox.TerminalEndpoint"/>
 	    <Setting name="terminalStatX.TerminalEndpoint"/>
       <Setting name="terminalFacebook.TerminalEndpoint"/>
@@ -320,11 +308,6 @@
       <InputEndpoint name="terminalTelegram" protocol="http" port="59022" />
       <InputEndpoint name="terminalInstagram" protocol="http" port="10109" />
       <InputEndpoint name="PlanDirectory" protocol="http" port="64879" />
-      
-      <!-- 
-      Deploy this one on another cloud service 
-      <InputEndpoint name="terminalDemo" protocol="http" port="22555" /> 
-      -->
     </Endpoints>
     <Imports>
       <Import moduleName="RemoteAccess" />
