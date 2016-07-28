@@ -138,7 +138,7 @@ namespace terminalYammer.Actions
 
             //Quick fix FR-2719
             var messageField = GetControl<TextSource>("Message");
-            groupMessage.Message = messageField.GetValue(payload);
+            groupMessage.Message = messageField.TextValue;
             return groupMessage;
         }
 

@@ -15,8 +15,6 @@ namespace terminalSalesforce.Infrastructure
         
         Task<List<FieldDTO>> GetProperties(SalesforceObjectType type, AuthorizationToken authToken, bool updatableOnly = false, string label = null);
 
-        T CreateSalesforceDTO<T>(ActivityPayload activity, PayloadDTO payload) where T : new();
-
         Task<string> PostToChatter(string message, string parentObjectId, AuthorizationToken authToken);
 
         IEnumerable<FieldDTO> GetSalesforceObjectTypes(SalesforceObjectOperations filterByOperations = SalesforceObjectOperations.None, SalesforceObjectProperties filterByProperties = SalesforceObjectProperties.None);

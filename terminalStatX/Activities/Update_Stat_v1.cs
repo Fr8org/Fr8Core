@@ -236,7 +236,7 @@ namespace terminalStatX.Activities
 
         public override async Task Run()
         {
-            var statValues = ActivityUI.StatValues.Select(x => new { x.Name, Value = x.GetValue(Payload) }).ToDictionary(x => x.Name, x => x.Value);
+            var statValues = ActivityUI.StatValues.Select(x => new { x.Name, Value = x.TextValue }).ToDictionary(x => x.Name, x => x.Value);
             
             if (string.IsNullOrEmpty(ActivityUI.ExistingGroupsList.Value))
             {
@@ -249,7 +249,7 @@ namespace terminalStatX.Activities
             }
 
             await _statXIntegration.UpdateStatValue(StatXUtilities.GetStatXAuthToken(AuthorizationToken), ActivityUI.ExistingGroupsList.Value,
-                ActivityUI.ExistingGroupStats.Value, statValues, ActivityUI.StatTitle.GetValue(Payload), ActivityUI.StatNotes.GetValue(Payload));
+                ActivityUI.ExistingGroupStats.Value, statValues, ActivityUI.StatTitle.TextValue, ActivityUI.StatNotes.TextValue);
             
             Success();
         }

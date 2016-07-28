@@ -177,22 +177,13 @@ namespace terminalFr8Core.Activities
             {
                 RaiseError("No control found with Type == \"filterPane\"");
             }
-
-            List<KeyValueDTO> fields = new List<KeyValueDTO>();
-            var filterDataDTO = JsonConvert.DeserializeObject<FilterDataDTO>(filterPaneControl.Value);
-            foreach (var condition in filterDataDTO.Conditions)
-            {
-                var fieldValue = Payload.FindField(condition.Field);
-                if (!string.IsNullOrEmpty(fieldValue))
-                    fields.Add(new KeyValueDTO(condition.Field, fieldValue));
-            }
-
+            
             // Prepare envelope data.
             // Evaluate criteria using Contents json body of found Crate.
             bool result = false;
             try
             {
-                result = Evaluate(filterPaneControl.Value, ExecutionContext.ContainerId, fields.AsQueryable());
+                result = Evaluate(filterPaneControl.Value, ExecutionContext.ContainerId, filterPaneControl.ResolvedUpstreamFields.AsQueryable());
             }
             catch (Exception)
             {

@@ -1,6 +1,5 @@
 ﻿using System;
 using Data.Entities;
-using Data.Infrastructure.AutoMapper;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
@@ -15,49 +14,12 @@ namespace Hub.Managers
             if (activity == null) throw new ArgumentNullException("activity");
             return crateManager.UpdateStorage(() => activity.CrateStorage);
         }
-
-        public static IUpdatableCrateStorage GetUpdatableStorage(this ICrateManager crateManager, ActivityDTO activity)
-        {
-            if (activity == null) throw new ArgumentNullException("action");
-            return crateManager.UpdateStorage(() => activity.CrateStorage);
-        }
-
-        public static IUpdatableCrateStorage GetUpdatableStorage(this ICrateManager crateManager, PayloadDTO payload)
-        {
-            if (payload == null) throw new ArgumentNullException("payload");
-            return crateManager.UpdateStorage(() => payload.CrateStorage);
-        }
-
+        
         public static ICrateStorage GetStorage(this ICrateManager crateManager, ActivityDO activity)
         {
-           return GetStorage(crateManager, activity.CrateStorage);
+           return crateManager.GetStorage(activity.CrateStorage);
         }
-
-        public static ICrateStorage GetStorage(this ICrateManager crateManager, string crateStorageRaw)
-        {
-            if (string.IsNullOrWhiteSpace(crateStorageRaw))
-            {
-                return new CrateStorage();
-            }
-
-            return crateManager.FromDto(CrateStorageFromStringConverter.Convert(crateStorageRaw));
-        }
-
-        public static ICrateStorage GetStorage(this ICrateManager crateManager, ActivityDTO activity)
-        {
-            return crateManager.FromDto(activity.CrateStorage);
-        }
-
-        public static ICrateStorage GetStorage(this ICrateManager crateManager, PayloadDTO payload)
-        {
-            return crateManager.FromDto(payload.CrateStorage);
-        }
-
-        public static bool IsStorageEmpty(this ICrateManager crateManager, ActivityDTO activity)
-        {
-            return crateManager.IsEmptyStorage(activity.CrateStorage);
-        }
-
+        
         public static bool IsStorageEmpty(this ICrateManager crateManager, ActivityDO activity)
         {
             if (string.IsNullOrWhiteSpace(activity.CrateStorage))
