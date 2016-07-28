@@ -15,6 +15,7 @@ namespace terminalBox
         public static TerminalDTO TerminalDTO = new TerminalDTO()
         {
             Name = "terminalBox",
+            Label = "Box",
             TerminalStatus = TerminalStatus.Active,
             Endpoint = CloudConfigurationManager.GetSetting("terminalBox.TerminalEndpoint"),
             Version = "1",
