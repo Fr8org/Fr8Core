@@ -157,13 +157,10 @@ namespace terminalFr8Core.Activities
                 var expression = ParseCriteriaExpression(condition, fields);
                 var results = fields.Provider.CreateQuery<KeyValueDTO>(expression);
 
-                if (results.Any())
-                {
+                if (results.Any()) {
                     checker = true;
-                }
-                else
-                {
-                    //if there is false condition, stop evaluating
+                } else {
+                    // One false condition is enough for stopping evaluation
                     checker = false;
                     break;
                 }

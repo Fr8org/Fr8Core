@@ -150,6 +150,15 @@ namespace terminalFr8Core.Activities
                 case "lte":
                     criterionExpression = Expression.LessThanOrEqual(comparisionExpr, zero);
                     break;
+                case "con":
+                    criterionExpression = null;
+                    break;
+                case "enw":
+                    criterionExpression = null;
+                    break;
+                case "stw":
+                    criterionExpression = null;
+                    break;
                 default:
                     throw new NotSupportedException($"Not supported operator: {op}");
             }

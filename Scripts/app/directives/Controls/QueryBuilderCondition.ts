@@ -133,10 +133,8 @@
                             $scope.focusOutSet(focusElem);
                         }
 
-
-                            $select.open = !$scope.toggle;
-                            $scope.toggle = !$scope.toggle;
-
+                        $select.open = !$scope.toggle;
+                        $scope.toggle = !$scope.toggle;
                     };
 
                     var isFocusOutFunc = focusElem => {

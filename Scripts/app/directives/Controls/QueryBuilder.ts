@@ -66,7 +66,10 @@ module dockyard.directives {
                         { text: '<', value: 'lt' },
                         { text: '<=', value: 'lte' },
                         { text: '==', value: 'eq' },
-                        { text: '<>', value: 'neq' }
+                        { text: '<>', value: 'neq' },
+                        { text: 'contains', value: 'con' },
+                        { text: 'starts with', value: 'stw' },
+                        { text: 'ends with', value: 'enw' }
                     ];
 
                     $scope.addRowText = $scope.addRowText || 'Add Row';
