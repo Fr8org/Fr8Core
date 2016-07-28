@@ -7,7 +7,7 @@ namespace terminalTelegram
     {
         public static void Register(HttpConfiguration config)
         {
-            BaseTerminalWebApiConfig.Register("Fr8Telegram", config);
+            BaseTerminalWebApiConfig.Register("Telegram", config);
         }
     }
 }

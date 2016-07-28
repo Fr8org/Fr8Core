@@ -13,13 +13,12 @@ namespace Hub.Interfaces
         /// </summary>
         /// <param name="UserId">User who will be authenticated in PD</param>
         /// <returns></returns>
-        Task<string> GetAuthToken(string UserId);
+        Task<string> GetToken(string UserId);
 
         /// <summary>
-        /// Logiout user from PD in case he was uthenticated
+        /// Get url for logging out
         /// </summary>
-        /// <param name="UserId"></param>
-        /// <returns></returns>
-        Task<bool> Logout(string UserId);
+        /// <returns>url string</returns>
+        string LogOutUrl();
     }
 }

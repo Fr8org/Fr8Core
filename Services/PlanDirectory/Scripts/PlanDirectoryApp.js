@@ -124,6 +124,11 @@
                     });
             };
 
+            $scope.generatePages = function() {
+                var url = urlPrefix + '/api/plan_templates/generatepages';
+                $http.post(url, null);
+            }
+
             checkPrivileged()
                 .then(function (privileged) {
                     $scope.privileged = privileged;
