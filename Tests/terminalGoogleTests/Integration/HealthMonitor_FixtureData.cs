@@ -170,7 +170,6 @@ namespace terminalGoogleTests.Integration
             var eventReportContent = new EventReportCM
             {
                 EventNames = "Google Form Response",
-                ContainerDoId = "",
                 EventPayload = WrapPayloadDataCrate(payloadFields),
                 ExternalAccountId = "g_admin@dockyard.company",
                 Manufacturer = "Google"
@@ -187,7 +186,6 @@ namespace terminalGoogleTests.Integration
             var eventReportContent = new EventReportCM
             {
                 EventNames = "Google Form Response",
-                ContainerDoId = "",
                 EventPayload = WrapPayloadDataCrate(payloadFields),
                 ExternalAccountId = "g_admin@dockyard.company",
                 Manufacturer = "Google"
