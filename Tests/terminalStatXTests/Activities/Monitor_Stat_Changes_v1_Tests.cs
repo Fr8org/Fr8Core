@@ -17,6 +17,7 @@ using terminalStatXTests.Fixtures;
 
 namespace terminalStatXTests.Activities
 {
+    [Ignore]
     [TestFixture, Category("terminalStatX")]
     public class Monitor_Stat_Changes_v1_Tests : BaseTest
     {
