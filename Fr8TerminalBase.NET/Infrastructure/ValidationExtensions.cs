@@ -56,6 +56,14 @@ namespace Fr8.TerminalBase.Infrastructure
 
         public static bool ValidateTextSourceNotEmpty(this ValidationManager validationManager, TextSource control, string errorMessage)
         {
+            ////here is a check for design time
+            if (validationManager.Payload == null && control != null && !control.HasValue)
+            {
+                validationManager.SetError(errorMessage, control);
+                return false;
+            }
+
+            //this is a check for runtime
             if (control != null && control.CanGetValue(validationManager.Payload) && string.IsNullOrWhiteSpace(control.GetValue(validationManager.Payload)))
             {
                 validationManager.SetError(errorMessage, control);
