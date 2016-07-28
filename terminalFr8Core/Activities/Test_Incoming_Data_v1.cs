@@ -14,6 +14,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using Newtonsoft.Json;
+using Fr8.Infrastructure.Data.Helpers;
 
 namespace terminalFr8Core.Activities
 {
@@ -40,26 +41,6 @@ namespace terminalFr8Core.Activities
         public Test_Incoming_Data_v1(ICrateManager crateManager)
             : base(crateManager)
         {
-        }
-
-        protected List<KeyValueDTO> GetAllPayloadFields()
-        {
-            var valuesCrates = Payload.CrateContentsOfType<StandardPayloadDataCM>();
-            var valuesTableCrates = Payload.CrateContentsOfType<StandardTableDataCM>();
-            var curValues = new List<KeyValueDTO>();
-            foreach (var valuesCrate in valuesCrates)
-            {
-                curValues.AddRange(valuesCrate.AllValues());
-            }
-            var tableCrates = valuesTableCrates.Where(c => c.Table.Count == 1);
-            if(tableCrates != null)
-            {
-                foreach (var valuesCrate in tableCrates)
-                {
-                    curValues.AddRange(valuesCrate.ToPayloadData().AllValues());
-                }
-            }
-            return curValues;
         }
 
         private bool Evaluate(string criteria, Guid processId, IEnumerable<KeyValueDTO> values)
@@ -101,7 +82,7 @@ namespace terminalFr8Core.Activities
             if (left is string && right is string)
             {
                 decimal v1;
-                decimal v2; 
+                decimal v2;
                 if (decimal.TryParse((string)left, out v1) && decimal.TryParse((string)right, out v2))
                 {
                     return v1.CompareTo(v2);
@@ -110,7 +91,7 @@ namespace terminalFr8Core.Activities
             }
             return -2;
         }
-        
+
         protected Expression ParseCriteriaExpression(FilterConditionDTO condition, IQueryable<KeyValueDTO> queryableData)
         {
             var curType = typeof(KeyValueDTO);
@@ -175,7 +156,7 @@ namespace terminalFr8Core.Activities
                 Required = true,
                 Source = new FieldSourceDTO
                 {
-                    Label = "Queryable Criteria",
+                    Label = "Upstream Terminal-Provided Fields",
                     ManifestType = CrateManifestTypes.StandardDesignTimeFields,
                     RequestUpstream = true
                 }
@@ -196,13 +177,22 @@ namespace terminalFr8Core.Activities
             {
                 RaiseError("No control found with Type == \"filterPane\"");
             }
-            var curValues = GetAllPayloadFields();
+
+            List<KeyValueDTO> fields = new List<KeyValueDTO>();
+            var filterDataDTO = JsonConvert.DeserializeObject<FilterDataDTO>(filterPaneControl.Value);
+            foreach (var condition in filterDataDTO.Conditions)
+            {
+                var fieldValue = Payload.FindField(condition.Field);
+                if (!string.IsNullOrEmpty(fieldValue))
+                    fields.Add(new KeyValueDTO(condition.Field, fieldValue));
+            }
+
             // Prepare envelope data.
             // Evaluate criteria using Contents json body of found Crate.
             bool result = false;
             try
             {
-                result = Evaluate(filterPaneControl.Value, ExecutionContext.ContainerId, curValues);
+                result = Evaluate(filterPaneControl.Value, ExecutionContext.ContainerId, fields.AsQueryable());
             }
             catch (Exception)
             {
