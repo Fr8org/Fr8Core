@@ -41,7 +41,7 @@ namespace PlanDirectory.Infrastructure
 
             private void ConfigurePlanPageGenerator(Uri planDirectoryUrl, string serverPath)
             {
-                var templateGenerator = new TemplateGenerator(new Uri($"{planDirectoryUrl}CategoryPages"), $"{serverPath}/CategoryPages");
+                var templateGenerator = new TemplateGenerator(new Uri($"{planDirectoryUrl}Category"), $"{serverPath}/Category");
                 For<IWebservicesPageGenerator>().Use<WebservicesPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
             }
 
