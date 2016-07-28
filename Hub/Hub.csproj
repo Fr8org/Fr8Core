@@ -389,6 +389,7 @@
     <Compile Include="Services\ContainerService.ExecutionSession.cs" />
     <Compile Include="Services\Fact.cs" />
     <Compile Include="Interfaces\ITerminalDiscoveryService.cs" />
+    <Compile Include="Interfaces\IFr8Account.cs" />
     <Compile Include="Services\ManifestService.cs" />
     <Compile Include="Services\MT\MTSearchHelper.cs" />
     <Compile Include="Services\MT\MTSearchHelper.IMtQueryProvider.cs" />
