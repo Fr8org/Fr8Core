@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 
-namespace PlanDirectory.Infrastructure
+namespace PlanDirectory.Interfaces
 {
     public interface IPlanTemplate
     {
