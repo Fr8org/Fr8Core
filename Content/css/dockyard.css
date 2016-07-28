@@ -146,6 +146,12 @@
     cursor: pointer;
 }
 
+@media (max-width: 599px){
+    designer-header md-radio-group {
+        margin-top: -15px
+    }
+}
+
 .sub-plan-container {
     padding-top:50px;
     overflow: auto;

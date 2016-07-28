@@ -8,6 +8,7 @@ Fr8 Operating Concepts Home
 * [Documentation & Help](/Docs/ForDevelopers/ActivityDevelopmentBuildingDocumentation.md)
 * [Events](/Docs/ForDevelopers/OperatingConcepts/Events.md)  
 * [Execution](/Docs/ForDevelopers/OperatingConcepts/PlanExecution.md)
+* [Logging, Incidents, and Facts](/Docs/ForDevelopers/OperatingConcepts/LoggingIncidentsFacts.md)
 * [Manifests](/Docs/ForDevelopers/Objects/CratesManifest.md)
 * [Security/Authorization](/Docs/ForDevelopers/OperatingConcepts/Authorization/Home.md)
 * [Signaling](/Docs/ForDevelopers/OperatingConcepts/Signaling.md)
