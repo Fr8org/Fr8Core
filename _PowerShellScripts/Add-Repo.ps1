@@ -24,7 +24,7 @@ param(
 
 function Checkout-Branch($branchName) {
     # Checkout the specified branch 
-    Invoke-Expression "git checkout $branchName"
+    Invoke-Expression "git checkout $branchName 2> $tempFileName"
     if ($LastExitCode -ne 0)
     {
 	    return $false;
@@ -58,7 +58,7 @@ if ($LastExitCode -ne 0)
 # Clone open source repo
 Echo "Cloning..."
 
-Invoke-Expression  "git clone  $githubUrl $checkoutDirectory" | Out-Host
+Invoke-Expression  "git clone  $githubUrl $checkoutDirectory 2> $tempFileName" | Out-Host
 
 if ($LastExitCode -ne 0)
 {
