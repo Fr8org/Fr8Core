@@ -174,7 +174,7 @@ namespace HubWeb.Controllers
             var pdSvc = new PlanDirectoryService(hmacService,client);
 
             var userId = User.Identity.GetUserId();
-            var token = await pdSvc.GetAuthToken(userId);
+            var token = await pdSvc.GetToken(userId);
 
             //var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/authentication/token");
             //var headers =
