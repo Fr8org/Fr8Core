@@ -513,7 +513,7 @@ namespace Fr8.Infrastructure.Data.Control
         }
 
         public bool HasValue => !string.IsNullOrEmpty(ValueSource) && (HasUpstreamValue || HasSpecificValue);
-        public bool HasUpstreamValue => ValueSource == UpstreamValueSrouce && !string.IsNullOrEmpty(Value);
+        public bool HasUpstreamValue => ValueSource == UpstreamValueSrouce && (!string.IsNullOrEmpty(Value) || !string.IsNullOrEmpty(selectedKey));
         public bool HasSpecificValue => ValueSource == SpecificValueSource && !string.IsNullOrEmpty(TextValue);
         public bool ValueSourceIsNotSet => string.IsNullOrEmpty(ValueSource);
     }
