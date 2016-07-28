@@ -317,7 +317,7 @@ namespace terminalFr8Core.Activities
                 if (submitButton.Clicked)
                 {
                     // Push toast message to front-end
-                    await _pushNotificationService.PushUserNotification(MyTemplate, NotificationArea.Toast, "App Builder Submit Button", "Your information has been submitted.");
+                    
                     if (ActivityContext.ActivityPayload.RootPlanNodeId == null)
                     {
                         throw new Exception($"Activity with id \"{ActivityId}\" has no owner plan");
@@ -327,10 +327,11 @@ namespace terminalFr8Core.Activities
                     
                     ThreadPool.QueueUserWorkItem(state =>
                     {
-                        var ap = state as ActivityPayload;
-                        Task.WaitAll(HubCommunicator.SaveActivity(ap));
-                        Task.WaitAll(HubCommunicator.RunPlan(ap.RootPlanNodeId.Value, new[] { flagCrate }));
-                    }, ActivityContext.ActivityPayload);
+                        Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, NotificationArea.Toast, "App Builder Submit Button", "Your information has been submitted."));
+                        Task.WaitAll(HubCommunicator.SaveActivity(ActivityContext.ActivityPayload));
+                        Task.WaitAll(HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, new[] { flagCrate }));
+                        Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, NotificationArea.Toast, "-", "Your information has been processed."));
+                    });
 
                     //we need to start the process - run current plan - that we belong to
                     //after running the plan - let's reset button state
