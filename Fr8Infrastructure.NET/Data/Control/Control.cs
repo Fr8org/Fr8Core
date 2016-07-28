@@ -50,7 +50,6 @@ namespace Fr8.Infrastructure.Data.Control
         public const string TextSource = "TextSource";
         public const string TextArea = "TextArea";
         public const string QueryBuilder = "QueryBuilder";
-        public const string ManagePlan = "ManagePlan";
         public const string Duration = "Duration";
         public const string RunPlanButton = "RunPlanButton";
         public const string UpstreamDataChooser = "UpstreamDataChooser";
