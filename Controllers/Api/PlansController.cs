@@ -314,6 +314,19 @@ namespace HubWeb.Controllers
         {
             await _plan.Deactivate(planId);
 
+            // Notify UI for stopped plan
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var plan = uow.PlanRepository.GetById<PlanDO>(planId);
+                _pusherNotifier.NotifyUser(new NotificationMessageDTO
+                {
+                    NotificationType = NotificationType.ExecutionStopped,
+                    NotificationArea = NotificationArea.ActivityStream,
+                    Message = $"\"{plan.Name}\"",
+                    Collapsed = false
+                }, plan.Fr8AccountId);
+            }
+
             return Ok();
         }
         /// <summary>
