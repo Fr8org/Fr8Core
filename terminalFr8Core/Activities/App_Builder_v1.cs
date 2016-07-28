@@ -132,7 +132,7 @@ namespace terminalFr8Core.Activities
         private async Task<byte[]> ProcessExcelFile(string filePath)
         {
             var byteArray = await _excelUtils.GetExcelFileAsByteArray(filePath);
-            var payloadCrate = Crate.FromContent(RuntimeCrateLabelPrefix, _excelUtils.GetExcelFile(byteArray, filePath, false), AvailabilityType.RunTime);
+            var payloadCrate = Crate.FromContent(RuntimeCrateLabelPrefix, _excelUtils.GetExcelFile(byteArray, filePath, false));
             Payload.Add(payloadCrate);
             return byteArray;
         }
@@ -145,7 +145,7 @@ namespace terminalFr8Core.Activities
             foreach (var filepicker in file_pickers)
             {
                 string crate_label = GetFileDescriptionLabel(filepicker, labelless_filepickers);
-                storage.Add(Crate.FromContent(crate_label, new StandardFileDescriptionCM(), AvailabilityType.RunTime));
+                storage.Add(Crate.FromContent(crate_label, new StandardFileDescriptionCM()));
             }
         }
 
@@ -189,7 +189,7 @@ namespace terminalFr8Core.Activities
                     Filetype = Path.GetExtension(uploadFilePath)
                 };
 
-                Payload.Add(Crate.FromContent(crate_label, fileDescription, AvailabilityType.RunTime));
+                Payload.Add(Crate.FromContent(crate_label, fileDescription));
             }
         }
 
@@ -231,7 +231,7 @@ namespace terminalFr8Core.Activities
                 }
             };
             generatedConfigControls.Add(submitButton);
-            return Crate<StandardConfigurationControlsCM>.FromContent(CollectionControlsLabel, new StandardConfigurationControlsCM(generatedConfigControls.ToArray()), AvailabilityType.Configuration);
+            return Crate<StandardConfigurationControlsCM>.FromContent(CollectionControlsLabel, new StandardConfigurationControlsCM(generatedConfigControls.ToArray()));
         }
         protected void CreateInitialControls()
         {

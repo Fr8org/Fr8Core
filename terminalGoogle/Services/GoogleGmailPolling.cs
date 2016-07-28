@@ -85,7 +85,6 @@ namespace terminalGoogle.Services
                                 var eventReportContent = new EventReportCM
                                 {
                                     EventNames = "GmailInbox",
-                                    ContainerDoId = "",
                                     EventPayload = new CrateStorage(Crate.FromContent("GmailInbox", email)),
                                     Manufacturer = "Google",
                                     ExternalAccountId = pollingData.ExternalAccountId

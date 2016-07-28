@@ -241,6 +241,7 @@
     <Compile Include="Data\Helpers\Fr8ApiHelper.cs" />
     <Compile Include="Data\Helpers\Fr8ReflectionHelper.cs" />
     <Compile Include="Data\Helpers\IMemberAccessor.cs" />
+    <Compile Include="Data\Helpers\IndexerMemeberAccessor.cs" />
     <Compile Include="Data\Helpers\PropertyMemberAccessor.cs" />
     <Compile Include="Data\Convertors\JsonNet\ActivityTemplateActivityConverter.cs" />
     <Compile Include="Data\Convertors\JsonNet\AvailabilityConverter.cs" />
@@ -349,6 +350,7 @@
     <Compile Include="Interfaces\IPusherNotifier.cs" />
     <Compile Include="Utilities\JsonPackager.cs" />
     <Compile Include="Utilities\JsonSettings.cs" />
+    <Compile Include="Utilities\Logging\Fr8PatternLayout.cs" />
     <Compile Include="Utilities\Logging\Logger.cs" />
     <Compile Include="Utilities\Logging\RemoteSyslogAppender.cs" />
     <Compile Include="Utilities\MappingEngineExtensions.cs" />

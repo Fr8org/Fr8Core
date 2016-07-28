@@ -146,7 +146,7 @@ namespace terminalDocuSign.Services
 
         private bool CheckIfSaveToFr8WarehouseConfiguredWithOldManifest(PlanDTO val)
         {
-            return (Hub.Managers.CrateManagerExtensions.GetStorage(_crateManager, val.Plan.SubPlans.ElementAt(0).Activities[1]).CrateContentsOfType<StandardConfigurationControlsCM>()
+            return (_crateManager.GetStorage(val.Plan.SubPlans.ElementAt(0).Activities[1]).CrateContentsOfType<StandardConfigurationControlsCM>()
                      .First().FindByName("UpstreamCrateChooser") as UpstreamCrateChooser).SelectedCrates.Count > 1;
         }
 
@@ -167,7 +167,7 @@ namespace terminalDocuSign.Services
                         //second condition
                         val.Plan.SubPlans.ElementAt(0).Activities.Any() &&
                         //third condtion
-                        Hub.Managers.CrateManagerExtensions.GetStorage(_crateManager, val.Plan.SubPlans.ElementAt(0).Activities[0]).FirstOrDefault(t => t.Label == "DocuSignUserCrate") != null &&
+                        _crateManager.GetStorage(val.Plan.SubPlans.ElementAt(0).Activities[0]).FirstOrDefault(t => t.Label == "DocuSignUserCrate") != null &&
                         //fourth condition -> check if SaveToFr8Warehouse configured with old manifests
                         !(plan_name == "MonitorAllDocuSignEvents" && CheckIfSaveToFr8WarehouseConfiguredWithOldManifest(val))
 
@@ -180,7 +180,7 @@ namespace terminalDocuSign.Services
 
                         existingPlans = newPlans.Where(
                               a => a.Plan.SubPlans.Any(b =>
-                                  Hub.Managers.CrateManagerExtensions.GetStorage(_crateManager, b.Activities[0])
+                                 _crateManager.GetStorage(b.Activities[0])
                                   .FirstOrDefault(t => t.Label == "DocuSignUserCrate").Get<StandardPayloadDataCM>().GetValues("DocuSignUserEmail").FirstOrDefault() == authToken.ExternalAccountId)).ToList();
 
                         if (existingPlans.Count > 1)

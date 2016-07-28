@@ -79,7 +79,6 @@ namespace terminalDocuSign.Services
                 var eventReportContent = new EventReportCM
                 {
                     EventNames = DocuSignEventParser.GetEventNames(envelope),
-                    ContainerDoId = "",
                     EventPayload = new CrateStorage(Crate.FromContent("DocuSign Connect Event", envelope)),
                     Manufacturer = "DocuSign",
                     ExternalAccountId = envelope.ExternalAccountId

@@ -108,6 +108,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/DesignerHeader/DesignerHeader.js',
         'Scripts/app/directives/SubplanHeader.js',
         'Scripts/app/directives/ActivityHeader.js',
+        'Scripts/app/directives/UIBlocker.js',
         'Scripts/app/services/SubordinateSubplanService.js',
         'Scripts/app/directives/Controls/FilePicker.js',
         'Scripts/app/directives/Controls/RadioButtonGroup.js',
@@ -408,7 +409,7 @@ gulp.task('cdnizer-js', ['bower'], function () {
             {
                 file: '~/bower_components/noty/js/noty/packaged/jquery.noty.packaged.min.js',
                 package: 'noty',
-                cdn: '//cdnjs.cloudflare.com/ajax/libs/jquery-noty/2.3.8/jquery.noty.min.js'
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/jquery-noty/2.3.8/packaged/jquery.noty.packaged.min.js'
             }
         ]))
         .pipe(gulp.dest('./Views/Shared/CDN'));

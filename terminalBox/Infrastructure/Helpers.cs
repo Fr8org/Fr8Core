@@ -6,6 +6,6 @@ namespace terminalBox.Infrastructure
     {
         public static string ClientId = CloudConfigurationManager.GetSetting("BoxClientId");
         public static string Secret = CloudConfigurationManager.GetSetting("BoxSecret");
-        public static string RedirectUri = CloudConfigurationManager.GetSetting("BoxCallbackUrlsDomain") + "AuthenticationCallback/ProcessSuccessfulOAuthResponse?terminalName=terminalBox&terminalVersion=1";
+        public static string RedirectUri = CloudConfigurationManager.GetSetting("BoxCallbackUrlsDomain");
     }
 }

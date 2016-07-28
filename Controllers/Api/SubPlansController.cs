@@ -146,7 +146,7 @@ namespace HubWeb.Controllers
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(ex.Message);
+                    Logger.GetLogger().Error(ex.Message);
                     return InternalServerError(ex);
                 }
             }

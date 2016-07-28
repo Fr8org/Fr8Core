@@ -19,20 +19,15 @@ namespace terminalQuickBooks.Infrastructure
     {
         public const string TokenSeparator = ";;;;;;;";
 
-        public static readonly string AccessToken =
-          CloudConfigurationManager.GetSetting("QuickBooksAppToken").ToString(CultureInfo.InvariantCulture);
+        public static readonly string AccessToken = CloudConfigurationManager.GetSetting("QuickBooksAppToken");
 
-        public static readonly string RequestUrl =
-            CloudConfigurationManager.GetSetting("QuickBooksRequestTokenUrl").ToString(CultureInfo.InvariantCulture);
+        public static readonly string RequestUrl = CloudConfigurationManager.GetSetting("QuickBooksRequestTokenUrl");
 
-        public static readonly ConcurrentDictionary<string, string> TokenSecrets =
-           new ConcurrentDictionary<string, string>();
+        public static readonly ConcurrentDictionary<string, string> TokenSecrets = new ConcurrentDictionary<string, string>();
 
-        public static readonly string ConsumerKey =
-            CloudConfigurationManager.GetSetting("QuickBooksConsumerKey").ToString(CultureInfo.InvariantCulture);
+        public static readonly string ConsumerKey = CloudConfigurationManager.GetSetting("QuickBooksConsumerKey");
 
-        public static readonly string ConsumerSecret =
-           CloudConfigurationManager.GetSetting("QuickBooksConsumerSecret").ToString(CultureInfo.InvariantCulture);
+        public static readonly string ConsumerSecret = CloudConfigurationManager.GetSetting("QuickBooksConsumerSecret");
 
         /// <summary>
         /// Build external QuickBooks OAuth url.
@@ -57,12 +52,12 @@ namespace terminalQuickBooks.Infrastructure
                 ConsumerSecret = ConsumerSecret,
                 SignatureMethod = SignatureMethod.HmacSha1
             };
+
             return new OAuthSession(
                 consumerContext,
                 RequestUrl,
-                CloudConfigurationManager.GetSetting("QuickBooksOAuthAuthorizeUrl")
-                    .ToString(CultureInfo.InvariantCulture),
-                CloudConfigurationManager.GetSetting("QuickBooksOAuthAccessUrl").ToString(CultureInfo.InvariantCulture));
+                CloudConfigurationManager.GetSetting("QuickBooksOAuthAuthorizeUrl"),
+                CloudConfigurationManager.GetSetting("QuickBooksOAuthAccessUrl"));
         }
 
         public async Task<AuthorizationTokenDTO> GetAuthToken(string oauthToken, string oauthVerifier, string realmId)
@@ -75,8 +70,7 @@ namespace terminalQuickBooks.Infrastructure
             {
                 Token = oauthToken,
                 TokenSecret = tokenSecret,
-                ConsumerKey =
-                    CloudConfigurationManager.GetSetting("QuickBooksConsumerKey").ToString(CultureInfo.InvariantCulture)
+                ConsumerKey = CloudConfigurationManager.GetSetting("QuickBooksConsumerKey")
             };
             var accToken = oauthSession.ExchangeRequestTokenForAccessToken(reqToken, oauthVerifier);
             var expiresAt = DateTime.Now.Date.AddDays(180);
