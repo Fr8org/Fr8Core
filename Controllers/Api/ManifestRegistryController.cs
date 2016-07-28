@@ -15,17 +15,19 @@ using Hub.Managers;
 using System.Web.Http.Description;
 using System.Collections.Generic;
 using System.Net;
+using Fr8.Infrastructure.Interfaces;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers.Api
 {
-    public class ManifestRegistriesController : ApiController
+    public class ManifestRegistryController : ApiController
     {
         private readonly IManifestRegistryMonitor _manifestRegistryMonitor;
-
+        private readonly IRestfulServiceClient _restfulServiceClient;
         private readonly string _systemUserAccountId;
 
-        public ManifestRegistriesController(IManifestRegistryMonitor manifestRegistryMonitor, IConfigRepository configRepository)
+        public ManifestRegistryController(IManifestRegistryMonitor manifestRegistryMonitor, IConfigRepository configRepository, IRestfulServiceClient restfulServiceClient)
         {
             if (manifestRegistryMonitor == null)
             {
@@ -37,6 +39,7 @@ namespace HubWeb.Controllers.Api
             }
             _systemUserAccountId = configRepository.Get("SystemUserEmail");
             _manifestRegistryMonitor = manifestRegistryMonitor;
+            _restfulServiceClient = restfulServiceClient;
         }
 
         /// <summary>
@@ -64,6 +67,16 @@ namespace HubWeb.Controllers.Api
                 return Ok(list);
             }
         }
+
+        [HttpGet]
+        [ActionName("get_manifest_page_url")]
+        public async Task<IHttpActionResult> GetManifestPageUrl(string manifestName)
+        {
+            return Ok(await _restfulServiceClient.PostAsync<string, string>(
+                new Uri($"{CloudConfigurationManager.GetSetting("PlanDirectoryUrl")}/api/page_generation/generate_manifest_page"),
+                manifestName));
+        }
+
         /// <summary>
         /// Retrieves URL of Google Form that is used to submit new manifests
         /// </summary>
