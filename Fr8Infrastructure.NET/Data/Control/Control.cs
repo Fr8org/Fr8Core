@@ -205,6 +205,10 @@ namespace Fr8.Infrastructure.Data.Control
     {
         [JsonProperty("transitions")]
         public List<ContainerTransitionField> Transitions { get; set; }
+
+        [JsonProperty("resolvedUpstreamFields", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public List<KeyValueDTO> ResolvedUpstreamFields = new List<KeyValueDTO>();
+
         public ContainerTransition()
         {
             Type = ControlTypes.ContainerTransition;
@@ -329,6 +333,9 @@ namespace Fr8.Infrastructure.Data.Control
     {
         [JsonProperty("fields")]
         public List<FilterPaneField> Fields { get; set; }
+
+        [JsonProperty("resolvedUpstreamFields", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public List<KeyValueDTO> ResolvedUpstreamFields = new List<KeyValueDTO>();
 
         public FilterPane()
         {

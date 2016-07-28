@@ -421,6 +421,9 @@
     <Compile Include="Services\Time.cs" />
     <Compile Include="Services\Timers\Win32Timer.cs" />
     <Compile Include="Services\UpstreamDataExtractionService.cs" />
+    <Compile Include="Services\UpstreamValueExtractors\BuildMessageAppenderValueExtractor.cs" />
+    <Compile Include="Services\UpstreamValueExtractors\ContainerTransitionValueExtractor.cs" />
+    <Compile Include="Services\UpstreamValueExtractors\FilterPaneValueExtractor.cs" />
     <Compile Include="Services\UpstreamValueExtractors\IUpstreamValueExtractor.cs" />
     <Compile Include="Services\UpstreamValueExtractors\TextSourceValueExtractror.cs" />
     <Compile Include="Services\UpstreamValueExtractors\UpstreamValueExtractorBaseT.cs" />

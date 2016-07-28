@@ -15,6 +15,9 @@ namespace Hub.Services
         {
             RegisterExtractor(new TextSourceValueExtractror());
             RegisterExtractor(new UpstremFieldChooserValueExtractror());
+            RegisterExtractor(new ContainerTransitionValueExtractor());
+            RegisterExtractor(new FilterPaneValueExtractor());
+            RegisterExtractor(new BuildMessageAppenderValueExtractor());
         }
 
         private void RegisterExtractor(IUpstreamValueExtractor extractor)
