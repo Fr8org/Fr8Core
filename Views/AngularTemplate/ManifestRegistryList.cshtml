@@ -33,7 +33,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="manifestDescription in manifestRegistry">
+                                <tr ng-repeat="manifestDescription in manifestRegistry" ng-click="goToManifestDescriptionPage(manifestDescription.name)" class="cursor-pointer">
                                     <td>{{manifestDescription.id}}</td>
                                     <td>{{manifestDescription.name}}</td>
                                     <td>{{manifestDescription.version}}</td>
