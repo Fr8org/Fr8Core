@@ -876,6 +876,7 @@
     <TypeScriptCompile Include="Scripts\app\controllers\PageDefinitionFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\PageDefinitionListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionDocumentationController.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\UIBlocker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\BuildMessageAppender.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ControlList.ts" />
