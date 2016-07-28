@@ -536,6 +536,7 @@
     <Content Include="Content\icons\get-icon-64x64.png" />
     <Content Include="Content\icons\monitor-icon-64x64.png" />
     <Content Include="Content\icons\process-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\asana-icon-64x64.png" />
     <Content Include="Content\icons\web_services\basecamp2-icon-64x64.png" />
     <Content Include="Content\icons\web_services\Box-logo_64x64.png" />
     <Content Include="Content\icons\web_services\fr8-demo-icon-64x64.png" />
@@ -883,6 +884,7 @@
     <TypeScriptCompile Include="Scripts\app\controllers\PageDefinitionFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\PageDefinitionListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionDocumentationController.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\UIBlocker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\BuildMessageAppender.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ControlList.ts" />

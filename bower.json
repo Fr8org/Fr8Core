@@ -14,7 +14,7 @@
     "angular-sanitize": "1.4.9",
     "angular-touch": "~1.4.3",
     "angular-typescript": "latest",
-    "angular-ui-router": "~0.2.15",
+    "angular-ui-router": "^0.3.1",
     "angular-ui-select": "~0.14.1",
     "awesome-bootstrap-checkbox": "0.3.4",
     "bootstrap": "~3.3.1",
