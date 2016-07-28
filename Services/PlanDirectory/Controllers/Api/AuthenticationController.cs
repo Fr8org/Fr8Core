@@ -12,6 +12,7 @@ using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Infrastructure;
 using PlanDirectory.Infrastructure;
+using PlanDirectory.Interfaces;
 
 namespace PlanDirectory.Controllers.Api
 {

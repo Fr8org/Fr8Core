@@ -14,14 +14,12 @@ using Data.States;
 using Hub.Security;
 using System.Web;
 using System.Net.Http;
-using System.Security.Claims;
 using Fr8.Infrastructure.Utilities;
 using Hub.Interfaces;
-using RazorEngine.Templating;
 
 namespace Hub.Services
 {
-    public class Fr8Account
+    public class Fr8Account : IFr8Account
     {
         private readonly IUnitOfWorkFactory _uowFactory;
 
@@ -220,7 +218,7 @@ namespace Hub.Services
                 var systemUserEmail = _configRepository.Get("SystemUserEmail");
                 using (var uow = _uowFactory.Create())
                 {
-                    return uow.UserRepository.GetQuery().FirstOrDefault(x => x.EmailAddress.Address == systemUserEmail);
+                    return uow.UserRepository.GetQuery().Include(x => x.EmailAddress).FirstOrDefault(x => x.EmailAddress.Address == systemUserEmail);
                 }
             }
             catch (ConfigurationException)
