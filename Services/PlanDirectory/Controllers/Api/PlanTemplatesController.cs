@@ -143,21 +143,8 @@ namespace PlanDirectory.Controllers.Api
                     continue;
                 }
                 var planTemplateCm = await _planTemplate.CreateOrUpdate(fr8AccountId, planTemplateDto);
-                var storage = await _tagGenerator.GetTags(planTemplateCm, fr8AccountId);
                 await _searchProvider.CreateOrUpdate(planTemplateCm);
-
-                var pageDefinitions = new List<PageDefinitionDO>();
-                foreach (var tag in storage.WebServiceTemplateTags)
-                {
-                    var pd = new PageDefinitionDO()
-                    {
-                        Title = tag.Title,
-                        Tags = tag.TagsWithIcons.Select(x => x.Key),
-                        Type = "WebService"
-                    };
-                    pageDefinitions.Add(pd);
-                }
-                await _pageGenerator.Generate(storage, planTemplateCm, pageDefinitions, fr8AccountId);
+                await _webservicesPageGenerator.Generate(planTemplateCm, fr8AccountId);
             }
             watch.Stop();
             var elapsed = watch.Elapsed;
@@ -165,29 +152,5 @@ namespace PlanDirectory.Controllers.Api
 
             return Ok();
         }
-
-        // TODO: remove this.
-        // Added for PD <-> Hub debugging purposes only, to be removed in future.
-        // private Task<IHttpActionResult> ExceptionWrapper(Func<Task<IHttpActionResult>> handler)
-        // {
-        //     try
-        //     {
-        //         return handler();
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         var sb = new System.Text.StringBuilder();
-        // 
-        //         while (ex != null)
-        //         {
-        //             sb.AppendLine(ex.Message);
-        //             sb.AppendLine(ex.StackTrace);
-        // 
-        //             ex = ex.InnerException;
-        //         }
-        // 
-        //         return Task.FromResult<IHttpActionResult>(Ok(new { exception = sb.ToString() }));
-        //     }
-        // }
     }
 }
