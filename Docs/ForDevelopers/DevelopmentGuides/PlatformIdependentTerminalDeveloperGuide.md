@@ -1,8 +1,9 @@
 
 [Return to Terminal Development Guide Home](/Docs/ForDevelopers/DevelopmentGuides/TerminalDevelopmentGuide.md)
 
-### [Choosing a Development Approach](/Docs/ForDevelopers/DevelopmentGuides/ChoosingADevelopmentApproach.md)
+### [Before you begin: Choosing a Development Approach](/Docs/ForDevelopers/DevelopmentGuides/ChoosingADevelopmentApproach.md)
 
+### [Before you begin: Logging and Debugging](/Docs/ForDevelopers/DevelopmentGuides/BeforeYouBeginLogging.md)
 
 ### [Making Your Terminal Visible on the Public Web](/Docs/ForDevelopers/DevelopmentGuides/PublicVisibility.md)
 
