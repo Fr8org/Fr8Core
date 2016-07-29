@@ -1,4 +1,4 @@
-﻿<div id="ap-pane" class="pane-configure-action" block-if="processing === true" ng-click="reloadConfiguration()" ui-blocker active="plan.planState==2">
+﻿<div id="ap-pane" class="pane-configure-action" block-if="processing === true" ng-click="reloadConfiguration()" ui-blocker active="plan.planState==2" plan="plan">
     <div ng-if="!(currentAction.activityTemplate.category==='Solution' && mode !== 'solution')">
         <div ng-if="!currentAction.currentView" ng-repeat="field in currentAction.configurationControls.fields">
             <configuration-control plan="plan" sub-plan="subPlan" current-action="currentAction" field="field" ng-if="!field.isHidden"/>

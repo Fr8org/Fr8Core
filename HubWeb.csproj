@@ -869,7 +869,6 @@
     <Content Include="Views\AngularTemplate\ActivityHeader.cshtml" />
     <Content Include="_PowerShellScripts\Run-SQL.ps1" />
     <Content Include="_PowerShellScripts\Set-AzureSQLService.ps1" />
-    <Content Include="Views\DockyardAccount\LogOff.cshtml" />
     <Content Include="_PowerShellScripts\Add-Repo.ps1" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <Content Include="_PowerShellScripts\Update-HostnameInTerminalRegistration.ps1" />
