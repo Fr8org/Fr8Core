@@ -68,6 +68,19 @@ Your /discover response informs the Hub about the Activities you're currently su
 * If your Terminal communicates with branded web service(s), set the webService information so the Client will display correctly.
 * **iconPath** should be an absolute URL. 
 * **NeedsAuthentication** flag should be set if this activity requires an authentication token. The Client checks for this before passing on /configure and /run requests, and instead displays the initial authentication UI to the user. 
+* 
+
+Categories
+---------------
+
+This section is changing but until then, be aware of the following:
+
+Here's a correct set of category information for a terminal:
+![](categories.png)
+
+At this time, a category must be present in the categories json element for both a Web Service and one of the four original Categories (Process, Forwarder, Monitor, Get)
+
+This is being replaced by the work in JIRA FR-4943
 
 Consult [Activity Templates specs](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/ActivityTemplates.md) for more information on possible properties value.
 
