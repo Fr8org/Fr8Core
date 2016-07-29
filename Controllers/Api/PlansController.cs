@@ -224,32 +224,9 @@ namespace HubWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = _plan.GetFullPlan(uow, id);
+                var result = PlanMappingHelper.MapPlanToDto(plan);
 
-                var hmacService = ObjectFactory.GetInstance<IHMACService>();
-                var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
-
-                var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/plan_templates?id=" + id);
-                var headers = await hmacService.GenerateHMACHeader(
-                    uri,
-                    "PlanDirectory",
-                    CloudConfigurationManager.GetSetting("PlanDirectorySecret"),
-                    User.Identity.GetUserId()
-                );
-                var result = PlanMappingHelper.MapPlanToDto(uow, plan);
-                try
-                {
-                    //checking if Plan published in PlanDirectory
-                    var planTemplate =  await client.GetAsync<PublishPlanTemplateDTO>(uri,  headers: headers);
-                    if (planTemplate != null)
-                    {
-                        result.Plan.Visibility.Public = true;
-                    }
-                }
-                //in case of PlanDirectory absence
-                catch (Fr8.Infrastructure.Communication.RestfulServiceException e)
-                {
-                    result.Plan.Visibility.Public = false;
-                }
+                result.Plan.Visibility.Public = await _planDirectoryService.GetTemplate(id, User.Identity.GetUserId()) != null;
 
                 return Ok(result);
             };

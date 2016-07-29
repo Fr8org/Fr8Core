@@ -62,6 +62,26 @@ namespace Hub.Services
             return CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/Home/LogoutByToken";
         }
 
+        public async Task<PublishPlanTemplateDTO> GetTemplate(Guid id, string userId)
+        {
+            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/plan_templates?id=" + id);
+            var headers = await _hmacService.GenerateHMACHeader(
+                uri,
+                "PlanDirectory",
+                CloudConfigurationManager.GetSetting("PlanDirectorySecret"),
+                userId
+            );
+
+            try
+            {
+                return await _client.GetAsync<PublishPlanTemplateDTO>(uri, headers: headers);
+            }
+            catch (Fr8.Infrastructure.Communication.RestfulServiceException)
+            {
+                return null;
+            }
+        }
+
         public async Task Share(Guid planId, string userId)
         {
             var planDto = CrateTemplate(planId, userId);

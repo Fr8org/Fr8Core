@@ -19,6 +19,7 @@ namespace Hub.Interfaces
         /// <returns>url string</returns>
         string LogOutUrl();
 
+        Task<PublishPlanTemplateDTO> GetTemplate(Guid id, string userId); 
         Task Share(Guid planId, string userId);
         Task Unpublish(Guid planId, string userId);
         PlanFullDTO CrateTemplate(Guid planId, string userId);
