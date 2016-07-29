@@ -134,8 +134,8 @@ namespace terminalFr8Core.Activities
 
         public KeyValueDTO ParseSMSNumberAndMsg()
         {
-            var smsNumber = GeneralisePhoneNumber(ActivityUI.SmsNumber.GetValue(Payload).Trim());
-            var smsBody = ActivityUI.SmsBody.GetValue(Payload);
+            var smsNumber = GeneralisePhoneNumber(ActivityUI.SmsNumber.TextValue.Trim());
+            var smsBody = ActivityUI.SmsBody.TextValue;
 
             return new KeyValueDTO(smsNumber, smsBody);
         }

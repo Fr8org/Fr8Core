@@ -37,16 +37,6 @@ namespace Hub.Services
             ValidateInputQuery(ref historyQueryDTO);
             //get the current account
             var curAccount = _security.GetCurrentAccount(uow);
-            //if this user does not have Admin role return empty list
-            if (!DoesUserHaveAccessToHistory(uow, curAccount))
-            {
-                return new HistoryResultDTO<T>()
-                {
-                    CurrentPage = 1,
-                    Items = new List<T>(),
-                    TotalItemCount = 0
-                };
-            }
 
             var filteredResult = FilterHistoryItems(historyQuery, historyQueryDTO, curAccount);
 
@@ -60,15 +50,6 @@ namespace Hub.Services
                 CurrentPage = historyQueryDTO.Page.Value,
                 TotalItemCount = totalItemCountForCurrentCriterias
             };
-        }
-        private bool DoesUserHaveAccessToHistory(IUnitOfWork uow, Fr8AccountDO curAccount)
-        {
-            //get the roles to check if the account has admin role
-            var curAccountRoles = curAccount.Roles;
-            //prepare variable for incidents
-            var adminRoleId = uow.AspNetRolesRepository.GetQuery().Single(r => r.Name == "Admin").Id;
-            //if this user does not have Admin role return empty list
-            return curAccountRoles == null || curAccountRoles.Any(x => x.RoleId == adminRoleId);
         }
 
         private void ValidateInputQuery(ref HistoryQueryDTO historyQueryDTO)
