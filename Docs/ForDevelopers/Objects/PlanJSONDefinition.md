@@ -20,7 +20,7 @@ The JSON specification for a Plan is:
     "id": "91d3d82e-f471-4095-bd59-9f88ea86d5af",
     "name": "MonitorAllDocuSignEvents",
     "tag": "docusign-auto-monitor-plan-fcc7d694-4820-4d04-bc83-67251fcf8a15",
-    "visibility": "standard"
+    "visibility": {"hidden": false, "public": false},
     "description": "MonitorAllDocuSignEvents",
     "lastUpdated": "0001-01-01T00:00:00+00:00",
     "planState": 2, 
@@ -29,6 +29,6 @@ The JSON specification for a Plan is:
 ```
 ## Visibility
 
-This property is optional and can have two values “standard” or “internal”. Default is “Standard”. Plans with “Internal” visibility are not generally displayed to their owning users. An example would be the Plan that registers for and records DocuSign Events when a Fr8 User has linked in a DocuSign account.
+This property is optional and consist of object with two boolean properties: "hidden" and "public". Default is {"hidden": false, "public": false}, "hidden" corresponds to Plan's visibility for user, false is  “Standard” visibility. Plans with "hidden": false, “Internal” visibility are not generally displayed to their owning users. An example would be the Plan that registers for and records DocuSign Events when a Fr8 User has linked in a DocuSign account. Property "public" shows whether Plan is published in PlanDirectory, "public": true, means that Plan is published. 
 
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  

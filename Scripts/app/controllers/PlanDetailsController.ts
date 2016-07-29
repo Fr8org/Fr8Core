@@ -53,16 +53,19 @@ module dockyard.controllers {
             }
 
             $scope.sharePlan = () => {
-                PlanService.share($stateParams.id)
-                    .then(() => {
-                        console.log('sharePlan: Success');
-                        PusherNotifierService.frontendSuccess("Plan " + $scope.ptvm.plan.name + " shared");
-                    })
-                    .catch((exp) => {
-                        console.log('sharePlan: Failure');
-                        exp.data = exp.data ? exp.data : "";
-                        PusherNotifierService.frontendFailure("Plan sharing faliure: "+exp.data);
-                    });
+                if (!$scope.current.plan.visibility.public) {
+                    PlanService.share($stateParams.id)
+                        .then(() => {
+                            console.log('sharePlan: Success');
+                            PusherNotifierService.frontendSuccess("Plan " + $scope.current.plan.name + " shared");
+                        })
+                        .catch((exp) => {
+                            console.log('sharePlan: Failure');
+                            exp.data = exp.data ? exp.data : "";
+                            PusherNotifierService.frontendFailure("Plan sharing faliure: " + exp.data);
+                        });
+                }
+
             };
             $scope.onTitleChange = () => {
                 $scope.descriptionEditing = false;
@@ -73,16 +76,19 @@ module dockyard.controllers {
 
 
             $scope.unpublishPlan = () => {
-                PlanService.unpublish($stateParams.id)
-                    .then(() => {
-                        console.log('unpublishPlan: Success');
-                        PusherNotifierService.frontendSuccess("Plan " + $scope.ptvm.plan.name + " unpublished");
-                    })
-                    .catch((exp) => {
-                        console.log('unpublishPlan: Failure');
-                        exp.data = exp.data ? exp.data : "";
-                        PusherNotifierService.frontendFailure("Plan unpublished faliure: " + exp.data);
-                    });
+                if ($scope.current.plan.visibility.public) {
+                    PlanService.unpublish($stateParams.id)
+                        .then(() => {
+                            console.log('unpublishPlan: Success');
+                            PusherNotifierService.frontendSuccess("Plan " + $scope.current.plan.name + " unpublished");
+                        })
+                        .catch((exp) => {
+                            console.log('unpublishPlan: Failure');
+                            exp.data = exp.data ? exp.data : "";
+                            PusherNotifierService.frontendFailure("Plan unpublished faliure: " + exp.data);
+                        });
+                }
+
             };
 
             $scope.download = ($event: Event) => {

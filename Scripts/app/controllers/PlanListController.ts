@@ -137,7 +137,8 @@ module dockyard.controllers {
             $scope.addPlan = function () {
                var plan = new dockyard.model.PlanDTO();
                plan.planState = dockyard.model.PlanState.Inactive;
-               plan.visibility = dockyard.model.PlanVisibility.Standard;
+               plan.visibility = { hidden: false, public: false };
+               //plan.visibility = dockyard.model.PlanVisibility.Standard;
                var result = PlanService.save(plan);
 
                     result.$promise

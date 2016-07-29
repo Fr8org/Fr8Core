@@ -25,7 +25,7 @@ namespace HubWeb.Documentation.Swagger
                 PlanState = PlanState.Inactive,
                 StartingSubPlanId = Guid.Parse("39080509-1A69-43E6-910F-38C84B84324C"),
                 Tag = "some tags",
-                Visibility = PlanVisibility.Standard,
+                Visibility = new PlanVisibilityDTO() { Hidden = false },
                 Fr8UserId = "A41D5268-7DE0-4802-9F64-08E2D7D49375",
                 SubPlans = new []{ _fullSubplanSampleFactory.GetSampleData() }
             };

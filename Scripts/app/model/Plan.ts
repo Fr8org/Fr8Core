@@ -11,7 +11,7 @@
         externalEventSubscription: Array<number>;
         startingSubPlanId: number;
         subPlans: Array<SubPlanDTO>;
-        visibility: PlanVisibility;
+        visibility: { hidden: boolean, public: boolean };
         category: string;
     }
 
