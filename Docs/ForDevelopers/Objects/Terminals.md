@@ -16,6 +16,6 @@ Developers should consult the [Terminal Developer's Guide](/Docs/ForDevelopers/D
 [Terminal Events](/Docs/ForDevelopers/OperatingConcepts/Events.md)
 
 
-[Terminal Discovery](/Docs/ForDevelopers/Objects/Terminal/Discovery.md)
+[Terminal Discovery](/Docs/ForDevelopers/DevelopmentGuides/Guide-TerminalDiscovery.md)
 
 [Go to Home](/Docs/Home.md)
