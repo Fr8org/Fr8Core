@@ -13,6 +13,13 @@ If you are using the ["Public Hub" Development Approach](https://github.com/Fr8o
 
 So, in either case, your Terminal needs to stand ready to respond with information about itself.
 
+### Creating a Terminal ID
+You need to generate a GUID for your Terminal and provide that ID to the Hub.
+[ADD MORE MATERIAL HERE]
+For more information on Terminal ID's, see [Terminal Authentication](/Docs/ForDevelopers/OperatingConcepts/Authorization/TerminalAuthentication.md).
+
+
+
 ### Handling the /discover Request
 
 [Here's the API definition of a typical terminal](https://terminalfr8core.fr8.co/swagger/ui/index#!/Terminal/Terminal_Get). 
