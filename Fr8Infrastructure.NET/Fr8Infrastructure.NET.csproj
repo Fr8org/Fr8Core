@@ -242,6 +242,7 @@
     <Compile Include="Data\Helpers\Fr8ApiHelper.cs" />
     <Compile Include="Data\Helpers\Fr8ReflectionHelper.cs" />
     <Compile Include="Data\Helpers\IMemberAccessor.cs" />
+    <Compile Include="Data\Helpers\IndexerMemeberAccessor.cs" />
     <Compile Include="Data\Helpers\PropertyMemberAccessor.cs" />
     <Compile Include="Data\Convertors\JsonNet\ActivityTemplateActivityConverter.cs" />
     <Compile Include="Data\Convertors\JsonNet\AvailabilityConverter.cs" />

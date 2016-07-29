@@ -9,6 +9,7 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
+using PlanDirectory.Interfaces;
 
 namespace PlanDirectory.Infrastructure
 {

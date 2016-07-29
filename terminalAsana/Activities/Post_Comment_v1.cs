@@ -155,7 +155,7 @@ namespace terminalAsana.Activities
         public override async Task Run()
         {
             var taskId = ActivityUI.Tasks.Value;
-            var payloadMessage = ActivityUI.Comment.GetValue(Payload);
+            var payloadMessage = ActivityUI.Comment.TextValue;
 
             var comment = await AClient.Stories.PostCommentAsync(taskId, payloadMessage);            
         }

@@ -319,7 +319,7 @@ namespace terminalFr8Core.Activities
             }
         }
         //Wrappers for control properties
-        private string IncomingText => Payload.FindField(ActivityUI.IncomingTextSelector.selectedKey);
+        private string IncomingText => ActivityUI.IncomingTextSelector.Value;
 
         private string SelectedDataSourceActivityId => ActivityUI.DataSourceSelector.Value;
         
