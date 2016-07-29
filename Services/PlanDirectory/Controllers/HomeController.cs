@@ -1,9 +1,12 @@
-﻿using System.Web;
+﻿using System;
+using System.Web;
 using System.Web.Mvc;
 using StructureMap;
 using Data.Interfaces;
 using Data.Infrastructure.StructureMap;
+using Fr8.Infrastructure.Utilities.Logging;
 using PlanDirectory.Infrastructure;
+using PlanDirectory.Interfaces;
 
 namespace PlanDirectory.Controllers
 {
@@ -58,6 +61,32 @@ namespace PlanDirectory.Controllers
                 }
 
                 return Content(sb.ToString());
+            }
+        }
+
+        [HttpGet]        
+        public ActionResult LogoutByToken(string token)
+        {
+            try
+            {
+                var fr8AccountId = _authTokenManager.GetFr8AccountId(token);
+                if (!fr8AccountId.HasValue)
+                {
+                    return Redirect(VirtualPathUtility.ToAbsolute("~/Reauthenticate"));
+                }
+
+                var securityServices = ObjectFactory.GetInstance<ISecurityServices>();
+                Logger.GetLogger("PlanDirectory").Debug($"Logging out user {securityServices.GetCurrentUser()}");
+                securityServices.Logout();
+
+                //really should replace * with certain domain
+                Response.AppendHeader("Access-Control-Allow-Origin", "*");
+
+                return Redirect(VirtualPathUtility.ToAbsolute("~/"));
+            }
+            catch (Exception ex)
+            {
+                return Content(ex.ToString());
             }
         }
 

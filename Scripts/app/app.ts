@@ -97,9 +97,30 @@ initialization can be disabled and Layout.init() should be called on page load c
 
 /* Setup Layout Part - Header */
 app.controller('HeaderController', ['$scope', '$http', '$window', '$state', 'TerminalService', 'PlanService', ($scope, $http, $window, $state, TerminalService, PlanService) => {
-    $scope.$on('$includeContentLoaded', () => {
+
+    $scope.displayDeveloperMenu = JSON.parse($window.sessionStorage.getItem("displayDeveloperMenu"));
+
+    //$scope.$on('$includeContentLoaded', () => {
         Layout.initHeader(); // init header
-    });
+    //});
+
+    if ($scope.displayDeveloperMenu) {
+        $scope.displayDeveloperMenuText = "Hide Developer Menu";
+    } else {
+        $scope.displayDeveloperMenuText = "Show Developer Menu";
+    }
+
+    $scope.switchDeveloperMenu = () => {
+        if ($scope.displayDeveloperMenu) {
+            $window.sessionStorage.setItem("displayDeveloperMenu", false);
+            $scope.displayDeveloperMenuText = "Show Developer Menu";
+            $scope.displayDeveloperMenu = false;
+        } else {
+            $window.sessionStorage.setItem("displayDeveloperMenu", true);
+            $scope.displayDeveloperMenuText = "Hide Developer Menu";
+            $scope.displayDeveloperMenu = true;
+        }
+    };
 
     $scope.addPlan = function () {
         var plan = new dockyard.model.PlanDTO();
@@ -125,7 +146,7 @@ app.controller('HeaderController', ['$scope', '$http', '$window', '$state', 'Ter
             });
     };
 
-    $scope.runManifestRegistryMonitoring = () => { $http.post('/api/manifest_registries/runMonitoring', {}); };
+    $scope.runManifestRegistryMonitoring = () => { $http.post('/api/manifest_registry/runMonitoring', {}); };
 }]);
 
 /* Setup Layout Part - Footer */
@@ -459,7 +480,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
         })
         .state('manifestregistry',
         {
-            url: "/manifest_registries",
+            url: "/manifest_registry",
             templateUrl: "/AngularTemplate/ManifestRegistryList",
             data: { pageTitle: 'Manifest Registry', pageSubTitle: '' }
         })

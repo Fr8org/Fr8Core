@@ -17,12 +17,13 @@ using terminalStatXTests.Fixtures;
 
 namespace terminalStatXTests.Activities
 {
+    [Ignore]
     [TestFixture, Category("terminalStatX")]
     public class Monitor_Stat_Changes_v1_Tests : BaseTest
     {
         private static readonly CrateManager CrateManager = new CrateManager();
 
-        private static readonly AuthorizationToken AuthorizationToken = new AuthorizationToken { Token = "1" };
+        private static readonly AuthorizationToken AuthorizationToken = new AuthorizationToken { Token = "{\"authToken\":\"1\", \"apiKey\":\"1\"}" };
 
         public override void SetUp()
         {
@@ -36,6 +37,7 @@ namespace terminalStatXTests.Activities
                                 .Returns(Task.FromResult(new List<StatXGroupDTO> { new StatXGroupDTO() {Id = Guid.NewGuid().ToString(), Name = "Test Group"} }));
             ObjectFactory.Container.Inject(statXIntegrationMock);
             ObjectFactory.Container.Inject(statXIntegrationMock.Object);
+            ObjectFactory.Container.Inject(new Mock<IStatXPolling>().Object);
         }
 
         [Test]

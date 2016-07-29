@@ -145,54 +145,6 @@ namespace terminalSalesforce.Services
             return null;
         }
         
-        public T CreateSalesforceDTO<T>(ActivityPayload curActivity, PayloadDTO curPayload) where T : new()
-        {
-            var requiredType = typeof(T);
-            var requiredObject = (T)Activator.CreateInstance(requiredType);
-            var requiredProperties = requiredType.GetProperties().Where(p => !p.Name.Equals("Id"));
-
-            var designTimeCrateStorage = curActivity.CrateStorage;
-            var runTimeCrateStorage = _crateManager.FromDto(curPayload.CrateStorage);
-            var controls = designTimeCrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-
-            if (controls == null)
-            {
-                throw new InvalidOperationException("Failed to find configuration controls crate");
-            }
-
-            requiredProperties.ToList().ForEach(prop =>
-            {
-                try
-                {
-                    var textSourceControl = controls.Controls.SingleOrDefault(c => c.Name == prop.Name) as TextSource;
-
-                    if (textSourceControl == null)
-                    {
-                        throw new InvalidOperationException($"Unable to find TextSource control with name '{prop.Name}'");
-                    }
-
-                    var propValue = textSourceControl.GetValue(runTimeCrateStorage);
-                    prop.SetValue(requiredObject, propValue);
-                }
-                catch (ApplicationException applicationException)
-                {
-                    //If it can not extract the property, user did not enter any value for this property.
-                    //No problems. We can treat that value as empty and continue.
-                    if (applicationException.Message.Equals("Could not extract recipient, unknown recipient mode."))
-                    {
-                        prop.SetValue(requiredObject, string.Empty);
-                    }
-                    else if (applicationException.Message.StartsWith("No field found with specified key:"))
-                    {
-                        //FR-2502 - This else case handles, the user asked to pick up the value from the current payload.
-                        //But the payload does not contain the value of this property. In that case, set it as "Not Available"
-                        prop.SetValue(requiredObject, "Not Available");
-                    }
-                }
-            });
-
-            return requiredObject;
-        }
         public async Task<string> PostToChatter(string message, string parentObjectId, AuthorizationToken authToken)
         {
             var currentChatterUser = await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.MeAsync<UserDetail>(), authToken);

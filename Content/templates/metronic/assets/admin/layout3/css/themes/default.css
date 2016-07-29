@@ -446,8 +446,8 @@ Page Footer
   filter: alpha(opacity=70) ;
 }
 
-@media (min-width: 992px) {
-  /* 992px */
+@media (min-width: 768px) {
+  /* 768px */
   .page-header {
     /* Page Header Menu */
   }
@@ -459,8 +459,8 @@ Page Footer
     z-index: 9995;
   }
 }
-@media (max-width: 991px) {
-  /* 991px */
+@media (max-width: 768px) {
+  /* 768px */
   .page-header .page-header-menu {
     background: #eff3f8;
     /* Horizontal mega menu */

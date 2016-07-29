@@ -108,6 +108,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/DesignerHeader/DesignerHeader.js',
         'Scripts/app/directives/SubplanHeader.js',
         'Scripts/app/directives/ActivityHeader.js',
+        'Scripts/app/directives/UIBlocker.js',
         'Scripts/app/services/SubordinateSubplanService.js',
         'Scripts/app/directives/Controls/FilePicker.js',
         'Scripts/app/directives/Controls/RadioButtonGroup.js',

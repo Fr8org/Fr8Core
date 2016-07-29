@@ -355,12 +355,10 @@ namespace Hub.Services
         public async Task Deactivate(Guid planId)
         {
             var deactivateTasks = new List<Task>();
-            string planName;    // Used by UI notification
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = uow.PlanRepository.GetById<PlanDO>(planId);
                 plan.PlanState = PlanState.Inactive;
-                planName = plan.Name;
                 uow.SaveChanges();
 
                 foreach (var activity in plan.GetDescendants().OfType<ActivityDO>())
@@ -377,15 +375,6 @@ namespace Hub.Services
             {
                 throw new Exception("Failed to deactivate plan", ex);
             }
-
-            // Notify UI for stopped plan
-            _pusherNotifier.NotifyUser(new NotificationMessageDTO
-            {
-                NotificationType = NotificationType.ExecutionStopped,
-                NotificationArea = NotificationArea.ActivityStream,
-                Message = $"\"{planName}\"",
-                Collapsed = false
-            }, _security.GetCurrentUser());
 
             EventManager.PlanDeactivated(planId);
         }
