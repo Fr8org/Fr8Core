@@ -32,7 +32,6 @@
     </div>
     <div flex="40" flex-md="35" >
         <div class="designer-header-status" ng-if="!kioskMode" flex="noshrink">
-
             <span class="h4">
                 <strong>
                     <span ng-if="plan.planState === 3">Saving Changes...</span>
@@ -45,10 +44,10 @@
                 </span>
                 <span ng-click="deactivatePlan()" ng-if="plan.planState === 2">
                     <strong><span class="plan-state-text">{{plan.planState | PlanState}}</span></strong>
-                        <md-button class="md-icon-button" ng-click="deactivatePlan()" ng-show="plan.planState === 2">
-                            <md-icon md-font-icon="fa fa-power-off" class="fa fa-2x"></md-icon>
-                        </md-button>
-                    </span>
+                    <md-button class="md-icon-button" ng-show="plan.planState === 2">
+                        <md-icon md-font-icon="fa fa-power-off" class="fa fa-2x"></md-icon>
+                    </md-button>
+                </span>
             </span>
         </div>
     </div>
