@@ -230,14 +230,20 @@ namespace HubWeb.Controllers
                     CloudConfigurationManager.GetSetting("PlanDirectorySecret"),
                     User.Identity.GetUserId()
                 );
-
-                var planTemplate =  await client.GetAsync<PublishPlanTemplateDTO>(uri,  headers: headers);
-
                 var result = PlanMappingHelper.MapPlanToDto(uow, plan);
-
-                if (planTemplate != null)
+                try
                 {
-                    result.Plan.Visibility.Public = true;
+                    //checking if Plan published in PlanDirectory
+                    var planTemplate =  await client.GetAsync<PublishPlanTemplateDTO>(uri,  headers: headers);
+                    if (planTemplate != null)
+                    {
+                        result.Plan.Visibility.Public = true;
+                    }
+                }
+                //in case of PlanDirectory absence
+                catch (Fr8.Infrastructure.Communication.RestfulServiceException e)
+                {
+                    result.Plan.Visibility.Public = false;
                 }
 
                 return Ok(result);
