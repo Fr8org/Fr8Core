@@ -11,6 +11,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Infrastructure;
 using terminalSlack.Interfaces;
 
 namespace terminalSlack.Activities
@@ -51,38 +52,26 @@ namespace terminalSlack.Activities
                 ValidationManager.SetError("Channel or user is not specified", "Selected_Slack_Channel");
             }
 
-            if (messageField.CanGetValue(ValidationManager.Payload) && string.IsNullOrWhiteSpace(messageField.GetValue(ValidationManager.Payload)))
-            {
-                ValidationManager.SetError("Can't post empty message to Slack", messageField);
-            }
+            ValidationManager.ValidateTextSourceNotEmpty(messageField, "Can't post empty message to Slack");
 
             return Task.FromResult(0);
         }
 
         public override async Task Run()
         {
-            string message;
-
             var actionChannelId = GetControl<DropDownList>("Selected_Slack_Channel")?.Value;
+
             if (string.IsNullOrEmpty(actionChannelId))
             {
                 RaiseError("No selected channelId found in activity.");
             }
 
             var messageField = GetControl<TextSource>("Select_Message_Field");
-            try
-            {
-                message = messageField.GetValue(Payload);
-            }
-            catch (ApplicationException ex)
-            {
-                RaiseError("Cannot get selected field value from TextSource control in activity. Detailed information: " + ex.Message);
-            }
-
+            
             try
             {
                 await _slackIntegration.PostMessageToChat(AuthorizationToken.Token,
-                    actionChannelId, StripHTML(messageField.GetValue(Payload)));
+                    actionChannelId, StripHTML(messageField.TextValue));
             }
             catch (AuthorizationTokenExpiredOrInvalidException)
             {

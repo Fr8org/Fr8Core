@@ -100,7 +100,7 @@ namespace terminalSlack.Activities
         public override async Task Run()
         {
             var channel = ActivityUI.ChannelSelector.Value;
-            var message = ActivityUI.MessageSource.GetValue(Payload);
+            var message = ActivityUI.MessageSource.TextValue;
             var success = await _slackIntegration.PostMessageToChat(AuthorizationToken.Token, channel, message).ConfigureAwait(false);
             if (!success)
             {

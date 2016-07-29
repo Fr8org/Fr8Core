@@ -214,7 +214,7 @@ namespace terminalAtlassian.Actions
                         var textSource = (TextSource)control;
 
                         var key = control.Name.Substring("CustomField_".Length);
-                        var value = textSource.GetValue(crateStorage);
+                        var value = textSource.TextValue;
 
                         if (!string.IsNullOrEmpty(value))
                         {
@@ -422,8 +422,8 @@ namespace terminalAtlassian.Actions
                 ProjectKey = projectKey,
                 IssueTypeKey = issueTypeKey,
                 PriorityKey = ActivityUI.AvailablePriorities.Value,
-                Description = ActivityUI.Description.GetValue(Payload),
-                Summary = ActivityUI.Summary.GetValue(Payload),
+                Description = ActivityUI.Description.TextValue,
+                Summary = ActivityUI.Summary.TextValue,
                 CustomFields = ActivityUI.GetValues(Payload).ToList(),
                 Assignee = ActivityUI.AssigneeSelector.Value
             };
