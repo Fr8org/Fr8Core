@@ -21,36 +21,9 @@ module dockyard.directives.designerHeader {
 
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
-    class DesignerHeader implements ng.IDirective {
-        public link: (scope: IDesignerHeaderScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
-        public controller: (
-            $rootScope: interfaces.IAppRootScope,
-            $scope: IDesignerHeaderScope,
-            element: ng.IAugmentedJQuery,
-            attrs: ng.IAttributes,
-            $http: ng.IHttpService,
-            ngToast: any,
-            PlanService: services.IPlanService
-        ) => void;
+    export function DesignerHeader(): ng.IDirective {
 
-        public templateUrl = '/AngularTemplate/DesignerHeader';
-        public scope = {
-            plan: '=',
-            kioskMode: '=?',
-            state: '='
-        };
-        public restrict = 'E';
-
-        constructor(private Planervice: services.IPlanService) {
-            DesignerHeader.prototype.link = (
-                scope: IDesignerHeaderScope,
-                element: ng.IAugmentedJQuery,
-                attrs: ng.IAttributes) => {
-
-                //Link function goes here
-            };
-
-            DesignerHeader.prototype.controller = (
+        var controller = ['$rootScope', '$scope', '$element', '$attrs', '$http', 'ngToast', 'PlanService', (
                 $rootScope: interfaces.IAppRootScope,
                 $scope: IDesignerHeaderScope,
                 $element: ng.IAugmentedJQuery,
@@ -142,6 +115,9 @@ module dockyard.directives.designerHeader {
                     }
                 };
 
+                $scope.$on(<any>designHeaderEvents.PLAN_IS_DEACTIVATED,
+                    (event: ng.IAngularEvent, eventArgs: model.PlanDTO) => { $scope.plan.planState = 1;});
+
                 $scope.deactivatePlan = () => {
                     var result = PlanService.deactivate({ planId: $scope.plan.id });
                     result.$promise.then((data) => {                        
@@ -151,26 +127,23 @@ module dockyard.directives.designerHeader {
                         var messageToShow = "Plan successfully deactivated";
                         ngToast.success(messageToShow);
                     })
-                        .catch((err: any) => {
-                            var messageToShow = "Failed to toggle Plan Status";
-                            ngToast.danger(messageToShow);
-                        });
+                    .catch((err: any) => {
+                        var messageToShow = "Failed to toggle Plan Status";
+                        ngToast.danger(messageToShow);
+                    });
                 };
-            };
-
-            DesignerHeader.prototype.controller['$inject'] = ['$rootScope', '$scope', '$element', '$attrs', '$http', 'ngToast', 'PlanService'];
-        }
-
-        //The factory function returns Directive object as per Angular requirements
-        public static Factory() {
-            var directive = (PlanService: services.IPlanService) => {
-                return new DesignerHeader(PlanService);
-            };
-
-            directive['$inject'] = ['PlanService'];
-            return directive;
+            }];
+        return {
+            restrict: 'E',
+            scope: {
+                editing: '=', 
+                plan: '=',
+                kioskMode: '=',
+                state: '='
+            },
+            controller: controller,
+            templateUrl: '/AngularTemplate/DesignerHeader'
         }
     }
-
-    app.directive('designerHeader', DesignerHeader.Factory());
+    app.directive('designerHeader', DesignerHeader);
 }

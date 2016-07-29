@@ -4,7 +4,7 @@ Manifest Development Guide
 The biggest historical limitation, when it comes to building powerful IPaaS solutions, has been figuring out a way to work with structured data. Fr8 addresses 
 that via [Crate Manifests](https://github.com/Fr8org/Fr8Core/blob/docs5/Docs/ForDevelopers/Objects/CratesManifest.md).
 
-As a Developer extending Fr8, you should try to use the existing Fr8 Manifest schemae, as defined at the Fr8 [Manifest Registry](), and you should also feel free to extend existing Manifests and define new ones. Extending existing Manifests makes sense when you want to add richness or complexity to an existing definition. If your extension represents a pure subset of an existing Manifest, you may want to use the same name and increment the version number. This will allow Fr8 to continue to support the older version. 
+As a Developer extending Fr8, you should try to use the existing Fr8 Manifest schemae, as defined at the Fr8 [Manifest Registry](https://fr8.co/dashboard/manifest_registry), and you should also feel free to extend existing Manifests and define new ones. Extending existing Manifests makes sense when you want to add richness or complexity to an existing definition. If your extension represents a pure subset of an existing Manifest, you may want to use the same name and increment the version number. This will allow Fr8 to continue to support the older version. 
 
 Know the Core Manifests
 --------------------------

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Interfaces;
 using Newtonsoft.Json.Linq;
 
@@ -21,7 +22,7 @@ namespace Hub.Services
             _client = client;
         }
 
-        public async Task<string> GetAuthToken(string UserId)
+        public async Task<string> GetToken(string UserId)
         {
             var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/authentication/token");
             var headers =
@@ -35,18 +36,10 @@ namespace Hub.Services
             return token;
         }
 
-        public async Task<bool> Logout(string UserId)
+        public string LogOutUrl()
         {
-            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/authentication/logout");
-            var headers =
-                await
-                    _hmacService.GenerateHMACHeader(uri, "PlanDirectory",
-                        CloudConfigurationManager.GetSetting("PlanDirectorySecret"), UserId);
-
-            var json = await _client.PostAsync<JObject>(uri, headers: headers);
-            var result = json.Value<bool>("result");
-
-            return result;
+            return CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/Home/LogoutByToken";
         }
+        
     }
 }

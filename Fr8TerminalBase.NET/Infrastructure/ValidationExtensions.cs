@@ -18,12 +18,12 @@ namespace Fr8.TerminalBase.Infrastructure
         public static void ValidateEmail(this ValidationManager validationManager, IConfigRepository configRepository, TextSource textSource, string errorMessage = null)
         {
             //The validation actually won't go further only if Upstream is set as source but payload is not avaialable. That means we can't yet validate
-            if (!textSource.CanGetValue(validationManager.Payload) && !textSource.ValueSourceIsNotSet)
+            if (textSource.HasUpstreamValue)
             {
                 return;
             }
-            var value = textSource.CanGetValue(validationManager.Payload) ? textSource.GetValue(validationManager.Payload) : string.Empty;
-            if (!RegexUtilities.IsValidEmailAddress(configRepository, value))
+            
+            if (!RegexUtilities.IsValidEmailAddress(configRepository, textSource.TextValue))
             {
                 validationManager.SetError(errorMessage ?? "Not a valid e-mail address", textSource);
             }
@@ -56,7 +56,7 @@ namespace Fr8.TerminalBase.Infrastructure
 
         public static bool ValidateTextSourceNotEmpty(this ValidationManager validationManager, TextSource control, string errorMessage)
         {
-            if (control != null && control.CanGetValue(validationManager.Payload) && string.IsNullOrWhiteSpace(control.GetValue(validationManager.Payload)))
+            if (control != null && (!control.HasUpstreamValue && string.IsNullOrWhiteSpace(control.TextValue)))
             {
                 validationManager.SetError(errorMessage, control);
                 return false;

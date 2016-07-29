@@ -22,18 +22,10 @@ namespace Fr8.TerminalBase.Services
         public class FieldConfigurator
         {
             private readonly List<FieldDTO> _fields;
-            private readonly string _label;
-            private readonly CrateManifestType _manifestType;
-            private readonly Guid _sourceActivityId;
-            private readonly AvailabilityType _availabilityType;
 
-            public FieldConfigurator(List<FieldDTO> fields, string label, CrateManifestType manifestType, Guid sourceActivityId, AvailabilityType availabilityType)
+            public FieldConfigurator(List<FieldDTO> fields)
             {
                 _fields = fields;
-                _label = label;
-                _manifestType = manifestType;
-                _sourceActivityId = sourceActivityId;
-                _availabilityType = availabilityType;
             }
 
             public FieldConfigurator AddFields(IEnumerable<FieldDTO> fields)
@@ -59,23 +51,13 @@ namespace Fr8.TerminalBase.Services
             public FieldConfigurator AddField(FieldDTO field)
             {
                 field = field.Clone();
-                field.SourceCrateLabel = _label;
-                field.SourceCrateManifest = _manifestType;
-                field.SourceActivityId = _sourceActivityId.ToString();
-                field.Availability = _availabilityType;
-
                 _fields.Add(field);
                 return this;
             }
 
             public FieldConfigurator AddField(string name)
             {
-                return AddField(new FieldDTO(name, _availabilityType)
-                {
-                    SourceCrateManifest = _manifestType,
-                    SourceCrateLabel = _label,
-                    SourceActivityId = _sourceActivityId.ToString()
-                });
+                return AddField(new FieldDTO(name));
             }
         }
 
@@ -137,22 +119,25 @@ namespace Fr8.TerminalBase.Services
             return MarkAvailable<TManifest>(label, AvailabilityType.Always, suppressFieldDiscovery);
         }
 
-        public FieldConfigurator MarkAvailableWithoutSignalling(CrateDescriptionDTO crateDescription, AvailabilityType availabilityType, string label)
+        public FieldConfigurator MarkAvailable(CrateManifestType manifestType, string label, AvailabilityType availabilityType)
         {
             EnsureAvailableDataCrate();
+
             var fields = new List<FieldDTO>();
+            
             _availableData.AddOrUpdate(new CrateDescriptionDTO
             {
+                Availability = availabilityType,
                 Label = label,
-                ManifestId = crateDescription.ManifestId,
-                ManifestType = crateDescription.ManifestType,
+                ManifestId = manifestType.Id,
+                ManifestType = manifestType.Type,
                 ProducedBy = _owner,
+                SourceActivityId = _sourceActivityId.ToString(),
                 Fields = fields
             });
 
-            return new FieldConfigurator(fields, label, new CrateManifestType(crateDescription.ManifestType, crateDescription.ManifestId), _sourceActivityId, availabilityType);
+            return new FieldConfigurator(fields);
         }
-
 
         public FieldConfigurator MarkAvailable<TManifest>(string label, AvailabilityType availabilityType, bool suppressFieldDiscovery = false)
             where TManifest : Manifest
@@ -170,24 +155,22 @@ namespace Fr8.TerminalBase.Services
 
                 foreach (var memberAccessor in members)
                 {
-                    fields.Add(new FieldDTO(memberAccessor.Name, availabilityType)
-                    {
-                        SourceCrateLabel = label,
-                        SourceCrateManifest = manifestType
-                    });
+                    fields.Add(new FieldDTO(memberAccessor.Name));
                 }
             }
 
             _availableData.AddOrUpdate(new CrateDescriptionDTO
             {
+                Availability = availabilityType,
                 Label = label,
                 ManifestId = manifestType.Id,
                 ManifestType = manifestType.Type,
                 ProducedBy = _owner,
+                SourceActivityId = _sourceActivityId.ToString(),
                 Fields = fields
             });
 
-            return new FieldConfigurator(fields, label, manifestType, _sourceActivityId, availabilityType);
+            return new FieldConfigurator(fields);
         }
     }
 }

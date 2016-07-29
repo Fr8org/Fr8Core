@@ -10,6 +10,7 @@ using Data.Interfaces;
 using Data.States;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
+using PlanDirectory.Interfaces;
 
 namespace PlanDirectory.Infrastructure
 {
@@ -103,7 +104,7 @@ namespace PlanDirectory.Infrastructure
                         fr8AccountId,
                         x => x.ParentPlanId == planIdStr
                     );
-
+                uow.SaveChanges();
                 await Task.Yield();
             }
         }

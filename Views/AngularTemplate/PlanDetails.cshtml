@@ -18,10 +18,10 @@
         </div>
 
         <h4>
-            <md-radio-group layout="row">
+            <md-radio-group ng-model="current.plan.visibility.public" layout="row">
                 <b style="padding-right:10px">Publish to Public Directory</b>
-                <md-radio-button ng-click="sharePlan()" value="Share" class="md-primary">Yes</md-radio-button>
-                <md-radio-button ng-click="unpublishPlan()" value="Unpublish"> No </md-radio-button>
+                <md-radio-button ng-click="sharePlan()" data-ng-value="true" class="md-primary">Yes</md-radio-button>
+                <md-radio-button ng-click="unpublishPlan()" data-ng-value="false"> No </md-radio-button>
             </md-radio-group>
         </h4>
 

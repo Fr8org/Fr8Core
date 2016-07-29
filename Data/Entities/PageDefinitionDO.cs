@@ -3,13 +3,17 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using Data.Utility;
 using Newtonsoft.Json;
 
 namespace Data.Entities
 {
     public class PageDefinitionDO : BaseObject
     {
+        public PageDefinitionDO()
+        {
+            Tags = new string[0];
+            PlanTemplatesIds = new List<string>(0);
+        }
         [Key]
         public int Id { get; set; }
         [Required]
