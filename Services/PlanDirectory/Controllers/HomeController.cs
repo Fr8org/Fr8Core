@@ -80,7 +80,7 @@ namespace PlanDirectory.Controllers
                 securityServices.Logout();
 
                 //really should replace * with certain domains
-                Response.AppendHeader("Access-Control-Allow-Origin", "https://dev.fr8.co ; https://fr8.co");
+                Response.AppendHeader("Access-Control-Allow-Origin", "https://dev.fr8.co ; https://fr8.co; http://dev.fr8.co ; http://fr8.co");
 
                 return Redirect(VirtualPathUtility.ToAbsolute("~/"));
             }
