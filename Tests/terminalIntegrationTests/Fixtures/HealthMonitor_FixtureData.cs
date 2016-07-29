@@ -43,7 +43,6 @@ namespace terminalIntegrationTests.Fixtures
                 Id = Guid.NewGuid(),
                 ParentPlanNodeId = parentNodeId,
                 RootPlanNodeId = parentNodeId,
-                NodeTransitions = "[{'TransitionKey':'true','ProcessNodeId':'2'}]"
             };
             return SubPlanDO;
         }
