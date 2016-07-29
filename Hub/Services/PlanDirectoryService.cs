@@ -250,7 +250,7 @@ namespace Hub.Services
 
                     if (!_activityTemplate.TryGetByKey(activity.ActivityTemplateId, out activityTemplate))
                     {
-                        throw new KeyNotFoundException($"Activity '{activity.Name}' use activity template id = '{activity.ActivityTemplateId}' that is unknown to this Hub");
+                        throw new KeyNotFoundException($"Activity '{activity.Name}' use activity template '{activity.ActivityTemplate?.Name}' with id = '{activity.ActivityTemplateId}' that is unknown to this Hub");
                     }
 
                     activity.CrateStorage = UpdateCrateStorage(activity.CrateStorage, idsMap);
