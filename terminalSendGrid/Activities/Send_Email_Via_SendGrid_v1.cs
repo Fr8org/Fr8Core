@@ -25,7 +25,7 @@ namespace terminalSendGrid.Activities
         {
             Id = new Guid("f827af1c-3348-4981-bebd-cf81c8ab27ae"),
             Name = "Send_Email_Via_SendGrid",
-            Label = "Send Email",
+            Label = "Send Email Using SendGrid Account",
             Version = "1",
             Tags = string.Join(",", Tags.Notifier, Tags.EmailDeliverer),
             Terminal = TerminalData.TerminalDTO,
