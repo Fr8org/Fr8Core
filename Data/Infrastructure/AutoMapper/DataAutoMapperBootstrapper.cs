@@ -5,7 +5,6 @@ using AutoMapper;
 using Data.Entities;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using Fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities.AutoMapper;
 using Newtonsoft.Json.Linq;
@@ -213,27 +212,6 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.Id, opts => opts.Ignore())
                 .ForMember(x => x.Secret, opts => opts.Ignore())
                 .ForMember(x => x.AuthenticationTypeTemplate, opts => opts.Ignore());
-
-
-            Mapper.CreateMap<PlanTemplateDO, PlanTemplateDTO>();
-            Mapper.CreateMap<PlanTemplateDTO, PlanTemplateDO>();
-
-            Mapper.CreateMap<PlanNodeDescriptionDO, PlanNodeDescriptionDTO>();
-            Mapper.CreateMap<PlanNodeDescriptionDTO, PlanNodeDescriptionDO>();
-
-            Mapper.CreateMap<ActivityDescriptionDO, ActivityDescriptionDTO>();
-            Mapper.CreateMap<ActivityDescriptionDTO, ActivityDescriptionDO>();
-
-            Mapper.CreateMap<NodeTransitionDO, NodeTransitionDTO>();
-            Mapper.CreateMap<NodeTransitionDTO, NodeTransitionDO>();
-
-            Mapper.CreateMap<PlanNodeTransitionType, string>().ConvertUsing(ConvertPlanNodeToString);
-            Mapper.CreateMap<string, PlanNodeTransitionType>().ConvertUsing(e => (PlanNodeTransitionType)Enum.Parse(typeof(PlanNodeTransitionType), e, true));
-        }
-
-        public static string ConvertPlanNodeToString(PlanNodeTransitionType e)
-        {
-            return e.ToString().ToLower();
         }
 
         private static List<PlanNodeDO> MapActivities(IEnumerable<ActivityDTO> actions)

@@ -7,7 +7,6 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
-using HubWeb.Controllers.Helpers;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Data.Entities;
@@ -20,18 +19,15 @@ using System.Web;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using Fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities;
-using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Helper;
 using Newtonsoft.Json;
 using Hub.Infrastructure;
 using HubWeb.Infrastructure_HubWeb;
 using HubWeb.ViewModels.RequestParameters;
-using Newtonsoft.Json.Linq;
 using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
@@ -412,7 +408,7 @@ namespace HubWeb.Controllers
         /// <response code="403">Unauthorized request</response>
         [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
         [Fr8TerminalAuthentication]
-        [ResponseType(typeof(PlanTemplateDTO))]
+        [ResponseType(typeof(PlanFullDTO))]
         [HttpPost]
         public async Task<IHttpActionResult> Templates(Guid planId)
         {

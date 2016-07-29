@@ -213,10 +213,6 @@
     <Compile Include="Data\DataTransferObjects\PlanDTO.cs" />
     <Compile Include="Data\DataTransferObjects\PlanEmptyDTO.cs" />
     <Compile Include="Data\DataTransferObjects\PlanFullDTO.cs" />
-    <Compile Include="Data\DataTransferObjects\PlanTemplates\ActivityDescriptionDTO.cs" />
-    <Compile Include="Data\DataTransferObjects\PlanTemplates\NodeTransitionDTO.cs" />
-    <Compile Include="Data\DataTransferObjects\PlanTemplates\PlanNodeDescriptionDTO.cs" />
-    <Compile Include="Data\DataTransferObjects\PlanTemplates\PlanTemplateDTO.cs" />
     <Compile Include="Data\DataTransferObjects\PlanVisibilityDTO.cs" />
     <Compile Include="Data\DataTransferObjects\PollingDataDTO.cs" />
     <Compile Include="Data\DataTransferObjects\ProfileDTO.cs" />
