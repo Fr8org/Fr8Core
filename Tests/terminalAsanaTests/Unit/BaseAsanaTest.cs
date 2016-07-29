@@ -21,7 +21,7 @@ namespace terminalAsanaTests.Unit
         protected Mock<IRestfulServiceClient> _restClientMock;
         protected Mock<IAsanaParameters> _parametersMock;
 
-        [OneTimeSetUp]
+        [TestFixtureSetUp]
         public void Startup()
         {
             var tokenUrl = "http://token.asana.com/";

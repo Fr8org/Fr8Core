@@ -19,7 +19,7 @@ namespace terminalAsanaTests.Unit
         private IAsanaOAuth _asanaOAuth;
         private IAsanaOAuthCommunicator _communicator;
 
-        [OneTimeSetUp]
+        [TestFixtureSetUp]
         public void StartUp()
         {
             _asanaOAuth = new AsanaOAuthService(_restClient, _parameters);

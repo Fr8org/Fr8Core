@@ -8,7 +8,6 @@ using Fr8.Infrastructure.Interfaces;
 using Fr8.Testing.Unit;
 using Moq;
 using Newtonsoft.Json.Linq;
-using NUnit.Common;
 using NUnit.Framework;
 using terminalAsana.Asana;
 using terminalAsana.Asana.Services;
@@ -23,7 +22,7 @@ namespace terminalAsanaTests.Unit
         private IAsanaOAuth _asanaOAuth;
         private IAsanaOAuthCommunicator _communicator;
 
-        [OneTimeSetUp]
+        [TestFixtureSetUp]
         public void StartUp()
         {
             _asanaOAuth = new AsanaOAuthService(_restClient,_parameters);

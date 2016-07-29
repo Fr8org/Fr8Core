@@ -20,7 +20,7 @@ namespace terminalAsanaTests.Unit
         private IAsanaOAuthCommunicator _communicator;
         private IAsanaOAuth _asanaOAuth;
 
-        [OneTimeSetUp]
+        [TestFixtureSetUp]
         public async Task Start()
         {
             this._asanaOAuth = await new AsanaOAuthService(_restClient, _parameters).InitializeAsync(new OAuthToken());
