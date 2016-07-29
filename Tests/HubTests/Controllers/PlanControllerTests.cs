@@ -138,22 +138,22 @@ namespace HubTests.Controllers
         }
 
         [Test]
-        public void PlanController_Will_ReturnEmptyOkResult_If_No_Plan_Found()
+        public async void PlanController_Will_ReturnEmptyOkResult_If_No_Plan_Found()
         {
             //Act
             PlansController PlanController = CreatePlanController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
 
             //Assert
-            var postResult = PlanController.Get(new PlansGetParams()
+            var postResult = await PlanController.Get(new PlansGetParams()
             {
                 id = FixtureData.GetTestGuidById(55)
             });
-                //FixtureData.GetTestGuidById(55));
+            //FixtureData.GetTestGuidById(55));
             Assert.IsNull(postResult as OkNegotiatedContentResult<PlanDO>);
         }
 
         [Test]
-        public void ProcessController_Will_Return_All_When_Get_Invoked_With_Null()
+        public async void ProcessController_Will_Return_All_When_Get_Invoked_With_Null()
         {
             //Arrange
             var PlanController = CreatePlanController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
@@ -178,7 +178,7 @@ namespace HubTests.Controllers
                 PlanController.Post(PlanDto);
             }
             //Act
-            var actionResult = PlanController.Get(new PlansGetParams()) as OkNegotiatedContentResult<IList<PlanEmptyDTO>>;
+            var actionResult = await PlanController.Get(new PlansGetParams()) as OkNegotiatedContentResult<IList<PlanEmptyDTO>>;
 
             //Assert
             Assert.NotNull(actionResult);
@@ -186,7 +186,7 @@ namespace HubTests.Controllers
         }
 
         [Test]
-        public void ProcessController_Will_Return_One_When_Get_Invoked_With_Id()
+        public async void ProcessController_Will_Return_One_When_Get_Invoked_With_Id()
         {
             //Arrange
             var PlanController = CreatePlanController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
@@ -194,7 +194,7 @@ namespace HubTests.Controllers
             var resultPlan = (PlanController.Post(PlanDto).Result as OkNegotiatedContentResult<PlanDTO>).Content;
 
             //Act
-            var actionResult = PlanController.Get( new PlansGetParams()
+            var actionResult = await PlanController.Get(new PlansGetParams()
             {
                 id = resultPlan.Plan.Id
             }) as OkNegotiatedContentResult<PlanEmptyDTO>;
@@ -210,7 +210,7 @@ namespace HubTests.Controllers
         // We add object to PlanRepository but Delete logic recusively traverse Activity repository.
         [Ignore("MockDB behavior is incorrect")]
         [Test]
-        public void PlanController_CanDelete()
+        public async void PlanController_CanDelete()
         {
             //Arrange 
             var PlanDto = FixtureData.CreateTestPlanDTO();
@@ -228,10 +228,10 @@ namespace HubTests.Controllers
             //Assert
             //After delete, if we get the same process template, it should be null
             var afterDeleteAttemptResult =
-                PlanController.Get( new PlansGetParams()
-                {
-                    id = postResult.Content.Id
-                }) as OkNegotiatedContentResult<PlanEmptyDTO>;
+               await PlanController.Get(new PlansGetParams()
+               {
+                   id = postResult.Content.Id
+               }) as OkNegotiatedContentResult<PlanEmptyDTO>;
             Assert.IsNull(afterDeleteAttemptResult);
         }
 
@@ -254,7 +254,7 @@ namespace HubTests.Controllers
         }
 
         [Test]
-        public void ProcessController_CanEditProcess()
+        public async void ProcessController_CanEditProcess()
         {
             //Arrange 
             //var processTemplateDto = FixtureData.CreateTestPlanDTO();
@@ -273,7 +273,7 @@ namespace HubTests.Controllers
             Assert.NotNull(postResult);
 
             //Then Get
-            var getResult = PlanController.Get(new PlansGetParams()
+            var getResult = await PlanController.Get(new PlansGetParams()
             {
                 id = postResult.Content.Plan.Id
             }) as OkNegotiatedContentResult<PlanEmptyDTO>;
@@ -286,7 +286,7 @@ namespace HubTests.Controllers
             Assert.NotNull(editResult);
 
             //Then Get
-            var postEditGetResult = PlanController.Get( new PlansGetParams()
+            var postEditGetResult = await PlanController.Get(new PlansGetParams()
             {
                 id = editResult.Content.Plan.Id
             }) as OkNegotiatedContentResult<PlanEmptyDTO>;
@@ -298,9 +298,9 @@ namespace HubTests.Controllers
             Assert.AreEqual(postEditGetResult.Content.Id, postResult.Content.Plan.Id);
         }
 
-        
+
         [Test]
-        public void ShouldGetFullPlan()
+        public async void ShouldGetFullPlan()
         {
             var curPlanController = new PlansController();
             var curPlanDO = FixtureData.TestPlan3();
@@ -332,7 +332,7 @@ namespace HubTests.Controllers
             }
 
             //var curResult = curPlanController.GetFullPlan(curPlanDO.Id) as OkNegotiatedContentResult<PlanDTO>;
-            var curResult = curPlanController.Get( new PlansGetParams()
+            var curResult = await curPlanController.Get(new PlansGetParams()
             {
                 id = curPlanDO.Id,
                 include_children = true

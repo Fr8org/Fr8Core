@@ -54,7 +54,7 @@ namespace terminalGoogle.Services
                 Name = "MonitorSubmissionTerminalForm",
                 Description = "MonitorSubmissionTerminalForm",
                 PlanState = PlanState.Running,
-                Visibility = PlanVisibility.Internal
+                Visibility = new PlanVisibilityDTO() { Hidden = true }
             };
 
             monitorTerminalSubmissions = await _hubCommunicator.CreatePlan(emptyMonitorPlan);
