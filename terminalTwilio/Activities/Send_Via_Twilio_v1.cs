@@ -161,7 +161,7 @@ namespace terminalTwilio.Activities
             {
                 throw new ApplicationException("TextSource control was expected but not found.");
             }
-            smsNumber = control.GetValue(payloadCrates).Trim();
+            smsNumber = control.TextValue.Trim();
 
             smsNumber = GeneralisePhoneNumber(smsNumber);
 
@@ -176,7 +176,7 @@ namespace terminalTwilio.Activities
                 throw new ApplicationException("TextSource control was expected but not found.");
             }
 
-            smsBody = control.GetValue(payloadCrates);
+            smsBody = control.TextValue;
             if (smsBody == null)
             {
                 throw new ArgumentException("SMS body can not be null.");
