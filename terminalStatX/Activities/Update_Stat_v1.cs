@@ -113,6 +113,10 @@ namespace terminalStatX.Activities
         {
             if (!string.IsNullOrEmpty(ActivityUI.ExistingGroupsList.Value))
             {
+                ActivityUI.ExistingGroupsList.ListItems = (await _statXIntegration.GetGroups(StatXUtilities.GetStatXAuthToken(AuthorizationToken)))
+                     .Select(x => new ListItem { Key = x.Name, Value = x.Id }).ToList();
+                ActivityUI.ExistingGroupsList.Value = SelectedGroup;
+
                 var previousGroup = SelectedGroup;
                 if (string.IsNullOrEmpty(previousGroup) || !string.Equals(previousGroup, ActivityUI.ExistingGroupsList.Value))
                 {
