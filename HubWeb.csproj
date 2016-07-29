@@ -823,6 +823,7 @@
     <Content Include="Config\HubWeb\Settings.config.readme" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
+    <Content Include="_PowerShellScripts\Combine-Sources.ps1" />
     <Content Include="_PowerShellScripts\HM-job-run.cmd" />
     <Content Include="_PowerShellScripts\HM-job-settings.job" />
     <Content Include="_PowerShellScripts\Deploy-HMAsWebJob.ps1" />
@@ -851,7 +852,6 @@
     <Content Include="_PowerShellScripts\Copy-ImagesBetweenAccount.ps1" />
     <Content Include="Views\JsTests\endpoints.cshtml" />
     <Content Include="Views\AngularTemplate\PlanUploadModal.cshtml" />
-    <Content Include="_PowerShellScripts\Combine-Sources.ps1" />
     <Content Include="_PowerShellScripts\Set-Config.ps1" />
     <Content Include="Views\Redirect\ClonePlan.cshtml" />
     <Content Include="Views\AngularTemplate\UpstreamFieldChooser.cshtml" />
@@ -870,6 +870,7 @@
     <Content Include="_PowerShellScripts\Run-SQL.ps1" />
     <Content Include="_PowerShellScripts\Set-AzureSQLService.ps1" />
     <Content Include="Views\DockyardAccount\LogOff.cshtml" />
+    <Content Include="_PowerShellScripts\Add-Repo.ps1" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <Content Include="_PowerShellScripts\Update-HostnameInTerminalRegistration.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
@@ -4473,7 +4474,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('packages\Fr8.PrivateSettings.1.2016.202.9\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fr8.PrivateSettings.1.2016.202.9\build\net40\Fr8.PrivateSettings.targets'))" />
+    <Error Condition="!Exists('packages\Fr8.PrivateSettings.1.2016.210.2\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fr8.PrivateSettings.1.2016.210.2\build\net40\Fr8.PrivateSettings.targets'))" />
   </Target>
   <PropertyGroup>
     <CopyAllFilesToSingleFolderForPackageDependsOn>
@@ -4559,5 +4560,5 @@
   <Target Name="BeforeBuild">
     <RestoreSettingsTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)" ProjectName="$(ProjectName)" />
   </Target>
-  <Import Project="packages\Fr8.PrivateSettings.1.2016.202.9\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.202.9\build\net40\Fr8.PrivateSettings.targets')" />
+  <Import Project="packages\Fr8.PrivateSettings.1.2016.210.2\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.210.2\build\net40\Fr8.PrivateSettings.targets')" />
 </Project>

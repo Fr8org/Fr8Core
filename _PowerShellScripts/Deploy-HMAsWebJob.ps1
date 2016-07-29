@@ -23,7 +23,7 @@ If (Test-Path $archiveFolderName){
 If (Test-Path $outputArchiveFile){
 	Write-Host "Removing old $outputArchiveFile archive file"
 	Remove-Item $outputArchiveFile -Force -Recurse
-}
+} 
 
 # Create archive folder.
 New-Item -ItemType Directory -Force -Path $archiveFolderName | Out-Null
