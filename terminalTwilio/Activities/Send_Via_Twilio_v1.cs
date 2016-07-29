@@ -23,7 +23,7 @@ namespace terminalTwilio.Activities
         {
             Id = new Guid("ddd5be71-a23c-41e3-baf0-501e34f0517b"),
             Name = "Send_Via_Twilio",
-            Label = "Send SMS",
+            Label = "Send SMS Using Twilio Account",
             Tags = "Twillio,Notifier",
             Category = ActivityCategory.Forwarders,
             Version = "1",

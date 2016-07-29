@@ -11,7 +11,7 @@ module dockyard.directives.UIBlocker {
     }
 
     export function UIBlocker(): ng.IDirective {
-        var controller = ['$scope', '$rootScope', 'UIHelperService', ($scope: IUIBlockerScope, $rootScope: interfaces.IAppRootScope, UIHelperService: services.IUIHelperService) => {
+        var controller = ['$scope', '$rootScope', 'UIHelperService', 'PlanService', ($scope: IUIBlockerScope, $rootScope: interfaces.IAppRootScope, UIHelperService: services.IUIHelperService, PlanService: services.IPlanService) => {
             var alertMessage = new model.AlertDTO();
             alertMessage.title = "Plan is disabled";
             alertMessage.body = "You can't modify this Plan while it's running. Would you like to stop it now?";
@@ -21,9 +21,17 @@ module dockyard.directives.UIBlocker {
                 UIHelperService
                     .openConfirmationModal(alertMessage)
                     .then(() => {
-                        $rootScope.$broadcast(<any>designHeaderEvents.PLAN_IS_DEACTIVATED);
+                        $scope.deactivatePlan();
                     });
             }
+
+            $scope.deactivatePlan = () => {
+                var result = PlanService.deactivate({ planId: $scope.plan.id });
+                result.$promise.then((data) => {
+                    $scope.plan.planState = 1;
+                    $rootScope.$broadcast(<any>designHeaderEvents.PLAN_IS_DEACTIVATED);
+                });
+            };
             
         }];
 
@@ -33,7 +41,8 @@ module dockyard.directives.UIBlocker {
                        '<ng-transclude></ng-translude>',
             controller: controller,
             scope: {
-                active: '='
+                active: '=',
+                plan: '='
             }
         };
     }

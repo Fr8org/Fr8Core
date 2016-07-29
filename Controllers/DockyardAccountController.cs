@@ -73,22 +73,8 @@ namespace HubWeb.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> LogOff()
         {
-            if (User.Identity.IsAuthenticated)
-            {
-                var userId = User.Identity.GetUserId();
-
-                ViewBag.Token = await _planDirectory.GetToken(userId);
-                ViewBag.PDLogoutUrl = _planDirectory.LogOutUrl();
-
-                Logger.GetLogger().Debug($"PlanDirectory logging out");
-
-                this.Logout();
-                return View();
-            }
-            else
-            {
-                return RedirectToAction("Index");
-            }
+            this.Logout();
+            return RedirectToAction("Index");
         }
        
         [AllowAnonymous]

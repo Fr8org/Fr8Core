@@ -41,13 +41,13 @@ namespace PlanDirectory.Infrastructure
 
             private void ConfigurePlanPageGenerator(Uri planDirectoryUrl, string serverPath)
             {
-                var templateGenerator = new TemplateGenerator(new Uri($"{planDirectoryUrl}Category"), $"{serverPath}/Category");
+                var templateGenerator = new TemplateGenerator(new Uri($"{planDirectoryUrl}category"), $"{serverPath}/category");
                 For<IWebservicesPageGenerator>().Use<WebservicesPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
             }
 
             private void ConfigureManifestPageGenerator(Uri planDirectoryUrl, string serverPath)
             {
-                var templateGenerator = new TemplateGenerator(new Uri($"{planDirectoryUrl}ManifestPages"), $"{serverPath}/ManifestPages");
+                var templateGenerator = new TemplateGenerator(new Uri($"{planDirectoryUrl}manifestpages"), $"{serverPath}/manifestpages");
                 For<IManifestPageGenerator>().Use<ManifestPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
             }
 

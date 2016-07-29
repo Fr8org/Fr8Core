@@ -822,6 +822,7 @@
     <Content Include="Config\HubWeb\Settings.config.readme" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
+    <Content Include="_PowerShellScripts\Combine-Sources.ps1" />
     <Content Include="_PowerShellScripts\HM-job-run.cmd" />
     <Content Include="_PowerShellScripts\HM-job-settings.job" />
     <Content Include="_PowerShellScripts\Deploy-HMAsWebJob.ps1" />
@@ -850,7 +851,6 @@
     <Content Include="_PowerShellScripts\Copy-ImagesBetweenAccount.ps1" />
     <Content Include="Views\JsTests\endpoints.cshtml" />
     <Content Include="Views\AngularTemplate\PlanUploadModal.cshtml" />
-    <Content Include="_PowerShellScripts\Combine-Sources.ps1" />
     <Content Include="_PowerShellScripts\Set-Config.ps1" />
     <Content Include="Views\Redirect\ClonePlan.cshtml" />
     <Content Include="Views\AngularTemplate\UpstreamFieldChooser.cshtml" />
@@ -868,7 +868,7 @@
     <Content Include="Views\AngularTemplate\ActivityHeader.cshtml" />
     <Content Include="_PowerShellScripts\Run-SQL.ps1" />
     <Content Include="_PowerShellScripts\Set-AzureSQLService.ps1" />
-    <Content Include="Views\DockyardAccount\LogOff.cshtml" />
+    <Content Include="_PowerShellScripts\Add-Repo.ps1" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <Content Include="_PowerShellScripts\Update-HostnameInTerminalRegistration.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
