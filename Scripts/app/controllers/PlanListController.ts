@@ -117,8 +117,6 @@ module dockyard.controllers {
 
 
             $scope.$watch('inActiveQuery.filter', (newValue, oldValue) => {
-                console.log(oldValue);
-                console.log(newValue);
                 var bookmark: number = 1;
                 if (!oldValue) {
                     bookmark = $scope.inActiveQuery.page;
@@ -129,15 +127,14 @@ module dockyard.controllers {
                 if (!newValue) {
                     $scope.inActiveQuery.page = bookmark;
                 }
-                if (!!newValue && !!oldValue) {
-                    this.getInactivePlans();
-                }
+                this.getInactivePlans();
             });
 
             $scope.addPlan = function () {
                var plan = new dockyard.model.PlanDTO();
                plan.planState = dockyard.model.PlanState.Inactive;
-               plan.visibility = dockyard.model.PlanVisibility.Standard;
+               plan.visibility = { hidden: false, public: false };
+               //plan.visibility = dockyard.model.PlanVisibility.Standard;
                var result = PlanService.save(plan);
 
                     result.$promise
@@ -159,9 +156,7 @@ module dockyard.controllers {
                 if (!newValue) {
                     $scope.activeQuery.page = bookmark;
                 }
-                if (!!newValue && !!oldValue) {
-                    this.getActivePlans();
-                }
+                this.getActivePlans();
             });      
 
             UserService.getCurrentUser().$promise.then(data => {

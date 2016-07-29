@@ -188,7 +188,7 @@ namespace HubWeb.Controllers
         [SwaggerResponse(HttpStatusCode.OK, "Collection of plans queried by name", typeof(List<PlanDTO>))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "Multiple query parameters are defined")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
-        public IHttpActionResult Get([FromUri] PlansGetParams parameters)
+        public async Task<IHttpActionResult> Get([FromUri] PlansGetParams parameters)
         {
             if ((!parameters.name.IsNullOrEmpty() && parameters.id.HasValue)
                 || (parameters.activity_id.HasValue && parameters.id.HasValue)
@@ -198,7 +198,7 @@ namespace HubWeb.Controllers
             }
             if (parameters.include_children && parameters.id.HasValue)
             {
-                return GetFullPlan((Guid)parameters.id);
+                return await GetFullPlan((Guid)parameters.id);
             }
             if (parameters.activity_id.HasValue)
             {
@@ -214,12 +214,37 @@ namespace HubWeb.Controllers
         [ResponseType(typeof(PlanDTO))]
         [HttpGet]
         [NonAction]
-        private IHttpActionResult GetFullPlan(Guid id)
+        private async Task<IHttpActionResult> GetFullPlan(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = _plan.GetFullPlan(uow, id);
+
+                var hmacService = ObjectFactory.GetInstance<IHMACService>();
+                var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+
+                var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/plan_templates?id=" + id);
+                var headers = await hmacService.GenerateHMACHeader(
+                    uri,
+                    "PlanDirectory",
+                    CloudConfigurationManager.GetSetting("PlanDirectorySecret"),
+                    User.Identity.GetUserId()
+                );
                 var result = PlanMappingHelper.MapPlanToDto(uow, plan);
+                try
+                {
+                    //checking if Plan published in PlanDirectory
+                    var planTemplate =  await client.GetAsync<PublishPlanTemplateDTO>(uri,  headers: headers);
+                    if (planTemplate != null)
+                    {
+                        result.Plan.Visibility.Public = true;
+                    }
+                }
+                //in case of PlanDirectory absence
+                catch (Fr8.Infrastructure.Communication.RestfulServiceException e)
+                {
+                    result.Plan.Visibility.Public = false;
+                }
 
                 return Ok(result);
             };
@@ -313,6 +338,19 @@ namespace HubWeb.Controllers
         public async Task<IHttpActionResult> Deactivate(Guid planId)
         {
             await _plan.Deactivate(planId);
+
+            // Notify UI for stopped plan
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var plan = uow.PlanRepository.GetById<PlanDO>(planId);
+                _pusherNotifier.NotifyUser(new NotificationMessageDTO
+                {
+                    NotificationType = NotificationType.ExecutionStopped,
+                    NotificationArea = NotificationArea.ActivityStream,
+                    Message = $"\"{plan.Name}\"",
+                    Collapsed = false
+                }, plan.Fr8AccountId);
+            }
 
             return Ok();
         }

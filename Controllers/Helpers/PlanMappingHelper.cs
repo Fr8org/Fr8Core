@@ -3,6 +3,7 @@ using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.States;
 
 namespace HubWeb.Controllers.Helpers
 {
@@ -32,7 +33,7 @@ namespace HubWeb.Controllers.Helpers
                     Id = curPlanDO.Id,
                     Name = curPlanDO.Name,
                     PlanState = curPlanDO.PlanState,
-                    Visibility = curPlanDO.Visibility,
+                    Visibility = new PlanVisibilityDTO() { Hidden = curPlanDO.Visibility.BooleanValue() },
                     StartingSubPlanId = curPlanDO.StartingSubPlanId,
                     SubPlans = subPlanDTOList,
                     Fr8UserId = curPlanDO.Fr8AccountId,

@@ -30,7 +30,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         public Guid StartingSubPlanId { get; set; }
 
         [JsonProperty("visibility")]
-        public PlanVisibility Visibility { get; set; }
+        public PlanVisibilityDTO Visibility { get; set; }
 
         [JsonProperty("category")]
         public string Category { get; set; }
