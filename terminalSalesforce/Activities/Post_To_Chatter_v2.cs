@@ -268,11 +268,11 @@ namespace terminalSalesforce.Actions
             set { ActivityUI.ChatterSelector.ListItems = value; }
         }
 
-        private string FeedText => ActivityUI.FeedTextSource.GetValue(Payload);
+        private string FeedText => ActivityUI.FeedTextSource.TextValue;
 
         private string ChatterFilter => ActivityUI.ChatterFilter.Value;
 
-        private string IncomingChatterId => Payload.FindField(ActivityUI.IncomingChatterIdSelector.selectedKey);
+        private string IncomingChatterId => ActivityUI.IncomingChatterIdSelector.Value;
 
         #endregion
     }

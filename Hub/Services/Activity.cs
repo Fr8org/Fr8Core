@@ -21,28 +21,30 @@ using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Exceptions;
-using Hub.Interfaces;
 using Hub.Managers;
+using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
 
 namespace Hub.Services
 {
     public class Activity : IActivity
     {
-        private readonly ICrateManager _crate;
+        private readonly ICrateManager _crateManager;
         private readonly IAuthorization _authorizationToken;
         private readonly ISecurityServices _security;
         private readonly IActivityTemplate _activityTemplate;
         private readonly IPlanNode _planNode;
+        private readonly IUpstreamDataExtractionService _upstreamDataExtractionService;
         private readonly AsyncMultiLock _configureLock = new AsyncMultiLock();
 
-        public Activity(ICrateManager crate, IAuthorization authorizationToken, ISecurityServices security, IActivityTemplate activityTemplate, IPlanNode planNode)
+        public Activity(ICrateManager crateManager, IAuthorization authorizationToken, ISecurityServices security, IActivityTemplate activityTemplate, IPlanNode planNode, IUpstreamDataExtractionService upstreamDataExtractionService)
         {
-            _crate = crate;
+            _crateManager = crateManager;
             _authorizationToken = authorizationToken;
             _security = security;
             _activityTemplate = activityTemplate;
             _planNode = planNode;
+            _upstreamDataExtractionService = upstreamDataExtractionService;
         }
 
 
@@ -123,7 +125,7 @@ namespace Hub.Services
                 Id = Guid.NewGuid(),
                 ActivityTemplateId = activityTemplateId,
                 Name = name,
-                CrateStorage = _crate.EmptyStorageAsStr(),
+                CrateStorage = _crateManager.EmptyStorageAsStr(),
                 AuthorizationTokenId = authorizationTokenId
             };
 
@@ -192,7 +194,7 @@ namespace Hub.Services
                         Logger.GetLogger().Info($"Call to terminal activation of activity (Id - {submittedActivity.Id}) completed");
                         var activatedActivityDo = Mapper.Map<ActivityDO>(activatedActivityDTO);
 
-                        var storage = _crate.GetStorage(activatedActivityDo);
+                        var storage = _crateManager.GetStorage(activatedActivityDo);
 
                         var validationCrate = storage.CrateContentsOfType<ValidationResultsCM>().FirstOrDefault();
 
@@ -316,10 +318,25 @@ namespace Hub.Services
                 }
 
                 if (curActionExecutionMode != ActivityExecutionMode.ReturnFromChildren)
+                {
                     EventManager.ActivityRunRequested(curActivityDO, curContainerDO);
+                }
 
-                var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, "run", parameters, curActivityDO, curContainerDO.Id);
+                var activtiyClone = (ActivityDO) curActivityDO.Clone();
 
+                using (var storage = _crateManager.UpdateStorage(() => activtiyClone.CrateStorage))
+                {
+                    var configurationControls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+
+                    if (configurationControls != null)
+                    {
+                        var payloadStorage = _crateManager.GetStorage(curContainerDO.CrateStorage);
+                        _upstreamDataExtractionService.ExtactAndAssignValues(configurationControls, payloadStorage);
+                    }
+                }
+
+                var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, "run", parameters, activtiyClone, curContainerDO.Id);
+                
                 EventManager.ActivityResponseReceived(curActivityDO, ActivityResponse.RequestSuspend);
 
                 return payloadDTO;

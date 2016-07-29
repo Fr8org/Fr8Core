@@ -6,6 +6,7 @@ using Data.Interfaces;
 using Data.Infrastructure.StructureMap;
 using Fr8.Infrastructure.Utilities.Logging;
 using PlanDirectory.Infrastructure;
+using PlanDirectory.Interfaces;
 
 namespace PlanDirectory.Controllers
 {
@@ -78,8 +79,8 @@ namespace PlanDirectory.Controllers
                 Logger.GetLogger("PlanDirectory").Debug($"Logging out user {securityServices.GetCurrentUser()}");
                 securityServices.Logout();
 
-                //really should replace * with certain domains
-                Response.AppendHeader("Access-Control-Allow-Origin", "https://dev.fr8.co ; https://fr8.co");
+                //really should replace * with certain domain
+                Response.AppendHeader("Access-Control-Allow-Origin", "*");
 
                 return Redirect(VirtualPathUtility.ToAbsolute("~/"));
             }
