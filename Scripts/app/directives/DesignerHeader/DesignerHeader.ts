@@ -115,13 +115,9 @@ module dockyard.directives.designerHeader {
                     }
                 };
 
-                var deRegisterPlanIsDeactivatedEvent = $scope.$on(<any>designHeaderEvents.PLAN_IS_DEACTIVATED,
+                $scope.$on(<any>designHeaderEvents.DEACTIVATE_PLAN,
                     (event: ng.IAngularEvent, eventArgs: model.PlanDTO) => $scope.deactivatePlan());
 
-                $scope.$on('$destroy', function () {
-                    //deRegisterPlanIsDeactivatedEvent();
-                    console.log("asdasdas");
-                });
                 $scope.deactivatePlan = () => {
                     var result = PlanService.deactivate({ planId: $scope.plan.id });
                     result.$promise.then((data) => {                        

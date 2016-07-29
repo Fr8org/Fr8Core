@@ -21,7 +21,7 @@ module dockyard.directives.UIBlocker {
                 UIHelperService
                     .openConfirmationModal(alertMessage)
                     .then(() => {
-                        $rootScope.$broadcast(<any>designHeaderEvents.PLAN_IS_DEACTIVATED);
+                        $rootScope.$broadcast(<any>designHeaderEvents.DEACTIVATE_PLAN);
                     });
             }
             
