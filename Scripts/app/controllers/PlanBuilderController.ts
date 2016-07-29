@@ -45,7 +45,6 @@ module dockyard.controllers {
         curAggReloadingActions: Array<string>;
         addSubPlan: () => void;
         view: string;
-        displayDeveloperMenu: boolean;
         viewMode: string;
         hasAnyActivity: (pSubPlan: any) => boolean;
         state: string;
@@ -114,7 +113,6 @@ module dockyard.controllers {
 
             this.LayoutService.resetLayout();
 
-            this.$scope.displayDeveloperMenu = false;
             this.$scope.isPlanBuilderScope = true;
             this.$scope.isReConfiguring = false;
 
