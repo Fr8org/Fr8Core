@@ -302,7 +302,7 @@ namespace HubTests.Controllers
         [Test]
         public void ShouldGetFullPlan()
         {
-            var curPlanController = new PlansController();
+            var curPlanController = ObjectFactory.GetInstance<PlansController>();
             var curPlanDO = FixtureData.TestPlan3();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -351,7 +351,7 @@ namespace HubTests.Controllers
         // Current user shoud be resolved using mocked ISecurityServices.
         private static PlansController CreatePlanController(string userId, string email)
         {
-            return new PlansController();
+            return ObjectFactory.GetInstance<PlansController>();
         }
     }
 }

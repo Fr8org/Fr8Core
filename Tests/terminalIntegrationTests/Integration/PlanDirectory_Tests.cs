@@ -22,18 +22,11 @@ namespace terminalIntegrationTests.Integration
                 Name = "Test PlanTemplate Name 1",
                 Description = "Test PlanTemplate Description 1",
                 ParentPlanId = Guid.NewGuid(),
-                PlanContents = JsonConvert.DeserializeObject<JToken>(
-                    JsonConvert.SerializeObject(
-                        new
+                PlanContents = new PlanFullDTO
                         {
-                            id = "b2d428b3-f016-4a11-999a-5a16c34f1dc3",
-                            name = "Test PlanTemplate Name 1",
-                            startingPlanNodeDescriptionId = (string)null,
-                            planNodeDescriptions = new JToken[0],
-                            description = (string)null
+                            Id = Guid.Parse("b2d428b3-f016-4a11-999a-5a16c34f1dc3"),
+                            Name = "Test PlanTemplate Name 1",
                         }
-                    )
-                )
             };
         }
 
@@ -57,9 +50,7 @@ namespace terminalIntegrationTests.Integration
 
                 planTemplateDTO.Name = "Test PlanTemplate Name 1 (Updated)";
                 planTemplateDTO.Description = "Test PlanTemplate Description 1 (Updated)";
-                planTemplateDTO.PlanContents = JsonConvert.DeserializeObject<JToken>(
-                    JsonConvert.SerializeObject(new { subplans = new string[] { } })
-                );
+                planTemplateDTO.PlanContents = new PlanFullDTO();
 
                 await HttpPostAsync<PublishPlanTemplateDTO, string>(_baseUrl + "plan_templates/", planTemplateDTO);
 

@@ -395,7 +395,6 @@
     <Compile Include="Controllers\Api\TerminalsController.cs" />
     <Compile Include="Controllers\Api\WarehousesController.cs" />
     <Compile Include="Controllers\CompanyController.cs" />
-    <Compile Include="Controllers\Helpers\PlanMappingHelper.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
     <Compile Include="Controllers\ServicesController.cs" />
     <Compile Include="Controllers\SupportController.cs" />

@@ -127,6 +127,7 @@ namespace Hub.StructureMap
                 For<ITimer>().Use<Win32Timer>();
                 For<IManifestRegistryMonitor>().Use<ManifestRegistryMonitor>().Singleton();
                 For<IUpstreamDataExtractionService>().Use<UpstreamDataExtractionService>().Singleton();
+                For<IPlanDirectoryService>().Use<PlanDirectoryService>().Singleton();
                 
             }
         }
@@ -200,6 +201,7 @@ namespace Hub.StructureMap
                 For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
                 For<ITimer>().Use<Win32Timer>();
                 For<IUpstreamDataExtractionService>().Use<UpstreamDataExtractionService>().Singleton();
+                For<IPlanDirectoryService>().Use<PlanDirectoryService>().Singleton();
             }
         }
 
