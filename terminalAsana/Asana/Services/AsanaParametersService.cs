@@ -43,15 +43,15 @@ namespace terminalAsana.Asana.Services
             ApiVersion = "1.0";
             DomainName = "https://app.asana.com/api/";
 
-            Limit = CloudConfigurationManager.GetSetting("AsanaNumberOfObjectsLimit");
+            Limit = CloudConfigurationManager.GetSetting("AsanaNumberOfObjectsLimit") ?? "1000";
 
-            AsanaClientSecret = CloudConfigurationManager.GetSetting("AsanaClientSecret");
-            AsanaClientId = CloudConfigurationManager.GetSetting("AsanaClientId");
+            AsanaClientSecret = CloudConfigurationManager.GetSetting("AsanaClientSecret") ?? "";
+            AsanaClientId = CloudConfigurationManager.GetSetting("AsanaClientId") ?? "";
 
-            MinutesBeforeTokenRenewal = CloudConfigurationManager.GetSetting("MinutesBeforeTokenRenewal");
-            AsanaOriginalRedirectUrl = CloudConfigurationManager.GetSetting("DefaultHubUrl") + CloudConfigurationManager.GetSetting("AsanaOriginalRedirectUrl");
-            AsanaOAuthCodeUrl = CloudConfigurationManager.GetSetting("AsanaOAuthCodeUrl").Replace("%ASANA_CLIENT_ID%",AsanaClientId);
-            AsanaOAuthTokenUrl = CloudConfigurationManager.GetSetting("AsanaOAuthTokenUrl");
+            MinutesBeforeTokenRenewal = CloudConfigurationManager.GetSetting("MinutesBeforeTokenRenewal") ?? "10";
+            AsanaOriginalRedirectUrl = (CloudConfigurationManager.GetSetting("DefaultHubUrl") + CloudConfigurationManager.GetSetting("AsanaOriginalRedirectUrl")) ?? "";
+            AsanaOAuthCodeUrl = CloudConfigurationManager.GetSetting("AsanaOAuthCodeUrl")?.Replace("%ASANA_CLIENT_ID%",AsanaClientId) ?? "";
+            AsanaOAuthTokenUrl = CloudConfigurationManager.GetSetting("AsanaOAuthTokenUrl") ?? "https://app.asana.com/-/oauth_token";
 
         }
     }
