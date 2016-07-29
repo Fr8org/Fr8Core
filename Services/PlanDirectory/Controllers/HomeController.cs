@@ -79,8 +79,8 @@ namespace PlanDirectory.Controllers
                 Logger.GetLogger("PlanDirectory").Debug($"Logging out user {securityServices.GetCurrentUser()}");
                 securityServices.Logout();
 
-                //really should replace * with certain domains
-                Response.AppendHeader("Access-Control-Allow-Origin", "https://dev.fr8.co ; https://fr8.co; http://dev.fr8.co ; http://fr8.co");
+                //really should replace * with certain domain
+                Response.AppendHeader("Access-Control-Allow-Origin", "*");
 
                 return Redirect(VirtualPathUtility.ToAbsolute("~/"));
             }
