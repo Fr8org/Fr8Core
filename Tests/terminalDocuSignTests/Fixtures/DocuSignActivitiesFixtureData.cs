@@ -30,17 +30,17 @@ namespace terminalDocuSignTests.Fixtures
         {
         }
 
-        protected override Task RunDS()
+        public override Task Run()
         {
             return Task.FromResult(0);
         }
 
-        protected override Task InitializeDS()
+        public override Task Initialize()
         {
             return Task.FromResult(0);
         }
 
-        protected override Task FollowUpDS()
+        public override Task FollowUp()
         {
             return Task.FromResult(0);
         }
@@ -53,7 +53,7 @@ namespace terminalDocuSignTests.Fixtures
         {
             var result = new Mock<IDocuSignManager>();
             result.Setup(x => x.GetTemplatesList(It.IsAny<DocuSignApiConfiguration>()))
-                  .Returns(new List<FieldDTO> { new FieldDTO("1", "First") });
+                  .Returns(new List<KeyValueDTO> { new KeyValueDTO("1", "First") });
             return result.Object;
         }
 
@@ -61,7 +61,7 @@ namespace terminalDocuSignTests.Fixtures
         {
             var result = new Mock<IDocuSignManager>();
             result.Setup(x => x.GetTemplatesList(It.IsAny<DocuSignApiConfiguration>()))
-                  .Returns(new List<FieldDTO>());
+                  .Returns(new List<KeyValueDTO>());
             return result.Object;
         }
     }

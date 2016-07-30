@@ -16,9 +16,18 @@ namespace HealthMonitor.Jobs
     /// but not actually testing anything.  
     /// </summary>
     [Explicit]
-    public class MetricMonitor
+    public class MetricMonitor : BaseIntegrationTest
     {
         TelemetryClient _telemetry;
+
+        public override string TerminalName
+        {
+            get
+            {
+                return "Telemetry";
+            }
+        }
+
         public MetricMonitor()
         {
             var appInsightsInstrumentationKey = Program.Context.InstrumentationKey;

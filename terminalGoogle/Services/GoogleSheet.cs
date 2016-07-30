@@ -178,7 +178,7 @@ namespace terminalGoogle.Services
                         .Cast<ListEntry.Custom>()
                         .Select(c => new TableCellDTO
                         {
-                            Cell = new FieldDTO(c.LocalName, c.Value)
+                            Cell = new KeyValueDTO(c.LocalName, c.Value)
                         })
                         .ToList()
                 };

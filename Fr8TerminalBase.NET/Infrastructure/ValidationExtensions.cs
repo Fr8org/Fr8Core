@@ -18,12 +18,12 @@ namespace Fr8.TerminalBase.Infrastructure
         public static void ValidateEmail(this ValidationManager validationManager, IConfigRepository configRepository, TextSource textSource, string errorMessage = null)
         {
             //The validation actually won't go further only if Upstream is set as source but payload is not avaialable. That means we can't yet validate
-            if (!textSource.CanGetValue(validationManager.Payload) && !textSource.ValueSourceIsNotSet)
+            if (textSource.HasUpstreamValue)
             {
                 return;
             }
-            var value = textSource.CanGetValue(validationManager.Payload) ? textSource.GetValue(validationManager.Payload) : string.Empty;
-            if (!RegexUtilities.IsValidEmailAddress(configRepository, value))
+
+            if (!RegexUtilities.IsValidEmailAddress(configRepository, textSource.TextValue))
             {
                 validationManager.SetError(errorMessage ?? "Not a valid e-mail address", textSource);
             }
@@ -56,7 +56,15 @@ namespace Fr8.TerminalBase.Infrastructure
 
         public static bool ValidateTextSourceNotEmpty(this ValidationManager validationManager, TextSource control, string errorMessage)
         {
-            if (control != null && control.CanGetValue(validationManager.Payload) && string.IsNullOrWhiteSpace(control.GetValue(validationManager.Payload)))
+            ////here is a check for design time
+            if (validationManager.Payload == null && control != null && !control.HasValue)
+            {
+                validationManager.SetError(errorMessage, control);
+                return false;
+            }
+
+            //this is a check for runtime
+            if (control != null && (validationManager.Payload != null) && string.IsNullOrWhiteSpace(control.TextValue))
             {
                 validationManager.SetError(errorMessage, control);
                 return false;
@@ -76,6 +84,17 @@ namespace Fr8.TerminalBase.Infrastructure
             if (crateChooser.CanGetValue(validationManager.Payload) && crateChooser.GetValue(validationManager.Payload) == null)
             {
                 validationManager.SetError(errorMessage, crateChooser);
+                return false;
+            }
+
+            return true;
+        }
+
+        public static bool ValidateDropDownListNotEmpty(this ValidationManager validationManager, DropDownList control, string errorMessage)
+        {
+            if (control != null && control.Value.IsNullOrEmpty())
+            {
+                validationManager.SetError(errorMessage, control);
                 return false;
             }
 

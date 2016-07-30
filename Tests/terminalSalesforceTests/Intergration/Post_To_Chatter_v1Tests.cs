@@ -18,7 +18,7 @@ using terminalSalesforce.Infrastructure;
 namespace terminalSalesforceTests.Intergration
 {
     [Explicit]
-    public class Post_To_Chatter_v1Tests : BaseTerminalIntegrationTest
+    public class Post_To_Chatter_v1Tests : BaseSalesforceIntegrationTest
     {
         public override string TerminalName
         {
@@ -92,7 +92,7 @@ namespace terminalSalesforceTests.Intergration
                                          .CratesOfType<StandardPayloadDataCM>()
                                          .SingleOrDefault();
             Assert.IsNotNull(newFeedIdCrate, "Feed is not created");
-            Assert.IsTrue(await ObjectFactory.GetInstance<SalesforceManager>().Delete(SalesforceObjectType.FeedItem, 
+            Assert.IsTrue(await _container.GetInstance<SalesforceManager>().Delete(SalesforceObjectType.FeedItem, 
                 newFeedIdCrate.Content.PayloadObjects[0].PayloadObject[0].Value, new AuthorizationToken { Token = authToken.Token, AdditionalAttributes = authToken.AdditionalAttributes }), "Test feed created is not deleted");
         }
         

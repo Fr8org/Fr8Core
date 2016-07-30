@@ -96,7 +96,7 @@ namespace terminalSalesforceTests.Intergration
             //get required activity templates
             var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(_baseUrl + "activity_templates");
             var getData = activityTemplates.Single(at => at.Name.Equals("Receivers")).Activities.Single(a => a.Name.Equals("Get_Data"));
-            var sendEmail = activityTemplates.Single(at => at.Name.Equals("Forwarders")).Activities.Single(a => a.Name.Equals("SendEmailViaSendGrid"));
+            var sendEmail = activityTemplates.Single(at => at.Name.Equals("Forwarders")).Activities.Single(a => a.Name.Equals("Send_Email_Via_SendGrid"));
             Assert.IsNotNull(getData, "Get Salesforce Data activity is not available");
             Assert.IsNotNull(sendEmail, "Send Email activity is not available");
             Debug.WriteLine("Got required activity templates.");

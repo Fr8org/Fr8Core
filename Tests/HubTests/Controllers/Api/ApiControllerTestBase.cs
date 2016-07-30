@@ -20,16 +20,24 @@ namespace HubTests.Controllers.Api
             Assert.IsTrue(authAttribute.Any());
         }
 
-        protected void ShouldHaveFr8ApiAuthorizeOnFunction(Type controllerType, string functionName)
+        protected void ShouldHaveFr8ApiAuthorizeOnFunction(Type controllerType, string functionName, Type[] types = null)
         {
-            var methodInfo = controllerType.GetMethod(functionName);
+            MethodInfo methodInfo;
+            if (types == null)
+            {
+                methodInfo = controllerType.GetMethod(functionName);
+            }
+            else
+            {
+                methodInfo = controllerType.GetMethod(functionName, types);
+            }
             var authAttribute = methodInfo.GetCustomAttributes(typeof(Fr8ApiAuthorizeAttribute), true);
             Assert.IsTrue(authAttribute.Any());
         }
 
         protected void ShouldHaveFr8HMACAuthorize(Type controllerType)
         {
-            var authAttribute = controllerType.GetCustomAttributes(typeof(Fr8HubWebHMACAuthenticateAttribute), true);
+            var authAttribute = controllerType.GetCustomAttributes(typeof(Fr8TerminalAuthenticationAttribute), true);
             Assert.IsTrue(authAttribute.Any());
         }
 
@@ -41,7 +49,7 @@ namespace HubTests.Controllers.Api
 
         protected void ShouldHaveFr8HMACAuthorizeOnFunction(MethodInfo method)
         {
-            var authAttribute = method.GetCustomAttributes(typeof(Fr8HubWebHMACAuthenticateAttribute), true);
+            var authAttribute = method.GetCustomAttributes(typeof(Fr8TerminalAuthenticationAttribute), true);
             Assert.IsTrue(authAttribute.Any());
         }
     }

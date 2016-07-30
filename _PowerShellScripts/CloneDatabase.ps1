@@ -2,7 +2,9 @@
     [string]$connectionString,
 	[string]$sourceDbName,
 	[string]$targetDbName,
-	[string]$serverName
+	[string]$serverName,
+	[Parameter(Mandatory = $false)]
+	[string]$serviceObjective
 )
 
 Write-Host "Deletes old target database if exists and creates a new one from the specified database."
@@ -22,9 +24,17 @@ if ($command.ExecuteNonQuery() -ne -1)
 	Write-Host $errorMessage
 	exit 1
 }
-Write-Host "Successfully deleted old target database."
 
-$commandText = "CREATE DATABASE [$($targetDbName)] AS COPY OF [$($serverName)].[$($sourceDbName)] (EDITION='standard', SERVICE_OBJECTIVE = 'S1');"
+Write-Host "Successfully deleted old target database. 120 sec delay to let the database to delete..."
+
+Start-Sleep -Seconds 120
+
+if ([System.String]::IsNullOrEmpty($serviceObjective) -eq $true) 
+{
+	$serviceObjective = "S1";
+}
+
+$commandText = "CREATE DATABASE [$($targetDbName)] AS COPY OF [$($serverName)].[$($sourceDbName)] (EDITION='standard', SERVICE_OBJECTIVE = '$serviceObjective');"
 Write-Host $commandText
 $command.CommandText = $commandText
 if ($command.ExecuteNonQuery() -ne -1)

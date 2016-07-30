@@ -18,10 +18,12 @@ namespace HubWeb
             RegisterAuthenticationEndPoints(config);
 
             config.Routes.MapHttpRoute(
-                name: "DefaultApiWithAction",
-                routeTemplate: "api/v1/{controller}/{action}/{id}",
-                defaults: new { id = RouteParameter.Optional }
-                );
+               name: "DefaultApiWithAction",
+               routeTemplate: "api/v1/{controller}/{action}/{id}",
+               defaults: new { id = RouteParameter.Optional },
+               constraints:new {action = @"(?!^\d+$)^.+$" }
+               );
+
             config.Routes.MapHttpRoute(
                 name: "DefaultApiGet",
                 routeTemplate: "api/v1/{controller}/{id}",
@@ -46,12 +48,15 @@ namespace HubWeb
                 defaults: new { id = RouteParameter.Optional, action = "Delete" },
                 constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Delete) }
                 );
+
+            
+
             //config.Routes.MapHttpRoute(
             //    name: "DefaultApi",
             //    routeTemplate: "api/v1/{controller}/{id}",
             //    defaults: new { id = RouteParameter.Optional }
             //    );
-            HttpConfiguration config1 = GlobalConfiguration.Configuration;
+
             config.Formatters.JsonFormatter.SerializerSettings.Formatting =
                 Newtonsoft.Json.Formatting.Indented;
 

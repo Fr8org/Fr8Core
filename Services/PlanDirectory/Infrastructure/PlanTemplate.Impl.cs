@@ -9,6 +9,7 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
+using PlanDirectory.Interfaces;
 
 namespace PlanDirectory.Infrastructure
 {
@@ -60,7 +61,7 @@ namespace PlanDirectory.Infrastructure
             }
         }
 
-        public Task<PublishPlanTemplateDTO> Get(string fr8AccountId, Guid planId)
+        public Task<PublishPlanTemplateDTO> GetPlanTemplateDTO(string fr8AccountId, Guid planId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -79,6 +80,20 @@ namespace PlanDirectory.Infrastructure
             }
         }
 
+        public Task<PlanTemplateCM> Get(string fr8AccountId, Guid planId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var planIdString = planId.ToString();
+
+                var planTemplateCM = uow.MultiTenantObjectRepository
+                    .Query<PlanTemplateCM>(fr8AccountId, x => x.ParentPlanId == planIdString)
+                    .FirstOrDefault();
+
+                return Task.FromResult<PlanTemplateCM>(planTemplateCM);
+            }
+        }
+
         public async Task Remove(string fr8AccountId, Guid planId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -89,7 +104,7 @@ namespace PlanDirectory.Infrastructure
                         fr8AccountId,
                         x => x.ParentPlanId == planIdStr
                     );
-
+                uow.SaveChanges();
                 await Task.Yield();
             }
         }
@@ -102,7 +117,7 @@ namespace PlanDirectory.Infrastructure
                 Name = dto.Name,
                 Description = dto.Description,
                 ParentPlanId = dto.ParentPlanId.ToString(),
-                PlanContents = JsonConvert.SerializeObject(dto.PlanContents),
+                PlanContents = dto.PlanContents,
                 Version = existing?.Version ?? 1,
                 OwnerId = account.Id,
                 OwnerName = account.UserName
@@ -111,12 +126,12 @@ namespace PlanDirectory.Infrastructure
 
         private PublishPlanTemplateDTO CreatePlanTemplateDTO(PlanTemplateCM planTemplate)
         {
-            return new PublishPlanTemplateDTO()
+            return new PublishPlanTemplateDTO
             {
                 Name = planTemplate.Name,
                 Description = planTemplate.Description,
                 ParentPlanId = Guid.Parse(planTemplate.ParentPlanId),
-                PlanContents = JsonConvert.DeserializeObject<JToken>(planTemplate.PlanContents)
+                PlanContents = planTemplate.PlanContents
             };
         }
     }

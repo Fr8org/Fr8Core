@@ -5,9 +5,9 @@ using Microsoft.Owin.Hosting;
 using Microsoft.Owin.Security.DataProtection;
 using StructureMap;
 using Hub.Infrastructure;
-using PlanDirectory.App_Start;
 using PlanDirectory.Infrastructure;
 using System.Web.Http.Dispatcher;
+using PlanDirectory.Interfaces;
 
 namespace PlanDirectory
 {
@@ -15,7 +15,7 @@ namespace PlanDirectory
     {
         public class SelfHostStartup
         {
-            public void Configuration(IAppBuilder app)
+            public void Configuration(IAppBuilder app) 
             {
                 var configuration = new HttpConfiguration();
                 // Web API routes

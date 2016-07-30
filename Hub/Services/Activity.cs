@@ -2,7 +2,6 @@
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
-using Newtonsoft.Json;
 using StructureMap;
 using System;
 using System.Collections.Generic;
@@ -22,29 +21,30 @@ using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Exceptions;
-using Hub.Infrastructure;
-using Hub.Interfaces;
 using Hub.Managers;
+using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
 
 namespace Hub.Services
 {
     public class Activity : IActivity
     {
-        private readonly ICrateManager _crate;
+        private readonly ICrateManager _crateManager;
         private readonly IAuthorization _authorizationToken;
         private readonly ISecurityServices _security;
         private readonly IActivityTemplate _activityTemplate;
         private readonly IPlanNode _planNode;
+        private readonly IUpstreamDataExtractionService _upstreamDataExtractionService;
         private readonly AsyncMultiLock _configureLock = new AsyncMultiLock();
 
-        public Activity(ICrateManager crate, IAuthorization authorizationToken, ISecurityServices security, IActivityTemplate activityTemplate, IPlanNode planNode)
+        public Activity(ICrateManager crateManager, IAuthorization authorizationToken, ISecurityServices security, IActivityTemplate activityTemplate, IPlanNode planNode, IUpstreamDataExtractionService upstreamDataExtractionService)
         {
-            _crate = crate;
+            _crateManager = crateManager;
             _authorizationToken = authorizationToken;
             _security = security;
             _activityTemplate = activityTemplate;
             _planNode = planNode;
+            _upstreamDataExtractionService = upstreamDataExtractionService;
         }
 
 
@@ -54,7 +54,7 @@ namespace Hub.Services
             {
                 return await SaveOrUpdateActivityCore(submittedActivityData);
             }
-
+            
             using (await _configureLock.Lock(submittedActivityData.Id))
             {
                 return await SaveOrUpdateActivityCore(submittedActivityData);
@@ -104,7 +104,7 @@ namespace Hub.Services
 
                 if (parentNode is PlanDO)
                 {
-                    if (((PlanDO) parentNode).StartingSubplan == null)
+                    if (((PlanDO)parentNode).StartingSubplan == null)
                     {
                         parentNode.ChildNodes.Add(parentNode = new SubplanDO
                         {
@@ -114,7 +114,7 @@ namespace Hub.Services
                     }
                     else
                     {
-                        parentNode = ((PlanDO) parentNode).StartingSubplan;
+                        parentNode = ((PlanDO)parentNode).StartingSubplan;
                     }
 
                 }
@@ -125,7 +125,7 @@ namespace Hub.Services
                 Id = Guid.NewGuid(),
                 ActivityTemplateId = activityTemplateId,
                 Name = name,
-                CrateStorage = _crate.EmptyStorageAsStr(),
+                CrateStorage = _crateManager.EmptyStorageAsStr(),
                 AuthorizationTokenId = authorizationTokenId
             };
 
@@ -189,12 +189,12 @@ namespace Hub.Services
                         {
                             return Mapper.Map<ActivityDTO>(submittedActivity);
                         }
-                        Logger.LogInfo($"Before calling terminal activation of activity (Id - {submittedActivity.Id})");
+                        Logger.GetLogger().Info($"Before calling terminal activation of activity (Id - {submittedActivity.Id})");
                         var activatedActivityDTO = await CallTerminalActivityAsync<ActivityDTO>(uow, "activate", null, submittedActivity, Guid.Empty);
-                        Logger.LogInfo($"Call to terminal activation of activity (Id - {submittedActivity.Id}) completed");
+                        Logger.GetLogger().Info($"Call to terminal activation of activity (Id - {submittedActivity.Id}) completed");
                         var activatedActivityDo = Mapper.Map<ActivityDO>(activatedActivityDTO);
 
-                        var storage = _crate.GetStorage(activatedActivityDo);
+                        var storage = _crateManager.GetStorage(activatedActivityDo);
 
                         var validationCrate = storage.CrateContentsOfType<ValidationResultsCM>().FirstOrDefault();
 
@@ -317,10 +317,26 @@ namespace Hub.Services
                     };
                 }
 
-                EventManager.ActivityRunRequested(curActivityDO, curContainerDO);
+                if (curActionExecutionMode != ActivityExecutionMode.ReturnFromChildren)
+                {
+                    EventManager.ActivityRunRequested(curActivityDO, curContainerDO);
+                }
 
-                var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, "Run", parameters, curActivityDO, curContainerDO.Id);
+                var activtiyClone = (ActivityDO) curActivityDO.Clone();
 
+                using (var storage = _crateManager.UpdateStorage(() => activtiyClone.CrateStorage))
+                {
+                    var configurationControls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+
+                    if (configurationControls != null)
+                    {
+                        var payloadStorage = _crateManager.GetStorage(curContainerDO.CrateStorage);
+                        _upstreamDataExtractionService.ExtactAndAssignValues(configurationControls, payloadStorage);
+                    }
+                }
+
+                var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, "run", parameters, activtiyClone, curContainerDO.Id);
+                
                 EventManager.ActivityResponseReceived(curActivityDO, ActivityResponse.RequestSuspend);
 
                 return payloadDTO;
@@ -519,7 +535,7 @@ namespace Hub.Services
             }
             else
             {
-               skipDeactivation = true;
+                skipDeactivation = true;
             }
 
             if (!skipDeactivation)
@@ -624,7 +640,7 @@ namespace Hub.Services
         {
             var endpoint = _activityTemplate.GetTerminalUrl(activity.ActivityTemplateId) ?? "<no terminal url>";
 
-            var additionalData = containerId.IsNullOrEmpty() ? " no data " : " Container Id = " + containerId; 
+            var additionalData = containerId.IsNullOrEmpty() ? " no data " : " Container Id = " + containerId;
 
             reportingAction(endpoint, additionalData, error, objectId);
         }
@@ -659,7 +675,7 @@ namespace Hub.Services
                 //find the activity by the provided name
 
                 // To prevent mismatch between db and terminal solution lists, Single or Default used
-                var curActivityTerminalDTO = allActivityTemplates.SingleOrDefault(a => a.Name == activityDTO.ActivityTemplate.Name);
+                var curActivityTerminalDTO = allActivityTemplates.OrderByDescending(x => int.Parse(x.Version)).FirstOrDefault(a => a.Name == activityDTO.ActivityTemplate.Name);
                 //prepare an Activity object to be sent to Activity in a Terminal
                 //IMPORTANT: this object will not be hold in the database
                 //It is used to transfer data
@@ -682,14 +698,8 @@ namespace Hub.Services
                     },
                     Documentation = activityDTO.Documentation
                 };
-                activityResponce = await GetDocumentation<T>(curActivityDTO);
-                //Add log to the database
-                if (!isSolution)
-                {
-                    var curActivityDo = Mapper.Map<ActivityDO>(activityDTO);
-                    EventManager.ActivityResponseReceived(curActivityDo, ActivityResponse.ShowDocumentation);
-                }
 
+                activityResponce = await GetDocumentation<T>(curActivityDTO);
             }
             return activityResponce;
         }
@@ -713,13 +723,25 @@ namespace Hub.Services
             var solutionNameList = new List<string>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curActivities = uow.ActivityTemplateRepository.GetAll()
-                    .Where(a => a.Terminal.Name == terminalName
-                                && a.Category == ActivityCategory.Solution)
+                var curActivities = uow.ActivityTemplateRepository
+                    .GetQuery()
+                    .Where(x => x.Terminal.Name == terminalName
+                        && x.Category == Fr8.Infrastructure.Data.States.ActivityCategory.Solution)
+                    .GroupBy(x => x.Name)
+                    .AsEnumerable()
+                    .Select(x => x.OrderByDescending(y => int.Parse(y.Version)).First())
                     .ToList();
                 solutionNameList.AddRange(curActivities.Select(activity => activity.Name));
             }
             return solutionNameList;
+        }
+
+        public bool Exists(Guid id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return uow.PlanRepository.GetActivityQueryUncached().Any(x => x.Id == id);
+            }
         }
     }
 }

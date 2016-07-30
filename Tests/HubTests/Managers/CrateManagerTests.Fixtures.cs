@@ -63,13 +63,13 @@ namespace HubTests.Managers
             };
         }
 
-        private static FieldDescriptionsCM TestManifest(string value = "value")
+        private static KeyValueListCM TestManifest(string value = "value")
         {
-            return new FieldDescriptionsCM
+            return new KeyValueListCM
             {
-                Fields = new List<FieldDTO>
+                Values = new List<KeyValueDTO>
                 {
-                    new FieldDTO("key", value)
+                    new KeyValueDTO("key", value)
                 }
             };
         }

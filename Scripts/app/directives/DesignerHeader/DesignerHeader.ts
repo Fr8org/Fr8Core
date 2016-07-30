@@ -4,6 +4,7 @@ module dockyard.directives.designerHeader {
     'use strict';
 
     import designHeaderEvents = dockyard.Fr8Events.DesignerHeader;
+    import pca = dockyard.directives.paneConfigureAction;
 
     export interface IDesignerHeaderScope extends ng.IScope {
         editing: boolean;
@@ -15,39 +16,14 @@ module dockyard.directives.designerHeader {
         //sharePlan(): void;
         plan: model.PlanDTO;
         kioskMode: boolean;
+        state: string
     }
 
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
-    class DesignerHeader implements ng.IDirective {
-        public link: (scope: IDesignerHeaderScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
-        public controller: (
-            $rootScope: interfaces.IAppRootScope,
-            $scope: IDesignerHeaderScope,
-            element: ng.IAugmentedJQuery,
-            attrs: ng.IAttributes,
-            $http: ng.IHttpService,
-            ngToast: any,
-            PlanService: services.IPlanService
-        ) => void;
+    export function DesignerHeader(): ng.IDirective {
 
-        public templateUrl = '/AngularTemplate/DesignerHeader';
-        public scope = {
-            plan: '=',
-            kioskMode: '=?'
-        };
-        public restrict = 'E';
-
-        constructor(private Planervice: services.IPlanService) {
-            DesignerHeader.prototype.link = (
-                scope: IDesignerHeaderScope,
-                element: ng.IAugmentedJQuery,
-                attrs: ng.IAttributes) => {
-
-                //Link function goes here
-            };
-
-            DesignerHeader.prototype.controller = (
+        var controller = ['$rootScope', '$scope', '$element', '$attrs', '$http', 'ngToast', 'PlanService', (
                 $rootScope: interfaces.IAppRootScope,
                 $scope: IDesignerHeaderScope,
                 $element: ng.IAugmentedJQuery,
@@ -79,29 +55,17 @@ module dockyard.directives.designerHeader {
 
                 $scope.onTitleChange = () => {
                     $scope.editing = false;
-                    var result = PlanService.update({ id: $scope.plan.id, name: $scope.plan.name });
+                    var result = PlanService.update({ id: $scope.plan.id, name: $scope.plan.name, description: null });
                     result.$promise.then(() => { });
                 };
 
-
-                //moved to PlanDetailsController
-                //$scope.sharePlan = () => {
-                //    PlanService.share($scope.plan.id)
-                //        .then(() => {
-                //            console.log('sharePlan: Success');
-                //        })
-                //        .catch(() => {
-                //            console.log('sharePlan: Failure');
-                //        });
-                //};
-
                 $scope.runPlan = () => {
-                    // mark plan as Active
+                    // mark plan as Active                  
                     $scope.plan.planState = 2;                   
                     var promise = PlanService.runAndProcessClientAction($scope.plan.id);
                     
                     promise.then((container: model.ContainerDTO) => {
-                        //if we have validation errors - reset plan state to Inactive. Plans with errors can't be activated    
+                        //if we have validation errors - reset plan state to Inactive. Plans with errors can't be activated   
                         if (container.validationErrors && container.validationErrors != null) {
                             for (var key in container.validationErrors) {
                                 if (container.validationErrors.hasOwnProperty(key)) {
@@ -127,7 +91,6 @@ module dockyard.directives.designerHeader {
                         }
                     });
                 };
-
                 $scope.resetPlanStatus = () => {
                     var subPlan = $scope.plan.subPlans[0];
                     var initialActivity: interfaces.IActivityDTO = subPlan ? subPlan.activities[0] : null;
@@ -152,6 +115,9 @@ module dockyard.directives.designerHeader {
                     }
                 };
 
+                $scope.$on(<any>designHeaderEvents.PLAN_IS_DEACTIVATED,
+                    (event: ng.IAngularEvent, eventArgs: model.PlanDTO) => { $scope.plan.planState = 1;});
+
                 $scope.deactivatePlan = () => {
                     var result = PlanService.deactivate({ planId: $scope.plan.id });
                     result.$promise.then((data) => {                        
@@ -161,26 +127,23 @@ module dockyard.directives.designerHeader {
                         var messageToShow = "Plan successfully deactivated";
                         ngToast.success(messageToShow);
                     })
-                        .catch((err: any) => {
-                            var messageToShow = "Failed to toggle Plan Status";
-                            ngToast.danger(messageToShow);
-                        });
+                    .catch((err: any) => {
+                        var messageToShow = "Failed to toggle Plan Status";
+                        ngToast.danger(messageToShow);
+                    });
                 };
-            };
-
-            DesignerHeader.prototype.controller['$inject'] = ['$rootScope', '$scope', '$element', '$attrs', '$http', 'ngToast', 'PlanService'];
-        }
-
-        //The factory function returns Directive object as per Angular requirements
-        public static Factory() {
-            var directive = (PlanService: services.IPlanService) => {
-                return new DesignerHeader(PlanService);
-            };
-
-            directive['$inject'] = ['PlanService'];
-            return directive;
+            }];
+        return {
+            restrict: 'E',
+            scope: {
+                editing: '=', 
+                plan: '=',
+                kioskMode: '=',
+                state: '='
+            },
+            controller: controller,
+            templateUrl: '/AngularTemplate/DesignerHeader'
         }
     }
-
-    app.directive('designerHeader', DesignerHeader.Factory());
+    app.directive('designerHeader', DesignerHeader);
 }

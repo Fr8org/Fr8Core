@@ -8,7 +8,7 @@ namespace terminalDocuSign.Interfaces
 {
     public interface IDocuSignFolders
     {
-        IEnumerable<FieldDTO> GetFolders(DocuSignApiConfiguration conf);
+        IEnumerable<KeyValueDTO> GetFolders(DocuSignApiConfiguration conf);
 
         IEnumerable<FolderItem> GetFolderItems(DocuSignApiConfiguration config, DocuSignQuery docuSignQuery);
     }

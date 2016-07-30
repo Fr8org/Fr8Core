@@ -11,6 +11,7 @@ using Fr8.Infrastructure.Data.States;
 using terminalGoogle.Actions;
 using terminalGoogle.Interfaces;
 using terminalUtilities;
+using System;
 
 namespace terminalGoogle.Activities
 {
@@ -18,6 +19,7 @@ namespace terminalGoogle.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("f389bea8-164c-42c8-bdc5-121d7fb93d73"),
             Name = "Get_Google_Sheet_Data",
             Label = "Get Google Sheet Data",
             Version = "1",
@@ -25,8 +27,13 @@ namespace terminalGoogle.Activities
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             MinPaneWidth = 300,
-            WebService = TerminalData.WebServiceDTO,
-            Tags = "Table Data Generator"
+            WebService = TerminalData.GooogleWebServiceDTO,
+            Tags = "Table Data Generator",
+            Categories = new[]
+            {
+                ActivityCategories.Receive,
+                new ActivityCategoryDTO(TerminalData.GooogleWebServiceDTO.Name, TerminalData.GooogleWebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -80,28 +87,24 @@ namespace terminalGoogle.Activities
             }
         }
 
-        private const string RunTimeCrateLabel = "Table Generated From Google Sheet Data";
-
         private const string ConfigurationCrateLabel = "Selected Spreadsheet & Worksheet";
-
-        private const string ColumnHeadersCrateLabel = "Spreadsheet Column Headers";
 
         private readonly IGoogleSheet _googleApi;
         private readonly IGoogleIntegration _googleIntegration;
 
         public Get_Google_Sheet_Data_v1(ICrateManager crateManager, IGoogleIntegration googleIntegration, IGoogleSheet googleSheet)
-            :base (crateManager, googleIntegration)
+            : base(crateManager, googleIntegration)
         {
             _googleApi = googleSheet;
         }
         //This property is used to store and retrieve user-selected spreadsheet and worksheet between configuration responses 
         //to avoid extra fetch from Google
-        private FieldDTO SelectedSpreadsheet
+        private KeyValueDTO StoredSelectedSheet
         {
             get
             {
-                var storedValues = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == ConfigurationCrateLabel)?.Content;
-                return storedValues?.Fields.First();
+                var storedValues = Storage.FirstCrateOrDefault<KeyValueListCM>(x => x.Label == ConfigurationCrateLabel)?.Content;
+                return storedValues?.Values.First();
 
             }
             set
@@ -111,8 +114,8 @@ namespace terminalGoogle.Activities
                     Storage.RemoveByLabel(ConfigurationCrateLabel);
                     return;
                 }
-                value.Availability = AvailabilityType.Configuration;
-                var newValues = Crate.FromContent(ConfigurationCrateLabel, new FieldDescriptionsCM(value), AvailabilityType.Configuration);
+         
+                var newValues = Crate.FromContent(ConfigurationCrateLabel, new KeyValueListCM(value));
                 Storage.ReplaceByLabel(newValues);
             }
         }
@@ -123,13 +126,13 @@ namespace terminalGoogle.Activities
         {
             var spreadsheets = await _googleApi.GetSpreadsheets(GetGoogleAuthToken());
             ActivityUI.SpreadsheetList.ListItems = spreadsheets.Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
-            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel, true);
         }
 
         public override async Task FollowUp()
         {
+            CrateSignaller.ClearAvailableCrates();
+
             List<Crate> crates = new List<Crate>();
-            Crate fieldsCrate = null;
             var googleAuth = GetGoogleAuthToken();
             var spreadsheets = await _googleApi.GetSpreadsheets(googleAuth);
             ActivityUI.SpreadsheetList.ListItems = spreadsheets
@@ -139,6 +142,7 @@ namespace terminalGoogle.Activities
             var selectedSpreadsheet = ActivityUI.SpreadsheetList.selectedKey;
             if (!string.IsNullOrEmpty(selectedSpreadsheet))
             {
+                //This chunk here is about removing a selection if a spreadsheet was deleted but at the same time it was chosen in UI
                 if (ActivityUI.SpreadsheetList.ListItems.All(x => x.Key != selectedSpreadsheet))
                 {
                     ActivityUI.SpreadsheetList.selectedKey = null;
@@ -146,16 +150,15 @@ namespace terminalGoogle.Activities
                 }
             }
 
-            Storage.RemoveByLabel(ColumnHeadersCrateLabel);
             //If spreadsheet selection is cleared we hide worksheet DDLB
             if (string.IsNullOrEmpty(ActivityUI.SpreadsheetList.selectedKey))
             {
                 ActivityUI.HideWorksheetList();
-                SelectedSpreadsheet = null;
+                StoredSelectedSheet = null;
             }
             else
             {
-                var previousValues = SelectedSpreadsheet;
+                var previousValues = StoredSelectedSheet;
                 //Spreadsheet was changed - populate the list of worksheets and select first one
                 if (previousValues == null || previousValues.Key != ActivityUI.SpreadsheetList.Value)
                 {
@@ -174,36 +177,28 @@ namespace terminalGoogle.Activities
                     }
                 }
                 //Retrieving worksheet headers to make them avaialble for downstream activities
-                var selectedSpreasheetWorksheet = new FieldDTO(ActivityUI.SpreadsheetList.Value,
+                var selectedSpreasheetWorksheet = new KeyValueDTO(ActivityUI.SpreadsheetList.Value,
                                                                ActivityUI.WorksheetList.IsHidden
                                                                    ? string.Empty
                                                                    : ActivityUI.WorksheetList.Value);
                 var columnHeaders = await _googleApi.GetWorksheetHeaders(selectedSpreasheetWorksheet.Key, selectedSpreasheetWorksheet.Value, googleAuth);
-                var columnHeadersCrate = Crate.FromContent(ColumnHeadersCrateLabel,
-                                                           new FieldDescriptionsCM(columnHeaders.Select(x => new FieldDTO(x.Key, x.Key, AvailabilityType.Always) { SourceCrateLabel = RunTimeCrateLabel})),
-                                                           AvailabilityType.Always);
-                Storage.ReplaceByLabel(columnHeadersCrate);
-                SelectedSpreadsheet = selectedSpreasheetWorksheet;
+                
+                StoredSelectedSheet = selectedSpreasheetWorksheet;
 
-                var table = await GetSelectedSpreadSheet();
-                var hasHeaderRow = TryAddHeaderRow(table);
-                Storage.ReplaceByLabel(Crate.FromContent(RunTimeCrateLabel,new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
+                CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(GetRuntimeCrateLabel(), true)
+                    .AddFields(columnHeaders.Select(x => new FieldDTO(x.Key)));
 
-                if (table?.Count() > 0)
-                {
-                    fieldsCrate = TabularUtilities.PrepareFieldsForOneRowTable(hasHeaderRow, false, table, columnHeaders.Select(ch => ch.Key).ToList());
-                }
-
-                if (fieldsCrate != null)
-                {
-                    Storage.ReplaceByLabel(fieldsCrate);
-                }
-                else
-                {
-                    Storage.RemoveByLabel(TabularUtilities.ExtractedFieldsCrateLabel);
-                }
+                //here was logic responsible for handling one-row tables but it was faulty. It's main purpose was to spawn fields like "value immediatly below of" in a StandardPayload. 
+                //You might view TabularUtilities.PrepareFieldsForOneRowTable for reference
             }
-            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel, true);
+                }
+
+        private string GetRuntimeCrateLabel()
+                {
+            return string.Format("Spreadsheet Data from \"{0}\"",
+                ((!ActivityUI.WorksheetList.IsHidden && !string.IsNullOrEmpty(ActivityUI.WorksheetList.selectedKey))
+                ? ActivityUI.SpreadsheetList.selectedKey + "-" + ActivityUI.WorksheetList.selectedKey
+                : ActivityUI.SpreadsheetList.selectedKey));
         }
 
         private async Task<List<TableRowDTO>> GetSelectedSpreadSheet()
@@ -230,7 +225,7 @@ namespace terminalGoogle.Activities
                     {
                         Row =
                             table.First()
-                                .Row.Select(x => new TableCellDTO { Cell = new FieldDTO(x.Cell.Key, x.Cell.Key) })
+                                .Row.Select(x => new TableCellDTO { Cell = new KeyValueDTO(x.Cell.Key, x.Cell.Key) })
                                 .ToList()
                     });
 
@@ -248,13 +243,7 @@ namespace terminalGoogle.Activities
            
             var table = await GetSelectedSpreadSheet();
             var hasHeaderRow = TryAddHeaderRow(table);
-            Payload.Add(Crate.FromContent(RunTimeCrateLabel, new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
-
-            var fieldsCrate = TabularUtilities.PrepareFieldsForOneRowTable(hasHeaderRow, true, table, null); // assumes that hasHeaderRow is always true
-            if (fieldsCrate != null)
-            {
-                Payload.ReplaceByLabel(fieldsCrate);
-            }
+            Payload.Add(Crate.FromContent(GetRuntimeCrateLabel(), new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
         }
     }
 }

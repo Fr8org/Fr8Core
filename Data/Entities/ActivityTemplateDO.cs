@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Data.States.Templates;
@@ -13,7 +14,6 @@ namespace Data.Entities
             this.ActivityTemplateState = States.ActivityTemplateState.Active;
             this.Type = ActivityType.Standard;
             this.NeedsAuthentication = false;
-            this.ClientVisibility = true;
         }
 
         public ActivityTemplateDO(string name, string label, string version, string description, int terminalId, ActivityType type = ActivityType.Standard) : this()
@@ -36,7 +36,6 @@ namespace Data.Entities
         /// <param name="version"></param>
         ///<param name="label"></param>
         /// <param name="terminalName">Name of the new TerminalDO</param>
-        /*<param name="baseEndPoint">New TerminalDO base end point</param>*/
         /// <param name="Endpoint">New TerminalDO end point</param>
         public ActivityTemplateDO(string name, string version,
             string terminalName, string terminalLabel, string endPoint, string label = "", string description = "") : this()
@@ -72,8 +71,6 @@ namespace Data.Entities
 
         public bool NeedsAuthentication { get; set; }
 
-        public string ComponentActivities { get; set; }
-
         [Required]
         [ForeignKey("ActivityTemplateStateTemplate")]
         public int ActivityTemplateState { get; set; }
@@ -91,13 +88,14 @@ namespace Data.Entities
         [Required]
         public ActivityType Type { get; set; }
 
+        [InverseProperty("ActivityTemplate")]
+        public virtual IList<ActivityCategorySetDO> Categories { get; set; }
+
         public int MinPaneWidth { get; set; }
 
         [ForeignKey("WebService")]
 		public int? WebServiceId { get; set; }
 
 		public virtual WebServiceDO WebService { get; set; }
-
-        public bool? ClientVisibility { get; set; }
     }
 }

@@ -6,7 +6,7 @@ using terminalSalesforce.Services;
 
 namespace terminalSalesforce.Actions
 {
-    public abstract class BaseSalesforceTerminalActivity<T> : EnhancedTerminalActivity<T>
+    public abstract class BaseSalesforceTerminalActivity<T> : TerminalActivity<T>
         where T : StandardConfigurationControlsCM
     {
         protected BaseSalesforceTerminalActivity(ICrateManager crateManager)

@@ -9,9 +9,7 @@ namespace Fr8.Testing.Unit.Fixtures
 {
 	partial class FixtureData
 	{
-		private  const string _xmlPayLoadLocation = "HubTests\\Content\\DocusignXmlPayload.xml";
-        
-        public static ContainerDO TestContainer1()
+	    public static ContainerDO TestContainer1()
 		{
             var containerDO = new ContainerDO();
             containerDO.Id = TestContainer_Id_49();

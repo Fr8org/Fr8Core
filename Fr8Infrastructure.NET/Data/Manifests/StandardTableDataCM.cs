@@ -7,12 +7,6 @@ namespace Fr8.Infrastructure.Data.Manifests
 {
     public class StandardTableDataCM : Manifest
     {
-        public StandardTableDataCM()
-			  :base(MT.StandardTableData)
-        {
-            Table = new List<TableRowDTO>();
-        }
-
         public List<TableRowDTO> Table { get; set; }
 
         [ManifestField(IsHidden = true)]
@@ -41,6 +35,19 @@ namespace Fr8.Infrastructure.Data.Manifests
                 }
                 return Table.Skip(FirstRowHeaders ? 1 : 0);
             }
+        }
+
+        public StandardTableDataCM(bool isFirstRowHeaders, IEnumerable<TableRowDTO> rows)
+                          : base(MT.StandardTableData)
+        {
+            FirstRowHeaders = isFirstRowHeaders;
+            Table = new List<TableRowDTO>(rows);
+        }
+        
+        public StandardTableDataCM()
+              : base(MT.StandardTableData)
+        {
+            Table = new List<TableRowDTO>();
         }
 
         public TableRowDTO GetHeaderRow()
@@ -80,16 +87,16 @@ namespace Fr8.Infrastructure.Data.Manifests
     {
         public TableCellDTO()
         {
-            FieldDTO Cell = new FieldDTO();  //name should be the column number, and value is the value of the cell           
+            KeyValueDTO Cell = new KeyValueDTO();  //name should be the column number, and value is the value of the cell           
         }
 
-        public FieldDTO Cell;
+        public KeyValueDTO Cell;
 
         public static TableCellDTO Create(string key, string value)
         {
             return new TableCellDTO()
             {
-                Cell = new FieldDTO()
+                Cell = new KeyValueDTO()
                 {
                     Key = key,
                     Value = value,

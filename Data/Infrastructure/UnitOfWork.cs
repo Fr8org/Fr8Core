@@ -8,7 +8,6 @@ using Data.Interfaces;
 using Data.Repositories;
 using Data.Repositories.MultiTenant;
 using Data.Repositories.Plan;
-using Data.Repositories.PlanDescriptions;
 using StructureMap;
 
 namespace Data.Infrastructure
@@ -281,58 +280,7 @@ namespace Data.Infrastructure
                 return _incidentRepository ?? (_incidentRepository = new IncidentRepository(this));
             }
         }
-
-        //private QuestionRepository _questionRepository;
-
-        //public QuestionRepository QuestionRepository
-        //{
-        //    get
-        //    {
-        //        return _questionRepository ?? (_questionRepository = new QuestionRepository(this));
-        //    }
-        //}
-
-        //private AnswerRepository _answerRepository;
-
-        //public AnswerRepository AnswerRepository
-        //{
-        //    get
-        //    {
-        //        return _answerRepository ?? (_answerRepository = new AnswerRepository(this));
-        //    }
-        //}
-
-        //private QuestionResponseRepository _questionResponseRepository;
-
-        //public QuestionResponseRepository QuestionResponseRepository
-        //{
-        //    get
-        //    {
-        //        return _questionResponseRepository ?? (_questionResponseRepository = new QuestionResponseRepository(this));
-        //    }
-        //}
-
-
-        //private NegotiationsRepository _negotiationsRepository;
-
-        //public NegotiationsRepository NegotiationsRepository
-        //{
-        //    get
-        //    {
-        //        return _negotiationsRepository ?? (_negotiationsRepository = new NegotiationsRepository(this));
-        //    }
-        //}
-
-        //private QuestionsRepository _questionsRepository;
-
-        //public QuestionsRepository QuestionsRepository
-        //{
-        //    get
-        //    {
-        //        return _questionsRepository ?? (_questionsRepository = new QuestionsRepository(this));
-        //    }
-        //}
-
+        
         private IAuthorizationTokenRepository _authorizationTokenRepository;
 
         public IAuthorizationTokenRepository AuthorizationTokenRepository
@@ -494,43 +442,39 @@ namespace Data.Infrastructure
                 return _organizationRepository ?? (_organizationRepository = new OrganizationRepository(this));
             }
         }
+        
+        private IPageDefinitionRepository _pageDefinitionRepository;
 
-        private ActivityDescriptionRepository _activityDescriptionRepository;
-        public IActivityDescriptionRepository ActivityDescriptionRepository
+        public IPageDefinitionRepository PageDefinitionRepository => 
+            _pageDefinitionRepository ?? (_pageDefinitionRepository = new PageDefinitionRepository(this));
+
+        private TerminalRegistrationRepository _terminalRegistrationRepository;
+        public TerminalRegistrationRepository TerminalRegistrationRepository
         {
             get
             {
-                return _activityDescriptionRepository ?? (_activityDescriptionRepository = new ActivityDescriptionRepository(this));
+                return _terminalRegistrationRepository ?? (_terminalRegistrationRepository = new TerminalRegistrationRepository(this));
             }
         }
 
-        private NodeTransitionRepository _nodeTransitionRepository;
-        public INodeTransitionRepository NodeTransitionRepository
-
+        private IActivityCategoryRepository _activityCategoryRepository;
+        public IActivityCategoryRepository ActivityCategoryRepository
         {
             get
             {
-                return _nodeTransitionRepository ?? (_nodeTransitionRepository = new NodeTransitionRepository(this));
+                return _activityCategoryRepository ?? (_activityCategoryRepository = new ActivityCategoryRepository(this));
             }
         }
 
-        private PlanTemplateRepository _planTemplateRepository;
-        public IPlanTemplateRepository PlanTemplateRepository
+        private IActivityCategorySetRepository _activityCategorySetRepository;
+        public IActivityCategorySetRepository ActivityCategorySetRepository
         {
             get
             {
-                return _planTemplateRepository ?? (_planTemplateRepository = new PlanTemplateRepository(this));
+                return _activityCategorySetRepository ?? (_activityCategorySetRepository = new ActivityCategorySetRepository(this));
             }
         }
 
-        private PlanNodeDescriptionsRepository _planNodeDescriptionsRepository;
-        public IPlanNodeDescriptionsRepository PlanNodeDescriptionsRepository
-        {
-            get
-            {
-                return _planNodeDescriptionsRepository ?? (_planNodeDescriptionsRepository = new PlanNodeDescriptionsRepository(this));
-            }
-        }
 
         public void Save()
         {

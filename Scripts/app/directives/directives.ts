@@ -41,7 +41,7 @@ app.directive('blockIf', function () {
         restrict: 'A',
         link: function (_scope, _element, attrs) {
             var expr = attrs['blockIf'];
-            _scope.$watch(expr, function (value) {
+            _scope.$watch(expr, (value) => {
                 if (attrs['class'] === "plan-loading-message" && _scope.$eval(expr) == null) {
                     Metronic.blockUI({ target: _element, animate: true });
                 }
@@ -55,6 +55,31 @@ app.directive('blockIf', function () {
         }
     };
 });
+
+
+
+app.directive('fr8Click', ['$parse', '$timeout',($parse: ng.IParseService) => {
+    return {
+        restrict: 'A',
+        require: '^configurationControl',
+        compile: ($element: ng.IAugmentedJQuery, attr) => {
+            var fn = $parse(attr['fr8Click']);
+            return (scope, element: ng.IAugmentedJQuery, attr, cc: dockyard.directives.paneConfigureAction.IConfigurationControlController) => {
+                element.on('click', (event) => {
+                    if (cc.isThereOnGoingConfigRequest()) {
+                        cc.queueClick(element);
+                    } else {
+                        //lets call callback function immediately
+                        scope.$apply(() => {
+                            fn(scope, { $event: event });
+                        });
+                    }
+                });
+            };
+        }
+    };
+}]);
+
 
 app.directive("checkboxGroup", function () {
     return {
@@ -206,7 +231,7 @@ app.directive('delayedControl', ['$compile', ($compile: ng.ICompileService) => (
     },
     template: '',
     link: (scope: ng.IScope, elem: ng.IAugmentedJQuery, attr: ng.IAttributes) => {
-        
+
         elem.append("<configuration-control plan='plan' current-action='currentAction' field='field' change='change'></configuration-control>");
         $compile(elem.contents())(scope);
     }
@@ -288,7 +313,9 @@ app.directive('eventAdd', ['$timeout', '$window', function ($timeout, $window) {
         restrict: 'A',
         link: function (scope, element) {
             element.on('click', function () {
-                $window.analytics.track("Clicked Add Plan Button");
+                if ($window.analytics != null) {
+                    $window.analytics.track("Clicked Add Plan Button");
+                }
             });
         }
     };
@@ -299,7 +326,9 @@ app.directive('eventRun', ['$timeout', '$window', function ($timeout, $window) {
         restrict: 'A',
         link: function (scope, element) {
             element.on('click', function () {
-                $window.analytics.track("Clicked Run Plan Button");
+                if ($window.analytics != null) {
+                    $window.analytics.track("Clicked Run Plan Button");
+                }
             });
         }
     };
@@ -309,7 +338,9 @@ app.directive('eventAuthDialog', ['$timeout', '$window', function ($timeout, $wi
     return {
         restrict: 'A',
         link: function (scope, element) {
-            $window.analytics.track("Auth Dialog Opened");
+            if ($window.analytics != null) {
+                $window.analytics.track("Auth Dialog Opened");
+            }
         }
     };
 }]);
@@ -318,7 +349,20 @@ app.directive('eventPlanbuilder', ['$timeout', '$window', function ($timeout, $w
     return {
         restrict: 'A',
         link: function (scope, element) {
-            $window.analytics.page("Visited Page - Plan Builder");
+            if ($window.analytics != null) {
+                $window.analytics.page("Visited Page - Plan Builder");
+            }
+        }
+    };
+}]);
+
+app.directive('eventPlandashboard', ['$timeout', '$window', function ($timeout, $window) {
+    return {
+        restrict: 'A',
+        link: function (scope, element) {
+            if ($window.analytics != null) {
+                $window.analytics.page("Visited Page - Plan Dashboard");
+            }
         }
     };
 }]);

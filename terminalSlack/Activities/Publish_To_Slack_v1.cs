@@ -11,18 +11,19 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Infrastructure;
 using terminalSlack.Interfaces;
-using terminalSlack.Services;
 
 namespace terminalSlack.Activities
 {
 
-    public class Publish_To_Slack_v1 : BaseTerminalActivity
+    public class Publish_To_Slack_v1 : ExplicitTerminalActivity
     {
         private readonly ISlackIntegration _slackIntegration;
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("4698C675-CA2C-4BE7-82F9-2421F3608E13"),
             Name = "Publish_To_Slack",
             Label = "Publish To Slack",
             Tags = "Notifier",
@@ -31,7 +32,12 @@ namespace terminalSlack.Activities
             NeedsAuthentication = true,
             Version = "1",
             WebService = TerminalData.WebServiceDTO,
-            MinPaneWidth = 330
+            MinPaneWidth = 330,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -46,43 +52,26 @@ namespace terminalSlack.Activities
                 ValidationManager.SetError("Channel or user is not specified", "Selected_Slack_Channel");
             }
 
-            if (messageField.CanGetValue(ValidationManager.Payload) && string.IsNullOrWhiteSpace(messageField.GetValue(ValidationManager.Payload)))
-            {
-                ValidationManager.SetError("Can't post empty message to Slack", messageField);
-            }
+            ValidationManager.ValidateTextSourceNotEmpty(messageField, "Can't post empty message to Slack");
 
             return Task.FromResult(0);
         }
 
         public override async Task Run()
         {
-            string message;
-
-            if (IsAuthenticationRequired)
-            {
-                RaiseNeedsAuthenticationError();
-            }
-
             var actionChannelId = GetControl<DropDownList>("Selected_Slack_Channel")?.Value;
+
             if (string.IsNullOrEmpty(actionChannelId))
             {
                 RaiseError("No selected channelId found in activity.");
             }
 
             var messageField = GetControl<TextSource>("Select_Message_Field");
-            try
-            {
-                message = messageField.GetValue(Payload);
-            }
-            catch (ApplicationException ex)
-            {
-                RaiseError("Cannot get selected field value from TextSource control in activity. Detailed information: " + ex.Message);
-            }
-
+            
             try
             {
                 await _slackIntegration.PostMessageToChat(AuthorizationToken.Token,
-                    actionChannelId, StripHTML(messageField.GetValue(Payload)));
+                    actionChannelId, StripHTML(messageField.TextValue));
             }
             catch (AuthorizationTokenExpiredOrInvalidException)
             {
@@ -93,12 +82,12 @@ namespace terminalSlack.Activities
 
         public override async Task Initialize()
         {
-            var oauthToken = AuthorizationToken.Token;
-            var configurationCrate = PackCrate_ConfigurationControls();
-            await FillSlackChannelsSource(configurationCrate, "Selected_Slack_Channel", oauthToken);
-
             Storage.Clear();
-            Storage.Add(configurationCrate);
+
+            var oauthToken = AuthorizationToken.Token;
+            PackCrate_ConfigurationControls();
+
+            await FillSlackChannelsSource("Selected_Slack_Channel", oauthToken);
         }
 
         public Publish_To_Slack_v1(ICrateManager crateManager, ISlackIntegration slackIntegration)
@@ -112,22 +101,7 @@ namespace terminalSlack.Activities
             return Regex.Replace(input, "<.*?>", String.Empty);
         }
 
-        private List<FieldDTO> ExtractPayloadFields(PayloadDTO payloadCrates)
-        {
-            var payloadDataCrates = CrateManager.FromDto(payloadCrates.CrateStorage).CratesOfType<StandardPayloadDataCM>();
-
-            var result = new List<FieldDTO>();
-            foreach (var payloadDataCrate in payloadDataCrates)
-            {
-                result.AddRange(payloadDataCrate.Content.AllValues());
-            }
-
-            return result;
-        }
-
-
-
-        private Crate PackCrate_ConfigurationControls()
+        private void PackCrate_ConfigurationControls()
         {
             var fieldSelectChannel = new DropDownList()
             {
@@ -137,20 +111,14 @@ namespace terminalSlack.Activities
                 Source = null
             };
 
-            var fieldSelect = ControlHelper.CreateSpecificOrUpstreamValueChooser(
+            var fieldSelect = UiBuilder.CreateSpecificOrUpstreamValueChooser(
                 "Select Message Field",
                 "Select_Message_Field",
                 addRequestConfigEvent: true,
                 requestUpstream: true
             );
 
-            var fieldsDTO = new List<ControlDefinitionDTO>()
-            {
-                fieldSelectChannel,
-                fieldSelect
-            };
-
-            return CrateManager.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
+            AddControls(fieldSelectChannel, fieldSelect);
         }
 
         // TODO: finish that later.
@@ -179,10 +147,9 @@ namespace terminalSlack.Activities
         */
 
         #region Fill Source
-        private async Task FillSlackChannelsSource(Crate configurationCrate, string controlName, string oAuthToken)
+        private async Task FillSlackChannelsSource(string controlName, string oAuthToken)
         {
-            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
-            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            var control = ConfigurationControls.FindByNameNested<DropDownList>(controlName);
             if (control != null)
             {
                 control.ListItems = await GetAllChannelList(oAuthToken);

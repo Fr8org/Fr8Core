@@ -6,6 +6,7 @@ using Data.Entities;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Hub.Interfaces;
 using HubWeb.ViewModels;
+using Fr8.Infrastructure.Data.States;
 
 namespace HubWeb.App_Start
 {
@@ -22,6 +23,26 @@ namespace HubWeb.App_Start
 
         public void ConfigureAutoMapper()
         {
+            Mapper.CreateMap<PlanDO, PlanNoChildrenDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
+                .ForMember(a => a.Category, opts => opts.ResolveUsing(ad => ad.Category))
+                .ForMember(a => a.Description, opts => opts.ResolveUsing(ad => ad.Description))
+                .ForMember(a => a.LastUpdated, opts => opts.ResolveUsing(ad => ad.LastUpdated))
+                .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
+                .ForMember(a => a.PlanState, opts => opts.ResolveUsing(ad => ad.PlanState))
+                .ForMember(a => a.StartingSubPlanId, opts => opts.ResolveUsing(ad => ad.StartingSubPlanId))
+                .ForMember(a => a.Tag, opts => opts.ResolveUsing(ad => ad.Tag))
+                .ForMember(a => a.Visibility, opts => opts.ResolveUsing(ad => new PlanVisibilityDTO() { Hidden = ad.Visibility.BooleanValue() }));
+
+            Mapper.CreateMap<PlanNoChildrenDTO, PlanDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
+                .ForMember(a => a.Category, opts => opts.ResolveUsing(ad => ad.Category))
+                .ForMember(a => a.Description, opts => opts.ResolveUsing(ad => ad.Description))
+                .ForMember(a => a.LastUpdated, opts => opts.ResolveUsing(ad => ad.LastUpdated))
+                .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
+                .ForMember(a => a.PlanState, opts => opts.ResolveUsing(ad => ad.PlanState))
+                .ForMember(a => a.StartingSubPlanId, opts => opts.ResolveUsing(ad => ad.StartingSubPlanId))
+                .ForMember(a => a.Tag, opts => opts.ResolveUsing(ad => ad.Tag))
+                .ForMember(a => a.Visibility, opts => opts.ResolveUsing(ad => ad.Visibility?.PlanVisibilityValue()));
+
             Mapper.CreateMap<ActivityDO, ActivityDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.RootPlanNodeId, opts => opts.ResolveUsing(ad => ad.RootPlanNodeId))
                 .ForMember(a => a.ParentPlanNodeId, opts => opts.ResolveUsing(ad => ad.ParentPlanNodeId))
@@ -50,28 +71,33 @@ namespace HubWeb.App_Start
 
             Mapper.CreateMap<Fr8AccountDO, ManageUserVM>()
                 .ForMember(mu => mu.HasLocalPassword, opts => opts.ResolveUsing(account => !string.IsNullOrEmpty(account.PasswordHash)))
-                .ForMember(mu => mu.HasDocusignToken, opts => opts.Ignore())
                 .ForMember(mu => mu.HasGoogleToken, opts => opts.Ignore())
                 .ForMember(mu => mu.GoogleSpreadsheets, opts => opts.Ignore());
 
-          
+
             Mapper.CreateMap<UserVM, EmailAddressDO>()
                 .ForMember(userDO => userDO.Address, opts => opts.ResolveUsing(e => e.EmailAddress));
 
-            
 
-            
+
+
 
             Mapper.CreateMap<UserVM, Fr8AccountDO>()
                 .ForMember(userDO => userDO.Id, opts => opts.ResolveUsing(e => e.Id))
                 .ForMember(userDO => userDO.FirstName, opts => opts.ResolveUsing(e => e.FirstName))
                 .ForMember(userDO => userDO.LastName, opts => opts.ResolveUsing(e => e.LastName))
                 .ForMember(userDO => userDO.UserName, opts => opts.ResolveUsing(e => e.UserName))
-                .ForMember(userDO => userDO.EmailAddress, opts => opts.ResolveUsing(e => new EmailAddressDO {Address = e.EmailAddress}))
+                .ForMember(userDO => userDO.EmailAddress, opts => opts.ResolveUsing(e => new EmailAddressDO { Address = e.EmailAddress }))
                 .ForMember(userDO => userDO.Roles, opts => opts.Ignore());
 
+            Mapper.CreateMap<PageDefinitionDTO, PageDefinitionDO>()
+                .ForMember(dest => dest.Url, opts => opts.Ignore())
+                .ForMember(dest => dest.Tags, opts => opts.MapFrom(
+                    x => x.Tags.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList()));
 
-            
+            Mapper.CreateMap<PageDefinitionDO, PageDefinitionDTO>()
+                .ForMember(dest => dest.Tags, opts => opts.MapFrom(x => string.Join(", ", x.Tags)));
+
         }
 
         private static List<PlanNodeDO> MapActivities(IEnumerable<ActivityDTO> activities)
@@ -108,7 +134,7 @@ namespace HubWeb.App_Start
 
             if (ad.ActivityTemplateId == Guid.Empty)
             {
-                return null;                
+                return null;
             }
 
             return Mapper.Map<ActivityTemplateDTO>(_activityTemplate.GetByKey(ad.ActivityTemplateId));

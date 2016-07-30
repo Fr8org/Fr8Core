@@ -15,7 +15,8 @@ namespace Hub.Infrastructure
 
         protected override void HandleUnauthorizedRequest(HttpActionContext actionContext)
         {
-            if (actionContext.RequestContext.Principal.IsInRole("Guest"))
+            var principal = actionContext.RequestContext.Principal;
+            if (principal != null && principal.IsInRole("Guest"))
             {
                 actionContext.Response = actionContext.Request.CreateResponse(HttpStatusCode.Forbidden,
                     ErrorDTO.AuthenticationError("You need to register before using this functionality.", null, "GuestFail"));

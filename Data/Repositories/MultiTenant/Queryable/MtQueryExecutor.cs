@@ -18,9 +18,21 @@ namespace Data.Repositories.MultiTenant.Queryable
             _mtObjectRepository = mtObjectRepository;
             _currentAccountId = currentAccountId;
         }
+        
+        public IEnumerator<T> RunQuery(IMtQueryable<T> queryable)
+        {
+            var result = BuildExpression(queryable);
+            return _mtObjectRepository.Query(_currentAccountId, result).GetEnumerator();
+        }
+        
+        public int Count(IMtQueryable<T> queryable)
+        {
+            var result = BuildExpression(queryable);
+            return _mtObjectRepository.Count(_currentAccountId, result);
+        }
 
         // Currently we support only string of MtWhere. All Expressions from MtWhere are combined using 'and' into one expression.
-        public IEnumerator<T> RunQuery(IMtQueryable<T> queryable) 
+        private static Expression<Func<T, bool>> BuildExpression(IMtQueryable<T> queryable)
         {
             IMtQueryable<T> root = queryable;
             var condtions = new List<Expression<Func<T, bool>>>();
@@ -34,7 +46,7 @@ namespace Data.Repositories.MultiTenant.Queryable
 
                 if (root is MtWhere<T>)
                 {
-                    condtions.Add(((MtWhere<T>)root).Condition);
+                    condtions.Add(((MtWhere<T>) root).Condition);
                 }
                 else
                 {
@@ -66,8 +78,7 @@ namespace Data.Repositories.MultiTenant.Queryable
 
                 result = Expression.Lambda<Func<T, bool>>(temp, sourceParameter);
             }
-
-            return _mtObjectRepository.Query(_currentAccountId, result).GetEnumerator();
+            return result;
         }
 
         private static Expression ReplaceParameter(Expression<Func<T, bool>> expr, ParameterExpression sourceParameter)

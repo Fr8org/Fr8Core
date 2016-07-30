@@ -38,7 +38,7 @@ namespace terminalDocuSignTests.Activities
             ObjectFactory.Configure(x => x.For<IDocuSignFolders>().Use(docuSignFoldersMock.Object));
         }
 
-        protected async Task<ValidationResultsCM> Validate(BaseTerminalActivity activity, ActivityContext activityContext)
+        protected async Task<ValidationResultsCM> Validate(ExplicitTerminalActivity activity, ActivityContext activityContext)
         {
             var activityPayload = activityContext.ActivityPayload;
             activityPayload.CrateStorage.Remove<ValidationResultsCM>();

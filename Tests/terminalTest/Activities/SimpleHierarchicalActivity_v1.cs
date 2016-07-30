@@ -37,10 +37,6 @@ namespace terminalTest.Actions
             var templates = await HubCommunicator.GetActivityTemplates();
             var activityTemplate = templates.First(x => x.Name == "SimpleActivity");
 
-            //var atdo = AutoMapper.Mapper.Map<ActivityTemplateDTO, ActivityTemplateDO>(activityTemplate);
-
-            string emptyCrateStorage = CrateManager.CrateStorageAsStr(new CrateStorage(Crate.FromContent("Configuration Controls", new SimpleActivity_v1.ActivityUi())));
-
             ActivityPayload.ChildrenActivities.Add(new ActivityPayload
             {
                 Id = Guid.NewGuid(),

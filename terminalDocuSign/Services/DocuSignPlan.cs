@@ -58,7 +58,7 @@ namespace terminalDocuSign.Services
         /// </summary>
         public async Task CreatePlan_MonitorAllDocuSignEvents(IHubCommunicator hubCommunicator, AuthorizationToken authToken)
         {
-            Logger.Info($"Create MADSE called {hubCommunicator.UserId}");
+            Logger.Info($"Create MADSE called {authToken.UserId}");
             string currentPlanId = await FindAndActivateExistingPlan(hubCommunicator, "MonitorAllDocuSignEvents", authToken);
 
             if (string.IsNullOrEmpty(currentPlanId))
@@ -70,19 +70,19 @@ namespace terminalDocuSign.Services
         //only create a connect when running on dev/production
         public void CreateConnect(IHubCommunicator hubCommunicator, AuthorizationToken authToken)
         {
-            Logger.Info($"CreateConnect called {hubCommunicator.UserId}");
+            Logger.Info($"CreateConnect called {authToken.UserId}");
             var authTokenDO = new AuthorizationTokenDO() { Token = authToken.Token, ExternalAccountId = authToken.ExternalAccountId };
             var config = _docuSignManager.SetUp(authToken);
             string terminalUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint");
             string prodUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultProductionUrl");
             string devUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultDevUrl");
             string demoUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultDemoUrl");
-
+            bool isSelfHosting = CloudConfigurationManager.GetSetting("terminalDocusign.NotSelfHosting") == null;
             string connectName = "";
             string connectId = "";
 
             Logger.Info($"CreateConnect terminalUrl {terminalUrl}");
-            if (!string.IsNullOrEmpty(terminalUrl))
+            if (!isSelfHosting)
             {
                 if (terminalUrl.Contains(devUrl, StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -146,7 +146,7 @@ namespace terminalDocuSign.Services
 
         private bool CheckIfSaveToFr8WarehouseConfiguredWithOldManifest(PlanDTO val)
         {
-            return (Hub.Managers.CrateManagerExtensions.GetStorage(_crateManager, val.Plan.SubPlans.ElementAt(0).Activities[1]).CrateContentsOfType<StandardConfigurationControlsCM>()
+            return (_crateManager.GetStorage(val.Plan.SubPlans.ElementAt(0).Activities[1]).CrateContentsOfType<StandardConfigurationControlsCM>()
                      .First().FindByName("UpstreamCrateChooser") as UpstreamCrateChooser).SelectedCrates.Count > 1;
         }
 
@@ -167,7 +167,7 @@ namespace terminalDocuSign.Services
                         //second condition
                         val.Plan.SubPlans.ElementAt(0).Activities.Any() &&
                         //third condtion
-                        Hub.Managers.CrateManagerExtensions.GetStorage(_crateManager, val.Plan.SubPlans.ElementAt(0).Activities[0]).FirstOrDefault(t => t.Label == "DocuSignUserCrate") != null &&
+                        _crateManager.GetStorage(val.Plan.SubPlans.ElementAt(0).Activities[0]).FirstOrDefault(t => t.Label == "DocuSignUserCrate") != null &&
                         //fourth condition -> check if SaveToFr8Warehouse configured with old manifests
                         !(plan_name == "MonitorAllDocuSignEvents" && CheckIfSaveToFr8WarehouseConfiguredWithOldManifest(val))
 
@@ -180,7 +180,7 @@ namespace terminalDocuSign.Services
 
                         existingPlans = newPlans.Where(
                               a => a.Plan.SubPlans.Any(b =>
-                                  Hub.Managers.CrateManagerExtensions.GetStorage(_crateManager, b.Activities[0])
+                                 _crateManager.GetStorage(b.Activities[0])
                                   .FirstOrDefault(t => t.Label == "DocuSignUserCrate").Get<StandardPayloadDataCM>().GetValues("DocuSignUserEmail").FirstOrDefault() == authToken.ExternalAccountId)).ToList();
 
                         if (existingPlans.Count > 1)
@@ -197,7 +197,7 @@ namespace terminalDocuSign.Services
                             if (firstActivity != null)
                             {
                                 await hubCommunicator.ApplyNewToken(firstActivity.Id, Guid.Parse(authToken.Id));
-                                await hubCommunicator.RunPlan(existingPlan.Plan.Id, new List<CrateDTO>());
+                                await hubCommunicator.RunPlan(existingPlan.Plan.Id, null);
                                 Logger.Info($"#### Existing MADSE plan activated with planId: {existingPlan.Plan.Id}");
                                 return existingPlan.Plan.Id.to_S();
                             }
@@ -229,20 +229,20 @@ namespace terminalDocuSign.Services
                 Name = "MonitorAllDocuSignEvents",
                 Description = "MonitorAllDocuSignEvents",
                 PlanState = PlanState.Running,
-                Visibility = PlanVisibility.Internal
+                Visibility = new PlanVisibilityDTO() { Hidden = true }
             };
 
             var monitorDocusignPlan = await hubCommunicator.CreatePlan(emptyMonitorPlan);
             var activityTemplates = await hubCommunicator.GetActivityTemplates(null);
             var recordDocusignEventsTemplate = GetActivityTemplate(activityTemplates, "Prepare_DocuSign_Events_For_Storage");
-            var storeMTDataTemplate = GetActivityTemplate(activityTemplates, "SaveToFr8Warehouse");
-            Debug.WriteLine($"Calling create and configure with params {recordDocusignEventsTemplate} {hubCommunicator.UserId} {monitorDocusignPlan}");
+            var storeMTDataTemplate = GetActivityTemplate(activityTemplates, "Save_To_Fr8_Warehouse");
+            Debug.WriteLine($"Calling create and configure with params {recordDocusignEventsTemplate} {authToken.UserId} {monitorDocusignPlan}");
             await hubCommunicator.CreateAndConfigureActivity(recordDocusignEventsTemplate.Id, "Record DocuSign Events", 1, monitorDocusignPlan.Plan.StartingSubPlanId, false, new Guid(authToken.Id));
             var storeMTDataActivity = await hubCommunicator.CreateAndConfigureActivity(storeMTDataTemplate.Id, "Save To Fr8 Warehouse", 2, monitorDocusignPlan.Plan.StartingSubPlanId);
             SetSelectedCrates(storeMTDataActivity);
             //save this
             await hubCommunicator.ConfigureActivity(storeMTDataActivity);
-            await hubCommunicator.RunPlan(monitorDocusignPlan.Plan.Id, new List<CrateDTO>());
+            await hubCommunicator.RunPlan(monitorDocusignPlan.Plan.Id, null);
 
             Logger.Info($"#### New MADSE plan activated with planId: {monitorDocusignPlan.Plan.Id}");
         }

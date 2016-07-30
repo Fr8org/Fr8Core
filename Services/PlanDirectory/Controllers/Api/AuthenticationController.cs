@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Web.Http;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
 using StructureMap;
 using Data.Interfaces;
 using Data.Infrastructure.StructureMap;
+using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Infrastructure;
 using PlanDirectory.Infrastructure;
+using PlanDirectory.Interfaces;
 
 namespace PlanDirectory.Controllers.Api
 {
@@ -62,9 +66,14 @@ namespace PlanDirectory.Controllers.Api
         public IHttpActionResult Token()
         {
             var fr8UserId = User.Identity.GetUserId();
-            var token = _authTokenManager.CreateToken(Guid.Parse(fr8UserId));
 
-            return Ok(new { token });
+            if (!fr8UserId.IsNullOrEmpty())
+            {
+                var token = _authTokenManager.CreateToken(Guid.Parse(fr8UserId));
+
+                return Ok(new { token });
+            }
+            return BadRequest("User is not authenticated");
         }
 
         [HttpGet]
@@ -73,6 +82,21 @@ namespace PlanDirectory.Controllers.Api
         {
             var authenticated = User.Identity.IsAuthenticated;
             return Ok(new { authenticated });
+        }
+
+        [HttpGet]
+        [ActionName("is_privileged")]
+        public IHttpActionResult IsPrivileged()
+        {
+            var identity = User.Identity as ClaimsIdentity;
+            if (identity == null)
+            {
+                return Ok(new { privileged = false });
+            }
+
+            var privileged = identity.HasClaim(ClaimsIdentity.DefaultRoleClaimType, "Admin");
+
+            return Ok(new { privileged });
         }
     }
 }

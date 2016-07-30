@@ -30,7 +30,7 @@ namespace terminalSendGridTests.Integration
             Assert.AreEqual("terminalSendGrid", terminalDiscoverResponse.Definition.Name, "Definition terminalSendGrid not found.");
             Assert.AreEqual("SendGrid", terminalDiscoverResponse.Definition.Label, "Definition Label for terminalSendGrid not found.");
 
-            Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == "SendEmailViaSendGrid"), true, "Action " + "SendEmailViaSendGrid" + " was not loaded");
+            Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == "Send_Email_Via_SendGrid"), true, "Action " + "Send_Email_Via_SendGrid" + " was not loaded");
         }
     }
 }

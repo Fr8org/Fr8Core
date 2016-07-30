@@ -11,11 +11,12 @@ using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Activities
 {
-    public class Monitor_Fr8_Events_v1 : BaseTerminalActivity
+    public class Monitor_Fr8_Events_v1 : ExplicitTerminalActivity
     {
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new System.Guid("e75112ed-e17d-4b90-a337-50a5d59b1866"),
             Name = "Monitor_Fr8_Events",
             Label = "Monitor Fr8 Events",
             Version = "1",
@@ -24,27 +25,15 @@ namespace terminalFr8Core.Activities
             MinPaneWidth = 380,
             Tags = Tags.Internal,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Monitor,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
-        private Crate PackCrate_EventSubscriptions()
-        {
-            var subscriptions = new List<string>
-            {
-                "RouteActivated",
-                "RouteDeactivated",
-                "ContainerLaunched",
-                "ContainerExecutionComplete",
-                "ActionExecuted"
-            };
-
-            return CrateManager.CreateStandardEventSubscriptionsCrate(
-                "Standard Event Subscriptions",
-                "Fr8Core",
-                subscriptions.ToArray()
-                );
-        }
-
+        
         public Monitor_Fr8_Events_v1(ICrateManager crateManager)
             : base(crateManager)
         {
@@ -65,23 +54,24 @@ namespace terminalFr8Core.Activities
         public override Task Initialize()
         {
             //build a controls crate to render the pane
-            var eventSubscription = PackCrate_EventSubscriptions();
-            var textBlock = ControlHelper.GenerateTextBlock("Monitor Fr8 Events",
+            var textBlock = UiBuilder.GenerateTextBlock("Monitor Fr8 Events",
                 "This Activity doesn't require any configuration.", "well well-lg");
-            var curControlsCrate = PackControlsCrate(textBlock);
-            var planActivatedCrate = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "RouteActivated", "13", AvailabilityType.RunTime);
-            var planDeactivatedCrate = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "RouteDeactivated", "13", AvailabilityType.RunTime);
-            var containerLaunched = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "ContainerLaunched", "13", AvailabilityType.RunTime);
-            var containerExecutionComplete = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "ContainerExecutionComplete", "13", AvailabilityType.RunTime);
-            var actionExecuted = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "ActionExecuted", "13", AvailabilityType.RunTime);
+            AddControls(textBlock);
 
-            Storage.Add(curControlsCrate);
-            Storage.Add(planActivatedCrate);
-            Storage.Add(planDeactivatedCrate);
-            Storage.Add(containerLaunched);
-            Storage.Add(containerExecutionComplete);
-            Storage.Add(actionExecuted);
-            Storage.Add(eventSubscription);
+            // var planActivatedCrate = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "RouteActivated", "13", AvailabilityType.RunTime);
+            // var planDeactivatedCrate = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "RouteDeactivated", "13", AvailabilityType.RunTime);
+            //  var containerLaunched = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "ContainerLaunched", "13", AvailabilityType.RunTime);
+            // var containerExecutionComplete = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "ContainerExecutionComplete", "13", AvailabilityType.RunTime);
+            //  var actionExecuted = CrateManager.CreateManifestDescriptionCrate("Available Run-Time Objects", "ActionExecuted", "13", AvailabilityType.RunTime);
+
+            //  Storage.Add(planActivatedCrate);
+            // Storage.Add(planDeactivatedCrate);
+            //Storage.Add(containerLaunched);
+            // Storage.Add(containerExecutionComplete);
+            // Storage.Add(actionExecuted);
+
+            EventSubscriptions.Manufacturer = "Fr8Core";
+            EventSubscriptions.AddRange("RouteActivated", "RouteDeactivated", "ContainerLaunched", "ContainerExecutionComplete", "ActionExecuted");
 
             return Task.FromResult(0);
         }

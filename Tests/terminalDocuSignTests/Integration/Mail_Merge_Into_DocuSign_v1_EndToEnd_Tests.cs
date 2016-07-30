@@ -50,193 +50,6 @@ namespace terminalDocuSignTests.Integration
             _docuSignActivitiesTestTools = new Fr8.Testing.Integration.Tools.Activities.IntegrationTestTools_terminalDocuSign(this);
         }
 
-        [Test]
-        public async Task Mail_Merge_Into_DocuSign_EndToEnd()
-        {
-            await RevokeTokens();
-
-            var googleAuthTokenId = await ExtractGoogleDefaultToken();
-
-            //
-            // Create solution
-            //
-            var parameters = await _docuSignActivitiesTestTools.CreateAndConfigure_MailMergeIntoDocuSign_Solution("Get_Google_Sheet_Data", "Get Google Sheet Data", "9a4d2154-5b18-4316-9824-09432e62f458", "Medical_Form_v1", true);
-            this.solution = parameters.Item1;
-            var plan = parameters.Item2;
-
-            // Assert Loop activity has CrateChooser with assigned manifest types.
-            var loopActivity = this.solution.ChildrenActivities[1];
-            using (var loopCrateStorage = Crate.GetUpdatableStorage(loopActivity))
-            {
-                var loopControlsCrate = loopCrateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
-                var loopControls = loopControlsCrate.Content.Controls;
-
-                var loopCrateChooser = loopControls
-                    .SingleOrDefault(x => x.Type == ControlTypes.CrateChooser && x.Name == "Available_Crates") as CrateChooser;
-
-                Assert.NotNull(loopCrateChooser, "Unable to find CrateChooser control from loop activity");
-                Assert.AreEqual(1, loopCrateChooser.CrateDescriptions.Count, "Selected crate count is not equal to 1 on loopActivity CrateChooser");
-                Assert.AreEqual("Standard Table Data", loopCrateChooser.CrateDescriptions[0].ManifestType, "Selected crate on CrateChooser doesn't have ManifestType: Standard Table Data");
-                Assert.AreEqual("Table Generated From Google Sheet Data", loopCrateChooser.CrateDescriptions[0].Label, "Selected crate on CrateChooser doesn't have label: Table Generated From Google Sheet Data");
-
-                loopCrateChooser.CrateDescriptions = new List<CrateDescriptionDTO>();
-            }
-
-            // Delete Google action 
-            await HttpDeleteAsync(_baseUrl + "activities?id=" + this.solution.ChildrenActivities[0].Id);
-
-            // Add Add Payload Manually action
-            var activityCategoryParam = (int)ActivityCategory.Processors;
-            var activityTemplates = await HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseUrl + "webservices?id=" + activityCategoryParam);
-            var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == "AddPayloadManually");
-
-            var apmAction = new ActivityDTO()
-            {
-                ActivityTemplate = apmActivityTemplate,
-                Name = apmActivityTemplate.Label,
-                ParentPlanNodeId = this.solution.Id,
-                RootPlanNodeId = plan.Plan.Id
-            };
-            apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", apmAction);
-            Assert.NotNull(apmAction, "Add Payload Manually action failed to create");
-            Assert.IsTrue(apmAction.Id != default(Guid), "Add Payload Manually action failed to create");
-
-            //
-            // Configure Add Payload Manually action
-            //
-
-            //Add rows to Add Payload Manually action
-            apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", apmAction);
-            crateStorage = Crate.FromDto(apmAction.CrateStorage);
-            var controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
-            var fieldList = controlsCrate.Content.Controls.OfType<FieldList>().First();
-            fieldList.Value = @"[{""Key"":""Doctor"",""Value"":""Doctor1""},{""Key"":""Condition"",""Value"":""Condition1""}]";
-
-            using (var updatableStorage = Crate.GetUpdatableStorage(apmAction))
-            {
-                updatableStorage.Remove<StandardConfigurationControlsCM>();
-                updatableStorage.Add(controlsCrate);
-            }
-
-            // Move Add Payload Manually action to the beginning of the plan
-            apmAction.Ordering = 1;
-            apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", apmAction);
-            apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", apmAction);
-            Assert.AreEqual(1, apmAction.Ordering, "Failed to reoder the action Add Payload Manually");
-
-            var fr8CoreLoop = this.solution.ChildrenActivities.Single(a => a.Name.Equals("loop", StringComparison.InvariantCultureIgnoreCase));
-
-            using (var updatableStorage = Crate.UpdateStorage(() => fr8CoreLoop.CrateStorage))
-            {
-                updatableStorage.Clear();
-            }
-
-            fr8CoreLoop = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", fr8CoreLoop);
-            //we should update fr8Core loop to loop through manually added payload
-            var fr8CoreLoopCrateStorage = Crate.FromDto(fr8CoreLoop.CrateStorage);
-            var loopConfigCrate = fr8CoreLoopCrateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
-            var loopConfigControls = loopConfigCrate.Content.Controls;
-            var crateChooser = (CrateChooser)loopConfigControls.FirstOrDefault(c => c.Name == "Available_Crates");
-
-            Assert.NotNull(crateChooser, "Crate chooser was not found");
-
-            var firstActivityCrates = Crate.GetStorage(apmAction.CrateStorage).CrateContentsOfType<CrateDescriptionCM>().FirstOrDefault();
-
-            crateChooser.CrateDescriptions = firstActivityCrates?.CrateDescriptions;
-
-            var tableDescription = crateChooser.CrateDescriptions?.FirstOrDefault(c => c.ManifestId == (int)MT.StandardPayloadData);
-            Assert.NotNull(tableDescription, "StandardPayloadData was not found in crateChooser.CrateDescriptions. Available crate descriptions are: " + string.Join("\n", crateChooser.CrateDescriptions?.Select(x => $"{x.Label} of type {x.ManifestType}") ?? new string[0]));
-            
-            tableDescription.Selected = true;
-    
-            using (var updatableStorage = Crate.GetUpdatableStorage(fr8CoreLoop))
-            {
-                updatableStorage.Remove<StandardConfigurationControlsCM>();
-                updatableStorage.Add(loopConfigCrate);
-            }
-
-            fr8CoreLoop = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", fr8CoreLoop);
-
-            //
-            // Configure Send DocuSign Envelope action
-            //
-
-            // Initial Configuration
-            var sendEnvelopeAction = fr8CoreLoop.ChildrenActivities.Single(a => a.Name == "Send DocuSign Envelope");
-
-            crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
-            controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
-
-            var docuSignTemplate = controlsCrate.Content.Controls.OfType<DropDownList>().First();
-            docuSignTemplate.Value = "9a4d2154-5b18-4316-9824-09432e62f458";
-            docuSignTemplate.selectedKey = "Medical_Form_v1";
-            docuSignTemplate.ListItems.Add(new ListItem() { Value = "9a4d2154-5b18-4316-9824-09432e62f458", Key = "Medical_Form_v1" });
-
-            using (var updatableStorage = Crate.GetUpdatableStorage(sendEnvelopeAction))
-            {
-                updatableStorage.Remove<StandardConfigurationControlsCM>();
-                updatableStorage.Add(controlsCrate);
-            }
-
-            sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", sendEnvelopeAction);
-            sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", sendEnvelopeAction);
-
-
-            // Follow-up Configuration
-            crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
-            controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
-            var emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role email");
-            emailField.ValueSource = "specific";
-            emailField.Value = TestEmail;
-            emailField.TextValue = TestEmail;
-
-            var emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role name");
-            emailNameField.ValueSource = "specific";
-            emailNameField.Value = TestEmailName;
-            emailNameField.TextValue = TestEmailName;
-
-            using (var updatableStorage = Crate.GetUpdatableStorage(sendEnvelopeAction))
-            {
-                updatableStorage.Remove<StandardConfigurationControlsCM>();
-                updatableStorage.Add(controlsCrate);
-            }
-
-            sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", sendEnvelopeAction);
-
-            crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
-            controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
-
-            docuSignTemplate = controlsCrate.Content.Controls.OfType<DropDownList>().First();
-            Assert.AreEqual("9a4d2154-5b18-4316-9824-09432e62f458", docuSignTemplate.Value, "Selected DocuSign Template did not save on Send DocuSign Envelope action.");
-            Assert.AreEqual("Medical_Form_v1", docuSignTemplate.selectedKey, "Selected DocuSign Template did not save on Send DocuSign Envelope action.");
-
-            emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role email");
-            Assert.AreEqual(TestEmail, emailField.Value, "Email did not save on Send DocuSign Envelope action.");
-            Assert.AreEqual(TestEmail, emailField.TextValue, "Email did not save on Send DocuSign Envelope action.");
-
-            emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role name");
-            Assert.AreEqual(TestEmailName, emailNameField.Value, "Email Name did not save on Send DocuSign Envelope action.");
-            Assert.AreEqual(TestEmailName, emailNameField.TextValue, "Email Name did not save on Send DocuSign Envelope action.");
-
-            //
-            // Activate and run plan
-            //
-            var container = await HttpPostAsync<string, ContainerDTO>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
-            Assert.AreEqual(container.State, State.Completed, "Container state is not equal to completed on Mail_Merge e2e test");
-
-            //
-            // Deactivate plan
-            //
-            await HttpPostAsync<string, string>(_baseUrl + "plans/deactivate?planId=" + plan.Plan.Id, null);
-
-            // Verify that test email has been received
-            EmailAssert.EmailReceived("dse_demo@docusign.net", "Test Message from Fr8");
-
-            //
-            // Delete plan
-            //
-            //await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
-        }
 
         [Test]
         public async Task Mail_Merge_Into_DocuSign_EndToEnd_Upstream_Values_From_Google_Check_Tabs()
@@ -312,32 +125,32 @@ namespace terminalDocuSignTests.Integration
             //chosen "Fr8 Fromentum Registration Form" contains 7 specific DocuSign tabs that will be configured with upstream values 
             crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
             controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
-            var emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingLead role email");
+            var emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "Lead role email");
             emailField.ValueSource = "upstream";
             emailField.Value = "emailaddress";
             emailField.selectedKey = "emailaddress";
 
-            var emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingLead role name");
+            var emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "Lead role name");
             emailNameField.ValueSource = "upstream";
             emailNameField.Value = "name";
             emailNameField.selectedKey = "name";
 
-            var phoneField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "MappingPhone(Lead)");
+            var phoneField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "Phone(Lead)");
             phoneField.ValueSource = "upstream";
             phoneField.Value = "phone";
             phoneField.selectedKey = "phone";
 
-            var titleField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "MappingTitle(Lead)");
+            var titleField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "Title(Lead)");
             titleField.ValueSource = "upstream";
             titleField.Value = "title";
             titleField.selectedKey = "title";
 
-            var companyField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "MappingCompany(Lead)");
+            var companyField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.InitialLabel == "Company(Lead)");
             companyField.ValueSource = "upstream";
             companyField.Value = "companyname";
             companyField.selectedKey = "companyname";
 
-            var radioGroup = controlsCrate.Content.Controls.OfType<RadioButtonGroup>().First(f => f.GroupName == "RadioGroupMappingRegistration Type(Lead)");
+            var radioGroup = controlsCrate.Content.Controls.OfType<RadioButtonGroup>().First(f => f.GroupName == "Registration Type(Lead)");
             foreach (var radios in radioGroup.Radios)
             {
                 //reset all preselected radioButtons
@@ -346,10 +159,10 @@ namespace terminalDocuSignTests.Integration
             var radioButton = radioGroup.Radios.FirstOrDefault(x => x.Name == "Buy 2, Get 3rd Free");
             radioButton.Selected = true;
 
-            var checkboxField = controlsCrate.Content.Controls.OfType<CheckBox>().First(f => f.Name == "CheckBoxMappingGovernmentEntity?(Lead)");
+            var checkboxField = controlsCrate.Content.Controls.OfType<CheckBox>().First(f => f.Name == "CheckBoxFields_GovernmentEntity?(Lead)");
             checkboxField.Selected = true;
 
-            var dropdownField = controlsCrate.Content.Controls.OfType<DropDownList>().First(f => f.Name == "DropDownMappingSize of Company(Lead)");
+            var dropdownField = controlsCrate.Content.Controls.OfType<DropDownList>().First(f => f.Name == "DropDownListFields_Size of Company(Lead)");
             dropdownField.Value = "Medium (51-250)";
             dropdownField.selectedKey = "Medium (51-250)";
 

@@ -12,6 +12,7 @@ gulp.task('bower', function (done) {
     return bower({ layout: "byComponent" });
 });
 
+
 gulp.task('concattemplates', function () {
     return gulp.src(['Views/AngularTemplate/**/*.cshtml',
         /*we are excluding those files - because they contain razor code*/
@@ -19,13 +20,14 @@ gulp.task('concattemplates', function () {
         '!Views/AngularTemplate/PlanList.cshtml',
         '!Views/AngularTemplate/MyAccountPage.cshtml',
         '!Views/AngularTemplate/Header.cshtml',
+        '!Views/AngularTemplate/HeaderNav.cshtml',
         '!Views/AngularTemplate/MiniHeader.cshtml',
         '!Views/AngularTemplate/ChangePassword.cshtml',
         '!Views/AngularTemplate/AccountList.cshtml'])
         .pipe(templateCache('templateCache.js', {
             module: 'templates',
             standalone: true,
-            transformUrl: function(url) {
+            transformUrl: function (url) {
                 //remove .cshtml extension and /AngularTemplate/ prefix
                 return '/AngularTemplate/' + url.slice(0, -7);
             }
@@ -76,6 +78,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/services/FileDetailsService.js',
         'Scripts/app/services/ContainerService.js',
         'Scripts/app/services/UIHelperService.js',
+        'Scripts/app/services/UINotificationService.js',
         'Scripts/app/services/LayoutService.js',
         'Scripts/app/services/PusherNotifierService.js',
         'Scripts/app/services/UserService.js',
@@ -85,12 +88,17 @@ gulp.task('compile_js', function () {
         'Scripts/app/services/ManifestRegistryService.js',
         'Scripts/app/services/SolutionDocumentationService.js',
         'Scripts/app/services/UpstreamExtractor.js',
+        'Scripts/app/services/PageDefinitionService.js',
         'Scripts/app/filters/PlanState.js',
         'Scripts/app/filters/ContainerState.js',
         'Scripts/app/filters/FilterByTag.js',
+        'Scripts/app/enums/NotificationArea.js',
+        'Scripts/app/enums/NotificationType.js',
+        'Scripts/app/enums/UINotificationMessageStatus.js',
         'Scripts/app/directives/EventArgsBase.js',
         'Scripts/app/directives/directives.js',
         'Scripts/app/directives/indiClick.js',
+        'Scripts/app/directives/fillHeight.js',
         'Scripts/app/directives/layout.js',
         'Scripts/app/directives/PaneWorkflowDesigner/Messages.js',
         'Scripts/app/directives/PaneWorkflowDesigner/PaneWorkflowDesigner.js',
@@ -99,6 +107,8 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/PaneSelectAction/PaneSelectAction.js',
         'Scripts/app/directives/DesignerHeader/DesignerHeader.js',
         'Scripts/app/directives/SubplanHeader.js',
+        'Scripts/app/directives/ActivityHeader.js',
+        'Scripts/app/directives/UIBlocker.js',
         'Scripts/app/services/SubordinateSubplanService.js',
         'Scripts/app/directives/Controls/FilePicker.js',
         'Scripts/app/directives/Controls/RadioButtonGroup.js',
@@ -142,7 +152,6 @@ gulp.task('compile_js', function () {
         'Scripts/app/filters/DateTimeFormatter.js',
         'Scripts/app/controllers/PlanBuilderController.js',
         'Scripts/app/controllers/SandboxController.js',
-        'Scripts/app/controllers/PlanFormController.js',
         'Scripts/app/controllers/PlanListController.js',
         'Scripts/app/controllers/ReportFactController.js',
         'Scripts/app/controllers/ReportIncidentController.js',
@@ -152,6 +161,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/AccountListController.js',
         'Scripts/app/controllers/AccountDetailsController.js',
         'Scripts/app/controllers/InternalAuthenticationController.js',
+        'Scripts/app/controllers/PhoneNumberAuthenticationController.js',
         'Scripts/app/controllers/AuthenticationDialogController.js',
         'Scripts/app/controllers/SelectActionController.js',
         'Scripts/app/controllers/ContainerListController.js',
@@ -176,6 +186,8 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/ManageUserController.js',
         'Scripts/app/controllers/PlanUploadModalController.js',
         'Scripts/app/controllers/PlanUploadController.js',
+        'Scripts/app/controllers/PageDefinitionListController.js',
+        'Scripts/app/controllers/PageDefinitionFormController.js',
         'Scripts/app/directives/Controls/Fr8Event.js'
     ])
         .pipe(sourcemaps.init())
@@ -297,7 +309,7 @@ gulp.task('cdnizer-js', ['bower'], function () {
             },
             {
                 file: '~/bower_components/angular-animate/angular-animate.js',
-                package: 'angular',                
+                package: 'angular',
                 cdn: '//ajax.googleapis.com/ajax/libs/angularjs/${ version }/angular-animate.min.js'
             },
             {
@@ -393,19 +405,24 @@ gulp.task('cdnizer-js', ['bower'], function () {
                 file: '~/bower_components/angular-material/angular-material.js',
                 package: 'angular-material',
                 cdn: '//ajax.googleapis.com/ajax/libs/angular_material/${ version }/angular-material.min.js'
+            },
+            {
+                file: '~/bower_components/noty/js/noty/packaged/jquery.noty.packaged.min.js',
+                package: 'noty',
+                cdn: '//cdnjs.cloudflare.com/ajax/libs/jquery-noty/2.3.8/packaged/jquery.noty.packaged.min.js'
             }
         ]))
         .pipe(gulp.dest('./Views/Shared/CDN'));
 });
 
-function getProtractorBinary(binaryName){
-    var winExt = /^win/.test(process.platform)? '.cmd' : '';
+function getProtractorBinary(binaryName) {
+    var winExt = /^win/.test(process.platform) ? '.cmd' : '';
     var pkgPath = require.resolve('protractor');
     var protractorDir = path.resolve(path.join(path.dirname(pkgPath), '..', '..', '.bin'));
-    return path.join(protractorDir, '/'+binaryName+winExt);
+    return path.join(protractorDir, '/' + binaryName + winExt);
 }
 
-gulp.task('update-web-driver', function(done){
+gulp.task('update-web-driver', function (done) {
     return child_process.spawnSync(getProtractorBinary('webdriver-manager'), ['update'], {
         stdio: 'inherit'
     });
@@ -413,7 +430,7 @@ gulp.task('update-web-driver', function(done){
 
 gulp.task('protractor-run', function (done) {
     gutil.log('Using base url: ' + argv.baseUrl);
-    var result = child_process.spawnSync(getProtractorBinary('protractor'),  ['--baseUrl='+argv.baseUrl, 'Scripts\\tests\\e2e\\conf.js'] ,{
+    var result = child_process.spawnSync(getProtractorBinary('protractor'), ['--baseUrl=' + argv.baseUrl, 'Scripts\\tests\\e2e\\conf.js'], {
         stdio: 'inherit'
     });
 

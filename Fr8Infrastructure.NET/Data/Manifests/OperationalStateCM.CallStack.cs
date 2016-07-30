@@ -42,34 +42,9 @@ namespace Fr8.Infrastructure.Data.Manifests
             {
                 _stack.Clear();
             }
-
-            public StackFrame[] ToArray()
-            {
-                return _stack.ToArray();
-            }
-
-            public void CopyTo(Array array, int index)
-            {
-                ((ICollection) _stack).CopyTo(array, index);
-            }
-
-            public void CopyTo(StackFrame[] array, int arrayIndex)
-            {
-                _stack.CopyTo(array, arrayIndex);
-            }
-
+            
             // set of methods to work with activity's run-time state data.
-            // It's better not to use these methods outside of very special internal activities
-            public T CreateLocalData<T>(string type)
-                where T : new()
-            {
-                var data = new T();
-
-                StoreLocalData(type, data);
-
-                return data;
-            }
-
+            
             public T GetLocalData<T>(string type)
             {
                 var top = TopFrame;
@@ -92,20 +67,7 @@ namespace Fr8.Infrastructure.Data.Manifests
                     Data = JToken.FromObject(data)
                 };
             }
-
-            public T GetOrCreateLocalData<T>(string type)
-                where T : new()
-            {
-                var top = TopFrame;
-
-                if (top.LocalData?.Type != type || top.LocalData?.Data == null)
-                {
-                    return CreateLocalData<T>(type);
-                }
-
-                return top.LocalData.Data.ToObject<T>();
-            }
-
+            
             public IEnumerator<StackFrame> GetEnumerator()
             {
                 return _stack.GetEnumerator();
@@ -141,7 +103,7 @@ namespace Fr8.Infrastructure.Data.Manifests
             public string NodeName { get; set; }
             public ActivityExecutionPhase CurrentActivityExecutionPhase { get; set; }
             public Guid? CurrentChildId { get; set; }
-            // Here activity can store some custom state related to it's execution. It is better to avoid persisting such states if possible. 
+            // Here activity can store some custom state related to it's execution.
             // Legacy notes: This is a replacement for LoopStatus and Branches arrays we previously had
             public StackLocalData LocalData { get; set; } 
         }

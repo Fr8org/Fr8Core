@@ -3,22 +3,14 @@ using System.Collections.Generic;
 using System.Reflection;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities;
 using Hub.Interfaces;
-using StructureMap;
 
 namespace Hub.Services
 {
     public class ManifestService : IManifest
     {
-        private readonly ICrateManager _curCrateManager;
-
-        public ManifestService()
-        {
-            _curCrateManager = ObjectFactory.GetInstance<ICrateManager>();
-        }
-
         // Use the reflection and get the properties of manifest class. 
         // Create the designTime fields from fetched properties and send it to client.
         public Crate GetById(int id)
@@ -31,7 +23,7 @@ namespace Hub.Services
                 var propertyInfo = ReflectionHelper.GetProperties(clrManifestType);
                 var curFieldDto = ConvertPropertyToFields(propertyInfo);
 
-                crateDto = _curCrateManager.CreateDesignTimeFieldsCrate(clrManifestType.Name, curFieldDto.ToArray());
+                crateDto = Crate.FromContent(clrManifestType.Name, new FieldDescriptionsCM(curFieldDto.ToArray()));
             }
 
             return crateDto;
@@ -47,8 +39,8 @@ namespace Hub.Services
                 {
                     curPropertiesList.Add(new FieldDTO()
                     {
-                        Key = property.Name,
-                        Value = property.PropertyType.FullName
+                        Name = property.Name,
+                        Label = property.PropertyType.FullName
                     });
                 }
                 else
@@ -56,8 +48,8 @@ namespace Hub.Services
                     curPropertiesList.Add(new FieldDTO()
 
                     {
-                        Key = property.Name,
-                        Value = property.PropertyType.Name,
+                        Name = property.Name,
+                        Label = property.PropertyType.Name,
                     });
                 }
 

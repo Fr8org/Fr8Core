@@ -10,13 +10,7 @@
             <div class="alert alert-danger" ng-show="errorMessage != null">
                 {{errorMessage}}
             </div>
-            <div ng-class="(form.name.$error.required && form.$submitted) ? 'has-error' : ''" class="form-group">
-                <label class="control-label">Name<span class="required"></span></label>
-                <div class="input-icon right">
-                    <i class="fa fa-warning" ng-show="form.name.$error.required && form.$submitted"></i>
-                    <input type="text" name="name" placeholder="" class="form-control" ng-model="terminal.name" auto-focus required data-required="1" />
-                </div>
-            </div>
+          
             <div ng-class="(form.name.$error.required && form.$submitted) ? 'has-error' : ''" class="form-group">
                 <label class="control-label">Url<span class="required"></span></label>
                 <div class="input-icon right">
@@ -24,13 +18,7 @@
                     <input type="url" name="name" placeholder="" class="form-control" ng-model="terminal.endpoint" auto-focus required data-required="2" />
                 </div>
             </div>           
-            <div ng-class="(form.name.$error.required && form.$submitted) ? 'has-error' : ''" class="form-group">
-                <label class="control-label">Description<span class="required"></span></label>
-                <div class="input-icon right">
-                    <i class="fa fa-warning" ng-show="form.name.$error.required && form.$submitted"></i>
-                    <input type="text" name="name" placeholder="" class="form-control" ng-model="terminal.description" auto-focus required data-required="3" />
-                </div>
-            </div>
+           
         </div>
         <div class="modal-footer">
             <button class="btn btn-primary" type="submit">Ok</button>

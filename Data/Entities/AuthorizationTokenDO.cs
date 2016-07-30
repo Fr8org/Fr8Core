@@ -36,7 +36,7 @@ namespace Data.Entities
         public String RedirectURL { get; set; }
         public String SegmentTrackingEventName { get; set; }
         public String SegmentTrackingProperties { get; set; }
-        public DateTime ExpiresAt { get; set; }
+        public DateTime? ExpiresAt { get; set; }
 
         public String ExternalAccountId { get; set; }
 

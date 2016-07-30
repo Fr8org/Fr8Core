@@ -8,7 +8,7 @@ namespace terminalDocuSign.Services
 {
     public class DocuSignFoldersWrapper : IDocuSignFolders
     {
-        public IEnumerable<FieldDTO> GetFolders(DocuSignApiConfiguration conf)
+        public IEnumerable<KeyValueDTO> GetFolders(DocuSignApiConfiguration conf)
         {
             return DocuSignFolders.GetFolders(conf);
         }

@@ -76,7 +76,8 @@ namespace HubTests.Controllers
         [Test]
         public void ContainerController_ShouldHaveFr8ApiAuthorizeOnGetMethod()
         {
-            ShouldHaveFr8ApiAuthorizeOnFunction(typeof(ContainersController), "Get");
+            ShouldHaveFr8ApiAuthorizeOnFunction(typeof(ContainersController), "Get",Type.EmptyTypes);
+            ShouldHaveFr8ApiAuthorizeOnFunction(typeof(ContainersController), "Get",new[] { typeof(Guid)});
         }
 
         [Test]
@@ -85,7 +86,7 @@ namespace HubTests.Controllers
             //Act
             var containerController = CreateContainerController();
             Addcontainer();
-            Guid? id = FixtureData.TestContainer_Id_55();
+            Guid id = FixtureData.TestContainer_Id_55();
             var actionResult = containerController.Get(id);
             //Assert
             Assert.IsNull(actionResult as OkNegotiatedContentResult<ContainerDO>);
@@ -99,8 +100,7 @@ namespace HubTests.Controllers
             Addcontainer();
 
             //Act
-            Guid? id = null;
-            var actionResult = containerController.Get(id) as OkNegotiatedContentResult<IEnumerable<ContainerDTO>>;
+            var actionResult = containerController.Get() as OkNegotiatedContentResult<IEnumerable<ContainerDTO>>;
 
             ////Assert
             Assert.NotNull(actionResult);
@@ -115,7 +115,7 @@ namespace HubTests.Controllers
             Addcontainer();
 
             //Act
-            Guid? id = FixtureData.TestContainer_Id_1();
+            Guid id = FixtureData.TestContainer_Id_1();
             var actionResult = containerController.Get(id) as OkNegotiatedContentResult<ContainerDTO>;
 
             ////Assert

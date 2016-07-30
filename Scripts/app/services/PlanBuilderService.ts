@@ -5,7 +5,7 @@
 */
 module dockyard.services {
     export interface IPlanService extends ng.resource.IResourceClass<interfaces.IPlanFullDTO> {
-        getbystatus: (id: { id: number; status: number; category?: string }) => Array<interfaces.IPlanVM>;
+        getbystatus: (id: { id: number; status: number; category?: string; orderBy: string; }) => Array<interfaces.IPlanVM>;
         getByQuery: (query: model.PlanQueryDTO) => interfaces.IPlanResultDTO;
         getFull: (id: Object) => interfaces.IPlanFullDTO;
         getByActivity: (id: { id: string }) => interfaces.IPlanVM;
@@ -13,7 +13,7 @@ module dockyard.services {
         create: (args: { activityTemplateId: number, name: string, label: string, parentNodeId: number }) => ng.resource.IResource<model.PlanDTO>;
         createSolution: (args: { solutionName: string }) => ng.resource.IResource<model.PlanFullDTO>;
         deactivate: (data: { planId: string }) => ng.resource.IResource<string>;
-        update: (data: { id: string, name: string }) => interfaces.IPlanVM;
+        update: (data: { id: string, name: string, description: string }) => interfaces.IPlanVM;
         run: (id: string) => ng.IPromise<model.ContainerDTO>;
         runAndProcessClientAction: (id: string) => ng.IPromise<model.ContainerDTO>;
         share: (id: string) => ng.IPromise<any>;
@@ -106,11 +106,12 @@ module dockyard.services {
                     },
                     'getbystatus': {
                         method: 'GET',
-                        isArray: true,
-                        url: '/api/plans/status?status=:status&category=:category',
+                        isArray: false,
+                        url: '/api/plans/query?status=:status&category=:category&orderBy=:orderBy',
                         params: {
                             status: '@status',
-                            category: '@category'
+                            category: '@category',
+                            orderBy : '@orderBy'
                         }
                     },
                     'getByQuery': {
@@ -145,7 +146,7 @@ module dockyard.services {
                         //url: '/api/plans/createSolution',
                         url: '/api/plans/',
                         params: {
-                            solution_name: '@solutionName'
+                            solutionName: '@solutionName'
                         }
                     },
                     'deactivate': {

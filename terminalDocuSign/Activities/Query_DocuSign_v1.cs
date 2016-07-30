@@ -14,6 +14,7 @@ using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
 using FolderItem = DocuSign.eSign.Model.FolderItem;
+using System;
 
 namespace terminalDocuSign.Activities
 {
@@ -21,6 +22,7 @@ namespace terminalDocuSign.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("62CB1D64-1A94-483C-A577-DA514F5D0CB0"),
             Name = "Query_DocuSign",
             Label = "Query DocuSign",
             Version = "1",
@@ -28,7 +30,12 @@ namespace terminalDocuSign.Activities
             NeedsAuthentication = true,
             MinPaneWidth = 380,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Receive,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -80,12 +87,12 @@ namespace terminalDocuSign.Activities
 
         protected override string ActivityUserFriendlyName => "Query DocuSign";
 
-        public Query_DocuSign_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+        public Query_DocuSign_v1(ICrateManager crateManager, IDocuSignManager docuSignManager)
             : base(crateManager, docuSignManager)
         {
         }
 
-        protected override async Task RunDS()
+        public override async Task Run()
         {
             var configuration = DocuSignManager.SetUp(AuthorizationToken);
             var settings = GetDocusignQuery();
@@ -97,18 +104,20 @@ namespace terminalDocuSign.Activities
             Success();
         }
 
-        protected override Task InitializeDS()
+        public override Task Initialize()
         {
-            var configurationCrate = PackControls(new ActivityUi());
-            FillFolderSource(configurationCrate, "Folder");
-            FillStatusSource(configurationCrate, "Status");
             Storage.Clear();
-            Storage.Add(configurationCrate);
+
+            AddControls(new ActivityUi().Controls);
+
+            FillFolderSource("Folder");
+            FillStatusSource("Status");
+
             Storage.Add(GetAvailableRunTimeTableCrate(RunTimeCrateLabel));
             return Task.FromResult(0);
         }
 
-        protected override async Task FollowUpDS()
+        public override async Task FollowUp()
         {
             Storage.RemoveByLabel("Queryable Criteria");
         }
@@ -123,15 +132,15 @@ namespace terminalDocuSign.Activities
                         ManifestType = MT.DocuSignEnvelope.GetEnumDisplayName(),
                         Label = descriptionLabel,
                         ManifestId = (int)MT.DocuSignEnvelope,
-                        ProducedBy = "Query_DocuSign_v1"
-                    }), AvailabilityType.RunTime);
+                        ProducedBy = "Query_DocuSign_v1",
+                        Availability = AvailabilityType.RunTime
+                    }));
             return availableRunTimeCrates;
         }
 
-        private void FillFolderSource(Crate configurationCrate, string controlName)
+        private void FillFolderSource(string controlName)
         {
-            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
-            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            var control = ConfigurationControls.FindByNameNested<DropDownList>(controlName);
             if (control != null)
             {
                 var conf = DocuSignManager.SetUp(AuthorizationToken);
@@ -141,10 +150,9 @@ namespace terminalDocuSign.Activities
             }
         }
 
-        private void FillStatusSource(Crate configurationCrate, string controlName)
+        private void FillStatusSource(string controlName)
         {
-            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
-            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            var control = ConfigurationControls.FindByNameNested<DropDownList>(controlName);
             if (control != null)
             {
                 control.ListItems = DocuSignQuery.Statuses

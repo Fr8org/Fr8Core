@@ -79,6 +79,9 @@ namespace Fr8.Testing.Integration.Tools.Activities
         /// <returns></returns>
         public async Task<ActivityDTO> ConfigureLoopActivity(ActivityDTO activityDTO, string manifestType, string crateDescriptionLabel)
         {
+            activityDTO = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/configure", activityDTO);
+            activityDTO = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/save", activityDTO);
+
             using (var loopCrateStorage = _baseHubITest.Crate.GetUpdatableStorage(activityDTO))
             {
                 var loopControlsCrate = loopCrateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
@@ -89,16 +92,35 @@ namespace Fr8.Testing.Integration.Tools.Activities
                 Assert.NotNull(loopCrateChooser);
                 Assert.AreEqual(1, loopCrateChooser.CrateDescriptions.Count);
                 Assert.AreEqual(manifestType, loopCrateChooser.CrateDescriptions[0].ManifestType);
-                Assert.AreEqual(crateDescriptionLabel, loopCrateChooser.CrateDescriptions[0].Label);
-
-                loopCrateChooser.CrateDescriptions.First(x => x.Label == crateDescriptionLabel && x.ManifestType == manifestType).Selected = true;
+                Assert.IsTrue(loopCrateChooser.CrateDescriptions[0].Label.StartsWith("Spreadsheet Data from"));
             }
-
-            activityDTO = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/save", activityDTO);
-            activityDTO = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/configure", activityDTO);
 
             return activityDTO;
         }
 
+
+
+        public async Task<ActivityDTO> AddAndConfigureSaveToFr8Warehouse(PlanDTO plan, int ordering)
+        {
+            var activityName = "Save_To_Fr8_Warehouse";
+            var saveToFr8WarehouseActivity = FixtureData.Save_To_Fr8_Warehouse_InitialConfiguration();
+            var activityCategoryParam = (int)ActivityCategory.Processors;
+            var activityTemplates = await _baseHubITest.HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseHubITest.GetHubApiBaseUrl() + "webservices?id=" + activityCategoryParam);
+            var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == activityName);
+
+            saveToFr8WarehouseActivity.ActivityTemplate = apmActivityTemplate;
+
+            //connect current activity with a plan
+            var subPlan = plan.Plan.SubPlans.FirstOrDefault();
+            saveToFr8WarehouseActivity.ParentPlanNodeId = subPlan.SubPlanId;
+            saveToFr8WarehouseActivity.RootPlanNodeId = plan.Plan.Id;
+            saveToFr8WarehouseActivity.Ordering = ordering;
+
+            //call initial configuration to server
+            saveToFr8WarehouseActivity = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/save", saveToFr8WarehouseActivity);
+            //this call is without authtoken
+            saveToFr8WarehouseActivity = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/configure", saveToFr8WarehouseActivity);
+            return saveToFr8WarehouseActivity;
+        }
     }
 }

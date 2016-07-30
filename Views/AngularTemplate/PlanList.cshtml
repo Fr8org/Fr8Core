@@ -10,12 +10,12 @@
 <!-- END PAGE BREADCRUMB -->
 <!-- BEGIN MAIN CONTENT -->
 
-<div ng-controller="PlanListController" class="margin-top-10">
+<div ng-controller="PlanListController" class="margin-top-10" event-plandashboard>
     <div class="row">
         <div class="col-md-12 col-sm-12">
             <h3 class="pull-left">My Plans</h3>
             <div class="actions pull-right" style="margin-top: 14px;" event-add>
-                <a ui-sref="planForm" class="btn green" >Add New</a>
+                <a ng-click="addPlan()" class="btn green" >Add New</a>
             </div>
         </div>
     </div>

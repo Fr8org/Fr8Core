@@ -395,11 +395,11 @@ namespace Fr8.Testing.Unit.Fixtures
 
         public static Crate GetEnvelopeIdCrate(string curEnvelopeId = "11f41f43-57bd-4568-86f5-9ceabdaafc43")
         {
-            var crateFields = new List<FieldDTO>()
+            var crateFields = new List<KeyValueDTO>()
                     {
-                        new FieldDTO() { Key = "EnvelopeId", Value = curEnvelopeId },
-                        new FieldDTO() { Key = "ExternalEventType", Value = "1" },
-                        new FieldDTO() { Key = "RecipientId", Value= "1" }
+                        new KeyValueDTO() { Key = "EnvelopeId", Value = curEnvelopeId },
+                        new KeyValueDTO() { Key = "ExternalEventType", Value = "1" },
+                        new KeyValueDTO() { Key = "RecipientId", Value= "1" }
                     };
 
 

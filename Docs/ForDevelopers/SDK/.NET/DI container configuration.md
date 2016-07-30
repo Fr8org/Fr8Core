@@ -1,0 +1,7 @@
+# Dependency injection and DI container configuration
+
+Terminals are using [StructureMap](http://structuremap.github.io/) framework to perform dependency injection. .NET SDK for Terminals configures one global container for each terminal. This container is filled with services that can be accessed from any place of your code. For each HTTP request that the terminal is processing new child container is created. In addition to globally available services this container is filled with some request-specific services. The list of services within this container varies dependent on the request. See documentation on the specific service to find out when it can be used. Child container can only be used from Web API controllers within the terminal. All services that can be accessed from the global container are also accessible via child container, but not vice versa.
+
+When you configure dependencies (register your services) you do this in context of the global container. Currently you have no control over per-request child container configuration.
+
+.NET SDK configures Web API in such a way, that you can take advantage of constructor injection in controllers. This is the recommended way to resolve dependencies in controllers.

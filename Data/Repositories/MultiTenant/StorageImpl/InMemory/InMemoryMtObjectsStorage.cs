@@ -95,6 +95,23 @@ namespace Data.Repositories.MultiTenant.InMemory
                 }
             }
         }
+        
+        public int QueryScalar(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode @where)
+        {
+            int count = 0;
+            
+            for (int index = 0; index < _mtObjects.Count; index++)
+            {
+                var obj = _mtObjects[index];
+                var eval = new AstEvaluator(obj, _converter);
+                if (eval.Evaluate(@where))
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
 
         public int? GetObjectId(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode where)
         {

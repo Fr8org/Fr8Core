@@ -7,6 +7,7 @@ using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
 using Salesforce.Common;
 using StructureMap;
+using Newtonsoft.Json;
 
 namespace terminalSalesforceTests.Fixtures
 {
@@ -23,8 +24,8 @@ namespace terminalSalesforceTests.Fixtures
 
             return new AuthorizationToken()
             {
-                Token = auth.AccessToken,
-                AdditionalAttributes = $"refresh_token=;instance_url={auth.InstanceUrl};api_version={auth.ApiVersion}"
+                Token = JsonConvert.SerializeObject(new { AccessToken = auth.AccessToken }),
+                AdditionalAttributes = $"instance_url={auth.InstanceUrl};api_version={auth.ApiVersion}"
             };
         }
 
@@ -75,7 +76,7 @@ namespace terminalSalesforceTests.Fixtures
             {
                 HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = activityPayload,
-                AuthorizationToken = await FixtureData.Salesforce_AuthToken()
+                AuthorizationToken = await Salesforce_AuthToken()
             };
             return activityContext;
         }

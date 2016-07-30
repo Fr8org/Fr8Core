@@ -18,18 +18,12 @@
                         <table datatable="ng" class="row-border hover">
                             <thead>
                                 <tr>
-                                    <th>Id</th>
-                                    <th>Name</th>
                                     <th>Url</th>
-                                    <th>Description</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr ng-repeat="terminal in terminals">
-                                    <td>{{terminal.id}}</td>
-                                    <td>{{terminal.name}}</td>
                                     <td>{{terminal.endpoint}}</td>
-                                    <td>{{terminal.description}}</td>
                                 </tr>
                             </tbody>
                         </table>

@@ -3,9 +3,7 @@ using System.Linq;
 using AutoMapper;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using Fr8.Infrastructure.Data.Managers;
 using Fr8.TerminalBase.Models;
-using StructureMap;
 
 namespace Fr8.TerminalBase.Infrastructure
 {
@@ -22,6 +20,21 @@ namespace Fr8.TerminalBase.Infrastructure
                 .ForMember(x => x.ExternalDomainName, opts => opts.MapFrom(src => src.ExternalDomainName))
                 .ForMember(x => x.UserId, opts => opts.MapFrom(src => src.UserId))
                 .ForMember(x => x.ExternalStateToken, opts => opts.MapFrom(src => src.ExternalStateToken))
+                .ForMember(x => x.ExpiresAt, opts => opts.MapFrom(src => src.ExpiresAt))
+                .ForMember(x => x.AdditionalAttributes, opts => opts.MapFrom(src => src.AdditionalAttributes))
+                .ForMember(x => x.Error, opts => opts.MapFrom(src => src.Error))
+                .ForMember(x => x.AuthCompletedNotificationRequired, opts => opts.MapFrom(src => src.AuthCompletedNotificationRequired));
+
+            Mapper.CreateMap<AuthorizationToken, AuthorizationTokenDTO>()
+                .ForMember(x => x.Id, opts => opts.MapFrom(src => src.Id))
+                .ForMember(x => x.Token, opts => opts.MapFrom(src => src.Token))
+                .ForMember(x => x.ExternalAccountId, opts => opts.MapFrom(src => src.ExternalAccountId))
+                .ForMember(x => x.ExternalAccountName, opts => opts.MapFrom(src => src.ExternalAccountName))
+                .ForMember(x => x.ExternalDomainId, opts => opts.MapFrom(src => src.ExternalDomainId))
+                .ForMember(x => x.ExternalDomainName, opts => opts.MapFrom(src => src.ExternalDomainName))
+                .ForMember(x => x.UserId, opts => opts.MapFrom(src => src.UserId))
+                .ForMember(x => x.ExternalStateToken, opts => opts.MapFrom(src => src.ExternalStateToken))
+                .ForMember(x => x.ExpiresAt, opts => opts.MapFrom(src => src.ExpiresAt))
                 .ForMember(x => x.AdditionalAttributes, opts => opts.MapFrom(src => src.AdditionalAttributes))
                 .ForMember(x => x.Error, opts => opts.MapFrom(src => src.Error))
                 .ForMember(x => x.AuthCompletedNotificationRequired, opts => opts.MapFrom(src => src.AuthCompletedNotificationRequired));
