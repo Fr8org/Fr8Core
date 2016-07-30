@@ -109,7 +109,7 @@ namespace Hub.Services
 
             return new PlanResultDTO
             {
-                Plans = planQuery.ToList().Select(Mapper.Map<PlanEmptyDTO>).ToList(),
+                Plans = planQuery.ToList().Select(Mapper.Map<PlanNoChildrenDTO>).ToList(),
                 CurrentPage = planQueryDTO.Page.Value,
                 TotalPlanCount = totalPlanCountForCurrentCriterias
             };

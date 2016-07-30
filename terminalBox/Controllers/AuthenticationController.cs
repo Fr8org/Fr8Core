@@ -33,7 +33,7 @@ namespace terminalBox.Controllers
         {
             try
             {
-                var url = CloudConfigurationManager.GetSetting("BoxAuthUrl");
+                var url = "https://account.box.com/api/oauth2/authorize?"; //CloudConfigurationManager.GetSetting("BoxAuthUrl");
                 var clientId = BoxHelpers.ClientId;
                 var redirectUri = BoxHelpers.RedirectUri;
                 var state = Guid.NewGuid().ToString();
@@ -42,7 +42,7 @@ namespace terminalBox.Controllers
                       $"&redirect_uri={HttpUtility.UrlEncode(redirectUri)}" +
                       $"&state={HttpUtility.UrlEncode(state)}";
 
-                return new ExternalAuthUrlDTO() {Url = url, ExternalStateToken = HttpUtility.UrlEncode(state)};
+                return new ExternalAuthUrlDTO() { Url = url, ExternalStateToken = HttpUtility.UrlEncode(state) };
             }
             catch (Exception ex)
             {
