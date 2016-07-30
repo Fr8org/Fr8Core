@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using System.Web.Http;
@@ -102,23 +103,31 @@ namespace PlanDirectory.Controllers.Api
         [PlanDirectoryHMACAuthenticate]
         public async Task<IHttpActionResult> CreatePlan(Guid id)
         {
-            var fr8AccountId = User.Identity.GetUserId();
-            var planTemplateDTO = await _planTemplate.GetPlanTemplateDTO(fr8AccountId, id);
-
-            if (planTemplateDTO == null)
+            try
             {
-                throw new ApplicationException("Unable to find PlanTemplate in MT-database.");
-            }
+                var fr8AccountId = User.Identity.GetUserId();
+                var planTemplateDTO = await _planTemplate.GetPlanTemplateDTO(fr8AccountId, id);
 
-            var plan = await _hubCommunicator.LoadPlan(planTemplateDTO.PlanContents);
-
-            return Ok(
-                new
+                if (planTemplateDTO == null)
                 {
-                    RedirectUrl = CloudConfigurationManager.GetSetting("HubApiBaseUrl").Replace("/api/v1/", "")
-                        + "/dashboard/plans/" + plan.Id.ToString() + "/builder?viewMode=plan"
+                    throw new ApplicationException("Unable to find PlanTemplate in MT-database.");
                 }
-            );
+
+                var plan = await _hubCommunicator.LoadPlan(planTemplateDTO.PlanContents);
+
+                return Ok(
+                    new
+                    {
+                        RedirectUrl = CloudConfigurationManager.GetSetting("HubApiBaseUrl").Replace("/api/v1/", "")
+                            + "/dashboard/plans/" + plan.Id.ToString() + "/builder?viewMode=plan"
+                    }
+                );
+            }
+            catch (ApplicationException exception)
+            {
+                Logger.Error(exception.Message);
+                return Content(HttpStatusCode.InternalServerError, exception.Message);
+            }
         }
 
         [HttpPost]
