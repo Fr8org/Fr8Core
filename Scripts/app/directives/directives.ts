@@ -398,7 +398,8 @@ app.directive('pbScrollPane', ['$timeout', '$window', function ($timeout, $windo
                 
                 if (!_validScrollFlag) {
                     e.preventDefault();
-                    $scroller.start();                   
+                    $scroller.start();
+                    $(element).trigger('mouseup');
                     return false;
                 }                                
             });            
