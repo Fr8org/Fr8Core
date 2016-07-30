@@ -14,5 +14,7 @@ namespace Data.Entities
         public String UserId { get; set; }
         public Fr8AccountDO User { get; set; }
         public bool IsFr8OwnTerminal { get; set; }
+        public string DevUrl { get; set; }
+        public string ProdUrl { get; set; }
     }
 }
