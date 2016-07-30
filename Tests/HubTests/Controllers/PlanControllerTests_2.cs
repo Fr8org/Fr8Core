@@ -73,7 +73,7 @@ namespace HubTests.Controllers
                 plan.Fr8Account = userAcct;
                 uow.SaveChanges();
 
-                var controller = new PlansController();
+                var controller = ObjectFactory.GetInstance<PlansController>();
                 // Act
                 var container = await controller.Run(plan.Id, null);
 
@@ -121,7 +121,7 @@ namespace HubTests.Controllers
             ObjectFactory.Container.Inject(typeof(IPlan), planMock.Object);
             ObjectFactory.Container.Inject(typeof(IPusherNotifier), pusherMock.Object);
 
-            var controller = new PlansController();
+            var controller = ObjectFactory.GetInstance<PlansController>();
 
             // Act
             var result = controller.Run(Guid.NewGuid(), null);
@@ -163,7 +163,7 @@ namespace HubTests.Controllers
             ObjectFactory.Container.Inject(typeof(IPlan), planMock.Object);
             ObjectFactory.Container.Inject(typeof(IPusherNotifier), pusherMock.Object);
 
-            var controller = new PlansController();
+            var controller = ObjectFactory.GetInstance<PlansController>();
 
             var crate = Crate.FromContent("Payload", new StandardPayloadDataCM(new KeyValueDTO("I'm", "payload")));
 

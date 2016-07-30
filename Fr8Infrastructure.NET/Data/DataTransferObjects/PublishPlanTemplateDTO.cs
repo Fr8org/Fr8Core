@@ -1,5 +1,4 @@
 ﻿using System;
-using Newtonsoft.Json.Linq;
 
 namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
@@ -7,7 +6,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public JToken PlanContents { get; set; }
+        public PlanFullDTO PlanContents { get; set; }
         public Guid ParentPlanId { get; set; }
     }
 }
