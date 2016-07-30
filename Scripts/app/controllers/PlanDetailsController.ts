@@ -4,7 +4,7 @@ module dockyard.controllers {
     'use strict';
 
     export interface IPlanDetailsScope extends IMainPlanScope {
-        ptvm: interfaces.IPlanFullDTO;
+        ptvm: interfaces.IPlanVM;
         submit: (isValid: boolean) => void;
         errorMessage: string;
         planBuilder: any,

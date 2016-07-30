@@ -22,7 +22,7 @@ namespace terminalIntegrationTests.Integration
                 Name = "Test PlanTemplate Name 1",
                 Description = "Test PlanTemplate Description 1",
                 ParentPlanId = Guid.NewGuid(),
-                PlanContents = new PlanFullDTO
+                PlanContents = new PlanDTO
                         {
                             Id = Guid.Parse("b2d428b3-f016-4a11-999a-5a16c34f1dc3"),
                             Name = "Test PlanTemplate Name 1",
@@ -50,7 +50,7 @@ namespace terminalIntegrationTests.Integration
 
                 planTemplateDTO.Name = "Test PlanTemplate Name 1 (Updated)";
                 planTemplateDTO.Description = "Test PlanTemplate Description 1 (Updated)";
-                planTemplateDTO.PlanContents = new PlanFullDTO();
+                planTemplateDTO.PlanContents = new PlanDTO();
 
                 await HttpPostAsync<PublishPlanTemplateDTO, string>(_baseUrl + "plan_templates/", planTemplateDTO);
 

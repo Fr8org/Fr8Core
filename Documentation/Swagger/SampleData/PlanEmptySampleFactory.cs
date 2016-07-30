@@ -5,11 +5,11 @@ using Fr8.Infrastructure.Data.States;
 
 namespace HubWeb.Documentation.Swagger
 {
-    public class PlanEmptySampleFactory : ISwaggerSampleFactory<PlanEmptyDTO>
+    public class PlanEmptySampleFactory : ISwaggerSampleFactory<PlanNoChildrenDTO>
     {
-        public PlanEmptyDTO GetSampleData()
+        public PlanNoChildrenDTO GetSampleData()
         {
-            return new PlanEmptyDTO
+            return new PlanNoChildrenDTO
             {
                 Id = Guid.Parse("B8E50730-6420-4DE0-B8B7-956D1A7AF1EF"),
                 Name = "Plan Name",
