@@ -222,7 +222,7 @@ namespace HubWeb.Controllers
                 var plan = _plan.GetFullPlan(uow, id);
                 var result = PlanMappingHelper.MapPlanToDto(plan);
 
-                result.Plan.Visibility.Public = await _planDirectoryService.GetTemplate(id, User.Identity.GetUserId()) != null;
+                result.Visibility.Public = await _planDirectoryService.GetTemplate(id, User.Identity.GetUserId()) != null;
 
                 return Ok(result);
             };
@@ -358,7 +358,7 @@ namespace HubWeb.Controllers
 
                     var content = new StreamReader(stream).ReadToEnd();
 
-                    var planTemplateDTO = JsonConvert.DeserializeObject<PlanFullDTO>(content);
+                    var planTemplateDTO = JsonConvert.DeserializeObject<PlanDTO>(content);
                     planTemplateDTO.Name = planName;
 
                     result = Load(planTemplateDTO);
@@ -408,7 +408,7 @@ namespace HubWeb.Controllers
         /// <response code="403">Unauthorized request</response>
         [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
         [Fr8TerminalAuthentication]
-        [ResponseType(typeof(PlanFullDTO))]
+        [ResponseType(typeof(PlanDTO))]
         [HttpPost]
         public async Task<IHttpActionResult> Templates(Guid planId)
         {
@@ -465,7 +465,7 @@ namespace HubWeb.Controllers
         [Fr8PlanDirectoryAuthentication]
         [HttpPost]
         [ResponseType(typeof(PlanNoChildrenDTO))]
-        public IHttpActionResult Load(PlanFullDTO plan)
+        public IHttpActionResult Load(PlanDTO plan)
         {
             return Ok(_planDirectoryService.CreateFromTemplate(plan, User.Identity.GetUserId()));
         }

@@ -32,7 +32,7 @@ namespace Fr8.Infrastructure.Data.Manifests
         /// </summary>
         public int Status { get; set; }
 
-        public PlanFullDTO PlanContents { get; set; }
+        public PlanDTO PlanContents { get; set; }
 
         [MtPrimaryKey]
         public string ParentPlanId { get; set; }

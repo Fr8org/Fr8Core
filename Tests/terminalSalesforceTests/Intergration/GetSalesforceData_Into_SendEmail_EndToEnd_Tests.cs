@@ -42,7 +42,7 @@ namespace terminalSalesforceTests.Intergration
                 Debug.WriteLine("Created plan with all activities.");
 
                 //make get salesforce data to get Lead
-                var getData = plan.Plan.SubPlans.First().Activities.First();
+                var getData = plan.SubPlans.First().Activities.First();
                 using (var updatableStorage = Crate.GetUpdatableStorage(getData))
                 {
                     //select Lead
@@ -57,7 +57,7 @@ namespace terminalSalesforceTests.Intergration
                 Debug.WriteLine("Get Lead using condition is successful in the Follow Up Configure");
 
                 //prepare the send email activity controls.
-                var sendEmail = plan.Plan.SubPlans.First().Activities.Last();
+                var sendEmail = plan.SubPlans.First().Activities.Last();
                 using (var updatableStorage = Crate.GetUpdatableStorage(sendEmail))
                 {
                     var configControls = updatableStorage.CratesOfType<StandardConfigurationControlsCM>().Single();
@@ -77,7 +77,7 @@ namespace terminalSalesforceTests.Intergration
                 Debug.WriteLine("Send Email follow up configure is successful.");
 
                 //Run the plan
-                await HttpPostAsync<string, string>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
+                await HttpPostAsync<string, string>(_baseUrl + "plans/run?planId=" + plan.Id, null);
                 Debug.WriteLine("Plan execution is successful.");
 
                 await CleanUp(authTokenDO, initialPlanId);
@@ -111,7 +111,7 @@ namespace terminalSalesforceTests.Intergration
             string mainUrl = _baseUrl + "activities/create";
             var postUrl = "?activityTemplateId={0}&createPlan=false";
             var formattedPostUrl = string.Format(postUrl, getData.Id);
-            formattedPostUrl += "&parentNodeId=" + initialPlan.Plan.StartingSubPlanId;
+            formattedPostUrl += "&parentNodeId=" + initialPlan.StartingSubPlanId;
             formattedPostUrl += "&authorizationTokenId=" + authToken.Id.ToString();
             formattedPostUrl += "&order=" + 1;
             formattedPostUrl = mainUrl + formattedPostUrl;
@@ -120,14 +120,14 @@ namespace terminalSalesforceTests.Intergration
             Debug.WriteLine("Create and Initial Configure of Get Salesforce Data activity is successful.");
 
             formattedPostUrl = string.Format(postUrl, sendEmail.Id);
-            formattedPostUrl += "&parentNodeId=" + initialPlan.Plan.StartingSubPlanId;
+            formattedPostUrl += "&parentNodeId=" + initialPlan.StartingSubPlanId;
             formattedPostUrl += "&order=" + 2;
             formattedPostUrl = mainUrl + formattedPostUrl;
             var sendEmailActivity = await HttpPostAsync<ActivityDTO>(formattedPostUrl, null);
             Assert.IsNotNull(sendEmailActivity, "Initial Create and Configure of Send Email action is failed.");
             Debug.WriteLine("Create and Initial Configure of Send Email activity is successful.");
 
-            return initialPlan.Plan.Id;
+            return initialPlan.Id;
         }
 
         private async Task CleanUp(AuthorizationTokenDO authTokenDO, Guid initialPlanId)

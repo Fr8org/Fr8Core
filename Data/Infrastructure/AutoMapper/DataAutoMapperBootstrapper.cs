@@ -156,9 +156,9 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<TerminalRegistrationDO, TerminalRegistrationDTO>();
             Mapper.CreateMap<TerminalRegistrationDTO, TerminalRegistrationDO>();
 
-            Mapper.CreateMap<PlanDO, PlanFullDTO>().ConvertUsing<PlanDOFullConverter>();
+            Mapper.CreateMap<PlanDO, PlanDTO>().ConvertUsing<PlanDOFullConverter>();
 
-            Mapper.CreateMap<PlanNoChildrenDTO, PlanFullDTO>();
+            Mapper.CreateMap<PlanNoChildrenDTO, PlanDTO>();
 
 
             //  Mapper.CreateMap<ActionListDO, FullActionListDTO>();

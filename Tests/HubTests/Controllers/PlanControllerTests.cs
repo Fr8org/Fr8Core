@@ -130,8 +130,8 @@ namespace HubTests.Controllers
             //Assert
             var okResult = response as OkNegotiatedContentResult<PlanDTO>;
             var okResult1 = response1 as OkNegotiatedContentResult<PlanDTO>;
-            var result = Int32.Parse(Regex.Match(okResult.Content.Plan.Name, @"\d+").Value);
-            var result1 = Int32.Parse(Regex.Match(okResult1.Content.Plan.Name, @"\d+").Value);
+            var result = Int32.Parse(Regex.Match(okResult.Content.Name, @"\d+").Value);
+            var result1 = Int32.Parse(Regex.Match(okResult1.Content.Name, @"\d+").Value);
  
             Assert.IsTrue(result1 - result == 1);
 
@@ -196,13 +196,13 @@ namespace HubTests.Controllers
             //Act
             var actionResult = await PlanController.Get(new PlansGetParams()
             {
-                id = resultPlan.Plan.Id
+                id = resultPlan.Id
             }) as OkNegotiatedContentResult<PlanNoChildrenDTO>;
 
             //Assert
             Assert.NotNull(actionResult);
             Assert.NotNull(actionResult.Content);
-            Assert.AreEqual(resultPlan.Plan.Id, actionResult.Content.Id);
+            Assert.AreEqual(resultPlan.Id, actionResult.Content.Id);
 
         }
 
@@ -250,7 +250,7 @@ namespace HubTests.Controllers
             //Assert
             var okResult = response as OkNegotiatedContentResult<PlanDTO>;
             
-            Assert.IsTrue(okResult.Content.Plan.Name.Contains("Untitled Plan"));
+            Assert.IsTrue(okResult.Content.Name.Contains("Untitled Plan"));
         }
 
         [Test]
@@ -275,7 +275,7 @@ namespace HubTests.Controllers
             //Then Get
             var getResult = await PlanController.Get(new PlansGetParams()
             {
-                id = postResult.Content.Plan.Id
+                id = postResult.Content.Id
             }) as OkNegotiatedContentResult<PlanNoChildrenDTO>;
             Assert.NotNull(getResult);
 
@@ -288,14 +288,14 @@ namespace HubTests.Controllers
             //Then Get
             var postEditGetResult = await PlanController.Get(new PlansGetParams()
             {
-                id = editResult.Content.Plan.Id
+                id = editResult.Content.Id
             }) as OkNegotiatedContentResult<PlanNoChildrenDTO>;
             Assert.NotNull(postEditGetResult);
 
             //Assert 
             Assert.AreEqual(postEditGetResult.Content.Name, postEditNameValue);
-            Assert.AreEqual(postEditGetResult.Content.Id, editResult.Content.Plan.Id);
-            Assert.AreEqual(postEditGetResult.Content.Id, postResult.Content.Plan.Id);
+            Assert.AreEqual(postEditGetResult.Content.Id, editResult.Content.Id);
+            Assert.AreEqual(postEditGetResult.Content.Id, postResult.Content.Id);
         }
 
 
@@ -339,7 +339,7 @@ namespace HubTests.Controllers
             })
                 as OkNegotiatedContentResult<PlanDTO>;
 
-            var curPlanDTO = curResult.Content.Plan;
+            var curPlanDTO = curResult.Content;
 
             Assert.AreEqual(curPlanDO.Name, curPlanDTO.Name);
             Assert.AreEqual(curPlanDO.Description, curPlanDTO.Description);

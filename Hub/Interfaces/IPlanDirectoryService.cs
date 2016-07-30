@@ -22,7 +22,7 @@ namespace Hub.Interfaces
         Task<PublishPlanTemplateDTO> GetTemplate(Guid id, string userId); 
         Task Share(Guid planId, string userId);
         Task Unpublish(Guid planId, string userId);
-        PlanFullDTO CrateTemplate(Guid planId, string userId);
-        PlanNoChildrenDTO CreateFromTemplate(PlanFullDTO plan, string userId);
+        PlanDTO CrateTemplate(Guid planId, string userId);
+        PlanNoChildrenDTO CreateFromTemplate(PlanDTO plan, string userId);
     }
 }

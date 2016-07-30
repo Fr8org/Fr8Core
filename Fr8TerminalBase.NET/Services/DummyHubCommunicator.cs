@@ -16,7 +16,7 @@ namespace Fr8.TerminalBase.Services
 {
     public class DummyHubCommunicator : IHubCommunicator
     {
-        public Task<PlanNoChildrenDTO> LoadPlan(PlanFullDTO planContents)
+        public Task<PlanNoChildrenDTO> LoadPlan(PlanDTO planContents)
         {
             throw new NotImplementedException("Terminals can't communicate with an unknown hub");
         }
