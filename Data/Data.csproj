@@ -751,6 +751,10 @@
     <Compile Include="Migrations\201607291915038_RemovePlanTemplateEntities.Designer.cs">
       <DependentUpon>201607291915038_RemovePlanTemplateEntities.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201607300016510_RemoveNodeTransitions.cs" />
+    <Compile Include="Migrations\201607300016510_RemoveNodeTransitions.Designer.cs">
+      <DependentUpon>201607300016510_RemoveNodeTransitions.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -1383,6 +1387,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201607291915038_RemovePlanTemplateEntities.resx">
       <DependentUpon>201607291915038_RemovePlanTemplateEntities.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607300016510_RemoveNodeTransitions.resx">
+      <DependentUpon>201607300016510_RemoveNodeTransitions.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
