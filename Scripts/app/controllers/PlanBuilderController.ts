@@ -409,8 +409,8 @@ module dockyard.controllers {
             var plan = this.PlanService.createSolution({
                 solutionName: solutionName
             });
-            plan.$promise.then((curPlan: interfaces.IPlanFullDTO) => {
-                this.$scope.planId = curPlan.plan.id;
+            plan.$promise.then((curPlan: interfaces.IPlanVM) => {
+                this.$scope.planId = curPlan.id;
                 this.onPlanLoad('solution', curPlan);
             });
         }
@@ -433,19 +433,19 @@ module dockyard.controllers {
             }, 1500);
         }
 
-        private onPlanLoad(mode: string, curPlan: interfaces.IPlanFullDTO) {
-            this.AuthService.setCurrentPlan(<interfaces.IPlanVM>curPlan.plan);
+        private onPlanLoad(mode: string, curPlan: interfaces.IPlanVM) {
+            this.AuthService.setCurrentPlan(<interfaces.IPlanVM>curPlan);
             this.AuthService.clear();
 
             this.$scope.mode = mode;
-            this.$scope.current.plan = curPlan.plan;
+            this.$scope.current.plan = curPlan;
             //this.$scope.currentSubroute = curRoute.subroutes[0];
-            if (curPlan.plan.subPlans.length > 1) {
+            if (curPlan.subPlans.length > 1) {
                 this.setAdvancedEditingMode();
             }
-            this.renderPlan(<interfaces.IPlanVM>curPlan.plan);
+            this.renderPlan(<interfaces.IPlanVM>curPlan);
             if (this.$state.current.name != 'plan.details') {
-                this.$state.go('plan', { id: curPlan.plan.id, viewMode: mode });
+                this.$state.go('plan', { id: curPlan.id, viewMode: mode });
             }
         }
 

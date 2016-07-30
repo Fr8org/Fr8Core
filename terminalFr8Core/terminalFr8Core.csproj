@@ -263,7 +263,6 @@
     <Compile Include="Activities\Convert_Related_Fields_Into_Table_v1.cs" />
     <Compile Include="Activities\Execute_Sql_v1.cs" />
     <Compile Include="Activities\Loop_v1.cs" />
-    <Compile Include="Activities\Manage_Plan_v1.cs" />
     <Compile Include="Activities\Select_Fr8_Object_v1.cs" />
     <Compile Include="Activities\Show_Report_Onscreen_v1.cs" />
     <Compile Include="Activities\Save_To_Fr8_Warehouse_v1.cs" />

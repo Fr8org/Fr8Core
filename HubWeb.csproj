@@ -395,7 +395,6 @@
     <Compile Include="Controllers\Api\TerminalsController.cs" />
     <Compile Include="Controllers\Api\WarehousesController.cs" />
     <Compile Include="Controllers\CompanyController.cs" />
-    <Compile Include="Controllers\Helpers\PlanMappingHelper.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
     <Compile Include="Controllers\ServicesController.cs" />
     <Compile Include="Controllers\SupportController.cs" />
@@ -417,7 +416,6 @@
     <Compile Include="Documentation\Swagger\DocumentFilters\AddDefaultValuesDocumentFilter.cs" />
     <Compile Include="Documentation\Swagger\DocumentFilters\RemoveDuplicatesDocumentFilter.cs" />
     <Compile Include="Documentation\Swagger\OperationFilters\RemoveParameterModelNameOperationFilter.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\ActivityDescriptionSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\ActivitySampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\ActivityTemplateSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\AuthenticationTokenGrantSampleFactory.cs" />
@@ -441,7 +439,6 @@
     <Compile Include="Documentation\Swagger\SampleData\IncomingCratesSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\ISwaggerSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\ManifestDescriptionSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\NodeTransitionSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\OrganizationSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PageDefinitionSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PayloadSampleFactory.cs" />
@@ -449,12 +446,10 @@
     <Compile Include="Documentation\Swagger\SampleData\PhoneNumberVerificationSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanEmptySampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanFullSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\PlanNodeDescriptionSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanPostParamsSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanQuerySampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanResultSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\PlanTemplateSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PollingDataSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\ProfileSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\QuerySampleFactory.cs" />
@@ -869,7 +864,6 @@
     <Content Include="Views\AngularTemplate\ActivityHeader.cshtml" />
     <Content Include="_PowerShellScripts\Run-SQL.ps1" />
     <Content Include="_PowerShellScripts\Set-AzureSQLService.ps1" />
-    <Content Include="Views\DockyardAccount\LogOff.cshtml" />
     <Content Include="_PowerShellScripts\Add-Repo.ps1" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <Content Include="_PowerShellScripts\Update-HostnameInTerminalRegistration.ps1" />

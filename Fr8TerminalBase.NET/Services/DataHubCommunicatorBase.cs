@@ -54,7 +54,7 @@ namespace Fr8.TerminalBase.Services
             }
         }
 
-        public Task<PlanEmptyDTO> LoadPlan(JToken planContents)
+        public Task<PlanNoChildrenDTO> LoadPlan(PlanDTO planContents)
         {
             throw new NotImplementedException();
         }
@@ -217,7 +217,7 @@ namespace Fr8.TerminalBase.Services
             throw new NotImplementedException();
         }
 
-        public Task<PlanDTO> CreatePlan(PlanEmptyDTO planDTO)
+        public Task<PlanDTO> CreatePlan(PlanNoChildrenDTO planDTO)
         {
             throw new NotImplementedException();
         }
@@ -237,7 +237,7 @@ namespace Fr8.TerminalBase.Services
             throw new NotImplementedException();
         }
 
-        public Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan)
+        public Task<PlanDTO> UpdatePlan(PlanNoChildrenDTO plan)
         {
             throw new NotImplementedException();
         }
