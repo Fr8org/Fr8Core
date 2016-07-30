@@ -54,6 +54,12 @@ namespace terminalStatX.Activities
             set { this[nameof(SelectedStatType)] = value; }
         }
 
+        private string SelectedStatGroup
+        {
+            get { return this[nameof(SelectedStatGroup)]; }
+            set { this[nameof(SelectedStatGroup)] = value; }
+        }
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public RadioButtonOption UseNewStatXGroupOption { get; set; }
@@ -172,6 +178,11 @@ namespace terminalStatX.Activities
                 ActivityUI.ClearDynamicFields();
                 SelectedStatType = string.Empty;
             }
+
+            SelectedStatGroup = ActivityUI.ExistingStatGroupList.Value;
+            ActivityUI.ExistingStatGroupList.ListItems = (await _statXIntegration.GetGroups(StatXUtilities.GetStatXAuthToken(AuthorizationToken)))
+                .Select(x => new ListItem { Key = x.Name, Value = x.Id }).ToList();
+            ActivityUI.ExistingStatGroupList.Value = SelectedStatGroup;
         }
 
         public async override Task Run()
