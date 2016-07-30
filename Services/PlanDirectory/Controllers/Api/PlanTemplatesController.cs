@@ -57,13 +57,12 @@ namespace PlanDirectory.Controllers.Api
             var fr8AccountId = identity.GetUserId();
             var planTemplateCM = await _planTemplate.Get(fr8AccountId, id);
 
-            if (planTemplateCM.OwnerId != fr8AccountId && !privileged)
-            {
-                return Unauthorized();
-            }
-
             if (planTemplateCM != null)
             {
+                if (planTemplateCM.OwnerId != fr8AccountId && !privileged)
+                {
+                    return Unauthorized();
+                }
                 await _planTemplate.Remove(fr8AccountId, id);
                 await _searchProvider.Remove(id);
             }
