@@ -11,51 +11,53 @@
     <div class="plan-loading-message" block-if="current.plan"></div>
     <!-- SUB-PLAN CONTAINER -->
     <div class="sub-plan-container" fill-height footer-element-id="footer" additional-padding="100">
-        <div ng-repeat="pSubPlan in processedSubPlans">
-            <!-- SUB-PLAN HEADER -->
-            <subplan-header ng-if="editingMode == 'advanced'" subplan="pSubPlan.subPlan"></subplan-header>
-            <!-- SUB-PLAN BODY -->
-            <div class="route-builder-container" layout-container>
-                <div ng-repeat="group in pSubPlan.actionGroups" layout-action-group class="action-group" ng-style="{left: group.offsetLeft, top: group.offsetTop}">
-                    <div ng-if="mode !== 'solution' || $index === 0">
-                        <div ng-show="group.arrowOffsetLeft != 0" class="action-arrow-bottom" ng-style="{top: -group.arrowLength - 60, height: group.arrowLength + 35, left: group.arrowOffsetLeft}"></div>
-                        <div dnd-list="group.envelopes" dnd-external-sources="true" dnd-drop="onActionDrop(group, item, index)" style="display: inline-block;">
-                            <div ng-repeat="envelope in group.envelopes track by $index">
-                                <div class="action" ng-class="{'solution-action': envelope.activity.activityTemplate.category === 'Solution' && mode !== 'solution'}"
-                                     layout-action popover-toggle="envelope.activity.showAdvisoryPopup" popover-template="'/AngularTemplate/AdvisoryMessagesPopup'" popover-placement="right-top">
-                                    <div class="ap-resize" activity-resize min-width="{{envelope.activity.activityTemplate.minPaneWidth}}">
-                                        <activity-header dnd-draggable="envelope.activity.id"
-                                                         dnd-disable-if="current.plan.planState==2"
-                                                         envelope="envelope"
-                                                         re-configure-action="reConfigureAction"
-                                                         delete-action="deleteAction"
-                                                         choose-auth-token="chooseAuthToken">
-                                        </activity-header>
-                                        <pane-configure-action view="{{view}}" plan="current.plan" sub-plan="pSubPlan.subPlan" id="paneConfigureAction"
-                                                               current-action="envelope.activity" mode="mode" processing="isReConfiguring"></pane-configure-action>
+        <div class="pb-scroll-pane" id="scrollPane" pb-scroll-pane>
+            <div ng-repeat="pSubPlan in processedSubPlans">
+                <!-- SUB-PLAN HEADER -->
+                <subplan-header ng-if="editingMode == 'advanced'" subplan="pSubPlan.subPlan"></subplan-header>
+                <!-- SUB-PLAN BODY -->
+                <div class="route-builder-container" layout-container>
+                    <div ng-repeat="group in pSubPlan.actionGroups" layout-action-group class="action-group" ng-style="{left: group.offsetLeft, top: group.offsetTop}">
+                        <div ng-if="mode !== 'solution' || $index === 0">
+                            <div ng-show="group.arrowOffsetLeft != 0" class="action-arrow-bottom" ng-style="{top: -group.arrowLength - 60, height: group.arrowLength + 35, left: group.arrowOffsetLeft}"></div>
+                            <div dnd-list="group.envelopes" dnd-external-sources="true" dnd-drop="onActionDrop(group, item, index)" style="display: inline-block;">
+                                <div ng-repeat="envelope in group.envelopes track by $index">
+                                    <div class="action" ng-class="{'solution-action': envelope.activity.activityTemplate.category === 'Solution' && mode !== 'solution'}"
+                                         layout-action popover-toggle="envelope.activity.showAdvisoryPopup" popover-template="'/AngularTemplate/AdvisoryMessagesPopup'" popover-placement="right-top">
+                                        <div class="ap-resize" activity-resize min-width="{{envelope.activity.activityTemplate.minPaneWidth}}">
+                                            <activity-header dnd-draggable="envelope.activity.id"
+                                                             dnd-disable-if="current.plan.planState==2"
+                                                             envelope="envelope"
+                                                             re-configure-action="reConfigureAction"
+                                                             delete-action="deleteAction"
+                                                             choose-auth-token="chooseAuthToken">
+                                            </activity-header>
+                                            <pane-configure-action view="{{view}}" plan="current.plan" sub-plan="pSubPlan.subPlan" id="paneConfigureAction"
+                                                                   current-action="envelope.activity" mode="mode" processing="isReConfiguring"></pane-configure-action>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="jumptarget-wrapper" ng-if="envelope.jumpTargets.length > 0" style="display: inline-block; height: 50px; margin: 84px 10px 0 7px; width: 55px;">
-                                    <div class="action-arrow-right action-arrow-right-jumptarget"> </div>
-                                    <div ng-repeat="jumpTarget in envelope.jumpTargets" class="col-md-12">
-                                        <div class="action-arrow-right-{{jumpTarget.TransitionType}}"></div>
-                                        <div class="jump-target-text">{{jumpTarget.Target}}</div>
+                                    <div class="jumptarget-wrapper" ng-if="envelope.jumpTargets.length > 0" style="display: inline-block; height: 50px; margin: 84px 10px 0 7px; width: 55px;">
+                                        <div class="action-arrow-right action-arrow-right-jumptarget"> </div>
+                                        <div ng-repeat="jumpTarget in envelope.jumpTargets" class="col-md-12">
+                                            <div class="action-arrow-right-{{jumpTarget.TransitionType}}"></div>
+                                            <div class="jump-target-text">{{jumpTarget.Target}}</div>
+                                        </div>
                                     </div>
+                                    <div ng-if="envelope.allowsSiblings" class="action-arrow-right"></div>
+                                    <div ng-if="!envelope.allowsSiblings && (!envelope.jumpTargets || envelope.jumpTargets.length < 1)" style="display: inline-block; height: 50px; margin: 84px 10px 0 7px; width: 1px;"></div>
+                                    <action-picker ng-if="$last"></action-picker>
                                 </div>
-                                <div ng-if="envelope.allowsSiblings" class="action-arrow-right"></div>
-                                <div ng-if="!envelope.allowsSiblings && (!envelope.jumpTargets || envelope.jumpTargets.length < 1)" style="display: inline-block; height: 50px; margin: 84px 10px 0 7px; width: 1px;"></div>
-                                <action-picker ng-if="$last"></action-picker>
-                            </div>
-                            <action-picker ng-if="group.envelopes.length < 1"></action-picker>
-                            <div class="dndPlaceholder">
-                                <div class="action" style="width: 330px; opacity: 0.6; background-color: black;"> </div>
-                                <div class="action-arrow-right"> </div>
+                                <action-picker ng-if="group.envelopes.length < 1"></action-picker>
+                                <div class="dndPlaceholder">
+                                    <div class="action" style="width: 330px; opacity: 0.6; background-color: black;"> </div>
+                                    <div class="action-arrow-right"> </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <hr class="transition-seperator" />
             </div>
-            <hr class="transition-seperator" />
         </div>
     </div>
 

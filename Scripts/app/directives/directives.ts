@@ -366,3 +366,41 @@ app.directive('eventPlandashboard', ['$timeout', '$window', function ($timeout, 
         }
     };
 }]);
+
+app.directive('pbScrollPane', ['$timeout', '$window', function ($timeout, $window) {
+    return {
+        restrict: 'A',
+        link: function (scope, element) {
+            let _validScrollFlag = false;
+            let $scroller = null;
+
+            $(element).on('mousedown', function (e) {
+                let startObj = e.target,
+                    posX = e.pageX,
+                    posY = e.pageY;
+
+                var impossibleObjs = $('#scrollPane .action');                
+
+                _validScrollFlag = true;
+                
+                $scroller = (<any>$(element)).kinetic();
+
+                angular.forEach(impossibleObjs, (elem) => {
+                    let w = $(elem).width(),
+                        h = $(elem).height(),
+                        objPos = $(elem).offset();
+
+                    if (posX >= objPos.left && posX <= objPos.left + w && posY >= objPos.top && posY <= objPos.top + h) {
+                        _validScrollFlag = false;                        
+                    }
+                });
+                
+                if (!_validScrollFlag) {
+                    e.preventDefault();
+                    $scroller.start();                   
+                    return false;
+                }                                
+            });            
+        }
+    };
+}]);
