@@ -54,7 +54,7 @@ namespace Fr8.TerminalBase.Services
             }
         }
 
-        public Task<PlanEmptyDTO> LoadPlan(JToken planContents)
+        public Task<PlanEmptyDTO> LoadPlan(PlanFullDTO planContents)
         {
             throw new NotImplementedException();
         }

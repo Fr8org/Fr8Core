@@ -128,9 +128,9 @@ namespace Fr8.Testing.Unit
                 string userId = null,
                 string[] userRoles = null,
                 Tuple<string, string>[] claimValues = null
-            ) where TController : ApiController, new()
+            ) where TController : ApiController
         {
-            var controller = new TController();
+            var controller = ObjectFactory.GetInstance<TController>();
 
             if (!string.IsNullOrEmpty(userId))
             {

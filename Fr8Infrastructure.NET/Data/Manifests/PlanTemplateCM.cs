@@ -1,5 +1,6 @@
 ﻿using System;
 using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace Fr8.Infrastructure.Data.Manifests
 {
@@ -31,7 +32,7 @@ namespace Fr8.Infrastructure.Data.Manifests
         /// </summary>
         public int Status { get; set; }
 
-        public string PlanContents { get; set; }
+        public PlanFullDTO PlanContents { get; set; }
 
         [MtPrimaryKey]
         public string ParentPlanId { get; set; }

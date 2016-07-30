@@ -37,10 +37,10 @@ namespace Fr8.TerminalBase.Services
             _userId = userId;
         }
 
-        public async Task<PlanEmptyDTO> LoadPlan(JToken planContents)
+        public async Task<PlanEmptyDTO> LoadPlan(PlanFullDTO planContents)
         {
             var uri = new Uri($"{GetHubUrlWithApiVersion()}/plans/load");
-            return await _restfulServiceClient.PostAsync<JToken, PlanEmptyDTO>(uri, planContents);
+            return await _restfulServiceClient.PostAsync<PlanFullDTO, PlanEmptyDTO>(uri, planContents);
         }
 
         public async Task<PayloadDTO> GetPayload(Guid containerId)

@@ -259,10 +259,6 @@
     <Compile Include="Entities\EncryptedAuthorizationData.cs" />
     <Compile Include="Entities\OrganizationDO.cs" />
     <Compile Include="Entities\PageDefinitionDO.cs" />
-    <Compile Include="Entities\PlanTemplates\ActivityDescriptionDO.cs" />
-    <Compile Include="Entities\PlanTemplates\NodeTransitionDO.cs" />
-    <Compile Include="Entities\PlanTemplates\PlanTemplateDO.cs" />
-    <Compile Include="Entities\PlanTemplates\PlanNodeDescriptionDO.cs" />
     <Compile Include="Entities\PermissionSetDO.cs" />
     <Compile Include="Entities\PlanNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
@@ -751,6 +747,14 @@
     <Compile Include="Migrations\201607271152557_FixManifestDescriptionTypos.Designer.cs">
       <DependentUpon>201607271152557_FixManifestDescriptionTypos.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201607291915038_RemovePlanTemplateEntities.cs" />
+    <Compile Include="Migrations\201607291915038_RemovePlanTemplateEntities.Designer.cs">
+      <DependentUpon>201607291915038_RemovePlanTemplateEntities.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607300016510_RemoveNodeTransitions.cs" />
+    <Compile Include="Migrations\201607300016510_RemoveNodeTransitions.Designer.cs">
+      <DependentUpon>201607300016510_RemoveNodeTransitions.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -770,10 +774,6 @@
     <Compile Include="Repositories\EnvelopeRepository.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtObjectStorage.Queries.cs" />
     <Compile Include="Repositories\PageDefinitionRepository.cs" />
-    <Compile Include="Repositories\PlanTemplates\ActivityDescriptionRepository.cs" />
-    <Compile Include="Repositories\PlanTemplates\NodeTransitionRepository.cs" />
-    <Compile Include="Repositories\PlanTemplates\PlanNodeDescriptionsRepository.cs" />
-    <Compile Include="Repositories\PlanTemplates\PlanTemplateRepository.cs" />
     <Compile Include="Repositories\ProfileRepository.cs" />
     <Compile Include="Repositories\Cache\ICacheExpirationStrategy.cs" />
     <Compile Include="Repositories\Cache\IExpirationToken.cs" />
@@ -1013,7 +1013,6 @@
     <Compile Include="Utility\TagDO.cs" />
     <Compile Include="Validations\ActionValidator.cs" />
     <Compile Include="Validations\ContainerValidator.cs" />
-    <Compile Include="Validations\SubrouteValidator.cs" />
     <Compile Include="Validations\IncidentValidator.cs" />
     <Compile Include="Validations\OutboundEmailValidatorBase.cs" />
     <Compile Include="Validations\OutboundHtmlEmailValidator.cs" />
@@ -1385,6 +1384,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201607271152557_FixManifestDescriptionTypos.resx">
       <DependentUpon>201607271152557_FixManifestDescriptionTypos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607291915038_RemovePlanTemplateEntities.resx">
+      <DependentUpon>201607291915038_RemovePlanTemplateEntities.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607300016510_RemoveNodeTransitions.resx">
+      <DependentUpon>201607300016510_RemoveNodeTransitions.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
