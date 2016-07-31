@@ -419,7 +419,7 @@ namespace Data.Migrations
         }
 
         /// <summary>
-        /// Craete a user with role 'Customer'
+        /// Craete a user with role 'StandardUser'
         /// </summary>
         /// <param name="userEmail"></param>
         /// <param name="curPassword"></param>

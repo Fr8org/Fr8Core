@@ -89,11 +89,8 @@ namespace Hub.Services
             String[] acceptableRoles = { };
             switch (minAuthLevel)
             {
-                case "Customer":
-                    acceptableRoles = new[] { "Customer", "Booker", "Admin" };
-                    break;
-                case "Booker":
-                    acceptableRoles = new[] { "Booker", "Admin" };
+                case "StandardUser":
+                    acceptableRoles = new[] { "StandardUser", "Admin" };
                     break;
                 case "Admin":
                     acceptableRoles = new[] { "Admin" };

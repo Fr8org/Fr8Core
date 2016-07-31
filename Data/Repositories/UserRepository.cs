@@ -66,7 +66,7 @@ namespace Data.Repositories
 
                 if (!userRole.Equals(Roles.Guest))
                 {
-                    // Assign Customer role only if creation of Guest user is not intended
+                    // Assign StandardUser role only if creation of Guest user is not intended
                     UnitOfWork.AspNetUserRolesRepository.AssignRoleToUser(Roles.StandardUser, matchingUser.Id);
                 }
             }
