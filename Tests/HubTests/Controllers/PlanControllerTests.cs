@@ -221,7 +221,7 @@ namespace HubTests.Controllers
             Assert.NotNull(postResult);
 
             //Act
-            var deleteResult = PlanController.Delete(postResult.Content.Id) as OkNegotiatedContentResult<int>;
+            var deleteResult = await PlanController.Delete(postResult.Content.Id) as OkNegotiatedContentResult<int>;
 
             Assert.NotNull(deleteResult);
 
