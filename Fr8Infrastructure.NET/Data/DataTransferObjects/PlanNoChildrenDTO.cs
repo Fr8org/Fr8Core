@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
-    public class PlanEmptyDTO
+    public class PlanNoChildrenDTO
     {
         [JsonProperty("id")]
         public Guid Id { get; set; }

@@ -23,7 +23,7 @@ namespace HubWeb.App_Start
 
         public void ConfigureAutoMapper()
         {
-            Mapper.CreateMap<PlanDO, PlanEmptyDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
+            Mapper.CreateMap<PlanDO, PlanNoChildrenDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Category, opts => opts.ResolveUsing(ad => ad.Category))
                 .ForMember(a => a.Description, opts => opts.ResolveUsing(ad => ad.Description))
                 .ForMember(a => a.LastUpdated, opts => opts.ResolveUsing(ad => ad.LastUpdated))
@@ -33,7 +33,7 @@ namespace HubWeb.App_Start
                 .ForMember(a => a.Tag, opts => opts.ResolveUsing(ad => ad.Tag))
                 .ForMember(a => a.Visibility, opts => opts.ResolveUsing(ad => new PlanVisibilityDTO() { Hidden = ad.Visibility.BooleanValue() }));
 
-            Mapper.CreateMap<PlanEmptyDTO, PlanDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
+            Mapper.CreateMap<PlanNoChildrenDTO, PlanDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Category, opts => opts.ResolveUsing(ad => ad.Category))
                 .ForMember(a => a.Description, opts => opts.ResolveUsing(ad => ad.Description))
                 .ForMember(a => a.LastUpdated, opts => opts.ResolveUsing(ad => ad.LastUpdated))

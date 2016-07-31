@@ -184,7 +184,7 @@ namespace terminalDocuSignTests.Integration
             //
             // Activate and run plan
             //
-            var container = await HttpPostAsync<string, ContainerDTO>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
+            var container = await HttpPostAsync<string, ContainerDTO>(_baseUrl + "plans/run?planId=" + plan.Id, null);
             Assert.AreEqual(container.State, State.Completed, "Container state is not equal to completed on Mail_Merge e2e test");
 
             //
@@ -251,12 +251,12 @@ namespace terminalDocuSignTests.Integration
             //
             // Deactivate plan
             //
-            await HttpPostAsync<string, string>(_baseUrl + "plans/deactivate?planId=" + plan.Plan.Id, null);
+            await HttpPostAsync<string, string>(_baseUrl + "plans/deactivate?planId=" + plan.Id, null);
 
             //
             // Delete plan
             //
-            //await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
+            //await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Id);
         }
 
         private async Task<Guid> ExtractGoogleDefaultToken()

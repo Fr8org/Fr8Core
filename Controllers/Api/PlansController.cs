@@ -75,7 +75,7 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         [HttpPost]
         [ResponseType(typeof(PlanDTO))]
-        public async Task<IHttpActionResult> Post([FromBody] PlanEmptyDTO planDto, [FromUri] PlansPostParams parameters = null)
+        public async Task<IHttpActionResult> Post([FromBody] PlanNoChildrenDTO planDto, [FromUri] PlansPostParams parameters = null)
         {
             parameters = parameters ?? new PlansPostParams();
 
@@ -130,7 +130,7 @@ namespace HubWeb.Controllers
         [Fr8TerminalAuthentication]
         [ResponseType(typeof(PlanDTO))]
         [NonAction]
-        private async Task<IHttpActionResult> Post(PlanEmptyDTO planDto)
+        private async Task<IHttpActionResult> Post(PlanNoChildrenDTO planDto)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -139,7 +139,7 @@ namespace HubWeb.Controllers
                 {
                     return BadRequest("Some of the request data is invalid");
                 }
-                var curPlanDO = Mapper.Map<PlanEmptyDTO, PlanDO>(planDto, opts => opts.Items.Add("ptid", planDto.Id));
+                var curPlanDO = Mapper.Map<PlanNoChildrenDTO, PlanDO>(planDto, opts => opts.Items.Add("ptid", planDto.Id));
 
                 _plan.CreateOrUpdate(uow, curPlanDO);
 
@@ -222,7 +222,7 @@ namespace HubWeb.Controllers
                 var plan = _plan.GetFullPlan(uow, id);
                 var result = PlanMappingHelper.MapPlanToDto(plan);
 
-                result.Plan.Visibility.Public = await _planDirectoryService.GetTemplate(id, User.Identity.GetUserId()) != null;
+                result.Visibility.Public = await _planDirectoryService.GetTemplate(id, User.Identity.GetUserId()) != null;
 
                 return Ok(result);
             };
@@ -297,9 +297,9 @@ namespace HubWeb.Controllers
         [HttpDelete]
         [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
-        public IHttpActionResult Delete(Guid id)
+        public async Task<IHttpActionResult> Delete(Guid id)
         {
-            _plan.Delete(id);
+            await _plan.Delete(id);
 
             return Ok(id);
         }
@@ -344,7 +344,7 @@ namespace HubWeb.Controllers
         /// <response code="500">Bad format of plan file</response>
         [HttpPost]
         [Fr8ApiAuthorize]
-        [ResponseType(typeof(PlanEmptyDTO))]
+        [ResponseType(typeof(PlanNoChildrenDTO))]
         public async Task<IHttpActionResult> Upload(string planName)
         {
             IHttpActionResult result = InternalServerError();
@@ -358,7 +358,7 @@ namespace HubWeb.Controllers
 
                     var content = new StreamReader(stream).ReadToEnd();
 
-                    var planTemplateDTO = JsonConvert.DeserializeObject<PlanFullDTO>(content);
+                    var planTemplateDTO = JsonConvert.DeserializeObject<PlanDTO>(content);
                     planTemplateDTO.Name = planName;
 
                     result = Load(planTemplateDTO);
@@ -408,7 +408,7 @@ namespace HubWeb.Controllers
         /// <response code="403">Unauthorized request</response>
         [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
         [Fr8TerminalAuthentication]
-        [ResponseType(typeof(PlanFullDTO))]
+        [ResponseType(typeof(PlanDTO))]
         [HttpPost]
         public async Task<IHttpActionResult> Templates(Guid planId)
         {
@@ -464,8 +464,8 @@ namespace HubWeb.Controllers
         [Fr8TerminalAuthentication]
         [Fr8PlanDirectoryAuthentication]
         [HttpPost]
-        [ResponseType(typeof(PlanEmptyDTO))]
-        public IHttpActionResult Load(PlanFullDTO plan)
+        [ResponseType(typeof(PlanNoChildrenDTO))]
+        public IHttpActionResult Load(PlanDTO plan)
         {
             return Ok(_planDirectoryService.CreateFromTemplate(plan, User.Identity.GetUserId()));
         }
