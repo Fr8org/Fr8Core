@@ -16,5 +16,6 @@ namespace Data.Repositories.Security
         List<int> GetObjectBasedPermissionSetForObject(string dataObjectId, string dataObjectType, Guid profileId);
         void SetDefaultRecordBasedSecurityForObject(string currentUserId, string roleName, string dataObjectId, string dataObjectType, Guid rolePermissionId, int? organizationId);
         RolePermission GetRolePermission(string roleName, Guid permissionSetId);
+        List<string> GetAllowedUserRolesForSecuredObject(string objectId, string objectType);
     }
 }

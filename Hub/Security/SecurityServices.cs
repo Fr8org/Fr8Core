@@ -191,6 +191,17 @@ namespace Hub.Security
         }
 
         /// <summary>
+        /// Get Allowed User Roles from the ObjectRolePermissions. Determines what user groups based on their roles can interact with an secured object 
+        /// </summary>
+        /// <param name="objectId"></param>
+        /// <param name="objectType"></param>
+        /// <returns></returns>
+        public List<string> GetAllowedUserRolesForSecuredObject(string objectId, string objectType)
+        {
+            return _securityObjectStorageProvider.GetAllowedUserRolesForSecuredObject(objectId, objectType);
+        }
+
+        /// <summary>
         /// Authorize current activity by a permission name for some data object. Get role permission for a compare them with all roles that current uses has.
         /// When at least one role is found for this user, he is authorized to perform some activity.
         /// </summary>

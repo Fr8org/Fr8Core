@@ -4,7 +4,7 @@ module dockyard.controllers {
     'use strict';
 
     export interface ITerminalListScope extends ng.IScope {
-        terminals: Array<model.TerminalRegistrationDTO>;
+        terminals: Array<model.TerminalDTO>;
         openDetails(terminal: interfaces.ITerminalVM);
         showAddTerminalModal: () => void;
     }
@@ -30,7 +30,7 @@ module dockyard.controllers {
 
             $scope.showAddTerminalModal = <() => void>angular.bind(this, this.showAddTerminalModal);
 
-            TerminalService.getRegistrations().$promise.then(data => {
+            TerminalService.getAll().$promise.then(data => {
                 $scope.terminals = data;
             }).catch(e => {
                 console.log(e.statusText);

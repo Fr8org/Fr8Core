@@ -751,9 +751,9 @@
     <Compile Include="Migrations\201607271152557_FixManifestDescriptionTypos.Designer.cs">
       <DependentUpon>201607271152557_FixManifestDescriptionTypos.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201607241524205_Terminals_Standard_Permissions.cs" />
-    <Compile Include="Migrations\201607241524205_Terminals_Standard_Permissions.Designer.cs">
-      <DependentUpon>201607241524205_Terminals_Standard_Permissions.cs</DependentUpon>
+    <Compile Include="Migrations\201607291413299_Standard_Permissions_for_Terminals.cs" />
+    <Compile Include="Migrations\201607291413299_Standard_Permissions_for_Terminals.Designer.cs">
+      <DependentUpon>201607291413299_Standard_Permissions_for_Terminals.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1390,8 +1390,8 @@
     <EmbeddedResource Include="Migrations\201607271152557_FixManifestDescriptionTypos.resx">
       <DependentUpon>201607271152557_FixManifestDescriptionTypos.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201607241524205_Terminals_Standard_Permissions.resx">
-      <DependentUpon>201607241524205_Terminals_Standard_Permissions.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201607291413299_Standard_Permissions_for_Terminals.resx">
+      <DependentUpon>201607291413299_Standard_Permissions_for_Terminals.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

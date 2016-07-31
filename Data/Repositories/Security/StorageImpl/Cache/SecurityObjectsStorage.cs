@@ -150,6 +150,11 @@ namespace Data.Repositories.Security.StorageImpl.Cache
             return _securityObjectStorageProvider.GetRolePermission(roleName, permissionSetId);
         }
 
+        public List<string> GetAllowedUserRolesForSecuredObject(string objectId, string objectType)
+        {
+            return _securityObjectStorageProvider.GetAllowedUserRolesForSecuredObject(objectId, objectType);
+        }
+
         private PermissionSetDO GetOrCreateDefaultSecurityPermissionSet(string dataObjectType)
         {
             var defaultPermissions = new[] { (int)PermissionType.ReadObject, (int)PermissionType.EditObject, (int)PermissionType.CreateObject, (int)PermissionType.DeleteObject, (int) PermissionType.RunObject };

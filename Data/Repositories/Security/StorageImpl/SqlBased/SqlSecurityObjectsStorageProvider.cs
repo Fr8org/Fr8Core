@@ -79,6 +79,40 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
+        public List<string> GetAllowedUserRolesForSecuredObject(string objectId, string objectType)
+        {
+            using (var connection = OpenConnection(_sqlConnectionProvider))
+            {
+                var roles = new List<string>();
+                using (var command = new SqlCommand())
+                {
+                    command.Connection = connection;
+
+                    const string cmd = @" select distinct anr.Name from dbo.ObjectRolePermissions orp 
+	                                        inner join dbo.RolePermissions rp on orp.RolePermissionId = rp.Id
+	                                        inner join dbo.AspNetRoles  anr on rp.RoleId =anr.Id
+                                          where orp.ObjectId = @objectId and orp.Type = @objectType   ";
+
+                    command.Parameters.AddWithValue("@objectId", objectId);
+                    command.Parameters.AddWithValue("@objectType", objectType);
+                    command.CommandText = cmd;
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            if (reader["Name"] != DBNull.Value)
+                            {
+                               roles.Add((string)reader["Name"]);  
+                            }   
+                        }
+                    }
+
+                    return roles;
+                }
+            }
+        }
+
         public int UpdateRolePermission(RolePermission rolePermission)
         {
             return Upsert(_sqlConnectionProvider, rolePermission, true, false);

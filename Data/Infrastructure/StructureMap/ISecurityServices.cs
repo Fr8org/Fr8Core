@@ -23,5 +23,6 @@ namespace Data.Infrastructure.StructureMap
         bool UserHasPermission(PermissionType permissionType, string objectType);
         void SetDefaultRecordBasedSecurityForObject(string roleName, string dataObjectId, string dataObjectType);
         IEnumerable<TerminalDO> GetAllowedTerminalsByUser(IEnumerable<TerminalDO> terminals);
+        List<string> GetAllowedUserRolesForSecuredObject(string objectId, string objectType);
     }
 }

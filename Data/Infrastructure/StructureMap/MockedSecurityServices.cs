@@ -116,5 +116,10 @@ namespace Data.Infrastructure.StructureMap
         {
             return terminals;
         }
+
+        public List<string> GetAllowedUserRolesForSecuredObject(string objectId, string objectType)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

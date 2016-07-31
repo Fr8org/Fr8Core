@@ -125,6 +125,12 @@ namespace Data.Repositories.Security.StorageImpl
         {
             throw new NotImplementedException();
         }
+
+        public List<string> GetAllowedUserRolesForSecuredObject(string objectId, string objectType)
+        {
+            return new List<string>();
+        }
+
         public ObjectRolePermissionsWrapper GetRecordBasedPermissionSetForObject(string dataObjectId, string dataObjectType)
         {
             lock (ObjectRolePermissions)

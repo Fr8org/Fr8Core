@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class Terminals_Standard_Permissions : IMigrationMetadata
+    public sealed partial class Standard_Permissions_for_Terminals : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Terminals_Standard_Permissions));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Standard_Permissions_for_Terminals));
         
         string IMigrationMetadata.Id
         {
-            get { return "201607241524205_Terminals_Standard_Permissions"; }
+            get { return "201607291413299_Standard_Permissions_for_Terminals"; }
         }
         
         string IMigrationMetadata.Source
