@@ -12,7 +12,6 @@ namespace Fr8.Infrastructure.Data.Manifests
         public class LoopStatus
         {
             public int Index { get; set; }
-            public CrateDescriptionCM CrateManifest { get; set; }
         }
 
         public class BranchStatus

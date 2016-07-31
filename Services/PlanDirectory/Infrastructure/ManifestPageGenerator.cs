@@ -6,7 +6,6 @@ using Data.Entities;
 using Data.Interfaces;
 using Fr8.Infrastructure.Data.Manifests;
 using Hub.Interfaces;
-using Hub.Services;
 using PlanDirectory.Exceptions;
 using PlanDirectory.Interfaces;
 using PlanDirectory.ManifestPages;
@@ -15,7 +14,6 @@ namespace PlanDirectory.Infrastructure
 {
     public class ManifestPageGenerator : IManifestPageGenerator
     {
-        private const string PagePrefix = "Manifest description of ";
         private const string PageType = "Manifest Description";
         private const string PageExtension = ".html";
 
@@ -39,8 +37,8 @@ namespace PlanDirectory.Infrastructure
                 throw new ArgumentException("Value can't be empty", nameof(manifestName));
             }
             var normalizedManifestName = manifestName.ToLower();
-            var pageName = $"{PagePrefix}{manifestName}";
-            var fileName = $"{pageName}{PageExtension}";
+            var pageName = manifestName;
+            var fileName = $"{normalizedManifestName}{PageExtension}";
             var pageDefinition = _pageDefinitionService.Get(x => x.Type == PageType && x.PageName == pageName).FirstOrDefault();
             switch (generateMode)
             {

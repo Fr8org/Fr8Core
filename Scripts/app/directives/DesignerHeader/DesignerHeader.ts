@@ -16,7 +16,7 @@ module dockyard.directives.designerHeader {
         //sharePlan(): void;
         plan: model.PlanDTO;
         kioskMode: boolean;
-        state: string
+        state: string;
     }
 
     //More detail on creating directives in TypeScript: 
