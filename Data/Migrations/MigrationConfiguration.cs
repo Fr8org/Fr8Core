@@ -11,6 +11,7 @@ using Data.States.Templates;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using StructureMap;
 using System.Text.RegularExpressions;
 
@@ -67,6 +68,7 @@ namespace Data.Migrations
                 uow.SaveChanges();
 
                 AddWebServices(uow);
+                AddPredefinedActivityCategories(uow);
                 AddTestUser(uow);
                 RenameActivity(uow);
                 RegisterTerminals(uow);
@@ -485,6 +487,48 @@ namespace Data.Migrations
             }
 
             uow.SaveChanges();
+        }
+
+        private void AddPredefinedActivityCategories(IUnitOfWork uow)
+        {
+            var predefinedCategories = new List<Tuple<Guid, string, string>>()
+            {
+                new Tuple<Guid, string, string>(ActivityCategories.MonitorId, ActivityCategories.MonitorName, "/Content/icons/monitor-icon-64x64.png"),
+                new Tuple<Guid, string, string>(ActivityCategories.ReceiveId, ActivityCategories.ReceiveName, "/Content/icons/get-icon-64x64.png"),
+                new Tuple<Guid, string, string>(ActivityCategories.ProcessId, ActivityCategories.ProcessName, "/Content/icons/process-icon-64x64.png"),
+                new Tuple<Guid, string, string>(ActivityCategories.ForwardId, ActivityCategories.ForwardName, "/Content/icons/forward-icon-64x64.png"),
+                new Tuple<Guid, string, string>(ActivityCategories.SolutionId, ActivityCategories.SolutionName, null)
+            };
+
+            foreach (var category in predefinedCategories)
+            {
+                AddOrUpdateActivityCategory(uow, category.Item1, category.Item2, category.Item3);
+            }
+
+            uow.SaveChanges();
+        }
+
+        private void AddOrUpdateActivityCategory(IUnitOfWork uow, Guid id, string name, string iconPath)
+        {
+            var existingActivityCategory = uow.ActivityCategoryRepository
+                .GetQuery()
+                .FirstOrDefault(x => x.Id == id);
+
+            if (existingActivityCategory == null)
+            {
+                var activityCategory = new ActivityCategoryDO()
+                {
+                    Id = id,
+                    Name = name,
+                    IconPath = iconPath
+                };
+
+                uow.ActivityCategoryRepository.Add(activityCategory);
+            }
+            else
+            {
+                existingActivityCategory.IconPath = iconPath;
+            }
         }
 
         private void AddTestUser(IUnitOfWork uow)
