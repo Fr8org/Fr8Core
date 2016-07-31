@@ -38,7 +38,6 @@ namespace HubTests.Services
             return a.NeedsAuthentication == b.NeedsAuthentication &&
                    a.ActivityTemplateState == b.ActivityTemplateState &&
                    a.Category == b.Category &&
-                   a.ComponentActivities == b.ComponentActivities &&
                    a.Description == b.Description &&
                    (skipId || a.Id == b.Id) &&
                    a.Label == b.Label &&
@@ -149,7 +148,6 @@ namespace HubTests.Services
                 ActivityTemplateState = 1,
                 Category = Fr8.Infrastructure.Data.States.ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
-                ComponentActivities = prefix + "ca" + id,
                 Description = prefix + "des" + id,
                 Name = "name" + id,
                 Label = prefix + "label" + id,

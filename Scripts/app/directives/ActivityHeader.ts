@@ -12,6 +12,7 @@ module dockyard.directives.ActivityHeader {
         deleteAction: (action: model.ActivityDTO) => void;
         chooseAuthToken: (action: model.ActivityDTO) => void;
         planState: number;
+        finishedLoading: () => void;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -58,6 +59,13 @@ module dockyard.directives.ActivityHeader {
                 });
             }
 
+            angular.element(document.querySelector('.col-sm-8.ellipsis')).ready(function () {
+                window.setTimeout(function () {
+                    console.log('loading header');
+                    $scope.$emit('titleLoadingFinished');
+                }, 500);
+            });
+            
         }];
 
         return {

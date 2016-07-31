@@ -20,14 +20,14 @@ Actions are added to Plans during the Design stage. They are ordered in a linear
 * [JSON Definition](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/ActivityJSONDefinition.md)
 * [Registration](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/ActivitiesRegistration.md)
 * [Signalling](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Activities/Signalling.md)
-    
     * [Available Crate Data](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/CrateSignalling.md)
 * [ActivityTemplates](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/ActivityTemplates.md)
 * [Documentation](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/ActivityDevelopmentBuildingDocumentation.md)
 
 ### Advanced Concepts
 
-[Activity Branching](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Branching.md)   
+[Activity Branching](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Branching.md)
+[Loop](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Activities/Loop.md)   
 [Views](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/ActivitiesViews.md)
 
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  

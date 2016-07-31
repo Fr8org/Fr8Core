@@ -107,10 +107,10 @@ namespace terminalExcel.Activities
             // Read file from repository
             var fileAsByteArray = file.Retrieve(curFileDO);*/
 
-            return CreateStandardTableCMFromExcelFile(new byte[] {}/*fileAsByteArray*/, extension);
+            return CreateStandardTableCMFromExcelFile(new byte[] { }/*fileAsByteArray*/, extension);
         }
 
-       
+
 
         //private async Task<StandardTableDataCM> GetUpstreamTableData()
         //{
@@ -142,11 +142,11 @@ namespace terminalExcel.Activities
             Storage.Clear();
 
             AddControls(new ActivityUi().Controls);
-            
+
             Storage.Add(GetAvailableRunTimeTableCrate(DataTableLabel));
         }
 
-        
+
 
         //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
         public override async Task FollowUp()
@@ -177,7 +177,7 @@ namespace terminalExcel.Activities
             if (!string.IsNullOrEmpty(uploadFilePath))
             {
                 var generatedTable = CreateStandardTableDataCM();
-                var tableCrate = Crate.FromContent(DataTableLabel, generatedTable, AvailabilityType.Always);
+                var tableCrate = Crate.FromContent(DataTableLabel, generatedTable);
                 Storage.Add(tableCrate);
             }
         }
@@ -190,8 +190,9 @@ namespace terminalExcel.Activities
                         ManifestType = MT.StandardTableData.GetEnumDisplayName(),
                         Label = descriptionLabel,
                         ManifestId = (int)MT.StandardTableData,
-                        ProducedBy = "Set_Excel_Template_v1"
-                    }), AvailabilityType.Always);
+                        ProducedBy = "Set_Excel_Template_v1",
+                        Availability = AvailabilityType.Always
+                    }));
 
             return availableRunTimeCrates;
         }

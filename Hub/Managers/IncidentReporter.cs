@@ -278,7 +278,7 @@ namespace Hub.Managers
                 currentIncident.Fr8UserId);
 
             //Logger.GetLogger().Info(logData);
-            Logger.LogInfo(logData);
+            Logger.GetLogger().Info(logData);
         }
 
         private void AlertManagerOnAlertResponseReceived(int bookingRequestId, string userId, string customerId)
@@ -394,7 +394,7 @@ namespace Hub.Managers
                 SecondaryCategory = "Authentication",
                 Activity = "Token Validation Failed"
             };
-            Logger.LogError(errorMessage);
+            Logger.GetLogger().Error(errorMessage);
             SaveAndLogIncident(incident);
         }
     }

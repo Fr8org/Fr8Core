@@ -265,6 +265,7 @@
       <Setting name="Fr8.ConnectionString"/>
       <Setting name="CoreWebServerUrl"/>
       <Setting name="HubApiBaseUrl"/>
+      <Setting name="DefaultHubUrl"/>
       <Setting name="LoggerNamePrefix"/>
       <Setting name="terminalAsana.TerminalEndpoint"/>
       <Setting name="terminalAtlassian.TerminalEndpoint"/>

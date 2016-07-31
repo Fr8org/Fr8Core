@@ -701,7 +701,7 @@ namespace Fr8.TerminalBase.BaseClasses
         protected void RequestClientActivityExecution(string clientActionName)
         {
             SetResponse(ActivityResponse.ExecuteClientActivity);
-            OperationalState.CurrentClientActivityName = clientActionName;
+            OperationalState.CurrentActivityResponse.Body = clientActionName;
         }
 
         /**********************************************************************************/
@@ -782,7 +782,6 @@ namespace Fr8.TerminalBase.BaseClasses
         protected void RaiseError(string errorMessage, ActivityErrorCode? errorCode = null, ErrorType errorType = ErrorType.Generic)
         {
             SetResponse(ActivityResponse.Error);
-            OperationalState.CurrentActivityErrorCode = errorCode;
             OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, errorType, errorCode.ToString(), null, MyTemplate.Name, MyTemplate.Terminal?.Name));
         }
         

@@ -146,7 +146,7 @@ namespace Hub.Managers.APIManagers.Packagers.SendGrid
                 catch (Exception ex)
                 {
                     OnEmailRejected(ex.Message, email.Id);
-                    Logger.LogError("Error occured while trying to send email. " +
+                    Logger.GetLogger().Error("Error occured while trying to send email. " +
                                     $"From = {email.From.Address}; " +
                                     $"Subject = {email.Subject}; " +
                                     $"Exception = {ex.Message}; ");

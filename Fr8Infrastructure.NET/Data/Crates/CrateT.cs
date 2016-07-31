@@ -10,7 +10,7 @@ namespace Fr8.Infrastructure.Data.Crates
         public T Content => Get<T>();
 
         public Crate(Crate crate)
-            : base(crate.ManifestType, crate.Id, crate.Availability)
+            : base(crate.ManifestType, crate.Id)
         {
             Label = crate.Label;
             KnownContent = crate.Get<T>();
@@ -18,12 +18,7 @@ namespace Fr8.Infrastructure.Data.Crates
 
         public static Crate<T> FromContent(string label, T content)
         {
-            return FromContent(label, content, AvailabilityType.NotSet);
-        }
-
-        public static Crate<T> FromContent(string label, T content, AvailabilityType availability)
-        {
-            return new Crate<T>(FromContentUnsafe(label, content, availability));
+            return new Crate<T>(FromContentUnsafe(label, content));
         }     
     }
 }
