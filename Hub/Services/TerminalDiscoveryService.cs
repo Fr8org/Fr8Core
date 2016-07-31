@@ -91,7 +91,23 @@ namespace Hub.Services
             {
                 var terminalRegistration = new TerminalRegistrationDO();
                 terminalRegistration.OperationalState = OperationalState.Undiscovered;
-                terminalRegistration.ParticipationState = ParticipationState.Unapproved;
+
+                // The 'Endpoint' property contains the currently active endpoint which may be changed 
+                // by deployment scripts or by promoting the terminal from Dev to Production 
+                // while ProdUrl/DevUrl contains  whatever user or administrator have supplied.                
+                terminalRegistration.Endpoint = endpoint.ToLower();
+                if (UserHasTerminalAdministratorPermission())
+                {
+                    // Promote terminal directly to the Approved state if an admin adds it
+                    terminalRegistration.ParticipationState = ParticipationState.Approved;
+                    terminalRegistration.ProdUrl = terminalRegistration.Endpoint;
+                }
+                else
+                {
+                    // If a Developer adds a terminal, it has to be approved by Fr8 Administrator
+                    terminalRegistration.ParticipationState = ParticipationState.Unapproved;
+                    terminalRegistration.DevUrl = terminalRegistration.Endpoint;
+                }
 
                 if (uow.TerminalRegistrationRepository.GetAll().FirstOrDefault(x => string.Equals(ExtractTerminalAuthority(x.Endpoint), endpoint, StringComparison.OrdinalIgnoreCase)) != null)
                 {
@@ -100,7 +116,6 @@ namespace Hub.Services
                 }
 
                 terminalRegistration.UserId = Thread.CurrentPrincipal.Identity.GetUserId();
-                terminalRegistration.Endpoint = terminalRegistration.DevUrl = endpoint.ToLower();
 
                 // Consider terminal to be Fr8's if endpoint is "localhost". 
                 // This assumption may be changed in the future.
@@ -121,6 +136,12 @@ namespace Hub.Services
             }
 
             Logger.Info($"Terminal at '{endpoint}' was successfully registered.");
+        }
+
+        private bool UserHasTerminalAdministratorPermission()
+        {
+            //TODO: @alexavrutin: Plug Marjan's security system in here
+            return _securityService.IsCurrentUserHasRole("Admin");
         }
 
         public async Task Discover()
