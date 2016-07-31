@@ -870,6 +870,8 @@
     <Compile Include="Repositories\Utilization\MockedUtilizationDataProvider.cs" />
     <Compile Include="Repositories\Utilization\SqlUtilizationDataProvider.cs" />
     <Compile Include="Repositories\WebServiceRepository.cs" />
+    <Compile Include="States\ParticipationState.cs" />
+    <Compile Include="States\OperationalState.cs" />
     <Compile Include="States\ActivationState.cs" />
     <Compile Include="States\ActivityTemplateState.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
@@ -914,6 +916,8 @@
     <Compile Include="States\AccessLevel.cs" />
     <Compile Include="States\PermissionType.cs" />
     <Compile Include="States\SubscriptionState.cs" />
+    <Compile Include="States\Templates\_ParticipationStateTemplate.cs" />
+    <Compile Include="States\Templates\_OperationalStateTemplate.cs" />
     <Compile Include="States\Templates\_PermissionTypeTemplate.cs" />
     <Compile Include="States\Templates\_SubscriptionStateTemplate.cs" />
     <Compile Include="States\ContainerState.cs" />

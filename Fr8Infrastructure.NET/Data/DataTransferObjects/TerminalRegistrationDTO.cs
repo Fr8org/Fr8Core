@@ -10,7 +10,10 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         [JsonProperty("devUrl")]
         public string DevUrl { get; set; }
 
-        [JsonProperty("prodUrl")]
-        public string ProdUrl { get; set; }
+        [JsonProperty("operationalState")]
+        public int OperationalState{ get; set; }
+
+        [JsonProperty("participationState")]
+        public int ParticipationState { get; set; }
     }
 }

@@ -14,6 +14,8 @@ using Hub.Interfaces;
 using Hub.Managers;
 using log4net;
 using Microsoft.AspNet.Identity;
+using Data.States;
+using Data.Infrastructure.StructureMap;
 
 namespace Hub.Services
 {
@@ -28,14 +30,23 @@ namespace Hub.Services
         private readonly IUnitOfWorkFactory _unitOfWorkFactory;
         private readonly string _serverUrl;
         private readonly HashSet<string> _knownTerminals = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
+        private readonly ISecurityServices _securityService;
 
-        public TerminalDiscoveryService(IActivityTemplate activityTemplateService, ITerminal terminal, IRestfulServiceClient restfulServiceClient, EventReporter eventReporter, IUnitOfWorkFactory unitOfWorkFactory, IConfigRepository configRepository)
+        public TerminalDiscoveryService(
+            IActivityTemplate activityTemplateService, 
+            ITerminal terminal, 
+            IRestfulServiceClient restfulServiceClient, 
+            EventReporter eventReporter, 
+            IUnitOfWorkFactory unitOfWorkFactory, 
+            IConfigRepository configRepository, 
+            ISecurityServices securityService)
         {
             _activityTemplateService = activityTemplateService;
             _terminal = terminal;
             _restfulServiceClient = restfulServiceClient;
             _eventReporter = eventReporter;
             _unitOfWorkFactory = unitOfWorkFactory;
+            _securityService = securityService;
 
             var serverProtocol = configRepository.Get("ServerProtocol", String.Empty);
             var domainName = configRepository.Get("ServerDomainName", String.Empty);
@@ -79,6 +90,8 @@ namespace Hub.Services
             using (var uow = _unitOfWorkFactory.Create())
             {
                 var terminalRegistration = new TerminalRegistrationDO();
+                terminalRegistration.OperationalState = OperationalState.Undiscovered;
+                terminalRegistration.ParticipationState = ParticipationState.Unapproved;
 
                 if (uow.TerminalRegistrationRepository.GetAll().FirstOrDefault(x => string.Equals(ExtractTerminalAuthority(x.Endpoint), endpoint, StringComparison.OrdinalIgnoreCase)) != null)
                 {
@@ -87,7 +100,7 @@ namespace Hub.Services
                 }
 
                 terminalRegistration.UserId = Thread.CurrentPrincipal.Identity.GetUserId();
-                terminalRegistration.Endpoint = endpoint.ToLower();
+                terminalRegistration.Endpoint = terminalRegistration.DevUrl = endpoint.ToLower();
 
                 // Consider terminal to be Fr8's if endpoint is "localhost". 
                 // This assumption may be changed in the future.

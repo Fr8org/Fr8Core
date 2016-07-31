@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Data.States.Templates;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -16,5 +17,15 @@ namespace Data.Entities
         public bool IsFr8OwnTerminal { get; set; }
         public string DevUrl { get; set; }
         public string ProdUrl { get; set; }
+
+        [Required]
+        [ForeignKey("OperationalStateTemplate")]
+        public int OperationalState { get; set; }
+        public virtual _OperationalStateTemplate OperationalStateTemplate { get; set; }
+
+        [Required]
+        [ForeignKey("ParticipationStateTemplate")]
+        public int ParticipationState { get; set; }
+        public virtual _ParticipationStateTemplate ParticipationStateTemplate { get; set; }
     }
 }

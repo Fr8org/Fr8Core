@@ -11,6 +11,7 @@
         ModifyAllObjects = 7,
         ManageFr8Users = 8,
         ManageInternalUsers = 9,
-        EditPageDefinitions = 10
+        EditPageDefinitions = 10,
+        ManageTerminals = 11
     }
 }

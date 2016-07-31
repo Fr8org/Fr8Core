@@ -171,7 +171,7 @@ namespace Hub.Security
                 return true;
 
             //check if request came from terminal 
-            if (Thread.CurrentPrincipal is Fr8Principle)
+            if (Thread.CurrentPrincipal is Fr8Principal)
                 return true;
 
             //get all current roles for current user
