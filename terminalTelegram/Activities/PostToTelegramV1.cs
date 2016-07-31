@@ -87,7 +87,7 @@ namespace terminalTelegram.Activities
             // Phone to send message
             var phoneNumber = ActivityUI.PhoneNumber.Value;
             // Message
-            var message = ActivityUI.MessageSource.GetValue(Payload);
+            var message = ActivityUI.MessageSource.TextValue;
 
             await _telegramIntegration.ConnectAsync();
 

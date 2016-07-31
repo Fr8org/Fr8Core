@@ -92,7 +92,7 @@ namespace terminalDocuSign.Activities
         {
             //Get envlopeId from configuration
             var control = GetControl<TextSource>("EnvelopeIdSelector");
-            string envelopeId = control.GetValue(Payload);
+            string envelopeId = control.TextValue;
 
             if (envelopeId.IsGuid())
             {

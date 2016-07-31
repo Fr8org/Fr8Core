@@ -26,7 +26,7 @@ namespace terminalUtilities
         /// <param name="isRunTime">If true, StandardPayloadDataCM rather than FieldDescriptionsCM (if false).</param>
         /// <param name="headersArray">An array with table headers.</param>
         /// <param name="rows">Table rows as a list of TableRowDTO.</param>
-        public static Crate PrepareFieldsForOneRowTable(bool isFirstRowAsColumnNames, bool isRunTime, List<TableRowDTO> rows, IList<string> headersArray = null)
+        public static Crate PrepareFieldsForOneRowTable(bool isFirstRowAsColumnNames, List<TableRowDTO> rows, IList<string> headersArray = null)
         {
             if (!isFirstRowAsColumnNames && (headersArray == null || headersArray.Count == 0))
             {
@@ -49,16 +49,13 @@ namespace terminalUtilities
                         fields.Add(new KeyValueDTO("Value immediately below of " + headerName, cell.Cell.Value));
                     }
                 }
-                if (isRunTime)
+                return Crate.FromContent(ExtractedFieldsCrateLabel, new StandardPayloadDataCM()
                 {
-                    return Crate.FromContent(ExtractedFieldsCrateLabel, new StandardPayloadDataCM()
-                    {
-                        PayloadObjects = new List<PayloadObjectDTO>()
+                    PayloadObjects = new List<PayloadObjectDTO>()
                                 {
                                     new PayloadObjectDTO(fields)
                                 }
-                    });
-                }
+                });
             }
 
             return null;

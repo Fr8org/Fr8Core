@@ -10,12 +10,12 @@ namespace Data.Infrastructure.AutoMapper
     /// AutoMapper converter to convert PlanDO to FullPlanDTO.
     /// </summary>
     public class PlanDOFullConverter
-        : ITypeConverter<PlanDO, PlanFullDTO>
+        : ITypeConverter<PlanDO, PlanDTO>
     {
         public const string UnitOfWork_OptionsKey = "UnitOfWork";
 
 
-        public PlanFullDTO Convert(ResolutionContext context)
+        public PlanDTO Convert(ResolutionContext context)
         {
             var plan = (PlanDO)context.SourceValue;
             var uow = (IUnitOfWork)context.Options.Items[UnitOfWork_OptionsKey];
@@ -33,7 +33,7 @@ namespace Data.Infrastructure.AutoMapper
                     return pntDTO;
                 }).ToList();
 
-            var result = Mapper.Map<PlanFullDTO>(Mapper.Map<PlanEmptyDTO>(plan));
+            var result = Mapper.Map<PlanDTO>(Mapper.Map<PlanNoChildrenDTO>(plan));
             result.SubPlans = subPlanDTOList;
             result.Fr8UserId = plan.Fr8Account.Id;
 

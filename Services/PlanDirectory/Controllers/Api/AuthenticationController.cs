@@ -8,8 +8,11 @@ using Microsoft.Owin.Security;
 using StructureMap;
 using Data.Interfaces;
 using Data.Infrastructure.StructureMap;
+using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Infrastructure;
 using PlanDirectory.Infrastructure;
+using PlanDirectory.Interfaces;
 
 namespace PlanDirectory.Controllers.Api
 {
@@ -60,22 +63,17 @@ namespace PlanDirectory.Controllers.Api
         [HttpPost]
         [Fr8ApiAuthorize]
         [PlanDirectoryHMACAuthenticate]
-        public IHttpActionResult LogOut()
-        {
-            var securityServices = ObjectFactory.GetInstance<ISecurityServices>();
-            securityServices.Logout();
-            return Ok(new {Result = true});
-        }
-
-        [HttpPost]
-        [Fr8ApiAuthorize]
-        [PlanDirectoryHMACAuthenticate]
         public IHttpActionResult Token()
         {
             var fr8UserId = User.Identity.GetUserId();
-            var token = _authTokenManager.CreateToken(Guid.Parse(fr8UserId));
 
-            return Ok(new { token });
+            if (!fr8UserId.IsNullOrEmpty())
+            {
+                var token = _authTokenManager.CreateToken(Guid.Parse(fr8UserId));
+
+                return Ok(new { token });
+            }
+            return BadRequest("User is not authenticated");
         }
 
         [HttpGet]

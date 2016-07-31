@@ -232,58 +232,39 @@ This is what **OperationalStateCM** looks like after the **Publish To Slack** ha
 
 ```JavaScript
 {
-   "CallStack":[
-      {
-         "NodeId":"051ca542-f891-49c7-864d-99aaadb6394b",
-         "NodeName":"Starting subplan",
-         "CurrentActivityExecutionPhase":1,
-         "CurrentChildId":"c61519f8-e2ec-4a22-bfa6-f7a56a32cddc",
-         "LocalData":null
-      },
-      {
-         "NodeId":"c61519f8-e2ec-4a22-bfa6-f7a56a32cddc",
-         "NodeName":"Activity: Loop",
-         "CurrentActivityExecutionPhase":1,
-         "CurrentChildId":"15603dbe-4f2e-4b42-924d-6f2ac1272eb9",
-         "LocalData":{
-            "Type":"Loop",
-            "Data":{
-               "Index":0,
-               "CrateManifest":{
-                  "CrateDescriptions":[
-                     {
-                        "manifestId":9,
-                        "manifestType":"Standard Table Data",
-                        "label":"Table Generated From Google Sheet Data",
-                        "producedBy":"Get_Google_Sheet_Data",
-                        "selected":true,
-                        "availability":2,
-                        "fields":[
-                            .....
-							Information about fields was removed for clarity
-							.....
-                        ]
-                     }
-                  ]
-               }
-            }
-         }
-      },
-      {
-         "NodeId":"15603dbe-4f2e-4b42-924d-6f2ac1272eb9",
-         "NodeName":"Activity: Publish To Slack",
-         "CurrentActivityExecutionPhase":1,
-         "CurrentChildId":null,
-         "LocalData":null
-      }
-   ],
-   "History":[
-
-   ],
-   "CurrentActivityResponse":{
-      "type":"Success",
-      "body":null
-   }
+	"CallStack": [
+		{
+			"NodeId": "051ca542-f891-49c7-864d-99aaadb6394b",
+			"NodeName": "Starting subplan",
+			"CurrentActivityExecutionPhase": 1,
+			"CurrentChildId": "c61519f8-e2ec-4a22-bfa6-f7a56a32cddc",
+			"LocalData": null
+		},
+		{
+			"NodeId": "c61519f8-e2ec-4a22-bfa6-f7a56a32cddc",
+			"NodeName": "Activity: Loop",
+			"CurrentActivityExecutionPhase": 1,
+			"CurrentChildId": "15603dbe-4f2e-4b42-924d-6f2ac1272eb9",
+			"LocalData": {
+				"Type": "Loop",
+				"Data": {
+					"Index": 0
+				}
+			}
+		},
+		{
+			"NodeId": "15603dbe-4f2e-4b42-924d-6f2ac1272eb9",
+			"NodeName": "Activity: Publish To Slack",
+			"CurrentActivityExecutionPhase": 1,
+			"CurrentChildId": null,
+			"LocalData": null
+		}
+	],
+	"History": [],
+	"CurrentActivityResponse": {
+		"type": "Success",
+		"body": null
+	}
 }
 ```
 
