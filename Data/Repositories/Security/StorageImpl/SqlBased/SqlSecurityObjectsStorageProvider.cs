@@ -122,7 +122,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
-        public ObjectRolePermissionsWrapper GetRecordBasedPermissionSetForObject(string dataObjectId)
+        public ObjectRolePermissionsWrapper GetRecordBasedPermissionSetForObject(string dataObjectId, string dataObjectType)
         {
             using (var connection = OpenConnection(_sqlConnectionProvider))
             {
@@ -136,9 +136,10 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                           from dbo.RolePermissions rp          
                           inner join dbo.PermissionSets p on rp.PermissionSetId = p.Id                                                                  
                           inner join dbo.ObjectRolePermissions orp on rp.Id = orp.RolePermissionId                               
-                          inner join dbo.AspNetRoles anr on rp.RoleId = anr.Id where orp.ObjectId = @objectId ";
+                          inner join dbo.AspNetRoles anr on rp.RoleId = anr.Id where orp.ObjectId = @objectId and orp.Type = @objectType ";
 
                     command.Parameters.AddWithValue("@objectId", dataObjectId);
+                    command.Parameters.AddWithValue("@objectType", dataObjectType);
                     command.CommandText = cmd;
 
                     var result = new ObjectRolePermissionsWrapper();
@@ -183,7 +184,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             throw new NotImplementedException();
         }
 
-        public void SetDefaultObjectSecurity(string currentUserId, string dataObjectId, string dataObjectType, Guid rolePermissionId, int? organizationId = null)
+        public void SetDefaultRecordBasedSecurityForObject(string currentUserId, string roleName, string dataObjectId, string dataObjectType, Guid rolePermissionId, int? organizationId = null)
         {
             using (var connection = OpenConnection(_sqlConnectionProvider))
             {
@@ -195,7 +196,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                     insertCommand.Parameters.AddWithValue("@objectId", dataObjectId);
                     insertCommand.Parameters.AddWithValue("@rolePermissionId", rolePermissionId);
                     insertCommand.Parameters.AddWithValue("@fr8AccountId", currentUserId);
-                    insertCommand.Parameters.AddWithValue("@organizationId", (organizationId.HasValue) ? (object) organizationId.Value : DBNull.Value);
+                    insertCommand.Parameters.AddWithValue("@organizationId", (organizationId.HasValue) ? (object)organizationId.Value : DBNull.Value);
                     insertCommand.Parameters.AddWithValue("@type", dataObjectType);
                     insertCommand.Parameters.AddWithValue("@propertyName", DBNull.Value);
                     insertCommand.Parameters.AddWithValue("@createDate", DateTimeOffset.UtcNow);

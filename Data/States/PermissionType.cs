@@ -12,6 +12,6 @@
         ManageFr8Users = 8,
         ManageInternalUsers = 9,
         EditPageDefinitions = 10,
-        ManageTerminals = 11
+        UseTerminal = 11
     }
 }

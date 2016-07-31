@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using Data.Entities;
@@ -72,17 +73,6 @@ namespace Data.Infrastructure.StructureMap
             throw new NotImplementedException();
         }
 
-        public void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType)
-        {
-            SetDefaultObjectSecurity(dataObjectId.ToString(), dataObjectType);
-        }
-
-        public void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType)
-        {
-            var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
-            securityStorageProvider.SetDefaultObjectSecurity(GetCurrentUser(), dataObjectId.ToString(), dataObjectType, Guid.Empty, null);
-        }
-
         public bool AuthorizeActivity(PermissionType permissionName, string curObjectId, string curObjectType, string propertyName = null)
         {
             //check if user is authenticated. Unauthenticated users cannot pass security and come up to here, which means this is internal fr8 event, that need to be passed 
@@ -114,6 +104,17 @@ namespace Data.Infrastructure.StructureMap
         public bool UserHasPermission(PermissionType permissionType, string objectType)
         {
             return true;
+        }
+
+        public void SetDefaultRecordBasedSecurityForObject(string roleName, string dataObjectId, string dataObjectType)
+        {
+            var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
+            securityStorageProvider.SetDefaultRecordBasedSecurityForObject(GetCurrentUser(), Roles.OwnerOfCurrentObject, dataObjectId.ToString(), dataObjectType, Guid.Empty, null);
+        }
+
+        public IEnumerable<TerminalDO> GetAllowedTerminalsByUser(IEnumerable<TerminalDO> terminals)
+        {
+            return terminals;
         }
     }
 }

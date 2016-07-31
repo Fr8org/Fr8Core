@@ -17,6 +17,7 @@ using Data.Interfaces;
 using Data.Repositories.Security;
 using Data.Repositories.Security.Entities;
 using Data.States;
+using Data.States.Templates;
 using Fr8.Infrastructure.Data.States;
 using Hub.Exceptions;
 using Hub.Infrastructure;
@@ -119,19 +120,16 @@ namespace Hub.Security
             return identity;
         }
 
+        #region Permissions Related Methods
 
         /// <summary>
         /// For every new created object setup default security with permissions for Read Object, Edit Object, Delete Object 
-        /// and Role OwnerOfCurrentObject
+        /// and Role. For setup ownership to a record use Role OwnerOfCurrentObject
         /// </summary>
+        /// <param name="roleName">User role</param>
         /// <param name="dataObjectId"></param>
         /// <param name="dataObjectType"></param>
-        public void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType)
-        {
-            SetDefaultObjectSecurity(dataObjectId.ToString(), dataObjectType);
-        }
-
-        public void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType)
+        public void SetDefaultRecordBasedSecurityForObject(string roleName, string dataObjectId, string dataObjectType)
         {
             if (!IsAuthenticated()) return;
 
@@ -152,7 +150,44 @@ namespace Hub.Security
                 if (orgId != 0) organizationId = orgId;
             }
 
-            _securityObjectStorageProvider.SetDefaultObjectSecurity(currentUserId, dataObjectId.ToString(), dataObjectType, Guid.Empty, organizationId);
+            _securityObjectStorageProvider.SetDefaultRecordBasedSecurityForObject(currentUserId, roleName, dataObjectId.ToString(), dataObjectType, Guid.Empty, organizationId);
+        }
+
+        public IEnumerable<TerminalDO> GetAllowedTerminalsByUser(IEnumerable<TerminalDO> terminals)
+        {
+            if (!IsAuthenticated())
+                return terminals;
+
+            if (Thread.CurrentPrincipal is Fr8Principle)
+                return terminals;
+
+            var roles = GetRoleNames().ToList();
+
+            var allowedTerminals = new List<TerminalDO>();
+            foreach (var terminal in terminals)
+            {
+                var objRolePermissionWrapper = _securityObjectStorageProvider.GetRecordBasedPermissionSetForObject(terminal.Id.ToString(), nameof(TerminalDO));
+                if (!objRolePermissionWrapper.RolePermissions.Any()) continue;
+
+                // first check if this user is the owner of the record
+                var ownerRolePermission = objRolePermissionWrapper.RolePermissions.FirstOrDefault(x=>x.Role.RoleName == Roles.OwnerOfCurrentObject && x.PermissionSet.Permissions.Any(m => m.Id == (int)PermissionType.UseTerminal));
+                if (ownerRolePermission != null && objRolePermissionWrapper.Fr8AccountId == GetCurrentUser())
+                {
+                    allowedTerminals.Add(terminal);
+                    continue;
+                }
+
+                //check other user roles
+                var rolePermissions = objRolePermissionWrapper.RolePermissions.Where(x => x.Role.RoleName != Roles.OwnerOfCurrentObject && x.PermissionSet.Permissions.Any(m=> m.Id == (int) PermissionType.UseTerminal))
+                    .Where(l=> roles.Contains(l.Role.RoleName));
+
+                if (rolePermissions.Any())
+                {
+                    allowedTerminals.Add(terminal);
+                }
+            }
+
+            return allowedTerminals;
         }
 
         /// <summary>
@@ -191,7 +226,7 @@ namespace Hub.Security
 
             //first check Record Based Permission.
             bool? evaluator = null;
-            var objRolePermissionWrapper = _securityObjectStorageProvider.GetRecordBasedPermissionSetForObject(curObjectId);
+            var objRolePermissionWrapper = _securityObjectStorageProvider.GetRecordBasedPermissionSetForObject(curObjectId, curObjectType);
             if (objRolePermissionWrapper.RolePermissions.Any() || objRolePermissionWrapper.Properties.Any())
             {
                 if (string.IsNullOrEmpty(propertyName))
@@ -389,5 +424,7 @@ namespace Hub.Security
 
             return false;
         }
+
+        #endregion
     }
 }
