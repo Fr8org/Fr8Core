@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
-    public class PlanEmptyDTO
+    public class PlanNoChildrenDTO
     {
         [JsonProperty("id")]
         public Guid Id { get; set; }
@@ -30,7 +30,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         public Guid StartingSubPlanId { get; set; }
 
         [JsonProperty("visibility")]
-        public PlanVisibility Visibility { get; set; }
+        public PlanVisibilityDTO Visibility { get; set; }
 
         [JsonProperty("category")]
         public string Category { get; set; }

@@ -304,6 +304,7 @@
     <Compile Include="Exceptions\InvalidTokenException.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
+    <Compile Include="Helper\PlanMappingHelper.cs" />
     <Compile Include="Infrastructure\ActivityTemplateInfo.cs" />
     <Compile Include="Infrastructure\CustomSelector.cs" />
     <Compile Include="Infrastructure\FilterConditionPredicateBuilder.cs" />
@@ -314,8 +315,7 @@
     <Compile Include="Interfaces\IActivityCategory.cs" />
     <Compile Include="Interfaces\IManifestRegistryMonitor.cs" />
     <Compile Include="Interfaces\IPageDefinition.cs" />
-    <Compile Include="Interfaces\IPlanDirectory.cs" />
-    <Compile Include="Interfaces\IPlanTemplates.cs" />
+    <Compile Include="Interfaces\IPlanDirectoryService.cs" />
     <Compile Include="Interfaces\ITimer.cs" />
     <Compile Include="Interfaces\IUpstreamDataExtractionService.cs" />
     <Compile Include="Managers\APIManagers\Packagers\IEmailPackager.cs" />
@@ -398,7 +398,6 @@
     <Compile Include="Services\PlanBased\ManifestRegistryMonitor.cs" />
     <Compile Include="Services\PageDefinition.cs" />
     <Compile Include="Services\PlanDirectoryService.cs" />
-    <Compile Include="Services\PlanTemplates.cs" />
     <Compile Include="Services\PlanNode.cs" />
     <Compile Include="Services\Organization.cs" />
     <Compile Include="Services\Activity.cs" />

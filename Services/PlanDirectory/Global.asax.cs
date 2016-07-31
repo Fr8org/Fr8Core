@@ -46,7 +46,7 @@ namespace PlanDirectory
                 var generateTasks = new List<Task>();
                 foreach (var manifestName in uow.MultiTenantObjectRepository.Query<ManifestDescriptionCM>(systemUser, x => true).Select(x => x.Name).Distinct())
                 {
-                    generateTasks.Add(generator.Generate(manifestName, GenerateMode.GenerateIfNotExists));
+                    generateTasks.Add(generator.Generate(manifestName, GenerateMode.GenerateAlways));
                 }
                 await Task.WhenAll(generateTasks);
             }

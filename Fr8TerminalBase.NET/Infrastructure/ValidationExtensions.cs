@@ -22,7 +22,7 @@ namespace Fr8.TerminalBase.Infrastructure
             {
                 return;
             }
-            
+
             if (!RegexUtilities.IsValidEmailAddress(configRepository, textSource.TextValue))
             {
                 validationManager.SetError(errorMessage ?? "Not a valid e-mail address", textSource);
@@ -56,7 +56,15 @@ namespace Fr8.TerminalBase.Infrastructure
 
         public static bool ValidateTextSourceNotEmpty(this ValidationManager validationManager, TextSource control, string errorMessage)
         {
-            if (control != null && (!control.HasUpstreamValue && string.IsNullOrWhiteSpace(control.TextValue)))
+            ////here is a check for design time
+            if (validationManager.Payload == null && control != null && !control.HasValue)
+            {
+                validationManager.SetError(errorMessage, control);
+                return false;
+            }
+
+            //this is a check for runtime
+            if (control != null && (validationManager.Payload != null) && string.IsNullOrWhiteSpace(control.TextValue))
             {
                 validationManager.SetError(errorMessage, control);
                 return false;

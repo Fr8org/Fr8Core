@@ -38,9 +38,9 @@ namespace Fr8.Testing.Integration.Tools.Activities
             dropboxGetFileListActivityDto.ActivityTemplate = apmActivityTemplate;
 
             //connect current activity with a plan
-            var subPlan = plan.Plan.SubPlans.FirstOrDefault();
+            var subPlan = plan.SubPlans.FirstOrDefault();
             dropboxGetFileListActivityDto.ParentPlanNodeId = subPlan.SubPlanId;
-            dropboxGetFileListActivityDto.RootPlanNodeId = plan.Plan.Id;
+            dropboxGetFileListActivityDto.RootPlanNodeId = plan.Id;
             dropboxGetFileListActivityDto.Ordering = ordering;
 
             //call initial configuration to server

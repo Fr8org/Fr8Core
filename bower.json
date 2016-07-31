@@ -62,7 +62,8 @@
     "angular-material-data-table": "^0.10.8",
     "angulartics-google-analytics": "^0.1.4",
     "angular-popover-toggle": "^0.1.1",
-    "json-formatter": "^0.6.0"
+    "json-formatter": "^0.6.0",
+    "jquery.kinetic": "^2.1.0"
   },
   "resolutions": {
     "angular": "1.4.9"

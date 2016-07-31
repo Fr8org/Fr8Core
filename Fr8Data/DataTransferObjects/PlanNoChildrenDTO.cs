@@ -5,7 +5,7 @@ using Fr8Data.States;
 
 namespace Fr8Data.DataTransferObjects
 {
-    public class PlanEmptyDTO
+    public class PlanNoChildrenDTO
     {
         public Guid Id { get; set; }
 
