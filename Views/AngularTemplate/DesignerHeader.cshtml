@@ -4,7 +4,7 @@
             <div layout="row"  flex>
                 <div class="designer-header-title page-title" ng-class="{'design-header-title-editing': editing}" style="min-width: 0">
                     <h1 ng-if="!kioskMode">
-                        <div class="route-name" ng-click="editTitle()">{{plan.name}}</div>
+                        <div class="route-name" ng-click="editTitle()" style="line-height: 1.3">{{plan.name}}</div>
                         <input class="design-header-title-editField" type="text" ng-model="plan.name" ng-blur="onTitleChange()" input-focus="editing" />
 
                     </h1>
