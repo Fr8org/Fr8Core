@@ -13,6 +13,8 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 
         [JsonProperty("id")]
         public string PublicIdentifier { get; set; }
+        [JsonProperty("InternalId")]
+        public int InternalId { get; set; }
         [JsonProperty("name")]
         public string Name { get; set; }
         [JsonProperty("label")]

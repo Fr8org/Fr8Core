@@ -37,7 +37,7 @@ module dockyard.controllers {
                 });
 
             $scope.openDetails = terminal => {
-                $state.go('terminalDetails', { id: terminal.id });
+                $state.go('terminalDetails', { id: terminal.internalId });
             }
         }
 

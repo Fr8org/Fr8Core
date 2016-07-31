@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class Standard_Permissions_for_Terminals : IMigrationMetadata
+    public sealed partial class ChangeRoleName_Customer_to_StandardUser : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Standard_Permissions_for_Terminals));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(ChangeRoleName_Customer_to_StandardUser));
         
         string IMigrationMetadata.Id
         {
-            get { return "201607291413299_Standard_Permissions_for_Terminals"; }
+            get { return "201607311227053_ChangeRoleName_Customer_to_StandardUser"; }
         }
         
         string IMigrationMetadata.Source

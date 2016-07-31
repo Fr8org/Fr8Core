@@ -24,6 +24,7 @@
                             </thead>
                             <tbody>
                                 <tr ng-repeat="terminal in terminals" ng-click="openDetails(terminal)" style="cursor: pointer">
+                                    <td>{{terminal.label}}</td>
                                     <td>{{terminal.endpoint}}</td>
                                 </tr>
                             </tbody>

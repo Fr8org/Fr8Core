@@ -57,6 +57,7 @@ namespace HubWeb.Controllers
                     .Select(Mapper.Map<TerminalRegistrationDTO>)
                     .ToList();
 
+
                 return Ok(terminals);
             }
         }

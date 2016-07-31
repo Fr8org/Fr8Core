@@ -759,9 +759,13 @@
     <Compile Include="Migrations\201607301037088_PlanDTO_PlanFullDTO_Refactoring.Designer.cs">
       <DependentUpon>201607301037088_PlanDTO_PlanFullDTO_Refactoring.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201607291413299_Standard_Permissions_for_Terminals.cs" />
-    <Compile Include="Migrations\201607291413299_Standard_Permissions_for_Terminals.Designer.cs">
-      <DependentUpon>201607291413299_Standard_Permissions_for_Terminals.cs</DependentUpon>
+    <Compile Include="Migrations\201607310758516_Standard_Permissions_for_Terminals.cs" />
+    <Compile Include="Migrations\201607310758516_Standard_Permissions_for_Terminals.Designer.cs">
+      <DependentUpon>201607310758516_Standard_Permissions_for_Terminals.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607311227053_ChangeRoleName_Customer_to_StandardUser.cs" />
+    <Compile Include="Migrations\201607311227053_ChangeRoleName_Customer_to_StandardUser.Designer.cs">
+      <DependentUpon>201607311227053_ChangeRoleName_Customer_to_StandardUser.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1402,8 +1406,11 @@
     <EmbeddedResource Include="Migrations\201607301037088_PlanDTO_PlanFullDTO_Refactoring.resx">
       <DependentUpon>201607301037088_PlanDTO_PlanFullDTO_Refactoring.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201607291413299_Standard_Permissions_for_Terminals.resx">
-      <DependentUpon>201607291413299_Standard_Permissions_for_Terminals.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201607310758516_Standard_Permissions_for_Terminals.resx">
+      <DependentUpon>201607310758516_Standard_Permissions_for_Terminals.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607311227053_ChangeRoleName_Customer_to_StandardUser.resx">
+      <DependentUpon>201607311227053_ChangeRoleName_Customer_to_StandardUser.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
