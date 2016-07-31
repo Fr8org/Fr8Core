@@ -395,7 +395,6 @@
     <Compile Include="Controllers\Api\TerminalsController.cs" />
     <Compile Include="Controllers\Api\WarehousesController.cs" />
     <Compile Include="Controllers\CompanyController.cs" />
-    <Compile Include="Controllers\Helpers\PlanMappingHelper.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
     <Compile Include="Controllers\ServicesController.cs" />
     <Compile Include="Controllers\SupportController.cs" />
@@ -417,7 +416,6 @@
     <Compile Include="Documentation\Swagger\DocumentFilters\AddDefaultValuesDocumentFilter.cs" />
     <Compile Include="Documentation\Swagger\DocumentFilters\RemoveDuplicatesDocumentFilter.cs" />
     <Compile Include="Documentation\Swagger\OperationFilters\RemoveParameterModelNameOperationFilter.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\ActivityDescriptionSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\ActivitySampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\ActivityTemplateSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\AuthenticationTokenGrantSampleFactory.cs" />
@@ -441,7 +439,6 @@
     <Compile Include="Documentation\Swagger\SampleData\IncomingCratesSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\ISwaggerSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\ManifestDescriptionSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\NodeTransitionSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\OrganizationSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PageDefinitionSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PayloadSampleFactory.cs" />
@@ -449,12 +446,10 @@
     <Compile Include="Documentation\Swagger\SampleData\PhoneNumberVerificationSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanEmptySampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanFullSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\PlanNodeDescriptionSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanPostParamsSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanQuerySampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanResultSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\PlanTemplateSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PollingDataSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\ProfileSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\QuerySampleFactory.cs" />
@@ -4473,7 +4468,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('packages\Fr8.PrivateSettings.1.2016.210.2\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fr8.PrivateSettings.1.2016.210.2\build\net40\Fr8.PrivateSettings.targets'))" />
+    <Error Condition="!Exists('packages\Fr8.PrivateSettings.1.2016.212.1\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fr8.PrivateSettings.1.2016.212.1\build\net40\Fr8.PrivateSettings.targets'))" />
   </Target>
   <PropertyGroup>
     <CopyAllFilesToSingleFolderForPackageDependsOn>
@@ -4559,5 +4554,5 @@
   <Target Name="BeforeBuild">
     <RestoreSettingsTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)" ProjectName="$(ProjectName)" />
   </Target>
-  <Import Project="packages\Fr8.PrivateSettings.1.2016.210.2\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.210.2\build\net40\Fr8.PrivateSettings.targets')" />
+  <Import Project="packages\Fr8.PrivateSettings.1.2016.212.1\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.212.1\build\net40\Fr8.PrivateSettings.targets')" />
 </Project>

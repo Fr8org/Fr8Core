@@ -84,7 +84,7 @@ namespace terminalSalesforceTests.Intergration
             {
                 var authToken = await Fixtures.HealthMonitor_FixtureData.CreateSalesforceAuthToken();
                 plan = await CreateMonitoringPlan(authToken.Id);
-                await _plansHelper.RunPlan(plan.Plan.Id);
+                await _plansHelper.RunPlan(plan.Id);
 
                 await HttpPostAsync<string>(GetTerminalEventsUrl(), new StringContent(string.Format(SalesforcePayload, objectType)));
 
@@ -96,7 +96,7 @@ namespace terminalSalesforceTests.Intergration
                     await Task.Delay(PeriodAwaitTime);
                     Debug.WriteLine("Awaiting for monitor container to run: " + stopwatch.ElapsedMilliseconds.ToString() + " msec");
 
-                    if (IsContainerAvailable(plan.Plan.Id))
+                    if (IsContainerAvailable(plan.Id))
                     {
                         Debug.WriteLine("Container successfully executed");
                         return;
@@ -109,7 +109,7 @@ namespace terminalSalesforceTests.Intergration
             {
                 if (plan != null)
                 {
-                    await HttpDeleteAsync(GetHubApiBaseUrl() + "/plans?id=" + plan.Plan.Id.ToString());
+                    await HttpDeleteAsync(GetHubApiBaseUrl() + "/plans?id=" + plan.Id.ToString());
                 }
             }
         }
@@ -130,7 +130,7 @@ namespace terminalSalesforceTests.Intergration
             {
                 if (plan != null)
                 {
-                    await HttpDeleteAsync(GetHubApiBaseUrl() + "/plans?id=" + plan.Plan.Id.ToString());
+                    await HttpDeleteAsync(GetHubApiBaseUrl() + "/plans?id=" + plan.Id.ToString());
                 }
 
                 throw;
@@ -157,7 +157,7 @@ namespace terminalSalesforceTests.Intergration
             var createActivityUrl = _baseUrl + "activities/create"
                 + "?activityTemplateId=" + activityTemplate.Id.ToString()
                 + "&createPlan=false"
-                + "&parentNodeId=" + plan.Plan.StartingSubPlanId.ToString()
+                + "&parentNodeId=" + plan.StartingSubPlanId.ToString()
                 + "&authorizationTokenId=" + authTokenId.ToString()
                 + "&order=1";
 
