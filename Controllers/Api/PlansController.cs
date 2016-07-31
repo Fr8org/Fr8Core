@@ -297,9 +297,9 @@ namespace HubWeb.Controllers
         [HttpDelete]
         [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
-        public IHttpActionResult Delete(Guid id)
+        public async Task<IHttpActionResult> Delete(Guid id)
         {
-            _plan.Delete(id);
+            await _plan.Delete(id);
 
             return Ok(id);
         }
