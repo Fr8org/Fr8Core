@@ -48,6 +48,9 @@ module dockyard.controllers {
         viewMode: string;
         hasAnyActivity: (pSubPlan: any) => boolean;
         state: string;
+        scrollStart: (event: MouseEvent) => void;
+        scrollStop: (event: MouseEvent) => void;
+        scrollDrag: (event: MouseEvent) => void;
     }
 
 
@@ -88,6 +91,10 @@ module dockyard.controllers {
 
         private _longRunningActionsCounter: number;
         private _loading = false;
+        private _validScrollFlag = false;
+        private _paneLastClientX: number;
+        private _paneLastClientY: number;
+        private _scrollState = false;
 
         constructor(
             private $scope: IPlanBuilderScope,
@@ -230,7 +237,7 @@ module dockyard.controllers {
 
             };
             $scope.state = $state.current.name;
-            this.processState($state);
+            this.processState($state);           
         }
 
         private handleBackButton(event, toState, toParams, fromState, fromParams, options) {

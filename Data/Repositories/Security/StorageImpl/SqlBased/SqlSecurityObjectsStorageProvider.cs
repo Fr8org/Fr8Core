@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using Data.Entities;
 using Data.Repositories.Security.Entities;
 using Data.Repositories.SqlBased;
+using Data.States;
 using Data.States.Templates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 
@@ -75,6 +76,40 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                     }
                     
                     return result;
+                }
+            }
+        }
+
+        public List<string> GetAllowedUserRolesForSecuredObject(string objectId, string objectType)
+        {
+            using (var connection = OpenConnection(_sqlConnectionProvider))
+            {
+                var roles = new List<string>();
+                using (var command = new SqlCommand())
+                {
+                    command.Connection = connection;
+
+                    const string cmd = @" select distinct anr.Name from dbo.ObjectRolePermissions orp 
+	                                        inner join dbo.RolePermissions rp on orp.RolePermissionId = rp.Id
+	                                        inner join dbo.AspNetRoles  anr on rp.RoleId =anr.Id
+                                          where orp.ObjectId = @objectId and orp.Type = @objectType   ";
+
+                    command.Parameters.AddWithValue("@objectId", objectId);
+                    command.Parameters.AddWithValue("@objectType", objectType);
+                    command.CommandText = cmd;
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            if (reader["Name"] != DBNull.Value)
+                            {
+                               roles.Add((string)reader["Name"]);  
+                            }   
+                        }
+                    }
+
+                    return roles;
                 }
             }
         }
@@ -184,7 +219,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             throw new NotImplementedException();
         }
 
-        public void SetDefaultRecordBasedSecurityForObject(string currentUserId, string roleName, string dataObjectId, string dataObjectType, Guid rolePermissionId, int? organizationId = null)
+        public void SetDefaultRecordBasedSecurityForObject(string currentUserId, string roleName, string dataObjectId, string dataObjectType, Guid rolePermissionId, int? organizationId = null, List<PermissionType> customPermissionTypes = null)
         {
             using (var connection = OpenConnection(_sqlConnectionProvider))
             {

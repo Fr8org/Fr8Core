@@ -119,11 +119,11 @@ namespace Data.Repositories.Security.StorageImpl.Cache
         }
 
         public void SetDefaultRecordBasedSecurityForObject(string currentUserId, string roleName, string dataObjectId, string dataObjectType,
-            Guid rolePermissionId, int? organizationId)
+            Guid rolePermissionId, int? organizationId, List<PermissionType> customPermissionTypes = null)
         {
             if (rolePermissionId == Guid.Empty)
             {
-                var permissionSet = GetOrCreateDefaultSecurityPermissionSet(dataObjectType);
+                var permissionSet = GetOrCreateDefaultSecurityPermissionSet(dataObjectType, customPermissionTypes);
 
                 if (permissionSet == null)
                 {
@@ -134,7 +134,7 @@ namespace Data.Repositories.Security.StorageImpl.Cache
                 if (rolePermission == null)
                 {
                     InsertRolePermission(new RolePermission() { PermissionSet = permissionSet, Role = new RoleDO { RoleName = roleName } });
-                    rolePermission = GetRolePermission(Roles.OwnerOfCurrentObject, permissionSet.Id);
+                    rolePermission = GetRolePermission(roleName, permissionSet.Id);
                 }
                 rolePermissionId = rolePermission.Id;
             }
@@ -150,15 +150,22 @@ namespace Data.Repositories.Security.StorageImpl.Cache
             return _securityObjectStorageProvider.GetRolePermission(roleName, permissionSetId);
         }
 
-        private PermissionSetDO GetOrCreateDefaultSecurityPermissionSet(string dataObjectType)
+        public List<string> GetAllowedUserRolesForSecuredObject(string objectId, string objectType)
         {
-            var defaultPermissions = new[] { (int)PermissionType.ReadObject, (int)PermissionType.EditObject, (int)PermissionType.CreateObject, (int)PermissionType.DeleteObject, (int) PermissionType.RunObject };
+            return _securityObjectStorageProvider.GetAllowedUserRolesForSecuredObject(objectId, objectType);
+        }
+
+        private PermissionSetDO GetOrCreateDefaultSecurityPermissionSet(string dataObjectType, List<PermissionType> customPermissionTypes = null)
+        {
+            var defaultPermissions = customPermissionTypes?.Select(x => (int) x).ToArray() 
+                                       ?? new[] { (int)PermissionType.ReadObject, (int)PermissionType.EditObject, (int)PermissionType.CreateObject, (int)PermissionType.DeleteObject, (int)PermissionType.RunObject };
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var defaultPermissionsCount = defaultPermissions.Length;
                 //check for existing permission set with this default permissions
-                var permissionSet = uow.PermissionSetRepository.GetQuery().FirstOrDefault(x => x.ObjectType == dataObjectType && x.Permissions.Count == 5 &&
-                                             x.Permissions.Any(l => l.Id == (int) PermissionType.ReadObject) && x.Permissions.Any(l => l.Id == (int) PermissionType.CreateObject) && x.Permissions.Any(l => l.Id == (int) PermissionType.EditObject) && x.Permissions.Any(l => l.Id == (int) PermissionType.DeleteObject) && x.Permissions.Any(l => l.Id == (int)PermissionType.RunObject));
+                var permissionSet = uow.PermissionSetRepository.GetQuery().FirstOrDefault(x => x.ObjectType == dataObjectType && x.Permissions.Count == defaultPermissionsCount &&
+                                             x.Permissions.All(t => defaultPermissions.Contains(t.Id)));
 
                 if (permissionSet != null)
                 {

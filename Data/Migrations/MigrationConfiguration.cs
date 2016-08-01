@@ -21,7 +21,7 @@ namespace Data.Migrations
         public MigrationConfiguration()
         {
             //Do not ever turn this on! It will break database upgrades
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
 
             CommandTimeout = 60 * 15;
 
@@ -402,7 +402,7 @@ namespace Data.Migrations
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
             uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
             uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, user.Id);
-            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, user.Id);
+            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.StandardUser, user.Id);
             uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.OwnerOfCurrentObject, user.Id);
             user.TestAccount = false;
         }
@@ -416,12 +416,12 @@ namespace Data.Migrations
             }
             uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
             uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, user.Id);
-            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, user.Id);
+            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.StandardUser, user.Id);
             user.TestAccount = true;
         }
 
         /// <summary>
-        /// Craete a user with role 'Customer'
+        /// Craete a user with role 'StandardUser'
         /// </summary>
         /// <param name="userEmail"></param>
         /// <param name="curPassword"></param>
@@ -431,7 +431,7 @@ namespace Data.Migrations
         {
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
             uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
-            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, user.Id);
+            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.StandardUser, user.Id);
             user.TestAccount = true;
             return user;
         }
@@ -497,11 +497,11 @@ namespace Data.Migrations
             var existingEmailAddressDO = uow.EmailAddressRepository.GetQuery().FirstOrDefault(ea => ea.Address == email);
             if (existingEmailAddressDO != null)
             {
-                RegisterTestUser(uow, email, password, Roles.Customer);
+                RegisterTestUser(uow, email, password, Roles.StandardUser);
             }
             else
             {
-                RegisterTestUser(uow, email, password, Roles.Customer);
+                RegisterTestUser(uow, email, password, Roles.StandardUser);
             }
 
             uow.SaveChanges();

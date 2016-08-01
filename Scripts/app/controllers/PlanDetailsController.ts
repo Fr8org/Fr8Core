@@ -48,7 +48,7 @@ module dockyard.controllers {
             $scope.id = $stateParams.id;
             if (this.isValidGUID($scope.id)) {
                 PlanService.getFull({ id: $stateParams.id }).$promise.then(function (plan) {
-                    $scope.current.plan = (<any>plan).plan;
+                    $scope.current.plan = (<any>plan);
                 });
             }
 

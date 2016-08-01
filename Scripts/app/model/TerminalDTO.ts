@@ -1,6 +1,6 @@
 ﻿module dockyard.model {
     export class TerminalDTO {
-        id : number;
+        internalId : number;
         name: string;
         label: string;
         endpoint: string;
@@ -8,12 +8,14 @@
         version: string;
         terminalStatus: number;
         authenticationType: number;
+        roles: Array<string>;
         
-        constructor(id: number, name: string, url: string, description: string) {
-            this.id = id;
+        constructor(internalId: number, name: string, url: string, description: string, roles: Array<string>) {
+            this.internalId = internalId;
             this.name = name;
             this.endpoint = url;
             this.description = description;
+            this.roles = roles;
             //this.version = "1";
         }
 	}

@@ -236,10 +236,10 @@ namespace HubWeb.Controllers
             switch (selectedRole)
             {
                 case Roles.Admin:
-                    userRoles = new[] { Roles.Admin, Roles.Customer };
+                    userRoles = new[] { Roles.Admin, Roles.StandardUser };
                     break;
-                case Roles.Customer:
-                    userRoles = new[] { Roles.Customer };
+                case Roles.StandardUser:
+                    userRoles = new[] { Roles.StandardUser };
                     break;
             }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -257,8 +257,8 @@ namespace HubWeb.Controllers
         {
             if (userRoles.Contains(Roles.Admin))
                 return Roles.Admin;
-            else if (userRoles.Contains(Roles.Customer))
-                return Roles.Customer;
+            else if (userRoles.Contains(Roles.StandardUser))
+                return Roles.StandardUser;
             else
                 return "";
         }

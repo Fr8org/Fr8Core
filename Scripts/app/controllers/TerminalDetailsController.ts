@@ -42,21 +42,20 @@ module dockyard.controllers {
                     templateUrl: '/AngularTemplate/PermissionsSetterModal',
                     controller: 'PermissionsSetterModalController',
                     resolve: {
+                        terminal: () => terminal
                     }
-                })
-                modalInstance.result.then(function (label: string) {
-                    //action.label = label;
-                    //ActionService.save(action);
+                });
+                modalInstance.result.then(function (terminal: model.TerminalDTO) {
+                    //TerminalServire.setPermissions(terminal);
                 });
             }
         }
     }
 
     app.controller('TerminalDetailsController', TerminalDetailsController);
+    app.controller('PermissionsSetterModalController', ['$scope', '$modalInstance','terminal' , ($scope: any, $modalInstance: any, terminal : model.TerminalDTO): void => {
 
-    app.controller('PermissionsSetterModalController', ['$scope', '$modalInstance', ($scope: any, $modalInstance: any): void => {
-
-        $scope.label = 'bla bla';
+        $scope.terminal = terminal;
 
         $scope.submitForm = () => {
             $modalInstance.close($scope.label);
