@@ -51,9 +51,9 @@ namespace Fr8.Testing.Integration.Tools.Activities
             buildMessageActivityDTO.ActivityTemplate = apmActivityTemplate;
 
             //connect current activity with a plan
-            var subPlan = plan.Plan.SubPlans.FirstOrDefault();
+            var subPlan = plan.SubPlans.FirstOrDefault();
             buildMessageActivityDTO.ParentPlanNodeId = subPlan.SubPlanId;
-            buildMessageActivityDTO.RootPlanNodeId = plan.Plan.Id;
+            buildMessageActivityDTO.RootPlanNodeId = plan.Id;
             buildMessageActivityDTO.Ordering = ordering;
 
             //call initial configuration to server
@@ -129,9 +129,9 @@ namespace Fr8.Testing.Integration.Tools.Activities
             saveToFr8WarehouseActivity.ActivityTemplate = apmActivityTemplate;
 
             //connect current activity with a plan
-            var subPlan = plan.Plan.SubPlans.FirstOrDefault();
+            var subPlan = plan.SubPlans.FirstOrDefault();
             saveToFr8WarehouseActivity.ParentPlanNodeId = subPlan.SubPlanId;
-            saveToFr8WarehouseActivity.RootPlanNodeId = plan.Plan.Id;
+            saveToFr8WarehouseActivity.RootPlanNodeId = plan.Id;
             saveToFr8WarehouseActivity.Ordering = ordering;
 
             //call initial configuration to server

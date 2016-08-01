@@ -70,7 +70,7 @@ namespace terminalIntegrationTests.EndToEnd
             saveToFr8WarehouseActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(GetHubApiBaseUrl() + "activities/configure", saveToFr8WarehouseActivity);
 
             //run the plan
-            await _plansHelper.RunPlan(testPlan.Plan.Id);
+            await _plansHelper.RunPlan(testPlan.Id);
             await Task.Delay(10000);
 
             //sending an email

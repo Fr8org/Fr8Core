@@ -50,7 +50,7 @@ namespace Fr8.Testing.Integration.Tools.Activities
             // Create solution
             //
             var plan = await _baseHubITest.HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
-            var solution = plan.Plan.SubPlans.FirstOrDefault().Activities.FirstOrDefault();
+            var solution = plan.SubPlans.FirstOrDefault().Activities.FirstOrDefault();
 
             //
             // Send configuration request without authentication token
@@ -107,10 +107,10 @@ namespace Fr8.Testing.Integration.Tools.Activities
             //
             //Rename plan to include a dateTimeStamp in the name
             //
-            var newName = plan.Plan.Name + " | " + DateTime.UtcNow.ToShortDateString() + " " +
+            var newName = plan.Name + " | " + DateTime.UtcNow.ToShortDateString() + " " +
                 DateTime.UtcNow.ToShortTimeString();
-            await _baseHubITest.HttpPostAsync<object, PlanFullDTO>(_baseHubITest.GetHubApiBaseUrl() + "plans?id=" + plan.Plan.Id,
-                new { id = plan.Plan.Id, name = newName });
+            await _baseHubITest.HttpPostAsync<object, PlanDTO>(_baseHubITest.GetHubApiBaseUrl() + "plans?id=" + plan.Id,
+                new { id = plan.Id, name = newName });
 
             //
             // Configure solution
@@ -150,9 +150,9 @@ namespace Fr8.Testing.Integration.Tools.Activities
             queryDocuSignActivity.ActivityTemplate = apmActivityTemplate;
 
             //connect current activity with a plan
-            var subPlan = plan.Plan.SubPlans.FirstOrDefault();
+            var subPlan = plan.SubPlans.FirstOrDefault();
             queryDocuSignActivity.ParentPlanNodeId = subPlan.SubPlanId;
-            queryDocuSignActivity.RootPlanNodeId = plan.Plan.Id;
+            queryDocuSignActivity.RootPlanNodeId = plan.Id;
             queryDocuSignActivity.Ordering = ordering;
 
             //call initial configuration to server

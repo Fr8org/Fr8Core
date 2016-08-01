@@ -190,9 +190,9 @@ namespace Fr8.Testing.Integration.Tools.Activities
             googleActivityDTO.ActivityTemplate = apmActivityTemplate;
 
             //connect current activity with a plan
-            var subPlan = plan.Plan.SubPlans.FirstOrDefault();
+            var subPlan = plan.SubPlans.FirstOrDefault();
             googleActivityDTO.ParentPlanNodeId = subPlan.SubPlanId;
-            googleActivityDTO.RootPlanNodeId = plan.Plan.Id;
+            googleActivityDTO.RootPlanNodeId = plan.Id;
             googleActivityDTO.Ordering = ordering;
 
             //call initial configuration to server

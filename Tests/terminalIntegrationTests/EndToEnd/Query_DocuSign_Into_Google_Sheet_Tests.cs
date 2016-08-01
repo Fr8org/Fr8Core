@@ -57,7 +57,7 @@ namespace terminalIntegrationTests.EndToEnd
             try
             {
                 //run the plan
-                await plansHelper.RunPlan(thePlan.Plan.Id);
+                await plansHelper.RunPlan(thePlan.Id);
 
                 //add asserts here
                 var googleSheets = await googleSheetApi.GetSpreadsheets(defaultGoogleAuthToken);

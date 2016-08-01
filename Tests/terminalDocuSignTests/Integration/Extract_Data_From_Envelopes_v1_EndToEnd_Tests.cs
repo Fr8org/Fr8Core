@@ -39,7 +39,7 @@ namespace terminalDocuSignTests.Integration
             // Create solution
             //
             var plan = await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
-            var solution = plan.Plan.SubPlans.FirstOrDefault().Activities.FirstOrDefault();
+            var solution = plan.SubPlans.FirstOrDefault().Activities.FirstOrDefault();
 
             //
             // Send configuration request without authentication token
@@ -106,10 +106,10 @@ namespace terminalDocuSignTests.Integration
             //
             // Rename route
             //
-            var newName = plan.Plan.Name + " | " + DateTime.UtcNow.ToShortDateString() + " " +
+            var newName = plan.Name + " | " + DateTime.UtcNow.ToShortDateString() + " " +
                 DateTime.UtcNow.ToShortTimeString();
-            await HttpPostAsync<object, PlanFullDTO>(_baseUrl + "plans?id=" + plan.Plan.Id,
-                new { id = plan.Plan.Id, name = newName });
+            await HttpPostAsync<object, PlanDTO>(_baseUrl + "plans?id=" + plan.Id,
+                new { id = plan.Id, name = newName });
 
             //
             // Configure Monitor DocuSign Envelope action
@@ -249,7 +249,7 @@ namespace terminalDocuSignTests.Integration
                 ActivityTemplate = activityTemplateSummary,
                 Name = apmActivityTemplate.Label,
                 ParentPlanNodeId = _solution.Id,
-                RootPlanNodeId = plan.Plan.Id
+                RootPlanNodeId = plan.Id
             };
             apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", apmAction);
             Assert.NotNull(apmAction, "Add Payload Manually action failed to create");
@@ -277,17 +277,17 @@ namespace terminalDocuSignTests.Integration
             //
             // Activate and run plan
             //
-            await HttpPostAsync<string, ContainerDTO>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
+            await HttpPostAsync<string, ContainerDTO>(_baseUrl + "plans/run?planId=" + plan.Id, null);
 
             //
             // Deactivate plan
             //
-            await HttpPostAsync<string, string>(_baseUrl + "plans/deactivate?planId=" + plan.Plan.Id, null);
+            await HttpPostAsync<string, string>(_baseUrl + "plans/deactivate?planId=" + plan.Id, null);
 
             //
             // Delete plan
             //
-            //await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
+            //await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Id);
         }
 
         private async Task<Guid> ResolveAuth(ActivityDTO solution, ICrateStorage crateStorage)

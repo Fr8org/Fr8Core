@@ -127,9 +127,18 @@ namespace Hub.Services
             );
 
             await _client.DeleteAsync(uri, headers: headers);
+
+            // Notify user that plan successfully deleted
+            _pusherNotifier.NotifyUser(new NotificationMessageDTO
+            {
+                NotificationType = NotificationType.GenericSuccess,
+                NotificationArea = NotificationArea.ActivityStream,
+                Message = $"Plan Unpublished.",
+                Collapsed = false
+            }, userId);
         }
 
-        public PlanFullDTO CrateTemplate(Guid planId, string userId)
+        public PlanDTO CrateTemplate(Guid planId, string userId)
         {
             PlanDO clonedPlan;
 
@@ -169,7 +178,7 @@ namespace Hub.Services
                 activity.CrateStorage = UpdateCrateStorage(activity.CrateStorage, idsMap);
             }
             
-            return PlanMappingHelper.MapPlanToDto(clonedPlan).Plan;
+            return PlanMappingHelper.MapPlanToDto(clonedPlan);
         }
 
         private string UpdateCrateStorage(string crateStorage, Dictionary<Guid, Guid> idsMap)
@@ -190,7 +199,7 @@ namespace Hub.Services
         }
 
 
-        public PlanEmptyDTO CreateFromTemplate(PlanFullDTO plan, string userId)
+        public PlanNoChildrenDTO CreateFromTemplate(PlanDTO plan, string userId)
         {
             var planDo = new PlanDO()
             {
@@ -263,7 +272,7 @@ namespace Hub.Services
                 uow.SaveChanges();
 
 
-                return AutoMapper.Mapper.Map<PlanEmptyDTO>(planDo);
+                return AutoMapper.Mapper.Map<PlanNoChildrenDTO>(planDo);
             }
         }
     }

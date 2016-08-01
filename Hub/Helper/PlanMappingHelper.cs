@@ -26,8 +26,6 @@ namespace Hub.Helper
 
             var result = new PlanDTO()
             {
-                Plan = new PlanFullDTO()
-                {
                     Description = curPlanDO.Description,
                     Id = curPlanDO.Id,
                     Name = curPlanDO.Name,
@@ -39,7 +37,6 @@ namespace Hub.Helper
                     Tag = curPlanDO.Tag,
                     Category = curPlanDO.Category,
                     LastUpdated = curPlanDO.LastUpdated
-                }
             };
 
             return result;

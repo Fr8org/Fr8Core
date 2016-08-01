@@ -69,7 +69,7 @@ namespace terminalIntegrationTests.EndToEnd
             try
             {
                 plan = await CreatePlan();
-                var solution = plan.Plan.SubPlans.First().Activities.Single();
+                var solution = plan.SubPlans.First().Activities.Single();
                 await ApplyAuthTokenToSolution(solution, salesforceAuthToken);
                 //Initial configuration
                 solution = await Configure(solution);
@@ -113,7 +113,7 @@ namespace terminalIntegrationTests.EndToEnd
                 Assert.IsTrue(caseWasDeleted, "Case created for test purposes failed to be deleted");
                 //if (plan != null)
                 //{
-                //    await HttpDeleteAsync($"{_baseUrl}plans?id={plan.Plan.Id}");
+                //    await HttpDeleteAsync($"{_baseUrl}plans?id={plan.Id}");
                 //}
             }
             
@@ -186,12 +186,12 @@ namespace terminalIntegrationTests.EndToEnd
 
         private async Task<ContainerDTO> Run(PlanDTO plan)
         {
-            return await HttpPostAsync<string, ContainerDTO>($"{_baseUrl}plans/run?planId={plan.Plan.Id}", null);
+            return await HttpPostAsync<string, ContainerDTO>($"{_baseUrl}plans/run?planId={plan.Id}", null);
         }
 
         private async Task<string> Deactivate(PlanDTO plan)
         {
-            return await HttpPostAsync<string, string>($"{_baseUrl}plans/deactivate?planId={plan.Plan.Id}", null);
+            return await HttpPostAsync<string, string>($"{_baseUrl}plans/deactivate?planId={plan.Id}", null);
         }
 
         private async Task ApplyAuthTokenToSolution(ActivityDTO solution, AuthorizationTokenDO salesforceAuthToken)

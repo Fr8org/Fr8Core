@@ -6,7 +6,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public PlanFullDTO PlanContents { get; set; }
+        public PlanDTO PlanContents { get; set; }
         public Guid ParentPlanId { get; set; }
     }
 }
