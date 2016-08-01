@@ -19,7 +19,7 @@ jQuery(function ($) {
     // navbar and logo switch related with scroll position
     $(window).on('scroll', function () {
         if ($(window).width() > 1024) {
-            if ($(document).scrollTop() > 150) {
+            if ($(document).scrollTop() > 80) {
                 setNavbarLight();
             } else {
                 setNavbarTransparent();

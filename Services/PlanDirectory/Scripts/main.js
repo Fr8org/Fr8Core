@@ -2,7 +2,7 @@
 
     // Navbar and logo switch related with screen width
     function toggleNavbar() {
-        if (($(window).width() > 1024) && ($(document).scrollTop() <= 50)) {
+        if (($(window).width() > 1024) && ($(document).scrollTop() <= 100)) {
             setNavbarTransparent();
         } else {
             setNavbarLight();

@@ -127,6 +127,15 @@ namespace Hub.Services
             );
 
             await _client.DeleteAsync(uri, headers: headers);
+
+            // Notify user that plan successfully deleted
+            _pusherNotifier.NotifyUser(new NotificationMessageDTO
+            {
+                NotificationType = NotificationType.GenericSuccess,
+                NotificationArea = NotificationArea.ActivityStream,
+                Message = $"Plan Unpublished.",
+                Collapsed = false
+            }, userId);
         }
 
         public PlanDTO CrateTemplate(Guid planId, string userId)
