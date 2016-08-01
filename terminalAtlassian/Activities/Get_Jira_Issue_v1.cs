@@ -77,7 +77,7 @@ namespace terminalAtlassian.Actions
 
         public override async Task FollowUp()
         {
-            var issueKey = ActivityUI.IssueNumber.GetValue(Storage);
+            var issueKey = ActivityUI.IssueNumber.TextValue;
             if (!string.IsNullOrEmpty(issueKey))
             {
                 var curJiraIssue = await _atlassianService.GetJiraIssue(issueKey, AuthorizationToken);
@@ -89,7 +89,7 @@ namespace terminalAtlassian.Actions
 
         public override async Task Run()
         {
-            var issueKey = ActivityUI.IssueNumber.GetValue(Storage);
+            var issueKey = ActivityUI.IssueNumber.TextValue;
             if (!string.IsNullOrEmpty(issueKey))
             {
                 var issueFields = await _atlassianService.GetJiraIssue(issueKey, AuthorizationToken);

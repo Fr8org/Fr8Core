@@ -146,10 +146,22 @@
     cursor: pointer;
 }
 
+@media (max-width: 599px){
+    designer-header md-radio-group {
+        margin-top: -15px
+    }
+}
+
 .sub-plan-container {
     padding-top:50px;
-    overflow: auto;
+    overflow: hidden;
     width: 100%;
+}
+
+.pb-scroll-pane {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
 }
 
 .sub-plan-options-content md-icon {

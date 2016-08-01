@@ -1,0 +1,27 @@
+﻿
+@*fallback for case js won`t work*@
+@{
+    Html.RenderAction("Index", "DockyardAccount");
+}
+
+    <script>
+        //here we can logout from all related services which uses cookie authentication
+        $().ready(function () {
+            var redirectUrl = "@Url.Action("Index", "DockyardAccount")";
+            $.ajax({
+                    method: "GET",
+                    url: "@ViewBag.PDLogoutUrl",
+                    data: { token:"@ViewBag.Token" }
+                }).done(function() {
+                    window.location.href = redirectUrl;
+                })
+                .error(function() {
+                    //redirect anyway
+                    //alert('can not log off from plan directory');
+                    window.location.href = redirectUrl;
+                });
+        });
+    </script>
+
+
+

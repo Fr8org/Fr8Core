@@ -132,6 +132,17 @@ namespace Hub.Services
             return GetByKey(curActivityTemplateId.Value).Terminal.Endpoint;
         }
 
+
+        public bool TryGetByKey(Guid activityTemplateId, out ActivityTemplateDO activityTemplate)
+        {
+            Initialize();
+
+            lock (_activityTemplates)
+            {
+                return _activityTemplates.TryGetValue(activityTemplateId, out activityTemplate);
+            }
+        }
+
         public ActivityTemplateDO GetByKey(Guid curActivityTemplateId)
         {
             Initialize();

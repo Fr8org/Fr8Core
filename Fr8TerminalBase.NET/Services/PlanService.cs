@@ -20,7 +20,7 @@ namespace Fr8.TerminalBase.Services
             return await _hubCommunicator.GetPlansByActivity(activityId);
         }
 
-        protected async Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan)
+        protected async Task<PlanDTO> UpdatePlan(PlanNoChildrenDTO plan)
         {
             return await _hubCommunicator.UpdatePlan(plan);
         }
@@ -31,20 +31,20 @@ namespace Fr8.TerminalBase.Services
         /// <param name="terminalActivity"></param>
         /// <param name="OriginalPlanName"></param>
         /// <returns></returns>
-        public async Task<PlanFullDTO> UpdatePlanName(Guid activityId, string OriginalPlanName, string NewPlanName)
+        public async Task<PlanDTO> UpdatePlanName(Guid activityId, string OriginalPlanName, string NewPlanName)
         {
             try
             {
                 PlanDTO plan = await GetPlansByActivity(activityId.ToString());
-                if (plan != null && plan.Plan.Name.Equals(OriginalPlanName, StringComparison.OrdinalIgnoreCase))
+                if (plan != null && plan.Name.Equals(OriginalPlanName, StringComparison.OrdinalIgnoreCase))
                 {
-                    plan.Plan.Name = NewPlanName;
+                    plan.Name = NewPlanName;
 
-                    var emptyPlanDTO = Mapper.Map<PlanEmptyDTO>(plan.Plan);
+                    var emptyPlanDTO = Mapper.Map<PlanNoChildrenDTO>(plan);
                     plan = await UpdatePlan(emptyPlanDTO);
                 }
 
-                return plan.Plan;
+                return plan;
 
             }
             catch (Exception ex)
@@ -53,18 +53,18 @@ namespace Fr8.TerminalBase.Services
             return null;
         }
 
-        public async Task<PlanFullDTO> UpdatePlanCategory(Guid activityId, string category)
+        public async Task<PlanDTO> UpdatePlanCategory(Guid activityId, string category)
         {
             PlanDTO plan = await GetPlansByActivity(activityId.ToString());
-            if (plan != null && plan.Plan != null)
+            if (plan != null && plan != null)
             {
-                plan.Plan.Category = category;
+                plan.Category = category;
 
-                var emptyPlanDTO = Mapper.Map<PlanEmptyDTO>(plan.Plan);
+                var emptyPlanDTO = Mapper.Map<PlanNoChildrenDTO>(plan);
                 plan = await UpdatePlan(emptyPlanDTO);
             }
 
-            return plan.Plan;
+            return plan;
         }
     }
 }

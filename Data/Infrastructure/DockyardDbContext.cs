@@ -358,10 +358,6 @@ namespace Data.Infrastructure
                 .HasForeignKey(x => x.OrganizationId)
                 .WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<ActivityDescriptionDO>().ToTable("ActivityDescriptions");
-            modelBuilder.Entity<NodeTransitionDO>().ToTable("NodeTransitions");
-            modelBuilder.Entity<PlanNodeDescriptionDO>().ToTable("PlanNodeDescriptions");
-            modelBuilder.Entity<PlanTemplateDO>().ToTable("PlanTemplates");
             modelBuilder.Entity<PageDefinitionDO>().ToTable("PageDefinitions");
             modelBuilder.Entity<TerminalRegistrationDO>().ToTable("TerminalRegistration");
 

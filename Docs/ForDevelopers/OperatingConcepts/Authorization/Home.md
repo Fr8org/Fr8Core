@@ -10,6 +10,8 @@ Operational Security
 
 [Fr8's OAuth Mechanisms](/Docs/ForDevelopers/OperatingConcepts/Authorization/Home.md)
 
+[Terminal Authentication (How the Terminals identify themselves to the Hubs)](/Docs/ForDevelopers/OperatingConcepts/Authorization/TerminalAuthentication.md)
+
 [Token Considerations](/Docs/ForDevelopers/OperatingConcepts/Authorization/ErrorHandling.md)
 
 

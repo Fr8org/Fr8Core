@@ -39,7 +39,7 @@ namespace Fr8Data.DataTransferObjects
     public class PlanResultDTO
     {
         [JsonProperty("plans")]
-        public IList<PlanEmptyDTO> Plans { get; set; }
+        public IList<PlanNoChildrenDTO> Plans { get; set; }
 
         [JsonProperty("currentPage")]
         public int CurrentPage { get; set; }
