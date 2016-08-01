@@ -49,10 +49,41 @@ namespace HubTests.Services
                    a.Type == b.Type &&
                    a.Version == b.Version &&
                    (skipId || a.WebServiceId == b.WebServiceId) &&
-                   AreEqual(a.WebService, b.WebService, skipId);
+                   AreEqual(a.Categories, b.Categories, skipId);
         }
 
-        private static bool AreEqual(WebServiceDO a, WebServiceDO b, bool skipId = false)
+        private static bool AreEqual(IEnumerable<ActivityCategorySetDO> a, IEnumerable<ActivityCategorySetDO> b, bool skipId = false)
+        {
+            if (a == null && b == null)
+            {
+                return true;
+            }
+
+            if (a == null || b == null)
+            {
+                return false;
+            }
+
+            var al = a.ToList();
+            var bl = b.ToList();
+
+            if (al.Count != bl.Count)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < al.Count; ++i)
+            {
+                if (!AreEqual(al[i].ActivityCategory, bl[i].ActivityCategory, skipId))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static bool AreEqual(ActivityCategoryDO a, ActivityCategoryDO b, bool skipId = false)
         {
             return a.IconPath == b.IconPath &&
                    (skipId || a.Id == b.Id) &&

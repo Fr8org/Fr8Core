@@ -35,8 +35,11 @@ namespace terminalQuickBooksTests.Integration
             //Activity Create_Journal_Entry
             Assert.True(terminalDiscoverResponse.Activities.Any(a => a.Name == Create_Journal_Entry), 
                 "Activity " + Create_Journal_Entry + " was not loaded");
-            Assert.AreEqual("QuickBooks", terminalDiscoverResponse.Activities[0].WebService.Name, 
-                "No WebService set for activity " + Create_Journal_Entry);
+            
+            // TODO: FR-4943, remove this.
+            // Assert.AreEqual("QuickBooks", terminalDiscoverResponse.Activities[0].WebService.Name, 
+            //     "No WebService set for activity " + Create_Journal_Entry);
+
             //Activity Convert_TableData_To_AccountingTransactions
             //Assert.True(terminalDiscoverResponse.Activities.Any(a => a.Name == Convert_TableData_To_AccountingTransactions),
              //   "Activity " + Convert_TableData_To_AccountingTransactions + " was not loaded");

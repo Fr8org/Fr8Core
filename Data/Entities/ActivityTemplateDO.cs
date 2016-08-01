@@ -93,10 +93,11 @@ namespace Data.Entities
 
         public int MinPaneWidth { get; set; }
 
-        [ForeignKey("WebService")]
-		public int? WebServiceId { get; set; }
+        // TODO: FR-4943, remove this.
+        // [ForeignKey("WebService")]
+        // public int? WebServiceId { get; set; }
 
         // TODO: FR-4943, remove this.
-		// public virtual WebServiceDO WebService { get; set; }
+        // public virtual WebServiceDO WebService { get; set; }
     }
 }
