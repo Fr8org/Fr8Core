@@ -272,7 +272,7 @@
     <Content Include="Content\metronic\loading.gif" />
     <Content Include="Content\metronic\ui.js" />
     <Content Include="Content\css\plan-category.css" />
-    <Content Include="CategoryPages\PlanCategoryTemplate.tt">
+    <Content Include="Templates\PlanCategoryTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>PlanCategoryTemplate.cs</LastGenOutput>
     </Content>
@@ -332,7 +332,7 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="CategoryPages\PlanCategoryTemplate.cs">
+    <Compile Include="Templates\PlanCategoryTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>PlanCategoryTemplate.tt</DependentUpon>

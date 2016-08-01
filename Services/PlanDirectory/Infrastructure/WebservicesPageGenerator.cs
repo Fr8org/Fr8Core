@@ -8,8 +8,8 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
-using PlanDirectory.CategoryPages;
 using PlanDirectory.Interfaces;
+using PlanDirectory.Templates;
 
 namespace PlanDirectory.Infrastructure
 {
