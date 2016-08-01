@@ -25,8 +25,6 @@ namespace PlanDirectory
                 app.SetDataProtectionProvider(new DpapiDataProtectionProvider());
 
 
-                app.UseWebApi(configuration);
-
                 ObjectFactory.Initialize();
                 ObjectFactory.Configure(Fr8.Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
                 ObjectFactory.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
@@ -35,6 +33,7 @@ namespace PlanDirectory
                 ObjectFactory.GetInstance<ISearchProvider>().Initialize(true).Wait();
 
                 OwinInitializer.ConfigureAuth(app, "/Reauthenticate");
+                app.UseWebApi(configuration);
             }
         }
 
