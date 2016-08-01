@@ -58,14 +58,7 @@ app.factory('settings', ['$rootScope', ($rootScope) => {
 
 /* Setup App Main Controller */
 app.controller('AppController', ['$scope', '$rootScope', '$state', function ($scope, $rootScope, $state) {
-    $scope.showPlanBuilderHeader = function () {
-        if ($state.current.name != 'plan' && $state.current.name != 'plan.details') {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
+
     $scope.$on('$viewContentLoaded', (event,viewName) => {
         Metronic.initComponents(); // init core components
         //Layout.init(); //  Init entire layout(header, footer, sidebar, etc) on page load if the partials included in server side instead of loading with ng-include directive 
@@ -105,6 +98,12 @@ initialization can be disabled and Layout.init() should be called on page load c
 
 /* Setup Layout Part - Header */
 app.controller('HeaderController', ['$scope', '$http', '$window', '$state', 'TerminalService', 'PlanService', '$rootScope', ($scope, $http, $window, $state, TerminalService, PlanService, $rootScope) => {
+    if ($state.current.name === 'plan' || $state.current.name === 'plan.details') {
+        $scope.showPlanBuilderHeader = true;
+    }
+    else {
+        $scope.showPlanBuilderHeader = false;
+    }
 
     Layout.initHeader(); // init header       
 
@@ -498,8 +497,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
 /* Init global settings and run the app */
 app.run(["$rootScope", "settings", "$state", function ($rootScope, settings, $state) {
     $rootScope.$state = $state; // state to be accessed from view
-    $rootScope.headerInitiated = false; // indicates whether to execude Layout.initHeader() in HeaderController
-    $rootScope.headerInitiated1 = false; // indicates whether to execude Layout.initHeader() in HeaderController
 }]);
 
 app.constant('fr8ApiVersion', 'v1');
