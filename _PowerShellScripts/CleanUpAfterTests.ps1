@@ -72,6 +72,8 @@ delete m from History m
 	inner join #Nodes cp on  convert(nvarchar(50),cp.Id) = m.ObjectId
 
 drop table #Nodes
+
+-- delete account used in register
 "
 
 Write-Host $commandText
