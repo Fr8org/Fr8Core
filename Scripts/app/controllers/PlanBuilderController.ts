@@ -45,10 +45,12 @@ module dockyard.controllers {
         curAggReloadingActions: Array<string>;
         addSubPlan: () => void;
         view: string;
-        displayDeveloperMenu: boolean;
         viewMode: string;
         hasAnyActivity: (pSubPlan: any) => boolean;
         state: string;
+        scrollStart: (event: MouseEvent) => void;
+        scrollStop: (event: MouseEvent) => void;
+        scrollDrag: (event: MouseEvent) => void;
     }
 
 
@@ -89,6 +91,10 @@ module dockyard.controllers {
 
         private _longRunningActionsCounter: number;
         private _loading = false;
+        private _validScrollFlag = false;
+        private _paneLastClientX: number;
+        private _paneLastClientY: number;
+        private _scrollState = false;
 
         constructor(
             private $scope: IPlanBuilderScope,
@@ -114,7 +120,6 @@ module dockyard.controllers {
 
             this.LayoutService.resetLayout();
 
-            this.$scope.displayDeveloperMenu = false;
             this.$scope.isPlanBuilderScope = true;
             this.$scope.isReConfiguring = false;
 
@@ -232,7 +237,7 @@ module dockyard.controllers {
 
             };
             $scope.state = $state.current.name;
-            this.processState($state);
+            this.processState($state);           
         }
 
         private handleBackButton(event, toState, toParams, fromState, fromParams, options) {
@@ -404,8 +409,8 @@ module dockyard.controllers {
             var plan = this.PlanService.createSolution({
                 solutionName: solutionName
             });
-            plan.$promise.then((curPlan: interfaces.IPlanFullDTO) => {
-                this.$scope.planId = curPlan.plan.id;
+            plan.$promise.then((curPlan: interfaces.IPlanVM) => {
+                this.$scope.planId = curPlan.id;
                 this.onPlanLoad('solution', curPlan);
             });
         }
@@ -428,19 +433,19 @@ module dockyard.controllers {
             }, 1500);
         }
 
-        private onPlanLoad(mode: string, curPlan: interfaces.IPlanFullDTO) {
-            this.AuthService.setCurrentPlan(<interfaces.IPlanVM>curPlan.plan);
+        private onPlanLoad(mode: string, curPlan: interfaces.IPlanVM) {
+            this.AuthService.setCurrentPlan(<interfaces.IPlanVM>curPlan);
             this.AuthService.clear();
 
             this.$scope.mode = mode;
-            this.$scope.current.plan = curPlan.plan;
+            this.$scope.current.plan = curPlan;
             //this.$scope.currentSubroute = curRoute.subroutes[0];
-            if (curPlan.plan.subPlans.length > 1) {
+            if (curPlan.subPlans.length > 1) {
                 this.setAdvancedEditingMode();
             }
-            this.renderPlan(<interfaces.IPlanVM>curPlan.plan);
+            this.renderPlan(<interfaces.IPlanVM>curPlan);
             if (this.$state.current.name != 'plan.details') {
-                this.$state.go('plan', { id: curPlan.plan.id, viewMode: mode });
+                this.$state.go('plan', { id: curPlan.id, viewMode: mode });
             }
         }
 

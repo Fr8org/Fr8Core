@@ -187,7 +187,7 @@ namespace Fr8.Testing.Integration
             return payload;
         }
 
-        protected async Task<ContainerDTO> ExecutePlan(PlanFullDTO plan)
+        protected async Task<ContainerDTO> ExecutePlan(PlanDTO plan)
         {
             var container = await HttpPostAsync<string, ContainerDTO>(
                 _baseUrl + "plans/run?planId=" + plan.Id,
