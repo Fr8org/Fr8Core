@@ -242,8 +242,8 @@ namespace terminalSalesforce.Services
                     {
                         var requiredDateFormat = matchedFilter.Substring(matchedFilter.IndexOf("'")).Replace("'", "");
 
-                        var normalizedValue = matchedFilter.Substring(0, matchedFilter.IndexOf("'")) + 
-                                           DateTime.Parse(requiredDateFormat).ToString("yyyy-MM-ddTHH:mm:ssZ");
+                        var normalizedValue = matchedFilter.Substring(0, matchedFilter.IndexOf("'")) +
+                                           DateTime.ParseExact(requiredDateFormat, "dd-MM-yyyy", System.Globalization.CultureInfo.InvariantCulture).ToString("yyyy-MM-ddTHH:mm:ssZ");
 
                         filterList[filterList.IndexOf(matchedFilter)] = normalizedValue;
                     }
