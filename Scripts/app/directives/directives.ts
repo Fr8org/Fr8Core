@@ -367,7 +367,7 @@ app.directive('eventPlandashboard', ['$timeout', '$window', function ($timeout, 
     };
 }]);
 
-//== scroll grey area of PB vertically and horizontally
+//== scroll grey area of PB vertically and horizontally 
 app.directive('pbScrollPane', ['$timeout', '$window', function ($timeout, $window) {
     return {
         restrict: 'A',
@@ -398,7 +398,8 @@ app.directive('pbScrollPane', ['$timeout', '$window', function ($timeout, $windo
                 
                 if (!_validScrollFlag) {
                     e.preventDefault();
-                    $scroller.start();                   
+                    $scroller.start();
+                    $(element).trigger('mouseup');
                     return false;
                 }                                
             });            
