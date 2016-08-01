@@ -18,7 +18,6 @@ namespace HubTests.Controllers
     public class UserControllerTests : ApiControllerTestBase
     {
         private Fr8AccountDO _testAccount1;
-        private Fr8AccountDO _testAccount2;
         private Fr8AccountDO _testAccount3;
 
         public override void SetUp()
@@ -40,8 +39,6 @@ namespace HubTests.Controllers
 
             Assert.AreEqual(result.Content.Count, 3);
             Assert.AreEqual(result.Content[0].Id, _testAccount1.Id);
-            Assert.AreEqual(result.Content[1].Id, _testAccount2.Id);
-            Assert.AreEqual(result.Content[1].Role, Roles.Booker);
             Assert.AreEqual(result.Content[2].Id, _testAccount3.Id);
         }
 
@@ -50,12 +47,11 @@ namespace HubTests.Controllers
         {
             var controller = CreateController<UsersController>();
 
-            var result = controller.UserData(_testAccount2.Id) as OkNegotiatedContentResult<UserDTO>;
+            var result = controller.UserData(_testAccount3.Id) as OkNegotiatedContentResult<UserDTO>;
 
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Content);
-            Assert.AreEqual(result.Content.EmailAddress, _testAccount2.EmailAddress.Address);
-            Assert.AreEqual(result.Content.Role, Roles.Booker);
+            Assert.AreEqual(result.Content.EmailAddress, _testAccount3.EmailAddress.Address);
         }
 
         private void InitializeUsers()
@@ -64,10 +60,6 @@ namespace HubTests.Controllers
             {
                 _testAccount1 = FixtureData.TestUser1();
                 uow.UserRepository.Add(_testAccount1);
-
-                _testAccount2 = FixtureData.TestUser2();
-                uow.UserRepository.Add(_testAccount2);
-                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Booker, _testAccount2.Id);
 
                 _testAccount3 = FixtureData.TestUser3();
                 uow.UserRepository.Add(_testAccount3);
@@ -79,7 +71,6 @@ namespace HubTests.Controllers
         private void InitializeRoles()
         {
             CreateRole(Roles.Admin);
-            CreateRole(Roles.Booker);
             CreateRole(Roles.Customer);
         }
 

@@ -763,6 +763,10 @@
     <Compile Include="Migrations\201607301037088_PlanDTO_PlanFullDTO_Refactoring.Designer.cs">
       <DependentUpon>201607301037088_PlanDTO_PlanFullDTO_Refactoring.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201608011644376_TerminalRegistrationEnhancements.cs" />
+    <Compile Include="Migrations\201608011644376_TerminalRegistrationEnhancements.Designer.cs">
+      <DependentUpon>201608011644376_TerminalRegistrationEnhancements.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -1408,6 +1412,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201607301037088_PlanDTO_PlanFullDTO_Refactoring.resx">
       <DependentUpon>201607301037088_PlanDTO_PlanFullDTO_Refactoring.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608011644376_TerminalRegistrationEnhancements.resx">
+      <DependentUpon>201608011644376_TerminalRegistrationEnhancements.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

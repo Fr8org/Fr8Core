@@ -158,7 +158,7 @@ namespace Hub.Security
             if (!IsAuthenticated())
                 return terminals;
 
-            if (Thread.CurrentPrincipal is Fr8Principle)
+            if (Thread.CurrentPrincipal is Fr8Principal)
                 return terminals;
 
             var roles = GetRoleNames().ToList();

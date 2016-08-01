@@ -7,6 +7,10 @@ namespace Data.Entities
 {
     public class TerminalRegistrationDO : BaseObject
     {
+        [Key]
+        [Required]
+        public Guid Id { get; set; }
+
         /// <summary>
         /// Currently active endpoint. 
         /// </summary>
@@ -15,7 +19,6 @@ namespace Data.Entities
         /// by deployment scripts or by promoting the terminal from Dev to Production 
         /// while ProdUrl/DevUrl contains  whatever user or administrator have supplied.
         /// </remarks>
-        [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public string Endpoint { get; set; }
 
@@ -30,12 +33,10 @@ namespace Data.Entities
         public string DevUrl { get; set; }
         public string ProdUrl { get; set; }
 
-        [Required]
         [ForeignKey("OperationalStateTemplate")]
         public int OperationalState { get; set; }
         public virtual _OperationalStateTemplate OperationalStateTemplate { get; set; }
 
-        [Required]
         [ForeignKey("ParticipationStateTemplate")]
         public int ParticipationState { get; set; }
         public virtual _ParticipationStateTemplate ParticipationStateTemplate { get; set; }

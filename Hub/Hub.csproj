@@ -309,7 +309,7 @@
     <Compile Include="Infrastructure\CustomSelector.cs" />
     <Compile Include="Infrastructure\FilterConditionPredicateBuilder.cs" />
     <Compile Include="Infrastructure\Fr8Identity.cs" />
-    <Compile Include="Infrastructure\Fr8Principle.cs" />
+    <Compile Include="Infrastructure\Fr8Principal.cs" />
     <Compile Include="Infrastructure\Fr8ApiAuthorizeAttribute.cs" />
     <Compile Include="Infrastructure\OwinInitializer.cs" />
     <Compile Include="Interfaces\IActivityCategory.cs" />

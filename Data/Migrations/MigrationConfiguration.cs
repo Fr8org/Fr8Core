@@ -138,6 +138,8 @@ namespace Data.Migrations
 
             terminalRegistration.Endpoint = terminalEndpoint;
             terminalRegistration.IsFr8OwnTerminal = true;
+            terminalRegistration.OperationalState = OperationalState.Active;
+            terminalRegistration.ParticipationState = ParticipationState.Approved;
 
             uow.TerminalRegistrationRepository.Add(terminalRegistration);
             uow.SaveChanges();

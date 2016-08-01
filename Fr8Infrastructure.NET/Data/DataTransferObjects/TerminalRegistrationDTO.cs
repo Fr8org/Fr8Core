@@ -4,6 +4,9 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
     public class TerminalRegistrationDTO
     {
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
         [JsonProperty("endpoint")]
         public string Endpoint { get; set; }
 
