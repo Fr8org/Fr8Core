@@ -367,24 +367,29 @@ app.directive('eventPlandashboard', ['$timeout', '$window', function ($timeout, 
     };
 }]);
 
-//== scroll grey area of PB vertically and horizontally
+//== scroll grey area of PB vertically and horizontally 
 app.directive('pbScrollPane', ['$timeout', '$window', function ($timeout, $window) {
     return {
         restrict: 'A',
         link: function (scope, element) {
             let _validScrollFlag = false;
             let $scroller = null;
+            let curSrollTop = 0;
+            let curScrollLeft = 0;
+
+            $scroller = (<any>$(element)).kinetic();
 
             $(element).on('mousedown', function (e) {
                 let startObj = e.target,
                     posX = e.pageX,
                     posY = e.pageY;
 
+                curSrollTop = $(element).scrollTop();
+                curScrollLeft = $(element).scrollLeft();
+
                 var impossibleObjs = $('#scrollPane .action');                
 
-                _validScrollFlag = true;
-                
-                $scroller = (<any>$(element)).kinetic();
+                _validScrollFlag = true;               
 
                 angular.forEach(impossibleObjs, (elem) => {
                     let w = $(elem).width(),
@@ -395,12 +400,9 @@ app.directive('pbScrollPane', ['$timeout', '$window', function ($timeout, $windo
                         _validScrollFlag = false;                        
                     }
                 });
-                
-                if (!_validScrollFlag) {
-                    e.preventDefault();
-                    $scroller.start();                   
-                    return false;
-                }                                
+
+                if (_validScrollFlag) $scroller.kinetic('attach');
+                else $scroller.kinetic('detach');
             });            
         }
     };
