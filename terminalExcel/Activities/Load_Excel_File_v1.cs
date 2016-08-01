@@ -233,11 +233,12 @@ namespace terminalExcel.Activities
             Terminal = TerminalData.TerminalDTO,
             Tags = "Table Data Generator,Getter",
             MinPaneWidth = 300,
-            WebService = TerminalData.WebServiceDTO,
+            // TODO: FR-4943, remove this.
+            // WebService = TerminalData.WebServiceDTO,
             Categories = new[]
             {
                 ActivityCategories.Receive,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

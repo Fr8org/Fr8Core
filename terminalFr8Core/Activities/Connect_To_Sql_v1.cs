@@ -24,11 +24,12 @@ namespace terminalFr8Core.Activities
             Version = "1",
             Tags = Tags.Internal,
             Terminal = TerminalData.TerminalDTO,
-            WebService = TerminalData.WebServiceDTO,
+            // TODO: FR-4943, remove this.
+            // WebService = TerminalData.WebServiceDTO,
             Categories = new[]
             {
                 ActivityCategories.Process,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

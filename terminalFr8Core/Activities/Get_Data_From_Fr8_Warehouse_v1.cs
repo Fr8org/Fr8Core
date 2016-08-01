@@ -34,12 +34,13 @@ namespace terminalFr8Core.Actions
             Category = Fr8.Infrastructure.Data.States.ActivityCategory.Processors,
             Version = "1",
             MinPaneWidth = 550,
-            WebService = TerminalData.WebServiceDTO,
+            // TODO: FR-4943, remove this.
+            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Process,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

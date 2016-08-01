@@ -24,12 +24,12 @@ namespace terminalFr8Core.Activities
             NeedsAuthentication = false,
             MinPaneWidth = 380,
             Tags = Tags.Internal,
-            WebService = TerminalData.WebServiceDTO,
+            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Monitor,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

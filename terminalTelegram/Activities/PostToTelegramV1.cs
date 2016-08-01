@@ -23,13 +23,14 @@ namespace terminalTelegram.Activities
             Category = ActivityCategory.Forwarders,
             Terminal = TerminalData.TerminalDTO,
             Version = "1",
-            WebService = TerminalData.WebServiceDTO,
+            // TODO: FR-4943, remove this.
+            // WebService = TerminalData.WebServiceDTO,
             MinPaneWidth = 330,
             NeedsAuthentication = true,
             Categories = new[]
             {
                 ActivityCategories.Forward,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
 

@@ -37,12 +37,13 @@ namespace terminalGoogle.Activities
             Category = ActivityCategory.Monitors,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
-            WebService = TerminalData.GmailWebServiceDTO,
+            // TODO: FR-4943, remove this.
+            // WebService = TerminalData.GmailWebServiceDTO,
             MinPaneWidth = 300,
             Categories = new[]
             {
                 ActivityCategories.Monitor,
-                new ActivityCategoryDTO(TerminalData.GooogleWebServiceDTO.Name, TerminalData.GooogleWebServiceDTO.IconPath)
+                TerminalData.GooogleActivityCategoryDTO
             }
         };
 

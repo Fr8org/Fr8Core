@@ -33,7 +33,8 @@ namespace terminalDocuSign.Activities
             Category = ActivityCategory.Solution,
             NeedsAuthentication = true,
             MinPaneWidth = 380,
-            WebService = TerminalData.WebServiceDTO,
+            // TODO: FR-4943, remove this.
+            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[] { ActivityCategories.Solution }
         };

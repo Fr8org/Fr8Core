@@ -65,12 +65,13 @@ namespace terminalGoogle.Actions
             Category = ActivityCategory.Monitors,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
-            WebService = TerminalData.GooogleWebServiceDTO,
+            // TODO: FR-4943, remove this.
+            // WebService = TerminalData.GooogleWebServiceDTO,
             MinPaneWidth = 300,
             Categories = new[]
             {
                 ActivityCategories.Monitor,
-                new ActivityCategoryDTO(TerminalData.GooogleWebServiceDTO.Name, TerminalData.GooogleWebServiceDTO.IconPath)
+                TerminalData.GooogleActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
