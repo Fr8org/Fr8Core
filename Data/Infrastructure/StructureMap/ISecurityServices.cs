@@ -21,7 +21,7 @@ namespace Data.Infrastructure.StructureMap
         ClaimsIdentity GetIdentity(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO);
         bool AuthorizeActivity(PermissionType permissionType, string curObjectId, string curObjectType, string propertyName = null);
         bool UserHasPermission(PermissionType permissionType, string objectType);
-        void SetDefaultRecordBasedSecurityForObject(string roleName, string dataObjectId, string dataObjectType);
+        void SetDefaultRecordBasedSecurityForObject(string roleName, string dataObjectId, string dataObjectType, List<PermissionType> customPermissions = null);
         IEnumerable<TerminalDO> GetAllowedTerminalsByUser(IEnumerable<TerminalDO> terminals);
         List<string> GetAllowedUserRolesForSecuredObject(string objectId, string objectType);
     }

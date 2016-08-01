@@ -4,6 +4,7 @@ using System.Linq;
 using Data.Infrastructure.StructureMap;
 using Data.Repositories.Security.Entities;
 using Data.Repositories.SqlBased;
+using Data.States;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using StructureMap;
 
@@ -61,46 +62,6 @@ namespace Data.Repositories.Security.StorageImpl
         {
             throw new NotImplementedException();
         }
-
-        public void SetDefaultObjectSecurity(string currentUserId, string dataObjectId, string dataObjectType, Guid rolePermissionId, int? organizationId)
-        {
-            lock (ObjectRolePermissions)
-            {
-                //var objectRolePrivilege = new ObjectRolePermissionsDO()
-                //{
-                //    ObjectId = dataObjectId,
-                //    RolePermissions = new List<RolePermission>()
-                //    {
-                //        new RolePermission()
-                //        {
-                //            PermissionSet = new PermissionSetDO() {},
-                //            Role = new RoleDO()
-                //            {
-                //                RoleName = roleName,
-                //            }
-                //        },
-                //        new RolePermission()
-                //        {
-                //            PermissionSet = new PermissionSetDO() {},
-                //            Role = new RoleDO()
-                //            {
-                //                RoleName = roleName
-                //            } 
-                //        },
-                //        new RolePermission()
-                //        {
-                //            PermissionSet = new PermissionSetDO() {},
-                //            Role = new RoleDO()
-                //            {
-                //                RoleName = roleName
-                //            }
-                //        }
-                //    }
-                //};
-                //ObjectRolePermissions.Add(objectRolePrivilege);
-            }
-        }
-
         public int UpdateRolePermission(RolePermission rolePermissions)
         {
             throw new NotImplementedException();
@@ -117,8 +78,9 @@ namespace Data.Repositories.Security.StorageImpl
         }
 
         public void SetDefaultRecordBasedSecurityForObject(string currentUserId, string roleName, string dataObjectId,
-            string dataObjectType, Guid rolePermissionId, int? organizationId)
+            string dataObjectType, Guid rolePermissionId, int? organizationId, List<PermissionType> permissionTypes = null)
         {
+            //refactor in security unit tests rework
         }
 
         public RolePermission GetRolePermission(string roleName, Guid permissionSetId)

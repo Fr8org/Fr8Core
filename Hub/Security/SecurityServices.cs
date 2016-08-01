@@ -129,7 +129,8 @@ namespace Hub.Security
         /// <param name="roleName">User role</param>
         /// <param name="dataObjectId"></param>
         /// <param name="dataObjectType"></param>
-        public void SetDefaultRecordBasedSecurityForObject(string roleName, string dataObjectId, string dataObjectType)
+        /// <param name="customPermissionTypes">You can define your own permission types for a object, or use default permission set for Standard Users</param>
+        public void SetDefaultRecordBasedSecurityForObject(string roleName, string dataObjectId, string dataObjectType, List<PermissionType> customPermissionTypes = null)
         {
             if (!IsAuthenticated()) return;
 
@@ -150,7 +151,7 @@ namespace Hub.Security
                 if (orgId != 0) organizationId = orgId;
             }
 
-            _securityObjectStorageProvider.SetDefaultRecordBasedSecurityForObject(currentUserId, roleName, dataObjectId.ToString(), dataObjectType, Guid.Empty, organizationId);
+            _securityObjectStorageProvider.SetDefaultRecordBasedSecurityForObject(currentUserId, roleName, dataObjectId.ToString(), dataObjectType, Guid.Empty, organizationId, customPermissionTypes);
         }
 
         public IEnumerable<TerminalDO> GetAllowedTerminalsByUser(IEnumerable<TerminalDO> terminals)

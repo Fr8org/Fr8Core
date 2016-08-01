@@ -106,10 +106,10 @@ namespace Data.Infrastructure.StructureMap
             return true;
         }
 
-        public void SetDefaultRecordBasedSecurityForObject(string roleName, string dataObjectId, string dataObjectType)
+        public void SetDefaultRecordBasedSecurityForObject(string roleName, string dataObjectId, string dataObjectType, List<PermissionType> customPermissionTypes = null )
         {
             var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
-            securityStorageProvider.SetDefaultRecordBasedSecurityForObject(GetCurrentUser(), Roles.OwnerOfCurrentObject, dataObjectId.ToString(), dataObjectType, Guid.Empty, null);
+            securityStorageProvider.SetDefaultRecordBasedSecurityForObject(GetCurrentUser(), Roles.OwnerOfCurrentObject, dataObjectId.ToString(), dataObjectType, Guid.Empty, null, null);
         }
 
         public IEnumerable<TerminalDO> GetAllowedTerminalsByUser(IEnumerable<TerminalDO> terminals)

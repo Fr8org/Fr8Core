@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using Data.Entities;
 using Data.Repositories.Security.Entities;
 using Data.Repositories.SqlBased;
+using Data.States;
 using Data.States.Templates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 
@@ -218,7 +219,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             throw new NotImplementedException();
         }
 
-        public void SetDefaultRecordBasedSecurityForObject(string currentUserId, string roleName, string dataObjectId, string dataObjectType, Guid rolePermissionId, int? organizationId = null)
+        public void SetDefaultRecordBasedSecurityForObject(string currentUserId, string roleName, string dataObjectId, string dataObjectType, Guid rolePermissionId, int? organizationId = null, List<PermissionType> customPermissionTypes = null)
         {
             using (var connection = OpenConnection(_sqlConnectionProvider))
             {
