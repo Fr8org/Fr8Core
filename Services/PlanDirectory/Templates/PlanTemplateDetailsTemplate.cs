@@ -15,9 +15,9 @@ namespace PlanDirectory.Templates
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
+    #line 1 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "14.0.0.0")]
-    public partial class PlanCategoryTemplate : PlanCategoryTemplateBase
+    public partial class PlanTemplateDetailsTemplate : PlanTemplateDetailsTemplateBase
     {
 #line hidden
         /// <summary>
@@ -25,7 +25,8 @@ namespace PlanDirectory.Templates
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write(@"<!DOCTYPE html>
+            this.Write(@"
+<!DOCTYPE html>
 <html>
 <head>
     <link rel=""stylesheet"" href=""../bower_components/bootstrap/dist/css/bootstrap.min.css""/>
@@ -37,226 +38,16 @@ namespace PlanDirectory.Templates
     <link rel=""stylesheet"" href=""../Content/css/plan-category.css"" />
 	<link rel=""stylesheet"" href=""../Content/css/plan-directory.css"" />
 
-    <title></title>
-    <meta charset=""utf-8""/>
-</head>
-<body>
-	 <div class=""header-container"">
-        <div class=""header"">
-            <div class=""logo""></div>                        
-        </div>
-    </div>
-    <div class=""container"">        
-        <p style=""font-size: 30px"">Plan Directory - ");
+    <title>Fr8 - ");
             
-            #line 27 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Name));
+            #line 15 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(manifestName));
             
             #line default
             #line hidden
-            this.Write("</p>\r\n        <div class=\"icons\">\r\n\t\t\t");
-            
-            #line 29 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
- int i = 0;
-			foreach (var tag in Tags)
-			{ 
-            
-            #line default
-            #line hidden
-            this.Write("\t\t\t<img class=\"web-service-icon\" src=\"..");
-            
-            #line 32 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(tag.Value));
-            
-            #line default
-            #line hidden
-            this.Write("\"/>\t\t\r\n\t\t\t\t");
-            
-            #line 33 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
- if (i < Tags.Count - 1)
-				{ 
-            
-            #line default
-            #line hidden
-            this.Write("\t\t\t\t<img src=\"../Content/icons/plus.png\"/>\r\n\t\t\t\t");
-            
-            #line 36 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
- i++;
-				} 
-            
-            #line default
-            #line hidden
-            this.Write("                        \r\n\t\t");
-            
-            #line 38 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
- } 
-            
-            #line default
-            #line hidden
-            this.Write(@"        </div>
-        <br/>
-        <p style=""font-size: 15px"">Plan Definition Description</p>
-        <p style=""font-size: 22px"">Related Plans</p>
-            <table class=""table""> 
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Plan Name</th>
-                        <th>Plan Description</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ");
-            
-            #line 53 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
- int number = 1;
-                    foreach (var plan in RelatedPlans) 
-                    {
-            
-            #line default
-            #line hidden
-            this.Write("                    <tr>\r\n                        <th scope=\"row\">");
-            
-            #line 57 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(number++));
-            
-            #line default
-            #line hidden
-            this.Write("</th>\r\n                        <td>");
-            
-            #line 58 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(plan.Item1));
-            
-            #line default
-            #line hidden
-            this.Write("</td>\r\n                        <td>");
-            
-            #line 59 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(plan.Item2));
-            
-            #line default
-            #line hidden
-            this.Write("</td>\r\n                        <td><a href=\"");
-            
-            #line 60 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(plan.Item3));
-            
-            #line default
-            #line hidden
-            this.Write("\">Create</a></td>\r\n                    </tr>                   \r\n                " +
-                    "    ");
-            
-            #line 62 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
- } 
-            
-            #line default
-            #line hidden
-            this.Write("                    \r\n                </tbody>\r\n            </table>\r\n</div>\r\n</b" +
-                    "ody>\r\n</html>\r\n");
+            this.Write("</title>\r\n    <meta charset=\"utf-8\"/>\r\n</head>\r\n<body>\r\n</body>\r\n");
             return this.GenerationEnvironment.ToString();
         }
-        
-        #line 1 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
-
-private string _NameField;
-
-/// <summary>
-/// Access the Name parameter of the template.
-/// </summary>
-private string Name
-{
-    get
-    {
-        return this._NameField;
-    }
-}
-
-private global::System.Collections.Generic.IDictionary<System.String, System.String> _TagsField;
-
-/// <summary>
-/// Access the Tags parameter of the template.
-/// </summary>
-private global::System.Collections.Generic.IDictionary<System.String, System.String> Tags
-{
-    get
-    {
-        return this._TagsField;
-    }
-}
-
-private global::System.Collections.Generic.IList<System.Tuple<System.String, System.String, System.String>> _RelatedPlansField;
-
-/// <summary>
-/// Access the RelatedPlans parameter of the template.
-/// </summary>
-private global::System.Collections.Generic.IList<System.Tuple<System.String, System.String, System.String>> RelatedPlans
-{
-    get
-    {
-        return this._RelatedPlansField;
-    }
-}
-
-
-/// <summary>
-/// Initialize the template
-/// </summary>
-public virtual void Initialize()
-{
-    if ((this.Errors.HasErrors == false))
-    {
-bool NameValueAcquired = false;
-if (this.Session.ContainsKey("Name"))
-{
-    this._NameField = ((string)(this.Session["Name"]));
-    NameValueAcquired = true;
-}
-if ((NameValueAcquired == false))
-{
-    object data = global::System.Runtime.Remoting.Messaging.CallContext.LogicalGetData("Name");
-    if ((data != null))
-    {
-        this._NameField = ((string)(data));
-    }
-}
-bool TagsValueAcquired = false;
-if (this.Session.ContainsKey("Tags"))
-{
-    this._TagsField = ((global::System.Collections.Generic.IDictionary<System.String, System.String>)(this.Session["Tags"]));
-    TagsValueAcquired = true;
-}
-if ((TagsValueAcquired == false))
-{
-    object data = global::System.Runtime.Remoting.Messaging.CallContext.LogicalGetData("Tags");
-    if ((data != null))
-    {
-        this._TagsField = ((global::System.Collections.Generic.IDictionary<System.String, System.String>)(data));
-    }
-}
-bool RelatedPlansValueAcquired = false;
-if (this.Session.ContainsKey("RelatedPlans"))
-{
-    this._RelatedPlansField = ((global::System.Collections.Generic.IList<System.Tuple<System.String, System.String, System.String>>)(this.Session["RelatedPlans"]));
-    RelatedPlansValueAcquired = true;
-}
-if ((RelatedPlansValueAcquired == false))
-{
-    object data = global::System.Runtime.Remoting.Messaging.CallContext.LogicalGetData("RelatedPlans");
-    if ((data != null))
-    {
-        this._RelatedPlansField = ((global::System.Collections.Generic.IList<System.Tuple<System.String, System.String, System.String>>)(data));
-    }
-}
-
-
-    }
-}
-
-
-        
-        #line default
-        #line hidden
     }
     
     #line default
@@ -266,7 +57,7 @@ if ((RelatedPlansValueAcquired == false))
     /// Base class for this transformation
     /// </summary>
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "14.0.0.0")]
-    public class PlanCategoryTemplateBase
+    public class PlanTemplateDetailsTemplateBase
     {
         #region Fields
         private global::System.Text.StringBuilder generationEnvironmentField;
