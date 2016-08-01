@@ -4,14 +4,14 @@
     The service enables operations with Process Templates
 */
 module dockyard.services {
-    export interface IPlanService extends ng.resource.IResourceClass<interfaces.IPlanFullDTO> {
+    export interface IPlanService extends ng.resource.IResourceClass<interfaces.IPlanVM> {
         getbystatus: (id: { id: number; status: number; category?: string; orderBy: string; }) => Array<interfaces.IPlanVM>;
         getByQuery: (query: model.PlanQueryDTO) => interfaces.IPlanResultDTO;
-        getFull: (id: Object) => interfaces.IPlanFullDTO;
+        getFull: (id: Object) => interfaces.IPlanVM;
         getByActivity: (id: { id: string }) => interfaces.IPlanVM;
         execute: (id: { id: number }, payload: { payload: string }, success: any, error: any) => void;
         create: (args: { activityTemplateId: number, name: string, label: string, parentNodeId: number }) => ng.resource.IResource<model.PlanDTO>;
-        createSolution: (args: { solutionName: string }) => ng.resource.IResource<model.PlanFullDTO>;
+        createSolution: (args: { solutionName: string }) => ng.resource.IResource<model.PlanDTO>;
         deactivate: (data: { planId: string }) => ng.resource.IResource<string>;
         update: (data: { id: string, name: string, description: string }) => interfaces.IPlanVM;
         run: (id: string) => ng.IPromise<model.ContainerDTO>;

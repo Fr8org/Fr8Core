@@ -1,0 +1,75 @@
+﻿<#@ template language="C#" #>
+<#@ assembly name="$(SolutionDir)\bin\Fr8Infrastructure.NET.dll" #>
+<#@ assembly name="$(SolutionDir)\bin\Newtonsoft.Json.dll" #>
+<#@ import namespace="Newtonsoft.Json" #>
+<#@ parameter name="Manifests" type="System.Collections.Generic.IList<Fr8.Infrastructure.Data.Manifests.ManifestDescriptionCM>" #>
+<#var manifestName = Manifests[0].Name;#>
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="../Content/metronic/components.css"/>
+
+    <link href='https://fonts.googleapis.com/css?family=Francois+One' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Didact+Gothic' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" href="../Content/css/plan-category.css" />
+	<link rel="stylesheet" href="../Content/css/plan-directory.css" />
+
+    <title>Fr8 - <#=manifestName#></title>
+    <meta charset="utf-8"/>
+</head>
+<body>
+    <div class="header-container">
+        <div class="header">
+            <div class="logo"></div>
+        </div>
+    </div>
+    <div class="container">
+        <h1>Manifest - <em><#=manifestName#></em></h1>
+		<#foreach (var manifest in Manifests)
+		{#>
+        <div class="row">
+            <div class="col-md-12">
+                <hr />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <h3>V<#=manifest.Version#> Registered By <#=manifest.RegisteredBy#></h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <p>
+                    <em><#=manifest.Description#></em>
+                </p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <strong>Sample JSON</strong>
+            </div>
+        </div>
+		<# 
+		var resultJson = manifest.SampleJSON;
+		try
+		{
+			resultJson = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(manifest.SampleJSON), Formatting.Indented);
+		}
+		catch
+		{
+			//If we can't format manifest JSON we leave it as-is
+		}
+		#>
+        <div class="row">
+            <div class="col-md-12">
+                <pre>
+<#=resultJson#>
+                </pre>
+            </div>
+        </div>
+		<# } #>
+    </div>
+</body>
+</html>

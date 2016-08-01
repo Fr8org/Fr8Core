@@ -5,19 +5,16 @@ namespace HubWeb.Documentation.Swagger
 {
     public class PlanSampleFactory : ISwaggerSampleFactory<PlanDTO>
     {
-        private readonly ISwaggerSampleFactory<PlanFullDTO> _planFullSampleFactory;
+        private readonly ISwaggerSampleFactory<PlanDTO> _planFullSampleFactory;
 
-        public PlanSampleFactory(ISwaggerSampleFactory<PlanFullDTO> planFullSampleFactory)
+        public PlanSampleFactory(ISwaggerSampleFactory<PlanDTO> planFullSampleFactory)
         {
             _planFullSampleFactory = planFullSampleFactory;
         }
 
         public PlanDTO GetSampleData()
         {
-            return new PlanDTO
-            {
-                Plan = _planFullSampleFactory.GetSampleData()
-            };
+            return _planFullSampleFactory.GetSampleData();
         }
 
         object ISwaggerSampleFactory.GetSampleData()

@@ -157,6 +157,7 @@ namespace terminalTests.Integration
             {
                 x.DataSourceSelector.Value = ActivityTemplates[0].Id.ToString();
                 x.IncomingTextSelector.selectedKey = "Message";
+                x.IncomingTextSelector.Value = "This message should be checked for keywords";
             });
             await activity.Configure(activityContext);
             var crateStorage = activityContext.ActivityPayload.CrateStorage;

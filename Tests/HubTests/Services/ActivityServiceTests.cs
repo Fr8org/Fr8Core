@@ -57,7 +57,7 @@ namespace HubTests.Services
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
         public async Task Activity_Configure_WithNullActionTemplate_ThrowsArgumentNullException()
         {
-            var _service = new Activity(ObjectFactory.GetInstance<ICrateManager>(), ObjectFactory.GetInstance<IAuthorization>(), ObjectFactory.GetInstance<ISecurityServices>(), ObjectFactory.GetInstance<IActivityTemplate>(), ObjectFactory.GetInstance<IPlanNode>());
+            var _service = new Activity(ObjectFactory.GetInstance<ICrateManager>(), ObjectFactory.GetInstance<IAuthorization>(), ObjectFactory.GetInstance<ISecurityServices>(), ObjectFactory.GetInstance<IActivityTemplate>(), ObjectFactory.GetInstance<IPlanNode>(), ObjectFactory.GetInstance<IUpstreamDataExtractionService>());
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -86,7 +86,7 @@ namespace HubTests.Services
                 uow.SaveChanges();
             }
 
-            IActivity activity = new Activity(ObjectFactory.GetInstance<ICrateManager>(), ObjectFactory.GetInstance<IAuthorization>(), ObjectFactory.GetInstance<ISecurityServices>(), ObjectFactory.GetInstance<IActivityTemplate>(), ObjectFactory.GetInstance<IPlanNode>());
+            IActivity activity = new Activity(ObjectFactory.GetInstance<ICrateManager>(), ObjectFactory.GetInstance<IAuthorization>(), ObjectFactory.GetInstance<ISecurityServices>(), ObjectFactory.GetInstance<IActivityTemplate>(), ObjectFactory.GetInstance<IPlanNode>(), ObjectFactory.GetInstance<IUpstreamDataExtractionService>());
 
             //Add
             await activity.SaveOrUpdateActivity(origActivityDO);
