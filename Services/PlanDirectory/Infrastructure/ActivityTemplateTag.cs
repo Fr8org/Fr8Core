@@ -9,7 +9,7 @@ namespace PlanDirectory.Infrastructure
     public class ActivityTemplateTag : TemplateTag
     {
         //id, WebServiceId, name
-        private List<Tuple<Guid, int, string>> _values = new List<Tuple<Guid, int, string>>();
+        private List<Tuple<Guid, Guid, string>> _values = new List<Tuple<Guid, Guid, string>>();
 
         [JsonIgnore]
         public override string Title { get { return string.Join(", ", _values.Select(a => a.Item3).ToArray()); } }
@@ -17,7 +17,15 @@ namespace PlanDirectory.Infrastructure
         public ActivityTemplateTag(List<ActivityTemplateDTO> values)
         {
             values.ForEach(a =>
-            { _values.Add(new Tuple<Guid, int, string>(a.Id, a.WebService.Id, a.Name)); });
+            {
+                if (a.Categories != null)
+                {
+                    a.Categories.ToList().ForEach(c =>
+                    {
+                        _values.Add(new Tuple<Guid, Guid, string>(a.Id, c.Id, a.Name));
+                    });
+                }
+            });
         }
     }
 }

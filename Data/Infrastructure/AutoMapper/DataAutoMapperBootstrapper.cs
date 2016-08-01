@@ -63,6 +63,8 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(a => a.AuthorizationTokenId, opts => opts.ResolveUsing(ad => ad.AuthToken != null && ad.AuthToken.Id != null ? new Guid(ad.AuthToken.Id) : (Guid?)null))
                 .ForMember(a => a.Fr8AccountId, opts => opts.ResolveUsing(ad => ad.Fr8AccountId));
 
+            Mapper.CreateMap<ActivityCategoryDO, ActivityCategoryDTO>();
+            Mapper.CreateMap<ActivityCategoryDTO, ActivityCategoryDO>();
 
             Mapper.CreateMap<ActivityTemplateDO, ActivityTemplateDTO>()
                 .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
@@ -78,6 +80,7 @@ namespace Data.Infrastructure.AutoMapper
                             .Where(y => y.ActivityCategory != null)
                             .Select(y => new ActivityCategoryDTO()
                             {
+                                Id = y.ActivityCategory.Id,
                                 Name = y.ActivityCategory.Name,
                                 IconPath = y.ActivityCategory.IconPath
                             })
@@ -114,6 +117,7 @@ namespace Data.Infrastructure.AutoMapper
                             {
                                 ActivityCategory = new ActivityCategoryDO()
                                 {
+                                    Id = y.Id,
                                     Name = y.Name,
                                     IconPath = y.IconPath
                                 }

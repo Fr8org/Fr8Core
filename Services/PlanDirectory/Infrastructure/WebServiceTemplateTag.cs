@@ -10,7 +10,7 @@ namespace PlanDirectory.Infrastructure
     public class WebServiceTemplateTag : TemplateTag
     {
         //id, iconPath, name
-        private List<Tuple<int, string, string>> _values = new List<Tuple<int, string, string>>();
+        private List<Tuple<Guid, string, string>> _values = new List<Tuple<Guid, string, string>>();
 
         public Dictionary<string, string> TagsWithIcons
         {
@@ -23,10 +23,10 @@ namespace PlanDirectory.Infrastructure
             get { return string.Join(", ", _values.Select(a => a.Item3).ToArray()); }
         }
 
-        public WebServiceTemplateTag(List<WebServiceDTO> values)
+        public WebServiceTemplateTag(List<ActivityCategoryDTO> values)
         {
             values.ForEach(a =>
-            { _values.Add(new Tuple<int, string, string>(a.Id, a.IconPath, a.Name)); });
+            { _values.Add(new Tuple<Guid, string, string>(a.Id, a.IconPath, a.Name)); });
         }
     }
 }

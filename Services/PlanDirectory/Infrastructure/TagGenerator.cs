@@ -78,8 +78,8 @@ namespace PlanDirectory.Infrastructure
             activityTemplatesCombinations.ForEach(a => result.ActivityTemplateTags.Add(new ActivityTemplateTag(a)));
 
             //4. adding tags for webservices
-            var usedWebServices = usedActivityTemplates.Select(a => a.WebService).Distinct(WebServiceDTO.NameComparer).OrderBy(b => b.Name).ToList();
-            var webServicesCombination = GetCombinations<WebServiceDTO>(usedWebServices);
+            var usedWebServices = usedActivityTemplates.SelectMany(a => a.Categories).Distinct(ActivityCategoryDTO.NameComparer).OrderBy(b => b.Name).ToList();
+            var webServicesCombination = GetCombinations<ActivityCategoryDTO>(usedWebServices);
             webServicesCombination.ForEach(a => result.WebServiceTemplateTags.Add(new WebServiceTemplateTag(a)));
 
             return result;
