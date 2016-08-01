@@ -288,6 +288,10 @@
     <Content Include="PreBuild.bat" />
     <Content Include="Scripts\main.js" />
     <Content Include="Scripts\PlanDirectoryApp.js" />
+    <Content Include="Templates\PlanTemplateDetailsTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>PlanTemplateDetailsTemplate.cs</LastGenOutput>
+    </Content>
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\Reauthenticate.cshtml" />
     <Content Include="Views\Shared\HomeNav.cshtml" />
@@ -332,6 +336,8 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Infrastructure\PlanTemplateDetailsGenerator.cs" />
+    <Compile Include="Interfaces\IPlanTemplateDetailsGenerator.cs" />
     <Compile Include="Templates\PlanCategoryTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -386,6 +392,11 @@
     <Compile Include="Infrastructure\PlanTemplate.Impl.cs" />
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Templates\PlanTemplateDetailsTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PlanTemplateDetailsTemplate.tt</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\HomeVM.cs" />
     <Compile Include="ViewModels\NavLinks.cs" />
   </ItemGroup>
