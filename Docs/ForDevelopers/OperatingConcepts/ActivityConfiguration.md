@@ -12,7 +12,8 @@ This approach has a big benefit: a developer can create a new Activity, complete
 
 The complexity of the configuration process depends entirely on the Activity. Some Activities require no configuration at all, while others require multiple steps.  
 
-Key Design Concepts  
+Key Design Concepts
+====================
 
 ## Configuration involves the manipulation of a JSON structure called an Activity Container that contains all information about the Activity. 
 When the Activity is created, this Activity Container JSON is generated between the client and hub. When a configure call is made to a Terminal, the Activity Container is passed to the code responsible for activity configuration. Most Terminals will make modifications to the Activity Container, generally by adding or modifying JSON data elements called Crates.  The most common modification a Terminal typically makes to an Activity Container is the creation or updating of a Crate of UI Controls which will be used by the client to show the user configuration UI. Once the terminal is completed with a round of configuration, it returns the modified Activity Container back to the Hub, which saves changes before passing it on to the client.
@@ -35,10 +36,12 @@ When the client receives a response to a Configuration call, it triggers configu
 
 ![Configure Flow](/Docs/img/ActivityConfiguration_ConfigureFlow.png)
 
-## Action Configuration Can Use a Set of Defined UI Controls
+## Activity Configuration Can Use a Set of Defined UI Controls
 
 Learn more about the [UI Control Definitions.](/Docs/ForDevelopers/DevelopmentGuides/ConfigurationControls.md)
 
+## Activities Signal To Downstream Siblings
+Signaling is the process by which an Activity informs other Activities what data it will be able to produce at run-time. This is critical to enabling easy design-time configuration. [Learn more](/Docs/ForDevelopers/OperatingConcepts/Signaling.md).
 
 =======================
 this content has some overlap with the above content and should be merged into it.
