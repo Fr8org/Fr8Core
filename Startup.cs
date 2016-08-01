@@ -28,6 +28,8 @@ using Hangfire.StructureMap;
 using Hub.StructureMap;
 using HubWeb.App_Start;
 using GlobalConfiguration = Hangfire.GlobalConfiguration;
+using System.Globalization;
+using System.Threading;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 
@@ -37,6 +39,19 @@ namespace HubWeb
     {
         public void Configuration(IAppBuilder app)
         {
+            //fix to IIS hanging on MemoryCache initialization
+            //taken from here https://www.zpqrtbnk.net/posts/appdomains-threads-cultureinfos-and-paracetamol
+            var currentCulture = CultureInfo.CurrentCulture;
+            var invariantCulture = currentCulture;
+            while (invariantCulture.Equals(CultureInfo.InvariantCulture) == false)
+                invariantCulture = invariantCulture.Parent;
+            if (!(ReferenceEquals(invariantCulture, CultureInfo.InvariantCulture)))
+            {
+                var thread = Thread.CurrentThread;
+                thread.CurrentCulture = CultureInfo.GetCultureInfo(thread.CurrentCulture.Name);
+                thread.CurrentUICulture = CultureInfo.GetCultureInfo(thread.CurrentUICulture.Name);
+            }
+
             Configuration(app, false);
         }
 
