@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories.Security;
@@ -69,6 +70,11 @@ namespace Data.Infrastructure.StructureMap
         }
 
         public ClaimsIdentity GetIdentity(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ClaimsIdentity> GetIdentityAsync(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO)
         {
             throw new NotImplementedException();
         }

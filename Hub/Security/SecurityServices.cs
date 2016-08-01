@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
 using Microsoft.AspNet.Identity;
@@ -104,6 +105,26 @@ namespace Hub.Security
         {
             var um = new DockyardIdentityManager(uow);
             var identity = um.CreateIdentity(fr8AccountDO, DefaultAuthenticationTypes.ApplicationCookie);
+            foreach (var roleId in fr8AccountDO.Roles.Select(r => r.RoleId))
+            {
+                var role = uow.AspNetRolesRepository.GetByKey(roleId);
+                identity.AddClaim(new Claim(ClaimTypes.Role, role.Name));
+            }
+            if (fr8AccountDO.OrganizationId.HasValue)
+            {
+                identity.AddClaim(new Claim("Organization", fr8AccountDO.OrganizationId.Value.ToString()));
+            }
+
+            //save profileId from current logged user for future usage inside authorization activities logic
+            identity.AddClaim(new Claim(ProfileClaim, fr8AccountDO.ProfileId.ToString()));
+
+            return identity;
+        }
+
+        public async Task<ClaimsIdentity> GetIdentityAsync(IUnitOfWork uow, Fr8AccountDO fr8AccountDO)
+        {
+            var um = new DockyardIdentityManager(uow);
+            var identity = await um.CreateIdentityAsync(fr8AccountDO, DefaultAuthenticationTypes.ApplicationCookie);
             foreach (var roleId in fr8AccountDO.Roles.Select(r => r.RoleId))
             {
                 var role = uow.AspNetRolesRepository.GetByKey(roleId);
