@@ -60,7 +60,9 @@ namespace Fr8.Testing.Unit.Fixtures
             var curActionTemplate = new ActivityTemplateSummaryDTO
             {
                 Name = "terminal_azure_sql_server",
-                Version = "1"
+                Version = "1",
+                TerminalName = "test",
+                TerminalVersion = "1"
             };
 
             return curActionTemplate;

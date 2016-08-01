@@ -54,7 +54,16 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ActivityDTO, ActivityDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.RootPlanNodeId, opts => opts.ResolveUsing(ad => ad.RootPlanNodeId))
                 .ForMember(a => a.ParentPlanNodeId, opts => opts.ResolveUsing(ad => ad.ParentPlanNodeId))
-                .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate))
+                .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(dto => new ActivityTemplateDO
+                {
+                    Name = dto.ActivityTemplate.Name,
+                    Version = dto.ActivityTemplate.Version,
+                    Terminal = new TerminalDO
+                    {
+                        Name = dto.ActivityTemplate.TerminalName,
+                        Version = dto.ActivityTemplate.TerminalVersion
+                    }
+                }))
                 //.ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.SerializeObject(ad.CrateStorage)))
                 .ForMember(a => a.currentView, opts => opts.ResolveUsing(ad => ad.CurrentView))
                 .ForMember(a => a.ChildNodes, opts => opts.ResolveUsing(ad => MapActivities(ad.ChildrenActivities)))

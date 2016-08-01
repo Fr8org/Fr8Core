@@ -193,22 +193,15 @@ namespace Hub.Services
                         var activatedActivityDTO = await CallTerminalActivityAsync<ActivityDTO>(uow, "activate", null, submittedActivity, Guid.Empty);
                         Logger.GetLogger().Info($"Call to terminal activation of activity (Id - {submittedActivity.Id}) completed");
                         var activatedActivityDo = Mapper.Map<ActivityDO>(activatedActivityDTO);
-
                         var storage = _crateManager.GetStorage(activatedActivityDo);
-
                         var validationCrate = storage.CrateContentsOfType<ValidationResultsCM>().FirstOrDefault();
-
                         if (validationCrate == null || !validationCrate.HasErrors)
                         {
                             existingAction.ActivationState = ActivationState.Activated;
                         }
-
                         UpdateActivityProperties(existingAction, activatedActivityDo);
-
                         uow.SaveChanges();
-
                         EventManager.ActionActivated(activatedActivityDo);
-
                         return Mapper.Map<ActivityDTO>(activatedActivityDo);
                     }
                 }
@@ -402,7 +395,22 @@ namespace Hub.Services
                 {
                     x.Id = Guid.NewGuid();
                 }
+                var activityDO = x as ActivityDO;
+                if (activityDO != null && activityDO.ActivityTemplateId == Guid.Empty)
+                {
+                    var activityTemplate = activityDO.ActivityTemplate;
+                    activityDO.ActivityTemplate = uow
+                        .ActivityTemplateRepository
+                        .GetQuery()
+                        .Single(y => y.Name == activityTemplate.Name 
+                                  && y.Version == activityTemplate.Version
+                                  && y.Terminal.Name == activityTemplate.Terminal.Name
+                                  && y.Terminal.Version == activityTemplate.Terminal.Version);
+                    activityDO.ActivityTemplateId = activityDO.ActivityTemplate.Id;
+                }
             });
+
+
 
             PlanNodeDO plan;
             PlanNodeDO originalAction;
