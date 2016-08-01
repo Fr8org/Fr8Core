@@ -130,11 +130,11 @@ namespace HubWeb.App_Start
             return Mapper.Map<TerminalDTO>(t.Terminal);
         }
 
-        private ActivityTemplateDTO GetActivityTemplate(ActivityDO ad)
+        private ActivityTemplateSummaryDTO GetActivityTemplate(ActivityDO ad)
         {
             if (ad.ActivityTemplate != null)
             {
-                return Mapper.Map<ActivityTemplateDTO>(ad.ActivityTemplate);
+                return Mapper.Map<ActivityTemplateSummaryDTO>(ad.ActivityTemplate);
             }
 
             if (ad.ActivityTemplateId == Guid.Empty)
@@ -142,7 +142,7 @@ namespace HubWeb.App_Start
                 return null;
             }
 
-            return Mapper.Map<ActivityTemplateDTO>(_activityTemplate.GetByKey(ad.ActivityTemplateId));
+            return Mapper.Map<ActivityTemplateSummaryDTO>(_activityTemplate.GetByKey(ad.ActivityTemplateId));
         }
 
         private object GetActivityTemplateId(ActivityDTO ad)
