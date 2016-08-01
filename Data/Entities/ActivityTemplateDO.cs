@@ -96,6 +96,7 @@ namespace Data.Entities
         [ForeignKey("WebService")]
 		public int? WebServiceId { get; set; }
 
-		public virtual WebServiceDO WebService { get; set; }
+        // TODO: FR-4943, remove this.
+		// public virtual WebServiceDO WebService { get; set; }
     }
 }

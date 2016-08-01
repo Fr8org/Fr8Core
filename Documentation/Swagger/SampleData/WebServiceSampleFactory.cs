@@ -2,20 +2,21 @@
 
 namespace HubWeb.Documentation.Swagger
 {
-    public class WebServiceSampleFactory : ISwaggerSampleFactory<WebServiceDTO>
-    {
-        public WebServiceDTO GetSampleData()
-        {
-            return new WebServiceDTO
-            {
-                Name = "Built-In Services",
-                IconPath = "https://fr8.co/Content/img/site/site-logo.png"
-            };
-        }
-
-        object ISwaggerSampleFactory.GetSampleData()
-        {
-            return GetSampleData();
-        }
-    }
+    // TODO: FR-4943, remove this.
+    // public class WebServiceSampleFactory : ISwaggerSampleFactory<WebServiceDTO>
+    // {
+    //     public WebServiceDTO GetSampleData()
+    //     {
+    //         return new WebServiceDTO
+    //         {
+    //             Name = "Built-In Services",
+    //             IconPath = "https://fr8.co/Content/img/site/site-logo.png"
+    //         };
+    //     }
+    // 
+    //     object ISwaggerSampleFactory.GetSampleData()
+    //     {
+    //         return GetSampleData();
+    //     }
+    // }
 }

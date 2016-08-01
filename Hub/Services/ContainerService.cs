@@ -253,10 +253,13 @@ namespace Hub.Services
         
         private void ReportAuthError(Fr8AccountDO user, InvalidTokenRuntimeException ex)
         {
-            string errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with " +
-                    $"{ex?.FailedActivityDTO.ActivityTemplate.WebService.Name}. ";
+            // TODO: FR-4943, remove this.
+            // string errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with " +
+            //         $"{ex?.FailedActivityDTO.ActivityTemplate.WebService.Name}. ";
 
-            errorMessage += $"Please re-authorize Fr8 to connect to {ex?.FailedActivityDTO.ActivityTemplate.WebService.Name} " +
+            var errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate.";
+
+            errorMessage += $"Please re-authorize Fr8 to connect to {ex?.FailedActivityDTO.ActivityTemplate.Terminal.Name}'s remote web-service " +
                     $"by clicking on the Settings dots in the upper " +
                     $"right corner of the activity and then selecting Choose Authentication. ";
 

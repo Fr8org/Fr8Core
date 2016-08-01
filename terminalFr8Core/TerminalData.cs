@@ -6,7 +6,14 @@ namespace terminalFr8Core
 {
     public static class TerminalData
     {
-        public static WebServiceDTO WebServiceDTO = new WebServiceDTO
+        // TODO: FR-4943, remove this.
+        // public static WebServiceDTO WebServiceDTO = new WebServiceDTO
+        // {
+        //     Name = "Built-In Services",
+        //     IconPath = "/Content/icons/web_services/fr8-core-icon-64x64.png"
+        // };
+
+        public static ActivityCategoryDTO ActivityCategoryDTO = new ActivityCategoryDTO
         {
             Name = "Built-In Services",
             IconPath = "/Content/icons/web_services/fr8-core-icon-64x64.png"

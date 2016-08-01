@@ -67,7 +67,8 @@ namespace Data.Migrations
 
                 uow.SaveChanges();
 
-                AddWebServices(uow);
+                // TODO: FR-4943, remove this.
+                // AddWebServices(uow);
                 AddPredefinedActivityCategories(uow);
                 AddTestUser(uow);
                 RenameActivity(uow);
@@ -438,56 +439,57 @@ namespace Data.Migrations
             return user;
         }
 
-        private void AddWebServices(IUnitOfWork uow)
-        {
-            var terminalToWs = new Dictionary<string, string>
-            {
-                {"terminalSalesforce", "Salesforce"},
-                {"terminalFr8Core", "fr8 Core"},
-                {"terminalDocuSign", "DocuSign"},
-                {"terminalSlack", "Slack"},
-                {"terminalTwilio", "Twilio"},
-                {"terminalAzure", "Microsoft Azure"},
-                {"terminalExcel", "Excel"},
-                {"terminalGoogle", "Google"},
-                {"terminalPapertrail", "Papertrail"}
-            };
-
-            var wsToId = new Dictionary<string, int>();
-
-            AddWebService(uow, "AWS", "/Content/icons/web_services/aws-icon-64x64.png");
-            AddWebService(uow, "Slack", "/Content/icons/web_services/slack-icon-64x64.png");
-            AddWebService(uow, "DocuSign", "/Content/icons/web_services/docusign-icon-64x64.png");
-            AddWebService(uow, "Microsoft Azure", "/Content/icons/web_services/ms-azure-icon-64x64.png");
-            AddWebService(uow, "Excel", "/Content/icons/web_services/ms-excel-icon-64x64.png");
-            AddWebService(uow, "Built-In Services", "/Content/icons/web_services/fr8-core-icon-64x64.png");
-            AddWebService(uow, "Salesforce", "/Content/icons/web_services/salesforce-icon-64x64.png");
-            AddWebService(uow, "SendGrid", "/Content/icons/web_services/sendgrid-icon-64x64.png");
-            AddWebService(uow, "Dropbox", "/Content/icons/web_services/dropbox-icon-64x64.png");
-            AddWebService(uow, "Atlassian", "/Content/icons/web_services/jira-icon-64x64.png");
-            AddWebService(uow, "UnknownService", "/Content/icons/web_services/unknown-service.png");
-
-            foreach (var webServiceDo in uow.WebServiceRepository.GetAll())
-            {
-                if (webServiceDo.Name != null)
-                {
-                    wsToId[webServiceDo.Name] = webServiceDo.Id;
-                }
-            }
-
-            foreach (var activity in uow.ActivityTemplateRepository.GetQuery().Include(x => x.Terminal))
-            {
-                string wsName;
-                int wsId;
-
-                if (terminalToWs.TryGetValue(activity.Terminal.Name, out wsName) && wsToId.TryGetValue(wsName, out wsId))
-                {
-                    activity.WebServiceId = wsId;
-                }
-            }
-
-            uow.SaveChanges();
-        }
+        // TODO: FR-4943, remove this.
+        // private void AddWebServices(IUnitOfWork uow)
+        // {
+        //     var terminalToWs = new Dictionary<string, string>
+        //     {
+        //         {"terminalSalesforce", "Salesforce"},
+        //         {"terminalFr8Core", "fr8 Core"},
+        //         {"terminalDocuSign", "DocuSign"},
+        //         {"terminalSlack", "Slack"},
+        //         {"terminalTwilio", "Twilio"},
+        //         {"terminalAzure", "Microsoft Azure"},
+        //         {"terminalExcel", "Excel"},
+        //         {"terminalGoogle", "Google"},
+        //         {"terminalPapertrail", "Papertrail"}
+        //     };
+        // 
+        //     var wsToId = new Dictionary<string, int>();
+        // 
+        //     AddWebService(uow, "AWS", "/Content/icons/web_services/aws-icon-64x64.png");
+        //     AddWebService(uow, "Slack", "/Content/icons/web_services/slack-icon-64x64.png");
+        //     AddWebService(uow, "DocuSign", "/Content/icons/web_services/docusign-icon-64x64.png");
+        //     AddWebService(uow, "Microsoft Azure", "/Content/icons/web_services/ms-azure-icon-64x64.png");
+        //     AddWebService(uow, "Excel", "/Content/icons/web_services/ms-excel-icon-64x64.png");
+        //     AddWebService(uow, "Built-In Services", "/Content/icons/web_services/fr8-core-icon-64x64.png");
+        //     AddWebService(uow, "Salesforce", "/Content/icons/web_services/salesforce-icon-64x64.png");
+        //     AddWebService(uow, "SendGrid", "/Content/icons/web_services/sendgrid-icon-64x64.png");
+        //     AddWebService(uow, "Dropbox", "/Content/icons/web_services/dropbox-icon-64x64.png");
+        //     AddWebService(uow, "Atlassian", "/Content/icons/web_services/jira-icon-64x64.png");
+        //     AddWebService(uow, "UnknownService", "/Content/icons/web_services/unknown-service.png");
+        // 
+        //     foreach (var webServiceDo in uow.WebServiceRepository.GetAll())
+        //     {
+        //         if (webServiceDo.Name != null)
+        //         {
+        //             wsToId[webServiceDo.Name] = webServiceDo.Id;
+        //         }
+        //     }
+        // 
+        //     foreach (var activity in uow.ActivityTemplateRepository.GetQuery().Include(x => x.Terminal))
+        //     {
+        //         string wsName;
+        //         int wsId;
+        // 
+        //         if (terminalToWs.TryGetValue(activity.Terminal.Name, out wsName) && wsToId.TryGetValue(wsName, out wsId))
+        //         {
+        //             activity.WebServiceId = wsId;
+        //         }
+        //     }
+        // 
+        //     uow.SaveChanges();
+        // }
 
         private void AddPredefinedActivityCategories(IUnitOfWork uow)
         {
@@ -558,22 +560,23 @@ namespace Data.Migrations
             uow.AspNetUserRolesRepository.AssignRoleToUser(roleId, userDO.Id);
         }
 
-        private void AddWebService(IUnitOfWork uow, string name, string iconPath)
-        {
-            var isWsExists = uow.WebServiceRepository.GetQuery().Any(x => x.Name == name);
-
-            if (isWsExists)
-            {
-                return;
-            }
-            var webServiceDO = new WebServiceDO
-            {
-                Name = name,
-                IconPath = iconPath
-            };
-
-            uow.WebServiceRepository.Add(webServiceDO);
-        }
+        // TODO: FR-4943, remove this.
+        // private void AddWebService(IUnitOfWork uow, string name, string iconPath)
+        // {
+        //     var isWsExists = uow.WebServiceRepository.GetQuery().Any(x => x.Name == name);
+        // 
+        //     if (isWsExists)
+        //     {
+        //         return;
+        //     }
+        //     var webServiceDO = new WebServiceDO
+        //     {
+        //         Name = name,
+        //         IconPath = iconPath
+        //     };
+        // 
+        //     uow.WebServiceRepository.Add(webServiceDO);
+        // }
 
         private void UpdateRootPlanNodeId(IUnitOfWork uow)
         {

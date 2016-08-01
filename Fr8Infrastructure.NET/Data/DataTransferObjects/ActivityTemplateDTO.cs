@@ -46,8 +46,9 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         [JsonProperty("version")]
         public string Version { get; set; }
 
-        [JsonProperty("webService")]
-        public WebServiceDTO WebService { get; set; }
+        // TODO: FR-4943, remove this.
+        // [JsonProperty("webService")]
+        // public WebServiceDTO WebService { get; set; }
 
         [JsonProperty("terminal")]
         public TerminalDTO Terminal { get; set; }

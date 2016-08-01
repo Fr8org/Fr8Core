@@ -23,7 +23,10 @@ namespace Fr8.Infrastructure.Data.Convertors.JsonNet
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             var customTerminalConverter = new TerminalActivityTemplateConverter();
-            var customWebServiceConvert = new WebServiceConverter();
+            
+            // TODO: FR-4943, remove this.
+            // var customWebServiceConvert = new WebServiceConverter();
+
             var item = (ActivityTemplateDTO)value;
             writer.WriteStartObject();
             writer.WritePropertyName("id");
@@ -46,8 +49,11 @@ namespace Fr8.Infrastructure.Data.Convertors.JsonNet
             writer.WriteValue(item.MinPaneWidth);
             writer.WritePropertyName("needsAuthentication");
             writer.WriteValue(item.NeedsAuthentication);
-            writer.WritePropertyName("webService");
-            writer.WriteRawValue(JsonConvert.SerializeObject(item.WebService, customWebServiceConvert));
+            
+            // TODO: FR-4943, remove this.
+            // writer.WritePropertyName("webService");
+            // writer.WriteRawValue(JsonConvert.SerializeObject(item.WebService, customWebServiceConvert));
+
             writer.WriteEndObject();
             writer.Flush();
         }

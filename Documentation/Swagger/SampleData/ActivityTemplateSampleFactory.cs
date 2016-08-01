@@ -8,11 +8,19 @@ namespace HubWeb.Documentation.Swagger.SampleData
     {
         private readonly ISwaggerSampleFactory<TerminalDTO> _terminalSampleFactory;
 
-        private readonly ISwaggerSampleFactory<WebServiceDTO> _webServiceSampleFactory;
-        public ActivityTemplateSampleFactory(ISwaggerSampleFactory<TerminalDTO> terminalSampleFactory, ISwaggerSampleFactory<WebServiceDTO> webServiceSampleFactory)
+        // TODO: FR-4943, remove this.
+        // private readonly ISwaggerSampleFactory<WebServiceDTO> _webServiceSampleFactory;
+
+        // TODO: FR-4943, remove this.
+        // public ActivityTemplateSampleFactory(ISwaggerSampleFactory<TerminalDTO> terminalSampleFactory, ISwaggerSampleFactory<WebServiceDTO> webServiceSampleFactory)
+        // {
+        //     _terminalSampleFactory = terminalSampleFactory;
+        //     _webServiceSampleFactory = webServiceSampleFactory;
+        // }
+
+        public ActivityTemplateSampleFactory(ISwaggerSampleFactory<TerminalDTO> terminalSampleFactory)
         {
             _terminalSampleFactory = terminalSampleFactory;
-            _webServiceSampleFactory = webServiceSampleFactory;
         }
 
         public ActivityTemplateDTO GetSampleData()
@@ -25,7 +33,8 @@ namespace HubWeb.Documentation.Swagger.SampleData
                 Category = ActivityCategory.Processors,
                 Version = "1",
                 MinPaneWidth = 330,
-                WebService = _webServiceSampleFactory.GetSampleData(),
+                // TODO: FR-4943, remove this.
+                // WebService = _webServiceSampleFactory.GetSampleData(),
                 Terminal = _terminalSampleFactory.GetSampleData(),
                 Tags = string.Empty
             };
