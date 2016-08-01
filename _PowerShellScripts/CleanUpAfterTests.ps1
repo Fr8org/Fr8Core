@@ -72,6 +72,31 @@ delete m from History m
 	inner join #Nodes cp on  convert(nvarchar(50),cp.Id) = m.ObjectId
 
 drop table #Nodes
+
+-- delete account used in register
+DECLARE @userId VARCHAR(60)
+
+SELECT @userId = Id
+FROM Users
+WHERE Users.EmailAddressID IN (	
+	SELECT Id
+	FROM EmailAddresses
+	WHERE EmailAddresses.Address LIKE 'testuser_%@fr8.co')
+
+DELETE FROM History
+	WHERE History.Fr8UserId = @userId
+
+DELETE FROM Users
+	WHERE Users.Id = @userId
+
+DELETE FROM EmailAddresses
+      WHERE EmailAddresses.Address LIKE 'testuser_%@fr8.co'
+
+DELETE FROM AspNetUserRoles
+	WHERE AspNetUserRoles.UserId = @userId
+
+DELETE FROM AspNetUsers
+	WHERE AspNetUsers.Id = @userId
 "
 
 Write-Host $commandText
