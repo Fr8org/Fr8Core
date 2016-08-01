@@ -134,7 +134,7 @@ namespace Data.Repositories.Security.StorageImpl.Cache
                 if (rolePermission == null)
                 {
                     InsertRolePermission(new RolePermission() { PermissionSet = permissionSet, Role = new RoleDO { RoleName = roleName } });
-                    rolePermission = GetRolePermission(Roles.OwnerOfCurrentObject, permissionSet.Id);
+                    rolePermission = GetRolePermission(roleName, permissionSet.Id);
                 }
                 rolePermissionId = rolePermission.Id;
             }
