@@ -171,9 +171,9 @@ namespace terminalGoogle.Services
                     }
                 }
 
-                foreach (var slack in planMTSF.Activities.Where(term => term.ActivityTemplate.Terminal.Name == "terminalSlack"))
+                foreach (var slack in planMTSF.Activities.Where(term => term.ActivityTemplate.TerminalName == "terminalSlack"))
                 {
-                    var curentSToken = slackTokens.AuthTokens.Where(t => t.Id == slack.AuthTokenId).FirstOrDefault();
+                    var curentSToken = slackTokens.AuthTokens.FirstOrDefault(t => t.Id == slack.AuthTokenId);
                     if (curentSToken == null)
                     {
                         var sToken = slackTokens.AuthTokens.FirstOrDefault();

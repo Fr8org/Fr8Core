@@ -219,7 +219,7 @@ namespace Hub.Services
                     new ActivityDTO
                     {
                         Documentation = "MainPage",
-                        ActivityTemplate = new ActivityTemplateDTO {Name = solutionName }
+                        ActivityTemplate = new ActivityTemplateSummaryDTO {Name = solutionName }
                     }, true);
                 if (solutionPageDTO != null)
                 {

@@ -61,6 +61,11 @@ namespace HubWeb.App_Start
                 .ForMember(a => a.ChildNodes, opts => opts.ResolveUsing(ad => MapActivities(ad.ChildrenActivities)))
                 .ForMember(a => a.AuthorizationTokenId, opts => opts.ResolveUsing(ad => ad.AuthToken != null && ad.AuthToken.Id != null ? new Guid(ad.AuthToken.Id) : (Guid?)null));
 
+            Mapper.CreateMap<ActivityTemplateDO, ActivityTemplateSummaryDTO>()
+               .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
+               .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
+               .ForMember(x => x.TerminalName, opts => opts.ResolveUsing(x => x.Terminal.Name))
+               .ForMember(x => x.TerminalVersion, opts => opts.ResolveUsing(x => x.Terminal.Version));
 
             Mapper.CreateMap<ActivityTemplateDO, ActivityTemplateDTO>()
                .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))

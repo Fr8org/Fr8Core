@@ -63,8 +63,13 @@ namespace Fr8.Testing.Integration.Tools.Activities
             var tokenGuid = Guid.Empty;
             if (!defaultDocuSignAuthTokenExists)
             {
+                var terminalSummaryDTO = new TerminalSummaryDTO
+                {
+                    Name = solution.ActivityTemplate.TerminalName,
+                    Version = solution.ActivityTemplate.TerminalVersion
+                };
                 // Authenticate with DocuSign
-                tokenGuid = await _terminalDocuSignTestTools.AuthenticateDocuSignAndAssociateTokenWithAction(solution.Id, _baseHubITest.GetDocuSignCredentials(), solution.ActivityTemplate.Terminal);
+                tokenGuid = await _terminalDocuSignTestTools.AuthenticateDocuSignAndAssociateTokenWithAction(solution.Id, _baseHubITest.GetDocuSignCredentials(), terminalSummaryDTO);
             }
 
             //
@@ -126,7 +131,16 @@ namespace Fr8.Testing.Integration.Tools.Activities
         {
             var queryDocuSignActivity = FixtureData.Query_DocuSign_v1_InitialConfiguration();
             var activityTemplates = await _baseHubITest.HttpGetAsync<ActivityTemplateCategoryDTO[]>(_baseHubITest.GetHubApiBaseUrl() + "/activity_templates");
-            var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).FirstOrDefault(a => a.Name == "Query_DocuSign" && a.Version == version.ToString());
+            var apmActivityTemplate = activityTemplates
+                .SelectMany(a => a.Activities)
+                .Select(x => new ActivityTemplateSummaryDTO
+                {
+                    Name = x.Name,
+                    Version = x.Version,
+                    TerminalName = x.Terminal.Name,
+                    TerminalVersion = x.Terminal.Version
+                })
+                .FirstOrDefault(a => a.Name == "Query_DocuSign" && a.Version == version.ToString());
 
             if (apmActivityTemplate == null)
             {
@@ -155,7 +169,12 @@ namespace Fr8.Testing.Integration.Tools.Activities
             //{
             var terminalDocuSignTools = new Fr8.Testing.Integration.Tools.Terminals.IntegrationTestTools_terminalDocuSign(_baseHubITest);
             // queryDocuSignActivity.AuthToken = await terminalDocuSignTools.GenerateAuthToken("fr8test@gmail.com", "fr8mesomething", queryDocuSignActivity.ActivityTemplate.Terminal);
-            queryDocuSignActivity.AuthToken = await terminalDocuSignTools.GenerateAuthToken("freight.testing@gmail.com", "I6HmXEbCxN", queryDocuSignActivity.ActivityTemplate.Terminal);
+            var terminalSummaryDTO = new TerminalSummaryDTO
+            {
+                Name = queryDocuSignActivity.ActivityTemplate.TerminalName,
+                Version = queryDocuSignActivity.ActivityTemplate.TerminalVersion
+            };
+            queryDocuSignActivity.AuthToken = await terminalDocuSignTools.GenerateAuthToken("freight.testing@gmail.com", "I6HmXEbCxN", terminalSummaryDTO);
 
             var applyToken = new AuthenticationTokenGrantDTO()
             {

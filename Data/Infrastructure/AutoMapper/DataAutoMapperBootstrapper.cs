@@ -61,6 +61,11 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(a => a.AuthorizationTokenId, opts => opts.ResolveUsing(ad => ad.AuthToken != null && ad.AuthToken.Id != null ? new Guid(ad.AuthToken.Id) : (Guid?)null))
                 .ForMember(a => a.Fr8AccountId, opts => opts.ResolveUsing(ad => ad.Fr8AccountId));
 
+            Mapper.CreateMap<ActivityTemplateDO, ActivityTemplateSummaryDTO>()
+               .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
+               .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
+               .ForMember(x => x.TerminalName, opts => opts.ResolveUsing(x => x.Terminal.Name))
+               .ForMember(x => x.TerminalVersion, opts => opts.ResolveUsing(x => x.Terminal.Version));
 
             Mapper.CreateMap<ActivityTemplateDO, ActivityTemplateDTO>()
                 .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
@@ -202,7 +207,7 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ManifestDescriptionCM, ManifestDescriptionDTO>();
             Mapper.CreateMap<ManifestDescriptionDTO, ManifestDescriptionCM>();
 
-
+            Mapper.CreateMap<TerminalDO, TerminalSummaryDTO>();
             Mapper.CreateMap<TerminalDO, TerminalDTO>();
             Mapper.CreateMap<TerminalDTO, TerminalDO>()
                 .ForMember(x => x.LastUpdated, opts => opts.Ignore())

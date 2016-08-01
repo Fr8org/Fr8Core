@@ -5,11 +5,10 @@ namespace terminalSendGridTests.Fixtures
 {
     public class HealthMonitor_FixtureData
     {
-        public static ActivityTemplateDTO SendEmailViaSendGrid_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO SendEmailViaSendGrid_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO
             {
-                Id = Guid.NewGuid(),
                 Name = "Send_Email_Via_SendGrid_TEST",
                 Version = "1"
             };

@@ -55,11 +55,10 @@ namespace Fr8.Testing.Unit.Fixtures
             return curActionTemplate;
         }
 
-        public static ActivityTemplateDTO TestActivityTemplateDTOV2()
+        public static ActivityTemplateSummaryDTO TestActivityTemplateDTOV2()
         {
-            var curActionTemplate = new ActivityTemplateDTO
+            var curActionTemplate = new ActivityTemplateSummaryDTO
             {
-                Id = GetTestGuidById(1),
                 Name = "terminal_azure_sql_server",
                 Version = "1"
             };

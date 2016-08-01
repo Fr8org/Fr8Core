@@ -39,7 +39,7 @@ namespace terminaBaselTests.Services
             {
             }
 
-            public IActivityFactory GetFactory(ActivityTemplateDTO activityTemplate)
+            public IActivityFactory GetFactory(string name, string version)
             {
                 return null;
             }

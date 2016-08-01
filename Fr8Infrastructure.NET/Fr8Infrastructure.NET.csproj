@@ -163,6 +163,7 @@
     <Compile Include="Data\DataTransferObjects\ActivityResponseDTO.cs" />
     <Compile Include="Data\DataTransferObjects\ActivityTemplateCategoryDTO.cs" />
     <Compile Include="Data\DataTransferObjects\ActivityTemplateDTO.cs" />
+    <Compile Include="Data\DataTransferObjects\ActivityTemplateSummaryDTO.cs" />
     <Compile Include="Data\DataTransferObjects\ActivityTypeListDTO.cs" />
     <Compile Include="Data\DataTransferObjects\AdvisoryMessageDTO.cs" />
     <Compile Include="Data\DataTransferObjects\AlarmDTO.cs" />
@@ -227,6 +228,7 @@
     <Compile Include="Data\DataTransferObjects\TerminalDTO.cs" />
     <Compile Include="Data\DataTransferObjects\NotificationMessageDTO.cs" />
     <Compile Include="Data\DataTransferObjects\TerminalRegistrationDTO.cs" />
+    <Compile Include="Data\DataTransferObjects\TerminalSummaryDTO.cs" />
     <Compile Include="Data\DataTransferObjects\TokenResponseDTO.cs" />
     <Compile Include="Data\DataTransferObjects\UrlResponseDTO.cs" />
     <Compile Include="Data\DataTransferObjects\UserDTO.cs" />

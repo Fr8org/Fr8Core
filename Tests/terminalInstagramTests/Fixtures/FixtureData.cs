@@ -7,11 +7,10 @@ namespace terminalInstagramTests.Fixtures
 {
     partial class FixtureData
     {
-        public static ActivityTemplateDTO MonitorForNewMediaPosted_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO MonitorForNewMediaPosted_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Monitor_For_New_Media_Posted_TEST",
                 Version = "1"
             };

@@ -147,8 +147,13 @@ namespace terminalIntegrationTests.EndToEnd
             var tokenId = Guid.Empty;
             if (authenticationRequired)
             {
+                var terminalSummaryDTO = new TerminalSummaryDTO
+                {
+                    Name = docuSignActivity.ActivityTemplate.TerminalName,
+                    Version = docuSignActivity.ActivityTemplate.TerminalVersion
+                };
                 // Authenticate with DocuSign
-                tokenId = await _docuSignTestTools.AuthenticateDocuSignAndAssociateTokenWithAction(docuSignActivity.Id, GetDocuSignCredentials(), docuSignActivity.ActivityTemplate.Terminal);
+                tokenId = await _docuSignTestTools.AuthenticateDocuSignAndAssociateTokenWithAction(docuSignActivity.Id, GetDocuSignCredentials(), terminalSummaryDTO);
                 docuSignActivity = await Configure(docuSignActivity);
             }
             docuSignActivity.UpdateControls<Send_DocuSign_Envelope_v2.ActivityUi>(x => x.TemplateSelector.SelectByKey("SendEnvelopeTestTemplate"));
