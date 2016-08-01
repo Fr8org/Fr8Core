@@ -18,7 +18,8 @@ namespace terminalTest.Actions
             Label = "SimpleHierarchicalActivity",
             Category = ActivityCategory.Processors,
             Version = "1",
-            WebService = TerminalData.WebServiceDTO,
+            // TODO: FR-4943, remove this.
+            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

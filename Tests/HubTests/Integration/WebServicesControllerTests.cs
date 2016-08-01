@@ -1,4 +1,5 @@
-﻿using Data.Interfaces;
+﻿using System;
+using Data.Interfaces;
 using Fr8.Testing.Integration;
 using HubTests.Fixtures;
 using NUnit.Framework;
@@ -30,7 +31,7 @@ namespace HubTests.Integration
             //Act
             string baseUrl = GetHubApiBaseUrl();
             var webServicesGetUrl = baseUrl + "WebServices/Get";
-            var webServices = await HttpGetAsync<List<WebServiceDTO>>(webServicesGetUrl);
+            var webServices = await HttpGetAsync<List<ActivityCategoryDTO>>(webServicesGetUrl);
 
             //Assert
             Assert.IsNotNull(webServices, "Web Services are not retrieved from HubWeb");
@@ -48,7 +49,7 @@ namespace HubTests.Integration
 
             //Assert
             Assert.IsNotNull(newWebService, "The new Web Service is not posted to HubWeb");
-            Assert.IsTrue(newWebService.Id > 0, "There is no new web services added in HubWeb");
+            Assert.IsTrue(newWebService.Id != Guid.Empty, "There is no new web services added in HubWeb");
             Assert.IsTrue(newWebService.Name.Equals("IntegrationTestWebService"), "The newly created web service is missing in HubWeb");
 
             CleanUpDatabase();
@@ -76,18 +77,18 @@ namespace HubTests.Integration
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var integrationTestWebServices = uow.WebServiceRepository.GetQuery().Where(webService => webService.Name.Equals("IntegrationTestWebService"));
+                var integrationTestWebServices = uow.ActivityCategoryRepository.GetQuery().Where(webService => webService.Name.Equals("IntegrationTestWebService"));
 
                 foreach (var webService in integrationTestWebServices.ToList())
                 {
-                    uow.WebServiceRepository.Remove(webService);
+                    uow.ActivityCategoryRepository.Remove(webService);
                 }
 
                 uow.SaveChanges();
             }
         }
 
-        private async Task<WebServiceDTO> CreateNewWebService()
+        private async Task<ActivityCategoryDTO> CreateNewWebService()
         {
             var webServiceDTO = FixtureData.BasicWebServiceDTOWithoutId();
 
@@ -95,7 +96,7 @@ namespace HubTests.Integration
             string baseUrl = GetHubApiBaseUrl();
             var webServicesPostUrl = baseUrl + "WebServices/Post";
 
-            var newWebService = await HttpPostAsync<WebServiceDTO, WebServiceDTO>(webServicesPostUrl, webServiceDTO);
+            var newWebService = await HttpPostAsync<ActivityCategoryDTO, ActivityCategoryDTO>(webServicesPostUrl, webServiceDTO);
 
             return newWebService;
         }
