@@ -202,8 +202,8 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ManifestDescriptionCM, ManifestDescriptionDTO>();
             Mapper.CreateMap<ManifestDescriptionDTO, ManifestDescriptionCM>();
 
-            Mapper.CreateMap<TerminalDO, TerminalDTO>()
-                .ForMember(x => x.InternalId, x=>x.ResolveUsing(y => y.Id));
+
+            Mapper.CreateMap<TerminalDO, TerminalDTO>();
             Mapper.CreateMap<TerminalDTO, TerminalDO>()
                 .ForMember(x => x.LastUpdated, opts => opts.Ignore())
                 .ForMember(x => x.CreateDate, opts => opts.Ignore())

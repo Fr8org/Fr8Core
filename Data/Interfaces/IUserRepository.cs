@@ -9,7 +9,7 @@ namespace Data.Interfaces
         Fr8AccountDO UpdateUserCredentials(String emailAddress, String userName = null, String password = null);
         Fr8AccountDO UpdateUserCredentials(EmailAddressDO emailAddressDO, String userName = null, String password = null);
         Fr8AccountDO UpdateUserCredentials(Fr8AccountDO dockyardAccountDO, String userName = null, String password = null);
-        Fr8AccountDO GetOrCreateUser(String emailAddress, string userRole = Roles.StandardUser, OrganizationDO organizationDO = null);
-        Fr8AccountDO GetOrCreateUser(EmailAddressDO emailAddressDO, string userRole = Roles.StandardUser, OrganizationDO organizationDO = null);
+        Fr8AccountDO GetOrCreateUser(String emailAddress, string userRole = Roles.Customer, OrganizationDO organizationDO = null);
+        Fr8AccountDO GetOrCreateUser(EmailAddressDO emailAddressDO, string userRole = Roles.Customer, OrganizationDO organizationDO = null);
     }
 }

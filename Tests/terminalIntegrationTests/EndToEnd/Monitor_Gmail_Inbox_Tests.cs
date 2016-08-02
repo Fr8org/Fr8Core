@@ -53,7 +53,7 @@ namespace terminalIntegrationTests.EndToEnd
         }
 
         // this test requires internet connection
-        [Test, Category("Integration.terminalGoogle")]
+        [Test, Ignore, Category("Integration.terminalGoogle")]
         public async Task Monitor_Gmail_Inbox_Test()
         {
             Fr8AccountDO currentUser = null;

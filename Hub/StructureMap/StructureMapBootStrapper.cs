@@ -192,7 +192,7 @@ namespace Hub.StructureMap
                 For<IPageDefinition>().Use<PageDefinition>();
 
                 For<TelemetryClient>().Use<TelemetryClient>();
-                For<ITerminal>().Use(x=>new TerminalServiceForTests(x.GetInstance<IConfigRepository>(), x.GetInstance<ISecurityServices>())).Singleton();
+                For<ITerminal>().Use(x=>new TerminalServiceForTests(x.GetInstance<IConfigRepository>())).Singleton();
                 For<IJobDispatcher>().Use<MockJobDispatcher>();
                 // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
                 For<IUtilizationMonitoringService>().Use<UtilizationMonitoringService>().Singleton();
@@ -215,9 +215,9 @@ namespace Hub.StructureMap
         {
             private readonly ITerminal _terminal;
 
-            public TerminalServiceForTests(IConfigRepository configRepository, ISecurityServices securityServices)
+            public TerminalServiceForTests(IConfigRepository configRepository)
             {
-                _terminal = new Terminal(configRepository, securityServices);
+                _terminal = new Terminal(configRepository);
             }
 
             public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal, string userId)

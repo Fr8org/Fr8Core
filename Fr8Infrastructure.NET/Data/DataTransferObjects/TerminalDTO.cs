@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
@@ -8,13 +7,10 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         public TerminalDTO()
         {
             AuthenticationType = States.AuthenticationType.None;
-            Roles = new List<string>();
         }
 
         [JsonProperty("id")]
         public string PublicIdentifier { get; set; }
-        [JsonProperty("InternalId")]
-        public int InternalId { get; set; }
         [JsonProperty("name")]
         public string Name { get; set; }
         [JsonProperty("label")]
@@ -29,10 +25,5 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         public string Description { get; set; }
         [JsonProperty("authenticationType")]
         public int AuthenticationType { get; set; }
-        /// <summary>
-        /// Allowed roles for users, determing Terminal Permissions
-        /// </summary>
-        [JsonProperty("roles")]
-        public List<string> Roles { get; set; }
     }
 }

@@ -89,8 +89,11 @@ namespace Hub.Services
             String[] acceptableRoles = { };
             switch (minAuthLevel)
             {
-                case "StandardUser":
-                    acceptableRoles = new[] { "StandardUser", "Admin" };
+                case "Customer":
+                    acceptableRoles = new[] { "Customer", "Booker", "Admin" };
+                    break;
+                case "Booker":
+                    acceptableRoles = new[] { "Booker", "Admin" };
                     break;
                 case "Admin":
                     acceptableRoles = new[] { "Admin" };
@@ -277,13 +280,13 @@ namespace Hub.Services
                 }
                 else
                 {
-                    newFr8Account = Register(uow, email, email, email, password, Roles.StandardUser, organizationDO);
+                    newFr8Account = Register(uow, email, email, email, password, Roles.Customer, organizationDO);
                     curRegStatus = RegistrationStatus.Successful;
                 }
             }
             else
             {
-                newFr8Account = Register(uow, email, email, email, password, Roles.StandardUser, organizationDO);
+                newFr8Account = Register(uow, email, email, email, password, Roles.Customer, organizationDO);
                 curRegStatus = RegistrationStatus.Successful;
             }
 
@@ -464,8 +467,10 @@ namespace Hub.Services
                 string userRole = "";
                 if (getRoles.Select(e => e.Name).Contains("Admin"))
                     userRole = "Admin";
-                else if (getRoles.Select(e => e.Name).Contains("StandardUser"))
-                    userRole = "StandardUser";
+                else if (getRoles.Select(e => e.Name).Contains("Booker"))
+                    userRole = "Booker";
+                else if (getRoles.Select(e => e.Name).Contains("Customer"))
+                    userRole = "Customer";
                 return userRole;
             }
         }
@@ -551,7 +556,7 @@ namespace Hub.Services
 
                 uow.AspNetUserRolesRepository.RevokeRoleFromUser(Roles.Guest, existingUserDO.Id);
                 // Add new role
-                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.StandardUser, existingUserDO.Id);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, existingUserDO.Id);
             }
 
             uow.SaveChanges();
