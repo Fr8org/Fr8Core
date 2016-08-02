@@ -76,11 +76,6 @@ namespace HubTests.Utilization
             {
                 Notifications.Add(notificationMessage);
             }
-
-            public void NotifyTerminalEvent(NotificationMessageDTO notificationMessage, string userId)
-            {
-                Notifications.Add(notificationMessage);
-            }
         }
 
         private UtilizationDataProviderMock _provider;
