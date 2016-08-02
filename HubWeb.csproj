@@ -907,7 +907,6 @@
     <TypeScriptCompile Include="Scripts\app\directives\ActivityHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\SubplanHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Validators\ManifestDescriptionValidators.ts" />
-    <TypeScriptCompile Include="Scripts\app\enums\NotificationArea.ts" />
     <TypeScriptCompile Include="Scripts\app\enums\NotificationType.ts" />
     <TypeScriptCompile Include="Scripts\app\enums\UINotificationMessageStatus.ts" />
     <TypeScriptCompile Include="Scripts\app\events\Fr8Events.ts" />
