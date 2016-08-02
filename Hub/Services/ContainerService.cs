@@ -281,7 +281,6 @@ namespace Hub.Services
             _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
                 NotificationType = NotificationType.GenericFailure,
-                NotificationArea = NotificationArea.ActivityStream,
                 Message = errorMessage,
                 Collapsed = false
             }, user.Id);

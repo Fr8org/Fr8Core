@@ -72,12 +72,12 @@ namespace HubTests.Utilization
                 throw new NotImplementedException();
             }
 
-            public void Notify(string channelName, NotificationMessageDTO notificationMessage)
+            public void NotifyUser(NotificationMessageDTO notificationMessage, string userId)
             {
                 Notifications.Add(notificationMessage);
             }
 
-            public void NotifyUser(NotificationMessageDTO notificationMessage, string userId)
+            public void NotifyTerminalEvent(NotificationMessageDTO notificationMessage, string userId)
             {
                 Notifications.Add(notificationMessage);
             }
