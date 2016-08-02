@@ -62,13 +62,13 @@ namespace Fr8.TerminalBase.Services
                 _hubCommunicator = new TestMonitoringHubCommunicator(curDataDTO.ExplicitData, CrateManager);
                 activityTemplate.Name = activityTemplate.Name.Substring(0, activityTemplate.Name.Length - "_TEST".Length);
 
-                factory = _activityStore.GetFactory(activityTemplate);
+                factory = _activityStore.GetFactory(activityTemplate.Name, activityTemplate.Version);
 
                 activityTemplate.Name = originalName;
             }
             else
             {
-                factory = _activityStore.GetFactory(curDataDTO.ActivityDTO.ActivityTemplate);
+                factory = _activityStore.GetFactory(curDataDTO.ActivityDTO.ActivityTemplate.Name, curDataDTO.ActivityDTO.ActivityTemplate.Version);
             }
 
 

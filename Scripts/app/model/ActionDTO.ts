@@ -8,7 +8,7 @@
         authTokenId: string;
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;
-        activityTemplate: ActivityTemplate;
+        activityTemplate: ActivityTemplateSummary;
         currentView: string;
         childrenActivities: Array<interfaces.IActivityDTO>;
         height: number = 300;
