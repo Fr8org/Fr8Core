@@ -9,9 +9,6 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         [JsonProperty("notificationType")]
         public NotificationType NotificationType { get; set; }
 
-        [JsonProperty("notificationArea")]
-        public NotificationArea NotificationArea { get; set; }
-
         [JsonProperty("subject")]
         public string Subject { get; set; }
 

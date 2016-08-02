@@ -174,7 +174,7 @@ namespace HubTests.Security
                 uow.SaveChanges();
 
                 activityDTO.Id = activityDO.Id;
-                activityDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(activityTemplateDO);
+                activityDTO.ActivityTemplate = Mapper.Map<ActivityTemplateSummaryDTO>(activityTemplateDO);
             }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -367,7 +367,7 @@ namespace HubTests.Security
                 uow.SaveChanges();
 
                 activityDTO.Id = activityDO.Id;
-                activityDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(activityTemplateDO);
+                activityDTO.ActivityTemplate = Mapper.Map<ActivityTemplateSummaryDTO>(activityTemplateDO);
             }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -404,7 +404,7 @@ namespace HubTests.Security
                 uow.SaveChanges();
 
                 activityDTO.Id = activityDO.Id;
-                activityDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(activityTemplateDO);
+                activityDTO.ActivityTemplate = Mapper.Map<ActivityTemplateSummaryDTO>(activityTemplateDO);
             }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
