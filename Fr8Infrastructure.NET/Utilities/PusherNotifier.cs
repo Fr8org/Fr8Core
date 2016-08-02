@@ -35,20 +35,10 @@ namespace Fr8.Infrastructure.Utilities
 
         public void NotifyUser(NotificationMessageDTO notificationMessage, string userId)
         {
-            Notify(notificationMessage, notificationMessage.NotificationType.ToString(), userId);
-        }
-
-        public void NotifyTerminalEvent(NotificationMessageDTO notificationMessage, string userId)
-        {
-            Notify(notificationMessage, NotificationType.TerminalEvent.ToString(), userId);
-        }
-        
-        private void Notify(NotificationMessageDTO notificationMessage, string notificationType, string userId )
-        {
             if (!string.IsNullOrWhiteSpace(userId))
             {
                 var pusherChannel = BuildChannelName(userId);
-                _pusher?.Trigger(pusherChannel, notificationType, notificationMessage);
+                _pusher?.Trigger(pusherChannel, notificationMessage.NotificationType.ToString(), notificationMessage);
             }
         }
 

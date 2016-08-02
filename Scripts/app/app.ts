@@ -573,12 +573,12 @@ bootstrapModule.factory('bootstrapper', ['$http', '$log','$q', ($http: ng.IHttpS
 }]);
 // create a div which is used as the root of the bootstrap app
 var appContainer = document.createElement('div');
-bootstrapModule.run((bootstrapper) => {
+bootstrapModule.run(['bootstrapper',(bootstrapper) => {
     bootstrapper.bootstrap('app').then(() => {
         // removing the container will destroy the bootstrap app
         appContainer.remove();
     });
-});
+}]);
 // make sure the DOM is fully loaded before bootstrapping.
 angular.element(document).ready(() => {
     angular.bootstrap(appContainer, ['activityTemplateBootstrapper']);

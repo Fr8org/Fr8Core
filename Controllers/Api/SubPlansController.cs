@@ -53,7 +53,6 @@ namespace HubWeb.Controllers
                     ParentPlanNodeId = subplanDto.ParentId,
                     RootPlanNodeId = subplanDto.PlanId,
                     Name = subplanDto.Name,
-                    Runnable = subplanDto.Runnable
                 };
 
                 _subplan.Create(uow, curSubPlanDO);

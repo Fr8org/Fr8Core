@@ -15,7 +15,6 @@ module dockyard.services {
         createSubplanAndConfigureActivity: (
             $scope: ng.IScope,
             subPlanName: string,
-            subPlanRunnable: boolean,
             parentPlan: model.PlanDTO,
             parentActivity: model.ActivityDTO,
             existingSubPlanId: string,
@@ -67,7 +66,6 @@ module dockyard.services {
         public createSubplanAndConfigureActivity(
             $scope: ng.IScope,
             subPlanName: string,
-            subPlanRunnable: boolean,
             parentPlan: model.PlanDTO,
             parentActivity: model.ActivityDTO,
             existingSubPlanId: string,
@@ -75,7 +73,7 @@ module dockyard.services {
 
             // Call Hub API to create subplan.
             var createSubPlan = (plan: model.PlanDTO, activity: model.ActivityDTO,
-                name: string, runnable: boolean): ng.IPromise<model.SubPlanDTO> => {
+                name: string): ng.IPromise<model.SubPlanDTO> => {
 
                 var defered = this.$q.defer<model.SubPlanDTO>();
 
@@ -86,9 +84,7 @@ module dockyard.services {
                     activity.id,
                     'subplan-' + name
                 );
-
-                subplan.runnable = runnable;
-
+                
                 this.SubPlanService.create(subplan).$promise
                     .then((subplan: model.SubPlanDTO) => {
                         defered.resolve(subplan);
@@ -169,11 +165,11 @@ module dockyard.services {
             );
 
             if (!existingSubPlanId) {
-                createSubPlan(parentPlan, parentActivity, subPlanName, subPlanRunnable)
+                createSubPlan(parentPlan, parentActivity, subPlanName)
                     .then((subplan: model.SubPlanDTO) => {
-                        createActivity(activityTemplate, parentPlan, subplan.subPlanId)
+                        createActivity(activityTemplate, parentPlan, subplan.id)
                             .then((activity: model.ActivityDTO) => {
-                                result.resolve(new model.SubordinateSubplan(subplan.subPlanId, activity.id));
+                                result.resolve(new model.SubordinateSubplan(subplan.id, activity.id));
                             })
                             .catch((reason: any) => {
                                 result.reject(reason);
