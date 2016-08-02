@@ -20,6 +20,9 @@ module dockyard.directives {
         return {
             restrict: 'E',
             templateUrl: '/AngularTemplate/ActionPicker',
+            scope: {
+                plan: '='
+            },
             link: (scope: IActionPickerScope, element: any, attr: any) => {
                 var containerEl = $('<div class="action-picker-container action-picker-container-hidden"><action-picker-panel on-close="close()" callback="panelCallback" action-group="group" /></div>');
                 containerEl.insertAfter($('designer-header')); 
@@ -45,6 +48,7 @@ module dockyard.directives {
             },
             controller: ['$scope', '$timeout',
                 ($scope: IActionPickerScope, $timeout: ng.ITimeoutService) => {
+                    console.log($scope);
                     $scope.panelCallback = {};
 
                     $scope.$on('$destroy', () => {
@@ -52,6 +56,7 @@ module dockyard.directives {
                     });
 
                     $scope.onAddActivity = () => {
+                        console.log($scope);
                         if ($scope.visible) {
                             return;
                         }
