@@ -25,7 +25,8 @@ module dockyard.controllers.NotifierController {
             'PusherNotifierService',
             'UINotificationService',
             '$mdSidenav',
-            '$scope'
+            '$scope',
+            '$stateParams'
         ];
 
         constructor(
@@ -33,12 +34,15 @@ module dockyard.controllers.NotifierController {
             private PusherNotifierService: services.IPusherNotifierService,
             private uiNotificationService: services.IUINotificationService,
             private $mdSidenav: any,
-            private $scope: INotifierControllerScope) {
+            private $scope: INotifierControllerScope,
+            private $stateParams: ng.ui.IStateParamsService) {
 
             // liner-progress-bar controll
             $scope.planIsRunning = false;
             var user = null;
             var isScopeDestroyed = false;
+
+            
 
             this.$scope.$on(<any>designHeaderEvents.PLAN_EXECUTION_STARTED,
                 (event: ng.IAngularEvent) => {
@@ -73,6 +77,9 @@ module dockyard.controllers.NotifierController {
                     event.type = data.NotificationType;
                     event.data = data;
                     this.$scope.eventList.splice(0, 0, event);
+                    if ($stateParams['viewMode'] == "kiosk" && data.NotificationType === 2) {
+                        uiNotificationService.notify(data.Message, dockyard.enums.UINotificationStatus.Error, null);
+                    }
                 });
 
                 // Toast Messages
