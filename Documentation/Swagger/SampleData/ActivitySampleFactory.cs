@@ -5,9 +5,9 @@ namespace HubWeb.Documentation.Swagger.SampleData
 {
     public class ActivitySampleFactory : ISwaggerSampleFactory<ActivityDTO>
     {
-        private readonly ISwaggerSampleFactory<ActivityTemplateDTO> _activityTemplateFactory;
+        private readonly ISwaggerSampleFactory<ActivityTemplateSummaryDTO> _activityTemplateFactory;
 
-        public ActivitySampleFactory(ISwaggerSampleFactory<ActivityTemplateDTO> activityTemplateFactory)
+        public ActivitySampleFactory(ISwaggerSampleFactory<ActivityTemplateSummaryDTO> activityTemplateFactory)
         {
             _activityTemplateFactory = activityTemplateFactory;
         }

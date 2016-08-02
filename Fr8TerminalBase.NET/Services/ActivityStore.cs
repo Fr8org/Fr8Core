@@ -46,10 +46,10 @@ namespace Fr8.TerminalBase.Services
             RegisterActivity(activityTemplate, new DefaultActivityFactory(typeof(T)));
         }
 
-        public IActivityFactory GetFactory(ActivityTemplateDTO activityTemplate)
+        public IActivityFactory GetFactory(string name, string version)
         {
             IActivityFactory factory;
-            if (!_activityRegistrations.TryGetValue(new ActivityRegistrationKey(activityTemplate), out factory))
+            if (!_activityRegistrations.TryGetValue(new ActivityRegistrationKey(name, version), out factory))
             {
                 return null;
             }

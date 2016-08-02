@@ -13,8 +13,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         public string Name { get; set; }
 
         [JsonProperty("activityTemplate")]
-        [JsonConverter(typeof(ActivityTemplateActivityConverter))]
-        public ActivityTemplateDTO ActivityTemplate { get; set; }
+        public ActivityTemplateSummaryDTO ActivityTemplate { get; set; }
 
         [JsonProperty("planId")]
         public Guid? RootPlanNodeId { get; set; }
