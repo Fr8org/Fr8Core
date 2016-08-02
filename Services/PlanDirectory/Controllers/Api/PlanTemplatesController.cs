@@ -23,6 +23,7 @@ namespace PlanDirectory.Controllers.Api
         private readonly IPlanTemplate _planTemplate;
         private readonly ISearchProvider _searchProvider;
         private readonly IWebservicesPageGenerator _webservicesPageGenerator;
+        private readonly IPlanTemplateDetailsGenerator _planTemplateDetailsGenerator;
         private static readonly ILog Logger = LogManager.GetLogger("PlanDirectory");
 
         public PlanTemplatesController()
@@ -32,6 +33,7 @@ namespace PlanDirectory.Controllers.Api
             _planTemplate = ObjectFactory.GetInstance<IPlanTemplate>();
             _searchProvider = ObjectFactory.GetInstance<ISearchProvider>();
             _webservicesPageGenerator = ObjectFactory.GetInstance<IWebservicesPageGenerator>();
+            _planTemplateDetailsGenerator = ObjectFactory.GetInstance<IPlanTemplateDetailsGenerator>();
         }
 
         [HttpPost]
@@ -43,6 +45,7 @@ namespace PlanDirectory.Controllers.Api
             var planTemplateCM = await _planTemplate.CreateOrUpdate(fr8AccountId, dto);
             await _searchProvider.CreateOrUpdate(planTemplateCM);
             await _webservicesPageGenerator.Generate(planTemplateCM, fr8AccountId);
+            await _planTemplateDetailsGenerator.Generate(dto);
             return Ok();
         }
 

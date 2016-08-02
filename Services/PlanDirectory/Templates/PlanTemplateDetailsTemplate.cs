@@ -38,14 +38,132 @@ namespace PlanDirectory.Templates
     <link rel=""stylesheet"" href=""../Content/css/plan-category.css"" />
 	<link rel=""stylesheet"" href=""../Content/css/plan-directory.css"" />
 
-    <title>Fr8 - Plan Template Detaild</title>
+    <title>Fr8 - Plan Template Details - ");
+            
+            #line 17 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(planTemplate.Name));
+            
+            #line default
+            #line hidden
+            this.Write(@"</title>
     <meta charset=""utf-8""/>
 </head>
 <body>
-</body>
+    <div class=""header-container"">
+        <div class=""header"">
+            <div class=""logo""></div>
+        </div>
+    </div>
+    <div class=""container"">
+        <h1>Plan Template Details - <em>");
+            
+            #line 27 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(planTemplate.Name));
+            
+            #line default
+            #line hidden
+            this.Write("</em></h1>\r\n\t\t");
+            
+            #line 28 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
+for (int i=0; i<5; i++)
+		{
+            
+            #line default
+            #line hidden
+            this.Write("        <div class=\"row\">\r\n            <div class=\"col-md-12\">\r\n                <" +
+                    "hr />\r\n            </div>\r\n        </div>\r\n        <div class=\"row\">\r\n          " +
+                    "  <div class=\"col-md-12\">\r\n                <h3>V");
+            
+            #line 37 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(i));
+            
+            #line default
+            #line hidden
+            this.Write(" Registered By ");
+            
+            #line 37 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(i));
+            
+            #line default
+            #line hidden
+            this.Write("</h3>\r\n            </div>\r\n        </div>\r\n        <div class=\"row\">\r\n           " +
+                    " <div class=\"col-md-12\">\r\n                <p>\r\n                    <em>");
+            
+            #line 43 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(i));
+            
+            #line default
+            #line hidden
+            this.Write(@"</em>
+                </p>
+            </div>
+        </div>
+        <div class=""row"">
+            <div class=""col-md-12"">
+                <strong>Sample JSON</strong>
+            </div>
+        </div>		
+        <div class=""row"">
+            <div class=""col-md-12"">
+                <pre>
 ");
+            this.Write("\r\n                </pre>\r\n            </div>\r\n        </div>\r\n\t\t");
+            
+            #line 59 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
+ } 
+            
+            #line default
+            #line hidden
+            this.Write("    </div>\r\n</body>\r\n");
             return this.GenerationEnvironment.ToString();
         }
+        
+        #line 1 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
+
+private global::Fr8.Infrastructure.Data.DataTransferObjects.PublishPlanTemplateDTO _planTemplateField;
+
+/// <summary>
+/// Access the planTemplate parameter of the template.
+/// </summary>
+private global::Fr8.Infrastructure.Data.DataTransferObjects.PublishPlanTemplateDTO planTemplate
+{
+    get
+    {
+        return this._planTemplateField;
+    }
+}
+
+
+/// <summary>
+/// Initialize the template
+/// </summary>
+public virtual void Initialize()
+{
+    if ((this.Errors.HasErrors == false))
+    {
+bool planTemplateValueAcquired = false;
+if (this.Session.ContainsKey("planTemplate"))
+{
+    this._planTemplateField = ((global::Fr8.Infrastructure.Data.DataTransferObjects.PublishPlanTemplateDTO)(this.Session["planTemplate"]));
+    planTemplateValueAcquired = true;
+}
+if ((planTemplateValueAcquired == false))
+{
+    object data = global::System.Runtime.Remoting.Messaging.CallContext.LogicalGetData("planTemplate");
+    if ((data != null))
+    {
+        this._planTemplateField = ((global::Fr8.Infrastructure.Data.DataTransferObjects.PublishPlanTemplateDTO)(data));
+    }
+}
+
+
+    }
+}
+
+
+        
+        #line default
+        #line hidden
     }
     
     #line default
