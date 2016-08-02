@@ -45,7 +45,7 @@ namespace terminalGoogleTests.Integration
 
         private void AssertCrateTypes_OnConfiguration(ICrateStorage crateStorage)
         {
-            Assert.AreEqual(1, crateStorage.Count);
+            Assert.AreEqual(2, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
         }
         /////////////
@@ -82,12 +82,12 @@ namespace terminalGoogleTests.Integration
             Assert.NotNull(responseActionDTO.CrateStorage);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            Assert.AreEqual(1, crateStorage.Count);
+            Assert.AreEqual(2, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
+            Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
 
-            // Due to performance issue, remove functionalilty to load table contents
-            //  Assert.AreEqual("(2,1)", crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table[0].Row[0].Cell.Value);
-            //Assert.AreEqual("(2,2)", crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table[0].Row[1].Cell.Value);
+            Assert.AreEqual("(2,1)", crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table[0].Row[0].Cell.Value);
+            Assert.AreEqual("(2,2)", crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table[0].Row[1].Cell.Value);
         }
 
         /// <summary>
@@ -117,11 +117,11 @@ namespace terminalGoogleTests.Integration
             Assert.NotNull(responseActionDTO.CrateStorage);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            Assert.AreEqual(1, crateStorage.Count);
+            Assert.AreEqual(2, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
+            Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
 
-            // Due to performance issue, remove functionalilty to load table contents
-            // Assert.AreEqual("(2,1)", crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table[0].Row[0].Cell.Value);
+            Assert.AreEqual("(2,1)", crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table[0].Row[0].Cell.Value);
         }
 
         [Test, Category("Integration.terminalGoogle")]
@@ -148,7 +148,7 @@ namespace terminalGoogleTests.Integration
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
 
-            Assert.AreEqual(3, crateStorage.Count);
+            Assert.AreEqual(4, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
             Assert.AreEqual(1, crateStorage.FirstCrate<CrateDescriptionCM>().Content.CrateDescriptions.Count);
@@ -182,8 +182,9 @@ namespace terminalGoogleTests.Integration
             Assert.NotNull(responseActionDTO.CrateStorage);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            Assert.AreEqual(1, crateStorage.Count);
+            Assert.AreEqual(2, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
+            Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
         }
         /////////////
         /// Followup Configuration End
@@ -347,7 +348,11 @@ namespace terminalGoogleTests.Integration
             var storage = Crate.GetStorage(response);
             var tableDataCrate = storage.CratesOfType<StandardTableDataCM>().Single();
             ////Assert
-            Assert.AreEqual("Spreadsheet Data from \"OneRow_WithHeader\"", tableDataCrate.Label);
+            Assert.AreEqual("Table Generated From Google Sheet Data", tableDataCrate.Label);
+
+            var payload = storage.CratesOfType<StandardPayloadDataCM>();
+            Assert.AreEqual(1, payload.Count(), "Reponse payload doesn't contain extracted fields data from file");
+            Assert.AreEqual(4, payload.First().Content.PayloadObjects[0].PayloadObject.Count(), "Reponse payload doesn't contain extracted fields data from file");
 
         }
 
