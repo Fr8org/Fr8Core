@@ -211,10 +211,9 @@ namespace Hub.Services
 
             lock (_terminals)
             {
-                var terminals = _terminals.Values.ToArray();
-
+                return _terminals.Values.ToArray();
                 //filter terminals and show only allowed for current logged user
-                return _securityServices.GetAllowedTerminalsByUser(terminals);
+//                return _securityServices.GetAllowedTerminalsByUser(terminals);
             }
         }
 
