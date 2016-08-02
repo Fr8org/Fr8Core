@@ -81,7 +81,7 @@ namespace terminalDocuSignTests.Integration
             get { return "terminalDocuSign"; }
         }
 
-        [Test, Ignore]
+        [Test]
         public async void Test_MonitorAllDocuSignEventsLocal_Plan()
         {
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
