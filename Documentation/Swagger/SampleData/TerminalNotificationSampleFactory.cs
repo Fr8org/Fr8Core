@@ -10,7 +10,6 @@ namespace HubWeb.Documentation.Swagger
             return new NotificationMessageDTO
             {
                 NotificationType = NotificationType.GenericSuccess,
-                NotificationArea = NotificationArea.ActivityStream,
                 Message = "Something good just happened",
                 TerminalName = "terminalFr8Core",
                 ActivityName = "Build_Message_v1",

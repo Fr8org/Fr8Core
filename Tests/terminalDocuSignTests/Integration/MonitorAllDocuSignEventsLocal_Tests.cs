@@ -81,7 +81,7 @@ namespace terminalDocuSignTests.Integration
             get { return "terminalDocuSign"; }
         }
 
-        [Test, Ignore]
+        [Test]
         public async void Test_MonitorAllDocuSignEventsLocal_Plan()
         {
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -178,7 +178,7 @@ namespace terminalDocuSignTests.Integration
                 Username = DocuSignEmail,
                 Password = DocuSignApiPassword,
                 IsDemoAccount = true,
-                Terminal = Mapper.Map<TerminalDTO>(docuSignTerminal)
+                Terminal = Mapper.Map<TerminalSummaryDTO>(docuSignTerminal)
             };
 
             var tokenResponse = await HttpPostAsync<CredentialsDTO, JObject>(

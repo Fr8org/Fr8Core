@@ -110,7 +110,6 @@ namespace Hub.Services
             _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
                 NotificationType = NotificationType.GenericSuccess,
-                NotificationArea = NotificationArea.ActivityStream,
                 Message = $"Plan Shared. To view, click on " + url,
                 Collapsed = false
             }, userId);
@@ -132,7 +131,6 @@ namespace Hub.Services
             _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
                 NotificationType = NotificationType.GenericSuccess,
-                NotificationArea = NotificationArea.ActivityStream,
                 Message = $"Plan Unpublished.",
                 Collapsed = false
             }, userId);

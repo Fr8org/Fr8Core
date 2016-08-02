@@ -34,7 +34,8 @@ module dockyard.services {
             private $q: ng.IQService,
             private $modal: any,
             private SubPlanService: services.ISubPlanService,
-            private ActionService: services.IActionService
+            private ActionService: services.IActionService,
+            private ActivityTemplateHelperService: services.IActivityTemplateHelperService
         ) {
         }
 
@@ -104,8 +105,7 @@ module dockyard.services {
                 var defered = this.$q.defer<model.ActivityDTO>();
 
                 var activity = new model.ActivityDTO(plan.id, subPlanId, null);
-                activity.activityTemplate = activityTemplate;
-
+                activity.activityTemplate = this.ActivityTemplateHelperService.toSummary(<interfaces.IActivityTemplateVM>activityTemplate);
                 this.ActionService.save(activity).$promise
                     .then((activity: model.ActivityDTO) => {
                         displayConfigureActivityModal(plan, activity)
@@ -311,6 +311,7 @@ app.service(
         '$modal',
         'SubPlanService',
         'ActionService',
+        'ActivityTemplateHelperService',
         dockyard.services.SubordinateSubplanService
     ]
 );

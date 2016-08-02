@@ -6,11 +6,10 @@ namespace terminalYammerTests.Fixtures
     public class HealthMonitor_FixtureData
     {
 
-        public static ActivityTemplateDTO Post_To_Yammer_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Post_To_Yammer_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Post_To_Yammer_TEST",
                 Version = "1"
             };
