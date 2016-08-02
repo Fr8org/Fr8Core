@@ -127,7 +127,6 @@
     <Compile Include="Data\Constants\ActivityErrorCode.cs" />
     <Compile Include="Data\Constants\ActivityExecutionMode.cs" />
     <Compile Include="Data\Constants\ActivityResponse.cs" />
-    <Compile Include="Data\Constants\NotificationArea.cs" />
     <Compile Include="Data\Constants\FieldValidationResult.cs" />
     <Compile Include="Data\Constants\ManifestIdEnum.cs" />
     <Compile Include="Data\Constants\NotificationType.cs" />

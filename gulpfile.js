@@ -93,7 +93,6 @@ gulp.task('compile_js', function () {
         'Scripts/app/filters/PlanState.js',
         'Scripts/app/filters/ContainerState.js',
         'Scripts/app/filters/FilterByTag.js',
-        'Scripts/app/enums/NotificationArea.js',
         'Scripts/app/enums/NotificationType.js',
         'Scripts/app/enums/UINotificationMessageStatus.js',
         'Scripts/app/directives/EventArgsBase.js',
