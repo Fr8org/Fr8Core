@@ -19,6 +19,7 @@ namespace HubTests.Controllers
     {
         private Fr8AccountDO _testAccount1;
         private Fr8AccountDO _testAccount3;
+        private Fr8AccountDO _testAccount2;
 
         public override void SetUp()
         {
