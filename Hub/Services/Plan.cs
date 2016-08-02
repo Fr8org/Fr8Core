@@ -552,7 +552,6 @@ namespace Hub.Services
                 _pusherNotifier.NotifyUser(new NotificationMessageDTO
                 {
                     NotificationType = NotificationType.GenericSuccess,
-                    NotificationArea = NotificationArea.ActivityStream,
                     Subject = "Trigger Activated",
                     Message = "Plan execution complete. Monitoring continues.",
                     Collapsed = false
@@ -600,7 +599,6 @@ namespace Hub.Services
                     _pusherNotifier.NotifyUser(new NotificationMessageDTO
                     {
                         NotificationType = NotificationType.GenericFailure,
-                        NotificationArea = NotificationArea.ActivityStream,
                         Message = $"Validation failed for activities: {activitiesList} from plan \"{plan.Name}\". See activity configuration pane for details.",
                         Collapsed = false
                     }, currentUserId);
@@ -648,7 +646,6 @@ namespace Hub.Services
                                 _pusherNotifier.NotifyUser(new NotificationMessageDTO
                                 {
                                     NotificationType = NotificationType.GenericSuccess,
-                                    NotificationArea = NotificationArea.ActivityStream,
                                     Message = $"Plan \"{plan.Name}\" activated. It will wait and respond to specified external events.",
                                     Collapsed = false
                                 }, currentUserId);
@@ -667,7 +664,6 @@ namespace Hub.Services
                             _pusherNotifier.NotifyUser(new NotificationMessageDTO
                             {
                                 NotificationType = NotificationType.GenericSuccess,
-                                NotificationArea = NotificationArea.ActivityStream,
                                 Message = $"Continue execution of the suspended Plan \"{plan.Name}\"",
                                 Collapsed = false
                             }, currentUserId);
@@ -683,7 +679,6 @@ namespace Hub.Services
                             _pusherNotifier.NotifyUser(new NotificationMessageDTO
                             {
                                 NotificationType = NotificationType.GenericSuccess,
-                                NotificationArea = NotificationArea.ActivityStream,
                                 Message = $"Complete processing for Plan \"{plan.Name}\".{responseMsg}",
                                 Collapsed = false
                             }, currentUserId);
@@ -693,7 +688,6 @@ namespace Hub.Services
                             _pusherNotifier.NotifyUser(new NotificationMessageDTO
                             {
                                 NotificationType = NotificationType.GenericFailure,
-                                NotificationArea = NotificationArea.ActivityStream,
                                 Message = $"Failed executing plan \"{plan.Name}\"",
                                 Collapsed = false
                             }, currentUserId);
@@ -787,7 +781,6 @@ namespace Hub.Services
             _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
                 NotificationType = NotificationType.GenericFailure,
-                NotificationArea = NotificationArea.ActivityStream,
                 Message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, messageToNotify),
                 Collapsed = false
             }, userId);
@@ -824,7 +817,6 @@ namespace Hub.Services
                 _pusherNotifier.NotifyUser(new NotificationMessageDTO
                 {
                     NotificationType = NotificationType.GenericFailure,
-                    NotificationArea = NotificationArea.ActivityStream,
                     Message = $"Validation of activity '{activityLabel}' from plan \"{planName}\" failed: {errors}",
                     Collapsed = false
                 }, userId);
@@ -939,7 +931,6 @@ namespace Hub.Services
             _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
                 NotificationType = NotificationType.GenericFailure,
-                NotificationArea = NotificationArea.ActivityStream,
                 Message = errorMessage,
                 Collapsed = false
             }, user.Id);
@@ -955,7 +946,6 @@ namespace Hub.Services
             _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
                 NotificationType = NotificationType.GenericFailure,
-                NotificationArea = NotificationArea.ActivityStream,
                 Message = errorMessage,
                 Collapsed = false
             }, plan.Fr8AccountId);
