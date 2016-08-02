@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Http;
@@ -33,7 +34,7 @@ namespace HubWeb.Controllers
         /// <summary>
         /// Retrieves collection of web services which contain activities of specified category. If category is not specified returns list of web servies only
         /// </summary>
-        // <param name="id">Id of activity category. 1 - Monitors, 2 - Receivers, 3 - Processors, 4 - Forwarders, 5 - Solutions</param>
+        /// <param name="id">Id of activity category. 1 - Monitors, 2 - Receivers, 3 - Processors, 4 - Forwarders, 5 - Solutions</param>
         // [HttpGet]
         // [SwaggerResponse(HttpStatusCode.OK, "Collection of web services including activity templates", typeof(List<WebServiceActivitySetDTO>))]
         // public IHttpActionResult Get(int id = -1)
@@ -100,16 +101,63 @@ namespace HubWeb.Controllers
         //     }
         // }
 
-        public IHttpActionResult Get()
+        [HttpGet]
+        [SwaggerResponse(HttpStatusCode.OK, "Collection of web services including activity templates", typeof(List<WebServiceActivitySetDTO>))]
+        public IHttpActionResult Get(Guid? id = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var models = uow.ActivityCategoryRepository
-                    .GetAll()
-                    .Select(Mapper.Map<ActivityCategoryDTO>)
-                    .ToList();
+                if (id.HasValue)
+                {
+                    if (!ActivityCategories.ActivityCategoryIds.Contains(id.Value))
+                    {
+                        throw new ApplicationException("Invalid predefined activity category");
+                    }
 
-                return Ok(models);
+                    var idValue = id.Value;
+                    var activityTemplates = uow
+                        .ActivityTemplateRepository
+                        .GetQuery()
+                        .Include("Categories.ActivityCategory")
+                        .Where(x => x.Categories.Any(y => y.ActivityCategoryId == idValue))
+                        .ToList();
+
+                    var categorySet = new HashSet<ActivityCategoryDO>();
+                    foreach (var category in activityTemplates.SelectMany(x => x.Categories).Select(x => x.ActivityCategory))
+                    {
+                        if (ActivityCategories.ActivityCategoryIds.Contains(category.Id))
+                        {
+                            continue;
+                        }
+
+                        categorySet.Add(category);
+                    }
+
+                    var result = categorySet
+                        .OrderBy(x => x.Name)
+                        .Select(x => new WebServiceActivitySetDTO()
+                        {
+                            WebServiceName = x.Name,
+                            WebServiceIconPath = x.IconPath,
+                            Activities = activityTemplates
+                                .Where(y => y.Categories.Any(z => z.ActivityCategoryId == x.Id))
+                                .GroupBy(y => new { y.Name })
+                                .Select(y => Mapper.Map<ActivityTemplateDTO>(y.OrderByDescending(z => int.Parse(z.Version)).First()))
+                                .ToList()
+                        })
+                        .ToList();
+
+                    return Ok(result);
+                }
+                else
+                {
+                    var models = uow.ActivityCategoryRepository
+                        .GetAll()
+                        .Select(Mapper.Map<ActivityCategoryDTO>)
+                        .ToList();
+
+                    return Ok(models);
+                }
             }
         }
 

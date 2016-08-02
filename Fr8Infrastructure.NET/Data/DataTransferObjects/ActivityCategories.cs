@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
@@ -33,6 +34,15 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
             Name = "Solution"
         };
 
+        private readonly static List<Guid> _categoryIds = new List<Guid>()
+        {
+            MonitorId,
+            ReceiveId,
+            ProcessId,
+            ForwardId,
+            SolutionId
+        };
+   
         public static Guid MonitorId
         {
             get { return Guid.Parse("417DD061-27A1-4DEC-AECD-4F468013FD24"); }
@@ -106,6 +116,11 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         public static ActivityCategoryDTO Solution
         {
             get { return _solution; }
+        }
+
+        public static List<Guid> ActivityCategoryIds
+        {
+            get { return _categoryIds; }
         }
     }
 }

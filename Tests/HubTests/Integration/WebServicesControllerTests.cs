@@ -59,7 +59,7 @@ namespace HubTests.Integration
         public async Task GetActivities_ShouldGetOneMonitorActivity()
         {
             //Arrange
-            int activityCategoryId = (int)ActivityCategory.Monitors;
+            var activityCategoryId = ActivityCategories.MonitorId.ToString();
 
             //Act
             string baseUrl = GetHubApiBaseUrl();
