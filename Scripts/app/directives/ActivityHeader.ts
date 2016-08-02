@@ -18,7 +18,7 @@ module dockyard.directives.ActivityHeader {
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     export function ActivityHeader(): ng.IDirective {
-        var controller = ['$scope', 'ActionService', '$modal', 'SolutionDocumentationService', ($scope: IActivityHeaderScope, ActionService: services.IActionService, $modal: any, documentationService: services.ISolutionDocumentationService) => {
+        var controller = ['$scope', 'ActionService', '$modal', 'SolutionDocumentationService', 'ActivityTemplateHelperService', ($scope: IActivityHeaderScope, ActionService: services.IActionService, $modal: any, documentationService: services.ISolutionDocumentationService, ActivityTemplateHelperService: services.IActivityTemplateHelperService) => {
             $scope.openMenu = ($mdOpenMenu, ev) => {
                 $mdOpenMenu(ev);
             };
@@ -30,16 +30,17 @@ module dockyard.directives.ActivityHeader {
                     resolve: {
                         label: () => action.label
                     }
-                })
+                });
                 modalInstance.result.then(function (label: string) {
                     action.label = label;
                     ActionService.save(action);
                 });
             }
             $scope.hasHelpMenuItem = (activity) => {
-                if (activity.activityTemplate.showDocumentation != null) {
-                    if (activity.activityTemplate.showDocumentation.body.displayMechanism != undefined &&
-                        activity.activityTemplate.showDocumentation.body.displayMechanism.contains("HelpMenu")) {
+                var at = ActivityTemplateHelperService.getActivityTemplate(activity);
+                if (at.showDocumentation != null) {
+                    if (at.showDocumentation.body.displayMechanism != undefined &&
+                        at.showDocumentation.body.displayMechanism.contains("HelpMenu")) {
                         return true;
                     }
                 }
@@ -61,7 +62,6 @@ module dockyard.directives.ActivityHeader {
 
             angular.element(document.querySelector('.col-sm-8.ellipsis')).ready(function () {
                 window.setTimeout(function () {
-                    console.log('loading header');
                     $scope.$emit('titleLoadingFinished');
                 }, 500);
             });

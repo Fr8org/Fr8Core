@@ -86,7 +86,8 @@ module dockyard.controllers {
             'AuthService',
             'ConfigureTrackerService',
             'SubPlanService',
-            '$stateParams'
+            '$stateParams',
+            'ActivityTemplateHelperService'
         ];
 
         private _longRunningActionsCounter: number;
@@ -115,7 +116,7 @@ module dockyard.controllers {
             private ConfigureTrackerService: services.ConfigureTrackerService,
             private SubPlanService: services.ISubPlanService,
             private $stateParams: ng.ui.IStateParamsService,
-            private documentationService: services.ISolutionDocumentationService
+            private ActivityTemplateHelperService: services.IActivityTemplateHelperService
         ) {
 
             this.LayoutService.resetLayout();
@@ -237,7 +238,7 @@ module dockyard.controllers {
 
             };
             $scope.state = $state.current.name;
-            this.processState($state);           
+            this.processState($state);
         }
 
         private handleBackButton(event, toState, toParams, fromState, fromParams, options) {
@@ -635,12 +636,13 @@ module dockyard.controllers {
             action.name = activityTemplate.label;
             // Add action to Workflow Designer.
             this.$scope.current.activities = action.toActionVM();
-            this.$scope.current.activities.activityTemplate = activityTemplate;
+            this.$scope.current.activities.activityTemplate = this.ActivityTemplateHelperService.toSummary(activityTemplate);
             this.selectAction(action, eventArgs.group, this.$window);
         }
 
         private allowsChildren(action: model.ActivityDTO) {
-            return action.activityTemplate.type === 'Loop';
+            var at = this.ActivityTemplateHelperService.getActivityTemplate(action);
+            return at.type === 'Loop';
         }
 
         private addActionToUI(action: model.ActivityDTO, group: model.ActionGroup) {
@@ -654,7 +656,7 @@ module dockyard.controllers {
             }
 
             //TODO we need to change rendering code
-
+            
             if (this.allowsChildren(action)) {
                 this.renderPlan(<interfaces.IPlanVM>this.$scope.current.plan);
             } else {
@@ -663,7 +665,8 @@ module dockyard.controllers {
                     for (var j = 0; j < curSubPlan.actionGroups.length; j++) {
                         var curActionGroup = <model.ActionGroup>curSubPlan.actionGroups[j];
                         if (curActionGroup.parentId === action.parentPlanNodeId) {
-                            curActionGroup.envelopes.push(new model.ActivityEnvelope(action));
+                            var activityTemplate = this.ActivityTemplateHelperService.getActivityTemplate(action);
+                            curActionGroup.envelopes.push(new model.ActivityEnvelope(action, activityTemplate));
                         }
                     }
                 }
@@ -762,7 +765,8 @@ module dockyard.controllers {
         */
         private PaneSelectAction_ActionTypeSelected(eventArgs: psa.ActionTypeSelectedEventArgs) {
             var pcaEventArgs = new pca.RenderEventArgs(eventArgs.action);
-            var pwdEventArs = new pwd.UpdateActivityTemplateIdEventArgs(eventArgs.action.id, eventArgs.action.activityTemplate.id);
+            var activityTemplate = this.ActivityTemplateHelperService.getActivityTemplate(<model.ActivityDTO>eventArgs.action);
+            var pwdEventArs = new pwd.UpdateActivityTemplateIdEventArgs(eventArgs.action.id, activityTemplate.id);
             this.$scope.$broadcast(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_UpdateActivityTemplateId], pwdEventArs);
         }
 

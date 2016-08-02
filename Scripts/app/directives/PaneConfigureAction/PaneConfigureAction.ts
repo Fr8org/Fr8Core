@@ -186,18 +186,22 @@ module dockyard.directives.paneConfigureAction {
     export class PaneConfigureActionController implements IPaneConfigureActionController {
 
         static $inject = ['$scope', 'ActionService', 'AuthService', 'ConfigureTrackerService', 'CrateHelper', '$filter',
-            '$timeout', '$modal', '$window', '$http', '$q', 'LayoutService'];
+            '$timeout', '$modal', '$window', '$http', '$q', 'LayoutService', 'ActivityTemplateHelperService'];
 
         private configLoadingError: boolean = false;
         private ignoreConfigurationChange: boolean = false;
+        private myActivityTemplate: model.ActivityTemplate = null;
 
         constructor(private $scope: IPaneConfigureActionScope, private ActionService: services.IActionService,
             private AuthService: services.AuthService, private ConfigureTrackerService: services.ConfigureTrackerService,
             private crateHelper: services.CrateHelper, private $filter: ng.IFilterService,
             private $timeout: ng.ITimeoutService, private $modal,
             private $window: ng.IWindowService, private $http: ng.IHttpService,
-            private $q: ng.IQService, private LayoutService: services.ILayoutService)
+            private $q: ng.IQService, private LayoutService: services.ILayoutService,
+            private ActivityTemplateHelperService: services.IActivityTemplateHelperService)
         {
+            this.myActivityTemplate = this.ActivityTemplateHelperService.getActivityTemplate($scope.currentAction);
+
             $scope.collapsed = false;
             $scope.showAdvisoryPopup = false;
             $scope.isConfigRequestQueued = false;
@@ -300,6 +304,8 @@ module dockyard.directives.paneConfigureAction {
                     $scope.processConfiguration();
                 }
             }
+
+            
         }
 
         public isThereOnGoingConfigRequest(): boolean {
@@ -490,10 +496,10 @@ module dockyard.directives.paneConfigureAction {
             if (this.$scope.configurationWatchUnregisterer) {
                 this.$scope.configurationWatchUnregisterer();
             }
-
+            
             this.ConfigureTrackerService.configureCallStarted(
                 this.$scope.currentAction.id,
-                this.$scope.currentAction.activityTemplate.needsAuthentication
+                this.myActivityTemplate.needsAuthentication
             );
 
             this.$scope.$broadcast(MessageType[MessageType.PaneConfigureAction_ConfigureStarting]);
