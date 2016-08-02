@@ -5,7 +5,7 @@
 ### Objects
 * [Activities](Activities.md)  
 * [Activity Templates](ActivityTemplates.md)  
-* [Crates](/Docs/ForDevelopers/Objects/Fr8Crates.md)  
+* [Crates](/Docs/ForDevelopers/Objects/Crate.md)  
 * [Hubs](Fr8Hubs.md)  
 * [Plans](Plans.md)  
 * [Plan Nodes](PlanNodes.md)
