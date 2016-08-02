@@ -61,7 +61,6 @@ module dockyard.directives.ActivityHeader {
 
             angular.element(document.querySelector('.col-sm-8.ellipsis')).ready(function () {
                 window.setTimeout(function () {
-                    console.log('loading header');
                     $scope.$emit('titleLoadingFinished');
                 }, 500);
             });
