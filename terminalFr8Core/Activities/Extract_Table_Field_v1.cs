@@ -25,7 +25,6 @@ namespace terminalFr8Core.Activities
             Category = ActivityCategory.Processors,
             NeedsAuthentication = false,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Process,

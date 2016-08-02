@@ -24,7 +24,6 @@ namespace terminalGoogle.Activities
             Label = "Get Google Sheet Data",
             Version = "1",
             Category = ActivityCategory.Receivers,
-            Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             MinPaneWidth = 300,
             WebService = TerminalData.GooogleWebServiceDTO,

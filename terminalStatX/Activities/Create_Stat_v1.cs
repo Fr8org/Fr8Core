@@ -35,7 +35,6 @@ namespace terminalStatX.Activities
             Label = "Create Stat",
             Version = "1",
             Category = ActivityCategory.Forwarders,
-            Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             MinPaneWidth = 300,
             WebService = TerminalData.WebServiceDTO,

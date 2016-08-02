@@ -63,7 +63,6 @@ namespace terminalGoogle.Actions
             Label = "Monitor Form Responses",
             Version = "1",
             Category = ActivityCategory.Monitors,
-            Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             WebService = TerminalData.GooogleWebServiceDTO,
             MinPaneWidth = 300,

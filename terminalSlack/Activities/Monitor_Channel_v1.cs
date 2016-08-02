@@ -83,7 +83,6 @@ namespace terminalSlack.Actions
             Name = "Monitor_Channel",
             Label = "Monitor Channel",
             Category = ActivityCategory.Monitors,
-            Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             Version = "1",
             WebService = TerminalData.WebServiceDTO,

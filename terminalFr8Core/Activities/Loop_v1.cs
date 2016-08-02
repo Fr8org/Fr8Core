@@ -31,7 +31,6 @@ namespace terminalFr8Core.Activities
             Type = ActivityType.Loop,
             Tags = Tags.AggressiveReload,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Process,

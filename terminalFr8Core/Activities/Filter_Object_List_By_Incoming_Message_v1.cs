@@ -30,7 +30,6 @@ namespace terminalFr8Core.Activities
             NeedsAuthentication = false,
             MinPaneWidth = 400,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Process,

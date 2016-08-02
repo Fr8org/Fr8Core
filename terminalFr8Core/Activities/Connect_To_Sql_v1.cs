@@ -23,7 +23,6 @@ namespace terminalFr8Core.Activities
             Category = ActivityCategory.Processors,
             Version = "1",
             Tags = Tags.Internal,
-            Terminal = TerminalData.TerminalDTO,
             WebService = TerminalData.WebServiceDTO,
             Categories = new[]
             {

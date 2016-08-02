@@ -44,7 +44,6 @@ namespace terminalDropbox.Actions
             Version = "1",
             Name = "Get_File_List",
             Label = "Get File List",
-            Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             Category = ActivityCategory.Receivers,
             MinPaneWidth = 330,

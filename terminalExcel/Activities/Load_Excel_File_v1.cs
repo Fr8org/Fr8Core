@@ -230,7 +230,6 @@ namespace terminalExcel.Activities
             Label = "Load Excel File",
             Version = "1",
             Category = ActivityCategory.Receivers,
-            Terminal = TerminalData.TerminalDTO,
             Tags = "Table Data Generator,Getter",
             MinPaneWidth = 300,
             WebService = TerminalData.WebServiceDTO,

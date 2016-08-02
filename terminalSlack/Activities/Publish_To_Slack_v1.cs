@@ -28,7 +28,6 @@ namespace terminalSlack.Activities
             Label = "Publish To Slack",
             Tags = "Notifier",
             Category = ActivityCategory.Forwarders,
-            Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             Version = "1",
             WebService = TerminalData.WebServiceDTO,

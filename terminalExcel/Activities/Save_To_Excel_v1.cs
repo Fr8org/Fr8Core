@@ -212,7 +212,6 @@ namespace terminalExcel.Actions
             Label = "Save to Excel",
             Version = "1",
             Category = ActivityCategory.Forwarders,
-            Terminal = TerminalData.TerminalDTO,
             MinPaneWidth = 300,
             WebService = TerminalData.WebServiceDTO,
             Categories = new[]

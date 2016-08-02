@@ -26,7 +26,6 @@ namespace terminalStatX.Activities
             Label = "Monitor Stat Changes",
             Version = "1",
             Category = ActivityCategory.Monitors,
-            Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             MinPaneWidth = 300,
             WebService = TerminalData.WebServiceDTO,
