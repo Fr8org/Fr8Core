@@ -35,11 +35,10 @@ namespace terminalTwilio.Tests.Fixtures
             return activityContext;
         }
 
-        public static ActivityTemplateDTO TwilioActivityTemplateDTO()
+        public static ActivityTemplateSummaryDTO TwilioActivityTemplateDTO()
         {
-            return new ActivityTemplateDTO
+            return new ActivityTemplateSummaryDTO
             {
-                Id = Guid.NewGuid(),
                 Name = "Send_Via_Twilio",
                 Version = "1"
             };

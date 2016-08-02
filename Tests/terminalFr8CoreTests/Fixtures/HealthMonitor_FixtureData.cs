@@ -8,11 +8,10 @@ namespace terminalTests.Fixtures
 {
     public class HealthMonitor_FixtureData
     {
-        public static ActivityTemplateDTO MapFields_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO MapFields_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "MapFields_TEST",
                 Version = "1"
             };
@@ -43,11 +42,10 @@ namespace terminalTests.Fixtures
             return result;
         }
 
-        public static ActivityTemplateDTO GetDataFromFr8Warehouse_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO GetDataFromFr8Warehouse_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Get_Data_From_Fr8_Warehouse_TEST",
                 Version = "1"
             };
