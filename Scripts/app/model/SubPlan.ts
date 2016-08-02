@@ -7,7 +7,6 @@
         public name: string;
         public criteria: CriteriaDTO;
         public activities: Array<ActivityDTO>;
-        public runnable: boolean;
 
         constructor(
             id: string,
@@ -24,14 +23,11 @@
 
             this.criteria = null;
             this.activities = [];
-
-            this.runnable = true;
         }
 
         clone(): SubPlanDTO {
             var result = new SubPlanDTO(this.id, this.isTempId, this.planId, this.parentPlanNodeId, this.name);
             result.criteria = this.criteria !== null ? this.criteria.clone() : null;
-            result.runnable = this.runnable;
 
             angular.forEach(this.activities, function (it) { result.activities.push(it.clone()); });
 
