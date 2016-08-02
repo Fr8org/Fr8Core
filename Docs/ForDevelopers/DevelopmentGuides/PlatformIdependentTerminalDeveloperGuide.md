@@ -34,6 +34,8 @@ Activity execution is a bit more complex than configuration. There are three end
 
 ### [Responding to /run](/Docs/ForDevelopers/DevelopmentGuides/Guide-ActivityExecution.md)
 
+### [Getting deployed](/Docs/ForDevelopers/DevelopmentGuides/GettingDeployed.md)
+
 
 
 More Information:

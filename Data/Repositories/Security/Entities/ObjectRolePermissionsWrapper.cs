@@ -27,7 +27,7 @@ namespace Data.Repositories.Security.Entities
         public string Type { get; set; }
 
         /// <summary>
-        /// Fr8 Account that created this. Used in combination with OwnerOfObject Role
+        /// Fr8 Account that created this object. Used in combination with OwnerOfObject Role
         /// </summary>
         public string Fr8AccountId { get; set; }
 

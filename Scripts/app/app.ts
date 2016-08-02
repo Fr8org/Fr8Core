@@ -115,12 +115,14 @@ initialization can be disabled and Layout.init() should be called on page load c
 
 /* Setup Layout Part - Header */
 app.controller('HeaderController', ['$scope', '$http', '$window', '$state', 'TerminalService', 'PlanService', ($scope, $http, $window, $state, TerminalService, PlanService) => {
+    if ($state.current.name === 'plan' || $state.current.name === 'plan.details') {
+        $scope.showPlanBuilderHeader = true;
+    }
+    else {
+        $scope.showPlanBuilderHeader = false;
+    }
 
-    
-
-    //$scope.$on('$includeContentLoaded', () => {
-        Layout.initHeader(); // init header
-    //});
+    Layout.initHeader(); // init header       
 
 
 
@@ -368,7 +370,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                         if ($stateParams['viewMode'] === 'kiosk') {
                             return "/AngularTemplate/KioskModeOrganizationHeader";
                         }
-                        return "/AngularTemplate/MiniHeader";
                     }
                 },
                 'maincontainer@': {
@@ -475,11 +476,15 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             data: { pageTitle: 'Web Services', pageSubTitle: '' }
         })
 
-
         .state('terminals', {
             url: "/terminals",
             templateUrl: "/AngularTemplate/TerminalList",
             data: { pageTitle: 'Terminals', pageSubTitle: '' }
+        })
+        .state("terminalDetails", {
+            url: "/terminals/{id}",
+            templateUrl: "/AngularTemplate/TerminalDetail",
+            data: {pageTitle: 'Terminal Details', pageSubTitle: ''}    
         })
         .state('manifestregistry',
         {
