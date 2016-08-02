@@ -46,42 +46,25 @@ Generating a Notification Message
 {
 	"ActivityName" : "App_Builder",
 	"ActivityVersion": "1",
+	"NotificationType": 1,	// Generic Success = 1, Generic Failure = 2, Generic Info = 3
 	"Collapsed": false,
 	"Message": "This is a plan message/description",
-	"NotificationArea": 1,	// ActvityStream = 1, Toast = 2
 	"Subject": "This is a custom (optional) header for message",
 	"TerminalName": "terminalFr8Core",
 	"TerminalVersion" : "1"
 }
 ```
 
+> *NotificationType* - This parameter is only implemented for toast notifications and determines color/priority of messages. Although there are 5 type of notifications, only "Generic Success", "Generic Failure" and "Generic Info" is used in terminal requests. More information can be found down below, in "Toast Notifications".
 
-## Toast Messages
 
-They have similar mechanism as Activity Stream and also uses Pusher service. These messages can be seen in 4 types as: *Success, Error, Info and Alert* (which are implemented with [Noty library](http://ned.im/noty/). Example request for Toast messages can be found down below:
+## Toast Notifications
 
-*Url*
+They uses same mechanism as in Activity Stream and render incoming pusher messages as Toast messages, based on whether there is a Activity Stream panel on screen. With this automatic rendering, developers are not supposed to have to worry about front end layout issues. Only thing to consider is "NotificationType" parameter in request body, which determines type of message in front-end. Toast messages (implemented with [Noty library](http://ned.im/noty/)) corresponding to "NotificationType" parameter can be seen in this table:
 
-	{{Fr8HubCallBackUrl}}/api/{{Fr8HubApiVersion}}/notifications
+![ActivityStream](/Docs/img/ToastMessageTable.png)
 
-*Method*
-
-    POST
-
-*Request Body*
-```javascript
-{
-	"ActivityName" : "App_Builder",
-	"ActivityVersion": "1",
-	"Message": "This is a toast message",
-	"NotificationArea": 2,	// ActivityStream = 1, Toast = 2
-	"NotificationType": 1,	// Success = 1, Error = 2, Info = 3, Alert = 4
-	"TerminalName": "terminalFr8Core",
-	"TerminalVersion" : "1"
-}
-```
-
-It is recommended to use Activity Stream as primary notification method but there can be some special cases more suitable to use Toast messages, like in [App Builder](Docs/ForDevelopers/OperatingConcepts/Apps.md). App Builder Apps are optimized visually for mobile screen sizes, so they haven't got visible Activity Stream. In this case, using toast messages are only way to notifiying users in Kiosk Mode.
+Example usage of these messages can be found in [App Builder Activity](Docs/ForDevelopers/OperatingConcepts/Apps.md) which is optimized visually for mobile screen sizes. Absence of Activity Stream causes usage of toast messages in Kiosk mode.
 
 
 [Go to Contents]( /Docs/Home.md)
