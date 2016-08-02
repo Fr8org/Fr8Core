@@ -21,11 +21,10 @@ namespace terminalAtlassianTests.Fixtures
             };
         }
 
-        public static ActivityTemplateDTO Get_Jira_Issue_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Get_Jira_Issue_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Get_Jira_Issue_TEST",
                 Version = "1"
             };

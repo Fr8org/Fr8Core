@@ -5,7 +5,9 @@ namespace Fr8.Infrastructure.Interfaces
 {
     public interface IPusherNotifier
     {
-        void Notify(string channelName, NotificationMessageDTO notificationMessage);
+        // Used for notifications coming from Hub
         void NotifyUser(NotificationMessageDTO notificationMessage, string userId);
+        // Used for notifications coming from Terminals
+        void NotifyTerminalEvent(NotificationMessageDTO notificationMessage, string userId);
     }
 }

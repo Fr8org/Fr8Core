@@ -114,8 +114,8 @@ namespace HubTests.Controllers
             });
 
             Mock<IPusherNotifier> pusherMock = new Mock<IPusherNotifier>();
-            pusherMock.Setup(x => x.Notify(It.IsAny<string>(), It.IsAny<NotificationMessageDTO>()));
-
+            pusherMock.Setup(x => x.NotifyUser(It.IsAny<NotificationMessageDTO>(), It.IsAny<string>()));
+            pusherMock.Setup(x => x.NotifyTerminalEvent(It.IsAny<NotificationMessageDTO>(), It.IsAny<string>()));
 
             ObjectFactory.Container.Inject(typeof(IUnitOfWork), uowMock.Object);
             ObjectFactory.Container.Inject(typeof(IPlan), planMock.Object);
@@ -156,8 +156,8 @@ namespace HubTests.Controllers
             });
 
             Mock<IPusherNotifier> pusherMock = new Mock<IPusherNotifier>();
-            pusherMock.Setup(x => x.Notify(It.IsAny<string>(), It.IsAny<NotificationMessageDTO>()));
-
+            pusherMock.Setup(x => x.NotifyUser(It.IsAny<NotificationMessageDTO>(), It.IsAny<string>()));
+            pusherMock.Setup(x => x.NotifyTerminalEvent(It.IsAny<NotificationMessageDTO>(), It.IsAny<string>()));
 
             ObjectFactory.Container.Inject(typeof(IUnitOfWork), uowMock.Object);
             ObjectFactory.Container.Inject(typeof(IPlan), planMock.Object);

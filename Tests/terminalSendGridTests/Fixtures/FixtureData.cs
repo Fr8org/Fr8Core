@@ -44,11 +44,10 @@ namespace terminalSendGridTests.Fixtures
             return containerDO;
         }
 
-        public static ActivityTemplateDTO SendEmailViaSendGridActivityTemplateDTO()
+        public static ActivityTemplateSummaryDTO SendEmailViaSendGridActivityTemplateDTO()
         {
-            return new ActivityTemplateDTO
+            return new ActivityTemplateSummaryDTO
             {
-                Id = Guid.NewGuid(),
                 Name = "Send Email Via SendGrid",
                 Version = "1"
             };
@@ -88,12 +87,12 @@ namespace terminalSendGridTests.Fixtures
         }
         public static ActivityContext TestActivityContext1()
         {
-            var activityTemplateDTO = new ActivityTemplateDTO
+            var activityTemplateDTO = new ActivityTemplateSummaryDTO
             {
-                Id = Guid.NewGuid(),
                 Name = "Type1",
                 Version = "1",
-                Terminal = new TerminalDTO { Name = "TestTerminal"}
+                TerminalName = "TestTerminal",
+                TerminalVersion = "1"
             };
             var activityPayload = new ActivityPayload
             {
