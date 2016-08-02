@@ -70,25 +70,21 @@ namespace terminalSalesforceTests.Fixtures
             }
         }
 
-        public static ActivityTemplateDTO Get_Data_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Get_Data_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
                 Version = "1",
-                Name = "Get_Data_TEST",
-                Label = "Get Data from Salesforce",
-                NeedsAuthentication = true
+                Name = "Get_Data_TEST"
             };
         }
 
-        public static ActivityTemplateDTO Post_To_Chatter_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Post_To_Chatter_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
                 Version = "1",
-                Name = "Post_To_Chatter_TEST",
-                Label = "Post To Chatter",
-                NeedsAuthentication = true
+                Name = "Post_To_Chatter_TEST"
             };
         }
 

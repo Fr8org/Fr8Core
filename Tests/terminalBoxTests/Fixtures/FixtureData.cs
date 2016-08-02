@@ -18,8 +18,7 @@ namespace terminalBoxTests.Fixtures
 
         public static Fr8DataDTO SaveToFileTestAction()
         {
-            ActivityTemplateDTO activityTemplateDto = Fixture.Build<ActivityTemplateDTO>()
-               .With(x => x.Id)
+            ActivityTemplateSummaryDTO activityTemplateDto = Fixture.Build<ActivityTemplateSummaryDTO>()
                .With(x => x.Name, "SaveToFile_TEST")
                .With(x => x.Version, "1")
                .OmitAutoProperties()

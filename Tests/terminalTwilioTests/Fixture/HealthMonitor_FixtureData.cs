@@ -16,11 +16,10 @@ namespace terminalTwilioTests.Fixture
 
             CrateManager = new CrateManager();
         }
-        public static ActivityTemplateDTO Send_Via_Twilio_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Send_Via_Twilio_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Send_Via_Twilio_TEST",
                 Version = "1"
             };

@@ -64,9 +64,7 @@ module dockyard.services {
         saveCurrent(current: model.PlanBuilderState): ng.IPromise<model.PlanBuilderState>
     }
 
-    export interface IActivityTemplateService extends ng.resource.IResourceClass<interfaces.IActivityTemplateVM> {
-        getAvailableActivities: () => ng.resource.IResource<Array<interfaces.IActivityCategoryDTO>>;
-    }
+    
 
     /*
         PlanDTO CRUD service.
@@ -415,16 +413,7 @@ module dockyard.services {
             })
     ]);
 
-    app.factory('ActivityTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IActivityTemplateService =>
-        <IActivityTemplateService>$resource('/api/activity_templates/:id', { id: '@id' },
-            {
-                'getAvailableActivities': {
-                    method: 'GET',
-                    url: '/api/activity_templates',
-                    isArray: true
-                }
-            })
-    ]);
+
 
     /*
         General data persistance methods for PlanBuilder.
