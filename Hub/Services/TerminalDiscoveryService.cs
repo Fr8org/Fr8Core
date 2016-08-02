@@ -194,7 +194,6 @@ namespace Hub.Services
                 var activityTemplates = terminalRegistrationInfo.Activities.Select(Mapper.Map<ActivityTemplateDO>).ToList();
 
                 var terminal = Mapper.Map<TerminalDO>(terminalRegistrationInfo.Definition);
-                activityTemplates.ForEach(a => a.Terminal = terminal);
 
                 terminal.Secret = secret;
 
