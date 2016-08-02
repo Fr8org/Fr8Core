@@ -29,25 +29,21 @@ namespace terminalSalesforceTests.Fixtures
             };
         }
 
-        public static ActivityTemplateDTO GetDataActivityTemplateDTO()
+        public static ActivityTemplateSummaryDTO GetDataActivityTemplateDTO()
         {
-            return new ActivityTemplateDTO
+            return new ActivityTemplateSummaryDTO
             {
                 Version = "1",
-                Name = "Get_Data",
-                Label = "Get Data from Salesforce.com",
-                NeedsAuthentication = true
+                Name = "Get_Data"
             };
         }
 
-        public static ActivityTemplateDTO SaveToSalesforceActivityTemplateDTO()
+        public static ActivityTemplateSummaryDTO SaveToSalesforceActivityTemplateDTO()
         {
-            return new ActivityTemplateDTO
+            return new ActivityTemplateSummaryDTO
             {
                 Version = "1",
-                Name = "Save_To_SalesforceDotCom",
-                Label = "Save To Salesforce.Com",
-                NeedsAuthentication = true
+                Name = "Save_To_SalesforceDotCom"
             };
         }
 

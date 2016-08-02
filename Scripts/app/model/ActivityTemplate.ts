@@ -1,4 +1,12 @@
 ﻿module dockyard.model {
+
+    export class ActivityTemplateSummary {
+        name: string;
+        version: string;
+        terminalName: string;
+        terminalVersion: string;
+    }
+
     export class ActivityTemplate {
         id: string;
         name: string;
