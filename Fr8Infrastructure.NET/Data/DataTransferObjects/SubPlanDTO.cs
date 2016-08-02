@@ -20,8 +20,5 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 
         [JsonProperty("name")]
         public string Name { get; set; }
-
-        [JsonProperty("runnable")]
-        public bool Runnable { get; set; }
     }
 }
