@@ -327,10 +327,10 @@ namespace terminalFr8Core.Activities
                     
                     ThreadPool.QueueUserWorkItem(state =>
                     {
-                        Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, "App Builder Submit Button", "Your information has been submitted."));
+                        Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, "App Builder Message", "Your information has been submitted."));
                         Task.WaitAll(HubCommunicator.SaveActivity(ActivityContext.ActivityPayload));
                         Task.WaitAll(HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, new[] { flagCrate }));
-                        Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, "-", "Your information has been processed."));
+                        Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, "App Builder Message", "Your information has been processed."));
                     });
 
                     //we need to start the process - run current plan - that we belong to
