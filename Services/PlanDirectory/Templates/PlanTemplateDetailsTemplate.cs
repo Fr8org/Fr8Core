@@ -35,36 +35,43 @@ namespace PlanDirectory.Templates
     <link href='https://fonts.googleapis.com/css?family=Francois+One' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Didact+Gothic' rel='stylesheet' type='text/css'>
 
-    <link rel=""stylesheet"" href=""../Content/css/plan-category.css"" />
+    <link rel=""stylesheet"" href=""../bower_components/bootstrap/dist/css/bootstrap.min.css"" />
+	<link rel=""stylesheet"" href=""../Content/metronic/components.css"" />	
 	<link rel=""stylesheet"" href=""../Content/css/plan-directory.css"" />
+	<link rel=""stylesheet"" href=""../Content/css/shared/main.css"" />	
 
     <title>Fr8 - Plan Template Details - ");
             
-            #line 17 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 19 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(planTemplate.Name));
             
             #line default
             #line hidden
-            this.Write(@"</title>
-    <meta charset=""utf-8""/>
-</head>
-<body>
-    <div class=""header-container"">
-        <div class=""header"">
-            <div class=""logo""></div>
-        </div>
-    </div>
+            this.Write("</title>\r\n    <meta charset=\"utf-8\"/>\r\n</head>\r\n<body>\r\n    <div id=\"wrap\">\r\n    " +
+                    "    <!-- NAVIGATION BAR-->\r\n        <header id=\"site-header\" class=\"header conta" +
+                    "iner-fluid\">\r\n            ");
+            this.Write(@"
+        </header>    
+		 <section id=""planDirectory"" class=""plan-directory-background full-height-block text-block"" data-section=""support"">
+            <div class=""inner-bg full-size-bg""></div>
+            <div class=""container full-height-block"">
+                <div class=""inner-wrap centered base-block-white"">
+				</div>
+			</div>
+			</div>
+		</section>
+    
     <div class=""container"">
         <h1>Plan Template Details - <em>");
             
-            #line 27 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 38 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(planTemplate.Name));
             
             #line default
             #line hidden
             this.Write("</em></h1>\r\n\t\t");
             
-            #line 28 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 39 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
 for (int i=0; i<5; i++)
 		{
             
@@ -74,14 +81,14 @@ for (int i=0; i<5; i++)
                     "hr />\r\n            </div>\r\n        </div>\r\n        <div class=\"row\">\r\n          " +
                     "  <div class=\"col-md-12\">\r\n                <h3>V");
             
-            #line 37 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 48 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(i));
             
             #line default
             #line hidden
             this.Write(" Registered By ");
             
-            #line 37 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 48 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(i));
             
             #line default
@@ -89,7 +96,7 @@ for (int i=0; i<5; i++)
             this.Write("</h3>\r\n            </div>\r\n        </div>\r\n        <div class=\"row\">\r\n           " +
                     " <div class=\"col-md-12\">\r\n                <p>\r\n                    <em>");
             
-            #line 43 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 54 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(i));
             
             #line default
@@ -109,12 +116,21 @@ for (int i=0; i<5; i++)
 ");
             this.Write("\r\n                </pre>\r\n            </div>\r\n        </div>\r\n\t\t");
             
-            #line 59 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 70 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
  } 
             
             #line default
             #line hidden
-            this.Write("    </div>\r\n</body>\r\n");
+            this.Write("    </div>\r\n\t    <!-- FOOTER -->\r\n    <footer id=\"site-footer\" class=\"section\">\r\n" +
+                    "        <div class=\"container\">\r\n            <p class=\"copyright\">");
+            
+            #line 75 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(DateTime.Now.Year));
+            
+            #line default
+            #line hidden
+            this.Write(" © The Fr8 Company. All Rights Reserved.</p>\r\n        </div>\r\n    </footer>\r\n    " +
+                    "<!-- END FOOTER -->\r\n</body>\r\n");
             return this.GenerationEnvironment.ToString();
         }
         
