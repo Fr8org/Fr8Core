@@ -77,7 +77,7 @@ module dockyard.directives {
 
 
     export interface IActionPickerPanelScope extends ng.IScope {
-        categories: Array<model.ActivityCategoryDTO>;
+        categories: Array<interfaces.IActivityCategoryDTO>;
         selectedCategory: model.ActivityCategoryDTO;
         actionGroup: model.ActionGroup;
         form: any;
@@ -126,7 +126,7 @@ module dockyard.directives {
 
                     var _reload = () => {
                         $http.get('/api/activity_templates/by_categories')
-                            .then((res: ng.IHttpPromiseCallbackArg<Array<model.ActivityCategoryDTO>>) => {
+                            .then((res: ng.IHttpPromiseCallbackArg<Array<interfaces.IActivityCategoryDTO>>) => {
                                 $scope.categories = res.data.filter((x) => { return x.name !== 'Solution'; });
                             });
                     };

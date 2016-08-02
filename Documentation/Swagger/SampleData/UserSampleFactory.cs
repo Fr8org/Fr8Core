@@ -16,7 +16,7 @@ namespace HubWeb.Documentation.Swagger
                 FirstName = "John",
                 LastName = "Doe",
                 ProfileId = Guid.Parse("5A22A7FF-FAC8-4B45-A086-EE21E79D699E"),
-                Role = "Customer"
+                Role = "StandardUser"
             };
         }
 
