@@ -90,14 +90,7 @@ module dockyard.controllers.NotifierController {
 
                 // Execution Stopped
                 PusherNotifierService.bindEventToChannel(channel, dockyard.enums.NotificationType[dockyard.enums.NotificationType.ExecutionStopped], (data: any) => {
-                    if ($stateParams['viewMode'] == "kiosk") {
-                        uiNotificationService.notify(data.Message, dockyard.enums.UINotificationStatus.Warning, null);
-                    } else {
-                        var event = new Fr8InternalEvent();
-                        event.type = data.NotificationType;
-                        event.data = data;
-                        this.$scope.eventList.splice(0, 0, event);
-                    }
+                    this.sendNotification(data, dockyard.enums.UINotificationStatus.Warning);
                 });
             });
         }
