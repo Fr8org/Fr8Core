@@ -506,19 +506,40 @@ namespace Data.Migrations
             {
                 AddOrUpdateActivityCategory(uow, category.Item1, category.Item2, category.Item3);
             }
-
-            uow.SaveChanges();
         }
 
         private void AddOrUpdateActivityCategory(IUnitOfWork uow, Guid id, string name, string iconPath)
         {
-            var existingActivityCategory = uow.ActivityCategoryRepository
+            var activityTemplateAssignments = new List<ActivityTemplateDO>();
+
+            var existingActivityCategoryByName = uow.ActivityCategoryRepository
+                .GetQuery()
+                .FirstOrDefault(x => x.Name == name && x.Id != id);
+
+            if (existingActivityCategoryByName != null)
+            {
+                var existingAssignments = uow.ActivityCategorySetRepository.GetQuery()
+                    .Where(x => x.ActivityCategoryId == existingActivityCategoryByName.Id)
+                    .ToList();
+
+                foreach (var assignment in existingAssignments)
+                {
+                    activityTemplateAssignments.Add(assignment.ActivityTemplate);
+                    uow.ActivityCategorySetRepository.Remove(assignment);
+                }
+                uow.SaveChanges();
+
+                uow.ActivityCategoryRepository.Remove(existingActivityCategoryByName);
+                uow.SaveChanges();
+            }
+
+            var activityCategory = uow.ActivityCategoryRepository
                 .GetQuery()
                 .FirstOrDefault(x => x.Id == id);
 
-            if (existingActivityCategory == null)
+            if (activityCategory == null)
             {
-                var activityCategory = new ActivityCategoryDO()
+                activityCategory = new ActivityCategoryDO()
                 {
                     Id = id,
                     Name = name,
@@ -529,8 +550,24 @@ namespace Data.Migrations
             }
             else
             {
-                existingActivityCategory.IconPath = iconPath;
+                activityCategory.IconPath = iconPath;
             }
+
+            foreach (var assignedActivityTemplate in activityTemplateAssignments)
+            {
+                uow.ActivityCategorySetRepository.Add(
+                    new ActivityCategorySetDO()
+                    {
+                        Id = Guid.NewGuid(),
+                        ActivityCategoryId = activityCategory.Id,
+                        ActivityCategory = activityCategory,
+                        ActivityTemplateId = assignedActivityTemplate.Id,
+                        ActivityTemplate = assignedActivityTemplate
+                    }
+                );
+            }
+
+            uow.SaveChanges();
         }
 
         private void AddTestUser(IUnitOfWork uow)
