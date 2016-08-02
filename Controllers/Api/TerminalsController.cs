@@ -11,7 +11,6 @@ using StructureMap;
 using System.Collections.Generic;
 using System.Net;
 using System.Web.Http.Description;
-using Data.Entities;
 using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
@@ -57,7 +56,6 @@ namespace HubWeb.Controllers
                     .Select(Mapper.Map<TerminalRegistrationDTO>)
                     .ToList();
 
-
                 return Ok(terminals);
             }
         }
@@ -76,25 +74,6 @@ namespace HubWeb.Controllers
                 .ToList();
             return Ok(terminals);
         }
-
-        /// <summary>
-        /// Retrieves Terminal registered in the current hub by his identifier
-        /// </summary>
-        /// <remarks>Fr8 authentication headers must be provided</remarks>
-        /// <response code="200">Terminal</response>
-        /// <response code="403">Unauthorized request</response>
-        [HttpGet]
-        [Fr8ApiAuthorize]
-        [ResponseType(typeof(TerminalDTO))]
-        public IHttpActionResult Get(int id)
-        {
-            var terminalDTO = Mapper.Map<TerminalDTO>(_terminal.GetByKey(id));
-
-            terminalDTO.Roles = _security.GetAllowedUserRolesForSecuredObject(id.ToString(), nameof(TerminalDO));
-
-            return Ok(terminalDTO);
-        }
-
         /// <summary>
         /// Registers terminal endpoint in the current hub and performs initial terminal discovery process using this endpoint
         /// </summary>

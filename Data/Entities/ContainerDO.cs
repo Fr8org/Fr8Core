@@ -6,7 +6,6 @@ using FluentValidation;
 using System;
 using System.Data.Entity.Infrastructure;
 using Data.Infrastructure.StructureMap;
-using Data.States;
 using StructureMap;
 
 
@@ -60,7 +59,7 @@ namespace Data.Entities
             base.AfterCreate();
 
             var securityService = ObjectFactory.GetInstance<ISecurityServices>();
-            securityService.SetDefaultRecordBasedSecurityForObject(Roles.OwnerOfCurrentObject, Id.ToString(), GetType().Name);
+            securityService.SetDefaultObjectSecurity(Id, GetType().Name);
         }
     }
 }

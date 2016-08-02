@@ -18,13 +18,11 @@
                         <table datatable="ng" class="row-border hover">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
                                     <th>Url</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="terminal in terminals" ng-click="openDetails(terminal)" style="cursor: pointer">
-                                    <td>{{terminal.label}}</td>
+                                <tr ng-repeat="terminal in terminals">
                                     <td>{{terminal.endpoint}}</td>
                                 </tr>
                             </tbody>

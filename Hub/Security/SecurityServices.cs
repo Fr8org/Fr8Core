@@ -4,7 +4,6 @@ using System.Data.Entity;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
 using Microsoft.AspNet.Identity;
@@ -18,7 +17,6 @@ using Data.Interfaces;
 using Data.Repositories.Security;
 using Data.Repositories.Security.Entities;
 using Data.States;
-using Data.States.Templates;
 using Fr8.Infrastructure.Data.States;
 using Hub.Exceptions;
 using Hub.Infrastructure;
@@ -121,37 +119,19 @@ namespace Hub.Security
             return identity;
         }
 
-        public async Task<ClaimsIdentity> GetIdentityAsync(IUnitOfWork uow, Fr8AccountDO fr8AccountDO)
-        {
-            var um = new DockyardIdentityManager(uow);
-            var identity = await um.CreateIdentityAsync(fr8AccountDO, DefaultAuthenticationTypes.ApplicationCookie);
-            foreach (var roleId in fr8AccountDO.Roles.Select(r => r.RoleId))
-            {
-                var role = uow.AspNetRolesRepository.GetByKey(roleId);
-                identity.AddClaim(new Claim(ClaimTypes.Role, role.Name));
-            }
-            if (fr8AccountDO.OrganizationId.HasValue)
-            {
-                identity.AddClaim(new Claim("Organization", fr8AccountDO.OrganizationId.Value.ToString()));
-            }
-
-            //save profileId from current logged user for future usage inside authorization activities logic
-            identity.AddClaim(new Claim(ProfileClaim, fr8AccountDO.ProfileId.ToString()));
-
-            return identity;
-        }
-
-        #region Permissions Related Methods
 
         /// <summary>
         /// For every new created object setup default security with permissions for Read Object, Edit Object, Delete Object 
-        /// and Role. For setup ownership to a record use Role OwnerOfCurrentObject
+        /// and Role OwnerOfCurrentObject
         /// </summary>
-        /// <param name="roleName">User role</param>
         /// <param name="dataObjectId"></param>
         /// <param name="dataObjectType"></param>
-        /// <param name="customPermissionTypes">You can define your own permission types for a object, or use default permission set for Standard Users</param>
-        public void SetDefaultRecordBasedSecurityForObject(string roleName, string dataObjectId, string dataObjectType, List<PermissionType> customPermissionTypes = null)
+        public void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType)
+        {
+            SetDefaultObjectSecurity(dataObjectId.ToString(), dataObjectType);
+        }
+
+        public void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType)
         {
             if (!IsAuthenticated()) return;
 
@@ -172,55 +152,7 @@ namespace Hub.Security
                 if (orgId != 0) organizationId = orgId;
             }
 
-            _securityObjectStorageProvider.SetDefaultRecordBasedSecurityForObject(currentUserId, roleName, dataObjectId.ToString(), dataObjectType, Guid.Empty, organizationId, customPermissionTypes);
-        }
-
-        public IEnumerable<TerminalDO> GetAllowedTerminalsByUser(IEnumerable<TerminalDO> terminals)
-        {
-            if (!IsAuthenticated())
-                return terminals;
-
-            if (Thread.CurrentPrincipal is Fr8Principle)
-                return terminals;
-
-            var roles = GetRoleNames().ToList();
-
-            var allowedTerminals = new List<TerminalDO>();
-            foreach (var terminal in terminals)
-            {
-                var objRolePermissionWrapper = _securityObjectStorageProvider.GetRecordBasedPermissionSetForObject(terminal.Id.ToString(), nameof(TerminalDO));
-                if (!objRolePermissionWrapper.RolePermissions.Any()) continue;
-
-                // first check if this user is the owner of the record
-                var ownerRolePermission = objRolePermissionWrapper.RolePermissions.FirstOrDefault(x=>x.Role.RoleName == Roles.OwnerOfCurrentObject && x.PermissionSet.Permissions.Any(m => m.Id == (int)PermissionType.UseTerminal));
-                if (ownerRolePermission != null && objRolePermissionWrapper.Fr8AccountId == GetCurrentUser())
-                {
-                    allowedTerminals.Add(terminal);
-                    continue;
-                }
-
-                //check other user roles
-                var rolePermissions = objRolePermissionWrapper.RolePermissions.Where(x => x.Role.RoleName != Roles.OwnerOfCurrentObject && x.PermissionSet.Permissions.Any(m=> m.Id == (int) PermissionType.UseTerminal))
-                    .Where(l=> roles.Contains(l.Role.RoleName));
-
-                if (rolePermissions.Any())
-                {
-                    allowedTerminals.Add(terminal);
-                }
-            }
-
-            return allowedTerminals;
-        }
-
-        /// <summary>
-        /// Get Allowed User Roles from the ObjectRolePermissions. Determines what user groups based on their roles can interact with an secured object 
-        /// </summary>
-        /// <param name="objectId"></param>
-        /// <param name="objectType"></param>
-        /// <returns></returns>
-        public List<string> GetAllowedUserRolesForSecuredObject(string objectId, string objectType)
-        {
-            return _securityObjectStorageProvider.GetAllowedUserRolesForSecuredObject(objectId, objectType);
+            _securityObjectStorageProvider.SetDefaultObjectSecurity(currentUserId, dataObjectId.ToString(), dataObjectType, Guid.Empty, organizationId);
         }
 
         /// <summary>
@@ -259,7 +191,7 @@ namespace Hub.Security
 
             //first check Record Based Permission.
             bool? evaluator = null;
-            var objRolePermissionWrapper = _securityObjectStorageProvider.GetRecordBasedPermissionSetForObject(curObjectId, curObjectType);
+            var objRolePermissionWrapper = _securityObjectStorageProvider.GetRecordBasedPermissionSetForObject(curObjectId);
             if (objRolePermissionWrapper.RolePermissions.Any() || objRolePermissionWrapper.Properties.Any())
             {
                 if (string.IsNullOrEmpty(propertyName))
@@ -457,7 +389,5 @@ namespace Hub.Security
 
             return false;
         }
-
-        #endregion
     }
 }

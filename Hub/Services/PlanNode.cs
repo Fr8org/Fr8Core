@@ -21,17 +21,15 @@ namespace Hub.Services
         #region Fields
 
         private readonly ICrateManager _crate;
-        private readonly ITerminal _terminal;
         private readonly IActivityTemplate _activityTemplate;
         private const string ValidationErrorsLabel = "Validation Errors";
 
         #endregion
 
-        public PlanNode(ICrateManager crateManager, IActivityTemplate activityTemplate, ITerminal terminal)
+        public PlanNode()
         {
-            _terminal = terminal;
-            _activityTemplate = activityTemplate;
-            _crate = crateManager;
+            _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
         public List<PlanNodeDO> GetUpstreamActivities(IUnitOfWork uow, PlanNodeDO curActivityDO)
@@ -165,6 +163,7 @@ namespace Hub.Services
             {
                 GetDownstreamRecusive(planNodeDo, nodes);
             }
+
 
             while (curActivityDO != null)
             {
@@ -359,11 +358,9 @@ namespace Hub.Services
 
         public IEnumerable<ActivityTemplateCategoryDTO> GetActivityTemplatesGroupedByCategories()
         {
-            var availableTerminalIds = _terminal.GetAll().Select(x => x.Id).ToList();
-
             var categories = _activityTemplate
                 .GetQuery()
-                .Where(x => availableTerminalIds.Contains(x.TerminalId) && x.Categories != null)
+                .Where(x => x.Categories != null)
                 .SelectMany(x => x.Categories)
                 .Select(x => new { x.ActivityCategory.Name, x.ActivityCategory.IconPath })
                 .OrderBy(x => x.Name)

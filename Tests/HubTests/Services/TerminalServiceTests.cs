@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Data.Entities;
-using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Configuration;
@@ -19,7 +18,6 @@ namespace HubTests.Services
     {
         private IApplicationSettings _originalSettings;
         private IConfigRepository _configRepository;
-        private ISecurityServices _securityServices;
 
         [SetUp]
         public override void SetUp()
@@ -27,7 +25,6 @@ namespace HubTests.Services
             base.SetUp();
             _originalSettings = CloudConfigurationManager.AppSettings;
             _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-            _securityServices = ObjectFactory.GetInstance<ISecurityServices>();
         }
 
         [TearDown]
@@ -97,13 +94,13 @@ namespace HubTests.Services
         public void CanDisableCaching()
         {
             ConfigureNoCache();
-            Assert.IsTrue(new Terminal(_configRepository, _securityServices).IsATandTCacheDisabled);
+            Assert.IsTrue(new Terminal(_configRepository).IsATandTCacheDisabled);
         }
 
         [Test]
         public void CanRunWithCaching()
         {
-            Assert.IsFalse(new Terminal(_configRepository, _securityServices).IsATandTCacheDisabled);
+            Assert.IsFalse(new Terminal(_configRepository).IsATandTCacheDisabled);
         }
 
         [Test]
@@ -137,7 +134,7 @@ namespace HubTests.Services
         [Test]
         public void CanIssueNewIdForTerminalsWithoutId()
         {
-            var terminalService = new Terminal(_configRepository, _securityServices);
+            var terminalService = new Terminal(_configRepository);
             var t = GenerateTerminals(1).First();
 
             t.Id = 0;
@@ -163,7 +160,7 @@ namespace HubTests.Services
         [Test]
         public void CanIssueNewIdForNewTerminalsWithInvalidId()
         {
-            var terminalService = new Terminal(_configRepository, _securityServices);
+            var terminalService = new Terminal(_configRepository);
             var t = GenerateTerminals(1).First();
             var terminal = terminalService.RegisterOrUpdate(t);
 
@@ -186,7 +183,7 @@ namespace HubTests.Services
         public void CanRegisterTerminals()
         {
             TerminalDO[] terminals;
-            var terminalService = new Terminal(_configRepository, _securityServices);
+            var terminalService = new Terminal(_configRepository);
             
             foreach (var terminal in GenerateTerminals(2))
             {
@@ -222,7 +219,7 @@ namespace HubTests.Services
                 terminals = uow.TerminalRepository.GetAll().ToArray();
             }
 
-            var terminalService = new Terminal(_configRepository, _securityServices);
+            var terminalService = new Terminal(_configRepository);
             var terminalsFromService = terminalService.GetAll().ToArray();
 
             Assert.AreEqual(10, terminalsFromService.Length);
@@ -244,7 +241,7 @@ namespace HubTests.Services
                 uow.SaveChanges();
             }
 
-            var terminalService = new Terminal(_configRepository, _securityServices);
+            var terminalService = new Terminal(_configRepository);
 
             var reference = GenerateTerminals(10, "updated").ToArray();
 
@@ -266,5 +263,6 @@ namespace HubTests.Services
                 CompareCollections(reference, terminalsFromRepository);
             }
         }
+
     }
 }

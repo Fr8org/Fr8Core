@@ -166,9 +166,7 @@ namespace Hub.Services
 
             lock (_activityTemplates)
             {
-                var availableTerminalIds = _terminal.GetAll().Select(x => x.Id).ToList();
-
-                return _activityTemplates.Values.Where(x => availableTerminalIds.Contains(x.TerminalId));
+                return _activityTemplates.Values.ToArray();
             }
         }
 

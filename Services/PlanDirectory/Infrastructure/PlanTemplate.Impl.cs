@@ -7,7 +7,6 @@ using StructureMap;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.States;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using PlanDirectory.Interfaces;
@@ -54,7 +53,8 @@ namespace PlanDirectory.Infrastructure
 
                 if (existingPlanTemplateCM == null && objectId.HasValue)
                 {
-                    ObjectFactory.GetInstance<ISecurityServices>().SetDefaultRecordBasedSecurityForObject(Roles.OwnerOfCurrentObject, objectId.ToString(), "Plan Template");
+                    ObjectFactory.GetInstance<ISecurityServices>()
+                        .SetDefaultObjectSecurity(objectId.ToString(), "Plan Template");
                 }
 
                 return Task.FromResult(planTemplateCM);
