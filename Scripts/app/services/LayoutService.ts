@@ -154,7 +154,7 @@ module dockyard.services {
             }
         }
 
-        private findParentAction(group: model.ActionGroup, parentGroup: model.ActionGroup): model.ActivityDTO {
+        private findParentAction(group: model.ActionGroup, parentGroup: model.ActionGroup): interfaces.IActivityDTO {
             var envelope = _.find(parentGroup.envelopes, (envelope: model.ActivityEnvelope) => {
                 return envelope.activity.id === group.parentEnvelope.activity.id;
             });

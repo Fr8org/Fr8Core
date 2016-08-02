@@ -13,12 +13,13 @@ module dockyard.directives.ActivityHeader {
         chooseAuthToken: (action: model.ActivityDTO) => void;
         planState: number;
         finishedLoading: () => void;
+        myActivityTemplate: interfaces.IActivityTemplateVM;
     }
 
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     export function ActivityHeader(): ng.IDirective {
-        var controller = ['$scope', 'ActionService', '$modal', 'SolutionDocumentationService', 'ActivityTemplateHelperService', ($scope: IActivityHeaderScope, ActionService: services.IActionService, $modal: any, documentationService: services.ISolutionDocumentationService, ActivityTemplateHelperService: services.IActivityTemplateHelperService) => {
+        var controller = ['$scope', 'ActionService', '$modal', 'SolutionDocumentationService', ($scope: IActivityHeaderScope, ActionService: services.IActionService, $modal: any, documentationService: services.ISolutionDocumentationService) => {
             $scope.openMenu = ($mdOpenMenu, ev) => {
                 $mdOpenMenu(ev);
             };
@@ -37,7 +38,7 @@ module dockyard.directives.ActivityHeader {
                 });
             }
             $scope.hasHelpMenuItem = (activity) => {
-                var at = ActivityTemplateHelperService.getActivityTemplate(activity);
+                var at = $scope.envelope.activityTemplate;
                 if (at.showDocumentation != null) {
                     if (at.showDocumentation.body.displayMechanism != undefined &&
                         at.showDocumentation.body.displayMechanism.contains("HelpMenu")) {

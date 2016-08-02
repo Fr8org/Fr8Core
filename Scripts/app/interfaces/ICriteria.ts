@@ -21,6 +21,10 @@ module dockyard.interfaces {
         activityTemplate: model.ActivityTemplateSummary;
         childrenActivities: Array<IActivityDTO>;
         ordering: number;
+        height: number;
+        documentation: string;
+        showAdvisoryPopup: boolean;
+        advisoryMessages: model.AdvisoryMessages;
     }
 
     export interface IActivityCategoryDTO {

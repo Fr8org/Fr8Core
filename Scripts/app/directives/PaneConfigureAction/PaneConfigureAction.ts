@@ -133,11 +133,9 @@ module dockyard.directives.paneConfigureAction {
         configurationControls: ng.resource.IResource<model.ControlsList> | model.ControlsList;
         mapFields: (scope: IPaneConfigureActionScope) => void;
         processing: boolean;
-
         isConfigRequestQueued: boolean;
         configControlOperationQueue: { [controlName: string]: Array<paneConfigureAction.ConfigurationControlOperation>; }
         configControlHandles: { [controlName: string]: paneConfigureAction.IConfigurationControlController; };
-
         configurationWatchUnregisterer: Function;
         mode: string;
         reconfigureChildrenActions: boolean;
@@ -145,10 +143,11 @@ module dockyard.directives.paneConfigureAction {
         currentActiveElement: model.ControlDefinitionDTO;
         collapsed: boolean;
         populateAllActivities: () => void;
-        allActivities: Array<interfaces.IActivityDTO>;
+        allActivities: Array<model.ActivityEnvelope>;
         view: string;
         plan: model.PlanDTO;
         showAdvisoryPopup: boolean;
+        myActivityTemplate: interfaces.IActivityTemplateVM;
     }
     
     export class CancelledEventArgs extends CancelledEventArgsBase { }
@@ -190,7 +189,6 @@ module dockyard.directives.paneConfigureAction {
 
         private configLoadingError: boolean = false;
         private ignoreConfigurationChange: boolean = false;
-        private myActivityTemplate: model.ActivityTemplate = null;
 
         constructor(private $scope: IPaneConfigureActionScope, private ActionService: services.IActionService,
             private AuthService: services.AuthService, private ConfigureTrackerService: services.ConfigureTrackerService,
@@ -200,8 +198,7 @@ module dockyard.directives.paneConfigureAction {
             private $q: ng.IQService, private LayoutService: services.ILayoutService,
             private ActivityTemplateHelperService: services.IActivityTemplateHelperService)
         {
-            this.myActivityTemplate = this.ActivityTemplateHelperService.getActivityTemplate($scope.currentAction);
-
+            $scope.myActivityTemplate = this.ActivityTemplateHelperService.getActivityTemplate($scope.currentAction);
             $scope.collapsed = false;
             $scope.showAdvisoryPopup = false;
             $scope.isConfigRequestQueued = false;
@@ -220,7 +217,7 @@ module dockyard.directives.paneConfigureAction {
             $scope.processConfiguration = <() => void>angular.bind(this, this.processConfiguration);
             $scope.setSolutionMode = <() => void>angular.bind(this, this.setSolutionMode);
             $scope.populateAllActivities = <() => void>angular.bind(this, this.populateAllActivities);
-            $scope.allActivities = Array<model.ActivityDTO>();
+            $scope.allActivities = Array<model.ActivityEnvelope>();
 
             $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], (event: ng.IAngularEvent, reConfigureActionEventArgs: ActionReconfigureEventArgs) => {
                 //this might be a general reconfigure command
@@ -469,11 +466,12 @@ module dockyard.directives.paneConfigureAction {
             }
         }
 
-        private allActivities = Array<interfaces.IActivityDTO>();
+        private allActivities = Array<model.ActivityEnvelope>();
 
         private getAllActivities(activities: Array<interfaces.IActivityDTO>) {
             for (var activity of activities) {
-                this.allActivities.push(activity);
+                var at = this.ActivityTemplateHelperService.getActivityTemplate(activity);
+                this.allActivities.push(new model.ActivityEnvelope(activity, at));
                 if (activity.childrenActivities.length > 0) {
                     this.getAllActivities(activity.childrenActivities);
                 }
@@ -499,7 +497,7 @@ module dockyard.directives.paneConfigureAction {
             
             this.ConfigureTrackerService.configureCallStarted(
                 this.$scope.currentAction.id,
-                this.myActivityTemplate.needsAuthentication
+                this.$scope.myActivityTemplate.needsAuthentication
             );
 
             this.$scope.$broadcast(MessageType[MessageType.PaneConfigureAction_ConfigureStarting]);

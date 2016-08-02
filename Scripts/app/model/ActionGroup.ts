@@ -20,12 +20,12 @@
     }
 
     export class ActivityEnvelope {
-        public activity: model.ActivityDTO;
+        public activity: interfaces.IActivityDTO;
         public allowsSiblings: boolean;
         public jumpTargets: Array<ActivityJumpTarget>;
         public activityTemplate: model.ActivityTemplate;
 
-        constructor(activity: model.ActivityDTO, activityTemplate: model.ActivityTemplate) {
+        constructor(activity: interfaces.IActivityDTO, activityTemplate: model.ActivityTemplate) {
             this.activity = activity;
             this.allowsSiblings = true;
             this.activityTemplate = activityTemplate;

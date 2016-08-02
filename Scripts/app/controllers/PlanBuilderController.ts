@@ -291,7 +291,7 @@ module dockyard.controllers {
             }
         }
 
-        private reConfigure(actions: model.ActivityDTO[]) {
+        private reConfigure(actions: interfaces.IActivityDTO[]) {
             for (var i = 0; i < actions.length; i++) {
                 this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure], new pca.ActionReconfigureEventArgs(actions[i]));
                 if (actions[i].childrenActivities.length > 0) {
@@ -569,8 +569,8 @@ module dockyard.controllers {
             this.loadPlan();
         }
 
-        private getDownstreamActions(currentAction: model.ActivityDTO) {
-            var results: Array<model.ActivityDTO> = [];
+        private getDownstreamActions(currentAction: interfaces.IActivityDTO) {
+            var results: Array<interfaces.IActivityDTO> = [];
             this.$scope.actionGroups.forEach(group => {
                 group.envelopes.filter((envelope: model.ActivityEnvelope) => {
                     return envelope.activity.parentPlanNodeId === currentAction.parentPlanNodeId && envelope.activity.ordering > currentAction.ordering;
@@ -778,7 +778,7 @@ module dockyard.controllers {
         }
 
         private PaneConfigureAction_ReConfigureDownStreamActivities(eventArgs: pca.DownStreamReConfigureEventArgs) {
-            var actionsToReconfigure = this.getDownstreamActions(<model.ActivityDTO>eventArgs.action);
+            var actionsToReconfigure = this.getDownstreamActions(eventArgs.action);
             for (var i = 0; i < actionsToReconfigure.length; i++) {
                 if (actionsToReconfigure[i].id === eventArgs.action.id) {
                     actionsToReconfigure.splice(i, 1);
@@ -871,7 +871,7 @@ module dockyard.controllers {
                 return;
             }
 
-            var results: Array<model.ActivityDTO> = [];
+            var results: Array<interfaces.IActivityDTO> = [];
             var subplan = this.getActionSubPlan(callConfigureResponseEventArgs.action);
             if (subplan) {
                 results = this.getAgressiveReloadingActions(subplan.actionGroups, callConfigureResponseEventArgs.action);
@@ -937,7 +937,7 @@ module dockyard.controllers {
             actionGroups: Array<model.ActionGroup>,
             currentAction: interfaces.IActivityDTO) {
 
-            var results: Array<model.ActivityDTO> = [];
+            var results: Array<interfaces.IActivityDTO> = [];
             var currentGroupArray = actionGroups.filter(group => _.any<model.ActivityEnvelope>(group.envelopes, envelope => envelope.activity.id == currentAction.id));
             if (currentGroupArray.length == 0) {
                 return [];

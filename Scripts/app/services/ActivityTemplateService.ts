@@ -19,7 +19,7 @@ module dockyard.services {
     ]);
 
     export interface IActivityTemplateHelperService {
-        getActivityTemplate: (activity: model.ActivityDTO) => interfaces.IActivityTemplateVM;
+        getActivityTemplate: (activity: interfaces.IActivityDTO) => interfaces.IActivityTemplateVM;
         toSummary: (activityTemplate: interfaces.IActivityTemplateVM) => model.ActivityTemplateSummary;
         equals: (activityTemplateSummary: model.ActivityTemplateSummary, activityTemplate: interfaces.IActivityTemplateVM) => boolean;
     }
