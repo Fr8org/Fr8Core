@@ -194,6 +194,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
     $locationProvider.html5Mode(true);
 
     $httpProvider.interceptors.push('fr8VersionInterceptor');
+    $httpProvider.interceptors.push('fr8ActivityRequestQueue');
 
     // Install a HTTP request interceptor that causes 'Processing...' message to display
     $httpProvider.interceptors.push(['$q', '$window', ($q: ng.IQService, $window: ng.IWindowService) => {
@@ -303,14 +304,14 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                 if (url.indexOf(this.configurePattern) == -1) return;
 
                 // check if such activity is currently being configured. if so, remove it from the array
-                let idx: number = this.currentConfigurationRequests.indexOf(activityId);
+                var idx: number = this.currentConfigurationRequests.indexOf(activityId);
                 if (idx > -1) {
                     this.currentConfigurationRequests.splice(idx, 1);
                 }
             }
         }
 
-        let apiRequestCoordinatorService = new ApiRequestCoordinatorService();
+        var apiRequestCoordinatorService = new ApiRequestCoordinatorService();
 
         return {
             request: (config) => {
@@ -326,7 +327,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             },
 
             response: (response) => {
-                let config = response.config;
+                var config = response.config;
                 if (!config.url) return response;
                 if (!response.data || !response.data.id) return response;
                 apiRequestCoordinatorService.endRequest(config.url, response.data.id)
@@ -534,6 +535,27 @@ app.factory('fr8VersionInterceptor', ['fr8ApiVersion', (fr8ApiVersion: string) =
                 config.url = config.url.slice(0, 5) + fr8ApiVersion + "/" + config.url.slice(5);
             }
             return config;
+        }
+    };
+}]);
+
+//this service delays an activityRequest until previous request completion
+app.factory('fr8ActivityRequestQueue', ['$q',($q: ng.IQService) => {
+    var activityRequestMap: { [id: string]: ng.IPromise<ng.IRequestConfig>; } = {};
+    return {
+        'request': (config: ng.IRequestConfig) => {
+            var deferred = $q.defer<ng.IRequestConfig>();
+            if (config.url.indexOf('/activities/') > -1 && config.params.id) {
+                if (activityRequestMap[config.params.id]) {
+                    activityRequestMap[config.params.id].then(() => {
+                        deferred.resolve(config);
+                    });
+                } else {
+                    deferred.resolve(config);
+                }
+                activityRequestMap[config.params.id] = deferred.promise;
+            }
+            return deferred.promise;
         }
     };
 }]);
