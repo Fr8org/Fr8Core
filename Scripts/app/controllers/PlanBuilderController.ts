@@ -276,7 +276,7 @@ module dockyard.controllers {
                 currentPlan.subPlans.push(createdSubPlan);
 
                 //dirty hack
-                var processedGroup = this.LayoutService.addEmptyProcessedGroup(createdSubPlan.subPlanId);
+                var processedGroup = this.LayoutService.addEmptyProcessedGroup(createdSubPlan.id);
                 this.$scope.processedSubPlans.push({ subPlan: createdSubPlan, actionGroups: processedGroup });
                 //this.renderPlan(<interfaces.IPlanVM>currentPlan);
                 this.$scope.$broadcast(<any>planEvents.SUB_PLAN_MODIFICATION);
@@ -353,7 +353,7 @@ module dockyard.controllers {
 
         private findSubPlanById(id: string): model.SubPlanDTO {
             for (var i = 0; i < this.$scope.current.plan.subPlans.length; i++) {
-                if (this.$scope.current.plan.subPlans[i].subPlanId === id) {
+                if (this.$scope.current.plan.subPlans[i].id === id) {
                     return this.$scope.current.plan.subPlans[i];
                 }
             }
@@ -526,7 +526,7 @@ module dockyard.controllers {
             this.$scope.processedSubPlans = [];
             for (var subPlan of curPlan.subPlans) {
                 var activities: Array<model.ActivityDTO> = this.filterActivitiesByUICrate(subPlan.activities, this.$scope.view);
-                var actionGroups = this.LayoutService.placeActions(activities, subPlan.subPlanId);
+                var actionGroups = this.LayoutService.placeActions(activities, subPlan.id);
                 this.$scope.processedSubPlans.push({ subPlan: subPlan, actionGroups: actionGroups });
             }
         }

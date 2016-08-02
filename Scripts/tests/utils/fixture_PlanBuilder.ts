@@ -27,7 +27,7 @@
             'subscribedDocuSignTemplates': ['58521204-58af-4e65-8a77-4f4b51fef626'],
             subPlans: [
                 <model.SubPlanDTO>{
-                    subPlanId: '89EBF277-0CC4-4D6D-856B-52457F10C686',
+                    id: '89EBF277-0CC4-4D6D-856B-52457F10C686',
                     isTempId: false,
                     name: 'Processnode Template 1',
                     activities: [

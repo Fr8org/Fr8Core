@@ -171,9 +171,9 @@ module dockyard.services {
             if (!existingSubPlanId) {
                 createSubPlan(parentPlan, parentActivity, subPlanName, subPlanRunnable)
                     .then((subplan: model.SubPlanDTO) => {
-                        createActivity(activityTemplate, parentPlan, subplan.subPlanId)
+                        createActivity(activityTemplate, parentPlan, subplan.id)
                             .then((activity: model.ActivityDTO) => {
-                                result.resolve(new model.SubordinateSubplan(subplan.subPlanId, activity.id));
+                                result.resolve(new model.SubordinateSubplan(subplan.id, activity.id));
                             })
                             .catch((reason: any) => {
                                 result.reject(reason);
