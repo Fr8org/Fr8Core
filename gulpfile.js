@@ -161,6 +161,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/FileDetailsController.js',
         'Scripts/app/controllers/AccountListController.js',
         'Scripts/app/controllers/AccountDetailsController.js',
+        'Scripts/app/controllers/TerminalDetailsController.js',
         'Scripts/app/controllers/InternalAuthenticationController.js',
         'Scripts/app/controllers/PhoneNumberAuthenticationController.js',
         'Scripts/app/controllers/AuthenticationDialogController.js',

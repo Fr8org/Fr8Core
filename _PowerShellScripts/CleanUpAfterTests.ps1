@@ -27,7 +27,7 @@ update p set p.ParentPlanNodeId = null, p.RootPlanNodeId = null from PlanNodes p
 
 -- list of ObjectRolePermissions
 delete derived from ObjectRolePermissions derived 
-	inner join #Nodes cp on cp.Id = derived.ObjectId
+	inner join #Nodes cp on convert(nvarchar(50), cp.Id) = derived.ObjectId
 	where derived.[Type] <> 'Plan Template'
 
 delete m from History m

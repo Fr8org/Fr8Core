@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using Data.Infrastructure.StructureMap;
 using Data.Repositories.Plan;
+using Data.States;
 using StructureMap;
 
 namespace Data.Entities
@@ -125,7 +126,7 @@ namespace Data.Entities
             base.AfterCreate();
 
             var securityService = ObjectFactory.GetInstance<ISecurityServices>();
-            securityService.SetDefaultObjectSecurity(Id, nameof(PlanNodeDO));
+            securityService.SetDefaultRecordBasedSecurityForObject(Roles.OwnerOfCurrentObject, Id.ToString(), nameof(PlanNodeDO));
         }
 
         public List<PlanNodeDO> GetDescendantsOrdered()
