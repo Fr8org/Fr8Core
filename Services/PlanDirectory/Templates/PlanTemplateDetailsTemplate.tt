@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="../Content/css/plan-category.css" />
 	<link rel="stylesheet" href="../Content/css/plan-directory.css" />
 
-    <title>Fr8 - <#=manifestName#></title>
+    <title>Fr8 - Plan Template Detaild</title>
     <meta charset="utf-8"/>
 </head>
 <body>

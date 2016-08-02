@@ -24,7 +24,11 @@ namespace PlanDirectory.Infrastructure
         private readonly ITemplateGenerator _templateGenerator;
         private readonly ITagGenerator _tagGenerator;
 
-        public WebservicesPageGenerator(IPageDefinition pageDefinitionService, IPlanTemplate planTemplateService, ITemplateGenerator templateGenerator, ITagGenerator tagGenerator)
+        public WebservicesPageGenerator(
+            IPageDefinition pageDefinitionService,
+            IPlanTemplate planTemplateService,
+            ITemplateGenerator templateGenerator,
+            ITagGenerator tagGenerator)
         {
             _pageDefinitionService = pageDefinitionService;
             _planTemplateService = planTemplateService;

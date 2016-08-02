@@ -15,7 +15,7 @@ namespace PlanDirectory.Templates
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
+    #line 1 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "14.0.0.0")]
     public partial class PlanTemplateDetailsTemplate : PlanTemplateDetailsTemplateBase
     {
@@ -38,14 +38,12 @@ namespace PlanDirectory.Templates
     <link rel=""stylesheet"" href=""../Content/css/plan-category.css"" />
 	<link rel=""stylesheet"" href=""../Content/css/plan-directory.css"" />
 
-    <title>Fr8 - ");
-            
-            #line 15 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(manifestName));
-            
-            #line default
-            #line hidden
-            this.Write("</title>\r\n    <meta charset=\"utf-8\"/>\r\n</head>\r\n<body>\r\n</body>\r\n");
+    <title>Fr8 - Plan Template Detaild</title>
+    <meta charset=""utf-8""/>
+</head>
+<body>
+</body>
+");
             return this.GenerationEnvironment.ToString();
         }
     }
