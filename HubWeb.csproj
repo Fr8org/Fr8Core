@@ -931,6 +931,7 @@
     <TypeScriptCompile Include="Scripts\app\model\OrganizationDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\Profile.ts" />
     <TypeScriptCompile Include="Scripts\app\model\SubordinateSubplan.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\ActivityService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\AuthService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ConfigureTrackerService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\FileDetailsService.ts" />

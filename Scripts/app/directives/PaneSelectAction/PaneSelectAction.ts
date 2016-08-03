@@ -110,7 +110,7 @@ module dockyard.directives.paneSelectAction {
         private _$element: ng.IAugmentedJQuery;
         private _$scope: IPaneSelectActionScope;
 
-        constructor(private $modal: any, private ActivityTemplateService: services.IActivityTemplateService) {
+        constructor(private $modal: any) {
             PaneSelectAction.prototype.link = (
                 scope: IPaneSelectActionScope,
                 element: ng.IAugmentedJQuery,
@@ -176,11 +176,11 @@ module dockyard.directives.paneSelectAction {
 
         //The factory function returns Directive object as per Angular requirements
         public static Factory() {
-            var directive = ($modal: any, ActivityTemplateService : services.IActivityTemplateService) => {
-                return new PaneSelectAction($modal, ActivityTemplateService);
+            var directive = ($modal: any) => {
+                return new PaneSelectAction($modal);
             };
 
-            directive['$inject'] = ['$modal', 'ActivityTemplateService'];
+            directive['$inject'] = ['$modal'];
             return directive;
         }
     }

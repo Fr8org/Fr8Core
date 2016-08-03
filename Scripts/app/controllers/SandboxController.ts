@@ -52,8 +52,7 @@ module dockyard.controllers {
             'CriteriaServiceWrapper',
             'PlanBuilderService',
             'ActionListService',
-            'CrateHelper',
-            'ActivityTemplateService'
+            'CrateHelper'
         ];
 
         private _scope: ISandboxScope;
@@ -71,9 +70,7 @@ module dockyard.controllers {
             private $timeout: ng.ITimeoutService,
             private CriteriaServiceWrapper: services.ICriteriaServiceWrapper,
             private PlanBuilderService: services.IPlanBuilderService,
-            
-            private CrateHelper: services.CrateHelper,
-            private ActivityTemplateService: services.IActivityTemplateService
+            private CrateHelper: services.CrateHelper
             ) {
             this._scope = $scope;
             this._scope.planId = $state.params.id;
