@@ -14,14 +14,12 @@ using Data.States;
 using Hub.Security;
 using System.Web;
 using System.Net.Http;
-using System.Security.Claims;
 using Fr8.Infrastructure.Utilities;
 using Hub.Interfaces;
-using RazorEngine.Templating;
 
 namespace Hub.Services
 {
-    public class Fr8Account
+    public class Fr8Account : IFr8Account
     {
         private readonly IUnitOfWorkFactory _uowFactory;
 
@@ -91,11 +89,8 @@ namespace Hub.Services
             String[] acceptableRoles = { };
             switch (minAuthLevel)
             {
-                case "Customer":
-                    acceptableRoles = new[] { "Customer", "Booker", "Admin" };
-                    break;
-                case "Booker":
-                    acceptableRoles = new[] { "Booker", "Admin" };
+                case "StandardUser":
+                    acceptableRoles = new[] { "StandardUser", "Admin" };
                     break;
                 case "Admin":
                     acceptableRoles = new[] { "Admin" };
@@ -220,7 +215,7 @@ namespace Hub.Services
                 var systemUserEmail = _configRepository.Get("SystemUserEmail");
                 using (var uow = _uowFactory.Create())
                 {
-                    return uow.UserRepository.GetQuery().FirstOrDefault(x => x.EmailAddress.Address == systemUserEmail);
+                    return uow.UserRepository.GetQuery().Include(x => x.EmailAddress).FirstOrDefault(x => x.EmailAddress.Address == systemUserEmail);
                 }
             }
             catch (ConfigurationException)
@@ -282,13 +277,13 @@ namespace Hub.Services
                 }
                 else
                 {
-                    newFr8Account = Register(uow, email, email, email, password, Roles.Customer, organizationDO);
+                    newFr8Account = Register(uow, email, email, email, password, Roles.StandardUser, organizationDO);
                     curRegStatus = RegistrationStatus.Successful;
                 }
             }
             else
             {
-                newFr8Account = Register(uow, email, email, email, password, Roles.Customer, organizationDO);
+                newFr8Account = Register(uow, email, email, email, password, Roles.StandardUser, organizationDO);
                 curRegStatus = RegistrationStatus.Successful;
             }
 
@@ -469,10 +464,8 @@ namespace Hub.Services
                 string userRole = "";
                 if (getRoles.Select(e => e.Name).Contains("Admin"))
                     userRole = "Admin";
-                else if (getRoles.Select(e => e.Name).Contains("Booker"))
-                    userRole = "Booker";
-                else if (getRoles.Select(e => e.Name).Contains("Customer"))
-                    userRole = "Customer";
+                else if (getRoles.Select(e => e.Name).Contains("StandardUser"))
+                    userRole = "StandardUser";
                 return userRole;
             }
         }
@@ -558,7 +551,7 @@ namespace Hub.Services
 
                 uow.AspNetUserRolesRepository.RevokeRoleFromUser(Roles.Guest, existingUserDO.Id);
                 // Add new role
-                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, existingUserDO.Id);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.StandardUser, existingUserDO.Id);
             }
 
             uow.SaveChanges();

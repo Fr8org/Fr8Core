@@ -132,6 +132,17 @@ namespace Hub.Services
             return GetByKey(curActivityTemplateId.Value).Terminal.Endpoint;
         }
 
+
+        public bool TryGetByKey(Guid activityTemplateId, out ActivityTemplateDO activityTemplate)
+        {
+            Initialize();
+
+            lock (_activityTemplates)
+            {
+                return _activityTemplates.TryGetValue(activityTemplateId, out activityTemplate);
+            }
+        }
+
         public ActivityTemplateDO GetByKey(Guid curActivityTemplateId)
         {
             Initialize();
@@ -155,7 +166,9 @@ namespace Hub.Services
 
             lock (_activityTemplates)
             {
-                return _activityTemplates.Values.ToArray();
+                var availableTerminalIds = _terminal.GetAll().Select(x => x.Id).ToList();
+
+                return _activityTemplates.Values.Where(x => availableTerminalIds.Contains(x.TerminalId));
             }
         }
 

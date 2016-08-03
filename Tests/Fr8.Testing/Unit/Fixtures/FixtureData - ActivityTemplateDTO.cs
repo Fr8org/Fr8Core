@@ -6,31 +6,28 @@ namespace Fr8.Testing.Unit.Fixtures
 {
     partial class FixtureData
     {
-        public static ActivityTemplateDTO TestActivityTemplateDTO1()
+        public static ActivityTemplateSummaryDTO TestActivityTemplateDTO1()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Write_To_Sql_Server",
                 Version = "1"
             };
         }
 
-        public static ActivityTemplateDTO TestActivityTemplateSalesforce()
+        public static ActivityTemplateSummaryDTO TestActivityTemplateSalesforce()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Create_Lead",
                 Version = "1"
             };
         }
 
-        public static ActivityTemplateDTO TestActivityTemplateSendGrid()
+        public static ActivityTemplateSummaryDTO TestActivityTemplateSendGrid()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Send_Email_Via_SendGrid",
                 Version = "1"
             };
@@ -46,88 +43,79 @@ namespace Fr8.Testing.Unit.Fixtures
             };
         }
 
-        public static ActivityTemplateDTO ActivityTemplateDTOSelectFr8Object()
+        public static ActivityTemplateSummaryDTO ActivityTemplateDTOSelectFr8Object()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Select Fr8 Object",
                 Version = "1"
             };
         }
 
-        public static ActivityTemplateDTO QueryDocuSignActivityTemplate()
+        public static ActivityTemplateSummaryDTO QueryDocuSignActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Query_DocuSign",
                 Version = "1",
             };
         }
 
-        public static ActivityTemplateDTO SaveToGoogleSheetActivityTemplate()
+        public static ActivityTemplateSummaryDTO SaveToGoogleSheetActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Save_To_Google_Sheet",
                 Version = "1"
             };
         }
 
-        public static ActivityTemplateDTO Monitor_Gmail_Inbox_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Monitor_Gmail_Inbox_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Monitor_Gmail_Inbox",
                 Version = "1"
             };
         }
 
-        public static ActivityTemplateDTO GetGoogleSheetDataActivityTemplate()
+        public static ActivityTemplateSummaryDTO GetGoogleSheetDataActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Get_Google_Sheet_Data",
                 Version = "1"
             };
         }
-        public static ActivityTemplateDTO MonitorFormResponsesActivityTemplate()
+        public static ActivityTemplateSummaryDTO MonitorFormResponsesActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Monitor_Form_Responses",
                 Version = "1"
             };
         }
-        public static ActivityTemplateDTO BuildMessageActivityTemplate()
+        public static ActivityTemplateSummaryDTO BuildMessageActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Build_Message",
                 Version = "1"
             };
         }
-        public static ActivityTemplateDTO SaveToFr8WarehouseActivityTemplate()
+        public static ActivityTemplateSummaryDTO SaveToFr8WarehouseActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Save_To_Fr8_Warehouse",
                 Version = "1"
             };
         }
 
-        public static ActivityTemplateDTO GetFileListActivityTemplate()
+        public static ActivityTemplateSummaryDTO GetFileListActivityTemplate()
         {
-            return new ActivityTemplateDTO
+            return new ActivityTemplateSummaryDTO
             {
-                Id = Guid.NewGuid(),
                 Name = "Get_File_List",
                 Version = "1"
             };

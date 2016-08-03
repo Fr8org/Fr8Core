@@ -145,7 +145,7 @@ namespace Hub.Services
             catch (InvalidTokenRuntimeException ex)
             {
                 var user = uow.UserRepository.GetByKey(plan.Fr8AccountId);
-                ReportAuthError(user, ex);
+                ReportAuthError(uow, user, ex);
                 EventManager.ContainerFailed(plan, ex, container.Id.ToString());
                 throw;
             }
@@ -251,12 +251,23 @@ namespace Hub.Services
             return (id == null ? containerRepository.Where(container => container.Plan.Fr8Account.Id == account.Id) : containerRepository.Where(container => container.Id == id && container.Plan.Fr8Account.Id == account.Id)).ToList();
         }
         
-        private void ReportAuthError(Fr8AccountDO user, InvalidTokenRuntimeException ex)
+        private void ReportAuthError(IUnitOfWork uow, Fr8AccountDO user, InvalidTokenRuntimeException ex)
         {
+            var activityTemplate = ex?.FailedActivityDTO.ActivityTemplate;
+            string webServiceName = null;
+            if (activityTemplate != null)
+            {
+                var webService = uow.ActivityTemplateRepository.GetQuery()
+                    .Where(x => x.Name == activityTemplate.Name && x.Version == activityTemplate.Version)
+                    .Select(x => x.WebService)
+                    .FirstOrDefault();
+                webServiceName = webService?.Name;
+            }
+            
             string errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with " +
-                    $"{ex?.FailedActivityDTO.ActivityTemplate.WebService.Name}. ";
+                    $"{webServiceName}. ";
 
-            errorMessage += $"Please re-authorize Fr8 to connect to {ex?.FailedActivityDTO.ActivityTemplate.WebService.Name} " +
+            errorMessage += $"Please re-authorize Fr8 to connect to {webServiceName} " +
                     $"by clicking on the Settings dots in the upper " +
                     $"right corner of the activity and then selecting Choose Authentication. ";
 
@@ -270,7 +281,6 @@ namespace Hub.Services
             _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
                 NotificationType = NotificationType.GenericFailure,
-                NotificationArea = NotificationArea.ActivityStream,
                 Message = errorMessage,
                 Collapsed = false
             }, user.Id);

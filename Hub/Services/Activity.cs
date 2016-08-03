@@ -21,47 +21,44 @@ using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Exceptions;
-using Hub.Interfaces;
 using Hub.Managers;
+using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
 
 namespace Hub.Services
 {
     public class Activity : IActivity
     {
-        private readonly ICrateManager _crate;
+        private readonly ICrateManager _crateManager;
         private readonly IAuthorization _authorizationToken;
         private readonly ISecurityServices _security;
         private readonly IActivityTemplate _activityTemplate;
         private readonly IPlanNode _planNode;
+        private readonly IUpstreamDataExtractionService _upstreamDataExtractionService;
         private readonly AsyncMultiLock _configureLock = new AsyncMultiLock();
 
-        public Activity(ICrateManager crate, IAuthorization authorizationToken, ISecurityServices security, IActivityTemplate activityTemplate, IPlanNode planNode)
+        public Activity(ICrateManager crateManager, IAuthorization authorizationToken, ISecurityServices security, IActivityTemplate activityTemplate, IPlanNode planNode, IUpstreamDataExtractionService upstreamDataExtractionService)
         {
-            _crate = crate;
+            _crateManager = crateManager;
             _authorizationToken = authorizationToken;
             _security = security;
             _activityTemplate = activityTemplate;
             _planNode = planNode;
+            _upstreamDataExtractionService = upstreamDataExtractionService;
         }
 
 
         public async Task<ActivityDTO> SaveOrUpdateActivity(ActivityDO submittedActivityData)
         {
-            //lets skip locking for save operations
-            return await SaveOrUpdateActivityCore(submittedActivityData);
-
-            /*
             if (submittedActivityData.Id == Guid.Empty)
             {
                 return await SaveOrUpdateActivityCore(submittedActivityData);
             }
-
             
             using (await _configureLock.Lock(submittedActivityData.Id))
             {
                 return await SaveOrUpdateActivityCore(submittedActivityData);
-            }*/
+            }
         }
 
         [AuthorizeActivity(Permission = PermissionType.ReadObject, ParamType = typeof(Guid), TargetType = typeof(PlanNodeDO))]
@@ -128,7 +125,7 @@ namespace Hub.Services
                 Id = Guid.NewGuid(),
                 ActivityTemplateId = activityTemplateId,
                 Name = name,
-                CrateStorage = _crate.EmptyStorageAsStr(),
+                CrateStorage = _crateManager.EmptyStorageAsStr(),
                 AuthorizationTokenId = authorizationTokenId
             };
 
@@ -196,22 +193,15 @@ namespace Hub.Services
                         var activatedActivityDTO = await CallTerminalActivityAsync<ActivityDTO>(uow, "activate", null, submittedActivity, Guid.Empty);
                         Logger.GetLogger().Info($"Call to terminal activation of activity (Id - {submittedActivity.Id}) completed");
                         var activatedActivityDo = Mapper.Map<ActivityDO>(activatedActivityDTO);
-
-                        var storage = _crate.GetStorage(activatedActivityDo);
-
+                        var storage = _crateManager.GetStorage(activatedActivityDo);
                         var validationCrate = storage.CrateContentsOfType<ValidationResultsCM>().FirstOrDefault();
-
                         if (validationCrate == null || !validationCrate.HasErrors)
                         {
                             existingAction.ActivationState = ActivationState.Activated;
                         }
-
                         UpdateActivityProperties(existingAction, activatedActivityDo);
-
                         uow.SaveChanges();
-
                         EventManager.ActionActivated(activatedActivityDo);
-
                         return Mapper.Map<ActivityDTO>(activatedActivityDo);
                     }
                 }
@@ -321,10 +311,25 @@ namespace Hub.Services
                 }
 
                 if (curActionExecutionMode != ActivityExecutionMode.ReturnFromChildren)
+                {
                     EventManager.ActivityRunRequested(curActivityDO, curContainerDO);
+                }
 
-                var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, "run", parameters, curActivityDO, curContainerDO.Id);
+                var activtiyClone = (ActivityDO) curActivityDO.Clone();
 
+                using (var storage = _crateManager.UpdateStorage(() => activtiyClone.CrateStorage))
+                {
+                    var configurationControls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+
+                    if (configurationControls != null)
+                    {
+                        var payloadStorage = _crateManager.GetStorage(curContainerDO.CrateStorage);
+                        _upstreamDataExtractionService.ExtactAndAssignValues(configurationControls, payloadStorage);
+                    }
+                }
+
+                var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, "run", parameters, activtiyClone, curContainerDO.Id);
+                
                 EventManager.ActivityResponseReceived(curActivityDO, ActivityResponse.RequestSuspend);
 
                 return payloadDTO;
@@ -390,7 +395,22 @@ namespace Hub.Services
                 {
                     x.Id = Guid.NewGuid();
                 }
+                var activityDO = x as ActivityDO;
+                if (activityDO != null && activityDO.ActivityTemplateId == Guid.Empty)
+                {
+                    var activityTemplate = activityDO.ActivityTemplate;
+                    activityDO.ActivityTemplate = uow
+                        .ActivityTemplateRepository
+                        .GetQuery()
+                        .Single(y => y.Name == activityTemplate.Name 
+                                  && y.Version == activityTemplate.Version
+                                  && y.Terminal.Name == activityTemplate.Terminal.Name
+                                  && y.Terminal.Version == activityTemplate.Terminal.Version);
+                    activityDO.ActivityTemplateId = activityDO.ActivityTemplate.Id;
+                }
             });
+
+
 
             PlanNodeDO plan;
             PlanNodeDO originalAction;
@@ -663,7 +683,9 @@ namespace Hub.Services
                 //find the activity by the provided name
 
                 // To prevent mismatch between db and terminal solution lists, Single or Default used
-                var curActivityTerminalDTO = allActivityTemplates.OrderByDescending(x => int.Parse(x.Version)).FirstOrDefault(a => a.Name == activityDTO.ActivityTemplate.Name);
+                var curActivityTerminalDTO = allActivityTemplates
+                    .OrderByDescending(x => int.Parse(x.Version))
+                    .FirstOrDefault(a => a.Name == activityDTO.ActivityTemplate.Name);
                 //prepare an Activity object to be sent to Activity in a Terminal
                 //IMPORTANT: this object will not be hold in the database
                 //It is used to transfer data
@@ -679,7 +701,13 @@ namespace Hub.Services
                     Id = Guid.NewGuid(),
                     Label = curActivityTerminalDTO.Label,
                     Name = curActivityTerminalDTO.Name,
-                    ActivityTemplate = curActivityTerminalDTO,
+                    ActivityTemplate = new ActivityTemplateSummaryDTO
+                    {
+                        Name = curActivityTerminalDTO.Name,
+                        Version = curActivityTerminalDTO.Version,
+                        TerminalName = curActivityTerminalDTO.Terminal.Name,
+                        TerminalVersion = curActivityTerminalDTO.Terminal.Version
+                    },
                     AuthToken = new AuthorizationTokenDTO
                     {
                         UserId = null

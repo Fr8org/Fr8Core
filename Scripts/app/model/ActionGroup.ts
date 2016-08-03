@@ -9,33 +9,26 @@
         public arrowLength: number = 0;
         public arrowOffsetLeft: number = 0;
 
-        public parentAction: model.ActivityDTO;
+        public parentEnvelope: model.ActivityEnvelope;
         public parentId: string;
 
-        constructor(activities: model.ActivityDTO[], parentAction: model.ActivityDTO, parentId: string) {
-            this.envelopes = this.packActivities(activities);
-            this.parentAction = parentAction;
+        constructor(envelopes: model.ActivityEnvelope[], parentEnvelope: model.ActivityEnvelope, parentId: string) {
+            this.envelopes = envelopes;
+            this.parentEnvelope = parentEnvelope;
             this.parentId = parentId;
-        }
-
-        packActivities(activities: model.ActivityDTO[]) {
-            var envelopeList = new Array<model.ActivityEnvelope>();
-            var sortedActivities = _.sortBy(activities, (activity: model.ActivityDTO) => activity.ordering);
-            for (var i = 0; i < sortedActivities.length; i++) {
-                envelopeList.push(new  ActivityEnvelope(sortedActivities[i]));
-            }
-            return envelopeList;
         }
     }
 
     export class ActivityEnvelope {
-        public activity: model.ActivityDTO;
+        public activity: interfaces.IActivityDTO;
         public allowsSiblings: boolean;
         public jumpTargets: Array<ActivityJumpTarget>;
+        public activityTemplate: model.ActivityTemplate;
 
-        constructor(activity: model.ActivityDTO) {
+        constructor(activity: interfaces.IActivityDTO, activityTemplate: model.ActivityTemplate) {
             this.activity = activity;
             this.allowsSiblings = true;
+            this.activityTemplate = activityTemplate;
         }
 
     }

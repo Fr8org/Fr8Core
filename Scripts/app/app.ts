@@ -1,6 +1,5 @@
 /// <reference path="../typings/tsd.d.ts" />
 /// <reference path="../typings/metronic.d.ts" />
-
 var app = angular.module("app", [
     "templates",
     "ui.router",
@@ -57,11 +56,29 @@ app.factory('settings', ['$rootScope', ($rootScope) => {
 }]);
 
 /* Setup App Main Controller */
-app.controller('AppController', ['$scope', '$rootScope', function ($scope, $rootScope) {
+app.controller('AppController', ['$scope', '$rootScope', '$window', function ($scope, $rootScope, $window) {
     $scope.$on('$viewContentLoaded', () => {
         Metronic.initComponents(); // init core components
         //Layout.init(); //  Init entire layout(header, footer, sidebar, etc) on page load if the partials included in server side instead of loading with ng-include directive 
     });
+    $scope.displayDeveloperMenu = JSON.parse($window.sessionStorage.getItem("displayDeveloperMenu"));
+    if ($scope.displayDeveloperMenu) {
+        $scope.displayDeveloperMenuText = "Hide Developer Menu";
+    } else {
+        $scope.displayDeveloperMenuText = "Show Developer Menu";
+    }
+
+    $scope.switchDeveloperMenu = () => {
+        if ($scope.displayDeveloperMenu) {
+            $window.sessionStorage.setItem("displayDeveloperMenu", false);
+            $scope.displayDeveloperMenuText = "Show Developer Menu";
+            $scope.displayDeveloperMenu = false;
+        } else {
+            $window.sessionStorage.setItem("displayDeveloperMenu", true);
+            $scope.displayDeveloperMenuText = "Hide Developer Menu";
+            $scope.displayDeveloperMenu = true;
+        }
+    };
 }]);
 
 app.config(['$mdThemingProvider', ($mdThemingProvider) => {
@@ -97,19 +114,27 @@ initialization can be disabled and Layout.init() should be called on page load c
 
 /* Setup Layout Part - Header */
 app.controller('HeaderController', ['$scope', '$http', '$window', '$state', 'TerminalService', 'PlanService', ($scope, $http, $window, $state, TerminalService, PlanService) => {
-    $scope.$on('$includeContentLoaded', () => {
-        Layout.initHeader(); // init header
-    });
+    if ($state.current.name === 'plan' || $state.current.name === 'plan.details') {
+        $scope.showPlanBuilderHeader = true;
+    }
+    else {
+        $scope.showPlanBuilderHeader = false;
+    }
+
+    Layout.initHeader(); // init header       
+
+
 
     $scope.addPlan = function () {
         var plan = new dockyard.model.PlanDTO();
         plan.planState = dockyard.model.PlanState.Inactive;
-        plan.visibility = dockyard.model.PlanVisibility.Standard;
+        plan.visibility = { hidden: false, public: false };
+        //plan.visibility = dockyard.model.PlanVisibility.Standard;
         var result = PlanService.save(plan);
 
         result.$promise
             .then(() => {
-                $state.go('plan', { id: result.plan.id });
+                $state.go('plan', { id: result.id });
                 //window.location.href = 'plans/' + result.plan.id + '/builder';
             });
     };
@@ -125,7 +150,7 @@ app.controller('HeaderController', ['$scope', '$http', '$window', '$state', 'Ter
             });
     };
 
-    $scope.runManifestRegistryMonitoring = () => { $http.post('/api/manifest_registries/runMonitoring', {}); };
+    $scope.runManifestRegistryMonitoring = () => { $http.post('/api/manifest_registry/runMonitoring', {}); };
 }]);
 
 /* Setup Layout Part - Footer */
@@ -143,7 +168,7 @@ app.config(['applicationInsightsServiceProvider', function (applicationInsightsS
 
     $.get('/api/v1/configuration/instrumentation-key').then((instrumentationKey: string) => {
         console.log(instrumentationKey);
-        if (instrumentationKey.indexOf('0000') == -1) { // if not local instance ('Debug' configuration)
+        if (instrumentationKey.indexOf('0000') === -1) { // if not local instance ('Debug' configuration)
             options = { applicationName: 'HubWeb' };
             applicationInsightsServiceProvider.configure(instrumentationKey, options, true);
         } else {
@@ -344,7 +369,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                         if ($stateParams['viewMode'] === 'kiosk') {
                             return "/AngularTemplate/KioskModeOrganizationHeader";
                         }
-                        return "/AngularTemplate/MiniHeader";
                     }
                 },
                 'maincontainer@': {
@@ -354,7 +378,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                         }
                         return "/AngularTemplate/MainContainer_AS";
                     },
-                    controller: 'PlanBuilderController',
+                    controller: 'PlanBuilderController'
                 },
                 '@plan': {
                     templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
@@ -451,15 +475,19 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             data: { pageTitle: 'Web Services', pageSubTitle: '' }
         })
 
-
         .state('terminals', {
             url: "/terminals",
             templateUrl: "/AngularTemplate/TerminalList",
             data: { pageTitle: 'Terminals', pageSubTitle: '' }
         })
+        .state("terminalDetails", {
+            url: "/terminals/{id}",
+            templateUrl: "/AngularTemplate/TerminalDetail",
+            data: {pageTitle: 'Terminal Details', pageSubTitle: ''}    
+        })
         .state('manifestregistry',
         {
-            url: "/manifest_registries",
+            url: "/manifest_registry",
             templateUrl: "/AngularTemplate/ManifestRegistryList",
             data: { pageTitle: 'Manifest Registry', pageSubTitle: '' }
         })
@@ -518,3 +546,40 @@ app.config(['ivhTreeviewOptionsProvider', ivhTreeviewOptionsProvider => {
         defaultSelectedState: false
     });
 }]);
+
+//We delay application bootstrapping until we load activity templates from server
+
+var bootstrapModule = angular.module('activityTemplateBootstrapper', []);
+// the bootstrapper service loads the config and bootstraps the specified app
+bootstrapModule.factory('bootstrapper', ['$http', '$log','$q', ($http: ng.IHttpService, $log: ng.ILogService, $q: ng.IQService) => {
+    return {
+        bootstrap: (appName) => {
+            var deferred = $q.defer();
+            $http.get('/api/v1/activity_templates')
+                .success((activityTemplates: Array<dockyard.interfaces.IActivityCategoryDTO>) => {
+                    // set all returned values as constants on the app
+                    var myApp = angular.module(appName);
+                    myApp.constant('ActivityTemplates', activityTemplates);
+                    angular.bootstrap(document, [appName]);
+                    deferred.resolve();
+                })
+                .error(() => {
+                    $log.warn('Could not initialize application, activity templates could not be loaded.');
+                    deferred.reject();
+                });
+            return deferred.promise;
+        }
+    };
+}]);
+// create a div which is used as the root of the bootstrap app
+var appContainer = document.createElement('div');
+bootstrapModule.run(['bootstrapper',(bootstrapper) => {
+    bootstrapper.bootstrap('app').then(() => {
+        // removing the container will destroy the bootstrap app
+        appContainer.remove();
+    });
+}]);
+// make sure the DOM is fully loaded before bootstrapping.
+angular.element(document).ready(() => {
+    angular.bootstrap(appContainer, ['activityTemplateBootstrapper']);
+});

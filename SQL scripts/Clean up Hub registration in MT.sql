@@ -1,0 +1,1 @@
+DELETE [MtData] FROM [MtData] INNER JOIN [MtTypes] on [MtData].[Type] = [MtTypes].[id] Where [MtTypes].[ManifestId] = 42

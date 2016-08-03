@@ -6,8 +6,8 @@ namespace HubWeb.Documentation.Swagger
 {
     public class PlanResultSampleFactory : ISwaggerSampleFactory<PlanResultDTO>
     {
-        private readonly ISwaggerSampleFactory<PlanEmptyDTO> _planEmptySampleFactory;
-        public PlanResultSampleFactory(ISwaggerSampleFactory<PlanEmptyDTO> planEmptySampleFactory)
+        private readonly ISwaggerSampleFactory<PlanNoChildrenDTO> _planEmptySampleFactory;
+        public PlanResultSampleFactory(ISwaggerSampleFactory<PlanNoChildrenDTO> planEmptySampleFactory)
         {
             _planEmptySampleFactory = planEmptySampleFactory;
         }
@@ -17,7 +17,7 @@ namespace HubWeb.Documentation.Swagger
             return new PlanResultDTO
             {
                 CurrentPage = 1,
-                Plans = new List<PlanEmptyDTO> {_planEmptySampleFactory.GetSampleData()},
+                Plans = new List<PlanNoChildrenDTO> {_planEmptySampleFactory.GetSampleData()},
                 TotalPlanCount = 200
             };
         }

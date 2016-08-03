@@ -4,7 +4,8 @@ module dockyard.controllers {
     'use strict';
 
     export interface ITerminalListScope extends ng.IScope {
-        terminals: Array<model.TerminalRegistrationDTO>;
+        terminals: Array<model.TerminalDTO>;
+        openDetails(terminal: interfaces.ITerminalVM);
         showAddTerminalModal: () => void;
     }
 
@@ -17,21 +18,27 @@ module dockyard.controllers {
         public static $inject = [
             '$scope',
             'TerminalService',
+            '$state',
             '$modal'
         ];
 
         constructor(
             private $scope: ITerminalListScope,
             private TerminalService: services.ITerminalService,
+            private $state: ng.ui.IStateService,
             private $modal: any) {
 
             $scope.showAddTerminalModal = <() => void>angular.bind(this, this.showAddTerminalModal);
 
-            TerminalService.getRegistrations().$promise.then(data => {
+            TerminalService.getAll().$promise.then(data => {
                 $scope.terminals = data;
             }).catch(e => {
                 console.log(e.statusText);
-            });
+                });
+
+            $scope.openDetails = terminal => {
+                $state.go('terminalDetails', { id: terminal.internalId });
+            }
         }
 
         private showAddTerminalModal() {

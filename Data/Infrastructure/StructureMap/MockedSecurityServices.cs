@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories.Security;
@@ -72,15 +74,9 @@ namespace Data.Infrastructure.StructureMap
             throw new NotImplementedException();
         }
 
-        public void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType)
+        public Task<ClaimsIdentity> GetIdentityAsync(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO)
         {
-            SetDefaultObjectSecurity(dataObjectId.ToString(), dataObjectType);
-        }
-
-        public void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType)
-        {
-            var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
-            securityStorageProvider.SetDefaultObjectSecurity(GetCurrentUser(), dataObjectId.ToString(), dataObjectType, Guid.Empty, null);
+            throw new NotImplementedException();
         }
 
         public bool AuthorizeActivity(PermissionType permissionName, string curObjectId, string curObjectType, string propertyName = null)
@@ -114,6 +110,22 @@ namespace Data.Infrastructure.StructureMap
         public bool UserHasPermission(PermissionType permissionType, string objectType)
         {
             return true;
+        }
+
+        public void SetDefaultRecordBasedSecurityForObject(string roleName, string dataObjectId, string dataObjectType, List<PermissionType> customPermissionTypes = null )
+        {
+            var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
+            securityStorageProvider.SetDefaultRecordBasedSecurityForObject(GetCurrentUser(), Roles.OwnerOfCurrentObject, dataObjectId.ToString(), dataObjectType, Guid.Empty, null, null);
+        }
+
+        public IEnumerable<TerminalDO> GetAllowedTerminalsByUser(IEnumerable<TerminalDO> terminals)
+        {
+            return terminals;
+        }
+
+        public List<string> GetAllowedUserRolesForSecuredObject(string objectId, string objectType)
+        {
+            throw new NotImplementedException();
         }
     }
 }

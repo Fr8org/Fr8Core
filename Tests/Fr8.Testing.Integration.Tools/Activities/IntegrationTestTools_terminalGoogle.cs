@@ -177,13 +177,22 @@ namespace Fr8.Testing.Integration.Tools.Activities
             var activityCategoryParam = (int)activityCategory;
             var activityTemplates = await _baseHubITest
                 .HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseHubITest.GetHubApiBaseUrl() + "webservices?id=" + activityCategoryParam);
-            var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == activityName);
+            var apmActivityTemplate = activityTemplates
+                .SelectMany(a => a.Activities)
+                .Select(x => new ActivityTemplateSummaryDTO
+                {
+                    Name = x.Name,
+                    Version = x.Version,
+                    TerminalName = x.Terminal.Name,
+                    TerminalVersion = x.Terminal.Version
+                })
+                .Single(a => a.Name == activityName);
             googleActivityDTO.ActivityTemplate = apmActivityTemplate;
 
             //connect current activity with a plan
-            var subPlan = plan.Plan.SubPlans.FirstOrDefault();
+            var subPlan = plan.SubPlans.FirstOrDefault();
             googleActivityDTO.ParentPlanNodeId = subPlan.SubPlanId;
-            googleActivityDTO.RootPlanNodeId = plan.Plan.Id;
+            googleActivityDTO.RootPlanNodeId = plan.Id;
             googleActivityDTO.Ordering = ordering;
 
             //call initial configuration to server

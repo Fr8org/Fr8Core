@@ -25,7 +25,7 @@ namespace Fr8.Testing.Integration.Tools.Terminals
         /// <param name="password"></param>
         /// <param name="terminalId"></param>
         /// <returns></returns>
-        public async Task<AuthorizationTokenDTO> GenerateAuthToken(string username, string password, TerminalDTO terminalDTO)
+        public async Task<AuthorizationTokenDTO> GenerateAuthToken(string username, string password, TerminalSummaryDTO terminalDTO)
         {
             var creds = new CredentialsDTO()
             {
@@ -54,7 +54,7 @@ namespace Fr8.Testing.Integration.Tools.Terminals
         /// <param name="credentials"></param>
         /// <param name="terminalId"></param>
         /// <returns></returns>
-        public async Task<Guid> AuthenticateDocuSignAndAssociateTokenWithAction(Guid activityId, CredentialsDTO credentials, TerminalDTO terminalDTO)
+        public async Task<Guid> AuthenticateDocuSignAndAssociateTokenWithAction(Guid activityId, CredentialsDTO credentials, TerminalSummaryDTO terminalDTO)
         {
             //
             // Authenticate with DocuSign Credentials

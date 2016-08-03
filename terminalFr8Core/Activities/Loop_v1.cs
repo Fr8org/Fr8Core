@@ -48,19 +48,20 @@ namespace terminalFr8Core.Activities
                 return;
             }
             var crateDescriptionToProcess = FindCrateDescriptionToProcess();
+
+            //updating iteration index
             var loopData = OperationalState.CallStack.GetLocalData<OperationalStateCM.LoopStatus>("Loop");
             if (loopData == null)
             {
-                loopData = new OperationalStateCM.LoopStatus
-                {
-                    CrateManifest = new CrateDescriptionCM(crateDescriptionToProcess)
-                };
+                loopData = new OperationalStateCM.LoopStatus();
             }
             else
             {
                 loopData.Index++;
             }
             OperationalState.CallStack.StoreLocalData("Loop", loopData);
+            //end of updating
+
             var crateToProcess = FindCrateToProcess(crateDescriptionToProcess);
             if (crateToProcess == null)
             {

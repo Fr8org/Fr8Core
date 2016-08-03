@@ -344,7 +344,7 @@ namespace terminalExcel.Actions
 
         private async Task PushLaunchURLNotification(string url)
         {
-            await _pushNotificationService.PushUserNotification(MyTemplate, NotificationArea.ActivityStream, "Excel File URL Generated", $"The Excel file can be downloaded by navigating to this URL: {new Uri(url).AbsoluteUri}");
+            await _pushNotificationService.PushUserNotification(MyTemplate, "Excel File URL Generated", $"The Excel file can be downloaded by navigating to this URL: {new Uri(url).AbsoluteUri}");
         }
     }
 }

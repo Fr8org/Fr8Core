@@ -9,8 +9,6 @@ namespace Fr8.Testing.Unit.Fixtures
             var SubPlanDO = new SubplanDO
             {
                 Id = GetTestGuidById(50),
-                NodeTransitions =
-                    "[{'TransitionKey':'true','ProcessNodeId':'1'},{'TransitionKey':'false','ProcessNodeId':'2'}]"
             };
             return SubPlanDO;
         }
@@ -22,7 +20,6 @@ namespace Fr8.Testing.Unit.Fixtures
                 Id = GetTestGuidById(50),
                 ParentPlanNodeId = GetTestGuidById(23),
                 RootPlanNodeId = GetTestGuidById(23),
-                NodeTransitions = "[{'TransitionKey':'true','ProcessNodeId':'2'}]"
             };
             return SubPlanDO;
         }
@@ -33,8 +30,6 @@ namespace Fr8.Testing.Unit.Fixtures
             {
                 Id = GetTestGuidById(51),
                 Name = "TestName",
-                NodeTransitions =
-                    "[{'TransitionKey':'true','ProcessNodeId':'1'},{'TransitionKey':'false','ProcessNodeId':'2'}]",
                 ParentPlanNodeId = GetTestGuidById(50),
                 RootPlanNodeId = GetTestGuidById(50),
                 StartingSubPlan = true
@@ -47,8 +42,6 @@ namespace Fr8.Testing.Unit.Fixtures
             SubplanDO subplanDO = new SubplanDO()
             {
                 Id = GetTestGuidById(50),
-                NodeTransitions =
-                    "[{'TransitionKey':'true','ProcessNodeId':'3'},{'TransitionKey':'false','ProcessNodeId':'5'}]"
             };
             return subplanDO;
         }
@@ -58,8 +51,6 @@ namespace Fr8.Testing.Unit.Fixtures
             SubplanDO subplanDO = new SubplanDO()
             {
                 Id = GetTestGuidById(1),
-                NodeTransitions =
-                    "[{'TransitionKey':'true','ProcessNodeId':'3'},{'TransitionKey':'false','ProcessNodeId':'5'}]"
             };
             return subplanDO;
         }
