@@ -25,106 +25,137 @@ namespace PlanDirectory.Templates
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write(@"
-<!DOCTYPE html>
+            this.Write("    ");
+            this.Write("        ");
+            this.Write(@"<!DOCTYPE html>
 <html>
-<head>
-    <link rel=""stylesheet"" href=""../bower_components/bootstrap/dist/css/bootstrap.min.css""/>
-    <link rel=""stylesheet"" href=""../Content/metronic/components.css""/>
 
+<head>
+    <link href=""../Content/css/additionalcss/font-awesome/css/font-awesome.css"" rel=""stylesheet"" type=""text/css"" />
+    <link href=""../Content/css/additionalcss/font-awesome/css/style.css"" rel=""stylesheet"" type=""text/css"" />
     <link href='https://fonts.googleapis.com/css?family=Francois+One' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Didact+Gothic' rel='stylesheet' type='text/css'>
-
     <link rel=""stylesheet"" href=""../bower_components/bootstrap/dist/css/bootstrap.min.css"" />
-	<link rel=""stylesheet"" href=""../Content/metronic/components.css"" />	
-	<link rel=""stylesheet"" href=""../Content/css/plan-directory.css"" />
-	<link rel=""stylesheet"" href=""../Content/css/shared/main.css"" />	
-
-    <title>Fr8 - Plan Template Details - ");
+    <link rel=""stylesheet"" href=""../Content/metronic/components.css"" />
+    <link rel=""stylesheet"" href=""../Content/css/plan-directory.css"" />
+    <link rel=""stylesheet"" href=""../Content/css/shared/main.css"" />
+    <script src=""../bower_components/jquery/dist/jquery.min.js""></script>
+    <script src=""../Content/metronic/jquery.blockui.min.js""></script>
+    <script src=""../bower_components/bootstrap/dist/js/bootstrap.min.js""></script>
+    <script src=""../Content/metronic/ui.js""></script>
+    <script src=""../Scripts/main.js""></script>
+    <title>Fr8 - Plan Template Details -
+        ");
             
-            #line 19 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 22 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(planTemplate.Name));
             
             #line default
             #line hidden
-            this.Write("</title>\r\n    <meta charset=\"utf-8\"/>\r\n</head>\r\n<body>\r\n    <div id=\"wrap\">\r\n    " +
-                    "    <!-- NAVIGATION BAR-->\r\n        <header id=\"site-header\" class=\"header conta" +
-                    "iner-fluid\">\r\n            ");
-            this.Write(@"
-        </header>    
-		 <section id=""planDirectory"" class=""plan-directory-background full-height-block text-block"" data-section=""support"">
-            <div class=""inner-bg full-size-bg""></div>
-            <div class=""container full-height-block"">
-                <div class=""inner-wrap centered base-block-white"">
-				</div>
-			</div>
-			</div>
-		</section>
-    
-    <div class=""container"">
-        <h1>Plan Template Details - <em>");
+            this.Write("\r\n    </title>\r\n    <meta charset=\"utf-8\" />\r\n</head>\r\n\r\n<body>\r\n    <div id=\"wra" +
+                    "p\">\r\n        <!-- NAVIGATION BAR-->\r\n        <header id=\"site-header\" class=\"hea" +
+                    "der container-fluid\">\r\n            <nav class=\"navbar navbar-fixed-top\">\r\n      " +
+                    "          <div class=\"container\">\r\n                    <!-- NAVIGATION BAR LOGO " +
+                    "-->\r\n                    <div class=\"navbar-header\">\r\n                        <a" +
+                    " href=\"http://dev.fr8.co\" class=\"navbar-brand\">\r\n                            <im" +
+                    "g src=\"../Content/img/dockyard_logo_white.png\" alt=\"FR8\">\r\n                     " +
+                    "       <h1 class=\"hide\">FR8 Company</h1>\r\n                        </a>\r\n        " +
+                    "            </div>\r\n                    <!-- NAVIGATION BAR CONTENT -->\r\n       " +
+                    "             <div class=\"navbar-collapse collapse\" id=\"main-nav\" role=\"navigatio" +
+                    "n\">\r\n                        <!-- SINGUP/LOGIN UPRIGHT OR WELCOMING MESSAGE -->\r" +
+                    "\n                        <!-- MENU -->\r\n                        <ul class=\"nav n" +
+                    "avbar-nav navbar-right\">\r\n                            <!--How It Works-->\r\n     " +
+                    "                       <li><a href=\"http://dev.fr8.co/#about\">How it Works</a></" +
+                    "li>\r\n                            <!--Services-->\r\n                            <l" +
+                    "i data-scroll=\"scrolling\" class=\"dropdown\">\r\n                                <a " +
+                    "data-target=\"#\" href=\"/\" class=\"dropdown-toggle\" data-toggle=\"dropdown\" role=\"bu" +
+                    "tton\" aria-haspopup=\"true\" aria-expanded=\"false\" title=\"Services\">Services <span" +
+                    " class=\"caret\"></span></a>\r\n                                <ul class=\"dropdown-" +
+                    "menu\">\r\n                                    <li><a href=\"http://dev.fr8.co/Servi" +
+                    "ces/DocuSign\">DocuSign</a></li>\r\n                                    <li><a href" +
+                    "=\"http://dev.fr8.co/Services/Salesforce\">Salesforce.com</a></li>\r\n              " +
+                    "                      <li><a href=\"http://dev-directory.fr8.co\">Plan Directory</" +
+                    "a></li>\r\n                                </ul>\r\n                            </li" +
+                    ">\r\n                            <!--Developers-->\r\n                            <l" +
+                    "i><a href=\"https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md\">Developer" +
+                    "s</a></li>\r\n                            <!--Company-->\r\n                        " +
+                    "    <li data-scroll=\"scrolling\" class=\"dropdown\">\r\n                             " +
+                    "   <a href=\"/\" class=\"dropdown-toggle\" data-toggle=\"dropdown\" role=\"button\" aria" +
+                    "-haspopup=\"true\" aria-expanded=\"false\" title=\"Company\">Company <span class=\"care" +
+                    "t\"></span></a>\r\n                                <ul class=\"dropdown-menu\">\r\n    " +
+                    "                                <li data-scroll=\"scrolling\"><a href=\"http://dev." +
+                    "fr8.co/Company/#vision\">Vision</a></li>\r\n                                    <li" +
+                    " data-scroll=\"scrolling\"><a href=\"http://dev.fr8.co/Company/#team\">Team</a></li>" +
+                    "\r\n                                    <li data-scroll=\"scrolling\"><a href=\"http:" +
+                    "//dev.fr8.co/Company/#press\">Press Releases</a></li>\r\n                          " +
+                    "          <li data-scroll=\"scrolling\"><a href=\"http://dev.fr8.co/Company/#locati" +
+                    "on\">Location</a></li>\r\n                                    <li data-scroll=\"scro" +
+                    "lling\"><a href=\"http://dev.fr8.co/Company/#jobs\">Jobs</a></li>\r\n                " +
+                    "                </ul>\r\n                            </li>\r\n                      " +
+                    "      <!--Contact-->\r\n                            <li><a href=\"http://dev.fr8.co" +
+                    "/Support\" title=\"Contact\">Contact</a></li>\r\n                            <!--Blog" +
+                    "-->\r\n                            <li><a href=\"http://blog.fr8.co\" target=\"_blank" +
+                    "\">Blog</a></li>\r\n                            <!--Login Button on Right-->\r\n     " +
+                    "                       <li>\r\n                                <p class=\"navbar-bt" +
+                    "n\">\r\n                                    <a href=\"http://dev.fr8.co/DockyardAcco" +
+                    "unt\" class=\"btn btn-danger\">Login/Register</a>\r\n                                " +
+                    "</p>\r\n                            </li>\r\n                        </ul>\r\n        " +
+                    "            </div>\r\n                </div>\r\n            </nav>\r\n        </header" +
+                    ">\r\n        <section id=\"planDirectory\" class=\"plan-directory-background full-hei" +
+                    "ght-block text-block\" data-section=\"support\">\r\n            <div class=\"inner-bg " +
+                    "full-size-bg\"></div>\r\n            <div class=\"container full-height-block\">\r\n   " +
+                    "             <div class=\"inner-wrap centered base-block-white\">\r\n               " +
+                    "     <!-- SEARCH BAR-->\r\n                    <div class=\"search-bar-container\">\r" +
+                    "\n                        <div>\r\n                            <h2 style=\"width:100" +
+                    "%\">Details - <em>");
             
-            #line 38 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 91 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(planTemplate.Name));
             
             #line default
             #line hidden
-            this.Write("</em></h1>\r\n\t\t");
-            
-            #line 39 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
-for (int i=0; i<5; i++)
-		{
-            
-            #line default
-            #line hidden
-            this.Write("        <div class=\"row\">\r\n            <div class=\"col-md-12\">\r\n                <" +
-                    "hr />\r\n            </div>\r\n        </div>\r\n        <div class=\"row\">\r\n          " +
-                    "  <div class=\"col-md-12\">\r\n                <h3>V");
-            
-            #line 48 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(i));
-            
-            #line default
-            #line hidden
+            this.Write(@"</em></h2>
+                        </div>
+                        <hr/>
+                    </div>
+                    <!-- SEARCH RESULTS-->
+                    <div class=""row"">
+                        <div class=""col-md-12"">
+                            <hr />
+                        </div>
+                    </div>
+                    <div class=""row"">
+                        <div class=""col-md-12"">
+                            <h3>V");
             this.Write(" Registered By ");
-            
-            #line 48 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(i));
-            
-            #line default
-            #line hidden
-            this.Write("</h3>\r\n            </div>\r\n        </div>\r\n        <div class=\"row\">\r\n           " +
-                    " <div class=\"col-md-12\">\r\n                <p>\r\n                    <em>");
-            
-            #line 54 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(i));
-            
-            #line default
-            #line hidden
+            this.Write("</h3>\r\n                        </div>\r\n                    </div>\r\n              " +
+                    "      <div class=\"row\">\r\n                        <div class=\"col-md-12\">\r\n      " +
+                    "                      <p>\r\n                                <em>");
             this.Write(@"</em>
-                </p>
+                            </p>
+                        </div>
+                    </div>
+                    <div class=""row"">
+                        <div class=""col-md-12"">
+                            <strong>Sample JSON</strong>
+                        </div>
+                    </div>
+                    <div class=""row"">
+                        <div class=""col-md-12"">
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class=""row"">
-            <div class=""col-md-12"">
-                <strong>Sample JSON</strong>
-            </div>
-        </div>		
-        <div class=""row"">
-            <div class=""col-md-12"">
-                <pre>
-");
-            this.Write("\r\n                </pre>\r\n            </div>\r\n        </div>\r\n\t\t");
+        </section>
+        <div class=""clear clear-footer-spacer""></div>
+    </div>
+    <!-- FOOTER -->
+    <footer id=""site-footer"" class=""section"">
+        <div class=""container"">
+            <p class=""copyright"">
+                ");
             
-            #line 70 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
- } 
-            
-            #line default
-            #line hidden
-            this.Write("    </div>\r\n\t    <!-- FOOTER -->\r\n    <footer id=\"site-footer\" class=\"section\">\r\n" +
-                    "        <div class=\"container\">\r\n            <p class=\"copyright\">");
-            
-            #line 75 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 131 "d:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanTemplateDetailsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(DateTime.Now.Year));
             
             #line default

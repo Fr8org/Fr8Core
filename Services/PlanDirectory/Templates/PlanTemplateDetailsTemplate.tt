@@ -1,78 +1,134 @@
 ﻿<#@ template language="C#" #>
-<#@ assembly name="$(SolutionDir)\bin\Fr8Infrastructure.NET.dll" #>
-<#@ parameter name="planTemplate" type="Fr8.Infrastructure.Data.DataTransferObjects.PublishPlanTemplateDTO" #>
-
+    <#@ assembly name="$(SolutionDir)\bin\Fr8Infrastructure.NET.dll" #>
+        <#@ parameter name="planTemplate" type="Fr8.Infrastructure.Data.DataTransferObjects.PublishPlanTemplateDTO" #>
 <!DOCTYPE html>
 <html>
-<head>
-    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="../Content/metronic/components.css"/>
 
+<head>
+    <link href="../Content/css/additionalcss/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css" />
+    <link href="../Content/css/additionalcss/font-awesome/css/style.css" rel="stylesheet" type="text/css" />
     <link href='https://fonts.googleapis.com/css?family=Francois+One' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Didact+Gothic' rel='stylesheet' type='text/css'>
-
     <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css" />
-	<link rel="stylesheet" href="../Content/metronic/components.css" />	
-	<link rel="stylesheet" href="../Content/css/plan-directory.css" />
-	<link rel="stylesheet" href="../Content/css/shared/main.css" />	
-
-    <title>Fr8 - Plan Template Details - <#=planTemplate.Name#></title>
-    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="../Content/metronic/components.css" />
+    <link rel="stylesheet" href="../Content/css/plan-directory.css" />
+    <link rel="stylesheet" href="../Content/css/shared/main.css" />
+    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../Content/metronic/jquery.blockui.min.js"></script>
+    <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../Content/metronic/ui.js"></script>
+    <script src="../Scripts/main.js"></script>
+    <title>Fr8 - Plan Template Details -
+        <#=planTemplate.Name#>
+    </title>
+    <meta charset="utf-8" />
 </head>
+
 <body>
     <div id="wrap">
         <!-- NAVIGATION BAR-->
         <header id="site-header" class="header container-fluid">
-            <#=#>
-        </header>    
-		 <section id="planDirectory" class="plan-directory-background full-height-block text-block" data-section="support">
+            <nav class="navbar navbar-fixed-top">
+                <div class="container">
+                    <!-- NAVIGATION BAR LOGO -->
+                    <div class="navbar-header">
+                        <a href="http://dev.fr8.co" class="navbar-brand">
+                            <img src="../Content/img/dockyard_logo_white.png" alt="FR8">
+                            <h1 class="hide">FR8 Company</h1>
+                        </a>
+                    </div>
+                    <!-- NAVIGATION BAR CONTENT -->
+                    <div class="navbar-collapse collapse" id="main-nav" role="navigation">
+                        <!-- SINGUP/LOGIN UPRIGHT OR WELCOMING MESSAGE -->
+                        <!-- MENU -->
+                        <ul class="nav navbar-nav navbar-right">
+                            <!--How It Works-->
+                            <li><a href="http://dev.fr8.co/#about">How it Works</a></li>
+                            <!--Services-->
+                            <li data-scroll="scrolling" class="dropdown">
+                                <a data-target="#" href="/" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Services">Services <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="http://dev.fr8.co/Services/DocuSign">DocuSign</a></li>
+                                    <li><a href="http://dev.fr8.co/Services/Salesforce">Salesforce.com</a></li>
+                                    <li><a href="http://dev-directory.fr8.co">Plan Directory</a></li>
+                                </ul>
+                            </li>
+                            <!--Developers-->
+                            <li><a href="https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md">Developers</a></li>
+                            <!--Company-->
+                            <li data-scroll="scrolling" class="dropdown">
+                                <a href="/" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Company">Company <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li data-scroll="scrolling"><a href="http://dev.fr8.co/Company/#vision">Vision</a></li>
+                                    <li data-scroll="scrolling"><a href="http://dev.fr8.co/Company/#team">Team</a></li>
+                                    <li data-scroll="scrolling"><a href="http://dev.fr8.co/Company/#press">Press Releases</a></li>
+                                    <li data-scroll="scrolling"><a href="http://dev.fr8.co/Company/#location">Location</a></li>
+                                    <li data-scroll="scrolling"><a href="http://dev.fr8.co/Company/#jobs">Jobs</a></li>
+                                </ul>
+                            </li>
+                            <!--Contact-->
+                            <li><a href="http://dev.fr8.co/Support" title="Contact">Contact</a></li>
+                            <!--Blog-->
+                            <li><a href="http://blog.fr8.co" target="_blank">Blog</a></li>
+                            <!--Login Button on Right-->
+                            <li>
+                                <p class="navbar-btn">
+                                    <a href="http://dev.fr8.co/DockyardAccount" class="btn btn-danger">Login/Register</a>
+                                </p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <section id="planDirectory" class="plan-directory-background full-height-block text-block" data-section="support">
             <div class="inner-bg full-size-bg"></div>
             <div class="container full-height-block">
                 <div class="inner-wrap centered base-block-white">
-				</div>
-			</div>
-			</div>
-		</section>
-    
-    <div class="container">
-        <h1>Plan Template Details - <em><#=planTemplate.Name#></em></h1>
-		<#for (int i=0; i<5; i++)
-		{#>
-        <div class="row">
-            <div class="col-md-12">
-                <hr />
+                    <!-- SEARCH BAR-->
+                    <div class="search-bar-container">
+                        <div>
+                            <h2 style="width:100%">Details - <em><#=planTemplate.Name#></em></h2>
+                        </div>
+                        <hr/>
+                    </div>
+                    <!-- SEARCH RESULTS-->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <hr />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3>V<#=#> Registered By <#=#></h3>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p>
+                                <em><#=#></em>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <strong>Sample JSON</strong>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <h3>V<#=i#> Registered By <#=i#></h3>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <p>
-                    <em><#=i#></em>
-                </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <strong>Sample JSON</strong>
-            </div>
-        </div>		
-        <div class="row">
-            <div class="col-md-12">
-                <pre>
-<#=#>
-                </pre>
-            </div>
-        </div>
-		<# } #>
+        </section>
+        <div class="clear clear-footer-spacer"></div>
     </div>
-	    <!-- FOOTER -->
+    <!-- FOOTER -->
     <footer id="site-footer" class="section">
         <div class="container">
-            <p class="copyright"><#=DateTime.Now.Year#> © The Fr8 Company. All Rights Reserved.</p>
+            <p class="copyright">
+                <#=DateTime.Now.Year#> © The Fr8 Company. All Rights Reserved.</p>
         </div>
     </footer>
     <!-- END FOOTER -->
