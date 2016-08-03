@@ -203,6 +203,7 @@
       <DependentUpon>ApplicationInsights.config</DependentUpon>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="LICENSE" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

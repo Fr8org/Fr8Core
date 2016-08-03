@@ -102,8 +102,8 @@ module dockyard.directives {
         return {
             restrict: 'E',
             templateUrl: '/AngularTemplate/ActionPickerPanel',
-            controller: ['$scope', '$http', '$timeout',
-                ($scope: IActionPickerPanelScope, $http: ng.IHttpService, $timeout: ng.ITimeoutService) => {
+            controller: ['$scope', 'ActivityTemplateHelperService', '$timeout',
+                ($scope: IActionPickerPanelScope, ActivityTemplateHelperService: services.IActivityTemplateHelperService, $timeout: ng.ITimeoutService) => {
                     $scope.form = { searchText: '' };
 
                     $scope.selectCategory = (category: model.ActivityCategoryDTO) => {
@@ -130,9 +130,9 @@ module dockyard.directives {
                     };
 
                     var _reload = () => {
-                        $http.get('/api/activity_templates/by_categories')
-                            .then((res: ng.IHttpPromiseCallbackArg<Array<interfaces.IActivityCategoryDTO>>) => {
-                                $scope.categories = res.data.filter((x) => { return x.name !== 'Solution'; });
+                        ActivityTemplateHelperService.getAvailableActivityTemplatesByCategory()
+                            .then((res: Array<interfaces.IActivityCategoryDTO>) => {
+                                $scope.categories = res.filter((x) => { return x.name !== 'Solution'; });
                             });
                     };
 
