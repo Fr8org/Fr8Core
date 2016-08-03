@@ -21,9 +21,6 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         [JsonProperty("parentPlanNodeId")]
         public Guid? ParentPlanNodeId { get; set; }
 
-        [JsonProperty("currentView")]
-        public string CurrentView { get; set; }
-
         [JsonProperty("ordering")]
         public int Ordering { get; set; }
 

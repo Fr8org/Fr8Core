@@ -9,7 +9,6 @@
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;
         activityTemplate: ActivityTemplateSummary;
-        currentView: string;
         childrenActivities: Array<interfaces.IActivityDTO>;
         height: number = 300;
         ordering: number;
