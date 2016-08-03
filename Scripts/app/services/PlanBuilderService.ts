@@ -513,9 +513,9 @@ module dockyard.services {
             addDeferred.$promise
                 .then((addResult: interfaces.ISubPlanVM) => {
                     curProcessNodeTemplate.isTempId = false;
-                    curProcessNodeTemplate.subPlanId = addResult.subPlanId;    
+                    curProcessNodeTemplate.id = addResult.id;    
                     // Fetch criteria object from server by ProcessNodeTemplate global ID.
-                    return this.CriteriaService.byProcessNodeTemplate({ id: addResult.subPlanId }).$promise;
+                    return this.CriteriaService.byProcessNodeTemplate({ id: addResult.id }).$promise;
                 })
                 .then((getResult: interfaces.ICriteriaVM) => {
                     curProcessNodeTemplate.criteria.id = getResult.id;
@@ -568,7 +568,7 @@ module dockyard.services {
                     var criteria = new model.CriteriaDTO(
                         getCriteriaDeferred.id,
                         false,
-                        getPntDeferred.subPlanId,
+                        getPntDeferred.id,
                         getCriteriaDeferred.executionType
                     );
 

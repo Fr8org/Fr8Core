@@ -70,42 +70,37 @@ module dockyard.controllers.NotifierController {
 
                 // Generic Success
                 PusherNotifierService.bindEventToChannel(channel, dockyard.enums.NotificationType[dockyard.enums.NotificationType.GenericSuccess], (data: any) => {
-                    this.sendNotification(data, dockyard.enums.UINotificationStatus.Success);
+                    this.sendNotification(data);
                 });
 
                 // Generic Failure
                 PusherNotifierService.bindEventToChannel(channel, dockyard.enums.NotificationType[dockyard.enums.NotificationType.GenericFailure], (data: any) => {
-                    this.sendNotification(data, dockyard.enums.UINotificationStatus.Error);
+                    this.sendNotification(data);
                 });
 
                 // Generic Info
                 PusherNotifierService.bindEventToChannel(channel, dockyard.enums.NotificationType[dockyard.enums.NotificationType.GenericInfo], (data: any) => {
-                    this.sendNotification(data, dockyard.enums.UINotificationStatus.Info);
+                    this.sendNotification(data);
                 });
 
                 // Terminal Event
                 PusherNotifierService.bindEventToChannel(channel, dockyard.enums.NotificationType[dockyard.enums.NotificationType.TerminalEvent], (data: any) => {
-                    this.sendNotification(data, dockyard.enums.UINotificationStatus.Alert);
+                    this.sendNotification(data);
                 });
 
                 // Execution Stopped
                 PusherNotifierService.bindEventToChannel(channel, dockyard.enums.NotificationType[dockyard.enums.NotificationType.ExecutionStopped], (data: any) => {
-                    if ($stateParams['viewMode'] == "kiosk") {
-                        uiNotificationService.notify(data.Message, dockyard.enums.UINotificationStatus.Warning, null);
-                    } else {
-                        var event = new Fr8InternalEvent();
-                        event.type = data.NotificationType;
-                        event.data = data;
-                        this.$scope.eventList.splice(0, 0, event);
-                    }
+                    this.sendNotification(data);
                 });
             });
         }
 
         // Determines notifications are (toast message or activity stream)
-        sendNotification(data: any, notificationStatus: dockyard.enums.UINotificationStatus): void {
+        sendNotification(data: any): void {
             if (this.$stateParams['viewMode'] == "kiosk") {
-                this.uiNotificationService.notify(data.Message, notificationStatus, null);
+                // All notifications are implemented as Alert messages in toast.
+                // When we implement sub-notification types for TerminalEvent, we can reevaluate here and pass a parameter for it
+                this.uiNotificationService.notify(data.Message, dockyard.enums.UINotificationStatus.Alert, null);
             } else {
                 var event = new Fr8InternalEvent();
                 event.type = data.NotificationType;

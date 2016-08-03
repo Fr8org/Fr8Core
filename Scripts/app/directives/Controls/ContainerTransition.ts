@@ -95,7 +95,7 @@ module dockyard.directives.containerTransition {
 
             var findSubPlanById = (id: string): model.SubPlanDTO => {
                 for (var i = 0; i < $scope.plan.subPlans.length; i++) {
-                    if ($scope.plan.subPlans[i].subPlanId === id) {
+                    if ($scope.plan.subPlans[i].id === id) {
                         return $scope.plan.subPlans[i];
                     }
                 }
@@ -167,14 +167,14 @@ module dockyard.directives.containerTransition {
                 for (var i = 0; i < $scope.plan.subPlans.length; i++) {
                     var subPlanName;
 
-                    if ($scope.plan.subPlans[i].subPlanId === $scope.subPlan.subPlanId) {
+                    if ($scope.plan.subPlans[i].id === $scope.subPlan.id) {
                         subPlanName = 'Jump back to the start of this subplan';
                     }
                     else {
                         subPlanName = $scope.plan.subPlans[i].name;
                     }
 
-                    subplans.push(new model.DropDownListItem(subPlanName, $scope.plan.subPlans[i].subPlanId));
+                    subplans.push(new model.DropDownListItem(subPlanName, $scope.plan.subPlans[i].id));
                 }
 
                 return subplans;
@@ -286,7 +286,7 @@ module dockyard.directives.containerTransition {
                 triggerChange();
 
                 if ((<any>transition)._dummyOperationDD.value === ContainerTransitions.JumpToSubplan.toString()
-                    && dd.value === $scope.subPlan.subPlanId) {
+                    && dd.value === $scope.subPlan.id) {
 
                     $modal.open({
                         template: warningMessageTemplate
