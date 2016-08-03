@@ -345,6 +345,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Config\HealthMonitor\Settings.config.src.readme" />
+    <Content Include="LICENSE" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

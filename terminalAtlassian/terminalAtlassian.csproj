@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -241,6 +241,7 @@
     <Content Include="Atlassian.Jira.dll" />
     <Content Include="Global.asax" />
     <Content Include="index.html" />
+    <Content Include="LICENSE" />
     <Content Include="log4net.terminals.config" />
     <Content Include="log4net.terminals.Demo.config" />
     <Content Include="log4net.terminals.Dev.config" />

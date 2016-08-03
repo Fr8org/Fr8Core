@@ -228,10 +228,6 @@
       <HintPath>packages\Microsoft.Rest.ClientRuntime.Azure.2.5.2\lib\net45\Microsoft.Rest.ClientRuntime.Azure.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Spatial, Version=6.13.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.Spatial.6.13.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.Spatial.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.dll</HintPath>
       <Private>True</Private>
@@ -393,6 +389,11 @@
     <Compile Include="App_Start\StartupMigration.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="CategoryPages\PlanCategoryTemplate.cs">
+      <DependentUpon>PlanCategoryTemplate.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Controllers\Api\ActivitiesController.cs" />
     <Compile Include="Controllers\Api\ActivityTemplatesController.cs" />
     <Compile Include="Controllers\Api\DocumentationController.cs" />
@@ -507,11 +508,6 @@
     <Compile Include="Infrastructure_HubWeb\Fr8TerminalAuthenticationAttribute.cs" />
     <Compile Include="Infrastructure_HubWeb\Fr8Identity.cs" />
     <Compile Include="Infrastructure_HubWeb\HtmlHelpers.cs" />
-    <Compile Include="CategoryPages\PlanCategoryTemplate.cs">
-      <DependentUpon>PlanCategoryTemplate.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Infrastructure_PD\Exceptions\ManifestGenerationException.cs" />
     <Compile Include="Infrastructure_PD\Exceptions\ManifestNotFoundException.cs" />
     <Compile Include="Infrastructure_PD\Exceptions\ManifestPageNotFoundException.cs" />
@@ -573,6 +569,14 @@
     <Compile Include="ExceptionHandling\WebApiExceptionFilterAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="CategoryPages\basecamp2.html" />
+    <Content Include="CategoryPages\built-in services-slack.html" />
+    <Content Include="CategoryPages\built-in services.html" />
+    <Content Include="CategoryPages\PlanCategoryTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>PlanCategoryTemplate.cs</LastGenOutput>
+    </Content>
+    <Content Include="CategoryPages\slack.html" />
     <Content Include="Content\css\CDNRelatedStyles.css" />
     <Content Include="Content\css\dockyard\activity-stream.css" />
     <Content Include="Content\css\dockyard\authentication-dialog.css" />
@@ -590,11 +594,9 @@
     <Content Include="Content\css\plan-directory.css" />
     <Content Include="Content\css\shared\main.css" />
     <Content Include="Content\css\shared\navbar.css" />
-    <Content Include="Content\css\shared\PlanDirectoryMain.css" />
     <Content Include="Content\icons\forward-icon-64x64.png" />
     <Content Include="Content\icons\get-icon-64x64.png" />
     <Content Include="Content\icons\monitor-icon-64x64.png" />
-    <Content Include="Content\icons\plus.png" />
     <Content Include="Content\icons\process-icon-64x64.png" />
     <Content Include="Content\icons\web_services\asana-icon-64x64.png" />
     <Content Include="Content\icons\web_services\basecamp2-icon-64x64.png" />
@@ -629,6 +631,7 @@
     <Content Include="Content\img\backgrounds\solution-bg.png" />
     <Content Include="Content\img\icons\more_vert.svg" />
     <Content Include="Content\img\logo-fr8.svg" />
+    <Content Include="Content\img\logo.svg" />
     <Content Include="Content\img\Management\Alexei_Avrutin.png" />
     <Content Include="Content\img\Management\Alex_Edelstein_Round.png" />
     <Content Include="Content\img\Management\Andrew_Cantino.png" />
@@ -719,6 +722,7 @@
     <Content Include="Content\img\Management\Stuart_Gold.png" />
     <Content Include="Content\img\MicrosoftExchangelogo.png" />
     <Content Include="Content\img\minus.png" />
+    <Content Include="Content\img\plan-bg.jpg" />
     <Content Include="Content\img\plus.png" />
     <Content Include="Content\img\PlanBuilder\action-add-small.png" />
     <Content Include="Content\img\PlanBuilder\actions-node-bg.png" />
@@ -761,6 +765,7 @@
     <Content Include="Content\img\welcome\DocuSign_Logo_Purple_Yellow.png" />
     <Content Include="Content\img\welcome\header_green.png" />
     <Content Include="Content\img\welcome\welcome_header.png" />
+    <Content Include="Content\img\white-bg-overlay.png" />
     <Content Include="Content\metronic\components.css" />
     <Content Include="Content\metronic\jquery.blockui.min.js" />
     <Content Include="Content\metronic\loading.gif" />
@@ -770,10 +775,6 @@
     <Content Include="Content\videos\motion_1920.jpg" />
     <Content Include="Content\videos\motion_1920.mp4" />
     <Content Include="Content\img\Management\Rob_Bailey.png" />
-    <Content Include="CategoryPages\PlanCategoryTemplate.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>PlanCategoryTemplate.cs</LastGenOutput>
-    </Content>
     <Content Include="ManifestPages\ManifestDescriptionTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>ManifestDescriptionTemplate.cs</LastGenOutput>
@@ -799,7 +800,6 @@
     <Content Include="Scripts\homejs\plugins\vide\jquery.vide.min.js" />
     <Content Include="Scripts\homejs\plugins\waypoints\waypoints.min.js" />
     <Content Include="Scripts\homejs\plugins\wow\wow.js" />
-    <Content Include="Scripts\PlanDirectoryMain.js" />
     <Content Include="Scripts\PlanBuilder\core.js" />
     <Content Include="Scripts\PlanBuilder\pb-consts.js" />
     <Content Include="Scripts\PlanBuilder\pb-fabricjs-img.js" />
@@ -808,6 +808,7 @@
     <Content Include="Scripts\PlanBuilder\pb-resources.js" />
     <Content Include="Scripts\PlanBuilder\pb-widget.js" />
     <Content Include="Scripts\PlanDirectoryApp.js" />
+    <Content Include="Scripts\PlanDirectoryMain.js" />
     <Content Include="Scripts\templateCache.js" />
     <Content Include="Scripts\tests\e2e\conf.js" />
     <Content Include="Scripts\tests\e2e\login\login.spec.js" />
@@ -895,6 +896,7 @@
     <Content Include="Views\AngularTemplate\ActionPickerPanel.cshtml" />
     <Content Include="Views\AngularTemplate\HeaderNav.cshtml" />
     <Content Include="Config\HubWeb\Settings.config.readme" />
+    <Content Include="LICENSE" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="_PowerShellScripts\Combine-Sources.ps1" />
@@ -946,6 +948,7 @@
     <Content Include="_PowerShellScripts\Add-Repo.ps1" />
     <Content Include="Views\AngularTemplate\PermissionsSetterModal.cshtml" />
     <Content Include="Views\AngularTemplate\TerminalDetail.cshtml" />
+    <Content Include="Views\AngularTemplate\TerminalPublishForm.cshtml" />
     <Content Include="Views\PlanDirectory\Index.cshtml" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <Content Include="_PowerShellScripts\Update-HostnameInTerminalRegistration.ps1" />
@@ -1010,6 +1013,7 @@
     <TypeScriptCompile Include="Scripts\app\model\OrganizationDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\Profile.ts" />
     <TypeScriptCompile Include="Scripts\app\model\SubordinateSubplan.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\ActivityService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\AuthService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ConfigureTrackerService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\FileDetailsService.ts" />
@@ -4552,7 +4556,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('packages\Fr8.PrivateSettings.1.2016.216.1\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fr8.PrivateSettings.1.2016.216.1\build\net40\Fr8.PrivateSettings.targets'))" />
+    <Error Condition="!Exists('packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets'))" />
   </Target>
   <PropertyGroup>
     <CopyAllFilesToSingleFolderForPackageDependsOn>
@@ -4638,5 +4642,5 @@
   <Target Name="BeforeBuild">
     <RestoreSettingsTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)" ProjectName="$(ProjectName)" />
   </Target>
-  <Import Project="packages\Fr8.PrivateSettings.1.2016.216.1\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.216.1\build\net40\Fr8.PrivateSettings.targets')" />
+  <Import Project="packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets')" />
 </Project>
