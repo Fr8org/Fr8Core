@@ -199,7 +199,8 @@ namespace Hub.Services
 
                 if (node is ActivityDO)
                 {
-                    nodeName = "Activity: " + ((ActivityDO)node).ActivityTemplate.Name;
+                    var activityTemplate = uow.ActivityTemplateRepository.GetByKey(((ActivityDO)node).ActivityTemplateId);
+                    nodeName = "Activity: " + activityTemplate.Name + " Version:" + activityTemplate.Version;
                 }
 
                 if (node is SubplanDO)
