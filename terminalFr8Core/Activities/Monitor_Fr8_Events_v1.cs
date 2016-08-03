@@ -25,7 +25,6 @@ namespace terminalFr8Core.Activities
             MinPaneWidth = 380,
             Tags = Tags.Internal,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Monitor,

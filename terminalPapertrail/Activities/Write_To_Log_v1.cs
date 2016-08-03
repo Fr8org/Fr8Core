@@ -28,7 +28,6 @@ namespace terminalPapertrail.Actions
             Name = "Write_To_Log",
             Label = "Write To Log",
             Category = ActivityCategory.Forwarders,
-            Terminal = TerminalData.TerminalDTO,
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
             Categories = new[]

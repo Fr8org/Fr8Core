@@ -20,7 +20,6 @@ namespace terminalFr8Core.Activities
             Name = "Add_Payload_Manually",
             Label = "Add Payload Manually",
             Category = ActivityCategory.Processors,
-            Terminal = TerminalData.TerminalDTO,
             Version = "1",
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
@@ -84,7 +83,7 @@ namespace terminalFr8Core.Activities
                 Label = "Fill the values for other actions",
                 Name = "Selected_Fields",
                 Required = true,
-                Events = new List<ControlEvent>(){ControlEvent.RequestConfig}
+                Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
             };
 
             AddControl(fieldFilterPane);

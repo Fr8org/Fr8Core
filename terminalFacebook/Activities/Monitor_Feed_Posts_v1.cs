@@ -30,7 +30,6 @@ namespace terminalFacebook.Activities
             Version = "1",
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             Categories = new[]
             {

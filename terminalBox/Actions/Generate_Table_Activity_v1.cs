@@ -20,7 +20,6 @@ namespace terminalBox.Actions
             Category = ActivityCategory.Receivers,
             Version = "1",
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Receive,

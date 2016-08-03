@@ -21,7 +21,6 @@ namespace terminalTelegram.Activities
             Label = "Post To Telegram",
             Tags = "Notifier",
             Category = ActivityCategory.Forwarders,
-            Terminal = TerminalData.TerminalDTO,
             Version = "1",
             WebService = TerminalData.WebServiceDTO,
             MinPaneWidth = 330,

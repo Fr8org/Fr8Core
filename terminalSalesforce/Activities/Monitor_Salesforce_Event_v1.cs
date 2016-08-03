@@ -25,7 +25,6 @@ namespace terminalSalesforce.Actions
             Category = ActivityCategory.Monitors,
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Monitor,

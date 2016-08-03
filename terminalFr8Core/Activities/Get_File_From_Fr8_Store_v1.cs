@@ -28,7 +28,6 @@ namespace terminalFr8Core.Actions
             Type = ActivityType.Standard,
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Receive,

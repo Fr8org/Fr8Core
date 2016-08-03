@@ -22,7 +22,6 @@ namespace terminalSlack.Activities
             Name = "Monitor_Channel",
             Label = "Monitor Slack Messages",
             Category = ActivityCategory.Monitors,
-            Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             Version = "2",
             WebService = TerminalData.WebServiceDTO,

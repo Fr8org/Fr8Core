@@ -29,7 +29,6 @@ namespace terminalExcel.Activities
             Version = "1",
             MinPaneWidth = 330,
             Category = ActivityCategory.Processors,
-            Terminal = TerminalData.TerminalDTO,
             Tags = "Table Data Generator,Skip At Run-Time",
             WebService = TerminalData.WebServiceDTO,
             Categories = new[]

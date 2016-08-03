@@ -28,7 +28,6 @@ namespace terminalGoogle.Activities
             Label = "Save To Google Sheet",
             Version = "1",
             Category = ActivityCategory.Forwarders,
-            Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             MinPaneWidth = 300,
             WebService = TerminalData.GooogleWebServiceDTO,

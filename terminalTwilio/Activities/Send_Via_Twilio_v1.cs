@@ -28,7 +28,6 @@ namespace terminalTwilio.Activities
             Category = ActivityCategory.Forwarders,
             Version = "1",
             MinPaneWidth = 330,
-            Terminal = TerminalData.TerminalDTO,
             WebService = TerminalData.WebServiceDTO,
             Categories = new[]
             {

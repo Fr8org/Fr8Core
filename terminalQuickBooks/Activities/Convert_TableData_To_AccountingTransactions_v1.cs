@@ -157,7 +157,6 @@ namespace terminalQuickBooks.Actions
             Name = "Convert_TableData_To_AccountingTransactions",
             Label = "Convert Table Data To Accounting Transactions",
             Category = ActivityCategory.Processors,
-            Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO

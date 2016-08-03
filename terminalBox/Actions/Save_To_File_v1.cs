@@ -31,7 +31,6 @@ namespace terminalBox.Actions
             NeedsAuthentication = true,
             MinPaneWidth = 300,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Forward,

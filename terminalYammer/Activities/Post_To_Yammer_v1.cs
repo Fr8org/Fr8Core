@@ -28,7 +28,6 @@ namespace terminalYammer.Actions
             NeedsAuthentication = true,
             Version = "1",
             MinPaneWidth = 330,
-            Terminal = TerminalData.TerminalDTO,
             WebService = TerminalData.WebServiceDTO,
             Categories = new[]
             {

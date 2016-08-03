@@ -27,7 +27,6 @@ namespace terminalDocuSign.Activities
             MinPaneWidth = 330,
             Tags = Tags.Internal,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Monitor,

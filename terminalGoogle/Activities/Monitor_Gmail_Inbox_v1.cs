@@ -35,7 +35,6 @@ namespace terminalGoogle.Activities
             Label = "Monitor Gmail Inbox",
             Version = "1",
             Category = ActivityCategory.Monitors,
-            Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             WebService = TerminalData.GmailWebServiceDTO,
             MinPaneWidth = 300,

@@ -28,7 +28,6 @@ namespace terminalSendGrid.Activities
             Label = "Send Email Using SendGrid Account",
             Version = "1",
             Tags = string.Join(",", Tags.Notifier, Tags.EmailDeliverer),
-            Terminal = TerminalData.TerminalDTO,
             Category = ActivityCategory.Forwarders,
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
