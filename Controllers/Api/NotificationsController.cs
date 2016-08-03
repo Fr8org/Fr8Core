@@ -45,7 +45,8 @@ namespace HubWeb.Controllers
             }
 
             // These notifications are evaulated as terminal event without exception
-            _pusherNotifier.NotifyTerminalEvent(notificationMessage, userId);
+            notificationMessage.NotificationType = NotificationType.TerminalEvent;
+            _pusherNotifier.NotifyUser(notificationMessage, userId);
             return Ok();
         }
     }

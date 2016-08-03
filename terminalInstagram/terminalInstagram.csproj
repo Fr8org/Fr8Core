@@ -246,6 +246,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IsTransformFile>True</IsTransformFile>
     </None>
+    <Content Include="LICENSE" />
     <None Include="Project_Readme.html" />
     <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
     <None Include="Web.Demo.config">

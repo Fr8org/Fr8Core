@@ -183,6 +183,9 @@ namespace terminalGoogle.Activities
                 var columnHeaders = await _googleApi.GetWorksheetHeaders(selectedSpreasheetWorksheet.Key, selectedSpreasheetWorksheet.Value, googleAuth);
                 
                 StoredSelectedSheet = selectedSpreasheetWorksheet;
+                var table = await GetSelectedSpreadSheet();
+                var hasHeaderRow = TryAddHeaderRow(table); 
+                Storage.ReplaceByLabel(Crate.FromContent(GetRuntimeCrateLabel(), new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
 
                 CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(GetRuntimeCrateLabel(), true)
                     .AddFields(columnHeaders.Select(x => new FieldDTO(x.Key)));
@@ -190,7 +193,7 @@ namespace terminalGoogle.Activities
                 //here was logic responsible for handling one-row tables but it was faulty. It's main purpose was to spawn fields like "value immediatly below of" in a StandardPayload. 
                 //You might view TabularUtilities.PrepareFieldsForOneRowTable for reference
             }
-                }
+        }
 
         private string GetRuntimeCrateLabel()
                 {

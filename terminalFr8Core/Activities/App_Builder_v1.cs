@@ -62,7 +62,7 @@ namespace terminalFr8Core.Activities
         {
             var msg = "This Plan can be launched with the following URL: " + CloudConfigurationManager.GetSetting("DefaultHubUrl")
                 + "redirect/cloneplan?id=" + ActivityId;
-            await _pushNotificationService.PushUserNotification(MyTemplate, NotificationType.GenericInfo, "App Builder URL Generated", msg);
+            await _pushNotificationService.PushUserNotification(MyTemplate, "App Builder URL Generated", msg);
         }
 
         private async Task UpdateMetaControls()
@@ -326,10 +326,10 @@ namespace terminalFr8Core.Activities
                     
                     ThreadPool.QueueUserWorkItem(state =>
                     {
-                        Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, NotificationType.GenericSuccess, "App Builder Submit Button", "Your information has been submitted."));
+                        Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, "App Builder Message", "Your information has been submitted."));
                         Task.WaitAll(HubCommunicator.SaveActivity(ActivityContext.ActivityPayload));
                         Task.WaitAll(HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, new[] { flagCrate }));
-                        Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, NotificationType.GenericSuccess, "-", "Your information has been processed."));
+                        Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, "App Builder Message", "Your information has been processed."));
                     });
 
                     //we need to start the process - run current plan - that we belong to
