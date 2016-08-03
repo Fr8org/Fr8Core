@@ -196,14 +196,14 @@ namespace Hub.Services
                 return null;
             }
 
-            return currentActivity.ParentPlanNode.GetOrderedChildren().FirstOrDefault(x => x.Runnable && x.Ordering > currentActivity.Ordering);
+            return currentActivity.ParentPlanNode.GetOrderedChildren().FirstOrDefault(x => x.Ordering > currentActivity.Ordering);
         }
 
         public PlanNodeDO GetFirstChild(PlanNodeDO currentActivity)
         {
             if (currentActivity.ChildNodes.Count != 0)
             {
-                return currentActivity.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault(x => x.Runnable);
+                return currentActivity.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault();
             }
 
             return null;

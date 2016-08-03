@@ -14,11 +14,11 @@ namespace Fr8.TerminalBase.Services
             _hubCommunicator = hubCommunicator;
         }
         
-        public async Task PushUserNotification(ActivityTemplateDTO activityTemplate, NotificationType notificationType, string subject, string message)
+        public async Task PushUserNotification(ActivityTemplateDTO activityTemplate, string subject, string message)
         {
             var notificationMsg = new NotificationMessageDTO
             {
-                NotificationType = notificationType,
+                NotificationType = NotificationType.TerminalEvent,
                 Subject = subject,
                 Message = message,
                 ActivityName = activityTemplate.Name,
