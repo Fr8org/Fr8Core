@@ -175,7 +175,7 @@ namespace Hub.Managers
                 {
                     NotificationType = NotificationType.GenericInfo,
                     Message = "For Plan: " + containerDO.Name + "\nContainer: " + containerDO.Id.ToString(),
-                    ActivityName = activityDo.Name,
+                    ActivityName = activityDo.ActivityTemplate.Name,
                     PlanId = planId,
                     PlanLastUpdated = planLastUpdated,
                     Collapsed = true,

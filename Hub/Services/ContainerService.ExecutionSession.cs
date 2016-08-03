@@ -87,7 +87,7 @@ namespace Hub.Services
 
                 if (node is ActivityDO)
                 {
-                    nodeName = "Activity: " + ((ActivityDO) node).Name;
+                    nodeName = "Activity: " + ((ActivityDO) node).ActivityTemplate.Name;
                 }
 
                 if (node is SubplanDO)

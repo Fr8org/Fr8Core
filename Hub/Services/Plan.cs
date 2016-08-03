@@ -584,7 +584,7 @@ namespace Hub.Services
 
                         if (activity != null)
                         {
-                            var label = string.IsNullOrWhiteSpace(activity.Label) ? activity.Name : activity.Label;
+                            var label = string.IsNullOrWhiteSpace(activity.Label) ? activity.ActivityTemplate.Name : activity.Label;
 
                             if (string.IsNullOrWhiteSpace(label))
                             {

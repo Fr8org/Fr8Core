@@ -124,7 +124,6 @@ namespace Hub.Services
             {
                 Id = Guid.NewGuid(),
                 ActivityTemplateId = activityTemplateId,
-                Name = name,
                 CrateStorage = _crateManager.EmptyStorageAsStr(),
                 AuthorizationTokenId = authorizationTokenId
             };
