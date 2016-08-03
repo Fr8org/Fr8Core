@@ -30,7 +30,7 @@ These notification types can report an error of validation, successful execution
 Generating a Notification Message
 ---------------------------------
 
- Terminals generate notification messages with this call: 
+Notification messages coming from Terminal requests are classified under "Terminal Event" type and displayed with bolt icon on the screen. They can be generated with this call: 
 
 
 *Url*
@@ -46,7 +46,6 @@ Generating a Notification Message
 {
 	"ActivityName" : "App_Builder",
 	"ActivityVersion": "1",
-	"NotificationType": 1,	// Generic Success = 1, Generic Failure = 2, Generic Info = 3
 	"Collapsed": false,
 	"Message": "This is a plan message/description",
 	"Subject": "This is a custom (optional) header for message",
@@ -55,16 +54,10 @@ Generating a Notification Message
 }
 ```
 
-> *NotificationType* - This parameter is only implemented for toast notifications and determines color/priority of messages. Although there are 5 type of notifications, only "Generic Success", "Generic Failure" and "Generic Info" is used in terminal requests. More information can be found down below, in "Toast Notifications".
-
 
 ## Toast Notifications
 
-They uses same mechanism as in Activity Stream and render incoming pusher messages as Toast messages, based on whether there is a Activity Stream panel on screen. With this automatic rendering, developers are not supposed to have to worry about front end layout issues. Only thing to consider is "NotificationType" parameter in request body, which determines type of message in front-end. Toast messages (implemented with [Noty library](http://ned.im/noty/)) corresponding to "NotificationType" parameter can be seen in this table:
-
-![ActivityStream](/Docs/img/ToastMessageTable.png)
-
-Example usage of these messages can be found in [App Builder Activity](Docs/ForDevelopers/OperatingConcepts/Apps.md) which is optimized visually for mobile screen sizes. Absence of Activity Stream causes usage of toast messages in Kiosk mode.
+They uses same mechanism as in Activity Stream and render incoming pusher messages as Toast messages, based on whether there is a Activity Stream panel on screen. With this automatic rendering, developers are not supposed to have to worry about front end layout issues. Example usage of these messages can be found in [App Builder Activity](Docs/ForDevelopers/OperatingConcepts/Apps.md) which is optimized visually for mobile screen sizes. Absence of Activity Stream causes display of alert message at the top-center of page (implemented with [Noty library](http://ned.im/noty/)) in Kiosk Mode.
 
 
 [Go to Contents]( /Docs/Home.md)
