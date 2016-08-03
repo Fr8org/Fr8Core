@@ -35,7 +35,13 @@ namespace terminalTest.Actions
         public override async Task Initialize()
         {
             var templates = await HubCommunicator.GetActivityTemplates();
-            var activityTemplate = templates.First(x => x.Name == "SimpleActivity");
+            var activityTemplate = templates.Select(x => new ActivityTemplateSummaryDTO
+            {
+                Name = x.Name,
+                Version = x.Version,
+                TerminalName = x.Terminal.Name,
+                TerminalVersion = x.Terminal.Version
+            }).First(x => x.Name == "SimpleActivity");
 
             ActivityPayload.ChildrenActivities.Add(new ActivityPayload
             {

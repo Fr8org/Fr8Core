@@ -150,7 +150,7 @@ namespace terminalExcel.Activities
                 if (rows != null && rows.Count > 0)
                 {
                     tableCrate = Crate.FromContent(RunTimeCrateLabel, new StandardTableDataCM(hasFirstRowHeader, rows));
-                    var fieldsCrate = TabularUtilities.PrepareFieldsForOneRowTable(isFirstRowAsColumnNames, isRunTime, rows, headersArray);
+                    var fieldsCrate = TabularUtilities.PrepareFieldsForOneRowTable(isFirstRowAsColumnNames, rows, headersArray);
                     if (fieldsCrate != null)
                     {
                         crates.Add(fieldsCrate);
@@ -182,7 +182,7 @@ namespace terminalExcel.Activities
             {
                 Payload.Add(crate);
             }
-            Payload.Add(Crate.FromContent(FileCrateLabel, fileDescription, AvailabilityType.Always));
+            Payload.Add(Crate.FromContent(FileCrateLabel, fileDescription));
         }
 
         private Crate CreateExternalObjectHandlesCrate()
@@ -199,8 +199,7 @@ namespace terminalExcel.Activities
 
             var crate = Crate.FromContent(
                 ExternalObjectHandlesLabel,
-                new ExternalObjectHandlesCM(externalObjectHandle),
-                AvailabilityType.Always
+                new ExternalObjectHandlesCM(externalObjectHandle)
             );
 
             return crate;

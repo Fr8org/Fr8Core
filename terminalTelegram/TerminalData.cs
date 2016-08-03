@@ -17,7 +17,7 @@ namespace terminalTelegram
             Endpoint = CloudConfigurationManager.GetSetting("terminalTelegram.TerminalEndpoint"),
             TerminalStatus = TerminalStatus.Active,
             Name = "terminalTelegram",
-            Label = "Fr8Telegram",
+            Label = "Telegram",
             Version = "1",
             AuthenticationType = AuthenticationType.PhoneNumberWithCode
         };

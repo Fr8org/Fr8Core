@@ -16,7 +16,7 @@ namespace Fr8.TerminalBase.Services
 {
     public class DummyHubCommunicator : IHubCommunicator
     {
-        public Task<PlanEmptyDTO> LoadPlan(JToken planContents)
+        public Task<PlanNoChildrenDTO> LoadPlan(PlanDTO planContents)
         {
             throw new NotImplementedException("Terminals can't communicate with an unknown hub");
         }
@@ -93,7 +93,7 @@ namespace Fr8.TerminalBase.Services
             throw new NotImplementedException("Terminals can't communicate with an unknown hub");
         }
 
-        public Task<PlanDTO> CreatePlan(PlanEmptyDTO planDTO)
+        public Task<PlanDTO> CreatePlan(PlanNoChildrenDTO planDTO)
         {
             throw new NotImplementedException("Terminals can't communicate with an unknown hub");
         }
@@ -153,12 +153,12 @@ namespace Fr8.TerminalBase.Services
             throw new NotImplementedException("Terminals can't communicate with an unknown hub");
         }
 
-        public Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan)
+        public Task<PlanDTO> UpdatePlan(PlanNoChildrenDTO plan)
         {
             throw new NotImplementedException("Terminals can't communicate with an unknown hub");
         }
 
-        public Task NotifyUser(TerminalNotificationDTO notificationMessage)
+        public Task NotifyUser(NotificationMessageDTO notificationMessage)
         {
             throw new NotImplementedException("Terminals can't communicate with an unknown hub");
         }

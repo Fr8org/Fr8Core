@@ -1,5 +1,6 @@
 ﻿using System;
 using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using PusherServer;
@@ -32,20 +33,13 @@ namespace Fr8.Infrastructure.Utilities
             }
         }
 
-        public void Notify(string channelName, NotificationType notificationType, object message)
+        public void NotifyUser(NotificationMessageDTO notificationMessage, string userId)
         {
-            _pusher?.Trigger(channelName, notificationType.ToString(), message);
-        }
-
-        public void NotifyUser(object message, NotificationType notificationType, string userId)
-        {
-            if (string.IsNullOrWhiteSpace(userId))
+            if (!string.IsNullOrWhiteSpace(userId))
             {
-                return;
+                var pusherChannel = BuildChannelName(userId);
+                _pusher?.Trigger(pusherChannel, notificationMessage.NotificationType.ToString(), notificationMessage);
             }
-
-            var pusherChannel = BuildChannelName(userId);
-            Notify(pusherChannel, notificationType, message);
         }
 
         private string BuildChannelName(string userId)

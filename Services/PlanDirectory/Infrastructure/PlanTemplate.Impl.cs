@@ -7,8 +7,10 @@ using StructureMap;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using Data.States;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
+using PlanDirectory.Interfaces;
 
 namespace PlanDirectory.Infrastructure
 {
@@ -52,8 +54,7 @@ namespace PlanDirectory.Infrastructure
 
                 if (existingPlanTemplateCM == null && objectId.HasValue)
                 {
-                    ObjectFactory.GetInstance<ISecurityServices>()
-                        .SetDefaultObjectSecurity(objectId.ToString(), "Plan Template");
+                    ObjectFactory.GetInstance<ISecurityServices>().SetDefaultRecordBasedSecurityForObject(Roles.OwnerOfCurrentObject, objectId.ToString(), "Plan Template");
                 }
 
                 return Task.FromResult(planTemplateCM);
@@ -103,7 +104,7 @@ namespace PlanDirectory.Infrastructure
                         fr8AccountId,
                         x => x.ParentPlanId == planIdStr
                     );
-
+                uow.SaveChanges();
                 await Task.Yield();
             }
         }
@@ -116,7 +117,7 @@ namespace PlanDirectory.Infrastructure
                 Name = dto.Name,
                 Description = dto.Description,
                 ParentPlanId = dto.ParentPlanId.ToString(),
-                PlanContents = JsonConvert.SerializeObject(dto.PlanContents),
+                PlanContents = dto.PlanContents,
                 Version = existing?.Version ?? 1,
                 OwnerId = account.Id,
                 OwnerName = account.UserName
@@ -125,12 +126,12 @@ namespace PlanDirectory.Infrastructure
 
         private PublishPlanTemplateDTO CreatePlanTemplateDTO(PlanTemplateCM planTemplate)
         {
-            return new PublishPlanTemplateDTO()
+            return new PublishPlanTemplateDTO
             {
                 Name = planTemplate.Name,
                 Description = planTemplate.Description,
                 ParentPlanId = Guid.Parse(planTemplate.ParentPlanId),
-                PlanContents = JsonConvert.DeserializeObject<JToken>(planTemplate.PlanContents)
+                PlanContents = planTemplate.PlanContents
             };
         }
     }

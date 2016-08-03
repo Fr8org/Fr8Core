@@ -62,11 +62,12 @@
                         <!-- <li><a ui-sref="managefiles">Manage Files</a></li> -->
                         <li><a ui-sref="manageAuthTokens">Manage Auth Tokens</a></li>
                         <li><a ui-sref="configureSolution({solutionName: 'Search_Fr8_Warehouse'})">Search Fr8 Warehouse</a></li>
+                        <li><a ng-click="switchDeveloperMenu()"> {{ displayDeveloperMenuText }} </a></li>
                     </ul>
                 </li>
 
                 <!-- DEVELOPER DROPDOWN -->
-                <li class="menu-dropdown classic-menu-dropdown">
+                <li class="menu-dropdown classic-menu-dropdown ng-hide" ng-show="displayDeveloperMenu" ng-cloak>
                     <a data-toggle="dropdown" href="javascript:;" class="dropdown-toggle">Developer <i class="fa fa-angle-down"></i></a>
                     <ul class="dropdown-menu">
                         <li><a href="https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md">Developer Home</a></li>
@@ -91,11 +92,18 @@
                     </ul>
                 </li>
 
+
+            </ul>
+            <!-- END NAVIGATION BAR -->
+        </div>
+
+        <div class="hor-menu admin-drop-down">
+            <ul class="nav navbar-nav">
                 <!-- ADMIN DROPDOWN -->
                 @if (Html.HasManageUsersPermission(PermissionType.ManageInternalUsers))
-                {
-                    <li class="menu-dropdown classic-menu-dropdown pull-right" style="position: absolute; right: 0;">
-                        <a data-toggle="dropdown" href="#" class="dropdown-toggle">Admin <i class="fa fa-angle-down"></i></a>
+            {
+                    <li class="menu-dropdown classic-menu-dropdown " >
+                        <a data-toggle="dropdown" href="javascript:;" class="dropdown-toggle">Admin <i class="fa fa-angle-down"></i></a>
                         <ul class="dropdown-menu">
                             <li><a ui-sref="accounts">Manage Users</a></li>
                             <li><a onclick="window.parent.document.body.style.zoom = 0.6;">Ipad Mode</a></li>
@@ -105,9 +113,9 @@
                 }
 
                 @if (Html.HasManageUsersPermission(PermissionType.ManageFr8Users))
-                {
-                    <li class="menu-dropdown classic-menu-dropdown pull-right" style="position: absolute; right: 0;">
-                        <a data-toggle="dropdown" href="#" class="dropdown-toggle">Admin <i class="fa fa-angle-down"></i></a>
+            {
+                    <li class="menu-dropdown classic-menu-dropdown ">
+                        <a data-toggle="dropdown" href="javascript:;" class="dropdown-toggle">Admin <i class="fa fa-angle-down"></i></a>
                         <ul class="dropdown-menu">
                             <li><a ui-sref="accounts">Manage Users</a></li>
                             <li><a ui-sref="pageDefinitions">Page Definitions</a></li>
@@ -120,14 +128,13 @@
                 }
 
                 @if (User.IsInRole("Guest"))
-                {
+            {
                     <li class="visible-xs">
                         <a href="/DockyardAccount/Logoff"> Have an Account? Login </a>
                     </li>
                 }
             </ul>
-            <!-- END NAVIGATION BAR -->
-        </div>
+</div>
         @if (User.IsInRole("Guest"))
         {
             <ul class="nav navbar-nav navbar-right pull-right">

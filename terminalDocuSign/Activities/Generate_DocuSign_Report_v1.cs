@@ -25,6 +25,9 @@ using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSign.Activities
 {
+    /// <summary>
+    ///  Not in service, but may provide useful ideas and insights
+    /// </summary>
     public class Generate_DocuSign_Report_v1 : ExplicitTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
@@ -459,7 +462,7 @@ namespace terminalDocuSign.Activities
                         var operationalStatus = new OperationalStateCM();
                         operationalStatus.CurrentActivityResponse =
                             ActivityResponseDTO.Create(ActivityResponse.ExecuteClientActivity);
-                        operationalStatus.CurrentClientActivityName = "RunImmediately";
+                        operationalStatus.CurrentActivityResponse.Body = "RunImmediately";
                     var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
                     Storage.Add(operationsCrate);
 
@@ -501,7 +504,7 @@ namespace terminalDocuSign.Activities
             return Crate<StandardQueryCM>.FromContent(QueryCrateLabel, queryCM);
         }
 
-        private async Task<PlanFullDTO> UpdatePlanName()
+        private async Task<PlanDTO> UpdatePlanName()
         {
             if (ConfigurationControls != null)
             {

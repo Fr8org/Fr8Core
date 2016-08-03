@@ -7,11 +7,10 @@ namespace terminalFacebookTests.Fixtures
 {
     partial class FixtureData
     {
-        public static ActivityTemplateDTO MonitorFr8Event_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO MonitorFr8Event_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Post_To_Timeline_TEST",
                 Version = "1"
             };
@@ -32,11 +31,10 @@ namespace terminalFacebookTests.Fixtures
             return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
-        public static ActivityTemplateDTO MonitorFeedPosts_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO MonitorFeedPosts_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Monitor_Feed_Posts_TEST",
                 Version = "1"
             };

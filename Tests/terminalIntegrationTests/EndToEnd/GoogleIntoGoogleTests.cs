@@ -66,7 +66,7 @@ namespace terminalIntegrationTests.EndToEnd
 
                 await _googleActivityConfigurator.AddAndConfigureSaveToGoogleSheet(thePlan, 3, "Standard Payload Data", Build_Message_v1.RuntimeCrateLabel, destinationSpreadsheetName);
                 //run the plan
-                await _plansHelper.RunPlan(thePlan.Plan.Id);
+                await _plansHelper.RunPlan(thePlan.Id);
 
                 var googleSheets = await googleSheetApi.GetSpreadsheets(defaultGoogleAuthToken);
 

@@ -1,0 +1,58 @@
+﻿
+<ul class="page-breadcrumb breadcrumb hide">
+    <!-- BEGIN PAGE BREADCRUMB -->
+    <li>
+        <a href="#">Home</a><i class="fa fa-circle"></i>
+    </li>
+    <li class="active">
+        Dashboard
+    </li>
+</ul>
+<!-- END PAGE BREADCRUMB -->
+<!-- BEGIN MAIN CONTENT -->
+<div ng-controller="TerminalDetailsController" class="margin-top-10">
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <!-- BEGIN PORTLET-->
+            <div class="portlet light ">
+                <div class="portlet-title">
+                    <div class="caption caption-md">
+                        <i class="icon-bar-chart font-green-haze hide"></i>
+                        <span class="caption-subject font-green-haze bold uppercase">Terminal Details</span>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <!-- PROCESS FORM -->
+                    <div class="tab-pane active" id="tab_1_1">
+                        <form role="form" ng-submit="submit(form.$valid)" name="form" novalidate>
+                            <div class="alert alert-danger" ng-show="form.$submitted && !form.$valid">
+                                Some fields do not contain correct data. Please check below.
+                            </div>
+                            <div class="alert alert-danger" ng-show="errorMessage != null">
+                                {{errorMessage}}
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Name</label>
+                                <input type="text" placeholder="" disabled="disabled" maxlength="100" class="form-control" ng-model="terminal.label"/>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Endpoint</label>
+                                <input type="text" placeholder="" disabled="disabled" maxlength="100" class="form-control" ng-model="terminal.endpoint" />
+                            </div>
+                            <div class="margiv-top-10">
+                                <button type="button" ng-click="openPermissionsSetterModal(terminal)" class="btn green-haze">
+                                    Set Permissions
+                                </button>
+                                <a ng-click="cancel()" class="btn default">
+                                    Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- END PROCESS FORM -->
+                </div>
+            </div>
+            <!-- END PORTLET-->
+        </div>
+    </div>
+</div><!-- END MAIN CONTENT -->

@@ -1329,10 +1329,10 @@ After you configured and run plan you will see messages in Activity stream
 ## Troubleshooting
 General flow usually looks like: create a plan, add activity, if it require authorization you will see auth modal dialog window, add account for authorization, in our case it will be another browser windows with oAuth url, which shows request of external service app to your account in that service, after you confirm access you will see your username from external service, when you select it and activity pane will be avaliable for configuration, you configure it and other activities, press run button to trigger plan execution and see validation errors reported in Activity Stream, if everything have valid configuration you see messages about plan execution. Keep this process in mind when you have to do troubleshooting.
 
-If You don't see your terminals in plan builder's activities list, first look at registered terminals list. If your terminal not in list repeat step 7, if it is there try to call terminal `/discover` endpoint and see if there will be valid JSON in the response. 
+If You don't see your terminals in plan builder's activities list, first look at registered terminals list. If your terminal not in list repeat step 8, if it is there try to call terminal `/discover` endpoint and see if there will be valid JSON in the response. 
 This JSON data should contain list of registered activities for your terminals. 
-- if it`s not, check step 6.c)
-- if it has activities, ensure they have not empty Id`s and at least one category in Categories list, otherwise check code from step 5 
+- if it`s not, check step 7.c)
+- if it has activities, ensure they have not empty Id`s and at least one category in Categories list, otherwise check code from step 6 
 - if instead of JSON you see error response follow instruction in it`s descrption.
 
 Authentication problem can appears when you see error in second browser window, it means that `/request_url` endpoint returned invalid value. Or after confirmation  you got an error calling '/token' enpoint. Another common problem could be outdated token, so don`t forget to provide refreshing mechanics. If you faced with problems of that kind look closely what we did at third step.

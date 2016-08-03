@@ -387,15 +387,14 @@
     <Compile Include="Controllers\Api\AlarmsController.cs" />
     <Compile Include="Controllers\Api\AuthenticationController.cs" />
     <Compile Include="Controllers\Api\ConfigurationController.cs" />
-    <Compile Include="Controllers\Api\ManifestRegistriesController.cs" />
+    <Compile Include="Controllers\Api\ManifestRegistryController.cs" />
     <Compile Include="Controllers\Api\ManifestsController.cs" />
     <Compile Include="Controllers\Api\PageDefinitionsController.cs" />
     <Compile Include="Controllers\Api\SubPlansController.cs" />
     <Compile Include="Controllers\Api\PlansController.cs" />
     <Compile Include="Controllers\Api\TerminalsController.cs" />
-    <Compile Include="Controllers\Api\WarehouseController.cs" />
+    <Compile Include="Controllers\Api\WarehousesController.cs" />
     <Compile Include="Controllers\CompanyController.cs" />
-    <Compile Include="Controllers\Helpers\PlanMappingHelper.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
     <Compile Include="Controllers\ServicesController.cs" />
     <Compile Include="Controllers\SupportController.cs" />
@@ -417,7 +416,6 @@
     <Compile Include="Documentation\Swagger\DocumentFilters\AddDefaultValuesDocumentFilter.cs" />
     <Compile Include="Documentation\Swagger\DocumentFilters\RemoveDuplicatesDocumentFilter.cs" />
     <Compile Include="Documentation\Swagger\OperationFilters\RemoveParameterModelNameOperationFilter.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\ActivityDescriptionSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\ActivitySampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\ActivityTemplateSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\AuthenticationTokenGrantSampleFactory.cs" />
@@ -441,7 +439,6 @@
     <Compile Include="Documentation\Swagger\SampleData\IncomingCratesSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\ISwaggerSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\ManifestDescriptionSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\NodeTransitionSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\OrganizationSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PageDefinitionSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PayloadSampleFactory.cs" />
@@ -449,12 +446,10 @@
     <Compile Include="Documentation\Swagger\SampleData\PhoneNumberVerificationSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanEmptySampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanFullSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\PlanNodeDescriptionSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanPostParamsSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanQuerySampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanResultSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\PlanTemplateSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PollingDataSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\ProfileSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\QuerySampleFactory.cs" />
@@ -485,7 +480,7 @@
     <Compile Include="Controllers\ControllerExtensions.cs" />
     <Compile Include="Controllers\Helpers\DemoExtensions.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\Api\ReportController.cs" />
+    <Compile Include="Controllers\Api\ReportsController.cs" />
     <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="Infrastructure_HubWeb\AngularTemplateCacheAttribute.cs" />
     <Compile Include="Infrastructure_HubWeb\FileActionResult.cs" />
@@ -536,6 +531,7 @@
     <Content Include="Content\icons\get-icon-64x64.png" />
     <Content Include="Content\icons\monitor-icon-64x64.png" />
     <Content Include="Content\icons\process-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\asana-icon-64x64.png" />
     <Content Include="Content\icons\web_services\basecamp2-icon-64x64.png" />
     <Content Include="Content\icons\web_services\Box-logo_64x64.png" />
     <Content Include="Content\icons\web_services\fr8-demo-icon-64x64.png" />
@@ -736,7 +732,13 @@
     <Content Include="Scripts\templateCache.js" />
     <Content Include="Scripts\tests\e2e\conf.js" />
     <Content Include="Scripts\tests\e2e\login\login.spec.js" />
+    <Content Include="Scripts\tests\e2e\registration\registration.spec.js" />
     <Content Include="Scripts\tests\e2e\pages\login.page.js" />
+    <Content Include="Scripts\tests\e2e\pages\registration.page.js" />
+    <Content Include="Scripts\tests\e2e\shared\accountHelper.js" />
+    <Content Include="Scripts\tests\e2e\shared\consoleLog.js" />
+    <Content Include="Scripts\tests\e2e\shared\manageAuthTokens.js" />
+    <Content Include="Scripts\tests\e2e\shared\uiHelpers.js" />
     <Content Include="Views\AngularTemplate\DatePicker.cshtml" />
     <Content Include="ApplicationInsights.config">
       <TransformOnBuild>true</TransformOnBuild>
@@ -816,6 +818,7 @@
     <Content Include="Config\HubWeb\Settings.config.readme" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
+    <Content Include="_PowerShellScripts\Combine-Sources.ps1" />
     <Content Include="_PowerShellScripts\HM-job-run.cmd" />
     <Content Include="_PowerShellScripts\HM-job-settings.job" />
     <Content Include="_PowerShellScripts\Deploy-HMAsWebJob.ps1" />
@@ -844,7 +847,6 @@
     <Content Include="_PowerShellScripts\Copy-ImagesBetweenAccount.ps1" />
     <Content Include="Views\JsTests\endpoints.cshtml" />
     <Content Include="Views\AngularTemplate\PlanUploadModal.cshtml" />
-    <Content Include="_PowerShellScripts\Combine-Sources.ps1" />
     <Content Include="_PowerShellScripts\Set-Config.ps1" />
     <Content Include="Views\Redirect\ClonePlan.cshtml" />
     <Content Include="Views\AngularTemplate\UpstreamFieldChooser.cshtml" />
@@ -862,6 +864,9 @@
     <Content Include="Views\AngularTemplate\ActivityHeader.cshtml" />
     <Content Include="_PowerShellScripts\Run-SQL.ps1" />
     <Content Include="_PowerShellScripts\Set-AzureSQLService.ps1" />
+    <Content Include="_PowerShellScripts\Add-Repo.ps1" />
+    <Content Include="Views\AngularTemplate\PermissionsSetterModal.cshtml" />
+    <Content Include="Views\AngularTemplate\TerminalDetail.cshtml" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <Content Include="_PowerShellScripts\Update-HostnameInTerminalRegistration.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
@@ -876,6 +881,8 @@
     <TypeScriptCompile Include="Scripts\app\controllers\PageDefinitionFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\PageDefinitionListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionDocumentationController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\TerminalDetailsController.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\UIBlocker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\BuildMessageAppender.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ControlList.ts" />
@@ -900,6 +907,8 @@
     <TypeScriptCompile Include="Scripts\app\directives\ActivityHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\SubplanHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Validators\ManifestDescriptionValidators.ts" />
+    <TypeScriptCompile Include="Scripts\app\enums\NotificationType.ts" />
+    <TypeScriptCompile Include="Scripts\app\enums\UINotificationMessageStatus.ts" />
     <TypeScriptCompile Include="Scripts\app\events\Fr8Events.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\DateTimeFormatter.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />
@@ -925,6 +934,8 @@
     <TypeScriptCompile Include="Scripts\app\services\ConfigureTrackerService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\FileDetailsService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\FileService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\ActivityTemplateService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\UINotificationService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\PageDefinitionService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ManifestRegistryService.ts" />
     <TypeScriptCompile Include="Scripts\app\model\DocumentationResponseDTO.ts" />
@@ -4326,6 +4337,7 @@
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\bootstrap-switch\bootstrap-switch.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jasmine\jasmine.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\jquery.noty\jquery.noty.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\bootstrap.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\Metronic.d.ts" />
@@ -4459,7 +4471,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('packages\Fr8.PrivateSettings.1.2016.202.9\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fr8.PrivateSettings.1.2016.202.9\build\net40\Fr8.PrivateSettings.targets'))" />
+    <Error Condition="!Exists('packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets'))" />
   </Target>
   <PropertyGroup>
     <CopyAllFilesToSingleFolderForPackageDependsOn>
@@ -4545,5 +4557,5 @@
   <Target Name="BeforeBuild">
     <RestoreSettingsTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)" ProjectName="$(ProjectName)" />
   </Target>
-  <Import Project="packages\Fr8.PrivateSettings.1.2016.202.9\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.202.9\build\net40\Fr8.PrivateSettings.targets')" />
+  <Import Project="packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets')" />
 </Project>

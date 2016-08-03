@@ -4,9 +4,19 @@ using Newtonsoft.Json;
 
 namespace Fr8.Infrastructure.Data.DataTransferObjects
 {
-    public class PlanDTO
+    public class PlanDTO : PlanNoChildrenDTO
     {
-        public PlanFullDTO Plan { get; set; }
+        //[JsonProperty("plan")]
+        //public PlanFullDTO Plan { get; set; }
+
+        [JsonProperty("subPlans")]
+        /// <summary>
+        /// List of SubPlan DTOs.
+        /// </summary>
+        public IEnumerable<FullSubplanDto> SubPlans { get; set; }
+
+        [JsonProperty("fr8UserId")]
+        public string Fr8UserId { get; set; }
     }
 
     public class PlanQueryDTO
@@ -56,7 +66,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
     public class PlanResultDTO
     {
         [JsonProperty("plans")]
-        public IList<PlanEmptyDTO> Plans { get; set; }
+        public IList<PlanNoChildrenDTO> Plans { get; set; }
 
         [JsonProperty("currentPage")]
         public int CurrentPage { get; set; }

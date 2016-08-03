@@ -43,9 +43,33 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Dev|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Demo|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.ApplicationInsights, Version=1.2.3.490, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.1.2.3\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.ApplicationInsights.Log4NetAppender, Version=1.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.Log4NetAppender.1.2.5\lib\net45\Microsoft.ApplicationInsights.Log4NetAppender.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
@@ -156,6 +180,22 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
+    <Content Include="..\Config\log4net.terminals.config">
+      <Link>log4net.terminals.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Config\log4net.terminals.Demo.config">
+      <Link>log4net.terminals.Demo.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Config\log4net.terminals.Dev.config">
+      <Link>log4net.terminals.Dev.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Config\log4net.terminals.Release.config">
+      <Link>log4net.terminals.Release.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -218,7 +258,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props'))" />
-    <Error Condition="!Exists('..\packages\Fr8.PrivateSettings.1.2016.202.12957-prerelease\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fr8.PrivateSettings.1.2016.202.12957-prerelease\build\net40\Fr8.PrivateSettings.targets'))" />
+    <Error Condition="!Exists('..\packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets'))" />
   </Target>
   <ItemGroup>
     <Log4netConfigFiles Include="..\Config\log4net.terminals.config" />
@@ -226,13 +266,32 @@
     <Log4netConfigFiles Include="..\Config\log4net.terminals.Dev.config" />
     <Log4netConfigFiles Include="..\Config\log4net.terminals.Release.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="ApplicationInsights.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ApplicationInsights.Debug.config">
+      <DependentUpon>ApplicationInsights.config</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ApplicationInsights.Dev.config">
+      <DependentUpon>ApplicationInsights.config</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ApplicationInsights.Release.config">
+      <DependentUpon>ApplicationInsights.config</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Target Name="BeforeCompile">
     <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
   </Target>
   <Target Name="BeforeBuild">
     <RestoreSettingsTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)" ProjectName="$(ProjectName)" />
   </Target>
-  <Import Project="..\packages\Fr8.PrivateSettings.1.2016.202.12957-prerelease\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('..\packages\Fr8.PrivateSettings.1.2016.202.12957-prerelease\build\net40\Fr8.PrivateSettings.targets')" />
+  <Import Project="..\packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('..\packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

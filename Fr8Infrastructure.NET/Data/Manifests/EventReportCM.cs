@@ -9,12 +9,10 @@ namespace Fr8.Infrastructure.Data.Manifests
     public class EventReportCM : Manifest
     {
         public string EventNames { get; set; }
-        public string ContainerDoId { get; set; }
         public string ExternalAccountId { get; set; }
         public string ExternalDomainId { get; set; }
         public ICrateStorage EventPayload { get; set; }
         public string Manufacturer { get; set; }
-        public string Source { get; set; }
 
         public EventReportCM()
             : base(MT.StandardEventReport)
@@ -30,7 +28,6 @@ namespace Fr8.Infrastructure.Data.Manifests
         public class EventReportCMSerializationProxy
         {
             public string EventNames { get; set; }
-            public string ContainerDoId { get; set; }
             public string ExternalAccountId { get; set; }
             public string ExternalDomainId { get; set; }
             public CrateStorageDTO EventPayload { get; set; }
@@ -52,7 +49,6 @@ namespace Fr8.Infrastructure.Data.Manifests
             return new EventReportCM
             {
                 EventNames = proxy.EventNames,
-                ContainerDoId = proxy.ContainerDoId,
                 ExternalAccountId = proxy.ExternalAccountId,
                 ExternalDomainId = proxy.ExternalDomainId,
                 EventPayload = storage,
@@ -67,7 +63,6 @@ namespace Fr8.Infrastructure.Data.Manifests
             var proxy = new EventReportCMSerializationProxy
             {
                 EventNames = e.EventNames,
-                ContainerDoId = e.ContainerDoId,
                 ExternalAccountId = e.ExternalAccountId,
                 ExternalDomainId = e.ExternalDomainId,
                 Manufacturer = e.Manufacturer,

@@ -246,6 +246,22 @@
     <Content Include="Web.Demo.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
+    <Content Include="..\Config\log4net.terminals.config">
+      <Link>log4net.terminals.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Config\log4net.terminals.Demo.config">
+      <Link>log4net.terminals.Demo.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Config\log4net.terminals.Dev.config">
+      <Link>log4net.terminals.Dev.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Config\log4net.terminals.Release.config">
+      <Link>log4net.terminals.Release.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -320,12 +336,12 @@
   <Target Name="BeforeBuild">
     <RestoreSettingsTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)" ProjectName="$(ProjectName)" />
   </Target>
-  <Import Project="..\packages\Fr8.PrivateSettings.1.2016.202.12957-prerelease\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('..\packages\Fr8.PrivateSettings.1.2016.202.12957-prerelease\build\net40\Fr8.PrivateSettings.targets')" />
+  <Import Project="..\packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('..\packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Fr8.PrivateSettings.1.2016.202.12957-prerelease\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fr8.PrivateSettings.1.2016.202.12957-prerelease\build\net40\Fr8.PrivateSettings.targets'))" />
+    <Error Condition="!Exists('..\packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

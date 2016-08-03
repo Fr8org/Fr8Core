@@ -312,14 +312,14 @@ namespace terminalFr8Core.Activities
             {
                 throw new ActivityExecutionException("Data source activity is missing");
             }
-            var datasourceActivity = ActivityContext.ActivityPayload.ChildrenActivities.OrderBy(x => x.Ordering).ToList()[0];
+            /*var datasourceActivity = ActivityContext.ActivityPayload.ChildrenActivities.OrderBy(x => x.Ordering).ToList()[0];
             if (datasourceActivity.ActivityTemplate.Id != Guid.Parse(SelectedDataSourceActivityId))
             {
                 throw new ActivityExecutionException("Data source activity is other than specified in data source");
-            }
+            }*/
         }
         //Wrappers for control properties
-        private string IncomingText => Payload.FindField(ActivityUI.IncomingTextSelector.selectedKey);
+        private string IncomingText => ActivityUI.IncomingTextSelector.Value;
 
         private string SelectedDataSourceActivityId => ActivityUI.DataSourceSelector.Value;
         

@@ -63,8 +63,8 @@ namespace Hub.Services
             var inboundEvent = curCrateStandardEventReport.Get<EventReportCM>();
             if (string.IsNullOrWhiteSpace(inboundEvent.ExternalDomainId) && string.IsNullOrWhiteSpace(inboundEvent.ExternalAccountId))
             {
-                Logger.LogError($"External event has no information about external account or external domain. Processing is cancelled. Event names - {inboundEvent.EventNames}, " +
-                                $"source - {inboundEvent.Source}, manufacturer - {inboundEvent.Manufacturer} ");
+                Logger.GetLogger().Error($"External event has no information about external account or external domain. Processing is cancelled. Event names - {inboundEvent.EventNames}, " +
+                                $"manufacturer - {inboundEvent.Manufacturer} ");
                 return;
             }
             // Fetching values from Config file is not working on CI.
@@ -75,7 +75,7 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Logger.LogInfo($"Received external event for account '{inboundEvent.ExternalAccountId}'");
+                Logger.GetLogger().Info($"Received external event for account '{inboundEvent.ExternalAccountId}'");
                 if (inboundEvent.ExternalAccountId == systemUserEmail)
                 {
                     try
@@ -123,10 +123,10 @@ namespace Hub.Services
                     //Checking both domain and account is additional way to protect from running plans not related to the event as account Id is often an email and can be the same across
                     //multiple terminals
                     var planOwnerIds = authTokens.Select(x => x.UserID).Distinct().ToArray();
-                    Logger.LogInfo($"External event for domain '{inboundEvent.ExternalDomainId}' and account '{inboundEvent.ExternalAccountId}' relates to {planOwnerIds.Length} user(s)");
+                    Logger.GetLogger().Info($"External event for domain '{inboundEvent.ExternalDomainId}' and account '{inboundEvent.ExternalAccountId}' relates to {planOwnerIds.Length} user(s)");
                     if (string.IsNullOrEmpty(inboundEvent.ExternalDomainId) && planOwnerIds.Length > 1)
                     {
-                        Logger.LogWarning($"Multiple users are identified as owners of plans related to external domain '{inboundEvent.ExternalDomainId}' and account '{inboundEvent.ExternalAccountId}'");
+                        Logger.GetLogger().Warn($"Multiple users are identified as owners of plans related to external domain '{inboundEvent.ExternalDomainId}' and account '{inboundEvent.ExternalAccountId}'");
                     }
                     foreach (var planOwnerId in planOwnerIds)
                     {
@@ -154,7 +154,7 @@ namespace Hub.Services
                 .Where(pt => pt.Fr8AccountId == curDockyardAccountId && pt.PlanState == PlanState.Running).ToList();
             var subscribingPlans = _plan.MatchEvents(initialPlansList, eventReportMS);
 
-            Logger.LogInfo($"Upon receiving event for account '{eventReportMS.ExternalAccountId}' {subscribingPlans.Count} of {initialPlansList.Count} will be notified");
+            Logger.GetLogger().Info($"Upon receiving event for account '{eventReportMS.ExternalAccountId}' {subscribingPlans.Count} of {initialPlansList.Count} will be notified");
             //When there's a match, it means that it's time to launch a new Process based on this Plan, 
             foreach (var plan in subscribingPlans.Where(p => p.PlanState != PlanState.Inactive))
             {

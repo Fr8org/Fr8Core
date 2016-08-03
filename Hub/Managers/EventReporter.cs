@@ -19,6 +19,13 @@ using Fr8.Infrastructure.Utilities.Logging;
 //NOTES: Do NOT put Incidents here. Put them in IncidentReporter
 namespace Hub.Managers
 {
+    public enum EventType
+    {
+        Info,
+        Warning,
+        Error
+    }
+
     public class EventReporter
     {
         private readonly IActivityTemplate _activityTemplate;
@@ -164,15 +171,15 @@ namespace Hub.Managers
 
                 //create user notifications
                 var _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
-                _pusherNotifier.NotifyUser(new
+                _pusherNotifier.NotifyUser(new NotificationPlanDTO
                 {
+                    NotificationType = NotificationType.GenericInfo,
+                    Message = "For Plan: " + containerDO.Name + "\nContainer: " + containerDO.Id.ToString(),
                     ActivityName = activityDo.Name,
-                    PlanName = containerDO.Name,
-                    Collapsed = true,
-                    ContainerId = containerDO.Id.ToString(),
                     PlanId = planId,
                     PlanLastUpdated = planLastUpdated,
-                }, NotificationType.GenericInfo, activityDo.Fr8Account.Id);
+                    Collapsed = true,
+                }, activityDo.Fr8Account.Id);
             }
             catch (Exception exception)
             {
@@ -476,7 +483,7 @@ namespace Hub.Managers
                 }
                 catch(Exception exp)
                 {
-                    Logger.LogError($"Can`t add incident to repository. Exception = [{exp}]");
+                    Logger.GetLogger().Error($"Can`t add incident to repository. Exception = [{exp}]");
                 }
                 finally
                 {
@@ -583,7 +590,7 @@ namespace Hub.Managers
                 }
                 catch(Exception exp)
                 {
-                    Logger.LogError($"Can`t add incident to repository. Exception = [{exp}]");
+                    Logger.GetLogger().Error($"Can`t add incident to repository. Exception = [{exp}]");
                 }
                 finally
                 {
@@ -646,7 +653,22 @@ namespace Hub.Managers
         public void LogHistoryItem(HistoryItemDO historyItem, EventType eventType = EventType.Info)
         {
             var message = ComposeOutputString(historyItem);
-            Logger.LogMessage(message,eventType);
+            var logger = Logger.GetLogger();
+
+            if (eventType == EventType.Info)
+            {
+                logger.Info(message);
+            }
+            if (eventType == EventType.Warning)
+            {
+                logger.Warn(message);
+            }
+            if (eventType == EventType.Error)
+            {
+                logger.Error(message);
+            }
+
+            //Logger.LogMessage(message,eventType);
         }
 
         private void OnAlertTokenRequestInitiated(string userId)

@@ -37,10 +37,10 @@ namespace Fr8.TerminalBase.Services
             _userId = userId;
         }
 
-        public async Task<PlanEmptyDTO> LoadPlan(JToken planContents)
+        public async Task<PlanNoChildrenDTO> LoadPlan(PlanDTO planContents)
         {
             var uri = new Uri($"{GetHubUrlWithApiVersion()}/plans/load");
-            return await _restfulServiceClient.PostAsync<JToken, PlanEmptyDTO>(uri, planContents);
+            return await _restfulServiceClient.PostAsync<PlanDTO, PlanNoChildrenDTO>(uri, planContents);
         }
 
         public async Task<PayloadDTO> GetPayload(Guid containerId)
@@ -107,6 +107,17 @@ namespace Fr8.TerminalBase.Services
             var url = $"{GetHubUrlWithApiVersion()}/plan_nodes/signals?id={activityId}&direction={(int)direction}&availability={(int)availability}";
             var uri = new Uri(url, UriKind.Absolute);
             var availableData = await _restfulServiceClient.GetAsync<IncomingCratesDTO>(uri, null);
+
+            foreach (var availableCrate in availableData.AvailableCrates)
+            {
+                foreach (var fieldDto in availableCrate.Fields)
+                {
+                    fieldDto.SourceCrateLabel = availableCrate.Label;
+                    fieldDto.SourceActivityId = availableCrate.SourceActivityId;
+                    fieldDto.Availability = availableCrate.Availability;
+                }
+            }
+
             return availableData;
         }
 
@@ -219,11 +230,11 @@ namespace Fr8.TerminalBase.Services
             return Mapper.Map<ActivityPayload>(resultActivityDTO);
         }
 
-        public async Task<PlanDTO> CreatePlan(PlanEmptyDTO planDTO)
+        public async Task<PlanDTO> CreatePlan(PlanNoChildrenDTO planDTO)
         {
             var url = $"{GetHubUrlWithApiVersion()}/plans";
             var uri = new Uri(url);
-            return await _restfulServiceClient.PostAsync<PlanEmptyDTO, PlanDTO>(uri, planDTO);
+            return await _restfulServiceClient.PostAsync<PlanNoChildrenDTO, PlanDTO>(uri, planDTO);
         }
 
         public async Task RunPlan(Guid planId, IEnumerable<Crate> payload)
@@ -254,7 +265,7 @@ namespace Fr8.TerminalBase.Services
             return await _restfulServiceClient.GetAsync<PlanDTO>(uri);
         }
 
-        public async Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan)
+        public async Task<PlanDTO> UpdatePlan(PlanNoChildrenDTO plan)
         {
             var jsonObject = JsonConvert.SerializeObject(plan);
             HttpContent jsonContent = new StringContent(jsonObject, Encoding.UTF8, "application/json");
@@ -264,7 +275,7 @@ namespace Fr8.TerminalBase.Services
             return await _restfulServiceClient.PostAsync<PlanDTO>(uri, jsonContent);
         }
 
-        public async Task NotifyUser(TerminalNotificationDTO notificationMessage)
+        public async Task NotifyUser(NotificationMessageDTO notificationMessage)
         {
             var hubUrl = $"{GetHubUrlWithApiVersion()}/notifications";
             var uri = new Uri(hubUrl);
@@ -332,7 +343,7 @@ namespace Fr8.TerminalBase.Services
 
         public async Task<List<CrateDTO>> GetStoredManifests(List<CrateDTO> cratesForMTRequest)
         {
-            var hubUrl = $"{GetHubUrlWithApiVersion()}/warehouse?userId={_userId}";
+            var hubUrl = $"{GetHubUrlWithApiVersion()}/warehouses?userId={_userId}";
             var uri = new Uri(hubUrl);
             return await _restfulServiceClient.PostAsync<List<CrateDTO>, List<CrateDTO>>(uri, cratesForMTRequest);
         }
@@ -376,7 +387,7 @@ namespace Fr8.TerminalBase.Services
         public async Task<List<TManifest>> QueryWarehouse<TManifest>(List<FilterConditionDTO> query)
             where TManifest : Manifest
         {
-            var url = $"{GetHubUrlWithApiVersion()}/warehouse/query";
+            var url = $"{GetHubUrlWithApiVersion()}/warehouses/query";
             var uri = new Uri(url);
 
             var payload = new QueryDTO(ManifestDiscovery.Default.GetManifestType<TManifest>().Type, query);
@@ -386,7 +397,7 @@ namespace Fr8.TerminalBase.Services
 
         public async Task AddOrUpdateWarehouse(params Manifest[] manifests)
         {
-            var url = $"{GetHubUrlWithApiVersion()}/warehouse";
+            var url = $"{GetHubUrlWithApiVersion()}/warehouses";
             var uri = new Uri(url);
 
             var crateStorage = new CrateStorage(manifests.Select(x => Crate.FromContent(null, x)));
@@ -398,7 +409,7 @@ namespace Fr8.TerminalBase.Services
         public async Task DeleteFromWarehouse<TManifest>(List<FilterConditionDTO> query)
             where TManifest : Manifest
         {
-            var url = $"{GetHubUrlWithApiVersion()}/warehouse/delete";
+            var url = $"{GetHubUrlWithApiVersion()}/warehouses/delete";
             var uri = new Uri(url);
             var payload = new QueryDTO(ManifestDiscovery.Default.GetManifestType<TManifest>().Type, query);
 

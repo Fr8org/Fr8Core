@@ -1,11 +1,24 @@
-# FR8 SECURITY – AUTHORIZATION
-[Return Home](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
+# Security
 
+
+
+
+Operational Security
+------------------
 
 [Authorization and Authentication Overview](./AuthOverview.md)
 
 [Fr8's OAuth Mechanisms](/Docs/ForDevelopers/OperatingConcepts/Authorization/Home.md)
 
+[Terminal Authentication (How the Terminals identify themselves to the Hubs)](/Docs/ForDevelopers/OperatingConcepts/Authorization/TerminalAuthentication.md)
+
 [Token Considerations](/Docs/ForDevelopers/OperatingConcepts/Authorization/ErrorHandling.md)
 
-[Go to Contents](/Docs/Home.md)  
+
+
+Administrative Security
+------------------
+[Administrative Security Home](/Docs/SecurityHome.md)
+
+
+[Return Home](/Docs/Home.md)  

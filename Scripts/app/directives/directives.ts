@@ -355,3 +355,55 @@ app.directive('eventPlanbuilder', ['$timeout', '$window', function ($timeout, $w
         }
     };
 }]);
+
+app.directive('eventPlandashboard', ['$timeout', '$window', function ($timeout, $window) {
+    return {
+        restrict: 'A',
+        link: function (scope, element) {
+            if ($window.analytics != null) {
+                $window.analytics.page("Visited Page - Plan Dashboard");
+            }
+        }
+    };
+}]);
+
+//== scroll grey area of PB vertically and horizontally 
+app.directive('pbScrollPane', ['$timeout', '$window', function ($timeout, $window) {
+    return {
+        restrict: 'A',
+        link: function (scope, element) {
+            let _validScrollFlag = false;
+            let $scroller = null;
+            let curSrollTop = 0;
+            let curScrollLeft = 0;
+
+            $scroller = (<any>$(element)).kinetic();
+
+            $(element).on('mousedown', function (e) {
+                let startObj = e.target,
+                    posX = e.pageX,
+                    posY = e.pageY;
+
+                curSrollTop = $(element).scrollTop();
+                curScrollLeft = $(element).scrollLeft();
+
+                var impossibleObjs = $('#scrollPane .action');                
+
+                _validScrollFlag = true;               
+
+                angular.forEach(impossibleObjs, (elem) => {
+                    let w = $(elem).width(),
+                        h = $(elem).height(),
+                        objPos = $(elem).offset();
+
+                    if (posX >= objPos.left && posX <= objPos.left + w && posY >= objPos.top && posY <= objPos.top + h) {
+                        _validScrollFlag = false;                        
+                    }
+                });
+
+                if (_validScrollFlag) $scroller.kinetic('attach');
+                else $scroller.kinetic('detach');
+            });            
+        }
+    };
+}]);

@@ -53,7 +53,6 @@ namespace HubWeb.Controllers
                     ParentPlanNodeId = subplanDto.ParentId,
                     RootPlanNodeId = subplanDto.PlanId,
                     Name = subplanDto.Name,
-                    Runnable = subplanDto.Runnable
                 };
 
                 _subplan.Create(uow, curSubPlanDO);
@@ -146,7 +145,7 @@ namespace HubWeb.Controllers
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(ex.Message);
+                    Logger.GetLogger().Error(ex.Message);
                     return InternalServerError(ex);
                 }
             }
