@@ -131,11 +131,10 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual(ActivityResponse.Success.ToString(), operationalStateCrate.CurrentActivityResponse.Type);
         }
 
-        private ActivityTemplateDTO CreateActivityTemplateFixture()
+        private ActivityTemplateSummaryDTO CreateActivityTemplateFixture()
         {
-            var activityTemplate = new ActivityTemplateDTO
+            var activityTemplate = new ActivityTemplateSummaryDTO
             {
-                Id = Guid.NewGuid(),
                 Name = "Set_Delay_TEST",
                 Version = "1"
             };

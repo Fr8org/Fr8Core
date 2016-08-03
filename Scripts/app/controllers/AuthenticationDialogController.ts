@@ -64,7 +64,7 @@
                 var i, j;
                 var terminalName;
                 for (i = 0; i < _activities.length; ++i) {
-                    terminalName = _activities[i].activityTemplate.terminal.name;
+                    terminalName = _activities[i].activityTemplate.terminalName;
                     for (j = 0; j < $scope.terminals.length; ++j) {
                         if ($scope.terminals[j].name === terminalName) {
                             data.push({
@@ -230,7 +230,7 @@
 
                 var result = authTokenTerminals.filter((it) => {
                     for (var i = 0; i < $scope.activities.length; ++i) {
-                        if ($scope.activities[i].activityTemplate.terminal.name === it.name) {
+                        if ($scope.activities[i].activityTemplate.terminalName === it.name) {
                             return true;
                         }
                     }
@@ -253,8 +253,8 @@
 
                 for (var i = 0; i < activities.length; ++i) {
                     var terminal;
-                    if ((terminal = hasTerminal(allTerminals, activities[i].activityTemplate.terminal.name))
-                        && !hasTerminal(result, activities[i].activityTemplate.terminal.name)) {
+                    if ((terminal = hasTerminal(allTerminals, activities[i].activityTemplate.terminalName))
+                        && !hasTerminal(result, activities[i].activityTemplate.terminalName)) {
 
                         var item = new model.AuthenticationTokenTerminalDTO(
                             terminal.name,

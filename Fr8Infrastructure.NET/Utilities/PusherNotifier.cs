@@ -33,17 +33,12 @@ namespace Fr8.Infrastructure.Utilities
             }
         }
 
-        public void Notify(string channelName, NotificationMessageDTO notificationMessage)
-        {
-            _pusher?.Trigger(channelName, notificationMessage.NotificationArea.ToString(), notificationMessage);
-        }
-
         public void NotifyUser(NotificationMessageDTO notificationMessage, string userId)
         {
             if (!string.IsNullOrWhiteSpace(userId))
             {
                 var pusherChannel = BuildChannelName(userId);
-                Notify(pusherChannel, notificationMessage);
+                _pusher?.Trigger(pusherChannel, notificationMessage.NotificationType.ToString(), notificationMessage);
             }
         }
 

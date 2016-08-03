@@ -324,7 +324,6 @@ namespace HubWeb.Controllers
                 _pusherNotifier.NotifyUser(new NotificationMessageDTO
                 {
                     NotificationType = NotificationType.ExecutionStopped,
-                    NotificationArea = NotificationArea.ActivityStream,
                     Message = $"\"{plan.Name}\"",
                     Collapsed = false
                 }, plan.Fr8AccountId);
@@ -379,7 +378,7 @@ namespace HubWeb.Controllers
         /// <response code="200">Container creating during successful plan execution</response>
         /// <response code="403">Unauthorized request</response>
         /// <response code="400">Plan with specified Id doesn't exist</response>
-        [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
+        [Fr8ApiAuthorize("Admin", "StandardUser", "Terminal")]
         [Fr8TerminalAuthentication]
         [HttpPost]
         [ResponseType(typeof(ContainerDTO))]
@@ -422,7 +421,7 @@ namespace HubWeb.Controllers
         /// <remarks>
         /// Fr8 authentication headers must be provided
         /// </remarks>
-        [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
+        [Fr8ApiAuthorize("Admin", "StandardUser", "Terminal")]
         [Fr8TerminalAuthentication]
         [HttpPost]
         [SwaggerResponse(HttpStatusCode.OK, "Plan was successfully shared")]
@@ -440,7 +439,7 @@ namespace HubWeb.Controllers
         /// <remarks>
         /// Fr8 authentication headers must be provided
         /// </remarks>
-        [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
+        [Fr8ApiAuthorize("Admin", "StandardUser", "Terminal")]
         [Fr8TerminalAuthentication]
         [HttpPost]
         [SwaggerResponse(HttpStatusCode.OK, "Plan was successfully removed from plan directory")]
@@ -460,7 +459,7 @@ namespace HubWeb.Controllers
         /// </remarks>
         /// <response code="200">Plan was successfully built from template</response>
         /// <response code="403">Unauthorized request</response>
-        [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
+        [Fr8ApiAuthorize("Admin", "StandardUser", "Terminal")]
         [Fr8TerminalAuthentication]
         [Fr8PlanDirectoryAuthentication]
         [HttpPost]
