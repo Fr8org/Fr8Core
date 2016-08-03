@@ -330,6 +330,9 @@
     <Log4netConfigFiles Include="..\Config\log4net.terminals.Dev.config" />
     <Log4netConfigFiles Include="..\Config\log4net.terminals.Release.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="LICENSE" />
+  </ItemGroup>
   <Target Name="BeforeCompile">
     <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
   </Target>

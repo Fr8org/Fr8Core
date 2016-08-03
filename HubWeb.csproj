@@ -816,6 +816,7 @@
     <Content Include="Views\AngularTemplate\ActionPickerPanel.cshtml" />
     <Content Include="Views\AngularTemplate\HeaderNav.cshtml" />
     <Content Include="Config\HubWeb\Settings.config.readme" />
+    <Content Include="LICENSE" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="_PowerShellScripts\Combine-Sources.ps1" />
@@ -931,6 +932,7 @@
     <TypeScriptCompile Include="Scripts\app\model\OrganizationDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\Profile.ts" />
     <TypeScriptCompile Include="Scripts\app\model\SubordinateSubplan.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\ActivityService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\AuthService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ConfigureTrackerService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\FileDetailsService.ts" />
