@@ -313,21 +313,6 @@ module dockyard.services {
                 }
             })
     ]);
-
-    app.factory('ActionTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IActionService =>
-        <IActionService>$resource('/api/activity_templates/', null,
-            {
-                'available': {
-                    method: 'GET',
-                    isArray: true,
-                    url: '/api/activity_templates?tag=:tag',
-                    params: {
-                        tag: '@tag'
-                    }
-                }
-            })
-    ]);
-
     
     /* 
         ActivityDTO CRUD service.
