@@ -167,19 +167,20 @@ namespace Hub.Managers
                     planLastUpdated = planDO.LastUpdated;
 
                     SaveAndLogFact(factDO);
-                }
 
-                //create user notifications
-                var _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
-                _pusherNotifier.NotifyUser(new NotificationPlanDTO
-                {
-                    NotificationType = NotificationType.GenericInfo,
-                    Message = "For Plan: " + containerDO.Name + "\nContainer: " + containerDO.Id.ToString(),
-                    ActivityName = activityDo.ActivityTemplate.Name,
-                    PlanId = planId,
-                    PlanLastUpdated = planLastUpdated,
-                    Collapsed = true,
-                }, activityDo.Fr8Account.Id);
+                    //create user notifications
+                    var _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
+                    _pusherNotifier.NotifyUser(new NotificationPlanDTO
+                    {
+                        NotificationType = NotificationType.GenericInfo,
+                        Message = "For Plan: " + containerDO.Name + "\nContainer: " + containerDO.Id.ToString(),
+                        ActivityName = template?.Name,
+                        PlanId = planId,
+                        PlanLastUpdated = planLastUpdated,
+                        Collapsed = true,
+                    }, activityDo.Fr8Account.Id);
+                }
+                
             }
             catch (Exception exception)
             {
