@@ -28,12 +28,12 @@
                 var promise = $q(function (resolve, reject) {
                     $http.get(url)
                         .then(function (res) {
-                            $scope.totalCount = res.data.TotalCount;
-                            $scope.planTemplates = res.data.PlanTemplates;
+                            $scope.totalCount = res.data.totalCount;
+                            $scope.planTemplates = res.data.planTemplates;
 
                             $scope.currentPage = pageStart;
                             $scope.pages = [];
-                            for (var i = 0; i < Math.ceil(res.data.TotalCount / $scope.pageSize) ; ++i) {
+                            for (var i = 0; i < Math.ceil(res.data.totalCount / $scope.pageSize) ; ++i) {
                                 $scope.pages.push(i + 1);
                             }
 
@@ -100,11 +100,11 @@
                             Metronic.unblockUI();
                         }
                         else {
-                            var url = urlPrefix + '/api/v1/plan_templates/createplan/?id=' + planTemplate.ParentPlanId;
+                            var url = urlPrefix + '/api/v1/plan_templates/createplan/?id=' + planTemplate.parentPlanId;
                             $http.post(url, null)
                                 .then(function (data) {
                                     Metronic.unblockUI();
-                                    window.location.href = data.data.RedirectUrl;
+                                    window.location.href = data.data.redirectUrl;
                                 });
                         }
                     })
@@ -116,7 +116,7 @@
             $scope.removePlan = function (planTemplate) {
                 Metronic.blockUI({ animate: true });
 
-                var url = urlPrefix + '/api/v1/plan_templates/?id=' + planTemplate.ParentPlanId;
+                var url = urlPrefix + '/api/v1/plan_templates/?id=' + planTemplate.parentPlanId;
                 $http.delete(url)
                     .then(function (data) {
                         Metronic.unblockUI();

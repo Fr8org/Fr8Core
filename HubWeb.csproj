@@ -168,6 +168,10 @@
       <HintPath>packages\Microsoft.AspNet.Identity.Owin.2.0.0\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Azure.Search, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Azure.Search.1.1.2\lib\net45\Microsoft.Azure.Search.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Build" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -214,6 +218,18 @@
     </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\CommonServiceLocator.1.2\lib\portable-windows8+net40+sl5+windowsphone8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Rest.ClientRuntime, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Rest.ClientRuntime.1.8.1\lib\net45\Microsoft.Rest.ClientRuntime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Rest.ClientRuntime.Azure, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Rest.ClientRuntime.Azure.2.5.2\lib\net45\Microsoft.Rest.ClientRuntime.Azure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Spatial, Version=6.13.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Spatial.6.13.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.Spatial.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -390,6 +406,8 @@
     <Compile Include="Controllers\Api\ManifestRegistryController.cs" />
     <Compile Include="Controllers\Api\ManifestsController.cs" />
     <Compile Include="Controllers\Api\PageDefinitionsController.cs" />
+    <Compile Include="Controllers\Api\PageGenerationController.cs" />
+    <Compile Include="Controllers\Api\PlanTemplatesController.cs" />
     <Compile Include="Controllers\Api\SubPlansController.cs" />
     <Compile Include="Controllers\Api\PlansController.cs" />
     <Compile Include="Controllers\Api\TerminalsController.cs" />
@@ -489,6 +507,48 @@
     <Compile Include="Infrastructure_HubWeb\Fr8TerminalAuthenticationAttribute.cs" />
     <Compile Include="Infrastructure_HubWeb\Fr8Identity.cs" />
     <Compile Include="Infrastructure_HubWeb\HtmlHelpers.cs" />
+    <Compile Include="CategoryPages\PlanCategoryTemplate.cs">
+      <DependentUpon>PlanCategoryTemplate.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Infrastructure_PD\Exceptions\ManifestGenerationException.cs" />
+    <Compile Include="Infrastructure_PD\Exceptions\ManifestNotFoundException.cs" />
+    <Compile Include="Infrastructure_PD\Exceptions\ManifestPageNotFoundException.cs" />
+    <Compile Include="Infrastructure_PD\Infrastructure\ActivityTemplateTag.cs" />
+    <Compile Include="Infrastructure_PD\Infrastructure\AuthTokenManager.cs" />
+    <Compile Include="Infrastructure_PD\Infrastructure\HubAuthenticationPDHeaderSignature.cs" />
+    <Compile Include="Infrastructure_PD\Infrastructure\ManifestPageGenerator.cs" />
+    <Compile Include="Infrastructure_PD\Infrastructure\PlanDirectoryAuthorizeAttribute.cs" />
+    <Compile Include="Infrastructure_PD\Infrastructure\PlanDirectoryBootstrapper.cs" />
+    <Compile Include="Infrastructure_PD\Infrastructure\PlanDirectoryHMACAuthenticateAttribute.cs" />
+    <Compile Include="Infrastructure_PD\Infrastructure\PlanDirectoryHubCommunicatorFactory.cs" />
+    <Compile Include="Infrastructure_PD\Infrastructure\PlanTemplate.Impl.cs" />
+    <Compile Include="Infrastructure_PD\Infrastructure\SearchProvider.Impl.cs" />
+    <Compile Include="Infrastructure_PD\Infrastructure\TagGenerator.cs" />
+    <Compile Include="Infrastructure_PD\Infrastructure\TemplateGenerator.cs" />
+    <Compile Include="Infrastructure_PD\Infrastructure\TemplateTag.cs" />
+    <Compile Include="Infrastructure_PD\Infrastructure\TemplateTagStorage.cs" />
+    <Compile Include="Infrastructure_PD\Infrastructure\WebservicesPageGenerator.cs" />
+    <Compile Include="Infrastructure_PD\Infrastructure\WebServiceTemplateTag.cs" />
+    <Compile Include="Infrastructure_PD\Interfaces\CreatePlanDTO.cs" />
+    <Compile Include="Infrastructure_PD\Interfaces\GenerateMode.cs" />
+    <Compile Include="Infrastructure_PD\Interfaces\IAuthTokenManager.cs" />
+    <Compile Include="Infrastructure_PD\Interfaces\IHubCommunicatorFactory.cs" />
+    <Compile Include="Infrastructure_PD\Interfaces\IManifestPageGenerator.cs" />
+    <Compile Include="Infrastructure_PD\Interfaces\IPlanTemplate.cs" />
+    <Compile Include="Infrastructure_PD\Interfaces\ISearchProvider.cs" />
+    <Compile Include="Infrastructure_PD\Interfaces\ITagGenerator.cs" />
+    <Compile Include="Infrastructure_PD\Interfaces\ITemplateGenerator.cs" />
+    <Compile Include="Infrastructure_PD\Interfaces\IWebservicesPageGenerator.cs" />
+    <Compile Include="Infrastructure_PD\Interfaces\SearchItemDTO.cs" />
+    <Compile Include="Infrastructure_PD\Interfaces\SearchRequestDTO.cs" />
+    <Compile Include="Infrastructure_PD\Interfaces\SearchResultDTO.cs" />
+    <Compile Include="ManifestPages\ManifestDescriptionTemplate.cs">
+      <DependentUpon>ManifestDescriptionTemplate.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="ViewModels\AuthenticationErrorVM.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />
@@ -710,6 +770,14 @@
     <Content Include="Content\videos\motion_1920.jpg" />
     <Content Include="Content\videos\motion_1920.mp4" />
     <Content Include="Content\img\Management\Rob_Bailey.png" />
+    <Content Include="CategoryPages\PlanCategoryTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>PlanCategoryTemplate.cs</LastGenOutput>
+    </Content>
+    <Content Include="ManifestPages\ManifestDescriptionTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>ManifestDescriptionTemplate.cs</LastGenOutput>
+    </Content>
     <Content Include="Scripts\ai.0.15.0-build58334.js" />
     <Content Include="Scripts\ai.0.15.0-build58334.min.js" />
     <Content Include="Scripts\homejs\bootstrap.min.js" />
@@ -4398,6 +4466,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
@@ -4483,7 +4552,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets'))" />
+    <Error Condition="!Exists('packages\Fr8.PrivateSettings.1.2016.216.1\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fr8.PrivateSettings.1.2016.216.1\build\net40\Fr8.PrivateSettings.targets'))" />
   </Target>
   <PropertyGroup>
     <CopyAllFilesToSingleFolderForPackageDependsOn>
@@ -4569,5 +4638,5 @@
   <Target Name="BeforeBuild">
     <RestoreSettingsTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)" ProjectName="$(ProjectName)" />
   </Target>
-  <Import Project="packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.214.1\build\net40\Fr8.PrivateSettings.targets')" />
+  <Import Project="packages\Fr8.PrivateSettings.1.2016.216.1\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('packages\Fr8.PrivateSettings.1.2016.216.1\build\net40\Fr8.PrivateSettings.targets')" />
 </Project>

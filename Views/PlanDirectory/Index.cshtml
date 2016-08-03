@@ -86,14 +86,14 @@
                             <button class="btn green create-plan-btn" ng-class="{'privileged': privileged}" ng-click="createPlan(plan)">Create</button>
                             <button type="button" class="btn red remove-plan-btn" ng-click="removePlan(plan)" ng-if="privileged">Delete</button>
                             <div class="info-row first">
-                                <div class="label">Name:</div> {{plan.Name}}
+                                <div class="label">Name:</div> {{plan.name}}
                             </div>
-                            <div class="info-row" ng-if="plan.Owner">
-                                <div class="label">Created by:</div> {{plan.Owner}}
+                            <div class="info-row" ng-if="plan.owner">
+                                <div class="label">Created by:</div> {{plan.owner}}
                             </div>
-                            <div class="info-row" ng-if="plan.Description">
+                            <div class="info-row" ng-if="plan.description">
                                 <div class="label">Description:</div>
-                                <div class="value">{{plan.Description}}</div>
+                                <div class="value">{{plan.description}}</div>
                             </div>
 
                         </div>

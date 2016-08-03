@@ -373,6 +373,14 @@ namespace HubWeb.Controllers
         }
 
         [HttpGet]
+        [ActionName("is_authenticated")]
+        public IHttpActionResult IsAuthenicated()
+        {
+            var authenticated = User.Identity.IsAuthenticated;
+            return Ok(new { authenticated });
+        }
+
+        [HttpGet]
         [ActionName("is_privileged")]
         public IHttpActionResult IsPrivileged()
         {

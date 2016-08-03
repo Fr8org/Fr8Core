@@ -7,7 +7,7 @@
         } else {
             setNavbarLight();
         }
-    }
+    } 
 
     function setNavbarLight() {
         $('.navbar').addClass('navbar-light');
