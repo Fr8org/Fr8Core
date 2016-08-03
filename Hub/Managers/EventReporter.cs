@@ -174,6 +174,7 @@ namespace Hub.Managers
                 _pusherNotifier.NotifyUser(new NotificationPlanDTO
                 {
                     NotificationType = NotificationType.GenericInfo,
+                    Subject = "Executing Activity",
                     Message = "For Plan: " + containerDO.Name + "\nContainer: " + containerDO.Id.ToString(),
                     ActivityName = activityDo.Name,
                     PlanId = planId,
