@@ -370,7 +370,22 @@ namespace HubWeb.Controllers
                 AuthTokenId = response.AuthorizationToken?.Id.ToString(),
                 Error = response.Error
             });
-        }        
+        }
+
+        [HttpGet]
+        [ActionName("is_privileged")]
+        public IHttpActionResult IsPrivileged()
+        {
+            var identity = User.Identity as ClaimsIdentity;
+            if (identity == null)
+            {
+                return Ok(new { privileged = false });
+            }
+
+            var privileged = identity.HasClaim(ClaimsIdentity.DefaultRoleClaimType, "Admin");
+
+            return Ok(new { privileged });
+        }
     }
     //This class is purely for Swagger documentation purposes
     public class TokenWrapper
