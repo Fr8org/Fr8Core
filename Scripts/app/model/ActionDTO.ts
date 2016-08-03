@@ -4,7 +4,6 @@
         parentPlanNodeId: string;
         id: string;
         label: string;
-        name: string;
         authTokenId: string;
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;
@@ -52,7 +51,6 @@
             result.configurationControls = dataObject.configurationControls;
             result.id = dataObject.id;
             result.label = dataObject.label;
-            result.name = dataObject.name;
             result.parentPlanNodeId = dataObject.parentPlanNodeId;
             result.ordering = dataObject.ordering;
             return result;
