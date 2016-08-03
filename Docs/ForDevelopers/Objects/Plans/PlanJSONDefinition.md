@@ -3,7 +3,7 @@
 
 In Fr8 plans are represented in the form of JSON. Lets looks at the following plan:
 
-![plan with loop](/Doc/img/PlanExecution-PlanWithLoop.png)
+![plan with loop](/Docs/img/PlanExecution-PlanWithLoop.png)
 
 
 The JSON representation of this plan is:
