@@ -193,7 +193,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
     $locationProvider.html5Mode(true);
 
     $httpProvider.interceptors.push('fr8VersionInterceptor');
-    $httpProvider.interceptors.push('fr8ActivityRequestQueue');
 
     // Install a HTTP request interceptor that causes 'Processing...' message to display
     $httpProvider.interceptors.push(['$q', '$window', ($q: ng.IQService, $window: ng.IWindowService) => {
@@ -222,122 +221,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                 }
                 Metronic.stopPageLoading();
                 return $q.reject(config);
-            }
-        }
-    }]);
-
-    class ApiRequestCoordinatorService {
-        private configurePattern: string = 'activities/configure';
-        private savePattern: string = 'activities/save';
-        private currentConfigurationRequests: string[] = [];
-
-        // If the function returns false, request must be rejected. If true, the request can proceed.
-        public startRequest(url: string, activityId: string): boolean {
-            if (url.indexOf(this.configurePattern) > -1) {
-                // check if such activity is currently being configured. if so, reject the request.
-                if (this.currentConfigurationRequests.indexOf(activityId) > -1) {
-                    return false;
-                }
-                else {
-                    // if not, add it in the list of configured activities
-                    this.currentConfigurationRequests.push(activityId);
-                }
-            }
-
-            else if (url.indexOf(this.savePattern) > -1) {
-                if (this.currentConfigurationRequests.indexOf(activityId) > -1) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        public endRequest(url: string, activityId: string) {
-            if (url.indexOf(this.configurePattern) == -1) return;
-
-            // check if such activity is currently being configured. if so, remove it from the array
-            let idx: number = this.currentConfigurationRequests.indexOf(activityId);
-            if (idx > -1) {
-                this.currentConfigurationRequests.splice(idx, 1);
-            }
-        }
-    }
-
-    app.service('ApiRequestCoordinatorService', [ApiRequestCoordinatorService]);
-
-
-    // Install a HTTP request interceptor that syncronizes Save and Config requests for a single activity.
-    // If a Configure request is currently executing, Save and other Configure requests will be dropped. 
-    // See FR-3475 for rationale. 
-    $httpProvider.interceptors.push(['$q', ($q: ng.IQService) => {
-
-        // Since we cannot reference services from initialization code, we define a nested class and instantiate it. 
-        class ApiRequestCoordinatorService {
-            private configurePattern: string = 'activities/configure';
-            private savePattern: string = 'activities/save';
-            private currentConfigurationRequests: string[] = [];
-
-            // If the function returns false, request must be rejected. If true, the request can proceed.
-            public startRequest(url: string, activityId: string): boolean {
-                if (url.indexOf(this.configurePattern) > -1) {
-                    // check if such activity is currently being configured. if so, reject the request.
-                    if (this.currentConfigurationRequests.indexOf(activityId) > -1) {
-                        return false;
-                    }
-                    else {
-                        // if not, add it in the list of configured activities
-                        this.currentConfigurationRequests.push(activityId);
-                    }
-                }
-
-                else if (url.indexOf(this.savePattern) > -1) {
-                    if (this.currentConfigurationRequests.indexOf(activityId) > -1) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            public endRequest(url: string, activityId: string) {
-                if (url.indexOf(this.configurePattern) == -1) return;
-
-                // check if such activity is currently being configured. if so, remove it from the array
-                var idx: number = this.currentConfigurationRequests.indexOf(activityId);
-                if (idx > -1) {
-                    this.currentConfigurationRequests.splice(idx, 1);
-                }
-            }
-        }
-
-        var apiRequestCoordinatorService = new ApiRequestCoordinatorService();
-
-        return {
-            request: (config) => {
-                // bypass any requests which are not of interest for us
-                if (config.method != 'POST') return config;
-                if (!config.params || !config.params.id) return config;
-                if (!apiRequestCoordinatorService.startRequest(config.url, config.params.id)) {
-                    var canceler = $q.defer();
-                    config.timeout = canceler.promise;
-                    canceler.resolve();
-                }
-                return config;
-            },
-
-            response: (response) => {
-                var config = response.config;
-                if (!config.url) return response;
-                if (!response.data || !response.data.id) return response;
-                apiRequestCoordinatorService.endRequest(config.url, response.data.id)
-                return response;
-            },
-
-            responseError: (response) => {
-                if (!response.url) return $q.reject(response);
-                if (!response.data || !response.data.id) return $q.reject(response);
-                apiRequestCoordinatorService.endRequest(response.url, response.data.id)
-                return $q.reject(response);
             }
         }
     }]);
@@ -534,27 +417,6 @@ app.factory('fr8VersionInterceptor', ['fr8ApiVersion', (fr8ApiVersion: string) =
                 config.url = config.url.slice(0, 5) + fr8ApiVersion + "/" + config.url.slice(5);
             }
             return config;
-        }
-    };
-}]);
-
-//this service delays an activityRequest until previous request completion
-app.factory('fr8ActivityRequestQueue', ['$q',($q: ng.IQService) => {
-    var activityRequestMap: { [id: string]: ng.IPromise<ng.IRequestConfig>; } = {};
-    return {
-        'request': (config: ng.IRequestConfig) => {
-            var deferred = $q.defer<ng.IRequestConfig>();
-            if (config.url.indexOf('/activities/') > -1 && config.params.id) {
-                if (activityRequestMap[config.params.id]) {
-                    activityRequestMap[config.params.id].then(() => {
-                        deferred.resolve(config);
-                    });
-                } else {
-                    deferred.resolve(config);
-                }
-                activityRequestMap[config.params.id] = deferred.promise;
-            }
-            return deferred.promise;
         }
     };
 }]);
