@@ -184,13 +184,13 @@ module dockyard.directives.paneConfigureAction {
 
     export class PaneConfigureActionController implements IPaneConfigureActionController {
 
-        static $inject = ['$scope', 'ActionService', 'AuthService', 'ConfigureTrackerService', 'CrateHelper', '$filter',
+        static $inject = ['$scope', 'ActivityService', 'AuthService', 'ConfigureTrackerService', 'CrateHelper', '$filter',
             '$timeout', '$modal', '$window', '$http', '$q', 'LayoutService', 'ActivityTemplateHelperService'];
 
         private configLoadingError: boolean = false;
         private ignoreConfigurationChange: boolean = false;
 
-        constructor(private $scope: IPaneConfigureActionScope, private ActionService: services.IActionService,
+        constructor(private $scope: IPaneConfigureActionScope, private ActivityService: services.IActivityService,
             private AuthService: services.AuthService, private ConfigureTrackerService: services.ConfigureTrackerService,
             private crateHelper: services.CrateHelper, private $filter: ng.IFilterService,
             private $timeout: ng.ITimeoutService, private $modal,
@@ -368,8 +368,7 @@ module dockyard.directives.paneConfigureAction {
 
                 this.$scope.currentAction.crateStorage.crateDTO = this.$scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
 
-                this.ActionService.save({ id: this.$scope.currentAction.id }, this.$scope.currentAction, null, null)
-                    .$promise
+                this.ActivityService.save(this.$scope.currentAction)
                     .then(() => {
                         
                         if (this.$scope.currentAction.childrenActivities
@@ -502,7 +501,7 @@ module dockyard.directives.paneConfigureAction {
 
             this.$scope.$broadcast(MessageType[MessageType.PaneConfigureAction_ConfigureStarting]);
     
-            this.ActionService.configure(this.$scope.currentAction).$promise
+            this.ActivityService.configure(this.$scope.currentAction)
                 .then((res: interfaces.IActionVM) => {
                     //lets reset config control handles
                     //they will re register themselves after initializing
