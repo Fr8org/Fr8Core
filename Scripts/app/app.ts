@@ -1,6 +1,5 @@
 /// <reference path="../typings/tsd.d.ts" />
 /// <reference path="../typings/metronic.d.ts" />
-
 var app = angular.module("app", [
     "templates",
     "ui.router",
@@ -169,7 +168,7 @@ app.config(['applicationInsightsServiceProvider', function (applicationInsightsS
 
     $.get('/api/v1/configuration/instrumentation-key').then((instrumentationKey: string) => {
         console.log(instrumentationKey);
-        if (instrumentationKey.indexOf('0000') == -1) { // if not local instance ('Debug' configuration)
+        if (instrumentationKey.indexOf('0000') === -1) { // if not local instance ('Debug' configuration)
             options = { applicationName: 'HubWeb' };
             applicationInsightsServiceProvider.configure(instrumentationKey, options, true);
         } else {
@@ -379,7 +378,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                         }
                         return "/AngularTemplate/MainContainer_AS";
                     },
-                    controller: 'PlanBuilderController',
+                    controller: 'PlanBuilderController'
                 },
                 '@plan': {
                     templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
@@ -547,3 +546,40 @@ app.config(['ivhTreeviewOptionsProvider', ivhTreeviewOptionsProvider => {
         defaultSelectedState: false
     });
 }]);
+
+//We delay application bootstrapping until we load activity templates from server
+
+var bootstrapModule = angular.module('activityTemplateBootstrapper', []);
+// the bootstrapper service loads the config and bootstraps the specified app
+bootstrapModule.factory('bootstrapper', ['$http', '$log','$q', ($http: ng.IHttpService, $log: ng.ILogService, $q: ng.IQService) => {
+    return {
+        bootstrap: (appName) => {
+            var deferred = $q.defer();
+            $http.get('/api/v1/activity_templates')
+                .success((activityTemplates: Array<dockyard.interfaces.IActivityCategoryDTO>) => {
+                    // set all returned values as constants on the app
+                    var myApp = angular.module(appName);
+                    myApp.constant('ActivityTemplates', activityTemplates);
+                    angular.bootstrap(document, [appName]);
+                    deferred.resolve();
+                })
+                .error(() => {
+                    $log.warn('Could not initialize application, activity templates could not be loaded.');
+                    deferred.reject();
+                });
+            return deferred.promise;
+        }
+    };
+}]);
+// create a div which is used as the root of the bootstrap app
+var appContainer = document.createElement('div');
+bootstrapModule.run(['bootstrapper',(bootstrapper) => {
+    bootstrapper.bootstrap('app').then(() => {
+        // removing the container will destroy the bootstrap app
+        appContainer.remove();
+    });
+}]);
+// make sure the DOM is fully loaded before bootstrapping.
+angular.element(document).ready(() => {
+    angular.bootstrap(appContainer, ['activityTemplateBootstrapper']);
+});

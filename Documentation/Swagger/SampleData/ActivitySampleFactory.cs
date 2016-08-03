@@ -5,9 +5,9 @@ namespace HubWeb.Documentation.Swagger.SampleData
 {
     public class ActivitySampleFactory : ISwaggerSampleFactory<ActivityDTO>
     {
-        private readonly ISwaggerSampleFactory<ActivityTemplateDTO> _activityTemplateFactory;
+        private readonly ISwaggerSampleFactory<ActivityTemplateSummaryDTO> _activityTemplateFactory;
 
-        public ActivitySampleFactory(ISwaggerSampleFactory<ActivityTemplateDTO> activityTemplateFactory)
+        public ActivitySampleFactory(ISwaggerSampleFactory<ActivityTemplateSummaryDTO> activityTemplateFactory)
         {
             _activityTemplateFactory = activityTemplateFactory;
         }
@@ -25,7 +25,6 @@ namespace HubWeb.Documentation.Swagger.SampleData
                 AuthTokenId = Guid.Parse("E75ADBF4-0A31-4C11-86F5-2AD41D54AC52"),
                 ChildrenActivities = new ActivityDTO[0],
                 CrateStorage = new CrateStorageDTO(),
-                Fr8AccountId = "2BCD3978-38CE-43EB-8721-BC81B644B6ED",
                 Ordering = 1,
                 RootPlanNodeId = Guid.Parse("6D3FFCE0-2FE1-48D9-B046-73D078186E2E"),
                 Documentation = "MainPage"

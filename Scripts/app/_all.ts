@@ -33,6 +33,7 @@
 /// <reference path="services/planbuilderservice.ts" />
 /// <reference path="services/stringservice.ts" />
 /// <reference path="services/pushernotifierservice.ts" />
+/// <reference path="services/ActivityTemplateService.ts" />
 
 /*
     FILTERS AND COMPONENTS

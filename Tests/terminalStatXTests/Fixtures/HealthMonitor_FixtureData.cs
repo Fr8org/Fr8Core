@@ -15,31 +15,28 @@ namespace terminalStatXTests.Fixtures
 {
     partial class FixtureData
     {
-        public static ActivityTemplateDTO MonitorStatChanges_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO MonitorStatChanges_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Monitor_Stat_Changes_TEST",
                 Version = "1"
             };
         }
 
-        public static ActivityTemplateDTO Update_Stat_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Update_Stat_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Update_Stat_TEST",
                 Version = "1"
             };
         }
 
-        public static ActivityTemplateDTO Create_Stat_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Create_Stat_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Create_Stat_TEST",
                 Version = "1"
             };

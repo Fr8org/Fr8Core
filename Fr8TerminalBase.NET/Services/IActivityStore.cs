@@ -22,7 +22,7 @@ namespace Fr8.TerminalBase.Services
         /// <param name="activityTemplate"></param>
         void RegisterActivity<T>(ActivityTemplateDTO activityTemplate) where T : IActivity;
 
-        IActivityFactory GetFactory(ActivityTemplateDTO activityTemplate);
+        IActivityFactory GetFactory(string name, string version);
         
         List<ActivityTemplateDTO> GetAllTemplates();
     }

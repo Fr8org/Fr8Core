@@ -907,7 +907,6 @@
     <TypeScriptCompile Include="Scripts\app\directives\ActivityHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\SubplanHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Validators\ManifestDescriptionValidators.ts" />
-    <TypeScriptCompile Include="Scripts\app\enums\NotificationArea.ts" />
     <TypeScriptCompile Include="Scripts\app\enums\NotificationType.ts" />
     <TypeScriptCompile Include="Scripts\app\enums\UINotificationMessageStatus.ts" />
     <TypeScriptCompile Include="Scripts\app\events\Fr8Events.ts" />
@@ -935,6 +934,7 @@
     <TypeScriptCompile Include="Scripts\app\services\ConfigureTrackerService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\FileDetailsService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\FileService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\ActivityTemplateService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\UINotificationService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\PageDefinitionService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ManifestRegistryService.ts" />
