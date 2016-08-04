@@ -120,7 +120,7 @@ namespace HubWeb.Controllers.Api
                 return Ok(
                     new
                     {
-                        RedirectUrl = CloudConfigurationManager.GetSetting("HubApiBaseUrl").Replace("/api/v1/", "")
+                        RedirectUrl = CloudConfigurationManager.GetSetting("HubApiUrl").Replace("/api/v1/", "")
                             + "/dashboard/plans/" + plan.Id.ToString() + "/builder?viewMode=plan"
                     }
                 );
