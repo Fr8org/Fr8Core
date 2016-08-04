@@ -34,7 +34,7 @@ module dockyard.directives.containerTransition {
                 <button class="btn btn-default" ng-click="$dismiss()">Okay</button>\
             </div>';
 
-        var controller = ['$scope', '$timeout', 'PlanService', '$modal', ($scope: IContainerTransitionScope, $timeout: ng.ITimeoutService, PlanService: services.IPlanService, $modal: any) => {
+        var controller = ['$scope', '$timeout', 'PlanService', '$modal', 'ActivityTemplateHelperService', ($scope: IContainerTransitionScope, $timeout: ng.ITimeoutService, PlanService: services.IPlanService, $modal: any, ActivityTemplateHelperService: services.IActivityTemplateHelperService) => {
 
             var planOptions = new Array<model.DropDownListItem>();
 
@@ -142,11 +142,13 @@ module dockyard.directives.containerTransition {
                 var subplanActivities = new Array<model.DropDownListItem>();
                 for (var i = 0; i < subplan.activities.length; i++) {
                     var current = subplan.activities[i];
-                    subplanActivities.push(new model.DropDownListItem(current.name, current.id));
+                    var currentAt = ActivityTemplateHelperService.getActivityTemplate(current);
+                    subplanActivities.push(new model.DropDownListItem(currentAt.label, current.id));
                     if (!isThisCurrentLevel(subplan.activities[i])) {
                         var childActivityTree = getActivityTree(current);
                         for (var j = 0; j < childActivityTree.length; j++) {
-                            subplanActivities.push(new model.DropDownListItem(childActivityTree[j].name, childActivityTree[j].id));
+                            var childAT = ActivityTemplateHelperService.getActivityTemplate(childActivityTree[j]);
+                            subplanActivities.push(new model.DropDownListItem(childAT.label, childActivityTree[j].id));
                         }
                     }
                 }

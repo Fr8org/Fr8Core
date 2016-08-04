@@ -542,7 +542,7 @@ module dockyard.directives.paneConfigureAction {
                         //in case of reconfiguring the solution check the child actions again
 
                         //not needed in case of Loop action
-                        if (this.$scope.currentAction.name !== "Loop") {
+                        if (this.$scope.currentAction.activityTemplate.name !== "Loop") {
                             this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
                         }
                     }

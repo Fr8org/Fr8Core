@@ -8,8 +8,8 @@
         <!-- Main Title -->
         <div class="col-sm-8 ellipsis">
             <h2 ng-if="!envelope.activity.label" style="-webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-o-user-select: none;user-select: none;">
-                {{envelope.activity.name}}
-                <md-tooltip>{{envelope.activity.name}}</md-tooltip>
+                {{envelope.activityTemplate.label}}
+                <md-tooltip>{{envelope.activityTemplate.label}}</md-tooltip>
             </h2>
             <h2 ng-if="envelope.activity.label !== null" style="-webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-o-user-select: none;user-select: none;">
                 {{envelope.activity.label}}
@@ -20,7 +20,7 @@
         <!-- Right Corner Header -->
         <div class="action-reconfigure-status" ng-show="isReConfiguring === true"> updating </div>
         <div class="action-name" ng-show="isReConfiguring === false && envelope.activity.label">
-            {{envelope.activity.name}}
+            {{envelope.activityTemplate.label}}
         </div>
         <!-- Options Menu -->
         <md-menu>
