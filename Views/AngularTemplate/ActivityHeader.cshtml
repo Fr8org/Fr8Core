@@ -3,7 +3,7 @@
     <div class="md-toolbar-tools">
         <!-- Icon -->
         <div class="action-header-icon" style="display: flex;">
-            <img draggable="false" ng-src="{{envelope.activity.activityTemplate.webService.iconPath}}" ng-if="envelope.activity.activityTemplate.webService.iconPath" />
+            <img draggable="false" ng-src="{{envelope.activityTemplate.webService.iconPath}}" ng-if="envelope.activityTemplate.webService.iconPath" />
         </div>
         <!-- Main Title -->
         <div class="col-sm-8 ellipsis">
@@ -29,7 +29,7 @@
             </md-button>
             <md-menu-content width="4" class="sub-plan-options-content">
                 <!-- OPTIONS - Choose Authentication -->
-                <md-menu-item ng-if="envelope.activity.activityTemplate.needsAuthentication">
+                <md-menu-item ng-if="envelope.activityTemplate.needsAuthentication">
                     <md-button ng-click="chooseAuthToken(envelope.activity);">
                         <md-icon md-font-icon="fa fa-key" md-menu-align-target></md-icon> Choose authentication
                     </md-button>

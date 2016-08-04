@@ -20,6 +20,9 @@ module dockyard.directives {
         return {
             restrict: 'E',
             templateUrl: '/AngularTemplate/ActionPicker',
+            scope: {
+                plan: '='
+            },
             link: (scope: IActionPickerScope, element: any, attr: any) => {
                 var containerEl = $('<div class="action-picker-container action-picker-container-hidden"><action-picker-panel on-close="close()" callback="panelCallback" action-group="group" /></div>');
                 containerEl.insertAfter($('designer-header')); 
@@ -45,6 +48,7 @@ module dockyard.directives {
             },
             controller: ['$scope', '$timeout',
                 ($scope: IActionPickerScope, $timeout: ng.ITimeoutService) => {
+                    console.log($scope);
                     $scope.panelCallback = {};
 
                     $scope.$on('$destroy', () => {
@@ -52,6 +56,7 @@ module dockyard.directives {
                     });
 
                     $scope.onAddActivity = () => {
+                        console.log($scope);
                         if ($scope.visible) {
                             return;
                         }
@@ -77,7 +82,7 @@ module dockyard.directives {
 
 
     export interface IActionPickerPanelScope extends ng.IScope {
-        categories: Array<model.ActivityCategoryDTO>;
+        categories: Array<interfaces.IActivityCategoryDTO>;
         selectedCategory: model.ActivityCategoryDTO;
         actionGroup: model.ActionGroup;
         form: any;
@@ -97,8 +102,8 @@ module dockyard.directives {
         return {
             restrict: 'E',
             templateUrl: '/AngularTemplate/ActionPickerPanel',
-            controller: ['$scope', '$http', '$timeout',
-                ($scope: IActionPickerPanelScope, $http: ng.IHttpService, $timeout: ng.ITimeoutService) => {
+            controller: ['$scope', 'ActivityTemplateHelperService', '$timeout',
+                ($scope: IActionPickerPanelScope, ActivityTemplateHelperService: services.IActivityTemplateHelperService, $timeout: ng.ITimeoutService) => {
                     $scope.form = { searchText: '' };
 
                     $scope.selectCategory = (category: model.ActivityCategoryDTO) => {
@@ -125,9 +130,9 @@ module dockyard.directives {
                     };
 
                     var _reload = () => {
-                        $http.get('/api/activity_templates/by_categories')
-                            .then((res: ng.IHttpPromiseCallbackArg<Array<model.ActivityCategoryDTO>>) => {
-                                $scope.categories = res.data.filter((x) => { return x.name !== 'Solution'; });
+                        ActivityTemplateHelperService.getAvailableActivityTemplatesByCategory()
+                            .then((res: Array<interfaces.IActivityCategoryDTO>) => {
+                                $scope.categories = res.filter((x) => { return x.name !== 'Solution'; });
                             });
                     };
 
