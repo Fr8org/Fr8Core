@@ -53,7 +53,7 @@ namespace terminalGoogle.Services
             {
                 Name = "MonitorSubmissionTerminalForm",
                 Description = "MonitorSubmissionTerminalForm",
-                PlanState = PlanState.Running,
+                PlanState = PlanState.Active,
                 Visibility = new PlanVisibilityDTO() { Hidden = true }
             };
 
