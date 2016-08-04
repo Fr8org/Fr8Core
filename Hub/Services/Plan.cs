@@ -305,7 +305,7 @@ namespace Hub.Services
                     {
                         if (e is InvalidTokenRuntimeException)
                         {
-                            ReportAuthError(plan.Fr8Account, (InvalidTokenRuntimeException)e);
+                            ReportAuthError(uow, plan.Fr8Account, (InvalidTokenRuntimeException)e);
                         }
                     }
 
@@ -314,7 +314,7 @@ namespace Hub.Services
                 }
                 catch (InvalidTokenRuntimeException ex)
                 {
-                    ReportAuthError(plan.Fr8Account, (InvalidTokenRuntimeException)ex);
+                    ReportAuthError(uow, plan.Fr8Account, (InvalidTokenRuntimeException)ex);
                     EventManager.PlanActivationFailed(plan, "Unable to activate plan");
                     throw;
                 }
@@ -513,7 +513,10 @@ namespace Hub.Services
                 {
                     await planService.Deactivate(planId);
                     Logger.GetLogger().Error($"Plan {planId} was deactivated due to authentication problems.");
-                    await planService.ReportAuthDeactivation(monitoringPlan, ex);
+                    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                    {
+                        await planService.ReportAuthDeactivation(uow, monitoringPlan, ex);
+                    }
                 }
             }
             catch
@@ -552,7 +555,6 @@ namespace Hub.Services
                 _pusherNotifier.NotifyUser(new NotificationMessageDTO
                 {
                     NotificationType = NotificationType.GenericSuccess,
-                    NotificationArea = NotificationArea.ActivityStream,
                     Subject = "Trigger Activated",
                     Message = "Plan execution complete. Monitoring continues.",
                     Collapsed = false
@@ -582,7 +584,13 @@ namespace Hub.Services
 
                         if (activity != null)
                         {
-                            var label = string.IsNullOrWhiteSpace(activity.Label) ? activity.Name : activity.Label;
+                            
+                            var label = string.IsNullOrWhiteSpace(activity.Label) ? activity.ActivityTemplate?.Name : activity.Label;
+                            if (label == null)
+                            {
+                                var template = uow.ActivityTemplateRepository.GetByKey(activity.ActivityTemplateId);
+                                label = template.Name;
+                            }
 
                             if (string.IsNullOrWhiteSpace(label))
                             {
@@ -600,7 +608,7 @@ namespace Hub.Services
                     _pusherNotifier.NotifyUser(new NotificationMessageDTO
                     {
                         NotificationType = NotificationType.GenericFailure,
-                        NotificationArea = NotificationArea.ActivityStream,
+                        Subject = "Plan Failed",
                         Message = $"Validation failed for activities: {activitiesList} from plan \"{plan.Name}\". See activity configuration pane for details.",
                         Collapsed = false
                     }, currentUserId);
@@ -648,7 +656,7 @@ namespace Hub.Services
                                 _pusherNotifier.NotifyUser(new NotificationMessageDTO
                                 {
                                     NotificationType = NotificationType.GenericSuccess,
-                                    NotificationArea = NotificationArea.ActivityStream,
+                                    Subject = "Success",
                                     Message = $"Plan \"{plan.Name}\" activated. It will wait and respond to specified external events.",
                                     Collapsed = false
                                 }, currentUserId);
@@ -667,7 +675,7 @@ namespace Hub.Services
                             _pusherNotifier.NotifyUser(new NotificationMessageDTO
                             {
                                 NotificationType = NotificationType.GenericSuccess,
-                                NotificationArea = NotificationArea.ActivityStream,
+                                Subject = "Success",
                                 Message = $"Continue execution of the suspended Plan \"{plan.Name}\"",
                                 Collapsed = false
                             }, currentUserId);
@@ -683,7 +691,7 @@ namespace Hub.Services
                             _pusherNotifier.NotifyUser(new NotificationMessageDTO
                             {
                                 NotificationType = NotificationType.GenericSuccess,
-                                NotificationArea = NotificationArea.ActivityStream,
+                                Subject = "Success",
                                 Message = $"Complete processing for Plan \"{plan.Name}\".{responseMsg}",
                                 Collapsed = false
                             }, currentUserId);
@@ -693,7 +701,7 @@ namespace Hub.Services
                             _pusherNotifier.NotifyUser(new NotificationMessageDTO
                             {
                                 NotificationType = NotificationType.GenericFailure,
-                                NotificationArea = NotificationArea.ActivityStream,
+                                Subject = "Plan Failed",
                                 Message = $"Failed executing plan \"{plan.Name}\"",
                                 Collapsed = false
                             }, currentUserId);
@@ -719,7 +727,7 @@ namespace Hub.Services
                     {
                         await Deactivate(planId);
                         Logger.GetLogger().Error($"Plan {planId} was deactivated due to authentication problems.");
-                        ReportAuthDeactivation(plan, exception);
+                        ReportAuthDeactivation(uow, plan, exception);
                     }
 
                     // Do not notify -- it happens in Plan.cs
@@ -787,7 +795,7 @@ namespace Hub.Services
             _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
                 NotificationType = NotificationType.GenericFailure,
-                NotificationArea = NotificationArea.ActivityStream,
+                Subject = "Plan Failed",
                 Message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, messageToNotify),
                 Collapsed = false
             }, userId);
@@ -824,7 +832,7 @@ namespace Hub.Services
                 _pusherNotifier.NotifyUser(new NotificationMessageDTO
                 {
                     NotificationType = NotificationType.GenericFailure,
-                    NotificationArea = NotificationArea.ActivityStream,
+                    Subject = "Plan Failed",
                     Message = $"Validation of activity '{activityLabel}' from plan \"{planName}\" failed: {errors}",
                     Collapsed = false
                 }, userId);
@@ -920,12 +928,23 @@ namespace Hub.Services
             }
         }
 
-        private void ReportAuthError(Fr8AccountDO user, InvalidTokenRuntimeException ex)
+        private void ReportAuthError(IUnitOfWork uow, Fr8AccountDO user, InvalidTokenRuntimeException ex)
         {
-            string errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with " +
-                    $"{ex?.FailedActivityDTO.ActivityTemplate.WebService.Name}. ";
+            var activityTemplate = ex?.FailedActivityDTO.ActivityTemplate;
+            string webServiceName = null;
+            if (activityTemplate != null)
+            {
+                var webService = uow.ActivityTemplateRepository.GetQuery()
+                    .Where(x => x.Name == activityTemplate.Name && x.Version == activityTemplate.Version)
+                    .Select(x => x.WebService)
+                    .FirstOrDefault();
+                webServiceName = webService?.Name;
+            }
 
-            errorMessage += $"Please re-authorize Fr8 to connect to {ex?.FailedActivityDTO.ActivityTemplate.WebService.Name} " +
+            string errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with " +
+                    $"{webServiceName}. ";
+
+            errorMessage += $"Please re-authorize Fr8 to connect to {webServiceName} " +
                     $"by clicking on the Settings dots in the upper " +
                     $"right corner of the activity and then selecting Choose Authentication. ";
 
@@ -939,55 +958,63 @@ namespace Hub.Services
             _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
                 NotificationType = NotificationType.GenericFailure,
-                NotificationArea = NotificationArea.ActivityStream,
+                Subject = "Plan Failed",
                 Message = errorMessage,
                 Collapsed = false
             }, user.Id);
         }
 
-        private async Task ReportAuthDeactivation(PlanDO plan, InvalidTokenRuntimeException ex)
+        private async Task ReportAuthDeactivation(IUnitOfWork uow, PlanDO plan, InvalidTokenRuntimeException ex)
         {
+            var activityTemplate = ex?.FailedActivityDTO.ActivityTemplate;
+            string webServiceName = null;
+            if (activityTemplate != null)
+            {
+                var webService = uow.ActivityTemplateRepository.GetQuery()
+                    .Where(x => x.Name == activityTemplate.Name && x.Version == activityTemplate.Version)
+                    .Select(x => x.WebService)
+                    .FirstOrDefault();
+                webServiceName = webService?.Name;
+            }
+
             string errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with " +
-                    $"{ex?.FailedActivityDTO.ActivityTemplate.WebService.Name}. ";
+                    $"{webServiceName}. ";
 
             errorMessage += $"Plan \"{plan.Name}\" which contains failed activity was deactivated.";
 
             _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
                 NotificationType = NotificationType.GenericFailure,
-                NotificationArea = NotificationArea.ActivityStream,
+                Subject = "Plan Failed",
                 Message = errorMessage,
                 Collapsed = false
             }, plan.Fr8AccountId);
 
             //Sending an Email
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            
+            var account = uow.UserRepository.GetQuery().FirstOrDefault(a => a.Id == plan.Fr8AccountId);
+            try
             {
-                var account = uow.UserRepository.GetQuery().Where(a => a.Id == plan.Fr8AccountId).FirstOrDefault();
+                var userEmail = account.UserName;
+                var emailDO = new EmailDO();
+                IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+                string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
+                var emailAddressDO = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress);
+                emailDO.From = emailAddressDO;
+                emailDO.FromID = emailAddressDO.Id;
+                emailDO.AddEmailRecipient(EmailParticipantType.To,
+                    uow.EmailAddressRepository.GetOrCreateEmailAddress(userEmail));
+                emailDO.Subject = "Your plan was deactivated due to authentication expiration";
+                string htmlText = $"Plan “{plan.Name}” was deactivated due to authentication problems. <br>If you would like to keep it active, please reauthenticate <a href='{Server.ServerUrl}dashboard/plans/{plan.Id}/builder?viewMode=plan'>here</a>";
+                emailDO.HTMLText = htmlText;
 
-                try
-                {
-                    var userEmail = account.UserName;
-                    var emailDO = new EmailDO();
-                    IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-                    string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
-                    var emailAddressDO = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress);
-                    emailDO.From = emailAddressDO;
-                    emailDO.FromID = emailAddressDO.Id;
-                    emailDO.AddEmailRecipient(EmailParticipantType.To,
-                        uow.EmailAddressRepository.GetOrCreateEmailAddress(userEmail));
-                    emailDO.Subject = "Your plan was deactivated due to authentication expiration";
-                    string htmlText = $"Plan “{plan.Name}” was deactivated due to authentication problems. <br>If you would like to keep it active, please reauthenticate <a href='{Server.ServerUrl}dashboard/plans/{plan.Id}/builder?viewMode=plan'>here</a>";
-                    emailDO.HTMLText = htmlText;
+                uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, "PlanDeactivated_Template");
+                uow.SaveChanges();
 
-                    uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, "PlanDeactivated_Template");
-                    uow.SaveChanges();
-
-                    await ObjectFactory.GetInstance<IEmailPackager>().Send(new EnvelopeDO { Email = emailDO });
-                }
-
-                catch { Logger.GetLogger().Error($"Couldn't send email to user {account.Id} to notify him about plan deactivation"); }
+                await ObjectFactory.GetInstance<IEmailPackager>().Send(new EnvelopeDO { Email = emailDO });
             }
+
+            catch { Logger.GetLogger().Error($"Couldn't send email to user {account.Id} to notify him about plan deactivation"); }
         }
     }
 }

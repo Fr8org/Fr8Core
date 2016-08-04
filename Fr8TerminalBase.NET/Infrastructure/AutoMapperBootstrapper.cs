@@ -39,6 +39,7 @@ namespace Fr8.TerminalBase.Infrastructure
                 .ForMember(x => x.Error, opts => opts.MapFrom(src => src.Error))
                 .ForMember(x => x.AuthCompletedNotificationRequired, opts => opts.MapFrom(src => src.AuthCompletedNotificationRequired));
 
+
             Mapper.CreateMap<ActivityDTO, ActivityPayload>()
                 .ForMember(x => x.ChildrenActivities, opts => opts.MapFrom(src => src.ChildrenActivities != null ? src.ChildrenActivities.ToList() : new List<ActivityDTO>()))
                 .ForMember(x => x.CrateStorage, opts => opts.Ignore())

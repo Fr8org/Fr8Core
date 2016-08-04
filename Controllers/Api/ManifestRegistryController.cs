@@ -73,7 +73,7 @@ namespace HubWeb.Controllers.Api
         public async Task<IHttpActionResult> GetManifestPageUrl(string manifestName)
         {
             return Ok(await _restfulServiceClient.PostAsync<string, string>(
-                new Uri($"{CloudConfigurationManager.GetSetting("PlanDirectoryUrl")}/api/page_generation/generate_manifest_page"),
+                new Uri($"{CloudConfigurationManager.GetSetting("PlanDirectoryUrl")}/api/v1/page_generation/generate_manifest_page"),
                 manifestName));
         }
 

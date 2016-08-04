@@ -124,7 +124,6 @@ namespace Hub.Services
             {
                 Id = Guid.NewGuid(),
                 ActivityTemplateId = activityTemplateId,
-                Name = name,
                 CrateStorage = _crateManager.EmptyStorageAsStr(),
                 AuthorizationTokenId = authorizationTokenId
             };
@@ -193,22 +192,15 @@ namespace Hub.Services
                         var activatedActivityDTO = await CallTerminalActivityAsync<ActivityDTO>(uow, "activate", null, submittedActivity, Guid.Empty);
                         Logger.GetLogger().Info($"Call to terminal activation of activity (Id - {submittedActivity.Id}) completed");
                         var activatedActivityDo = Mapper.Map<ActivityDO>(activatedActivityDTO);
-
                         var storage = _crateManager.GetStorage(activatedActivityDo);
-
                         var validationCrate = storage.CrateContentsOfType<ValidationResultsCM>().FirstOrDefault();
-
                         if (validationCrate == null || !validationCrate.HasErrors)
                         {
                             existingAction.ActivationState = ActivationState.Activated;
                         }
-
                         UpdateActivityProperties(existingAction, activatedActivityDo);
-
                         uow.SaveChanges();
-
                         EventManager.ActionActivated(activatedActivityDo);
-
                         return Mapper.Map<ActivityDTO>(activatedActivityDo);
                     }
                 }
@@ -402,7 +394,22 @@ namespace Hub.Services
                 {
                     x.Id = Guid.NewGuid();
                 }
+                var activityDO = x as ActivityDO;
+                if (activityDO != null && activityDO.ActivityTemplateId == Guid.Empty)
+                {
+                    var activityTemplate = activityDO.ActivityTemplate;
+                    activityDO.ActivityTemplate = uow
+                        .ActivityTemplateRepository
+                        .GetQuery()
+                        .Single(y => y.Name == activityTemplate.Name 
+                                  && y.Version == activityTemplate.Version
+                                  && y.Terminal.Name == activityTemplate.Terminal.Name
+                                  && y.Terminal.Version == activityTemplate.Terminal.Version);
+                    activityDO.ActivityTemplateId = activityDO.ActivityTemplate.Id;
+                }
             });
+
+
 
             PlanNodeDO plan;
             PlanNodeDO originalAction;
@@ -675,7 +682,9 @@ namespace Hub.Services
                 //find the activity by the provided name
 
                 // To prevent mismatch between db and terminal solution lists, Single or Default used
-                var curActivityTerminalDTO = allActivityTemplates.OrderByDescending(x => int.Parse(x.Version)).FirstOrDefault(a => a.Name == activityDTO.ActivityTemplate.Name);
+                var curActivityTerminalDTO = allActivityTemplates
+                    .OrderByDescending(x => int.Parse(x.Version))
+                    .FirstOrDefault(a => a.Name == activityDTO.ActivityTemplate.Name);
                 //prepare an Activity object to be sent to Activity in a Terminal
                 //IMPORTANT: this object will not be hold in the database
                 //It is used to transfer data
@@ -690,8 +699,13 @@ namespace Hub.Services
                 {
                     Id = Guid.NewGuid(),
                     Label = curActivityTerminalDTO.Label,
-                    Name = curActivityTerminalDTO.Name,
-                    ActivityTemplate = curActivityTerminalDTO,
+                    ActivityTemplate = new ActivityTemplateSummaryDTO
+                    {
+                        Name = curActivityTerminalDTO.Name,
+                        Version = curActivityTerminalDTO.Version,
+                        TerminalName = curActivityTerminalDTO.Terminal.Name,
+                        TerminalVersion = curActivityTerminalDTO.Terminal.Version
+                    },
                     AuthToken = new AuthorizationTokenDTO
                     {
                         UserId = null

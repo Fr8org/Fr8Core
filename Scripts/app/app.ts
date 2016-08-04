@@ -1,6 +1,5 @@
 /// <reference path="../typings/tsd.d.ts" />
 /// <reference path="../typings/metronic.d.ts" />
-
 var app = angular.module("app", [
     "templates",
     "ui.router",
@@ -115,12 +114,14 @@ initialization can be disabled and Layout.init() should be called on page load c
 
 /* Setup Layout Part - Header */
 app.controller('HeaderController', ['$scope', '$http', '$window', '$state', 'TerminalService', 'PlanService', ($scope, $http, $window, $state, TerminalService, PlanService) => {
+    if ($state.current.name === 'plan' || $state.current.name === 'plan.details') {
+        $scope.showPlanBuilderHeader = true;
+    }
+    else {
+        $scope.showPlanBuilderHeader = false;
+    }
 
-    
-
-    //$scope.$on('$includeContentLoaded', () => {
-        Layout.initHeader(); // init header
-    //});
+    Layout.initHeader(); // init header       
 
 
 
@@ -167,7 +168,7 @@ app.config(['applicationInsightsServiceProvider', function (applicationInsightsS
 
     $.get('/api/v1/configuration/instrumentation-key').then((instrumentationKey: string) => {
         console.log(instrumentationKey);
-        if (instrumentationKey.indexOf('0000') == -1) { // if not local instance ('Debug' configuration)
+        if (instrumentationKey.indexOf('0000') === -1) { // if not local instance ('Debug' configuration)
             options = { applicationName: 'HubWeb' };
             applicationInsightsServiceProvider.configure(instrumentationKey, options, true);
         } else {
@@ -224,122 +225,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
         }
     }]);
 
-    class ApiRequestCoordinatorService {
-        private configurePattern: string = 'activities/configure';
-        private savePattern: string = 'activities/save';
-        private currentConfigurationRequests: string[] = [];
-
-        // If the function returns false, request must be rejected. If true, the request can proceed.
-        public startRequest(url: string, activityId: string): boolean {
-            if (url.indexOf(this.configurePattern) > -1) {
-                // check if such activity is currently being configured. if so, reject the request.
-                if (this.currentConfigurationRequests.indexOf(activityId) > -1) {
-                    return false;
-                }
-                else {
-                    // if not, add it in the list of configured activities
-                    this.currentConfigurationRequests.push(activityId);
-                }
-            }
-
-            else if (url.indexOf(this.savePattern) > -1) {
-                if (this.currentConfigurationRequests.indexOf(activityId) > -1) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        public endRequest(url: string, activityId: string) {
-            if (url.indexOf(this.configurePattern) == -1) return;
-
-            // check if such activity is currently being configured. if so, remove it from the array
-            let idx: number = this.currentConfigurationRequests.indexOf(activityId);
-            if (idx > -1) {
-                this.currentConfigurationRequests.splice(idx, 1);
-            }
-        }
-    }
-
-    app.service('ApiRequestCoordinatorService', [ApiRequestCoordinatorService]);
-
-
-    // Install a HTTP request interceptor that syncronizes Save and Config requests for a single activity.
-    // If a Configure request is currently executing, Save and other Configure requests will be dropped. 
-    // See FR-3475 for rationale. 
-    $httpProvider.interceptors.push(['$q', ($q: ng.IQService) => {
-
-        // Since we cannot reference services from initialization code, we define a nested class and instantiate it. 
-        class ApiRequestCoordinatorService {
-            private configurePattern: string = 'activities/configure';
-            private savePattern: string = 'activities/save';
-            private currentConfigurationRequests: string[] = [];
-
-            // If the function returns false, request must be rejected. If true, the request can proceed.
-            public startRequest(url: string, activityId: string): boolean {
-                if (url.indexOf(this.configurePattern) > -1) {
-                    // check if such activity is currently being configured. if so, reject the request.
-                    if (this.currentConfigurationRequests.indexOf(activityId) > -1) {
-                        return false;
-                    }
-                    else {
-                        // if not, add it in the list of configured activities
-                        this.currentConfigurationRequests.push(activityId);
-                    }
-                }
-
-                else if (url.indexOf(this.savePattern) > -1) {
-                    if (this.currentConfigurationRequests.indexOf(activityId) > -1) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            public endRequest(url: string, activityId: string) {
-                if (url.indexOf(this.configurePattern) == -1) return;
-
-                // check if such activity is currently being configured. if so, remove it from the array
-                let idx: number = this.currentConfigurationRequests.indexOf(activityId);
-                if (idx > -1) {
-                    this.currentConfigurationRequests.splice(idx, 1);
-                }
-            }
-        }
-
-        let apiRequestCoordinatorService = new ApiRequestCoordinatorService();
-
-        return {
-            request: (config) => {
-                // bypass any requests which are not of interest for us
-                if (config.method != 'POST') return config;
-                if (!config.params || !config.params.id) return config;
-                if (!apiRequestCoordinatorService.startRequest(config.url, config.params.id)) {
-                    var canceler = $q.defer();
-                    config.timeout = canceler.promise;
-                    canceler.resolve();
-                }
-                return config;
-            },
-
-            response: (response) => {
-                let config = response.config;
-                if (!config.url) return response;
-                if (!response.data || !response.data.id) return response;
-                apiRequestCoordinatorService.endRequest(config.url, response.data.id)
-                return response;
-            },
-
-            responseError: (response) => {
-                if (!response.url) return $q.reject(response);
-                if (!response.data || !response.data.id) return $q.reject(response);
-                apiRequestCoordinatorService.endRequest(response.url, response.data.id)
-                return $q.reject(response);
-            }
-        }
-    }]);
-
 
     // Redirect any unmatched url
     $urlRouterProvider.otherwise("/myaccount");
@@ -368,7 +253,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                         if ($stateParams['viewMode'] === 'kiosk') {
                             return "/AngularTemplate/KioskModeOrganizationHeader";
                         }
-                        return "/AngularTemplate/MiniHeader";
                     }
                 },
                 'maincontainer@': {
@@ -378,7 +262,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                         }
                         return "/AngularTemplate/MainContainer_AS";
                     },
-                    controller: 'PlanBuilderController',
+                    controller: 'PlanBuilderController'
                 },
                 '@plan': {
                     templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
@@ -475,11 +359,15 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             data: { pageTitle: 'Web Services', pageSubTitle: '' }
         })
 
-
         .state('terminals', {
             url: "/terminals",
             templateUrl: "/AngularTemplate/TerminalList",
             data: { pageTitle: 'Terminals', pageSubTitle: '' }
+        })
+        .state("terminalDetails", {
+            url: "/terminals/{id}",
+            templateUrl: "/AngularTemplate/TerminalDetail",
+            data: {pageTitle: 'Terminal Details', pageSubTitle: ''}    
         })
         .state('manifestregistry',
         {
@@ -542,3 +430,40 @@ app.config(['ivhTreeviewOptionsProvider', ivhTreeviewOptionsProvider => {
         defaultSelectedState: false
     });
 }]);
+
+//We delay application bootstrapping until we load activity templates from server
+
+var bootstrapModule = angular.module('activityTemplateBootstrapper', []);
+// the bootstrapper service loads the config and bootstraps the specified app
+bootstrapModule.factory('bootstrapper', ['$http', '$log','$q', ($http: ng.IHttpService, $log: ng.ILogService, $q: ng.IQService) => {
+    return {
+        bootstrap: (appName) => {
+            var deferred = $q.defer();
+            $http.get('/api/v1/activity_templates')
+                .success((activityTemplates: Array<dockyard.interfaces.IActivityCategoryDTO>) => {
+                    // set all returned values as constants on the app
+                    var myApp = angular.module(appName);
+                    myApp.constant('ActivityTemplates', activityTemplates);
+                    angular.bootstrap(document, [appName]);
+                    deferred.resolve();
+                })
+                .error(() => {
+                    $log.warn('Could not initialize application, activity templates could not be loaded.');
+                    deferred.reject();
+                });
+            return deferred.promise;
+        }
+    };
+}]);
+// create a div which is used as the root of the bootstrap app
+var appContainer = document.createElement('div');
+bootstrapModule.run(['bootstrapper',(bootstrapper) => {
+    bootstrapper.bootstrap('app').then(() => {
+        // removing the container will destroy the bootstrap app
+        appContainer.remove();
+    });
+}]);
+// make sure the DOM is fully loaded before bootstrapping.
+angular.element(document).ready(() => {
+    angular.bootstrap(appContainer, ['activityTemplateBootstrapper']);
+});

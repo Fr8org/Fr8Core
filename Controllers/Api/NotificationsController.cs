@@ -34,7 +34,6 @@ namespace HubWeb.Controllers
         public IHttpActionResult Post(NotificationMessageDTO notificationMessage)
         {
             string userId;
-
             if (IsThisTerminalCall())
             {
                 var user = GetUserTerminalOperatesOn();
@@ -45,8 +44,8 @@ namespace HubWeb.Controllers
                 userId = _security.GetCurrentUser();
             }
 
+            // These notifications are evaulated as terminal event without exception
             notificationMessage.NotificationType = NotificationType.TerminalEvent;
-
             _pusherNotifier.NotifyUser(notificationMessage, userId);
             return Ok();
         }
