@@ -71,8 +71,8 @@ select @backupToUse = '$($backupPath)\' + @backupToUse;
 
 RESTORE DATABASE [$($targetDbName)]
 FROM DISK = @backupToUse
-WITH MOVE 'DockyardDB2_data' TO '$($dbPath)\$($targetDbName).mdf',
-MOVE 'DockyardDB2_log' TO '$($dbPath)\$($targetDbName).ldf'"
+WITH MOVE 'Fr8LocalDB_data' TO '$($dbPath)\$($targetDbName).mdf',
+MOVE 'Fr8LocalDB_log' TO '$($dbPath)\$($targetDbName).ldf'"
 
 Write-Host $commandText
 $command.CommandText = $commandText
