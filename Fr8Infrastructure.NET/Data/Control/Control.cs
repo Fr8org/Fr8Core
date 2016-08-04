@@ -50,7 +50,6 @@ namespace Fr8.Infrastructure.Data.Control
         public const string TextSource = "TextSource";
         public const string TextArea = "TextArea";
         public const string QueryBuilder = "QueryBuilder";
-        public const string ManagePlan = "ManagePlan";
         public const string Duration = "Duration";
         public const string RunPlanButton = "RunPlanButton";
         public const string UpstreamDataChooser = "UpstreamDataChooser";
@@ -205,6 +204,10 @@ namespace Fr8.Infrastructure.Data.Control
     {
         [JsonProperty("transitions")]
         public List<ContainerTransitionField> Transitions { get; set; }
+
+        [JsonProperty("resolvedUpstreamFields", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public List<KeyValueDTO> ResolvedUpstreamFields = new List<KeyValueDTO>();
+
         public ContainerTransition()
         {
             Type = ControlTypes.ContainerTransition;
@@ -329,6 +332,9 @@ namespace Fr8.Infrastructure.Data.Control
     {
         [JsonProperty("fields")]
         public List<FilterPaneField> Fields { get; set; }
+
+        [JsonProperty("resolvedUpstreamFields", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public List<KeyValueDTO> ResolvedUpstreamFields = new List<KeyValueDTO>();
 
         public FilterPane()
         {
@@ -474,47 +480,9 @@ namespace Fr8.Infrastructure.Data.Control
                 ManifestType = CrateManifestTypes.StandardDesignTimeFields
             };
         }
-
-        public string GetValue(ICrateStorage payloadCrateStorage)
-        {
-            switch (ValueSource)
-            {
-                case null:
-                case SpecificValueSource:
-                    return TextValue;
-                case UpstreamValueSrouce:
-                    if (payloadCrateStorage == null)
-                    {
-                        throw new Exception("Can't resolve upstream value without payload crate storage provided");
-                    }
-                    //This is for backward compatibility as controls in existing activites may not be reconfigured to use full field information
-                    if (SelectedItem == null)
-                    {
-                        return payloadCrateStorage.FindField(this.selectedKey);
-                    }
-                    return payloadCrateStorage.FindField(SelectedItem);
-                default:
-                    return null;
-            }
-        }
-
-        public bool CanGetValue(ICrateStorage payloadCrateStorage)
-        {
-            if (HasSpecificValue)
-            {
-                return true;
-            }
-
-            if (ValueSource == UpstreamValueSrouce && payloadCrateStorage == null)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
+        
         public bool HasValue => !string.IsNullOrEmpty(ValueSource) && (HasUpstreamValue || HasSpecificValue);
-        public bool HasUpstreamValue => ValueSource == UpstreamValueSrouce && !string.IsNullOrEmpty(Value);
+        public bool HasUpstreamValue => ValueSource == UpstreamValueSrouce && (!string.IsNullOrEmpty(Value) || !string.IsNullOrEmpty(selectedKey));
         public bool HasSpecificValue => ValueSource == SpecificValueSource && !string.IsNullOrEmpty(TextValue);
         public bool ValueSourceIsNotSet => string.IsNullOrEmpty(ValueSource);
     }
@@ -831,22 +799,6 @@ namespace Fr8.Infrastructure.Data.Control
         public UpstreamFieldChooser()
         {
             Type = ControlTypes.UpstreamFieldChooser;
-        }
-
-        public string GetValue(ICrateStorage payloadCrateStorage)
-        {
-            if (payloadCrateStorage == null)
-            {
-                throw new Exception("Can't resolve upstream value without payload crate storage provided");
-            }
-
-            //This is for backward compatibility as controls in existing activites may not be reconfigured to use full field information
-            if (SelectedItem == null)
-            {
-                return payloadCrateStorage.FindField(this.selectedKey);
-            }
-
-            return payloadCrateStorage.FindField(SelectedItem);
         }
     }
 

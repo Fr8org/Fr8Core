@@ -1,0 +1,23 @@
+﻿<div class="modal-header" event-auth-dialog>
+    <h4 class="pull-left">Set Permissions for Terminal</h4>
+</div>
+<div class="auth-dialog modal-body" block-if="isLoading()">
+   <div class="panel panel-default">
+        <div class="panel-heading">
+            Terminal: {{terminal.label}}
+        </div>
+        <div class="panel-body">
+            <p>
+                These Roles can see and use this Terminal:
+            </p>
+            <ul>
+                <li ng-repeat="role in terminal.roles">
+                    {{ role }}
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-default pull-right" style="width: 100px;" ng-click="$dismiss()">Cancel</button>
+</div>

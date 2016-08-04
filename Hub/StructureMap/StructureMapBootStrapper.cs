@@ -120,12 +120,13 @@ namespace Hub.StructureMap
                 For<TelemetryClient>().Use<TelemetryClient>();
                 For<IJobDispatcher>().Use<HangfireJobDispatcher>();
                 // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
-                For<IPlanTemplates>().Use<PlanTemplates>();
                 For<IUtilizationMonitoringService>().Use<UtilizationMonitoringService>().Singleton();
                 For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
                 For<ITimer>().Use<Win32Timer>();
                 For<IManifestRegistryMonitor>().Use<ManifestRegistryMonitor>().Singleton();
+                For<IUpstreamDataExtractionService>().Use<UpstreamDataExtractionService>().Singleton();
+                For<IPlanDirectoryService>().Use<PlanDirectoryService>().Singleton();
                 
             }
         }
@@ -191,14 +192,14 @@ namespace Hub.StructureMap
                 For<IPageDefinition>().Use<PageDefinition>();
 
                 For<TelemetryClient>().Use<TelemetryClient>();
-                For<ITerminal>().Use(x=>new TerminalServiceForTests(x.GetInstance<IConfigRepository>())).Singleton();
+                For<ITerminal>().Use(x=>new TerminalServiceForTests(x.GetInstance<IConfigRepository>(), x.GetInstance<ISecurityServices>())).Singleton();
                 For<IJobDispatcher>().Use<MockJobDispatcher>();
                 // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
-                For<IPlanTemplates>().Use<PlanTemplates>();
                 For<IUtilizationMonitoringService>().Use<UtilizationMonitoringService>().Singleton();
                 For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
                 For<ITimer>().Use<Win32Timer>();
-                
+                For<IUpstreamDataExtractionService>().Use<UpstreamDataExtractionService>().Singleton();
+                For<IPlanDirectoryService>().Use<PlanDirectoryService>().Singleton();
             }
         }
 
@@ -214,9 +215,9 @@ namespace Hub.StructureMap
         {
             private readonly ITerminal _terminal;
 
-            public TerminalServiceForTests(IConfigRepository configRepository)
+            public TerminalServiceForTests(IConfigRepository configRepository, ISecurityServices securityServices)
             {
-                _terminal = new Terminal(configRepository);
+                _terminal = new Terminal(configRepository, securityServices);
             }
 
             public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal, string userId)

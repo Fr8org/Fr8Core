@@ -47,7 +47,8 @@
                     <ul class="dropdown-menu">
                         <li><a href="@NavLinks.BaseUrl/Services/DocuSign">DocuSign</a></li>
                         <li><a href="@NavLinks.BaseUrl/Services/Salesforce">Salesforce.com</a></li>
-                        @if (!User.Identity.IsAuthenticated)
+                        <li><a href="@NavLinks.PlanDirectory">Plan Directory</a></li>
+                        @*@if (!User.Identity.IsAuthenticated)
                         {
                             <li><a href="@NavLinks.PlanDirectory">Plan Directory</a></li>
                         }
@@ -60,20 +61,20 @@
                                     } else {
                                         $.ajax({
                                             url: '/api/v1/authentication/authenticatePlanDirectory',
-                                            method:'POST'
-                                        }).done(function(data) {
+                                            method: 'POST'
+                                        }).done(function (data) {
                                             var token = data.token;
                                             var url = '@NavLinks.PlanDirectory' + '/AuthenticateByToken?token=' + token;
                                             window.location.href = url;
-                                        }).error(function(response) {
-                                            alert("Error aquiring token: "+response.data);
+                                        }).error(function (response) {
+                                            alert("Error aquiring token: " + response.data);
                                         });
                                     }
                                 }
                             </script>
                             <li><a href="#" onclick="goToPlanDirectory()">Plan Directory</a></li>
-                        }
-                        
+                        }*@
+
                     </ul>
                 </li>
                 <!--Developers-->

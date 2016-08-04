@@ -21,6 +21,6 @@ namespace HubWeb.ViewModels
         }
         public static string Blog = "http://blog.fr8.co";
         public static string Developers = "https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md";
-        public static string PlanDirectory = ConfigurationManager.AppSettings["PlanDirectoryUrl"];
+        public static string PlanDirectory = ConfigurationManager.AppSettings["PlanDirectoryUrl"] + "/plan_directory/";
     }
 }

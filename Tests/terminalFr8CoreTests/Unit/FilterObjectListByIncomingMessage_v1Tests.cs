@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
@@ -49,7 +50,7 @@ namespace terminalTests.Integration
                    .Returns<string, bool>((tags, getLatest) => Task.FromResult(ActivityTemplates.Where(x => x.Tags.Contains(tags)).ToList()));
 
             hubMock.Setup(x => x.CreateAndConfigureActivity(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid?>(), It.IsAny<bool>(), It.IsAny<Guid?>()))
-                .Returns(() => Task.FromResult(new ActivityPayload() { ActivityTemplate = ActivityTemplates[0], Ordering = 1 }));
+                .Returns(() => Task.FromResult(new ActivityPayload() { ActivityTemplate = Mapper.Map<ActivityTemplateSummaryDTO>(ActivityTemplates[0]), Ordering = 1 }));
                 
             ObjectFactory.Container.Inject(hubMock);
             ObjectFactory.Container.Inject(hubMock.Object);
@@ -157,6 +158,7 @@ namespace terminalTests.Integration
             {
                 x.DataSourceSelector.Value = ActivityTemplates[0].Id.ToString();
                 x.IncomingTextSelector.selectedKey = "Message";
+                x.IncomingTextSelector.Value = "This message should be checked for keywords";
             });
             await activity.Configure(activityContext);
             var crateStorage = activityContext.ActivityPayload.CrateStorage;
@@ -180,9 +182,9 @@ namespace terminalTests.Integration
             await activity.Configure(activityContext);
             var childActivity = new ActivityPayload
             {
-                ActivityTemplate = ActivityTemplates[0]
+                ActivityTemplate = Mapper.Map<ActivityTemplateSummaryDTO>(ActivityTemplates[0])
             };
-            AddChild(activityContext.ActivityPayload, childActivity,1) ;
+            AddChild(activityContext.ActivityPayload, childActivity,1);
             //Run
             await activity.Run(activityContext, containerExecutionContext);
             var operationalState = containerExecutionContext.PayloadStorage.FirstCrate<OperationalStateCM>().Content;

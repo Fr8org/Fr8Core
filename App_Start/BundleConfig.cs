@@ -187,7 +187,7 @@ namespace HubWeb.App_Start
                 .Include("~/Scripts/homejs/plugins/easypiechart/jquery.easypiechart.min.js")
                 .Include("~/Scripts/homejs/plugins/waypoints/waypoints.min.js")
                 .Include("~/Scripts/homejs/plugins/vide/jquery.vide.min.js")
-                .Include("~/Scripts/homejs/loop.js")
+                .Include("~/Scripts/homejs/loop.js")                
             );
 
             bundles.Add(new ScriptBundle("~/bundles/js/html5shiv")
@@ -224,6 +224,7 @@ namespace HubWeb.App_Start
                 .Include("~/bower_components/angular-popover-toggle/popover-toggle.js")//not found on cdn
                 .Include("~/bower_components/md-color-picker/dist/mdColorPicker.min.js")//not found on cdn
                 .Include("~/bower_components/angular-material-data-table/dist/md-data-table.min.js")
+                .Include("~/bower_components/jquery.kinetic/jquery.kinetic.min.js")
             );
 #if RELEASE || DEV
             BundleTable.EnableOptimizations = true;

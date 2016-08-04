@@ -33,35 +33,21 @@ namespace terminalSlackTests.Fixtures
             return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
-        public static ActivityTemplateDTO Monitor_Channel_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Monitor_Channel_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO
+            return new ActivityTemplateSummaryDTO
             {
-                Id = Guid.NewGuid(),
                 Name = "Monitor_Channel_TEST",
-                Label = "Monitor Channel",
-                Category = ActivityCategory.Monitors,
-                Terminal = new TerminalDTO
-                {
-                    AuthenticationType = AuthenticationType.Internal
-                },
                 Version = "1"
             };
         }
 
-        public static ActivityTemplateDTO Publish_To_Slack_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Publish_To_Slack_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO
+            return new ActivityTemplateSummaryDTO
             {
-                Id = Guid.NewGuid(),
                 Name = "Publish_To_Slack_TEST",
-                Label = "Publish To Slack",
-                Category = ActivityCategory.Forwarders,
-                Version = "1",
-                Terminal = new TerminalDTO
-                {
-                    AuthenticationType = AuthenticationType.Internal
-                }
+                Version = "1"
             };
         }
 

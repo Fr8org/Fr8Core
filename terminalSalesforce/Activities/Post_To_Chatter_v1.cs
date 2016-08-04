@@ -110,7 +110,7 @@ namespace terminalSalesforce.Actions
 
         public override async Task Run()
         {
-            var feedText = ActivityUI.FeedTextSource.GetValue(Payload);
+            var feedText = ActivityUI.FeedTextSource.TextValue;
             if (string.IsNullOrEmpty(feedText))
             {
                 throw new ActivityExecutionException("Can't post empty message to chatter");
@@ -130,7 +130,7 @@ namespace terminalSalesforce.Actions
             }
             if (ActivityUI.UseUpstreamFeedParentIdOption.Selected)
             {
-                feedParentId = ActivityUI.FeedParentIdSource.GetValue(Payload);
+                feedParentId = ActivityUI.FeedParentIdSource.TextValue;
                 if (string.IsNullOrEmpty(feedParentId))
                 {
                     throw new ActivityExecutionException("Upstream crates doesn't contain value for feed parent Id");

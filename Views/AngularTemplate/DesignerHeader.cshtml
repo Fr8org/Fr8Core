@@ -4,14 +4,14 @@
             <div layout="row"  flex>
                 <div class="designer-header-title page-title" ng-class="{'design-header-title-editing': editing}" style="min-width: 0">
                     <h1 ng-if="!kioskMode">
-                        <div class="route-name" ng-click="editTitle()">{{plan.name}}</div>
+                        <!--header title -->
+                        <div class="route-name" ng-click="editTitle()" style="line-height: 1.3">{{plan.name}}</div>
                         <input class="design-header-title-editField" type="text" ng-model="plan.name" ng-blur="onTitleChange()" input-focus="editing" />
 
                     </h1>
                     <h1 ng-if="kioskMode">
                         <div class="route-name">{{plan.name}}</div>
                     </h1>
-
                 </div>
                 <md-button class="md-icon-button" ng-click="editTitle()" style="margin-top: 2px">
                     <md-icon md-font-icon="glyphicon-pencil" class="glyphicon glyphicon-pencil"></md-icon>
@@ -21,7 +21,7 @@
                 </md-button>
             </div>
         </div>
-        <md-radio-group ng-model="state" layout="row" layout-gt-md="row" layout-align="end center" flex  >
+        <md-radio-group ng-model="state" layout="row" layout-gt-md="row" layout-xs="column" layout-align="end center" layout-align-xs="center" flex  >
             <span>View:</span>
             <a ui-sref="plan({id:plan.id})" style="margin-left:5px">
                 <md-radio-button value="plan">Activities</md-radio-button>
@@ -31,21 +31,24 @@
             </a>
         </md-radio-group>
     </div>
-    <div flex="40" flex-md="35" flex-sm="25">
+    <div flex="40" flex-md="35" >
         <div class="designer-header-status" ng-if="!kioskMode" flex="noshrink">
-
             <span class="h4">
                 <strong>
-                    <span class="plan-state-text" ng-if="plan.planState === 2">{{plan.planState | PlanState}}</span>
-                    <span ng-if="plan.planState === 1">Ready</span>
                     <span ng-if="plan.planState === 3">Saving Changes...</span>
                 </strong>
-                <md-button ng-disabled="plan.planState === 3" class="md-icon-button" ng-click="runPlan()" ng-show="plan.planState === 1" event-run>
-                    <md-icon md-font-icon="fa-play" class="fa fa-2x" style="color:green"></md-icon>
-                </md-button>
-                <md-button class="md-icon-button" ng-click="deactivatePlan()" ng-show="plan.planState === 2">
-                    <md-icon md-font-icon="fa fa-power-off" class="fa fa-2x"></md-icon>
-                </md-button>
+                <span ng-if="plan.planState === 1">
+                    <strong>Ready</strong>
+                    <md-button ng-disabled="plan.planState === 3" class="md-icon-button" ng-click="runPlan()" ng-show="plan.planState === 1" event-run>
+                        <md-icon md-font-icon="fa-play" class="fa fa-2x" style="color:green"></md-icon>
+                    </md-button>
+                </span>
+                <span ng-click="deactivatePlan()" ng-if="plan.planState === 2">
+                    <strong><span class="plan-state-text">{{plan.planState | PlanState}}</span></strong>
+                    <md-button class="md-icon-button" ng-show="plan.planState === 2">
+                        <md-icon md-font-icon="fa fa-power-off" class="fa fa-2x"></md-icon>
+                    </md-button>
+                </span>
             </span>
         </div>
     </div>
