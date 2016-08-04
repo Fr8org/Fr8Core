@@ -584,7 +584,13 @@ namespace Hub.Services
 
                         if (activity != null)
                         {
-                            var label = string.IsNullOrWhiteSpace(activity.Label) ? activity.ActivityTemplate.Name : activity.Label;
+                            
+                            var label = string.IsNullOrWhiteSpace(activity.Label) ? activity.ActivityTemplate?.Name : activity.Label;
+                            if (label == null)
+                            {
+                                var template = uow.ActivityTemplateRepository.GetByKey(activity.ActivityTemplateId);
+                                label = template.Name;
+                            }
 
                             if (string.IsNullOrWhiteSpace(label))
                             {
