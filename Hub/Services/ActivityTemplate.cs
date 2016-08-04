@@ -132,6 +132,17 @@ namespace Hub.Services
             return GetByKey(curActivityTemplateId.Value).Terminal.Endpoint;
         }
 
+
+        public bool TryGetByKey(Guid activityTemplateId, out ActivityTemplateDO activityTemplate)
+        {
+            Initialize();
+
+            lock (_activityTemplates)
+            {
+                return _activityTemplates.TryGetValue(activityTemplateId, out activityTemplate);
+            }
+        }
+
         public ActivityTemplateDO GetByKey(Guid curActivityTemplateId)
         {
             Initialize();
@@ -155,7 +166,9 @@ namespace Hub.Services
 
             lock (_activityTemplates)
             {
-                return _activityTemplates.Values.ToArray();
+                var availableTerminalIds = _terminal.GetAll().Select(x => x.Id).ToList();
+
+                return _activityTemplates.Values.Where(x => availableTerminalIds.Contains(x.TerminalId));
             }
         }
 
@@ -359,13 +372,14 @@ namespace Hub.Services
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    // Create new WebService entity or update reference to existing WebService entity.
                     if (activityTemplateDo.WebService != null)
                     {
                         var existingWebService = uow.WebServiceRepository.FindOne(x => x.Name == activityTemplateDo.WebService.Name);
 
+                        // Update existing WebService entity.
                         if (existingWebService != null)
                         {
+                            existingWebService.IconPath = activityTemplateDo.WebService.IconPath;
                             activityTemplateDo.WebServiceId = existingWebService.Id;
                             activityTemplateDo.WebService = existingWebService;
                         }

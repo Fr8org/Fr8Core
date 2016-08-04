@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Fr8.Testing.Integration;
@@ -75,16 +76,16 @@ namespace terminalDocuSignTests.Integration
 
             string baseUrl = GetHubApiBaseUrl();
 
-            var solutionCreateUrl = baseUrl + "plans?solution_name=Track_DocuSign_Recipients_v1";
+            var solutionCreateUrl = baseUrl + "plans?solutionName=Track_DocuSign_Recipients_v1";
 
 
             //
             // Create solution
             //
             var plan = await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
-            var solution = plan.Plan.SubPlans.FirstOrDefault().Activities.FirstOrDefault();
+            var solution = plan.SubPlans.FirstOrDefault().Activities.FirstOrDefault();
 
-            var planReloadUrl = string.Format(baseUrl + "plans?id={0}&include_children=true", plan.Plan.Id);
+            var planReloadUrl = string.Format(baseUrl + "plans?id={0}&include_children=true", plan.Id);
 
             //
             // Send configuration request without authentication token
@@ -100,7 +101,11 @@ namespace terminalDocuSignTests.Integration
                 // Authenticate with DocuSign
                 //
                 var creds = GetDocuSignCredentials();
-                creds.Terminal = solution.ActivityTemplate.Terminal;
+                creds.Terminal = new TerminalSummaryDTO
+                {
+                    Name = solution.ActivityTemplate.TerminalName,
+                    Version = solution.ActivityTemplate.TerminalVersion
+                };
 
                 var token = await HttpPostAsync<CredentialsDTO, JObject>(baseUrl + "authentication/token", creds);
                 Assert.AreEqual(false, String.IsNullOrEmpty(token["authTokenId"].Value<string>()), "AuthTokenId is missing in API response.");
@@ -209,16 +214,20 @@ namespace terminalDocuSignTests.Integration
             //from now on our solution should have followup crate structure
             Assert.True(this._solution.ChildrenActivities.Length == 4, "Solution child actions failed to create.");
 
-            Assert.True(this._solution.ChildrenActivities.Any(a => a.Name == "Monitor Docusign Envelope Activity" && a.Ordering == 1));
-            Assert.True(this._solution.ChildrenActivities.Any(a => a.Name == "Set Delay" && a.Ordering == 2));
-            Assert.True(this._solution.ChildrenActivities.Any(a => a.Name == "Query Fr8 Warehouse" && a.Ordering == 3));
-            Assert.True(this._solution.ChildrenActivities.Any(a => a.Name == "Test Incoming Data" && a.Ordering == 4));
+            Assert.True(this._solution.ChildrenActivities.Any(a => a.ActivityTemplate.Name == "Monitor_DocuSign_Envelope_Activity" && a.Ordering == 1));
+            Assert.True(this._solution.ChildrenActivities.Any(a => a.ActivityTemplate.Name == "Set_Delay" && a.Ordering == 2));
+            Assert.True(this._solution.ChildrenActivities.Any(a => a.ActivityTemplate.Name == "Query_Fr8_Warehouse" && a.Ordering == 3));
+            Assert.True(this._solution.ChildrenActivities.Any(a => a.ActivityTemplate.Name == "Test_Incoming_Data" && a.Ordering == 4));
 
             plan = await HttpGetAsync<PlanDTO>(planReloadUrl);
-            Assert.AreEqual(3, plan.Plan.SubPlans.First().Activities.Count);
-            Assert.True(plan.Plan.SubPlans.First().Activities.Any(a => a.Name == "Build a Message" && a.Ordering == 2));
-            var emailActivity = plan.Plan.SubPlans.First().Activities.Last();
-            Assert.True(emailActivity.Name == notificationHandler.selectedKey);
+            Assert.AreEqual(3, plan.SubPlans.First().Activities.Count);
+            Assert.True(plan.SubPlans.First().Activities.Any(a => a.ActivityTemplate.Name == "Build_Message" && a.Ordering == 2));
+            var emailActivity = plan.SubPlans.First().Activities.Last();
+
+            var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>($"{baseUrl}/activity_templates");
+            var templates = activityTemplates.SelectMany(x => x.Activities);
+            var selectedActivityName = templates.Single(x => x.Id == Guid.Parse(notificationHandler.Value));
+            Assert.True(emailActivity.ActivityTemplate.Name == selectedActivityName.Name);
 
             //let's configure email settings
 
@@ -260,11 +269,11 @@ namespace terminalDocuSignTests.Integration
             //
             //Rename plan
             //
-            var newName = plan.Plan.Name + " | " + DateTime.UtcNow.ToShortDateString() + " " + DateTime.UtcNow.ToShortTimeString();
-            await HttpPostAsync<object, PlanFullDTO>(baseUrl + "plans?id=" + plan.Plan.Id, new { id = plan.Plan.Id, name = newName });
+            var newName = plan.Name + " | " + DateTime.UtcNow.ToShortDateString() + " " + DateTime.UtcNow.ToShortTimeString();
+            await HttpPostAsync<object, PlanDTO>(baseUrl + "plans?id=" + plan.Id, new { id = plan.Id, name = newName });
 
             //let's activate our plan
-            await HttpPostAsync<string, string>(baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
+            await HttpPostAsync<string, string>(baseUrl + "plans/run?planId=" + plan.Id, null);
 
 
             //everything seems perfect -> let's fake a docusign event
@@ -278,12 +287,12 @@ namespace terminalDocuSignTests.Integration
             //
             // Deactivate plan
             //
-            await HttpPostAsync<string, string>(baseUrl + "plans/deactivate?planid=" + plan.Plan.Id, plan.Plan.Id.ToString());
+            await HttpPostAsync<string, string>(baseUrl + "plans/deactivate?planid=" + plan.Id, plan.Id.ToString());
 
             //
             // Delete plan
             //
-            await HttpDeleteAsync(baseUrl + "plans?id=" + plan.Plan.Id);
+            await HttpDeleteAsync(baseUrl + "plans?id=" + plan.Id);
 
             // Verify that test email has been received
             //EmailAssert.EmailReceived("fr8ops@fr8.company", "Fr8-TrackDocuSignRecipientsTest");

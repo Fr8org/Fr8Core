@@ -20,7 +20,8 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_DownStreamReconfiguration,
         PaneConfigureAction_UpdateValidationMessages,
         PaneConfigureAction_ResetValidationMessages,
-        PaneConfigureAction_ShowAdvisoryMessages
+        PaneConfigureAction_ShowAdvisoryMessages,
+        PaneConfigureAction_ConfigureStarting
     }
 
     export class ActionReconfigureEventArgs {
@@ -133,7 +134,8 @@ module dockyard.directives.paneConfigureAction {
         mapFields: (scope: IPaneConfigureActionScope) => void;
         processing: boolean;
         isConfigRequestQueued: boolean;
-        configNotificationQueue: Array<Function>;
+        configControlOperationQueue: { [controlName: string]: Array<paneConfigureAction.ConfigurationControlOperation>; }
+        configControlHandles: { [controlName: string]: paneConfigureAction.IConfigurationControlController; };
         configurationWatchUnregisterer: Function;
         mode: string;
         reconfigureChildrenActions: boolean;
@@ -141,10 +143,11 @@ module dockyard.directives.paneConfigureAction {
         currentActiveElement: model.ControlDefinitionDTO;
         collapsed: boolean;
         populateAllActivities: () => void;
-        allActivities: Array<interfaces.IActivityDTO>;
+        allActivities: Array<model.ActivityEnvelope>;
         view: string;
         plan: model.PlanDTO;
         showAdvisoryPopup: boolean;
+        myActivityTemplate: interfaces.IActivityTemplateVM;
     }
     
     export class CancelledEventArgs extends CancelledEventArgsBase { }
@@ -174,27 +177,34 @@ module dockyard.directives.paneConfigureAction {
 
     export interface IPaneConfigureActionController {
         setJumpTargets: (targets: Array<model.ActivityJumpTarget>) => void;
+        isThereOnGoingConfigRequest: () => boolean;
+        queueOperation: (controlName: string, operation: paneConfigureAction.ConfigurationControlOperation) => void;
+        registerControl: (controlName: string, control: paneConfigureAction.IConfigurationControlController) => void;
     }
 
     export class PaneConfigureActionController implements IPaneConfigureActionController {
 
-        static $inject = ['$scope', 'ActionService', 'AuthService', 'ConfigureTrackerService', 'CrateHelper', '$filter',
-            '$timeout', '$modal', '$window', '$http', '$q', 'LayoutService'];
+        static $inject = ['$scope', 'ActivityService', 'AuthService', 'ConfigureTrackerService', 'CrateHelper', '$filter',
+            '$timeout', '$modal', '$window', '$http', '$q', 'LayoutService', 'ActivityTemplateHelperService'];
 
         private configLoadingError: boolean = false;
         private ignoreConfigurationChange: boolean = false;
 
-        constructor(private $scope: IPaneConfigureActionScope, private ActionService: services.IActionService,
+        constructor(private $scope: IPaneConfigureActionScope, private ActivityService: services.IActivityService,
             private AuthService: services.AuthService, private ConfigureTrackerService: services.ConfigureTrackerService,
             private crateHelper: services.CrateHelper, private $filter: ng.IFilterService,
             private $timeout: ng.ITimeoutService, private $modal,
             private $window: ng.IWindowService, private $http: ng.IHttpService,
-            private $q: ng.IQService, private LayoutService: services.ILayoutService)
+            private $q: ng.IQService, private LayoutService: services.ILayoutService,
+            private ActivityTemplateHelperService: services.IActivityTemplateHelperService)
         {
+            $scope.myActivityTemplate = this.ActivityTemplateHelperService.getActivityTemplate($scope.currentAction);
             $scope.collapsed = false;
             $scope.showAdvisoryPopup = false;
             $scope.isConfigRequestQueued = false;
-            $scope.configNotificationQueue = [];
+            $scope.configControlOperationQueue = {};
+            $scope.configControlHandles = {};
+            
 
             $scope.$on("onChange", <() => void>angular.bind(this, this.onControlChange));
             $scope.$on("onClick", <() => void>angular.bind(this, this.onClickEvent));
@@ -207,7 +217,7 @@ module dockyard.directives.paneConfigureAction {
             $scope.processConfiguration = <() => void>angular.bind(this, this.processConfiguration);
             $scope.setSolutionMode = <() => void>angular.bind(this, this.setSolutionMode);
             $scope.populateAllActivities = <() => void>angular.bind(this, this.populateAllActivities);
-            $scope.allActivities = Array<model.ActivityDTO>();
+            $scope.allActivities = Array<model.ActivityEnvelope>();
 
             $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], (event: ng.IAngularEvent, reConfigureActionEventArgs: ActionReconfigureEventArgs) => {
                 //this might be a general reconfigure command
@@ -291,16 +301,19 @@ module dockyard.directives.paneConfigureAction {
                     $scope.processConfiguration();
                 }
             }
+
+            
         }
-    
-        
 
         public isThereOnGoingConfigRequest(): boolean {
             return this.$scope.isConfigRequestQueued;
         }
 
-        public notifyOnConfigureEnd(callback: Function) {
-            this.$scope.configNotificationQueue.push(callback);
+        public queueOperation(controlName: string, operation: paneConfigureAction.ConfigurationControlOperation): void {
+            if (!this.$scope.configControlOperationQueue[controlName]) {
+                this.$scope.configControlOperationQueue[controlName] = [];
+            }
+            this.$scope.configControlOperationQueue[controlName].push(operation);
         }
 
         private reloadAction (reloadActionEventArgs: ReloadActionEventArgs): void {
@@ -355,8 +368,7 @@ module dockyard.directives.paneConfigureAction {
 
                 this.$scope.currentAction.crateStorage.crateDTO = this.$scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
 
-                this.ActionService.save({ id: this.$scope.currentAction.id }, this.$scope.currentAction, null, null)
-                    .$promise
+                this.ActivityService.save(this.$scope.currentAction)
                     .then(() => {
                         
                         if (this.$scope.currentAction.childrenActivities
@@ -453,11 +465,12 @@ module dockyard.directives.paneConfigureAction {
             }
         }
 
-        private allActivities = Array<interfaces.IActivityDTO>();
+        private allActivities = Array<model.ActivityEnvelope>();
 
         private getAllActivities(activities: Array<interfaces.IActivityDTO>) {
             for (var activity of activities) {
-                this.allActivities.push(activity);
+                var at = this.ActivityTemplateHelperService.getActivityTemplate(activity);
+                this.allActivities.push(new model.ActivityEnvelope(activity, at));
                 if (activity.childrenActivities.length > 0) {
                     this.getAllActivities(activity.childrenActivities);
                 }
@@ -480,15 +493,19 @@ module dockyard.directives.paneConfigureAction {
             if (this.$scope.configurationWatchUnregisterer) {
                 this.$scope.configurationWatchUnregisterer();
             }
-
+            
             this.ConfigureTrackerService.configureCallStarted(
                 this.$scope.currentAction.id,
-                this.$scope.currentAction.activityTemplate.needsAuthentication
+                this.$scope.myActivityTemplate.needsAuthentication
             );
+
+            this.$scope.$broadcast(MessageType[MessageType.PaneConfigureAction_ConfigureStarting]);
     
-            this.ActionService.configure(this.$scope.currentAction).$promise
+            this.ActivityService.configure(this.$scope.currentAction)
                 .then((res: interfaces.IActionVM) => {
-                    
+                    //lets reset config control handles
+                    //they will re register themselves after initializing
+                    this.$scope.configControlHandles = {};
                 var childActionsDetected = false;
 
                 // Detect OperationalState crate with CurrentClientActionName = 'RunImmediately'.
@@ -497,7 +514,7 @@ module dockyard.directives.paneConfigureAction {
                     var contents = <any>operationalStatus.contents;
 
                     if (contents.CurrentActivityResponse.type === 'ExecuteClientActivity' 
-                        && (contents.CurrentClientActivityName === 'RunImmediately')) {
+                        && (contents.CurrentActivityResponse.body === 'RunImmediately')) {
                         this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ExecutePlan]);
                     }
                 }
@@ -525,7 +542,7 @@ module dockyard.directives.paneConfigureAction {
                         //in case of reconfiguring the solution check the child actions again
 
                         //not needed in case of Loop action
-                        if (this.$scope.currentAction.name !== "Loop") {
+                        if (this.$scope.currentAction.activityTemplate.name !== "Loop") {
                             this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
                         }
                     }
@@ -543,11 +560,11 @@ module dockyard.directives.paneConfigureAction {
                 }
 
                 deferred.resolve(this.$scope.currentAction);
-
-                
+                //lets wait for UI operations to end
+                this.$timeout(() => { this.processOperationQueue(); });
 
             }).catch((result) => {
-                   
+
                 if (result.status == 423) {
                     this.$scope.processing = false;
                     deferred.reject(result);
@@ -572,27 +589,33 @@ module dockyard.directives.paneConfigureAction {
                 deferred.reject(result);
 
                 }).finally(() => {
-
                     this.$scope.isConfigRequestQueued = false;
-
-                    var notifyCallbackFunctions = () => {
-                        //let's notify watchers about end of this config call
-                        for (var i = 0; i < this.$scope.configNotificationQueue.length; i++) {
-                            var callbackFunction: Function = this.$scope.configNotificationQueue[i];
-                            callbackFunction.apply(null);
-                        }
-                        this.$scope.configNotificationQueue = [];
-                    };
-
-                    //lets wait for BLOCKUI to disappear
-                    this.$timeout(notifyCallbackFunctions, 600);
-
                     this.ConfigureTrackerService.configureCallFinished(this.$scope.currentAction.id);
                     // emit ConfigureCallResponse for RouteBuilderController be able to reload actions with AgressiveReloadTag
                     this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ConfigureCallResponse], new CallConfigureResponseEventArgs(this.$scope.currentAction, this.$scope.currentActiveElement));
             });
             return deferred.promise;
         };
+
+        private processOperationQueue(): void {
+            for (var controlName in this.$scope.configControlOperationQueue) {
+                var controlHandle = this.$scope.configControlHandles[controlName];
+                if (controlHandle == null) {
+                    //hmm this control is probably deleted
+                    //nothing to do
+                    continue;
+                }
+                var operationQueue = this.$scope.configControlOperationQueue[controlName];
+                for (var i = 0; i < operationQueue.length; i++) {
+                    controlHandle.processOperation(operationQueue[i]);
+                }
+            }
+            this.$scope.configControlOperationQueue = {};
+        }
+
+        public registerControl(controlName: string, control: paneConfigureAction.IConfigurationControlController) {
+            this.$scope.configControlHandles[controlName] = control;
+        }
 
         public setJumpTargets(targets: Array<model.ActivityJumpTarget>) {
             this.LayoutService.setSiblingStatus(this.$scope.currentAction, false);

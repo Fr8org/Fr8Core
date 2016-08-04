@@ -2,11 +2,12 @@
 
 module dockyard.controllers.NotifierController {
     'use strict';
-    
+
     export class Fr8InternalEvent {
         data: any;
-        type: dockyard.directives.NotificationType;
+        type: dockyard.enums.NotificationType;
     }
+
     export interface INotifierControllerScope extends ng.IScope {
         eventList: Array<Fr8InternalEvent>;
         planIsRunning: Boolean;
@@ -22,20 +23,23 @@ module dockyard.controllers.NotifierController {
         public static $inject = [
             'UserService',
             'PusherNotifierService',
-            'ngToast',
+            'UINotificationService',
             '$mdSidenav',
-            '$scope'
+            '$scope',
+            '$stateParams'
         ];
 
         constructor(
             private UserService: services.IUserService,
             private PusherNotifierService: services.IPusherNotifierService,
-            private ngToast: any,
+            private uiNotificationService: services.IUINotificationService,
             private $mdSidenav: any,
-            private $scope: INotifierControllerScope) {
+            private $scope: INotifierControllerScope,
+            private $stateParams: ng.ui.IStateParamsService) {
 
-            // liner-progress-bar controll
-            $scope.planIsRunning = false;
+            $scope.planIsRunning = false; // Used for linear-progress-bar control
+            var user = null;
+            var isScopeDestroyed = false;
 
             this.$scope.$on(<any>designHeaderEvents.PLAN_EXECUTION_STARTED,
                 (event: ng.IAngularEvent) => {
@@ -47,47 +51,64 @@ module dockyard.controllers.NotifierController {
                     $scope.planIsRunning = false;
                 });
 
+            this.$scope.$on('$destroy', (event: ng.IAngularEvent) => {
+                isScopeDestroyed = true;
+                if (user !== null) {
+                    PusherNotifierService.removeAllEvents(user.id);
+                }
+            });
+
             UserService.getCurrentUser().$promise.then(data => {
+                // Destroyed scope's channel binding can be called late which we prevent it in here
+                if (isScopeDestroyed) {
+                    return;
+                }
+
                 $scope.eventList = [];
-
                 var channel: string = data.id;
+                user = data;
 
-                PusherNotifierService.bindEventToChannel(channel, dockyard.directives.NotificationType[dockyard.directives.NotificationType.GenericSuccess], (data: any) => {
-                    var event = new Fr8InternalEvent();
-                    event.type = dockyard.directives.NotificationType.GenericSuccess;
-                    event.data = data;
-                    this.$scope.eventList.splice(0,0,event);
+                // Generic Success
+                PusherNotifierService.bindEventToChannel(channel, dockyard.enums.NotificationType[dockyard.enums.NotificationType.GenericSuccess], (data: any) => {
+                    this.sendNotification(data);
                 });
 
-                PusherNotifierService.bindEventToChannel(channel, dockyard.directives.NotificationType[dockyard.directives.NotificationType.GenericFailure], (data: any) => {
-                    var event = new Fr8InternalEvent();
-                    event.type = dockyard.directives.NotificationType.GenericFailure;
-                    event.data = data;
-                    this.$scope.eventList.splice(0, 0, event);
+                // Generic Failure
+                PusherNotifierService.bindEventToChannel(channel, dockyard.enums.NotificationType[dockyard.enums.NotificationType.GenericFailure], (data: any) => {
+                    this.sendNotification(data);
                 });
 
-                PusherNotifierService.bindEventToChannel(channel, dockyard.directives.NotificationType[dockyard.directives.NotificationType.GenericInfo], (data: any) => {
-                    var event = new Fr8InternalEvent();
-                    event.type = dockyard.directives.NotificationType.GenericInfo;
-                    event.data = data;
-                    this.$scope.eventList.splice(0, 0, event);
+                // Generic Info
+                PusherNotifierService.bindEventToChannel(channel, dockyard.enums.NotificationType[dockyard.enums.NotificationType.GenericInfo], (data: any) => {
+                    this.sendNotification(data);
                 });
 
-                PusherNotifierService.bindEventToChannel(channel, dockyard.directives.NotificationType[dockyard.directives.NotificationType.TerminalEvent], (data: any) => {
-                    var event = new Fr8InternalEvent();
-                    event.type = dockyard.directives.NotificationType.TerminalEvent;
-                    event.data = data;
-                    this.$scope.eventList.splice(0, 0, event);
+                // Terminal Event
+                PusherNotifierService.bindEventToChannel(channel, dockyard.enums.NotificationType[dockyard.enums.NotificationType.TerminalEvent], (data: any) => {
+                    this.sendNotification(data);
                 });
 
-                PusherNotifierService.bindEventToChannel(channel, dockyard.directives.NotificationType[dockyard.directives.NotificationType.ExecutionStopped], (data: any) => {
-                    var event = new Fr8InternalEvent();
-                    event.type = dockyard.directives.NotificationType.ExecutionStopped;
-                    event.data = data;
-                    this.$scope.eventList.splice(0, 0, event);
+                // Execution Stopped
+                PusherNotifierService.bindEventToChannel(channel, dockyard.enums.NotificationType[dockyard.enums.NotificationType.ExecutionStopped], (data: any) => {
+                    this.sendNotification(data);
                 });
             });
         }
+
+        // Determines notifications are (toast message or activity stream)
+        sendNotification(data: any): void {
+            if (this.$stateParams['viewMode'] == "kiosk") {
+                // All notifications are implemented as Alert messages in toast.
+                // When we implement sub-notification types for TerminalEvent, we can reevaluate here and pass a parameter for it
+                this.uiNotificationService.notify(data.Message, dockyard.enums.UINotificationStatus.Alert, null);
+            } else {
+                var event = new Fr8InternalEvent();
+                event.type = data.NotificationType;
+                event.data = data;
+                this.$scope.eventList.splice(0, 0, event);
+            }
+        }
     }
+
     app.controller('NotifierController', NotifierController);
 }

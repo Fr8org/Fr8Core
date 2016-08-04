@@ -75,7 +75,6 @@ namespace Hub.Services
             }
 
             curSubPlan.Name = subplan.Name;
-            curSubPlan.NodeTransitions = subplan.NodeTransitions;
 
             uow.SaveChanges();
         }

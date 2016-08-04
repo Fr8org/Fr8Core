@@ -38,7 +38,7 @@ module dockyard.controllers {
                 { id: 3, name: "Process", description: "Carry out work on a Container", icon: "recycle" },
                 { id: 4, name: "Forward", description: "Send Crates to a web service", icon: "share" }
             ];
-            $scope.activeTerminal = 1
+            $scope.activeTerminal = 1;
         }
         private setActive(actionCategoryId) {
             console.log(this.WebServiceService.getActivities([actionCategoryId]))

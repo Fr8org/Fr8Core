@@ -56,45 +56,24 @@ app.directive('blockIf', function () {
     };
 });
 
-app.directive('fr8Click', ['$parse', '$timeout',($parse: ng.IParseService, $timeout: ng.ITimeoutService) => {
+
+
+app.directive('fr8Click', ['$parse', '$timeout',($parse: ng.IParseService) => {
     return {
         restrict: 'A',
-        require: '^paneConfigureAction',
+        require: '^configurationControl',
         compile: ($element: ng.IAugmentedJQuery, attr) => {
             var fn = $parse(attr['fr8Click']);
-            return (scope, element, attr, pca) => {
+            return (scope, element: ng.IAugmentedJQuery, attr, cc: dockyard.directives.paneConfigureAction.IConfigurationControlController) => {
                 element.on('click', (event) => {
-
-                    var simulateClick = () => {
-                        var x = event.clientX;
-                        var y = event.clientY;
-                        var ev = document.createEvent("MouseEvent");
-                        var el = document.elementFromPoint(x, y);
-                        ev.initMouseEvent(
-                            "click",
-                            true /* bubble */, true /* cancelable */,
-                            window, null,
-                            x, y, 0, 0, /* coordinates */
-                            false, false, false, false, /* modifier keys */
-                            0 /*left*/, null
-                        );
-                        el.dispatchEvent(ev);
-                    };
-                    var callCallback = () => {
+                    if (cc.isThereOnGoingConfigRequest()) {
+                        cc.queueClick(element);
+                    } else {
+                        //lets call callback function immediately
                         scope.$apply(() => {
                             fn(scope, { $event: event });
                         });
-                    };
-                    var checkConfigStatus = () => {
-                        
-                        if (pca.isThereOnGoingConfigRequest()) {
-                            //we need to wait for this to end
-                            pca.notifyOnConfigureEnd(simulateClick);
-                        } else {
-                            callCallback();
-                        }
-                    };
-                    checkConfigStatus();
+                    }
                 });
             };
         }
@@ -373,6 +352,58 @@ app.directive('eventPlanbuilder', ['$timeout', '$window', function ($timeout, $w
             if ($window.analytics != null) {
                 $window.analytics.page("Visited Page - Plan Builder");
             }
+        }
+    };
+}]);
+
+app.directive('eventPlandashboard', ['$timeout', '$window', function ($timeout, $window) {
+    return {
+        restrict: 'A',
+        link: function (scope, element) {
+            if ($window.analytics != null) {
+                $window.analytics.page("Visited Page - Plan Dashboard");
+            }
+        }
+    };
+}]);
+
+//== scroll grey area of PB vertically and horizontally 
+app.directive('pbScrollPane', ['$timeout', '$window', function ($timeout, $window) {
+    return {
+        restrict: 'A',
+        link: function (scope, element) {
+            let _validScrollFlag = false;
+            let $scroller = null;
+            let curSrollTop = 0;
+            let curScrollLeft = 0;
+
+            $scroller = (<any>$(element)).kinetic();
+
+            $(element).on('mousedown', function (e) {
+                let startObj = e.target,
+                    posX = e.pageX,
+                    posY = e.pageY;
+
+                curSrollTop = $(element).scrollTop();
+                curScrollLeft = $(element).scrollLeft();
+
+                var impossibleObjs = $('#scrollPane .action');                
+
+                _validScrollFlag = true;               
+
+                angular.forEach(impossibleObjs, (elem) => {
+                    let w = $(elem).width(),
+                        h = $(elem).height(),
+                        objPos = $(elem).offset();
+
+                    if (posX >= objPos.left && posX <= objPos.left + w && posY >= objPos.top && posY <= objPos.top + h) {
+                        _validScrollFlag = false;                        
+                    }
+                });
+
+                if (_validScrollFlag) $scroller.kinetic('attach');
+                else $scroller.kinetic('detach');
+            });            
         }
     };
 }]);

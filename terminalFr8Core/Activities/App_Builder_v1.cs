@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Hosting;
 using Fr8.Infrastructure.Data.Constants;
@@ -13,6 +14,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Models;
 using Fr8.TerminalBase.Services;
 using terminalUtilities.Excel;
 
@@ -59,9 +61,9 @@ namespace terminalFr8Core.Activities
 
         private async Task PushLaunchURLNotification()
         {
-            var msg = "This Plan can be launched with the following URL: " + CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+            var msg = "This Plan can be launched with the following URL: " + CloudConfigurationManager.GetSetting("DefaultHubUrl")
                 + "redirect/cloneplan?id=" + ActivityId;
-            await _pushNotificationService.PushUserNotification(MyTemplate, "Success", "App Builder URL Generated", msg);
+            await _pushNotificationService.PushUserNotification(MyTemplate, "App Builder URL Generated", msg);
         }
 
         private async Task UpdateMetaControls()
@@ -132,7 +134,7 @@ namespace terminalFr8Core.Activities
         private async Task<byte[]> ProcessExcelFile(string filePath)
         {
             var byteArray = await _excelUtils.GetExcelFileAsByteArray(filePath);
-            var payloadCrate = Crate.FromContent(RuntimeCrateLabelPrefix, _excelUtils.GetExcelFile(byteArray, filePath, false), AvailabilityType.RunTime);
+            var payloadCrate = Crate.FromContent(RuntimeCrateLabelPrefix, _excelUtils.GetExcelFile(byteArray, filePath, false));
             Payload.Add(payloadCrate);
             return byteArray;
         }
@@ -145,7 +147,7 @@ namespace terminalFr8Core.Activities
             foreach (var filepicker in file_pickers)
             {
                 string crate_label = GetFileDescriptionLabel(filepicker, labelless_filepickers);
-                storage.Add(Crate.FromContent(crate_label, new StandardFileDescriptionCM(), AvailabilityType.RunTime));
+                storage.Add(Crate.FromContent(crate_label, new StandardFileDescriptionCM()));
             }
         }
 
@@ -189,7 +191,7 @@ namespace terminalFr8Core.Activities
                     Filetype = Path.GetExtension(uploadFilePath)
                 };
 
-                Payload.Add(Crate.FromContent(crate_label, fileDescription, AvailabilityType.RunTime));
+                Payload.Add(Crate.FromContent(crate_label, fileDescription));
             }
         }
 
@@ -231,7 +233,7 @@ namespace terminalFr8Core.Activities
                 }
             };
             generatedConfigControls.Add(submitButton);
-            return Crate<StandardConfigurationControlsCM>.FromContent(CollectionControlsLabel, new StandardConfigurationControlsCM(generatedConfigControls.ToArray()), AvailabilityType.Configuration);
+            return Crate<StandardConfigurationControlsCM>.FromContent(CollectionControlsLabel, new StandardConfigurationControlsCM(generatedConfigControls.ToArray()));
         }
         protected void CreateInitialControls()
         {
@@ -314,6 +316,8 @@ namespace terminalFr8Core.Activities
                 var submitButton = collectionControls.FindByName<Button>("submit_button");
                 if (submitButton.Clicked)
                 {
+                    // Push toast message to front-end
+                    
                     if (ActivityContext.ActivityPayload.RootPlanNodeId == null)
                     {
                         throw new Exception($"Activity with id \"{ActivityId}\" has no owner plan");
@@ -321,16 +325,13 @@ namespace terminalFr8Core.Activities
 
                     var flagCrate = Crate.FromContent(RunFromSubmitButtonLabel, new KeyValueListCM());
                     
-                    await HubCommunicator.SaveActivity(ActivityContext.ActivityPayload);
-                    HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, new[] {flagCrate});
-
-
-                    // We must save ourselves before running activity
-                    /*
-                    HubCommunicator.SaveActivity(ActivityContext.ActivityPayload).ConfigureAwait(false);
-                    HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, payload);
-                    */
-
+                    ThreadPool.QueueUserWorkItem(state =>
+                    {
+                        Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, "App Builder Message", "Your information has been submitted."));
+                        Task.WaitAll(HubCommunicator.SaveActivity(ActivityContext.ActivityPayload));
+                        Task.WaitAll(HubCommunicator.RunPlan(ActivityContext.ActivityPayload.RootPlanNodeId.Value, new[] { flagCrate }));
+                        Task.WaitAll(_pushNotificationService.PushUserNotification(MyTemplate, "App Builder Message", "Your information has been processed."));
+                    });
 
                     //we need to start the process - run current plan - that we belong to
                     //after running the plan - let's reset button state

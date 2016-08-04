@@ -89,7 +89,7 @@ namespace Fr8.Testing.Integration
                 return new Dictionary<string, string>
                 {
                     {"Fr8HubCallbackSecret", terminal.Secret},
-                    {"Fr8HubCallBackUrl", ConfigurationManager.AppSettings["CoreWebServerUrl"]},
+                    {"Fr8HubCallBackUrl", ConfigurationManager.AppSettings["DefaultHubUrl"]},
                     {"Fr8UserId", userId }
                 };
             }
@@ -187,7 +187,7 @@ namespace Fr8.Testing.Integration
             return payload;
         }
 
-        protected async Task<ContainerDTO> ExecutePlan(PlanFullDTO plan)
+        protected async Task<ContainerDTO> ExecutePlan(PlanDTO plan)
         {
             var container = await HttpPostAsync<string, ContainerDTO>(
                 _baseUrl + "plans/run?planId=" + plan.Id,

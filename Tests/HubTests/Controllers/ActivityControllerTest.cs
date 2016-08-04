@@ -11,6 +11,7 @@ using HubTests.Controllers.Api;
 using Data.States;
 using Fr8.Infrastructure;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.States;
 using Hub.Interfaces;
 using HubWeb.Controllers;
 using Fr8.Testing.Unit.Fixtures;
@@ -51,8 +52,21 @@ namespace HubTests.Controllers
                 var plan = FixtureData.TestPlan1();
 
                 uow.PlanRepository.Add(plan);
+                var activityTemplate = FixtureData.TestActivityTemplateDTOV2();
+                var activityTemplateDO = new ActivityTemplateDO
+                {
+                    Name = activityTemplate.Name,
+                    Version = activityTemplate.Version,
+                    Terminal = new TerminalDO
+                    {
+                        Name = activityTemplate.TerminalName,
+                        Version = activityTemplate.TerminalVersion,
+                        TerminalStatus = TerminalStatus.Active,
+                        Label = "dummy"
+                    }
 
-
+                };
+                uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 plan.ChildNodes.Add(subPlan);
                 uow.SaveChanges();
             }
@@ -91,6 +105,23 @@ namespace HubTests.Controllers
 
                 subplan = FixtureData.TestSubPlanDO1();
                 plan.ChildNodes.Add(subplan);
+
+                var activityTemplate = FixtureData.TestActivityTemplateDTOV2();
+                var activityTemplateDO = new ActivityTemplateDO
+                {
+                    Name = activityTemplate.Name,
+                    Version = activityTemplate.Version,
+                    Terminal = new TerminalDO
+                    {
+                        Name = activityTemplate.TerminalName,
+                        Version = activityTemplate.TerminalVersion,
+                        TerminalStatus = TerminalStatus.Active,
+                        Label = "dummy"
+                    }
+                    
+                };
+
+                uow.ActivityTemplateRepository.Add(activityTemplateDO);
 
                 //Arrange
                 //Add one test action

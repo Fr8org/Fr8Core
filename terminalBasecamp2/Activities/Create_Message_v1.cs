@@ -148,8 +148,8 @@ namespace terminalBasecamp2.Activities
                 var message = await _basecampApiClient.CreateMessage(
                                                                      ActivityUI.AccountSelector.Value,
                                                                      ActivityUI.ProjectSelector.Value,
-                                                                     ActivityUI.MessageSubject.GetValue(Payload),
-                                                                     ActivityUI.MessageContent.GetValue(Payload),
+                                                                     ActivityUI.MessageSubject.TextValue,
+                                                                     ActivityUI.MessageContent.TextValue,
                                                                      AuthorizationToken)
                                                       .ConfigureAwait(false);
                 Payload.Add(Crate.FromContent(RuntimeCrateLabel, new StandardPayloadDataCM(new KeyValueDTO { Key = "id", Value = message.Id.ToString() },
@@ -158,7 +158,7 @@ namespace terminalBasecamp2.Activities
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Failed to create new message. Basecamp user - {AuthorizationToken.ExternalAccountName}, Fr8 User Id - {CurrentUserId}, Details - {ex}");
+                Logger.GetLogger().Error($"Failed to create new message. Basecamp user - {AuthorizationToken.ExternalAccountName}, Fr8 User Id - {CurrentUserId}, Details - {ex}");
                 throw;
             }
         }

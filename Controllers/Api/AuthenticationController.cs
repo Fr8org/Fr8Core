@@ -21,6 +21,7 @@ using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;
 using System.Web.Http.Description;
 using Fr8.Infrastructure;
+using Hub.Services;
 using Newtonsoft.Json;
 using Swashbuckle.Swagger.Annotations;
 
@@ -30,14 +31,15 @@ namespace HubWeb.Controllers
     {
         private readonly ISecurityServices _security;
         private readonly IAuthorization _authorization;
+        private readonly IPlanDirectoryService _planDirectoryService;
         private readonly ITerminal _terminal;
 
-
-        public AuthenticationController()
+        public AuthenticationController(ISecurityServices securityServices, ITerminal terminal, IAuthorization authorization, IPlanDirectoryService planDirectoryService)
         {
-            _security = ObjectFactory.GetInstance<ISecurityServices>();
-            _terminal = ObjectFactory.GetInstance<ITerminal>();
-            _authorization = ObjectFactory.GetInstance<IAuthorization>();
+            _security = securityServices;
+            _terminal = terminal;
+            _authorization = authorization;
+            _planDirectoryService = planDirectoryService;
         }
         /// <summary>
         /// Authenticates user with specified credentials within specified terminal. Returns authorazition token, terminal id and error message if there is any
@@ -162,20 +164,11 @@ namespace HubWeb.Controllers
         [ResponseType(typeof(TokenWrapper))]
         public async Task<IHttpActionResult> AuthenticatePlanDirectory()
         {
-            var hmacService = ObjectFactory.GetInstance<IHMACService>();
-            var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
-
-            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/authentication/token");
-            var headers =
-                await
-                    hmacService.GenerateHMACHeader(uri, "PlanDirectory",
-                        CloudConfigurationManager.GetSetting("PlanDirectorySecret"), User.Identity.GetUserId());
-
-            var json = await client.PostAsync<JObject>(uri, headers: headers);
-            var token = json.Value<string>("token");
-
+            var userId = User.Identity.GetUserId();
+            var token = await _planDirectoryService.GetToken(userId);
             return Ok(new TokenWrapper { Token = token });
         }
+
         /// <summary>
         /// Updates existing authorization token with new values provided
         /// </summary>
@@ -374,7 +367,30 @@ namespace HubWeb.Controllers
                 AuthTokenId = response.AuthorizationToken?.Id.ToString(),
                 Error = response.Error
             });
-        }        
+        }
+
+        [HttpGet]
+        [ActionName("is_authenticated")]
+        public IHttpActionResult IsAuthenicated()
+        {
+            var authenticated = User.Identity.IsAuthenticated;
+            return Ok(new { authenticated });
+        }
+
+        [HttpGet]
+        [ActionName("is_privileged")]
+        public IHttpActionResult IsPrivileged()
+        {
+            var identity = User.Identity as ClaimsIdentity;
+            if (identity == null)
+            {
+                return Ok(new { privileged = false });
+            }
+
+            var privileged = identity.HasClaim(ClaimsIdentity.DefaultRoleClaimType, "Admin");
+
+            return Ok(new { privileged });
+        }
     }
     //This class is purely for Swagger documentation purposes
     public class TokenWrapper

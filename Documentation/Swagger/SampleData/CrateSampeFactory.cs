@@ -14,7 +14,6 @@ namespace HubWeb.Documentation.Swagger
             {
                 Id = "1D6D0F68-82A3-455A-8804-2CEAF4E77523",
                 Label = "Some Content",
-                Availability = AvailabilityType.Configuration,
                 Contents = JToken.FromObject(new CrateDescriptionCM(new CrateDescriptionDTO
                 {
                     Label = "Some Other Content",

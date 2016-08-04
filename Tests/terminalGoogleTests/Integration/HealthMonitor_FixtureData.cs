@@ -47,17 +47,12 @@ namespace terminalGoogleTests.Integration
            return Crate.FromContent("Available Forms", new KeyValueListCM(new KeyValueDTO("Survey Form", "1z7mIQdHeFIpxBm92sIFB52B7SwyEO3IT5LiUcmojzn8" )));
         }
 
-        public static ActivityTemplateDTO Monitor_Form_Responses_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Monitor_Form_Responses_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Monitor_Form_Responses_TEST",
-                Version = "1",
-                Terminal = new TerminalDTO()
-                {
-                    AuthenticationType = AuthenticationType.External
-                }
+                Version = "1"
             };
         }
 
@@ -170,7 +165,6 @@ namespace terminalGoogleTests.Integration
             var eventReportContent = new EventReportCM
             {
                 EventNames = "Google Form Response",
-                ContainerDoId = "",
                 EventPayload = WrapPayloadDataCrate(payloadFields),
                 ExternalAccountId = "g_admin@dockyard.company",
                 Manufacturer = "Google"
@@ -187,7 +181,6 @@ namespace terminalGoogleTests.Integration
             var eventReportContent = new EventReportCM
             {
                 EventNames = "Google Form Response",
-                ContainerDoId = "",
                 EventPayload = WrapPayloadDataCrate(payloadFields),
                 ExternalAccountId = "g_admin@dockyard.company",
                 Manufacturer = "Google"
@@ -236,17 +229,12 @@ namespace terminalGoogleTests.Integration
             return activity;
         }
 
-        public static ActivityTemplateDTO Get_Google_Sheet_Data_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Get_Google_Sheet_Data_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Get_Google_Sheet_Data_TEST",
                 Version = "1",
-                Terminal = new TerminalDTO()
-                {
-                    AuthenticationType = 1
-                }
             };
         }
         public static Fr8DataDTO Get_Google_Sheet_Data_v1_InitialConfiguration_Fr8DataDTO()

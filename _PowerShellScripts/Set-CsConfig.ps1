@@ -183,7 +183,7 @@ if(Test-Path $ConfigFile)
 }
 else
 {
-    Write-Warning "Azure Service Configuration file wasn't found in the folder $($ConfigFile)"
+    throw "Azure Service Configuration file wasn't found in the folder $($ConfigFile)"
 }
 
 

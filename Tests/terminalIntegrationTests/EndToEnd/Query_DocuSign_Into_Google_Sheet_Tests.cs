@@ -32,7 +32,7 @@ namespace terminalIntegrationTests.EndToEnd
             googleActivityConfigurator = new IntegrationTestTools_terminalGoogle(this);
         }
 
-        [Test, Category("Integration.terminalGoogle")]
+        [Test, Ignore, Category("Integration.terminalGoogle")]
         public async Task Query_DocuSign_Into_Google_Sheet_End_To_End()
         {
            
@@ -57,7 +57,7 @@ namespace terminalIntegrationTests.EndToEnd
             try
             {
                 //run the plan
-                await plansHelper.RunPlan(thePlan.Plan.Id);
+                await plansHelper.RunPlan(thePlan.Id);
 
                 //add asserts here
                 var googleSheets = await googleSheetApi.GetSpreadsheets(defaultGoogleAuthToken);

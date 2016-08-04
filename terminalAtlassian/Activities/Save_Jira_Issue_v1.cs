@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Control;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
@@ -213,7 +214,7 @@ namespace terminalAtlassian.Actions
                         var textSource = (TextSource)control;
 
                         var key = control.Name.Substring("CustomField_".Length);
-                        var value = textSource.GetValue(crateStorage);
+                        var value = textSource.TextValue;
 
                         if (!string.IsNullOrEmpty(value))
                         {
@@ -396,7 +397,7 @@ namespace terminalAtlassian.Actions
 
             Payload.Add(Crate.FromContent("jira issue", new StandardPayloadDataCM(new KeyValueDTO() { Key = "jira issue key", Value = issueInfo.Key })));
             Payload.Add(Crate.FromContent("jira issue", new StandardPayloadDataCM(new KeyValueDTO() { Key = "jira domain", Value = credentialsDTO.Domain })));
-            await _pushNotificationService.PushUserNotification(MyTemplate, "Success", "Jira Issue Created", $"Created new jira issue: {jiraUrl}");
+            await _pushNotificationService.PushUserNotification(MyTemplate, "Jira Issue Created", $"Created new jira issue: {jiraUrl}");
             Payload.Add(Crate<KeyValueListCM>.FromContent(RuntimeCrateLabel, new KeyValueListCM(
                                                                                       new KeyValueDTO(JiraIdField, issueInfo.Key),
                                                                                       new KeyValueDTO(JiraUrlField, jiraUrl))));
@@ -421,8 +422,8 @@ namespace terminalAtlassian.Actions
                 ProjectKey = projectKey,
                 IssueTypeKey = issueTypeKey,
                 PriorityKey = ActivityUI.AvailablePriorities.Value,
-                Description = ActivityUI.Description.GetValue(Payload),
-                Summary = ActivityUI.Summary.GetValue(Payload),
+                Description = ActivityUI.Description.TextValue,
+                Summary = ActivityUI.Summary.TextValue,
                 CustomFields = ActivityUI.GetValues(Payload).ToList(),
                 Assignee = ActivityUI.AssigneeSelector.Value
             };

@@ -87,7 +87,7 @@ namespace terminalFacebook.Activities
 
         public override Task Run()
         {
-            _fbIntegration.PostToTimeline(AuthorizationToken.Token, ActivityUI.Message.GetValue(Payload));
+            _fbIntegration.PostToTimeline(AuthorizationToken.Token, ActivityUI.Message.TextValue);
             return Task.FromResult(0);
         }
     }

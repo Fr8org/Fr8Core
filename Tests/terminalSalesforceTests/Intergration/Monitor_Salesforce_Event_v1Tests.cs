@@ -13,7 +13,7 @@ using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Data.Interfaces;
-using Hub.Managers;
+using Fr8.Infrastructure.Data.Managers;
 
 namespace terminalSalesforceTests.Intergration
 {
@@ -57,14 +57,36 @@ namespace terminalSalesforceTests.Intergration
         [Test]
         public async void Monitor_Salesforce_Event_Local_Payload_Processed()
         {
+            var objectTypes = new[]
+            {
+                "Account",
+                "Case",
+                "Contact",
+                "Contract",
+                "Document",
+                "Lead",
+                "Opportunity",
+                "Product2"
+            };
+
+            foreach (var objectType in objectTypes)
+            {
+                await RunTest(objectType);
+            }
+        }
+
+        private async Task RunTest(string objectType)
+        {
+            Debug.WriteLine("Testing monitoring for ObjectType = " + objectType);
+
             PlanDTO plan = null;
             try
             {
                 var authToken = await Fixtures.HealthMonitor_FixtureData.CreateSalesforceAuthToken();
                 plan = await CreateMonitoringPlan(authToken.Id);
-                await _plansHelper.RunPlan(plan.Plan.Id);
+                await _plansHelper.RunPlan(plan.Id);
 
-                await HttpPostAsync<string>(GetTerminalEventsUrl(), new StringContent(SalesforcePayload));
+                await HttpPostAsync<string>(GetTerminalEventsUrl(), new StringContent(string.Format(SalesforcePayload, objectType)));
 
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
@@ -74,7 +96,7 @@ namespace terminalSalesforceTests.Intergration
                     await Task.Delay(PeriodAwaitTime);
                     Debug.WriteLine("Awaiting for monitor container to run: " + stopwatch.ElapsedMilliseconds.ToString() + " msec");
 
-                    if (IsContainerAvailable(plan.Plan.Id))
+                    if (IsContainerAvailable(plan.Id))
                     {
                         Debug.WriteLine("Container successfully executed");
                         return;
@@ -87,7 +109,7 @@ namespace terminalSalesforceTests.Intergration
             {
                 if (plan != null)
                 {
-                    await HttpDeleteAsync(GetHubApiBaseUrl() + "/plans?id=" + plan.Plan.Id.ToString());
+                    await HttpDeleteAsync(GetHubApiBaseUrl() + "/plans?id=" + plan.Id.ToString());
                 }
             }
         }
@@ -108,7 +130,7 @@ namespace terminalSalesforceTests.Intergration
             {
                 if (plan != null)
                 {
-                    await HttpDeleteAsync(GetHubApiBaseUrl() + "/plans?id=" + plan.Plan.Id.ToString());
+                    await HttpDeleteAsync(GetHubApiBaseUrl() + "/plans?id=" + plan.Id.ToString());
                 }
 
                 throw;
@@ -135,7 +157,7 @@ namespace terminalSalesforceTests.Intergration
             var createActivityUrl = _baseUrl + "activities/create"
                 + "?activityTemplateId=" + activityTemplate.Id.ToString()
                 + "&createPlan=false"
-                + "&parentNodeId=" + plan.Plan.StartingSubPlanId.ToString()
+                + "&parentNodeId=" + plan.StartingSubPlanId.ToString()
                 + "&authorizationTokenId=" + authTokenId.ToString()
                 + "&order=1";
 

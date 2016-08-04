@@ -29,10 +29,9 @@ namespace HubWeb.Controllers
         [SwaggerResponse(HttpStatusCode.OK, "Message was successfully posted")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request", typeof(ErrorDTO))]
         [SwaggerResponseRemoveDefaults]
-        public IHttpActionResult Post(TerminalNotificationDTO notificationMessage)
+        public IHttpActionResult Post(NotificationMessageDTO notificationMessage)
         {
             string userId;
-
             if (IsThisTerminalCall())
             {
                 var user = GetUserTerminalOperatesOn();
@@ -43,7 +42,9 @@ namespace HubWeb.Controllers
                 userId = _security.GetCurrentUser();
             }
 
-            _pusherNotifier.NotifyUser(notificationMessage, NotificationType.TerminalEvent, userId);
+            // These notifications are evaulated as terminal event without exception
+            notificationMessage.NotificationType = NotificationType.TerminalEvent;
+            _pusherNotifier.NotifyUser(notificationMessage, userId);
             return Ok();
         }
     }

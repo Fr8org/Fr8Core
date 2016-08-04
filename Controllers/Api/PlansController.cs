@@ -7,7 +7,6 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
-using HubWeb.Controllers.Helpers;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Data.Entities;
@@ -21,17 +20,15 @@ using Fr8.Infrastructure;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using Fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities;
-using Fr8.Infrastructure.Utilities.Configuration;
+using Hub.Helper;
 using Newtonsoft.Json;
 using Hub.Infrastructure;
 using HubWeb.Infrastructure_HubWeb;
 using HubWeb.ViewModels.RequestParameters;
-using Newtonsoft.Json.Linq;
 using Swashbuckle.Swagger.Annotations;
 
 namespace HubWeb.Controllers
@@ -42,24 +39,28 @@ namespace HubWeb.Controllers
     {
 
         private readonly IPlan _plan;
-
         private readonly IActivityTemplate _activityTemplate;
         private readonly IActivity _activity;
+        private readonly IPlanDirectoryService _planDirectoryService;
         private readonly ISecurityServices _security;
         private readonly ICrateManager _crate;
         private readonly IPusherNotifier _pusherNotifier;
-        private readonly IPlanTemplates _planTemplates;
 
-
-        public PlansController()
+        public PlansController( IPlan plan, 
+                                ISecurityServices securityServices, 
+                                ICrateManager crateManager, 
+                                IPusherNotifier pusherNotifier, 
+                                IActivityTemplate activityTemplate, 
+                                IActivity activity, 
+                                IPlanDirectoryService planDirectoryService)
         {
-            _plan = ObjectFactory.GetInstance<IPlan>();
-            _security = ObjectFactory.GetInstance<ISecurityServices>();
-            _crate = ObjectFactory.GetInstance<ICrateManager>();
-            _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
-            _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
-            _activity = ObjectFactory.GetInstance<IActivity>();
-            _planTemplates = ObjectFactory.GetInstance<IPlanTemplates>();
+            _plan = plan;
+            _security = securityServices;
+            _crate = crateManager;
+            _pusherNotifier = pusherNotifier;
+            _activityTemplate = activityTemplate;
+            _activity = activity;
+            _planDirectoryService = planDirectoryService;
         }
 
         /// <summary>
@@ -67,21 +68,20 @@ namespace HubWeb.Controllers
         /// </summary>
         /// <remarks>Fr8 authentication headers must be provided</remarks>
         /// <param name="planDto">Description of plan to create or update</param>
-        /// <param name="solution_name">Name of solution to create if specified</param>
-        /// <param name="update_registrations">Deprecated</param>
+        /// <param name="solutionName">Name of solution to create if specified</param>
+        /// <param name="updateRegistrations">Deprecated</param>
         [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         [HttpPost]
         [SwaggerResponse(HttpStatusCode.OK, "Created or updated plan", typeof(PlanDTO))]
-        [SwaggerResponse(HttpStatusCode.BadRequest, "Solution template doesn't activity", typeof(ErrorDTO))]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
-        public async Task<IHttpActionResult> Post([FromBody] PlanEmptyDTO planDto, [FromUri] PlansPostParams parameters = null)
+        public async Task<IHttpActionResult> Post([FromBody] PlanNoChildrenDTO planDto, [FromUri] PlansPostParams parameters = null)
         {
             parameters = parameters ?? new PlansPostParams();
 
-            if (!parameters.solution_name.IsNullOrEmpty())
+            if (!parameters.solutionName.IsNullOrEmpty())
             {
-                return await CreateSolution(parameters.solution_name);
+                return await CreateSolution(parameters.solutionName);
             }
 
             return await Post(planDto);
@@ -123,14 +123,14 @@ namespace HubWeb.Controllers
                     activityTemplate.Id,
                     name: activityTemplate.Label,
                     createPlan: true);
-                return Ok(PlanMappingHelper.MapPlanToDto(uow, (PlanDO)result));
+                return Ok(PlanMappingHelper.MapPlanToDto((PlanDO)result));
             }
         }
 
         [Fr8TerminalAuthentication]
         [ResponseType(typeof(PlanDTO))]
         [NonAction]
-        private async Task<IHttpActionResult> Post(PlanEmptyDTO planDto)
+        private async Task<IHttpActionResult> Post(PlanNoChildrenDTO planDto)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -139,12 +139,12 @@ namespace HubWeb.Controllers
                 {
                     return BadRequest("Some of the request data is invalid");
                 }
-                var curPlanDO = Mapper.Map<PlanEmptyDTO, PlanDO>(planDto, opts => opts.Items.Add("ptid", planDto.Id));
+                var curPlanDO = Mapper.Map<PlanNoChildrenDTO, PlanDO>(planDto, opts => opts.Items.Add("ptid", planDto.Id));
 
                 _plan.CreateOrUpdate(uow, curPlanDO);
 
                 uow.SaveChanges();
-                var result = PlanMappingHelper.MapPlanToDto(uow, _plan.GetFullPlan(uow, curPlanDO.Id));
+                var result = PlanMappingHelper.MapPlanToDto(_plan.GetFullPlan(uow, curPlanDO.Id));
                 return Ok(result);
             }
         }
@@ -189,7 +189,7 @@ namespace HubWeb.Controllers
         [SwaggerResponse(HttpStatusCode.OK, "Collection of plans queried by name", typeof(List<PlanDTO>))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "Multiple query parameters are defined")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request", typeof(ErrorDTO))]
-        public IHttpActionResult Get([FromUri] PlansGetParams parameters)
+        public async Task<IHttpActionResult> Get([FromUri] PlansGetParams parameters)
         {
             if ((!parameters.name.IsNullOrEmpty() && parameters.id.HasValue)
                 || (parameters.activity_id.HasValue && parameters.id.HasValue)
@@ -199,7 +199,7 @@ namespace HubWeb.Controllers
             }
             if (parameters.include_children && parameters.id.HasValue)
             {
-                return GetFullPlan((Guid)parameters.id);
+                return await GetFullPlan((Guid)parameters.id);
             }
             if (parameters.activity_id.HasValue)
             {
@@ -215,12 +215,14 @@ namespace HubWeb.Controllers
         [ResponseType(typeof(PlanDTO))]
         [HttpGet]
         [NonAction]
-        private IHttpActionResult GetFullPlan(Guid id)
+        private async Task<IHttpActionResult> GetFullPlan(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = _plan.GetFullPlan(uow, id);
-                var result = PlanMappingHelper.MapPlanToDto(uow, plan);
+                var result = PlanMappingHelper.MapPlanToDto(plan);
+
+                result.Visibility.Public = await _planDirectoryService.GetTemplate(id, User.Identity.GetUserId()) != null;
 
                 return Ok(result);
             };
@@ -234,7 +236,7 @@ namespace HubWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = _plan.GetPlanByActivityId(uow, id);
-                var result = PlanMappingHelper.MapPlanToDto(uow, plan);
+                var result = PlanMappingHelper.MapPlanToDto(plan);
 
                 return Ok(result);
             };
@@ -249,7 +251,7 @@ namespace HubWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curPlans = _plan.GetByName(uow, _security.GetCurrentAccount(uow), name, visibility);
-                var fullPlans = curPlans.Select(curPlan => PlanMappingHelper.MapPlanToDto(uow, curPlan)).ToList();
+                var fullPlans = curPlans.Select(curPlan => PlanMappingHelper.MapPlanToDto(curPlan)).ToList();
                 return Ok(fullPlans);
 
             }
@@ -298,9 +300,9 @@ namespace HubWeb.Controllers
         [SwaggerResponse(HttpStatusCode.OK, "Id of deleted plan")]
         [SwaggerResponse(HttpStatusCode.NotFound, "Plan doesn't exist", typeof(DetailedMessageDTO))]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request")]
-        public IHttpActionResult Delete(Guid id)
+        public async Task<IHttpActionResult> Delete(Guid id)
         {
-            _plan.Delete(id);
+            await _plan.Delete(id);
 
             return Ok(id);
         }
@@ -319,6 +321,19 @@ namespace HubWeb.Controllers
         {
             await _plan.Deactivate(planId);
 
+            // Notify UI for stopped plan
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var plan = uow.PlanRepository.GetById<PlanDO>(planId);
+                _pusherNotifier.NotifyUser(new NotificationMessageDTO
+                {
+                    NotificationType = NotificationType.ExecutionStopped,
+                    Subject = "Plan Stopped",
+                    Message = $"\"{plan.Name}\" has been stopped.",
+                    Collapsed = false
+                }, plan.Fr8AccountId);
+            }
+
             return Ok();
         }
         /// <summary>
@@ -330,7 +345,7 @@ namespace HubWeb.Controllers
         /// <param name="planName">Name to assign to plan that will be created</param>
         [HttpPost]
         [Fr8ApiAuthorize]
-        [SwaggerResponse(HttpStatusCode.OK, "Uploaded plan", typeof(PlanEmptyDTO))]
+        [SwaggerResponse(HttpStatusCode.OK, "Uploaded plan", typeof(PlanNoChildrenDTO))]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "Bad format of plan file", typeof(ErrorDTO))]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request", typeof(ErrorDTO))]
         public async Task<IHttpActionResult> Upload(string planName)
@@ -346,7 +361,7 @@ namespace HubWeb.Controllers
 
                     var content = new StreamReader(stream).ReadToEnd();
 
-                    var planTemplateDTO = JsonConvert.DeserializeObject<PlanTemplateDTO>(content);
+                    var planTemplateDTO = JsonConvert.DeserializeObject<PlanDTO>(content);
                     planTemplateDTO.Name = planName;
 
                     result = Load(planTemplateDTO);
@@ -364,7 +379,7 @@ namespace HubWeb.Controllers
         /// </remarks>
         /// <param name="planId">Id of plan to execute</param>
         /// <param name="payload">Payload to provide to plan during execution</param>
-        [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
+        [Fr8ApiAuthorize("Admin", "StandardUser", "Terminal")]
         [Fr8TerminalAuthentication]
         [HttpPost]
         [SwaggerResponse(HttpStatusCode.OK, "Container creating during successful plan execution", typeof(ContainerDTO))]
@@ -393,14 +408,14 @@ namespace HubWeb.Controllers
         /// </remarks>
         [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
         [Fr8TerminalAuthentication]
-        [ResponseType(typeof(PlanTemplateDTO))]
+        [ResponseType(typeof(PlanDTO))]
         [HttpPost]
         [SwaggerResponse(HttpStatusCode.OK, "Plan template was built successfully", typeof(ContainerDTO))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "Plan with specified Id doesn't exist", typeof(ErrorDTO))]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized request", typeof(ErrorDTO))]
         public async Task<IHttpActionResult> Templates(Guid planId)
         {
-            var planTemplateDTO = _planTemplates.GetPlanTemplate(planId, User.Identity.GetUserId());
+            var planTemplateDTO = _planDirectoryService.CrateTemplate(planId, User.Identity.GetUserId());
             return Ok(planTemplateDTO);
         }
         /// <summary>
@@ -410,7 +425,7 @@ namespace HubWeb.Controllers
         /// <remarks>
         /// Fr8 authentication headers must be provided
         /// </remarks>
-        [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
+        [Fr8ApiAuthorize("Admin", "StandardUser", "Terminal")]
         [Fr8TerminalAuthentication]
         [HttpPost]
         [SwaggerResponse(HttpStatusCode.OK, "Plan was successfully shared")]
@@ -419,38 +434,7 @@ namespace HubWeb.Controllers
         [SwaggerResponseRemoveDefaults]
         public async Task<IHttpActionResult> Share(Guid planId)
         {
-            var planTemplateDTO = _planTemplates.GetPlanTemplate(planId, User.Identity.GetUserId());
-
-            var hmacService = ObjectFactory.GetInstance<IHMACService>();
-            var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
-
-            var dto = new PublishPlanTemplateDTO()
-            {
-                Name = planTemplateDTO.Name,
-                Description = planTemplateDTO.Description,
-                ParentPlanId = planId,
-                PlanContents = JsonConvert.DeserializeObject<JToken>(JsonConvert.SerializeObject(planTemplateDTO))
-            };
-
-            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/plan_templates/");
-            var headers = await hmacService.GenerateHMACHeader(
-                uri,
-                "PlanDirectory",
-                CloudConfigurationManager.GetSetting("PlanDirectorySecret"),
-                User.Identity.GetUserId(),
-                dto
-            );
-
-            await client.PostAsync(uri, dto, headers: headers);
-
-            // Notify user with directing him to PlanDirectory with related search query
-            var url = CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/#?planSearch=" + HttpUtility.UrlEncode(dto.Name);
-            _pusherNotifier.NotifyUser(new
-            {
-                Message = $"Plan Shared. To view, click on " + url,
-                Collapsed = false
-            }, NotificationType.GenericSuccess, User.Identity.GetUserId());
-
+            await _planDirectoryService.Share(planId, User.Identity.GetUserId());
             return Ok();
         }
         /// <summary>
@@ -460,7 +444,7 @@ namespace HubWeb.Controllers
         /// <remarks>
         /// Fr8 authentication headers must be provided
         /// </remarks>
-        [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
+        [Fr8ApiAuthorize("Admin", "StandardUser", "Terminal")]
         [Fr8TerminalAuthentication]
         [HttpPost]
         [SwaggerResponse(HttpStatusCode.OK, "Plan was successfully removed from plan directory")]
@@ -469,41 +453,26 @@ namespace HubWeb.Controllers
         [SwaggerResponseRemoveDefaults]
         public async Task<IHttpActionResult> Unpublish(Guid planId)
         {
-            var planTemplateDTO = _planTemplates.GetPlanTemplate(planId, User.Identity.GetUserId());
-
-            var hmacService = ObjectFactory.GetInstance<IHMACService>();
-            var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
-
-            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/plan_templates/?id=" + planId);
-            var headers = await hmacService.GenerateHMACHeader(
-                uri,
-                "PlanDirectory",
-                CloudConfigurationManager.GetSetting("PlanDirectorySecret"),
-                User.Identity.GetUserId()
-            );
-
-            await client.DeleteAsync(uri, headers: headers);
-
+            await _planDirectoryService.Unpublish(planId, User.Identity.GetUserId());
             return Ok();
         }
         /// <summary>
         /// Builds a plan from specified plan template
         /// </summary>
-        /// <param name="dto">Plan template to build a plan from</param>
+        /// <param name="plan">Plan template to build a plan from</param>
         /// <remarks>
         /// Fr8 authentication headers must be provided
         /// </remarks>
         /// <response code="200">Plan was successfully built from template</response>
         /// <response code="403">Unauthorized request</response>
-        [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
+        [Fr8ApiAuthorize("Admin", "StandardUser", "Terminal")]
         [Fr8TerminalAuthentication]
         [Fr8PlanDirectoryAuthentication]
         [HttpPost]
-        [ResponseType(typeof(PlanEmptyDTO))]
-        public IHttpActionResult Load(PlanTemplateDTO dto)
+        [ResponseType(typeof(PlanNoChildrenDTO))]
+        public IHttpActionResult Load(PlanDTO plan)
         {
-            var planDO = _planTemplates.LoadPlan(dto, User.Identity.GetUserId());
-            return Ok(Mapper.Map<PlanEmptyDTO>(planDO));
+            return Ok(_planDirectoryService.CreateFromTemplate(plan, User.Identity.GetUserId()));
         }
     }
 }

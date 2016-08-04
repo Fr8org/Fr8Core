@@ -160,14 +160,12 @@ namespace terminalSalesforce.Actions
             var selectedObjectProperties = await _salesforceManager.GetProperties(SelectedChatter.ToEnum<SalesforceObjectType>(), AuthorizationToken,false,PostedFeedCrateLabel);
             var queryFilterCrate = Crate<FieldDescriptionsCM>.FromContent(
                 QueryFilterCrateLabel,
-                new FieldDescriptionsCM(selectedObjectProperties),
-                AvailabilityType.Configuration);
+                new FieldDescriptionsCM(selectedObjectProperties));
             Storage.ReplaceByLabel(queryFilterCrate);
 
             var objectPropertiesCrate = Crate<FieldDescriptionsCM>.FromContent(
                 SalesforceObjectFieldsCrateLabel,
-                new FieldDescriptionsCM(selectedObjectProperties),
-                AvailabilityType.RunTime);
+                new FieldDescriptionsCM(selectedObjectProperties));
             Storage.ReplaceByLabel(objectPropertiesCrate);
             this[nameof(SelectedChatter)] = SelectedChatter;
             //Publish information for downstream activities
@@ -270,11 +268,11 @@ namespace terminalSalesforce.Actions
             set { ActivityUI.ChatterSelector.ListItems = value; }
         }
 
-        private string FeedText => ActivityUI.FeedTextSource.GetValue(Payload);
+        private string FeedText => ActivityUI.FeedTextSource.TextValue;
 
         private string ChatterFilter => ActivityUI.ChatterFilter.Value;
 
-        private string IncomingChatterId => Payload.FindField(ActivityUI.IncomingChatterIdSelector.selectedKey);
+        private string IncomingChatterId => ActivityUI.IncomingChatterIdSelector.Value;
 
         #endregion
     }

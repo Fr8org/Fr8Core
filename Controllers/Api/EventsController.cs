@@ -59,7 +59,7 @@ namespace HubWeb.Controllers
                 return BadRequest("Crate content is empty");
             }
             var eventReportMS = curCrateStandardEventReport.Get<EventReportCM>();
-            Logger.LogInfo($"Crate {raw.Id} with incoming event '{eventReportMS.EventNames}' is received for external account '{eventReportMS.ExternalAccountId}'");
+            Logger.GetLogger().Info($"Crate {raw.Id} with incoming event '{eventReportMS.EventNames}' is received for external account '{eventReportMS.ExternalAccountId}'");
             if (eventReportMS.EventPayload == null)
             {
                 return BadRequest("EventReport can't have a null payload");

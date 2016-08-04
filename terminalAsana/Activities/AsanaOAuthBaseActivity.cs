@@ -67,7 +67,7 @@ namespace terminalAsana.Activities
             }
             catch (Exception exp)
             {
-                Logger.LogError($"terminalAsana: Error while token renew:  {exp.Message}", "Asana terminal");
+                Logger.GetLogger("Asana terminal").Error($"terminalAsana: Error while token renew:  {exp.Message}");
             }
         }
     }

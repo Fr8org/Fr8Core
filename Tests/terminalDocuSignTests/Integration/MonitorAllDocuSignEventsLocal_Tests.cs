@@ -178,7 +178,7 @@ namespace terminalDocuSignTests.Integration
                 Username = DocuSignEmail,
                 Password = DocuSignApiPassword,
                 IsDemoAccount = true,
-                Terminal = Mapper.Map<TerminalDTO>(docuSignTerminal)
+                Terminal = Mapper.Map<TerminalSummaryDTO>(docuSignTerminal)
             };
 
             var tokenResponse = await HttpPostAsync<CredentialsDTO, JObject>(

@@ -1,20 +1,21 @@
-﻿using Fr8.Infrastructure.Data.DataTransferObjects;
+﻿using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace HubWeb.Documentation.Swagger
 {
-    public class TerminalNotificationSampleFactory : ISwaggerSampleFactory<TerminalNotificationDTO>
+    public class TerminalNotificationSampleFactory : ISwaggerSampleFactory<NotificationMessageDTO>
     {
-        public TerminalNotificationDTO GetSampleData()
+        public NotificationMessageDTO GetSampleData()
         {
-            return new TerminalNotificationDTO
+            return new NotificationMessageDTO
             {
-                Type = "Success",
+                NotificationType = NotificationType.GenericSuccess,
+                Subject = "Good Message",
                 Message = "Something good just happened",
                 TerminalName = "terminalFr8Core",
                 ActivityName = "Build_Message_v1",
                 ActivityVersion = "1",
                 Collapsed = false,
-                Subject = "Good Message",
                 TerminalVersion = "1"
             };
         }

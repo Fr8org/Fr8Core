@@ -1,6 +1,6 @@
 # Adding OAuth Support to a Terminal
 
-Not all Terminal Activities require authentication, but if you need access to a user's accounts from some Web Service, you probably need to support the OAuth process in your Terminal.
+Not all Terminal Activities require authentication, but if you need access to a user's accounts from some Web Service, you probably need to support the OAuth process in your Terminal. Put another way: if you respond to a /discover request from the Hub with at least one ActivityTemplate that indicates Authentication is required, then your Terminal will need to support the [two /authentication endpoints](http://dev-terminals.fr8.co:25923/swagger/ui/index#/Authentication).
 
 This material assumes you've got a good basic understanding of OAuth. If you need to learn, we recommend [this](https://aaronparecki.com/articles/2012/07/29/1/oauth2-simplified).
 
@@ -14,7 +14,7 @@ We'll focus on #2. By looking at existing Terminal source code, you'll be able t
 The Basic Fr8 OAuth Interaction
 --------------------------------------
 
-This is diagrammed [here](Docs/ForDevelopers/OperatingConcepts/Authorization/AuthOverview.md). The key items are:
+This is diagrammed [here](/Docs/ForDevelopers/OperatingConcepts/Authorization/AuthOverview.md). The key items are:
 
 1. If your ActivityTemplate is signalling that Authentication is required, and the Fr8 Hub can't find a valid Authorization Token, it will [POST to the Terminal](http://dev-terminals.fr8.co:25923/swagger/ui/index#!/Authentication/Authentication_GenerateOAuthInitiationURL) to retrieve the **initialOAuthUrl**
 2. You return this URL to the Hub. It's usually hardcoded into your Terminal. 
@@ -33,7 +33,7 @@ Both MailChimp and Slack ask you to register a new "app" and then provide you wi
 
 | Mail Chimp app registration   |      Slack app registration      |
 |----------|:-------------:|
-|![](../../../../../Docs/img/TerminalDeveloping-Authentication.md-1.png) |  ![](../../../../../Docs/img/TerminalDeveloping-Authentication.md-2.png) | 
+|![](/Docs/img/TerminalDeveloping-Authentication.md-1.png) |  ![](/Docs/img/TerminalDeveloping-Authentication.md-2.png) | 
 
 After that you should be able to compose an **initialOAuthUrl**
 
@@ -54,7 +54,7 @@ Not encoded: ` http://localhost:30643/AuthenticationCallback/ProcessSuccessfulOA
 ###Example: Generating the initial oAuth url
 In this C# example, the Terminal has built an  AuthenticationController which responds to the incoming POST request. 
 
-![](../../../../../Docs/img/TerminalDeveloping-Authentication.md-3.png)
+![](/Docs/img/TerminalDeveloping-Authentication.md-3.png)
 
 The hardcoded URL is stored as a configuration setting, and retrieved with CloudConfigurationManager.GetSetting("MailChimpOAuthUrl") 
 `<add key="MailChimpOAuthUrl" value="https://login.mailchimp.com/oauth2/authorize?response_type=code&amp;state=%STATE%&amp;client_id=583227558154&amp;redirect_uri=http%3A%2F%2F127.0.0.1%3A30643%2FAuthenticationCallback%2FProcessSuccessfulOAuthResponse%3FterminalName%3DterminalMailChimp%26terminalVersion%3D1" />`
@@ -70,7 +70,7 @@ At this point the AuthenticationController has to implement a method to respond 
 In order to generate **oAuthToken** you have to make a call to OAuthAccessUrl with the code you've received
 First you have to parse received **code** and **state**
 
-![](../../../../../Docs/img/TerminalDeveloping-Authentication.md-4.png)
+![](/Docs/img/TerminalDeveloping-Authentication.md-4.png)
 
 When you get **code** and **state** you have to make a call to **OAuthAccessUrl**
 Different services have different variations on how this is done, so read their documentation carefully. Here are two different examples:
@@ -80,7 +80,7 @@ Different services have different variations on how this is done, so read their 
 
 In Slack, in order to exchange a code for a token you simply have to make a GET call on the **OAuthAccessUrl** with code specifed.
 
-![](../../../../../Docs/img/TerminalDeveloping-Authentication.md-5.png)
+![](/Docs/img/TerminalDeveloping-Authentication.md-5.png)
 
 #### Example: Getting a Token from MailChimp
 
@@ -94,7 +94,7 @@ You have to:
 
 Code for MailChimp GetOAuthToken looks like this:
 
-![](../../../../../Docs/img/TerminalDeveloping-Authentication.md-6.png)
+![](/Docs/img/TerminalDeveloping-Authentication.md-6.png)
 
  
 

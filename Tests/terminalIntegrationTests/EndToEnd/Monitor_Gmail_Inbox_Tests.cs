@@ -53,7 +53,7 @@ namespace terminalIntegrationTests.EndToEnd
         }
 
         // this test requires internet connection
-        [Test, Category("Integration.terminalGoogle")]
+        [Test ,Category("Integration.terminalGoogle")]
         public async Task Monitor_Gmail_Inbox_Test()
         {
             Fr8AccountDO currentUser = null;
@@ -70,7 +70,7 @@ namespace terminalIntegrationTests.EndToEnd
             saveToFr8WarehouseActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(GetHubApiBaseUrl() + "activities/configure", saveToFr8WarehouseActivity);
 
             //run the plan
-            await _plansHelper.RunPlan(testPlan.Plan.Id);
+            await _plansHelper.RunPlan(testPlan.Id);
             await Task.Delay(10000);
 
             //sending an email
