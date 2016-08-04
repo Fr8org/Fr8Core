@@ -632,8 +632,6 @@ module dockyard.controllers {
             var id = this.LocalIdentityGenerator.getNextId();
             var parentId = eventArgs.group.parentId;
             var action = new model.ActivityDTO(this.$scope.planId, parentId, id);
-
-            action.name = activityTemplate.label;
             // Add action to Workflow Designer.
             this.$scope.current.activities = action.toActionVM();
             this.$scope.current.activities.activityTemplate = this.ActivityTemplateHelperService.toSummary(activityTemplate);
@@ -680,7 +678,7 @@ module dockyard.controllers {
         private selectAction(action: model.ActivityDTO, group: model.ActionGroup, $window) {
             //this performs a call to Segment service for analytics
             if ($window['analytics'] != null) {
-                $window['analytics'].track("Added Activity To Plan", { "Activity Name": action.name });
+                $window['analytics'].track("Added Activity To Plan", { "Activity Name": action.activityTemplate.name });
             }
             console.log("Activity selected: " + action.id);
             var originalId,
@@ -756,7 +754,6 @@ module dockyard.controllers {
         */
         private PaneConfigureAction_ActionUpdated(updatedAction: model.ActivityDTO) {
             var action = this.findActionById(updatedAction.id);
-            action.name = updatedAction.name;
             action.label = updatedAction.label;
         }
 
