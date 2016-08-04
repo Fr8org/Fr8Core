@@ -30,7 +30,7 @@ namespace PlanDirectory.Infrastructure
                 //For<IHubCommunicatorFactory>().Use(
                 //    x => new PlanDirectoryHubCommunicatorFactory(
                 //        ObjectFactory.GetInstance<IRestfulServiceClientFactory>(),
-                //        CloudConfigurationManager.GetSetting("HubApiBaseUrl"),
+                //        CloudConfigurationManager.GetSetting("HubApiUrl"),
                 //        CloudConfigurationManager.GetSetting("PlanDirectorySecret")
                 //    )
                 //);
