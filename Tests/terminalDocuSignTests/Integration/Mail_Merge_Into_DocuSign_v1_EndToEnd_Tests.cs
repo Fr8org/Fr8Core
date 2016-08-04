@@ -84,13 +84,13 @@ namespace terminalDocuSignTests.Integration
             //
             // configure Get_Google_Sheet_Data activity
             //
-            var googleSheetActivity = this.solution.ChildrenActivities.Single(a => a.Name.Equals("get google sheet data", StringComparison.InvariantCultureIgnoreCase));
+            var googleSheetActivity = this.solution.ChildrenActivities.Single(a => a.ActivityTemplate.Name.Equals("Get_Google_Sheet_Data", StringComparison.InvariantCultureIgnoreCase));
             await googleActivityTestTools.ConfigureGetFromGoogleSheetActivity(googleSheetActivity, spreadsheetName, false, worksheetName);
 
             //
             // configure Loop activity
             //
-            var loopActivity = this.solution.ChildrenActivities.Single(a => a.Name.Equals("loop", StringComparison.InvariantCultureIgnoreCase));
+            var loopActivity = this.solution.ChildrenActivities.Single(a => a.ActivityTemplate.Name.Equals("Loop", StringComparison.InvariantCultureIgnoreCase));
             var terminalFr8CoreTools = new IntegrationTestTools_terminalFr8(this);
             loopActivity = await terminalFr8CoreTools.ConfigureLoopActivity(loopActivity, "Standard Table Data", "Table Generated From Google Sheet Data");
 
@@ -101,7 +101,7 @@ namespace terminalDocuSignTests.Integration
             //
             // Initial Configuration
             //
-            var sendEnvelopeAction = loopActivity.ChildrenActivities.Single(a => a.Name == "Send DocuSign Envelope");
+            var sendEnvelopeAction = loopActivity.ChildrenActivities.Single(a => a.ActivityTemplate.Name == "Send_DocuSign_Envelope");
 
             crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
             var controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();

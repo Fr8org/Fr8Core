@@ -16,6 +16,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Interfaces;
 using HubTests.Services.Container;
 using Fr8.Testing.Unit.Fixtures;
+using Fr8.Infrastructure.Data.States;
 
 namespace HubTests.Controllers
 {
@@ -66,7 +67,7 @@ namespace HubTests.Controllers
 
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(3)] = new SuspenderActivityMock(CrateManager);
 
-                plan.PlanState = PlanState.Running;
+                plan.PlanState = PlanState.Executing;
                 plan.StartingSubplan = (SubplanDO)plan.ChildNodes[0];
                 var userAcct = FixtureData.TestUser1();
                 uow.UserRepository.Add(userAcct);
@@ -115,7 +116,6 @@ namespace HubTests.Controllers
 
             Mock<IPusherNotifier> pusherMock = new Mock<IPusherNotifier>();
             pusherMock.Setup(x => x.NotifyUser(It.IsAny<NotificationMessageDTO>(), It.IsAny<string>()));
-            pusherMock.Setup(x => x.NotifyTerminalEvent(It.IsAny<NotificationMessageDTO>(), It.IsAny<string>()));
 
             ObjectFactory.Container.Inject(typeof(IUnitOfWork), uowMock.Object);
             ObjectFactory.Container.Inject(typeof(IPlan), planMock.Object);
@@ -157,7 +157,6 @@ namespace HubTests.Controllers
 
             Mock<IPusherNotifier> pusherMock = new Mock<IPusherNotifier>();
             pusherMock.Setup(x => x.NotifyUser(It.IsAny<NotificationMessageDTO>(), It.IsAny<string>()));
-            pusherMock.Setup(x => x.NotifyTerminalEvent(It.IsAny<NotificationMessageDTO>(), It.IsAny<string>()));
 
             ObjectFactory.Container.Inject(typeof(IUnitOfWork), uowMock.Object);
             ObjectFactory.Container.Inject(typeof(IPlan), planMock.Object);

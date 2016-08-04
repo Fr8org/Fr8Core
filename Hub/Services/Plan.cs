@@ -329,9 +329,9 @@ namespace Hub.Services
                     }
                 }
 
-                if (result.ValidationErrors.Count == 0 && plan.PlanState != PlanState.Running)
+                if (result.ValidationErrors.Count == 0 && plan.PlanState != PlanState.Executing)
                 {
-                    plan.PlanState = PlanState.Running;
+                    plan.PlanState = IsMonitoringPlan(uow, plan) ? PlanState.Active : PlanState.Executing;
                     plan.LastUpdated = DateTimeOffset.UtcNow;
                     uow.SaveChanges();
                 }
@@ -350,6 +350,19 @@ namespace Hub.Services
         {
             var crateStorage = _crate.GetStorage(curActivityDTO);
             return crateStorage.CrateContentsOfType<ValidationResultsCM>().SelectMany(x => x.ValidationErrors);
+        }
+
+        public bool IsPlanActiveOrExecuting(Guid planNodeId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var planState = GetPlanState(uow, planNodeId);
+                if (planState == PlanState.Executing || planState == PlanState.Active)
+                {
+                    return true;
+                }
+                return false;
+            }
         }
 
         public async Task Deactivate(Guid planId)
@@ -584,7 +597,13 @@ namespace Hub.Services
 
                         if (activity != null)
                         {
-                            var label = string.IsNullOrWhiteSpace(activity.Label) ? activity.Name : activity.Label;
+                            
+                            var label = string.IsNullOrWhiteSpace(activity.Label) ? activity.ActivityTemplate?.Name : activity.Label;
+                            if (label == null)
+                            {
+                                var template = uow.ActivityTemplateRepository.GetByKey(activity.ActivityTemplateId);
+                                label = template.Name;
+                            }
 
                             if (string.IsNullOrWhiteSpace(label))
                             {
@@ -602,6 +621,7 @@ namespace Hub.Services
                     _pusherNotifier.NotifyUser(new NotificationMessageDTO
                     {
                         NotificationType = NotificationType.GenericFailure,
+                        Subject = "Plan Failed",
                         Message = $"Validation failed for activities: {activitiesList} from plan \"{plan.Name}\". See activity configuration pane for details.",
                         Collapsed = false
                     }, currentUserId);
@@ -649,6 +669,7 @@ namespace Hub.Services
                                 _pusherNotifier.NotifyUser(new NotificationMessageDTO
                                 {
                                     NotificationType = NotificationType.GenericSuccess,
+                                    Subject = "Success",
                                     Message = $"Plan \"{plan.Name}\" activated. It will wait and respond to specified external events.",
                                     Collapsed = false
                                 }, currentUserId);
@@ -667,6 +688,7 @@ namespace Hub.Services
                             _pusherNotifier.NotifyUser(new NotificationMessageDTO
                             {
                                 NotificationType = NotificationType.GenericSuccess,
+                                Subject = "Success",
                                 Message = $"Continue execution of the suspended Plan \"{plan.Name}\"",
                                 Collapsed = false
                             }, currentUserId);
@@ -682,6 +704,7 @@ namespace Hub.Services
                             _pusherNotifier.NotifyUser(new NotificationMessageDTO
                             {
                                 NotificationType = NotificationType.GenericSuccess,
+                                Subject = "Success",
                                 Message = $"Complete processing for Plan \"{plan.Name}\".{responseMsg}",
                                 Collapsed = false
                             }, currentUserId);
@@ -691,6 +714,7 @@ namespace Hub.Services
                             _pusherNotifier.NotifyUser(new NotificationMessageDTO
                             {
                                 NotificationType = NotificationType.GenericFailure,
+                                Subject = "Plan Failed",
                                 Message = $"Failed executing plan \"{plan.Name}\"",
                                 Collapsed = false
                             }, currentUserId);
@@ -784,6 +808,7 @@ namespace Hub.Services
             _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
                 NotificationType = NotificationType.GenericFailure,
+                Subject = "Plan Failed",
                 Message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, messageToNotify),
                 Collapsed = false
             }, userId);
@@ -820,6 +845,7 @@ namespace Hub.Services
                 _pusherNotifier.NotifyUser(new NotificationMessageDTO
                 {
                     NotificationType = NotificationType.GenericFailure,
+                    Subject = "Plan Failed",
                     Message = $"Validation of activity '{activityLabel}' from plan \"{planName}\" failed: {errors}",
                     Collapsed = false
                 }, userId);
@@ -945,6 +971,7 @@ namespace Hub.Services
             _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
                 NotificationType = NotificationType.GenericFailure,
+                Subject = "Plan Failed",
                 Message = errorMessage,
                 Collapsed = false
             }, user.Id);
@@ -971,6 +998,7 @@ namespace Hub.Services
             _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
                 NotificationType = NotificationType.GenericFailure,
+                Subject = "Plan Failed",
                 Message = errorMessage,
                 Collapsed = false
             }, plan.Fr8AccountId);

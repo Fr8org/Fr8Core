@@ -1,37 +1,33 @@
 ﻿module dockyard.model {
     export class SubPlanDTO {
-        public subPlanId: string;
+        public id: string;
         public isTempId: boolean;
         public planId: string;
-        public parentId: string;
+        public parentPlanNodeId: string;
         public name: string;
         public criteria: CriteriaDTO;
         public activities: Array<ActivityDTO>;
-        public runnable: boolean;
 
         constructor(
             id: string,
             isTempId: boolean,
             planId: string,
-            parentId: string,
+            parentPlanNodeId: string,
             name: string
         ) {
-            this.subPlanId = id;
+            this.id = id;
             this.isTempId = isTempId;
             this.planId = planId;
-            this.parentId = parentId;
+            this.parentPlanNodeId = parentPlanNodeId;
             this.name = name;
 
             this.criteria = null;
             this.activities = [];
-
-            this.runnable = true;
         }
 
         clone(): SubPlanDTO {
-            var result = new SubPlanDTO(this.subPlanId, this.isTempId, this.planId, this.parentId, this.name);
+            var result = new SubPlanDTO(this.id, this.isTempId, this.planId, this.parentPlanNodeId, this.name);
             result.criteria = this.criteria !== null ? this.criteria.clone() : null;
-            result.runnable = this.runnable;
 
             angular.forEach(this.activities, function (it) { result.activities.push(it.clone()); });
 
@@ -58,7 +54,7 @@
             var criteria = new model.CriteriaDTO(
                 criteriaId,
                 true,
-                subPlan.subPlanId,
+                subPlan.id,
                 model.CriteriaExecutionType.WithConditions
             );
 

@@ -32,7 +32,7 @@ namespace Fr8.Testing.Unit.Fixtures
                 Id = GetTestGuidById(1000),
                 Name = "Test Plan Name",
                 Description = "Test Plan Description",
-                PlanState = PlanState.Running,
+                PlanState = PlanState.Executing,
             };
         }
 
