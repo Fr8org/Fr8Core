@@ -82,7 +82,7 @@ namespace HubWeb
                 System.Web.Http.GlobalConfiguration.Configure(ConfigureControllerActivator);
             }
 
-            ConfigureHangfire(app, "DockyardDB");
+            ConfigureHangfire(app, "Fr8LocalDB");
 
 #pragma warning disable 4014
             RegisterTerminalActions(selfHostMode);
