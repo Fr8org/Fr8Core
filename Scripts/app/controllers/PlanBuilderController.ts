@@ -485,7 +485,10 @@ module dockyard.controllers {
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ChildActionsDetected], () => this.PaneConfigureAction_ChildActionsDetected());
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ExecutePlan], () => this.PaneConfigureAction_ExecutePlan());
 
-            this.$scope.$on(<any>designHeaderEvents.PLAN_EXECUTION_FAILED, () => this.reloadFirstActions());
+            this.$scope.$on(<any>designHeaderEvents.PLAN_EXECUTION_FAILED, () => {
+                this.$scope.current.plan.planState = 1;
+                this.reloadFirstActions();
+            });
 
             // Handles Response from Configure call from PaneConfiguration
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ConfigureCallResponse],
