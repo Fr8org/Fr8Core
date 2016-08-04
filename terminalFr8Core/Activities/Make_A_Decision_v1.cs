@@ -11,6 +11,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Data.Helpers;
+using Fr8.TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
@@ -124,6 +125,12 @@ namespace terminalFr8Core.Activities
             }
             //none of them matched let's continue normal execution
             Success();
+        }
+
+        protected override Task Validate()
+        {
+            ValidationManager.ValidateTransitions((ContainerTransition)ConfigurationControls.Controls.Single());
+            return base.Validate();
         }
 
         private OperationalStateCM.BranchStatus CreateBranch()
