@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities
 {
-    public class TerminalRegistrationDO : BaseObject
+    public class _TerminalRegistrationDO : BaseObject
     {
         [Key]
         [Required]

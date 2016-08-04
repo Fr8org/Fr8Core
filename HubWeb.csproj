@@ -456,7 +456,6 @@
     <Compile Include="Documentation\Swagger\SampleData\ResponseMessageSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\SubplanSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\TerminalNotificationSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\TerminalRegistrationSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\TerminalSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\TokenResponseSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\TokenWrapperSampleFactory.cs" />

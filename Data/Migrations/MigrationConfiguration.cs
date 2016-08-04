@@ -13,6 +13,7 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using StructureMap;
 using System.Text.RegularExpressions;
+using Fr8.Infrastructure.Data.States;
 
 namespace Data.Migrations
 {
@@ -123,12 +124,12 @@ namespace Data.Migrations
         // ReSharper disable once UnusedMember.Local
         private void RegisterTerminal(UnitOfWork uow, string terminalEndpoint)
         {
-            var terminalRegistration = new TerminalRegistrationDO();
+            var terminalRegistration = new TerminalDO();
             string terminalPort = ExtractPort(terminalEndpoint);
 
             terminalEndpoint = ExtractTerminalAuthority(terminalEndpoint);
 
-            if (uow.TerminalRegistrationRepository.GetAll().FirstOrDefault(x =>
+            if (uow.TerminalRepository.GetAll().FirstOrDefault(x =>
                     string.Equals(ExtractTerminalAuthority(x.Endpoint), terminalEndpoint, StringComparison.OrdinalIgnoreCase) ||
                     (ExtractPort(x.Endpoint) != null && ExtractPort(terminalEndpoint) != null && string.Equals(ExtractPort(x.Endpoint), terminalPort, StringComparison.OrdinalIgnoreCase))
                 ) != null)
@@ -138,10 +139,10 @@ namespace Data.Migrations
 
             terminalRegistration.Endpoint = terminalEndpoint;
             terminalRegistration.IsFr8OwnTerminal = true;
-            terminalRegistration.OperationalState = OperationalState.Active;
+            terminalRegistration.TerminalStatus = TerminalStatus.Active;
             terminalRegistration.ParticipationState = ParticipationState.Approved;
 
-            uow.TerminalRegistrationRepository.Add(terminalRegistration);
+            uow.TerminalRepository.Add(terminalRegistration);
             uow.SaveChanges();
         }
 

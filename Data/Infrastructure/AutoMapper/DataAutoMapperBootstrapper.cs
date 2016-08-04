@@ -164,10 +164,6 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.PlanId, opts => opts.ResolveUsing(x => x.RootPlanNodeId))
                 .ForMember(x => x.SubPlanId, opts => opts.ResolveUsing(x => x.Id));
 
-
-            Mapper.CreateMap<TerminalRegistrationDO, TerminalRegistrationDTO>();
-            Mapper.CreateMap<TerminalRegistrationDTO, TerminalRegistrationDO>();
-
             Mapper.CreateMap<PlanDO, PlanDTO>().ConvertUsing<PlanDOFullConverter>();
 
             Mapper.CreateMap<PlanNoChildrenDTO, PlanDTO>();

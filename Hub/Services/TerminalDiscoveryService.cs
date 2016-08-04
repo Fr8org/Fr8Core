@@ -16,6 +16,7 @@ using log4net;
 using Microsoft.AspNet.Identity;
 using Data.States;
 using Data.Infrastructure.StructureMap;
+using Fr8.Infrastructure.Data.States;
 
 namespace Hub.Services
 {
@@ -82,6 +83,7 @@ namespace Hub.Services
             {
                 throw new ArgumentException("Invalid url", nameof(endpoint));
             }
+            endpoint = endpoint.ToLower();
 
             Logger.Info($"Registration of terminal at '{endpoint}' is requested.");
 
@@ -89,13 +91,13 @@ namespace Hub.Services
 
             using (var uow = _unitOfWorkFactory.Create())
             {
-                var terminalRegistration = new TerminalRegistrationDO();
-                terminalRegistration.OperationalState = OperationalState.Undiscovered;
+                var terminalRegistration = new TerminalDO();
+                terminalRegistration.TerminalStatus = TerminalStatus.Undiscovered;
 
                 // The 'Endpoint' property contains the currently active endpoint which may be changed 
                 // by deployment scripts or by promoting the terminal from Dev to Production 
                 // while ProdUrl/DevUrl contains  whatever user or administrator have supplied.                
-                terminalRegistration.Endpoint = endpoint.ToLower();
+                terminalRegistration.Endpoint = endpoint;
                 if (UserHasTerminalAdministratorPermission())
                 {
                     // Promote terminal directly to the Approved state if an admin adds it
@@ -109,7 +111,7 @@ namespace Hub.Services
                     terminalRegistration.DevUrl = terminalRegistration.Endpoint;
                 }
 
-                if (uow.TerminalRegistrationRepository.GetAll().FirstOrDefault(x => string.Equals(ExtractTerminalAuthority(x.Endpoint), endpoint, StringComparison.OrdinalIgnoreCase)) != null)
+                if (uow.TerminalRepository.GetAll().FirstOrDefault(x => string.Equals(ExtractTerminalAuthority(x.Endpoint), endpoint, StringComparison.OrdinalIgnoreCase)) != null)
                 {
                     Logger.Error($"Terminal with endpoint '{endpoint}' was already registered");
                     throw new Exception($"Terminal with endpoint '{endpoint}' was already registered");
@@ -131,7 +133,7 @@ namespace Hub.Services
                     throw new Exception($"Unable to discover terminal at '{normaizedEndpoint}'");
                 }
 
-                uow.TerminalRegistrationRepository.Add(terminalRegistration);
+                uow.TerminalRepository.Add(terminalRegistration);
                 uow.SaveChanges();
             }
 
@@ -147,9 +149,9 @@ namespace Hub.Services
         public async Task Discover()
         {
             var terminalUrls = ListTerminalEndpoints();
-            var discoverTerminalsTasts = terminalUrls.Select(x => DiscoverInternal(NormalizeTerminalEndpoint(x))).ToArray();
+            var discoverTerminalsTasks = terminalUrls.Select(x => DiscoverInternal(NormalizeTerminalEndpoint(x))).ToArray();
 
-            await Task.WhenAll(discoverTerminalsTasts);
+            await Task.WhenAll(discoverTerminalsTasks);
         }
 
         public async Task<bool> Discover(string terminalUrl)
@@ -225,10 +227,10 @@ namespace Hub.Services
                     throw new Exception($"Terminal at '{terminalUrl}' didn't return meaningfull reply for discovery request.");
                 }
 
+                terminalRegistrationInfo.Definition.Endpoint = terminalUrl; // Don't let terminal change its endpoint URL (FR-5069)
+
                 var activityTemplates = terminalRegistrationInfo.Activities.Select(Mapper.Map<ActivityTemplateDO>).ToList();
-
                 var terminal = Mapper.Map<TerminalDO>(terminalRegistrationInfo.Definition);
-
                 terminal.Secret = secret;
 
                 if (string.IsNullOrWhiteSpace(terminal.Label))
@@ -286,7 +288,7 @@ namespace Hub.Services
 
             using (var uow = _unitOfWorkFactory.Create())
             {
-                foreach (var terminalRegistration in uow.TerminalRegistrationRepository.GetAll())
+                foreach (var terminalRegistration in uow.TerminalRepository.GetAll())
                 {
                     terminalUrls.Add(terminalRegistration.Endpoint);
                 }

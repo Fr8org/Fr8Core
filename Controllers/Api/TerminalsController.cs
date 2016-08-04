@@ -48,13 +48,13 @@ namespace HubWeb.Controllers
         /// <response code="403">Unauthorized request</response>
 	    [HttpGet]
         [Fr8ApiAuthorize]
-        [ResponseType(typeof(List<TerminalRegistrationDTO>))]
+        [ResponseType(typeof(List<TerminalDTO>))]
         public IHttpActionResult Registrations()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var terminals = uow.TerminalRegistrationRepository.GetAll()
-                    .Select(Mapper.Map<TerminalRegistrationDTO>)
+                var terminals = uow.TerminalRepository.GetAll()
+                    .Select(Mapper.Map<TerminalDTO>)
                     .ToList();
 
 
@@ -103,7 +103,7 @@ namespace HubWeb.Controllers
         //[Fr8ApiAuthorize]
         [SwaggerResponse(HttpStatusCode.OK, "Terminal was registered and discovery process was successfully performed")]
         [SwaggerResponseRemoveDefaults]
-        public async Task<IHttpActionResult> Post([FromBody]TerminalRegistrationDTO registration)
+        public async Task<IHttpActionResult> Post([FromBody]TerminalDTO registration)
         {
             await _terminalDiscovery.RegisterTerminal(registration.Endpoint);
             return Ok();
