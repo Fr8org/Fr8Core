@@ -90,6 +90,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/services/UpstreamExtractor.js',
         'Scripts/app/services/PageDefinitionService.js',
         'Scripts/app/services/ActivityTemplateService.js',
+        'Scripts/app/services/ActivityService.js',
         'Scripts/app/filters/PlanState.js',
         'Scripts/app/filters/ContainerState.js',
         'Scripts/app/filters/FilterByTag.js',

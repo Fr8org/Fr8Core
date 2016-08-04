@@ -47,6 +47,9 @@ namespace HubWeb.Controllers
             var categoriesWithActivities = _activity.GetAvailableActivityGroups();
             return Ok(categoriesWithActivities);
         }
+
+
+        //TODO inspect this - why do we have 2 different methods returning different responses by similar names?
         /// <summary>
         /// Retreives all available activity templates grouped by category
         /// </summary>
