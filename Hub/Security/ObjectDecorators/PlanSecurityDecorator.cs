@@ -54,6 +54,11 @@ namespace Hub.Security.ObjectDecorators
             return _target.IsMonitoringPlan(uow, planDo);
         }
 
+        public bool IsPlanActiveOrExecuting(Guid planNodeId)
+        {
+            return _target.IsPlanActiveOrExecuting(planNodeId);
+        }
+
         public int? GetPlanState(IUnitOfWork uow, Guid planNodeId)
         {
             return _target.GetPlanState(uow, planNodeId);
