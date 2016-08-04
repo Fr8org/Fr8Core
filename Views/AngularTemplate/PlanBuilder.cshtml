@@ -45,7 +45,9 @@
                                     </div>
                                     <div ng-if="envelope.allowsSiblings" class="action-arrow-right"></div>
                                     <div ng-if="!envelope.allowsSiblings && (!envelope.jumpTargets || envelope.jumpTargets.length < 1)" style="display: inline-block; height: 50px; margin: 84px 10px 0 7px; width: 1px;"></div>
-                                    <action-picker ng-if="$last"></action-picker>
+                                    <div class="action-picker-container-blocker" ui-blocker active="current.plan.planState==2 || current.plan.planState==4" plan="current.plan">
+                                        <action-picker ng-if="$last"></action-picker>
+                                    </div>
                                 </div>
                                 <action-picker ng-if="group.envelopes.length < 1"></action-picker>
                                 <div class="dndPlaceholder">
