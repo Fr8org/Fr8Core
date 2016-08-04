@@ -20,7 +20,7 @@ namespace HubWeb.App_Start
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var configRepository  = ObjectFactory.GetInstance<IConfigRepository>();
+                var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
                 string userEmail = configRepository.Get("SystemUserEmail");
                 string curPassword = configRepository.Get("SystemUserPassword");
 
@@ -28,11 +28,11 @@ namespace HubWeb.App_Start
                 uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
                 uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, user.Id);
                 user.TestAccount = false;
-                
+
                 uow.SaveChanges();
             }
         }
-        
+
         //TODO: this method is a one-time update of transitions inside ContainerTransition control and should be removed after it is deployed to prod
         public static void UpdateTransitionNames()
         {
@@ -43,28 +43,29 @@ namespace HubWeb.App_Start
                     .GetActivityQueryUncached()
                     .Where(x => x.ActivityTemplate.Name == "Make_a_Decision" && x.ActivityTemplate.Version == "1"))
                 {
-
-                    var dto = Mapper.Map<ActivityDTO>(activity);
-                    if (dto.CrateStorage == null)
+                    var storage = activity.EncryptedCrateStorage == null
+                        ? activity.CrateStorage
+                        : encryptionService.DecryptString(activity.Fr8AccountId, activity.EncryptedCrateStorage);
+                    var crateStorageDto = JsonConvert.DeserializeObject<CrateStorageDTO>(storage);
+                    var crateStorage = CrateStorageSerializer.Default.ConvertFromDto(crateStorageDto);
+                    var controls = crateStorage.FirstCrateOrDefault<StandardConfigurationControlsCM>()?.Content;
+                    if (controls == null)
                     {
-                        dto.CrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(encryptionService.DecryptString(activity.Fr8AccountId, activity.EncryptedCrateStorage));
+                        continue;
                     }
-                    using (var storage = new CrateManager().GetUpdatableStorage(dto))
+                    var transitionList = controls.Controls.OfType<ContainerTransition>().First();
+                    for (var i = 0; i < transitionList.Transitions.Count; i++)
                     {
-                        var controls = storage.FirstCrateOrDefault<StandardConfigurationControlsCM>()?.Content;
-                        if (controls == null)
-                        {
-                            continue;
-                        }
-                        var transitionList = controls.Controls.OfType<ContainerTransition>().First();
-                        for (var i = 0; i < transitionList.Transitions.Count; i++)
-                        {
-                            var transition = transitionList.Transitions[i];
-                            transition.Name = $"transition_{i}";
-                        }
+                        var transition = transitionList.Transitions[i];
+                        transition.Name = $"transition_{i}";
                     }
-                    activity.CrateStorage = JsonConvert.SerializeObject(dto.CrateStorage, Formatting.Indented);
-                    activity.EncryptedCrateStorage = encryptionService.EncryptData(activity.Fr8AccountId, activity.CrateStorage);
+                    crateStorageDto = CrateStorageSerializer.Default.ConvertToDto(crateStorage);
+                    storage = JsonConvert.SerializeObject(crateStorageDto, Formatting.Indented);
+                    if (!string.IsNullOrEmpty(activity.CrateStorage))
+                    {
+                        activity.CrateStorage = storage;
+                    }
+                    activity.EncryptedCrateStorage = encryptionService.EncryptData(activity.Fr8AccountId, storage);
                     uow.SaveChanges();
                 }
             }
