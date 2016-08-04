@@ -43,9 +43,14 @@ namespace HubWeb.App_Start
                     .GetActivityQueryUncached()
                     .Where(x => x.ActivityTemplate.Name == "Make_a_Decision" && x.ActivityTemplate.Version == "1"))
                 {
-                    var storage = activity.EncryptedCrateStorage == null
+                    
+                    var storage = activity.EncryptedCrateStorage == null || activity.EncryptedCrateStorage.Length == 0
                         ? activity.CrateStorage
                         : encryptionService.DecryptString(activity.Fr8AccountId, activity.EncryptedCrateStorage);
+                    if (string.IsNullOrEmpty(storage))
+                    {
+                        continue;
+                    }
                     var crateStorageDto = JsonConvert.DeserializeObject<CrateStorageDTO>(storage);
                     var crateStorage = CrateStorageSerializer.Default.ConvertFromDto(crateStorageDto);
                     var controls = crateStorage.FirstCrateOrDefault<StandardConfigurationControlsCM>()?.Content;
