@@ -4,6 +4,13 @@ using StructureMap;
 using Fr8.Infrastructure.Utilities;
 using Newtonsoft.Json;
 using System.Linq;
+using AutoMapper;
+using Data.Repositories.Encryption;
+using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Data.Crates;
+using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Managers;
+using Fr8.Infrastructure.Data.Manifests;
 
 namespace HubWeb.App_Start
 {
@@ -25,30 +32,41 @@ namespace HubWeb.App_Start
                 uow.SaveChanges();
             }
         }
-
-        //Prior to FR-3683 Salesforce refresh tokens were stored in nonsecure part of database
-        //This method is intended to save them into key vault
-        //This method is not a part of Seed method because at that point of time key vault is not yet configured
-        //TODO: delete this method after this is deployed to prod
-        public static void MoveSalesforceRefreshTokensIntoKeyVault()
+        
+        //TODO: this method is a one-time update of transitions inside ContainerTransition control and should be removed after it is deployed to prod
+        public static void UpdateTransitionNames()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var terminalId = uow.TerminalRepository.GetQuery().Where(x => x.Name == "terminalSalesforce").Select(x => x.Id).FirstOrDefault();
-                if (terminalId == 0)
+                var encryptionService = ObjectFactory.GetInstance<IEncryptionService>();
+                foreach (var activity in uow.PlanRepository
+                    .GetActivityQueryUncached()
+                    .Where(x => x.ActivityTemplate.Name == "Make_a_Decision" && x.ActivityTemplate.Version == "1"))
                 {
-                    return;
+
+                    var dto = Mapper.Map<ActivityDTO>(activity);
+                    if (dto.CrateStorage == null)
+                    {
+                        dto.CrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(encryptionService.DecryptString(activity.Fr8AccountId, activity.EncryptedCrateStorage));
+                    }
+                    using (var storage = new CrateManager().GetUpdatableStorage(dto))
+                    {
+                        var controls = storage.FirstCrateOrDefault<StandardConfigurationControlsCM>()?.Content;
+                        if (controls == null)
+                        {
+                            continue;
+                        }
+                        var transitionList = controls.Controls.OfType<ContainerTransition>().First();
+                        for (var i = 0; i < transitionList.Transitions.Count; i++)
+                        {
+                            var transition = transitionList.Transitions[i];
+                            transition.Name = $"transition_{i}";
+                        }
+                    }
+                    activity.CrateStorage = JsonConvert.SerializeObject(dto.CrateStorage, Formatting.Indented);
+                    activity.EncryptedCrateStorage = encryptionService.EncryptData(activity.Fr8AccountId, activity.CrateStorage);
+                    uow.SaveChanges();
                 }
-                var tokens = uow.AuthorizationTokenRepository.GetPublicDataQuery().Where(x => x.TerminalID == terminalId && x.AdditionalAttributes.StartsWith("refresh_token"));
-                foreach (var token in tokens)
-                {
-                    var actualToken = uow.AuthorizationTokenRepository.FindTokenById(token.Id);
-                    var refreshTokenFirstIndex = actualToken.AdditionalAttributes.IndexOf('=') + 1;
-                    var refreshTokenLastIndex = actualToken.AdditionalAttributes.IndexOf(';');
-                    actualToken.Token = JsonConvert.SerializeObject(new { AccessToken = actualToken.Token, RefreshToken = actualToken.AdditionalAttributes.Substring(refreshTokenFirstIndex, refreshTokenLastIndex - refreshTokenFirstIndex) });
-                    actualToken.AdditionalAttributes = actualToken.AdditionalAttributes.Substring(refreshTokenLastIndex + 1);
-                }
-                uow.SaveChanges();
             }
         }
     }

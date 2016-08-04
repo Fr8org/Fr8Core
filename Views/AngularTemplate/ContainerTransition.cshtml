@@ -24,6 +24,9 @@
             <label class="control-label">{{transition._dummySecondaryOperationDD.label}}</label>
             <drop-down-list-box is-disabled="isDisabled" current-action="currentAction" field="transition._dummySecondaryOperationDD" change="onTargetChange(transition)"></drop-down-list-box>
         </div>
+        <div data-ng-if="transition.errorMessage != null && transition.errorMessage !==''" class="validationWraper">
+            <span class="validation-Icon"></span><div class="validation-message">{{transition.errorMessage}}</div>
+        </div>
         <hr class="transition-seperator"/>
     </div>
 
