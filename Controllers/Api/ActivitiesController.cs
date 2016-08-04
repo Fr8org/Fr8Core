@@ -77,7 +77,6 @@ namespace HubWeb.Controllers
         [SwaggerResponse((HttpStatusCode)423, "Specified plan is in running state and 'force' flag is not set so activity can't be configured")]
         public async Task<IHttpActionResult> Configure(ActivityDTO curActionDesignDTO, [FromUri]bool force = false)
         {
-            curActionDesignDTO.CurrentView = null;
             ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDesignDTO);
             var userId = User.Identity.GetUserId();
             using (var uow = _uowFactory.Create())

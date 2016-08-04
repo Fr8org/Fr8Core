@@ -124,7 +124,6 @@ namespace Hub.Services
             {
                 Id = Guid.NewGuid(),
                 ActivityTemplateId = activityTemplateId,
-                Name = name,
                 CrateStorage = _crateManager.EmptyStorageAsStr(),
                 AuthorizationTokenId = authorizationTokenId
             };
@@ -700,7 +699,6 @@ namespace Hub.Services
                 {
                     Id = Guid.NewGuid(),
                     Label = curActivityTerminalDTO.Label,
-                    Name = curActivityTerminalDTO.Name,
                     ActivityTemplate = new ActivityTemplateSummaryDTO
                     {
                         Name = curActivityTerminalDTO.Name,
