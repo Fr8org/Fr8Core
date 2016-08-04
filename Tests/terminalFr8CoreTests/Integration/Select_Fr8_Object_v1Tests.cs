@@ -266,11 +266,10 @@ namespace terminalFr8CoreTests.Integration
             Assert.NotNull(runResponse);
         }
 
-        private ActivityTemplateDTO CreateActivityTemplateFixture()
+        private ActivityTemplateSummaryDTO CreateActivityTemplateFixture()
         {
-            var activityTemplate = new ActivityTemplateDTO
+            var activityTemplate = new ActivityTemplateSummaryDTO
             {
-                Id = Guid.NewGuid(),
                 Name = "Select_Fr8_Object_TEST",
                 Version = "1"
             };

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Control;
 using Fr8.Infrastructure.Data.Crates;
@@ -145,7 +146,8 @@ namespace terminalDocuSign.Activities
                 SearchText = { Value = actionUi.SearchText.Value }
             };
 
-            var template = (await FindTemplates(x => x.Name == "Query_DocuSign")).FirstOrDefault();
+            var template = (await FindTemplates(x => x.Name == "Query_DocuSign"))
+                            .FirstOrDefault();
 
             if (template == null)
             {
@@ -169,7 +171,7 @@ namespace terminalDocuSign.Activities
             {
                 activity = new ActivityPayload
                 {
-                    ActivityTemplate = template,
+                    ActivityTemplate = Mapper.Map<ActivityTemplateSummaryDTO>(template),
                     Name = template.Label,
                     Ordering = 1,
                 };

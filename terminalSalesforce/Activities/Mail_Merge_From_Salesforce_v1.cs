@@ -233,6 +233,12 @@ namespace terminalSalesforce.Actions
                 context.SolutionActivity,
                 getSalesforceDataActivityTemplate,
                 order: 1);
+            if (dataSourceActivity.CrateStorage.Where(a => a.ManifestType.Id == (int)MT.StandardAuthentication).FirstOrDefault() != null)
+            {
+                await HubCommunicator.ApplyNewToken(dataSourceActivity.Id, Guid.Parse(AuthorizationToken.Id));
+                dataSourceActivity = await HubCommunicator.ConfigureActivity(dataSourceActivity);
+            }
+
             //This config call will make SF Get_Data activity to load properties of the selected object (and removes filter)
             CopySolutionUiValuesToSalesforceActivity(context.SolutionActivity, dataSourceActivity);
             dataSourceActivity = await HubCommunicator.ConfigureChildActivity(context.SolutionActivity, dataSourceActivity);
@@ -247,16 +253,16 @@ namespace terminalSalesforce.Actions
         }
 
         private void CopySolutionUiValuesToSalesforceActivity(ActivityPayload solutionActivity, ActivityPayload salesforceActivity)
-            {
+        {
             var storage = salesforceActivity.CrateStorage;
-                var controlsCrate = storage.FirstCrate<StandardConfigurationControlsCM>();
-                var activityUi = new Get_Data_v1.ActivityUi().ClonePropertiesFrom(controlsCrate.Content) as Get_Data_v1.ActivityUi;
+            var controlsCrate = storage.FirstCrate<StandardConfigurationControlsCM>();
+            var activityUi = new Get_Data_v1.ActivityUi().ClonePropertiesFrom(controlsCrate.Content) as Get_Data_v1.ActivityUi;
             var solutionActivityUi = new ActivityUi().ClonePropertiesFrom(solutionActivity.CrateStorage.FirstCrate<StandardConfigurationControlsCM>().Content) as ActivityUi;
-                activityUi.SalesforceObjectSelector.selectedKey = solutionActivityUi.SalesforceObjectSelector.selectedKey;
-                activityUi.SalesforceObjectSelector.Value = solutionActivityUi.SalesforceObjectSelector.Value;
-                activityUi.SalesforceObjectFilter.Value = solutionActivityUi.SalesforceObjectFilter.Value;
-                storage.ReplaceByLabel(Crate.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray())));
-            }
+            activityUi.SalesforceObjectSelector.selectedKey = solutionActivityUi.SalesforceObjectSelector.selectedKey;
+            activityUi.SalesforceObjectSelector.Value = solutionActivityUi.SalesforceObjectSelector.Value;
+            activityUi.SalesforceObjectFilter.Value = solutionActivityUi.SalesforceObjectFilter.Value;
+            storage.ReplaceByLabel(Crate.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray())));
+        }
 
         private async Task ConfigureSolutionActivityUi()
         {

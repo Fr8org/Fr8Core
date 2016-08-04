@@ -45,23 +45,34 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(a => a.RootPlanNodeId, opts => opts.ResolveUsing(ad => ad.RootPlanNodeId))
                 .ForMember(a => a.ParentPlanNodeId, opts => opts.ResolveUsing(ad => ad.ParentPlanNodeId))
                 //.ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => ad.CrateStorage == null ? null : JsonConvert.DeserializeObject(ad.CrateStorage)))
-                .ForMember(a => a.CurrentView, opts => opts.ResolveUsing(ad => ad.currentView))
                 .ForMember(a => a.ChildrenActivities, opts => opts.ResolveUsing(ad => ad.ChildNodes.OfType<ActivityDO>().OrderBy(da => da.Ordering)))
                 .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate))
                 .ForMember(a => a.AuthToken, opts => opts.ResolveUsing(ad => ad.AuthorizationToken))
-                .ForMember(a => a.AuthTokenId, opts => opts.ResolveUsing(ad => ad.AuthorizationTokenId))
-                .ForMember(a => a.Fr8AccountId, opts => opts.ResolveUsing(ad => ad.Fr8AccountId));
+                .ForMember(a => a.AuthTokenId, opts => opts.ResolveUsing(ad => ad.AuthorizationTokenId));
 
 
             Mapper.CreateMap<ActivityDTO, ActivityDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.RootPlanNodeId, opts => opts.ResolveUsing(ad => ad.RootPlanNodeId))
                 .ForMember(a => a.ParentPlanNodeId, opts => opts.ResolveUsing(ad => ad.ParentPlanNodeId))
-                .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate))
+                .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(dto => new ActivityTemplateDO
+                {
+                    Name = dto.ActivityTemplate.Name,
+                    Version = dto.ActivityTemplate.Version,
+                    Terminal = new TerminalDO
+                    {
+                        Name = dto.ActivityTemplate.TerminalName,
+                        Version = dto.ActivityTemplate.TerminalVersion
+                    }
+                }))
                 //.ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.SerializeObject(ad.CrateStorage)))
-                .ForMember(a => a.currentView, opts => opts.ResolveUsing(ad => ad.CurrentView))
                 .ForMember(a => a.ChildNodes, opts => opts.ResolveUsing(ad => MapActivities(ad.ChildrenActivities)))
-                .ForMember(a => a.AuthorizationTokenId, opts => opts.ResolveUsing(ad => ad.AuthToken != null && ad.AuthToken.Id != null ? new Guid(ad.AuthToken.Id) : (Guid?)null))
-                .ForMember(a => a.Fr8AccountId, opts => opts.ResolveUsing(ad => ad.Fr8AccountId));
+                .ForMember(a => a.AuthorizationTokenId, opts => opts.ResolveUsing(ad => ad.AuthToken != null && ad.AuthToken.Id != null ? new Guid(ad.AuthToken.Id) : (Guid?) null));
+
+            Mapper.CreateMap<ActivityTemplateDO, ActivityTemplateSummaryDTO>()
+               .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
+               .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
+               .ForMember(x => x.TerminalName, opts => opts.ResolveUsing(x => x.Terminal.Name))
+               .ForMember(x => x.TerminalVersion, opts => opts.ResolveUsing(x => x.Terminal.Version));
 
             Mapper.CreateMap<ActivityCategoryDO, ActivityCategoryDTO>();
             Mapper.CreateMap<ActivityCategoryDTO, ActivityCategoryDO>();
@@ -214,8 +225,9 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ManifestDescriptionCM, ManifestDescriptionDTO>();
             Mapper.CreateMap<ManifestDescriptionDTO, ManifestDescriptionCM>();
 
-
-            Mapper.CreateMap<TerminalDO, TerminalDTO>();
+            Mapper.CreateMap<TerminalDO, TerminalDTO>()
+                .ForMember(x => x.InternalId, x=>x.ResolveUsing(y => y.Id));
+            Mapper.CreateMap<TerminalDO, TerminalSummaryDTO>();
             Mapper.CreateMap<TerminalDTO, TerminalDO>()
                 .ForMember(x => x.LastUpdated, opts => opts.Ignore())
                 .ForMember(x => x.CreateDate, opts => opts.Ignore())

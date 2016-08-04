@@ -45,11 +45,13 @@ namespace PlanDirectory.Infrastructure
             var activityCategories = await client.GetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(
                uri, headers: headers);
 
-            var activityDict = activityCategories.SelectMany(a => a.Activities).ToDictionary(k => k.Id);
+            var activityDict = activityCategories
+                .SelectMany(a => a.Activities)
+                .ToDictionary(k => $"{k.Name};{k.Version};{k.Terminal.Name}:{k.Terminal.Version}");
 
             //1. getting ids of used templates
             var plan = planTemplateCM.PlanContents;
-            var usedActivityTemplatesIds = new HashSet<Guid>();
+            var usedActivityTemplatesIds = new HashSet<string>();
 
             if (plan.SubPlans != null)
             {
@@ -70,7 +72,6 @@ namespace PlanDirectory.Infrastructure
                                      .Distinct(ActivityTemplateDTO.IdComparer)
                                      .OrderBy(a => a.Name)
                                      .ToList();
-
             if (usedActivityTemplates.Count != usedActivityTemplatesIds.Count)
                 throw new ApplicationException("Template references activity that is not registered in Hub");
             //3. adding tags for activity templates
@@ -85,7 +86,7 @@ namespace PlanDirectory.Infrastructure
             return result;
         }
 
-        private void CollectActivityTemplateIds(FullSubplanDto subplan, HashSet<Guid> ids)
+        private void CollectActivityTemplateIds(FullSubplanDto subplan, HashSet<string> ids)
         {
             if (subplan.Activities == null)
             {
@@ -98,11 +99,15 @@ namespace PlanDirectory.Infrastructure
             }
         }
 
-        private void CollectActivityTemplateIds(ActivityDTO activity, HashSet<Guid> ids)
+        private void CollectActivityTemplateIds(ActivityDTO activity, HashSet<string> ids)
         {
-            if (activity.ActivityTemplate != null && activity.ActivityTemplate.Id != Guid.Empty)
+            var at = activity.ActivityTemplate;
+            if (at != null && !string.IsNullOrEmpty(at.Name) 
+                && !string.IsNullOrEmpty(at.Version) 
+                && !string.IsNullOrEmpty(at.TerminalName)
+                && !string.IsNullOrEmpty(at.TerminalVersion))
             {
-                ids.Add(activity.ActivityTemplate.Id);
+                ids.Add($"{at.Name};{at.Version};{at.TerminalName}:{at.TerminalVersion}");
             }
 
             if (activity.ChildrenActivities == null)

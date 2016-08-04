@@ -1,6 +1,6 @@
 
 
-Before doing this tutorial, you may want to try [this one](https://github.com/Fr8org/Fr8Core/blob/FR-3375/Docs/ForDevelopers/DevelopmentGuides/TerminalTutorial-Part%201.md).
+Before doing this tutorial, you may want to try [this one](https://github.com/Fr8org/Fr8Core/blob/FR-3375/Docs/ForDevelopers/DevelopmentGuides/TerminalTutorial-Part1.md).
 
 
 We'll build a Terminal that communicates with OpenWeatherMap.org and provides the Activity "Get Weather".

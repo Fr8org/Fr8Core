@@ -86,7 +86,8 @@ module dockyard.controllers {
             'AuthService',
             'ConfigureTrackerService',
             'SubPlanService',
-            '$stateParams'
+            '$stateParams',
+            'ActivityTemplateHelperService'
         ];
 
         private _longRunningActionsCounter: number;
@@ -115,7 +116,7 @@ module dockyard.controllers {
             private ConfigureTrackerService: services.ConfigureTrackerService,
             private SubPlanService: services.ISubPlanService,
             private $stateParams: ng.ui.IStateParamsService,
-            private documentationService: services.ISolutionDocumentationService
+            private ActivityTemplateHelperService: services.IActivityTemplateHelperService
         ) {
 
             this.LayoutService.resetLayout();
@@ -237,7 +238,7 @@ module dockyard.controllers {
 
             };
             $scope.state = $state.current.name;
-            this.processState($state);           
+            this.processState($state);
         }
 
         private handleBackButton(event, toState, toParams, fromState, fromParams, options) {
@@ -276,7 +277,7 @@ module dockyard.controllers {
                 currentPlan.subPlans.push(createdSubPlan);
 
                 //dirty hack
-                var processedGroup = this.LayoutService.addEmptyProcessedGroup(createdSubPlan.subPlanId);
+                var processedGroup = this.LayoutService.addEmptyProcessedGroup(createdSubPlan.id);
                 this.$scope.processedSubPlans.push({ subPlan: createdSubPlan, actionGroups: processedGroup });
                 //this.renderPlan(<interfaces.IPlanVM>currentPlan);
                 this.$scope.$broadcast(<any>planEvents.SUB_PLAN_MODIFICATION);
@@ -290,7 +291,7 @@ module dockyard.controllers {
             }
         }
 
-        private reConfigure(actions: model.ActivityDTO[]) {
+        private reConfigure(actions: interfaces.IActivityDTO[]) {
             for (var i = 0; i < actions.length; i++) {
                 this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure], new pca.ActionReconfigureEventArgs(actions[i]));
                 if (actions[i].childrenActivities.length > 0) {
@@ -353,7 +354,7 @@ module dockyard.controllers {
 
         private findSubPlanById(id: string): model.SubPlanDTO {
             for (var i = 0; i < this.$scope.current.plan.subPlans.length; i++) {
-                if (this.$scope.current.plan.subPlans[i].subPlanId === id) {
+                if (this.$scope.current.plan.subPlans[i].id === id) {
                     return this.$scope.current.plan.subPlans[i];
                 }
             }
@@ -526,7 +527,7 @@ module dockyard.controllers {
             this.$scope.processedSubPlans = [];
             for (var subPlan of curPlan.subPlans) {
                 var activities: Array<model.ActivityDTO> = this.filterActivitiesByUICrate(subPlan.activities, this.$scope.view);
-                var actionGroups = this.LayoutService.placeActions(activities, subPlan.subPlanId);
+                var actionGroups = this.LayoutService.placeActions(activities, subPlan.id);
                 this.$scope.processedSubPlans.push({ subPlan: subPlan, actionGroups: actionGroups });
             }
         }
@@ -568,8 +569,8 @@ module dockyard.controllers {
             this.loadPlan();
         }
 
-        private getDownstreamActions(currentAction: model.ActivityDTO) {
-            var results: Array<model.ActivityDTO> = [];
+        private getDownstreamActions(currentAction: interfaces.IActivityDTO) {
+            var results: Array<interfaces.IActivityDTO> = [];
             this.$scope.actionGroups.forEach(group => {
                 group.envelopes.filter((envelope: model.ActivityEnvelope) => {
                     return envelope.activity.parentPlanNodeId === currentAction.parentPlanNodeId && envelope.activity.ordering > currentAction.ordering;
@@ -631,16 +632,15 @@ module dockyard.controllers {
             var id = this.LocalIdentityGenerator.getNextId();
             var parentId = eventArgs.group.parentId;
             var action = new model.ActivityDTO(this.$scope.planId, parentId, id);
-
-            action.name = activityTemplate.label;
             // Add action to Workflow Designer.
             this.$scope.current.activities = action.toActionVM();
-            this.$scope.current.activities.activityTemplate = activityTemplate;
+            this.$scope.current.activities.activityTemplate = this.ActivityTemplateHelperService.toSummary(activityTemplate);
             this.selectAction(action, eventArgs.group, this.$window);
         }
 
         private allowsChildren(action: model.ActivityDTO) {
-            return action.activityTemplate.type === 'Loop';
+            var at = this.ActivityTemplateHelperService.getActivityTemplate(action);
+            return at.type === 'Loop';
         }
 
         private addActionToUI(action: model.ActivityDTO, group: model.ActionGroup) {
@@ -654,7 +654,7 @@ module dockyard.controllers {
             }
 
             //TODO we need to change rendering code
-
+            
             if (this.allowsChildren(action)) {
                 this.renderPlan(<interfaces.IPlanVM>this.$scope.current.plan);
             } else {
@@ -663,7 +663,8 @@ module dockyard.controllers {
                     for (var j = 0; j < curSubPlan.actionGroups.length; j++) {
                         var curActionGroup = <model.ActionGroup>curSubPlan.actionGroups[j];
                         if (curActionGroup.parentId === action.parentPlanNodeId) {
-                            curActionGroup.envelopes.push(new model.ActivityEnvelope(action));
+                            var activityTemplate = this.ActivityTemplateHelperService.getActivityTemplate(action);
+                            curActionGroup.envelopes.push(new model.ActivityEnvelope(action, activityTemplate));
                         }
                     }
                 }
@@ -677,7 +678,7 @@ module dockyard.controllers {
         private selectAction(action: model.ActivityDTO, group: model.ActionGroup, $window) {
             //this performs a call to Segment service for analytics
             if ($window['analytics'] != null) {
-                $window['analytics'].track("Added Activity To Plan", { "Activity Name": action.name });
+                $window['analytics'].track("Added Activity To Plan", { "Activity Name": action.activityTemplate.name });
             }
             console.log("Activity selected: " + action.id);
             var originalId,
@@ -753,7 +754,6 @@ module dockyard.controllers {
         */
         private PaneConfigureAction_ActionUpdated(updatedAction: model.ActivityDTO) {
             var action = this.findActionById(updatedAction.id);
-            action.name = updatedAction.name;
             action.label = updatedAction.label;
         }
 
@@ -762,7 +762,8 @@ module dockyard.controllers {
         */
         private PaneSelectAction_ActionTypeSelected(eventArgs: psa.ActionTypeSelectedEventArgs) {
             var pcaEventArgs = new pca.RenderEventArgs(eventArgs.action);
-            var pwdEventArs = new pwd.UpdateActivityTemplateIdEventArgs(eventArgs.action.id, eventArgs.action.activityTemplate.id);
+            var activityTemplate = this.ActivityTemplateHelperService.getActivityTemplate(<model.ActivityDTO>eventArgs.action);
+            var pwdEventArs = new pwd.UpdateActivityTemplateIdEventArgs(eventArgs.action.id, activityTemplate.id);
             this.$scope.$broadcast(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_UpdateActivityTemplateId], pwdEventArs);
         }
 
@@ -774,7 +775,7 @@ module dockyard.controllers {
         }
 
         private PaneConfigureAction_ReConfigureDownStreamActivities(eventArgs: pca.DownStreamReConfigureEventArgs) {
-            var actionsToReconfigure = this.getDownstreamActions(<model.ActivityDTO>eventArgs.action);
+            var actionsToReconfigure = this.getDownstreamActions(eventArgs.action);
             for (var i = 0; i < actionsToReconfigure.length; i++) {
                 if (actionsToReconfigure[i].id === eventArgs.action.id) {
                     actionsToReconfigure.splice(i, 1);
@@ -867,7 +868,7 @@ module dockyard.controllers {
                 return;
             }
 
-            var results: Array<model.ActivityDTO> = [];
+            var results: Array<interfaces.IActivityDTO> = [];
             var subplan = this.getActionSubPlan(callConfigureResponseEventArgs.action);
             if (subplan) {
                 results = this.getAgressiveReloadingActions(subplan.actionGroups, callConfigureResponseEventArgs.action);
@@ -933,7 +934,7 @@ module dockyard.controllers {
             actionGroups: Array<model.ActionGroup>,
             currentAction: interfaces.IActivityDTO) {
 
-            var results: Array<model.ActivityDTO> = [];
+            var results: Array<interfaces.IActivityDTO> = [];
             var currentGroupArray = actionGroups.filter(group => _.any<model.ActivityEnvelope>(group.envelopes, envelope => envelope.activity.id == currentAction.id));
             if (currentGroupArray.length == 0) {
                 return [];

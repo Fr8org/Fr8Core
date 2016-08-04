@@ -1,6 +1,4 @@
-﻿/// <reference path="../_all.ts"/>
-
-module dockyard.services {    
+﻿module dockyard.services {
 
     export interface IPusherNotifierService {
         bindEventToChannel(channel: string, event: string, callback: Function, context?: any): void;
@@ -122,4 +120,4 @@ module dockyard.services {
     app.factory('PusherNotifierService', ['$pusher', 'UserService','$timeout', ($pusher: any, UserService:IUserService, $timeout:ng.ITimeoutService): IPusherNotifierService =>
         new PusherNotifierService($pusher, UserService, $timeout)
     ]);
-}  
+}

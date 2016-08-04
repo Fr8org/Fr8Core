@@ -182,6 +182,11 @@ namespace Fr8.Testing.Unit
             Mapper.CreateMap<PlanDO, PlanNoChildrenDTO>();
 
             Mapper.CreateMap<ActivityDO, ActivityDTO>();
+            Mapper.CreateMap<ActivityTemplateDTO, ActivityTemplateSummaryDTO>()
+                .ForMember(x => x.Name, opts => opts.MapFrom(src => src.Name))
+                .ForMember(x => x.Version, opts => opts.MapFrom(src => src.Version))
+                .ForMember(x => x.TerminalName, opts => opts.MapFrom(src => src.Terminal.Name))
+                .ForMember(x => x.TerminalVersion, opts => opts.MapFrom(src => src.Terminal.Version));
 
             Mapper.CreateMap<Fr8AccountDO, UserDTO>()
                 .ForMember(dto => dto.EmailAddress, opts => opts.ResolveUsing(e => e.EmailAddress.Address))

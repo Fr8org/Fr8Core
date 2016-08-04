@@ -27,11 +27,69 @@ module dockyard.directives {
                     return curHeight > defaultHeight ? curHeight : defaultHeight;
                 };
 
+                // Setting title-bar style
+                function setTitleSize(width) {
+                    var titleObj = $(elem).find(".ellipsis h2");
+                    var titleStr = $(titleObj).html();
+
+                    if (typeof titleStr !== typeof undefined) {
+                        titleStr = titleStr.trim();
+                        let strnum = titleStr.length;
+                        let fontSize = 20;
+                        let titleWrappedWidth = $(titleObj).width();
+                        let expectedWidth = strnum * 10;
+                        let cssAttr = {
+                            'font-size': '20px',
+                            'white-space': 'normal'
+                        };
+
+                        if (expectedWidth <= titleWrappedWidth) {
+                            $(titleObj).css(cssAttr);
+                            return true;
+                        }
+
+                        let expectedRatio = titleWrappedWidth / expectedWidth;
+                        let fixedFontSize = Math.round(expectedRatio * fontSize);
+
+                        if (fixedFontSize < 15) {
+                            expectedWidth /= 2;
+                            if (expectedWidth <= titleWrappedWidth) {
+                                fixedFontSize = 20;
+                            } else {
+                                expectedRatio = titleWrappedWidth / expectedWidth;
+                                fixedFontSize = Math.round(expectedRatio * fontSize);
+
+                                if (fixedFontSize < 15)
+                                    fixedFontSize = 15
+                            }
+                        }
+
+                        cssAttr = {
+                            'font-size': fixedFontSize + 'px',
+                            'white-space': 'normal'
+                        };
+
+                        $(titleObj).css(cssAttr);
+                    }
+
+                };
+
+                var suspectedWidth = getOptimalWidth();
                 elem.css({
-                    'min-width': getOptimalWidth(),
-                    'width': getOptimalWidth(),
-                    'min-height': getOptimalHeight() 
-                }).resizable({ grid: [1, 10000]});
+                    'min-width': suspectedWidth,
+                    'width': suspectedWidth,
+                    'min-height': getOptimalHeight()
+                }).resizable({ grid: [1, 10000] });
+
+                //listen event of loading finished 
+                scope.$on('titleLoadingFinished', function () {
+                    setTitleSize(suspectedWidth);
+                });
+
+                angular.element(window).bind('resize', function () {
+                    var w = $(elem).find(".md-toolbar-tools .ellipsis").width();
+                    setTitleSize(w);
+                });
             }
         }
     }
@@ -40,6 +98,7 @@ module dockyard.directives {
         callback: any;
         height: number;
         resize: (events, ui) => void;
+        flagOneEmit: boolean;
     }
 
     app.directive('activityResize', dockyard.directives.Resizable);
