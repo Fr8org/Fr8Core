@@ -30,6 +30,7 @@ using HubWeb.App_Start;
 using GlobalConfiguration = Hangfire.GlobalConfiguration;
 using System.Globalization;
 using System.Threading;
+using PlanDirectory.Infrastructure;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 
@@ -59,6 +60,11 @@ namespace HubWeb
         {
             ObjectFactory.Configure(Fr8.Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
+            
+            //For PlanDirectory merge
+            ObjectFactory.Configure(PlanDirectoryBootStrapper.LiveConfiguration);
+
+
             ObjectFactory.GetInstance<AutoMapperBootStrapper>().ConfigureAutoMapper();
 
             var db = ObjectFactory.GetInstance<DbContext>();
