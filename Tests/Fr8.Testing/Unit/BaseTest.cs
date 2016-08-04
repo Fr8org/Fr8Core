@@ -128,9 +128,9 @@ namespace Fr8.Testing.Unit
                 string userId = null,
                 string[] userRoles = null,
                 Tuple<string, string>[] claimValues = null
-            ) where TController : ApiController, new()
+            ) where TController : ApiController
         {
-            var controller = new TController();
+            var controller = ObjectFactory.GetInstance<TController>();
 
             if (!string.IsNullOrEmpty(userId))
             {
@@ -154,7 +154,7 @@ namespace Fr8.Testing.Unit
 
         public static void ConfigureAutoMapper()
         {
-            Mapper.CreateMap<PlanDO, PlanEmptyDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
+            Mapper.CreateMap<PlanDO, PlanNoChildrenDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Category, opts => opts.ResolveUsing(ad => ad.Category))
                 .ForMember(a => a.Description, opts => opts.ResolveUsing(ad => ad.Description))
                 .ForMember(a => a.LastUpdated, opts => opts.ResolveUsing(ad => ad.LastUpdated))
@@ -164,7 +164,7 @@ namespace Fr8.Testing.Unit
                 .ForMember(a => a.Tag, opts => opts.ResolveUsing(ad => ad.Tag))
                 .ForMember(a => a.Visibility, opts => opts.ResolveUsing(ad => new PlanVisibilityDTO() { Hidden = ad.Visibility.BooleanValue() }));
 
-            Mapper.CreateMap<PlanEmptyDTO, PlanDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
+            Mapper.CreateMap<PlanNoChildrenDTO, PlanDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Category, opts => opts.ResolveUsing(ad => ad.Category))
                 .ForMember(a => a.Description, opts => opts.ResolveUsing(ad => ad.Description))
                 .ForMember(a => a.LastUpdated, opts => opts.ResolveUsing(ad => ad.LastUpdated))
@@ -178,10 +178,15 @@ namespace Fr8.Testing.Unit
                   .ForMember(activityTemplateDO => activityTemplateDO.Name, opts => opts.ResolveUsing(e => e.Name))
                   .ForMember(activityTemplateDO => activityTemplateDO.Version, opts => opts.ResolveUsing(e => e.Version));
 
-            Mapper.CreateMap<PlanEmptyDTO, PlanDO>();
-            Mapper.CreateMap<PlanDO, PlanEmptyDTO>();
+            Mapper.CreateMap<PlanNoChildrenDTO, PlanDO>();
+            Mapper.CreateMap<PlanDO, PlanNoChildrenDTO>();
 
             Mapper.CreateMap<ActivityDO, ActivityDTO>();
+            Mapper.CreateMap<ActivityTemplateDTO, ActivityTemplateSummaryDTO>()
+                .ForMember(x => x.Name, opts => opts.MapFrom(src => src.Name))
+                .ForMember(x => x.Version, opts => opts.MapFrom(src => src.Version))
+                .ForMember(x => x.TerminalName, opts => opts.MapFrom(src => src.Terminal.Name))
+                .ForMember(x => x.TerminalVersion, opts => opts.MapFrom(src => src.Terminal.Version));
 
             Mapper.CreateMap<Fr8AccountDO, UserDTO>()
                 .ForMember(dto => dto.EmailAddress, opts => opts.ResolveUsing(e => e.EmailAddress.Address))

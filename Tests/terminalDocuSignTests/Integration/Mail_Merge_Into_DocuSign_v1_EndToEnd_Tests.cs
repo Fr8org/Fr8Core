@@ -84,13 +84,13 @@ namespace terminalDocuSignTests.Integration
             //
             // configure Get_Google_Sheet_Data activity
             //
-            var googleSheetActivity = this.solution.ChildrenActivities.Single(a => a.Name.Equals("get google sheet data", StringComparison.InvariantCultureIgnoreCase));
+            var googleSheetActivity = this.solution.ChildrenActivities.Single(a => a.ActivityTemplate.Name.Equals("Get_Google_Sheet_Data", StringComparison.InvariantCultureIgnoreCase));
             await googleActivityTestTools.ConfigureGetFromGoogleSheetActivity(googleSheetActivity, spreadsheetName, false, worksheetName);
 
             //
             // configure Loop activity
             //
-            var loopActivity = this.solution.ChildrenActivities.Single(a => a.Name.Equals("loop", StringComparison.InvariantCultureIgnoreCase));
+            var loopActivity = this.solution.ChildrenActivities.Single(a => a.ActivityTemplate.Name.Equals("Loop", StringComparison.InvariantCultureIgnoreCase));
             var terminalFr8CoreTools = new IntegrationTestTools_terminalFr8(this);
             loopActivity = await terminalFr8CoreTools.ConfigureLoopActivity(loopActivity, "Standard Table Data", "Table Generated From Google Sheet Data");
 
@@ -101,7 +101,7 @@ namespace terminalDocuSignTests.Integration
             //
             // Initial Configuration
             //
-            var sendEnvelopeAction = loopActivity.ChildrenActivities.Single(a => a.Name == "Send DocuSign Envelope");
+            var sendEnvelopeAction = loopActivity.ChildrenActivities.Single(a => a.ActivityTemplate.Name == "Send_DocuSign_Envelope");
 
             crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
             var controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
@@ -184,7 +184,7 @@ namespace terminalDocuSignTests.Integration
             //
             // Activate and run plan
             //
-            var container = await HttpPostAsync<string, ContainerDTO>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
+            var container = await HttpPostAsync<string, ContainerDTO>(_baseUrl + "plans/run?planId=" + plan.Id, null);
             Assert.AreEqual(container.State, State.Completed, "Container state is not equal to completed on Mail_Merge e2e test");
 
             //
@@ -251,12 +251,12 @@ namespace terminalDocuSignTests.Integration
             //
             // Deactivate plan
             //
-            await HttpPostAsync<string, string>(_baseUrl + "plans/deactivate?planId=" + plan.Plan.Id, null);
+            await HttpPostAsync<string, string>(_baseUrl + "plans/deactivate?planId=" + plan.Id, null);
 
             //
             // Delete plan
             //
-            //await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
+            //await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Id);
         }
 
         private async Task<Guid> ExtractGoogleDefaultToken()

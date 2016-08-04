@@ -2,6 +2,8 @@
 
 A detailed introduction to Activity Configuration can be found [here.](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/ActivityConfiguration.md).
 
+[Learn about Signaling](/Docs/ForDevelopers/OperatingConcepts/Signaling.md), a key element of Activity Configuration.
+
 In this guide we'll go over a practial example showing how activity configuration can be implemented.
 When a user adds one of your Terminal's Activities to their Plan, the Hub will POST to the **/activities/configure** endpoint for your Terminal:
 

@@ -35,14 +35,14 @@ namespace terminalDocuSignTests.Integration
 
                 // Create Solution plan & initial configuration.
                 var plan = await CreateSolution();
-                var solution = ExtractSolution(plan.Plan);
+                var solution = ExtractSolution(plan);
                 solution = await EnsureSolutionAuthenticated(solution);
 
                 var crateStorage = Crate.FromDto(solution.CrateStorage);
                 ValidateCrateStructure(crateStorage);
                 ValidateConfigurationControls(crateStorage);
                 var planConfigure = await GetPlanByActivity(solution.Id);
-                ValidatePlanCategory(planConfigure.Plan);
+                ValidatePlanCategory(planConfigure);
                 await SaveActivity(solution);
 
                 // FollowUp configuration.
@@ -55,11 +55,11 @@ namespace terminalDocuSignTests.Integration
                 ValidateChildrenActivities(solution);
                 ValidateSolutionOperationalState(crateStorage);
                 var planFollowup = await GetPlanByActivity(solution.Id);
-                ValidatePlanName(planFollowup.Plan, crateStorage);
+                ValidatePlanName(planFollowup, crateStorage);
                 await SaveActivity(solution);
 
                 // Execute plan.
-                var container = await ExecutePlan(plan.Plan);
+                var container = await ExecutePlan(plan);
                 ValidateContainer(container);
 
 
@@ -82,7 +82,7 @@ namespace terminalDocuSignTests.Integration
             return plan;
         }
 
-        private ActivityDTO ExtractSolution(PlanFullDTO plan)
+        private ActivityDTO ExtractSolution(PlanDTO plan)
         {
             var solution = plan.SubPlans
                 .FirstOrDefault()
@@ -101,7 +101,11 @@ namespace terminalDocuSignTests.Integration
             if (!defaultDocuSignAuthTokenExists)
             {
                 var creds = GetDocuSignCredentials();
-                creds.Terminal = solution.ActivityTemplate.Terminal;
+                creds.Terminal = new TerminalSummaryDTO
+                {
+                    Name = solution.ActivityTemplate.TerminalName,
+                    Version = solution.ActivityTemplate.TerminalVersion
+                };
 
                 var token = await HttpPostAsync<CredentialsDTO, JObject>(
                     _baseUrl + "authentication/token", creds
@@ -243,12 +247,12 @@ namespace terminalDocuSignTests.Integration
             return plan;
         }
 
-        private void ValidatePlanCategory(PlanFullDTO plan)
+        private void ValidatePlanCategory(PlanDTO plan)
         {
             Assert.AreEqual(plan.Category.Trim().ToLower(), "report");
         }
 
-        private void ValidatePlanName(PlanFullDTO plan, ICrateStorage crateStorage)
+        private void ValidatePlanName(PlanDTO plan, ICrateStorage crateStorage)
         {
             var configurationControls = crateStorage
             .CrateContentsOfType<StandardConfigurationControlsCM>()

@@ -504,7 +504,7 @@ namespace terminalDocuSign.Activities
             return Crate<StandardQueryCM>.FromContent(QueryCrateLabel, queryCM);
         }
 
-        private async Task<PlanFullDTO> UpdatePlanName()
+        private async Task<PlanDTO> UpdatePlanName()
         {
             if (ConfigurationControls != null)
             {

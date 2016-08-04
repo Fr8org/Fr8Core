@@ -4,8 +4,10 @@ module dockyard.controllers {
     'use strict';
 
     export interface ITerminalListScope extends ng.IScope {
-        terminals: Array<model.TerminalRegistrationDTO>;
+        terminals: Array<model.TerminalDTO>;
+        openDetails(terminal: interfaces.ITerminalVM);
         showAddTerminalModal: () => void;
+        showPublishTerminalModal: () => void;
     }
 
     class TerminalListController {
@@ -17,21 +19,28 @@ module dockyard.controllers {
         public static $inject = [
             '$scope',
             'TerminalService',
+            '$state',
             '$modal'
         ];
 
         constructor(
             private $scope: ITerminalListScope,
             private TerminalService: services.ITerminalService,
+            private $state: ng.ui.IStateService,
             private $modal: any) {
 
+            $scope.showPublishTerminalModal = <() => void>angular.bind(this, this.showPublishTerminalModal);
             $scope.showAddTerminalModal = <() => void>angular.bind(this, this.showAddTerminalModal);
 
-            TerminalService.getRegistrations().$promise.then(data => {
+            TerminalService.getAll().$promise.then(data => {
                 $scope.terminals = data;
             }).catch(e => {
                 console.log(e.statusText);
-            });
+                });
+
+            $scope.openDetails = terminal => {
+                $state.go('terminalDetails', { id: terminal.internalId });
+            }
         }
 
         private showAddTerminalModal() {
@@ -43,6 +52,15 @@ module dockyard.controllers {
                 .result.then(terminal => {
                     this.$scope.terminals.push(terminal);
                 });
+        }
+        private showPublishTerminalModal() {
+            this.$modal.open({
+                animation: true,
+                templateUrl: '/AngularTemplate/TerminalPublishForm',
+                controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
+                    $scope.cancel = () => { $modalInstance.dismiss('cancel'); }
+                }]
+            })
         }
     }
 

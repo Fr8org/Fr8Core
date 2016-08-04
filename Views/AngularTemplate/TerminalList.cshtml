@@ -10,6 +10,7 @@
                     </div>
                     <div class="actions">
                         <a class="btn green" ng-click="showAddTerminalModal()" href="#">Add Terminal</a>
+                        <a class="btn green" ng-click="showPublishTerminalModal()" href="#">Publish Terminal</a>
                     </div>
                 </div>
                 <div class="portlet-body">
@@ -18,11 +19,13 @@
                         <table datatable="ng" class="row-border hover">
                             <thead>
                                 <tr>
+                                    <th>Name</th>
                                     <th>Url</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="terminal in terminals">
+                                <tr ng-repeat="terminal in terminals" ng-click="openDetails(terminal)" style="cursor: pointer">
+                                    <td>{{terminal.label}}</td>
                                     <td>{{terminal.endpoint}}</td>
                                 </tr>
                             </tbody>

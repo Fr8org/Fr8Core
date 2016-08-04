@@ -100,11 +100,11 @@ namespace terminalIntegrationTests.Integration
             var response = await RestfulServiceClient.GetAsync(new Uri(url), null, terminalAuthenticationHeader);
 
             var plans = JsonConvert.DeserializeObject<IEnumerable<PlanDTO>>(response).ToArray();
-            var plan = plans.FirstOrDefault().Plan.SubPlans.FirstOrDefault();
+            var plan = plans.FirstOrDefault().SubPlans.FirstOrDefault();
 
             // deactivate plan before editing
             Debug.WriteLine("deactivate plan before editing");
-            var deactivateUrl = GetHubApiBaseUrl() + "plans/deactivate?planId=" + plans.FirstOrDefault().Plan.Id;
+            var deactivateUrl = GetHubApiBaseUrl() + "plans/deactivate?planId=" + plans.FirstOrDefault().Id;
             await RestfulServiceClient.PostAsync(new Uri(deactivateUrl), new List<CrateDTO>(), null, terminalAuthenticationHeader);
 
             Debug.WriteLine("Reconfiguring plan activities");
@@ -121,7 +121,7 @@ namespace terminalIntegrationTests.Integration
 
             //Run plan again after reconfigure
             Debug.WriteLine("Run plan again after reconfigure");
-            var runUrl = GetHubApiBaseUrl() + "plans/run?planId=" + plans.FirstOrDefault().Plan.Id;
+            var runUrl = GetHubApiBaseUrl() + "plans/run?planId=" + plans.FirstOrDefault().Id;
             await RestfulServiceClient.PostAsync(new Uri(runUrl), new List<CrateDTO>(), null, terminalAuthenticationHeader);
 
             await SubmitForm(googleEventUrl, guidTestId.ToString());

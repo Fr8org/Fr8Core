@@ -2,17 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using StructureMap;
-using Microsoft.AspNet.Identity;
-using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using Fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates;
 
 namespace PlanDirectory.Infrastructure
 {
@@ -30,7 +25,6 @@ namespace PlanDirectory.Infrastructure
         /// WebServiceTemplateTag: Z
         /// WebServiceTemplateTag: Y, Z
         /// </summary>
-
         public async Task<TemplateTagStorage> GetTags(PlanTemplateCM planTemplateCM, string fr8AccountId)
         {
             var result = new TemplateTagStorage();
@@ -51,21 +45,33 @@ namespace PlanDirectory.Infrastructure
             var activityCategories = await client.GetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(
                uri, headers: headers);
 
-            var activityDict = activityCategories.SelectMany(a => a.Activities).ToDictionary(k => k.Id);
+            var activityDict = activityCategories
+                .SelectMany(a => a.Activities)
+                .ToDictionary(k => $"{k.Name};{k.Version};{k.Terminal.Name}:{k.Terminal.Version}");
 
             //1. getting ids of used templates
-            var planTemplateDTO = JsonConvert.DeserializeObject<PlanTemplateDTO>(planTemplateCM.PlanContents);
-            if (planTemplateDTO.PlanNodeDescriptions == null || planTemplateDTO.PlanNodeDescriptions.Count == 0)
-                return new TemplateTagStorage();
+            var plan = planTemplateCM.PlanContents;
+            var usedActivityTemplatesIds = new HashSet<string>();
 
-            var usedActivityTemplatesIds = planTemplateDTO.PlanNodeDescriptions.Select(a => a.ActivityDescription.ActivityTemplateId).Distinct().ToList();
+            if (plan.SubPlans != null)
+            {
+                foreach (var subplan in plan.SubPlans)
+                {
+                    CollectActivityTemplateIds(subplan, usedActivityTemplatesIds);
+                }
+            }
+
+            if (usedActivityTemplatesIds.Count == 0)
+            {
+                return new TemplateTagStorage();
+            }
+
             //2. getting used templates
             var usedActivityTemplates = usedActivityTemplatesIds.Intersect(activityDict.Keys)
                                      .Select(k => activityDict[k])
                                      .Distinct(ActivityTemplateDTO.IdComparer)
                                      .OrderBy(a => a.Name)
                                      .ToList();
-
             if (usedActivityTemplates.Count != usedActivityTemplatesIds.Count)
                 throw new ApplicationException("Template references activity that is not registered in Hub");
             //3. adding tags for activity templates
@@ -78,6 +84,41 @@ namespace PlanDirectory.Infrastructure
             webServicesCombination.ForEach(a => result.WebServiceTemplateTags.Add(new WebServiceTemplateTag(a)));
 
             return result;
+        }
+
+        private void CollectActivityTemplateIds(FullSubplanDto subplan, HashSet<string> ids)
+        {
+            if (subplan.Activities == null)
+            {
+                return;
+            }
+
+            foreach (var activity in subplan.Activities)
+            {
+                CollectActivityTemplateIds(activity, ids);
+            }
+        }
+
+        private void CollectActivityTemplateIds(ActivityDTO activity, HashSet<string> ids)
+        {
+            var at = activity.ActivityTemplate;
+            if (at != null && !string.IsNullOrEmpty(at.Name) 
+                && !string.IsNullOrEmpty(at.Version) 
+                && !string.IsNullOrEmpty(at.TerminalName)
+                && !string.IsNullOrEmpty(at.TerminalVersion))
+            {
+                ids.Add($"{at.Name};{at.Version};{at.TerminalName}:{at.TerminalVersion}");
+            }
+
+            if (activity.ChildrenActivities == null)
+            {
+                return;
+            }
+
+            foreach (var child in activity.ChildrenActivities)
+            {
+                CollectActivityTemplateIds(child, ids);
+            }
         }
 
         /// <summary>
