@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Fr8.Testing.Integration;
@@ -213,16 +214,20 @@ namespace terminalDocuSignTests.Integration
             //from now on our solution should have followup crate structure
             Assert.True(this._solution.ChildrenActivities.Length == 4, "Solution child actions failed to create.");
 
-            Assert.True(this._solution.ChildrenActivities.Any(a => a.Name == "Monitor Docusign Envelope Activity" && a.Ordering == 1));
-            Assert.True(this._solution.ChildrenActivities.Any(a => a.Name == "Set Delay" && a.Ordering == 2));
-            Assert.True(this._solution.ChildrenActivities.Any(a => a.Name == "Query Fr8 Warehouse" && a.Ordering == 3));
-            Assert.True(this._solution.ChildrenActivities.Any(a => a.Name == "Test Incoming Data" && a.Ordering == 4));
+            Assert.True(this._solution.ChildrenActivities.Any(a => a.ActivityTemplate.Name == "Monitor_DocuSign_Envelope_Activity" && a.Ordering == 1));
+            Assert.True(this._solution.ChildrenActivities.Any(a => a.ActivityTemplate.Name == "Set_Delay" && a.Ordering == 2));
+            Assert.True(this._solution.ChildrenActivities.Any(a => a.ActivityTemplate.Name == "Query_Fr8_Warehouse" && a.Ordering == 3));
+            Assert.True(this._solution.ChildrenActivities.Any(a => a.ActivityTemplate.Name == "Test_Incoming_Data" && a.Ordering == 4));
 
             plan = await HttpGetAsync<PlanDTO>(planReloadUrl);
             Assert.AreEqual(3, plan.SubPlans.First().Activities.Count);
-            Assert.True(plan.SubPlans.First().Activities.Any(a => a.Name == "Build a Message" && a.Ordering == 2));
+            Assert.True(plan.SubPlans.First().Activities.Any(a => a.ActivityTemplate.Name == "Build_Message" && a.Ordering == 2));
             var emailActivity = plan.SubPlans.First().Activities.Last();
-            Assert.True(emailActivity.Name == notificationHandler.selectedKey);
+
+            var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>($"{baseUrl}/activity_templates");
+            var templates = activityTemplates.SelectMany(x => x.Activities);
+            var selectedActivityName = templates.Single(x => x.Id == Guid.Parse(notificationHandler.Value));
+            Assert.True(emailActivity.ActivityTemplate.Name == selectedActivityName.Name);
 
             //let's configure email settings
 
