@@ -8,6 +8,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.Managers;
 using Hub.Managers;
 using Fr8.Infrastructure.Utilities.Serializers.Json;
+using Fr8.Infrastructure.Data.States;
 
 namespace Fr8.Testing.Unit.Fixtures
 {
@@ -20,7 +21,7 @@ namespace Fr8.Testing.Unit.Fixtures
                 Id = GetTestGuidById(33),
                 Description = "descr 1",
                 Name = "template1",
-                PlanState = PlanState.Running,
+                PlanState = PlanState.Executing,
 
 
             };
@@ -34,7 +35,7 @@ namespace Fr8.Testing.Unit.Fixtures
                 Id = GetTestGuidById(50),
                 Description = "descr 2",
                 Name = "template2",
-                PlanState = PlanState.Running,
+                PlanState = PlanState.Executing,
 
                 //UserId = "testUser1"
                 //Fr8Account = FixtureData.TestDockyardAccount1()
@@ -49,7 +50,7 @@ namespace Fr8.Testing.Unit.Fixtures
                 Id = GetTestGuidById(23),
                 Description = "DO-866 HealthDemo Integration Test",
                 Name = "HealthDemoIntegrationTest",
-                PlanState = PlanState.Running,
+                PlanState = PlanState.Executing,
             };
             return healthPlan;
         }
@@ -61,7 +62,7 @@ namespace Fr8.Testing.Unit.Fixtures
                 Id = GetTestGuidById(1),
                 Description = "DO-982 Process Node Template Test",
                 Name = "PlanWithSubPlans",
-                PlanState = PlanState.Running,
+                PlanState = PlanState.Executing,
             };
 
             for (int i = 1; i <= 4; ++i)
@@ -91,7 +92,7 @@ namespace Fr8.Testing.Unit.Fixtures
                     Id = GetTestGuidById(23),
                     Description = "HealthDemo Integration Test",
                     Name = "StandardEventTesting",
-                    PlanState = PlanState.Running,
+                    PlanState = PlanState.Executing,
                     Fr8Account = testUser
                 };
                 uow.PlanRepository.Add(planDO);
@@ -167,7 +168,7 @@ namespace Fr8.Testing.Unit.Fixtures
                     Id = GetTestGuidById(23 + idOffset),
                     Description = "HealthDemo Integration Test",
                     Name = "StandardEventTesting",
-                    PlanState = PlanState.Running,
+                    PlanState = PlanState.Executing,
                     Fr8Account = user
                 };
                 uow.PlanRepository.Add(planDO);
@@ -236,7 +237,7 @@ namespace Fr8.Testing.Unit.Fixtures
                 Id = GetTestGuidById(1),
                 Description = "DO-1040 Process Template Test",
                 Name = "Poress template",
-                PlanState = PlanState.Running,
+                PlanState = PlanState.Executing,
             };
 
             for (int i = 2; i <= 3; ++i)
@@ -261,7 +262,7 @@ namespace Fr8.Testing.Unit.Fixtures
                 Id = GetTestGuidById(1),
                 Description = "DO-1040 Process Template Test",
                 Name = "Poress template",
-                PlanState = PlanState.Running,
+                PlanState = PlanState.Executing,
             };
 
             for (int i = 2; i <= 3; ++i)
@@ -286,7 +287,7 @@ namespace Fr8.Testing.Unit.Fixtures
                 Id = GetTestGuidById(1),
                 Description = "DO-1124 Proper  deletion of Plan",
                 Name = "TestPlanWithStartingSubPlans",
-                PlanState = PlanState.Running,
+                PlanState = PlanState.Executing,
             };
 
             var curSubPlanDO = new SubplanDO()
@@ -311,7 +312,7 @@ namespace Fr8.Testing.Unit.Fixtures
                 Id = GetTestGuidById(1),
                 Description = "DO-1124 Proper  deletion of Plan",
                 Name = "TestPlanWithStartingSubPlan",
-                PlanState = PlanState.Running,
+                PlanState = PlanState.Executing,
             };
 
             var curSubPlanDO = new SubplanDO()
@@ -340,7 +341,7 @@ namespace Fr8.Testing.Unit.Fixtures
             {
                 Description = "DO-1124 Proper  deletion of Plan",
                 Name = "TestPlanWithStartingSubPlans_ID0",
-                PlanState = PlanState.Running,
+                PlanState = PlanState.Executing,
             };
 
             var curSubPlanDO = new SubplanDO()
@@ -361,7 +362,7 @@ namespace Fr8.Testing.Unit.Fixtures
             {
                 Description = "DO-1217 Unit Tests for Process#Create",
                 Name = "DO-1217",
-                PlanState = PlanState.Running,
+                PlanState = PlanState.Executing,
             };
             return curPlanDO;
         }
@@ -373,7 +374,7 @@ namespace Fr8.Testing.Unit.Fixtures
                 Id = GetTestGuidById(30),
                 Description = "Description 4",
                 Name = "Plan 4",
-                PlanState = PlanState.Running,
+                PlanState = PlanState.Executing,
                 Fr8Account = FixtureData.TestDockyardAccount5()
             };
             return plan;
@@ -386,7 +387,7 @@ namespace Fr8.Testing.Unit.Fixtures
                 Id = GetTestGuidById(40),
                 Description = "Description 5",
                 Name = "Plan 5",
-                PlanState = PlanState.Running,
+                PlanState = PlanState.Executing,
                 Fr8Account = FixtureData.TestDockyardAccount5()
             };
             return plan;
@@ -398,7 +399,7 @@ namespace Fr8.Testing.Unit.Fixtures
                 Id = GetTestGuidById(1),
                 Description = "DO-1419 Container Create Adds Logs Test",
                 Name = "Container Create",
-                PlanState = PlanState.Running
+                PlanState = PlanState.Executing
             };
 
             return curPlanDO;
