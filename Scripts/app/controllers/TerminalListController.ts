@@ -7,7 +7,6 @@ module dockyard.controllers {
         terminals: Array<model.TerminalDTO>;
         openDetails(terminal: interfaces.ITerminalVM);
         showAddTerminalModal: () => void;
-        showPublishTerminalModal: () => void;
     }
 
     class TerminalListController {
