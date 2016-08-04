@@ -818,8 +818,8 @@
     <Content Include="Scripts\tests\e2e\authorizationPathways\google.spec.js" />
     <Content Include="Scripts\tests\e2e\conf.js" />
     <Content Include="Scripts\tests\e2e\login\login.spec.js" />
-    <Content Include="Scripts\tests\e2e\pages\google.page.js" />
     <Content Include="Scripts\tests\e2e\pages\myAccount.page.js" />
+    <Content Include="Scripts\tests\e2e\pages\plans.page.js" />
     <Content Include="Scripts\tests\e2e\registration\registration.spec.js" />
     <Content Include="Scripts\tests\e2e\pages\login.page.js" />
     <Content Include="Scripts\tests\e2e\pages\registration.page.js" />
