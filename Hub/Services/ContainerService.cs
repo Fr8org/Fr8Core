@@ -281,6 +281,7 @@ namespace Hub.Services
             _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
                 NotificationType = NotificationType.GenericFailure,
+                Subject = "Plan Failed",
                 Message = errorMessage,
                 Collapsed = false
             }, user.Id);
