@@ -160,15 +160,13 @@ namespace HubTests.Controllers
 
             var plan = new PlanDO
             {
-                PlanState = PlanState.Running,
+                PlanState = PlanState.Executing,
                 Name = "name",
                 ChildNodes = { activity }
             };
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-
-
                 uow.PlanRepository.Add(plan);
                 uow.SaveChanges();
             }

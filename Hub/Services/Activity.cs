@@ -562,7 +562,7 @@ namespace Hub.Services
 
             var root = exisiting.GetTreeRoot() as PlanDO;
 
-            if (root?.PlanState == PlanState.Running)
+            if (root?.PlanState == PlanState.Executing || root?.PlanState == PlanState.Active)
             {
                 root.PlanState = PlanState.Inactive;
             }

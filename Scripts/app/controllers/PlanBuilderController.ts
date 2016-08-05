@@ -423,8 +423,9 @@ module dockyard.controllers {
 
         private reloadFirstActions() {
             this.$timeout(() => {
-                if (this.$scope.current.plan.planState != dockyard.model.PlanState.Running) {
-                    this.$scope.current.plan.subPlans.forEach(
+                var currentPlan = this.$scope.current.plan;
+                if (currentPlan.planState != dockyard.model.PlanState.Executing || currentPlan.planState != dockyard.model.PlanState.Active) {
+                    currentPlan.subPlans.forEach(
                         plan => {
                             if (plan.activities.length > 0) {
                                 this.$scope.reConfigureAction(plan.activities[0])

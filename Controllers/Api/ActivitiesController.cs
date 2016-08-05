@@ -53,7 +53,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = _uowFactory.Create())
             {
-                if (parentNodeId != null && _planService.GetPlanState(uow, parentNodeId.Value) == PlanState.Running)
+                if (parentNodeId != null && _planService.IsPlanActiveOrExecuting(parentNodeId.Value))
                 {
                     return new LockedHttpActionResult();
                 }
@@ -87,7 +87,7 @@ namespace HubWeb.Controllers
             var userId = User.Identity.GetUserId();
             using (var uow = _uowFactory.Create())
             {
-                if (_planService.GetPlanState(uow, curActionDesignDTO.Id) == PlanState.Running && !force)
+                if (_planService.IsPlanActiveOrExecuting(curActionDesignDTO.Id) && !force)
                 {
                     return new LockedHttpActionResult();
                 }
@@ -134,12 +134,9 @@ namespace HubWeb.Controllers
         [SwaggerResponseRemoveDefaults]
         public async Task<IHttpActionResult> Delete([FromUri] Guid id, [FromUri(Name = "delete_child_nodes")] bool deleteChildNodes = false)
         {
-            using (var uow = _uowFactory.Create())
+            if (_planService.IsPlanActiveOrExecuting(id))
             {
-                if (_planService.GetPlanState(uow, id) == PlanState.Running)
-                {
-                    return new LockedHttpActionResult();
-                }
+                return new LockedHttpActionResult();
             }
             if (deleteChildNodes)
             {
@@ -167,7 +164,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = _uowFactory.Create())
             {
-                if (_planService.GetPlanState(uow, curActionDTO.Id) == PlanState.Running && !force)
+                if (_planService.IsPlanActiveOrExecuting(curActionDTO.Id) && !force)
                 {
                     return new LockedHttpActionResult();
                 }
