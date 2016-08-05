@@ -9,8 +9,8 @@ namespace HubTests.Utilities
         [Test]
         public void MaskPassword_Should_MaskPasswordWithSemicolon()
         {
-            string cs = "Data Source=.;Initial Catalog=DockyardDB2;Integrated Security=SSPI;Password=strong!password;";
-            string cs_expected = "Data Source=.;Initial Catalog=DockyardDB2;Integrated Security=SSPI;Password=*****;";
+            string cs = "Data Source=.;Initial Catalog=Fr8LocalDB;Integrated Security=SSPI;Password=strong!password;";
+            string cs_expected = "Data Source=.;Initial Catalog=Fr8LocalDB;Integrated Security=SSPI;Password=*****;";
             string masked = MiscUtils.MaskPassword(cs);
             Assert.AreEqual(cs_expected, masked);
         }
@@ -18,8 +18,8 @@ namespace HubTests.Utilities
         [Test]
         public void MaskPassword_Should_MaskPasswordWithoutSemicolon()
         {
-            string cs = "Data Source=.;Initial Catalog=DockyardDB2;Integrated Security=SSPI;Password=strong!password";
-            string cs_expected = "Data Source=.;Initial Catalog=DockyardDB2;Integrated Security=SSPI;Password=*****";
+            string cs = "Data Source=.;Initial Catalog=Fr8LocalDB;Integrated Security=SSPI;Password=strong!password";
+            string cs_expected = "Data Source=.;Initial Catalog=Fr8LocalDB;Integrated Security=SSPI;Password=*****";
             string masked = MiscUtils.MaskPassword(cs);
             Assert.AreEqual(cs_expected, masked);
         }

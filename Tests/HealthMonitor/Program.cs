@@ -15,7 +15,7 @@ namespace HealthMonitor
         static void Main(string[] args)
         {
             var appName = "Unspecified App";
-            var csName = "DockyardDB";
+            var csName = "Fr8LocalDB";
             var allArguments = new Dictionary<string, object>();
             var connectionString = ConfigurationManager.ConnectionStrings[csName].ConnectionString;
             var sendEmailReport = false;
