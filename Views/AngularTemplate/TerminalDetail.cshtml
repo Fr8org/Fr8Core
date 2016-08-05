@@ -20,9 +20,6 @@
                         <i class="icon-bar-chart font-green-haze hide"></i>
                         <span class="caption-subject font-green-haze bold uppercase">Terminal Details</span>
                     </div>
-                    <div class="actions">
-                        <a class="btn green" ng-click="showPublishTerminalModal()" href="#">Publish Terminal</a>
-                    </div>
                 </div>
                 <div class="portlet-body">
                     <!-- PROCESS FORM -->
@@ -46,8 +43,11 @@
                                 <button type="button" ng-click="openPermissionsSetterModal(terminal)" class="btn green-haze">
                                     Set Permissions
                                 </button>
-                                <a ng-click="cancel()" class="btn default">
-                                    Cancel
+                                <button type="button" ng-click="showPublishTerminalModal()" class="btn green-haze">
+                                    Publish Terminal
+                                </button>
+                                <a ui-sref="terminals" class="btn default">
+                                    Return
                                 </a>
                             </div>
                         </form>

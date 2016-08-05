@@ -33,9 +33,6 @@ module dockyard.controllers {
                 $scope.terminal = data;
             });
 
-            $scope.cancel = function () {
-                $state.go('terminals');
-            };
             $scope.showPublishTerminalModal = () => {
                 $modal.open({
                     animation: true,
