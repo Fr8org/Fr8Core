@@ -9,6 +9,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Testing.Integration;
+using System.Configuration;
 
 namespace terminalIntegrationTests.Integration
 {
@@ -78,7 +79,7 @@ namespace terminalIntegrationTests.Integration
 
             try
             {
-                await AuthenticateWebApi("IntegrationTestUser1", "fr8#s@lt!");
+                await AuthenticateWebApi("IntegrationTestUser1", ConfigurationManager.AppSettings["TestUserPassword"]);
 
                 var createPlanResult = await HttpPostAsync<JToken>(
                     _baseUrl + "plan_templates/createplan?id=" + planTemplateDTO.ParentPlanId.ToString(), null);
