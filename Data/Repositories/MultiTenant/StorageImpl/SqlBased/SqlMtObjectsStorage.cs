@@ -16,7 +16,6 @@ namespace Data.Repositories.MultiTenant.Sql
         public SqlMtObjectsStorage(IMtObjectConverter converter)
         {
             _converter = converter;
-            //_connectionString = ConfigurationManager.ConnectionStrings["DockyardDB"].ConnectionString;
         }
 
         private SqlConnection OpenConnection(ISqlConnectionProvider connectionProvider)

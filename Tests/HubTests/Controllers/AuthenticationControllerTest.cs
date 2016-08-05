@@ -125,7 +125,7 @@ namespace HubTests.Controllers
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Running,
+                    PlanState = PlanState.Executing,
                     ChildNodes = { activityDO }
                 });
 
