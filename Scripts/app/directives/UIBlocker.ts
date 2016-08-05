@@ -28,7 +28,7 @@ module dockyard.directives.UIBlocker {
             $scope.deactivatePlan = () => {
                 var result = PlanService.deactivate({ planId: $scope.plan.id });
                 result.$promise.then((data) => {
-                    $scope.plan.planState = 1;
+                    $scope.plan.planState = model.PlanState.Inactive;
                     $rootScope.$broadcast(<any>designHeaderEvents.PLAN_IS_DEACTIVATED);
                 });
             };

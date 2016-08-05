@@ -16,7 +16,7 @@ namespace HubWeb.Documentation.Swagger
                 OrderBy = "-name",
                 Page = 1,
                 PlanPerPage = 50,
-                Status = 1
+                Status = "Inactive"
             };
         }
 
