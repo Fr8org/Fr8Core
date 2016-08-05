@@ -77,7 +77,7 @@ namespace HubWeb
             incidentReporter.SubscribeToAlerts();
             
             StartupMigration.CreateSystemUser();
-            StartupMigration.MoveSalesforceRefreshTokensIntoKeyVault();
+            StartupMigration.UpdateTransitionNames();
 
             SetServerUrl();
 
