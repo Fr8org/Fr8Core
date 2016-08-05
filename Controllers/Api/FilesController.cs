@@ -108,9 +108,6 @@ namespace HubWeb.Controllers
         /// Downloads file with specified Id and owned by current user
         /// </summary>
         /// <param name="id">Id of requested file</param>
-        /// <response code="200">Contents of specified file as byte array</response>
-        /// <response code="403">Unauthorized request</response>
-        /// <response code="404">File with specified Id doesn't exist</response>
         [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         [ResponseType(typeof(byte[]))]
@@ -145,9 +142,6 @@ namespace HubWeb.Controllers
         /// Downloads file with specified path and owned by current user
         /// </summary>
         /// <param name="path">Path of the requested file</param>
-        /// <response code="200">Contents of specified file as byte array</response>
-        /// <response code="403">Unauthorized request</response>
-        /// <response code="404">File with specified Id doesn't exist</response>
         [Fr8TerminalAuthentication]
         [Fr8ApiAuthorize]
         [ActionName("byPath")]
