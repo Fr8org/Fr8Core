@@ -130,6 +130,7 @@ namespace Hub.StructureMap
 
 
                 //PD services
+                For<ITagGenerator>().Use<TagGenerator>().Singleton();
                 For<IPlanTemplate>().Use<PlanTemplate>().Singleton();
                 For<ISearchProvider>().Use<SearchProvider>().Singleton();
                 For<IPageDefinition>().Use<PageDefinition>().Singleton();
@@ -215,6 +216,7 @@ namespace Hub.StructureMap
                 For<IWebservicesPageGenerator>().Use<WebservicesPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
                 For<IManifestPageGenerator>().Use<ManifestPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
 
+                For<ITagGenerator>().Use<TagGenerator>().Singleton();
                 For<IPlanTemplate>().Use<PlanTemplate>().Singleton();
                 For<ISearchProvider>().Use<SearchProvider>().Singleton();
                 For<IPageDefinition>().Use<PageDefinition>().Singleton();
