@@ -59,9 +59,10 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         [JsonProperty("categories")]
         public ActivityCategoryDTO[] Categories { get; set; }
 
-        [JsonProperty("category")]
-        [JsonConverter(typeof(StringEnumConverter))]
-        public ActivityCategory Category { get; set; }
+        // TODO: FR-4943, remove this.
+        // [JsonProperty("category")]
+        // [JsonConverter(typeof(StringEnumConverter))]
+        // public ActivityCategory Category { get; set; }
 
         [JsonProperty("type")]
         [JsonConverter(typeof(StringEnumConverter))]

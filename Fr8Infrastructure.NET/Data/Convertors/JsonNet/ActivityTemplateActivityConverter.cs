@@ -41,8 +41,11 @@ namespace Fr8.Infrastructure.Data.Convertors.JsonNet
             writer.WriteRawValue(JsonConvert.SerializeObject(item.Terminal, customTerminalConverter));
             writer.WritePropertyName("tags");
             writer.WriteValue(item.Tags);
-            writer.WritePropertyName("category");
-            writer.WriteValue(item.Category.ToString());
+
+            // TODO: FR-4943, remove this.
+            // writer.WritePropertyName("category");
+            // writer.WriteValue(item.Category.ToString());
+
             writer.WritePropertyName("type");
             writer.WriteValue(item.Type.ToString());
             writer.WritePropertyName("minPaneWidth");

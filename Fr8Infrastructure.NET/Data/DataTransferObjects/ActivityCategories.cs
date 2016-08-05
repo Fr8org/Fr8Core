@@ -7,31 +7,36 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
     {
         private readonly static ActivityCategoryDTO _monitor = new ActivityCategoryDTO()
         {
-            Name = "Monitor",
+            Id = MonitorId,
+            Name = MonitorName,
             IconPath = "/Content/icons/monitor-icon-64x64.png"
         };
 
         private readonly static ActivityCategoryDTO _receive = new ActivityCategoryDTO()
         {
-            Name = "Get",
+            Id = ReceiveId,
+            Name = ReceiveName,
             IconPath = "/Content/icons/get-icon-64x64.png"
         };
 
         private readonly static ActivityCategoryDTO _process = new ActivityCategoryDTO()
         {
-            Name = "Process",
+            Id = ProcessId,
+            Name = ProcessName,
             IconPath = "/Content/icons/process-icon-64x64.png"
         };
 
         private readonly static ActivityCategoryDTO _forward = new ActivityCategoryDTO()
         {
-            Name = "Forward",
+            Id = ForwardId,
+            Name = ForwardName,
             IconPath = "/Content/icons/forward-icon-64x64.png"
         };
 
         private readonly static ActivityCategoryDTO _solution = new ActivityCategoryDTO()
         {
-            Name = "Solution"
+            Id = SolutionId,
+            Name = SolutionName
         };
 
         private readonly static List<Guid> _categoryIds = new List<Guid>()
@@ -42,7 +47,17 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
             ForwardId,
             SolutionId
         };
-   
+
+        private readonly static List<ActivityCategoryDTO> _categories = new List<ActivityCategoryDTO>()
+        {
+            Monitor,
+            Receive,
+            Process,
+            Forward,
+            Solution
+        };
+
+
         public static Guid MonitorId
         {
             get { return Guid.Parse("417DD061-27A1-4DEC-AECD-4F468013FD24"); }
@@ -121,6 +136,11 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         public static List<Guid> ActivityCategoryIds
         {
             get { return _categoryIds; }
+        }
+
+        public static List<ActivityCategoryDTO> ActivityCategoryList
+        {
+            get { return _categories; }
         }
     }
 }
