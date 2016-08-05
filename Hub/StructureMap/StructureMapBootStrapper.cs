@@ -209,6 +209,12 @@ namespace Hub.StructureMap
                 For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
                 For<ITimer>().Use<Win32Timer>();
                 For<IUpstreamDataExtractionService>().Use<UpstreamDataExtractionService>().Singleton();
+
+                //PD bootstrap
+                For<IPlanTemplate>().Use<PlanTemplate>().Singleton();
+                For<ISearchProvider>().Use<SearchProvider>().Singleton();
+                For<IWebservicesPageGenerator>().Use<WebservicesPageGenerator>().Singleton();
+                For<IPageDefinition>().Use<PageDefinition>().Singleton();
                 For<IPlanDirectoryService>().Use<PlanDirectoryService>().Singleton();
             }
         }
