@@ -87,7 +87,7 @@ The JSON representation of this plan is:
       "name": "Starting Subplan"
     }
   ],
-  "fr8UserId": "fbb00d37-5c03-4296-9569-a32aeab70443",
+  "ownerId": "fbb00d37-5c03-4296-9569-a32aeab70443",
   "id": "5c1499ce-4b21-4ca3-ab81-6924e0d55a84",
   "name": "Plan with loops",
   "tag": null,
@@ -106,7 +106,7 @@ The JSON representation of this plan is:
 ## Plan node JSON
 Describes properties of the [plan](/Docs/ForDevelopers/Objects/Plans/Plans.md) itself.  
 * **subPlans** - one or more subplans. Each plan must have at least one subplan.
-* **fr8UserId** - Id of the owner user
+* **ownerId** - Id of the owner user
 * **id** - Id of the plan.
 * **name** - Name of the plan. Value of this property is shown in the UI.
 * **description** - Optional free form text, describing what this plan is doing.
