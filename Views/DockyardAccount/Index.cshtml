@@ -118,7 +118,7 @@
                     window.analytics.load(segmentKey);
                 window.analytics.page('Visited Page - Log In');
             }
-            var actionWithoutHash = $('form').attr('action');
+            var actionWithoutHash = $('form', "#loginform").attr('action');
             $('form').attr('action', actionWithoutHash + window.location.hash);
         });
     </script>
