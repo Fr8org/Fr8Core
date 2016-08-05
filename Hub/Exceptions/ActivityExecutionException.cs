@@ -50,11 +50,11 @@ namespace Hub.Exceptions
         {
             if (!string.IsNullOrEmpty(Message))
             {
-                return String.Format("Failed to run activity \"{0}\". {1}", FailedActivityDTO?.Name, Message);
+                return String.Format("Failed to run activity \"{0}\". {1}", FailedActivityDTO?.ActivityTemplate?.Name, Message);
             }
             else
             {
-                return String.Format("Failed to run activity \"{0}\". Please, make sure it is set up correctly.", FailedActivityDTO?.Name);
+                return String.Format("Failed to run activity \"{0}\". Please, make sure it is set up correctly.", FailedActivityDTO?.ActivityTemplate?.Name);
             }            
         }
     }

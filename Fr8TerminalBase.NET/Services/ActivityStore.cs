@@ -24,8 +24,6 @@ namespace Fr8.TerminalBase.Services
         public ActivityStore(TerminalDTO terminal)
         {
             Terminal = terminal;
-
-            Terminal.PublicIdentifier = CloudConfigurationManager.GetSetting("TerminalId") ?? ConfigurationManager.AppSettings[terminal.Name + "TerminalId"];
         }
 
         public void RegisterActivity(ActivityTemplateDTO activityTemplate, IActivityFactory activityFactory)

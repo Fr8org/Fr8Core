@@ -27,8 +27,8 @@ namespace Hub.Interfaces
         PlanDO GetPlanByActivityId(IUnitOfWork uow, Guid planActivityId);
         List<PlanDO> MatchEvents(List<PlanDO> curPlans, EventReportCM curEventReport);
         bool IsMonitoringPlan(IUnitOfWork uow, PlanDO planDo);
+        bool IsPlanActiveOrExecuting(Guid planNodeId);
         int? GetPlanState(IUnitOfWork uow, Guid planNodeId);
-
         void Enqueue(Guid curPlanId, params Crate[] curEventReport);
         Task<ContainerDTO> Run(Guid planId, Crate[] payload, Guid? containerId);
         PlanDO Clone(Guid planId);

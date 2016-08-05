@@ -1,5 +1,5 @@
 # Plans
-[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
+[Go to Contents](/Docs/Home.md)  
 
 A Fr8 Plan is a JSON element that defines a series of Activities. It may have one or more Subplans. When a Plan is run, a Fr8 Hubs first generates a Payload Container, which is a JSON structure designed to store any data generated during the execution of the Plan. The Hub then identifies the Terminal responsible for the starting Activity, and posts the Payload Container off to it. 
 
@@ -22,17 +22,17 @@ If you're developing a Terminal, you don't really worry about Plans. You're most
 
 Flow Control
 ------------
-Fr8 provides a powerful set of [flow control](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Activities/ActivityResponses.md) tools that can be integrated into Plans.
+Fr8 provides a powerful set of [flow control](/Docs/ForDevelopers/Objects/Activities/ActivityResponses.md) tools that can be integrated into Plans.
 
 
 
 
 Additional Resources
 --------------------
-[The Plan JSON Definition](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/PlanJSONDefinition.md)  
-[Activating & Running Plans](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/PlansActivationAndRunning.md)  
-[Moving and Sharing Plans](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Plans/MovingPlans.md)
+[The Plan JSON Definition](/Docs/ForDevelopers/Objects/Plans/PlanJSONDefinition.md)  
+[Activating & Running Plans](/Docs/ForDevelopers/Objects/PlansActivationAndRunning.md)  
+[Moving and Sharing Plans](/Docs/ForDevelopers/Objects/Plans/MovingPlans.md)
 
-[Plan Execution](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/PlanExecution.md)
+[Plan Execution](/Docs/ForDevelopers/OperatingConcepts/PlanExecution.md)
 
-[Go to Home](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
+[Go to Home](/Docs/Home.md)  

@@ -18,8 +18,7 @@ namespace Data.Entities
             typeof (PlanNodeDO).GetProperty(nameof(ParentPlanNodeId)),
             typeof (PlanNodeDO).GetProperty(nameof(Fr8AccountId)),
             typeof (PlanNodeDO).GetProperty(nameof(Ordering)),
-            typeof (PlanNodeDO).GetProperty(nameof(LastUpdated)),
-            typeof (PlanNodeDO).GetProperty(nameof(Runnable))
+            typeof (PlanNodeDO).GetProperty(nameof(LastUpdated))
         };
 
         [Key]
@@ -45,17 +44,8 @@ namespace Data.Entities
 
         public int Ordering { get; set; }
 
-        /// <summary>
-        /// Flag to indicate whether to execute current PlanNode during run-time or not.
-        /// Specifically when working with subordinate subplans,
-        /// we do not want to execute a subplan that was created during design-time mode,
-        /// since such subplan only provides template data for downstream activities during design-time. (FR-2908).
-        /// </summary>
-        public bool Runnable { get; set; }
-
         public PlanNodeDO()
         {
-            Runnable = true;
             ChildNodes = new List<PlanNodeDO>();
         }
 
@@ -166,7 +156,6 @@ namespace Data.Entities
             Fr8Account = source.Fr8Account;
             RootPlanNodeId = source.RootPlanNodeId;
             Ordering = source.Ordering;
-            Runnable = source.Runnable;
         }
     }
 }

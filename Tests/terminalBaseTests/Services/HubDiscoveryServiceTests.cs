@@ -164,7 +164,6 @@ namespace terminaBaselTests.Services
         {
             var activityStore = new ActivityStoreStub(new TerminalDTO
             {
-                PublicIdentifier = "test",
                 Endpoint = "http://test",
                 Name = "test"
             });

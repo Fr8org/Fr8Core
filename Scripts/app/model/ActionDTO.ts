@@ -1,15 +1,13 @@
 ﻿module dockyard.model {
     export class ActivityDTO implements interfaces.IActivityDTO {
-        rootPlanNodeId: string;
+        planId: string;
         parentPlanNodeId: string;
         id: string;
         label: string;
-        name: string;
         authTokenId: string;
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;
         activityTemplate: ActivityTemplateSummary;
-        currentView: string;
         childrenActivities: Array<interfaces.IActivityDTO>;
         height: number = 300;
         ordering: number;
@@ -17,11 +15,11 @@
         showAdvisoryPopup: boolean;
         advisoryMessages: model.AdvisoryMessages;
         constructor(
-            rootPlanNodeId: string,
+            planId: string,
             parentPlanNodeId: string,
             id: string
         ) {
-            this.rootPlanNodeId = rootPlanNodeId;
+            this.planId = planId;
             this.parentPlanNodeId = parentPlanNodeId;
             this.id = id;
             this.configurationControls = new ControlsList();
@@ -34,7 +32,7 @@
 
         clone(): ActivityDTO {
             var result = new ActivityDTO(
-                this.rootPlanNodeId,
+                this.planId,
                 this.parentPlanNodeId,
                 this.id
             );
@@ -53,7 +51,6 @@
             result.configurationControls = dataObject.configurationControls;
             result.id = dataObject.id;
             result.label = dataObject.label;
-            result.name = dataObject.name;
             result.parentPlanNodeId = dataObject.parentPlanNodeId;
             result.ordering = dataObject.ordering;
             return result;

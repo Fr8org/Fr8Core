@@ -199,7 +199,8 @@ namespace Hub.Services
 
                 if (node is ActivityDO)
                 {
-                    nodeName = "Activity: " + ((ActivityDO)node).Name;
+                    var activityTemplate = uow.ActivityTemplateRepository.GetByKey(((ActivityDO)node).ActivityTemplateId);
+                    nodeName = "Activity: " + activityTemplate.Name + " Version:" + activityTemplate.Version;
                 }
 
                 if (node is SubplanDO)
@@ -281,7 +282,7 @@ namespace Hub.Services
             _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
                 NotificationType = NotificationType.GenericFailure,
-                NotificationArea = NotificationArea.ActivityStream,
+                Subject = "Plan Failed",
                 Message = errorMessage,
                 Collapsed = false
             }, user.Id);

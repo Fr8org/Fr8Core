@@ -30,6 +30,7 @@ using HubWeb.App_Start;
 using GlobalConfiguration = Hangfire.GlobalConfiguration;
 using System.Globalization;
 using System.Threading;
+using PlanDirectory.Infrastructure;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 
@@ -59,6 +60,11 @@ namespace HubWeb
         {
             ObjectFactory.Configure(Fr8.Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
+            
+            //For PlanDirectory merge
+            ObjectFactory.Configure(PlanDirectoryBootStrapper.LiveConfiguration);
+
+
             ObjectFactory.GetInstance<AutoMapperBootStrapper>().ConfigureAutoMapper();
 
             var db = ObjectFactory.GetInstance<DbContext>();
@@ -71,7 +77,7 @@ namespace HubWeb
             incidentReporter.SubscribeToAlerts();
             
             StartupMigration.CreateSystemUser();
-            StartupMigration.MoveSalesforceRefreshTokensIntoKeyVault();
+            StartupMigration.UpdateTransitionNames();
 
             SetServerUrl();
 
@@ -82,7 +88,7 @@ namespace HubWeb
                 System.Web.Http.GlobalConfiguration.Configure(ConfigureControllerActivator);
             }
 
-            ConfigureHangfire(app, "DockyardDB");
+            ConfigureHangfire(app, "Fr8LocalDB");
 
 #pragma warning disable 4014
             RegisterTerminalActions(selfHostMode);

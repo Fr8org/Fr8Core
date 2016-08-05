@@ -9,20 +9,14 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         [JsonProperty("label")]
         public string Label { get; set; }
 
-        [JsonProperty("name")]
-        public string Name { get; set; }
-
         [JsonProperty("activityTemplate")]
         public ActivityTemplateSummaryDTO ActivityTemplate { get; set; }
 
-        [JsonProperty("rootPlanNodeId")]
+        [JsonProperty("planId")]
         public Guid? RootPlanNodeId { get; set; }
 
         [JsonProperty("parentPlanNodeId")]
         public Guid? ParentPlanNodeId { get; set; }
-
-        [JsonProperty("currenView")]
-        public string CurrentView { get; set; }
 
         [JsonProperty("ordering")]
         public int Ordering { get; set; }
@@ -41,9 +35,6 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 
         [JsonProperty("authToken")]
         public AuthorizationTokenDTO AuthToken { get; set; }
-
-        [JsonIgnore]
-        public string Fr8AccountId { get; set; }
 
         [JsonProperty("documentation")]
         public string Documentation { get; set; }

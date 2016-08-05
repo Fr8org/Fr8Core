@@ -53,6 +53,7 @@ module dockyard.controllers {
             }
 
             $scope.sharePlan = () => {
+                debugger;
                 if (!$scope.current.plan.visibility.public) {
                     PlanService.share($stateParams.id)
                         .then(() => {

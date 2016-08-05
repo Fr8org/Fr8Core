@@ -324,8 +324,8 @@ namespace HubWeb.Controllers
                 _pusherNotifier.NotifyUser(new NotificationMessageDTO
                 {
                     NotificationType = NotificationType.ExecutionStopped,
-                    NotificationArea = NotificationArea.ActivityStream,
-                    Message = $"\"{plan.Name}\"",
+                    Subject = "Plan Stopped",
+                    Message = $"\"{plan.Name}\" has been stopped.",
                     Collapsed = false
                 }, plan.Fr8AccountId);
             }

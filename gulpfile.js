@@ -90,10 +90,10 @@ gulp.task('compile_js', function () {
         'Scripts/app/services/UpstreamExtractor.js',
         'Scripts/app/services/PageDefinitionService.js',
         'Scripts/app/services/ActivityTemplateService.js',
+        'Scripts/app/services/ActivityService.js',
         'Scripts/app/filters/PlanState.js',
         'Scripts/app/filters/ContainerState.js',
         'Scripts/app/filters/FilterByTag.js',
-        'Scripts/app/enums/NotificationArea.js',
         'Scripts/app/enums/NotificationType.js',
         'Scripts/app/enums/UINotificationMessageStatus.js',
         'Scripts/app/directives/EventArgsBase.js',
@@ -432,7 +432,8 @@ gulp.task('update-web-driver', function (done) {
 
 gulp.task('protractor-run', function (done) {
     gutil.log('Using base url: ' + argv.baseUrl);
-    var result = child_process.spawnSync(getProtractorBinary('protractor'), ['--baseUrl=' + argv.baseUrl, 'Scripts\\tests\\e2e\\conf.js'], {
+    gutil.log('Testing with user: ' + argv.username);
+    var result = child_process.spawnSync(getProtractorBinary('protractor'), ['--baseUrl=' + argv.baseUrl, '--params.username='+argv.username, '--params.password='+argv.password, 'Scripts\\tests\\e2e\\conf.js'], {
         stdio: 'inherit'
     });
 
