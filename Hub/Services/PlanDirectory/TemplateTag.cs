@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Hub.Data
+namespace Hub.Services.PlanDirectory
 {
     public abstract class TemplateTag
     {
