@@ -3,6 +3,7 @@ using Data.Entities;
 using Data.Repositories;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
+using Hub.Data;
 using Hub.Services.PlanDirectory;
 using Moq;
 using NUnit.Framework;

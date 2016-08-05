@@ -4,7 +4,7 @@ using System.Linq;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Newtonsoft.Json;
 
-namespace Hub.Services.PlanDirectory
+namespace Hub.Data
 {
     public class WebServiceTemplateTag : TemplateTag
     {

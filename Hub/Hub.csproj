@@ -434,13 +434,13 @@
     <Compile Include="Services\PlanBased\ManifestRegistryMonitor.cs" />
     <Compile Include="Services\PageDefinition.cs" />
     <Compile Include="Services\PlanDirectoryService.cs" />
-    <Compile Include="Services\PlanDirectory\ActivityTemplateTag.cs" />
+    <Compile Include="Data\ActivityTemplateTag.cs" />
     <Compile Include="Services\PlanDirectory\ManifestPageGenerator.cs" />
     <Compile Include="Services\PlanDirectory\TagGenerator.cs" />
-    <Compile Include="Services\PlanDirectory\TemplateTag.cs" />
+    <Compile Include="Data\TemplateTag.cs" />
     <Compile Include="Services\PlanDirectory\TemplateTagStorage.cs" />
     <Compile Include="Services\PlanDirectory\WebservicesPageGenerator.cs" />
-    <Compile Include="Services\PlanDirectory\WebServiceTemplateTag.cs" />
+    <Compile Include="Data\WebServiceTemplateTag.cs" />
     <Compile Include="Services\PlanNode.cs" />
     <Compile Include="Services\Organization.cs" />
     <Compile Include="Services\Activity.cs" />

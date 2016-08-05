@@ -6,6 +6,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
+using Hub.Data;
 using Hub.Interfaces;
 using StructureMap;
 

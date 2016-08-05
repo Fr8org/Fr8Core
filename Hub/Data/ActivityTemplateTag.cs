@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Hub.Services.PlanDirectory;
 using Newtonsoft.Json;
 
-namespace Hub.Services.PlanDirectory
+namespace Hub.Data
 {
     public class ActivityTemplateTag : TemplateTag
     {
