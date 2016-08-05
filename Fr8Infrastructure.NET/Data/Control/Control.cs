@@ -680,6 +680,26 @@ namespace Fr8.Infrastructure.Data.Control
         ProceedToNextActivity
     }
 
+    public static class ContainerTransitionsExtensions
+    {
+        public static bool RequiresTargetNodeId(this ContainerTransitions transition)
+        {
+            switch (transition)
+            {
+                case ContainerTransitions.JumpToActivity:
+                case ContainerTransitions.LaunchAdditionalPlan:
+                case ContainerTransitions.JumpToSubplan:
+                    return true;
+                case ContainerTransitions.StopProcessing:
+                case ContainerTransitions.SuspendProcessing:
+                case ContainerTransitions.ProceedToNextActivity:
+                    return false;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(transition), transition, null);
+            }
+        }
+    }
+
     public class ContainerTransitionField
     {
         [JsonProperty("conditions")]
@@ -688,8 +708,10 @@ namespace Fr8.Infrastructure.Data.Control
         [JsonProperty("transition")]
         public ContainerTransitions Transition { get; set; }
 
-        [JsonProperty("targetNodeId")]
-        public Guid? TargetNodeId;
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("targetNodeId")] public Guid? TargetNodeId;
     }
 
     public class FilterPaneField
@@ -751,7 +773,6 @@ namespace Fr8.Infrastructure.Data.Control
 
         [JsonProperty("multiSelection")]
         public bool MultiSelection { get; set; }
-
     }
 
     public class CrateChooser : ControlDefinitionDTO
@@ -827,6 +848,7 @@ namespace Fr8.Infrastructure.Data.Control
             }
         }
     }
+
     public class BuildMessageAppender : TextArea
     {
         public BuildMessageAppender()

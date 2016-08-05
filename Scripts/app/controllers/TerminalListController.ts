@@ -7,6 +7,7 @@ module dockyard.controllers {
         terminals: Array<model.TerminalDTO>;
         openDetails(terminal: interfaces.ITerminalVM);
         showAddTerminalModal: () => void;
+        showPublishTerminalModal: () => void;
     }
 
     class TerminalListController {
@@ -28,6 +29,7 @@ module dockyard.controllers {
             private $state: ng.ui.IStateService,
             private $modal: any) {
 
+            $scope.showPublishTerminalModal = <() => void>angular.bind(this, this.showPublishTerminalModal);
             $scope.showAddTerminalModal = <() => void>angular.bind(this, this.showAddTerminalModal);
 
             TerminalService.getAll().$promise.then(data => {
@@ -50,6 +52,15 @@ module dockyard.controllers {
                 .result.then(terminal => {
                     this.$scope.terminals.push(terminal);
                 });
+        }
+        private showPublishTerminalModal() {
+            this.$modal.open({
+                animation: true,
+                templateUrl: '/AngularTemplate/TerminalPublishForm',
+                controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
+                    $scope.cancel = () => { $modalInstance.dismiss('cancel'); }
+                }]
+            })
         }
     }
 

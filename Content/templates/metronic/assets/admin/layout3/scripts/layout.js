@@ -98,9 +98,9 @@ var Layout = function () {
         });
 
         // hold mega menu content open on click/tap. 
-        $(document).on('click', '.mega-menu-dropdown .dropdown-menu, .classic-menu-dropdown .dropdown-menu', function (e) {
-            e.stopPropagation();
-        });
+        //$(document).on('click', '.mega-menu-dropdown .dropdown-menu, .classic-menu-dropdown .dropdown-menu', function (e) {
+        //    e.stopPropagation();
+        //});
 
         // handle fixed mega menu(minimized) 
         $(window).scroll(function() {                

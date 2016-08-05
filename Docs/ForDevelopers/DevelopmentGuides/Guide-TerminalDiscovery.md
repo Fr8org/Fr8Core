@@ -13,13 +13,6 @@ If you are using the ["Public Hub" Development Approach](https://github.com/Fr8o
 
 So, in either case, your Terminal needs to stand ready to respond with information about itself.
 
-### Creating a Terminal ID
-You need to generate a GUID for your Terminal and provide that ID to the Hub.
-[ADD MORE MATERIAL HERE]
-For more information on Terminal ID's, see [Terminal Authentication](/Docs/ForDevelopers/OperatingConcepts/Authorization/TerminalAuthentication.md).
-
-
-
 ### Handling the /discover Request
 
 [Here's the API definition of a typical terminal](https://terminalfr8core.fr8.co/swagger/ui/index#!/Terminal/Terminal_Get). 
@@ -28,7 +21,6 @@ Here is an example of response your terminal should return in response to **/dis
 ```javascript
 {
    "Definition":{
-      "id":"{generate some GUID value here}",
       "name":"MyTerminal",
       "label":"My Teriminal",
       "version":"1",
@@ -37,6 +29,7 @@ Here is an example of response your terminal should return in response to **/dis
    },
    "Activities":[
       {
+ 		 "id":"{generate some GUID value here}",
          "name":"My_fist_activity",
          "label":"My first activtiy",
          "version":"1",
@@ -44,7 +37,16 @@ Here is an example of response your terminal should return in response to **/dis
             "name":"My Terminal",
             "iconPath":"http://terminal.com/my-terminal-icon.png"
          },
-         "Category":"Processors",
+         "categories": [
+	         {
+	           "name": "My Terminal",
+	           "iconPath": "http://terminal.com/my-terminal-icon.png"
+	         },
+	         {
+	           "name": "Process",
+	           "iconPath": "/Content/icons/monitor-icon-64x64.png"
+	         }
+         ],
          "Type":"Standard",
          "minPaneWidth":330,
          "NeedsAuthentication":false,
@@ -55,8 +57,7 @@ Here is an example of response your terminal should return in response to **/dis
 
 There are few important notes here:
 * All properties in the above JSON are mandatory.
-* You should generate a GUID that will uniquely identify your terminal. This GUID should be returned as **Definition.Id** propery value. This GUID should never change unless and until you generate a new version of your Terminal (which will in most respects be treated as a completely different Terminal). GUID is represented by 32 hexadecimal digits separated by hyphens: 00000000-0000-0000-0000-000000000000.
-* Asign **Definition.name** and **Definition.label** to anything you want. Note, that **Definition.label** is the text that is shown to users in fr8 UI in activity selection pane.
+* Assign **Definition.name** and **Definition.label** to anything you want. Note, that **Definition.label** is the text that is shown to users in fr8 UI in activity selection pane.
 * **Definition.version**  Set it to "1" initially. 
 * **Definiton.endpoint** The address of the termninal's publically accessible HTTP endpoint. 
 * **Definition.authenticationType** defines what kind of authentication your terminal is going to use. We will not use authentication for now. Read about possible values here [link to the page describing terminal authentication]
@@ -64,21 +65,26 @@ There are few important notes here:
 Your /discover response informs the Hub about the Activities you're currently supporting. 
 
 * For each activity you have to supply **name** and **label**. Name should be unique across your terminal. Label is shown to users in fr8 UI in the activity selection pane. 
-* Activtiy **version** Set it to "1" at the beginning.</i>
+* You should generate a GUID that will uniquely identify your activitiy. This GUID should be returned as **id** property value. This GUID **should never change** unless and until you generate a new version of your Activity. GUID is represented by 32 hexadecimal digits separated by hyphens: 00000000-0000-0000-0000-000000000000.
+* Activtiy **version** Set it to "1" at the beginning.
 * If your Terminal communicates with branded web service(s), set the webService information so the Client will display correctly.
 * **iconPath** should be an absolute URL. 
 * **NeedsAuthentication** flag should be set if this activity requires an authentication token. The Client checks for this before passing on /configure and /run requests, and instead displays the initial authentication UI to the user. 
-* 
+
+> **Important!**  
+> You should **never** generate activity **Id** dynamically in your code. You should generate this unique identifier using some tool, like [this online GUID generator](https://www.guidgenerator.com/) and embed generated value into the code the same way you do this for **name** and **version** properties.  
 
 Categories
 ---------------
 
-This section is changing but until then, be aware of the following:
+This section is changing but until then, be aware of the following:  
+* You have to fill **categories** property for each of your activity template.
+* For each activity template you have to fill **categories** array with at least two items:
+	* Information about the general category of your activity: one of the four original Categories (Process, Forward, Monitor, Get)
+	* Information about your terminal. In general it is exactly the same info that is specified in **webService** property.
 
-Here's a correct set of category information for a terminal:
-![](categories.png)
-
-At this time, a category must be present in the categories json element for both a Web Service and one of the four original Categories (Process, Forwarder, Monitor, Get)
+> **Important!**  
+> If you failed to populate **categories** property then your activity template will not be visible in the Plan Builder UI.
 
 This is being replaced by the work in JIRA FR-4943
 

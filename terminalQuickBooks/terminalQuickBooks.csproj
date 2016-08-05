@@ -293,6 +293,7 @@
     </None>
     <Content Include="packages.config" />
     <Content Include="Config\terminalQuickBooks\Settings.config.readme" />
+    <Content Include="LICENSE" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

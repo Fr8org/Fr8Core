@@ -16,7 +16,6 @@ namespace HubWeb.Documentation.Swagger.SampleData
         {
             return new ActivityDTO
             {
-                Name = "Send_Message_v1",
                 Label = "Send Message",
                 Id = Guid.Parse("06D08982-6337-4E6F-AA59-0210D17F6861"),
                 ParentPlanNodeId = Guid.Parse("4C21492F-80B6-4495-9602-E38697B916B2"),

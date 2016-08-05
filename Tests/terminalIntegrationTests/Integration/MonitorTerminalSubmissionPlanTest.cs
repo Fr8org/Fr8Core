@@ -2,7 +2,6 @@ using Atlassian.Jira;
 using Data.Entities;
 using Data.Interfaces;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using Fr8.Infrastructure.Utilities;
 using Fr8.Testing.Integration;
 using NUnit.Framework;
 using StructureMap;
@@ -10,23 +9,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using terminalGoogle.Services;
 using Newtonsoft.Json;
 using Fr8.TerminalBase.Models;
 using Newtonsoft.Json.Linq;
-using Fr8.TerminalBase.Interfaces;
 using System.Diagnostics;
 using System.Configuration;
 using AutoMapper;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.Control;
-using Fr8.Infrastructure.Data.Managers;
 using Fr8.TerminalBase.Infrastructure;
-using System.Web;
-using terminalIntegrationTests.Fixtures;
 
 namespace terminalIntegrationTests.Integration
 {
@@ -41,8 +34,8 @@ namespace terminalIntegrationTests.Integration
             }
         }
 
-        private readonly string jiraToken = @"{""Terminal"":null,""Username"":""fr8_atlassian_test@fr8.co"",""Password"":""shoggoth34"",""Domain"":""https://maginot.atlassian.net"",""IsDemoAccount"":false}";
-
+        private static string AtlassianAccountId = ConfigurationManager.AppSettings["AtlassianTestAccountId"];
+        private static string AtlassianAccountPassword = ConfigurationManager.AppSettings["AtlassianTestAccountPassword"];
         private const int MaxAwaitPeriod = 45000;
         private const int SingleAwaitPeriod = 3000;
         private const int PlanExecutionPeriod = 10000;
@@ -54,9 +47,36 @@ namespace terminalIntegrationTests.Integration
                 return ConfigurationManager.AppSettings["SlackAuthToken"];
             }
         }
+        public static string SlackExternalDomainId
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["SlackExternalDomainId"];
+            }
+        }
+        public static string AtlassianToken
+        {
+            get
+            {
+                return "{\"Terminal\":null,\"Username\":\"" + AtlassianAccountId + "\",\"Password\":\"" + AtlassianAccountPassword + "\",\"Domain\":\"https://maginot.atlassian.net\",\"IsDemoAccount\":false}";
+            }
+        }
+        public static string GoogleAuthToken
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["GoogleTestAccountToken"];
+            }
+        }
+        public static string GoogleTestAccountId
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["GoogleTestAccountId"];
+            }
+        }
 
 
-        
 
         [Test]
         public async Task MonitorTerminalSubmissionPlan()
@@ -111,7 +131,7 @@ namespace terminalIntegrationTests.Integration
             await Task.Delay(PlanExecutionPeriod);
 
 
-            Jira jira = CreateRestClient(jiraToken);
+            Jira jira = CreateRestClient(AtlassianToken);
             Issue[] issues = new Issue[0];
 
             var slackUrl = "https://slack.com/api/search.messages?token=" + SlackAuthToken + "&query=" + guidTestId.ToString();
@@ -186,8 +206,8 @@ namespace terminalIntegrationTests.Integration
             string userId = "";
             var tokenADO = new AuthorizationTokenDO()
             {
-                Token = jiraToken,
-                ExternalAccountId = "fr8_atlassian_test@fr8.co",
+                Token = AtlassianToken,
+                ExternalAccountId = AtlassianAccountId,
                 CreateDate = DateTime.Now,
                 ExpiresAt = DateTime.Now.AddHours(1),
                 Id = Guid.NewGuid()
@@ -195,8 +215,8 @@ namespace terminalIntegrationTests.Integration
 
             var tokenGDO = new AuthorizationTokenDO()
             {
-                Token = @"{""AccessToken"":""ya29.CjHXAnhqySXYWbq-JE3Nqpq18L_LGYw3xx_T-lD6jeQd6C2mMoKzQhTWRWFSkPcX-pH_"",""RefreshToken"":""1/ZmUihiXxjwiVd-kQe46hDXKB95VaHM5yP-6bfrS-EUUMEudVrK5jSpoR30zcRFq6"",""Expires"":""2017-11-28T13:29:12.653075+05:00""}",
-                ExternalAccountId = "fr8test1@gmail.com",
+                Token = GoogleAuthToken,
+                ExternalAccountId = GoogleTestAccountId,
                 CreateDate = DateTime.Now,
                 ExpiresAt = DateTime.Now.AddHours(1),
                 Id = Guid.NewGuid()
@@ -207,7 +227,7 @@ namespace terminalIntegrationTests.Integration
                 Token = SlackAuthToken,
                 ExternalAccountId = "not_user",
                 ExternalAccountName = "not_user",
-                ExternalDomainId = "T07F83QLE",
+                ExternalDomainId = SlackExternalDomainId,
                 ExternalDomainName = "Fr8",
                 CreateDate = DateTime.Now,
                 ExpiresAt = DateTime.Now.AddHours(1),

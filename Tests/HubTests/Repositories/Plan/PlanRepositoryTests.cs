@@ -121,7 +121,7 @@ namespace HubTests.Repositories.Plan
             {
                 Id = NewGuid(13),
                 Name = "Plan",
-                PlanState = PlanState.Running,
+                PlanState = PlanState.Executing,
                 Description = "PlanDesc",
                 Fr8Account = new Fr8AccountDO()
                 {
