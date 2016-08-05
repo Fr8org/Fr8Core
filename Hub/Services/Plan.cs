@@ -332,9 +332,9 @@ namespace Hub.Services
                     }
                 }
 
-                if (result.ValidationErrors.Count == 0 && plan.PlanState != PlanState.Running)
+                if (result.ValidationErrors.Count == 0 && plan.PlanState != PlanState.Executing)
                 {
-                    plan.PlanState = PlanState.Running;
+                    plan.PlanState = IsMonitoringPlan(uow, plan) ? PlanState.Active : PlanState.Executing;
                     plan.LastUpdated = DateTimeOffset.UtcNow;
                     uow.SaveChanges();
                 }
@@ -353,6 +353,19 @@ namespace Hub.Services
         {
             var crateStorage = _crate.GetStorage(curActivityDTO);
             return crateStorage.CrateContentsOfType<ValidationResultsCM>().SelectMany(x => x.ValidationErrors);
+        }
+
+        public bool IsPlanActiveOrExecuting(Guid planNodeId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var planState = GetPlanState(uow, planNodeId);
+                if (planState == PlanState.Executing || planState == PlanState.Active)
+                {
+                    return true;
+                }
+                return false;
+            }
         }
 
         public async Task Deactivate(Guid planId)
