@@ -4,6 +4,7 @@ using Fr8.Testing.Unit;
 using System.Threading.Tasks;
 using System;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using System.Web.Http.Results;
 
 namespace HubTests.Controllers
 {
@@ -20,18 +21,18 @@ namespace HubTests.Controllers
         }
 
         [Test]
-        [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
         public async Task Events_NullCrateDTO_ThrowsException()
         {
-            await _eventController.Post(null);
+            var result = await _eventController.Post(null);
+            Assert.IsTrue(result is BadRequestErrorMessageResult, "Post method was expected to return BadRequest (code 400) for null payload");
         }
 
         [Test]
-        [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
         public async Task Events_NotStandardEventReport_ThrowsException()
         {
             var crateDTO = new CrateDTO();
-            await _eventController.Post(crateDTO);
+            var result = await _eventController.Post(crateDTO);
+            Assert.IsTrue(result is BadRequestErrorMessageResult, "Post method was expected to return BadRequest (code 400) for empty payload");
         }
         
     }

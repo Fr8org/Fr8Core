@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories.Utilization;
+using Fr8.Infrastructure.Data.Constants;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
@@ -63,21 +65,16 @@ namespace HubTests.Utilization
 
         public class PusherMock : IPusherNotifier
         {
-            public readonly List<string> Notifications = new List<string>();
+            public readonly List<NotificationMessageDTO> Notifications = new List<NotificationMessageDTO>();
 
             public string GetChanelMessages(string email)
             {
                 throw new NotImplementedException();
             }
 
-            public void Notify(string channelName, string eventName, object message)
+            public void NotifyUser(NotificationMessageDTO notificationMessage, string userId)
             {
-                Notifications.Add(message.ToString());
-            }
-
-            public void NotifyUser(object message, string eventName, string userId)
-            {
-                Notifications.Add(message.ToString());
+                Notifications.Add(notificationMessage);
             }
         }
 
@@ -173,7 +170,7 @@ namespace HubTests.Utilization
             _timerService.Tick();
 
             Assert.AreEqual(1, pusherMock.Notifications.Count, "Invalid number of push notifications");
-            Assert.IsTrue(pusherMock.Notifications[0].Contains("You are running more Activities than your capacity right now."), "Unexpected notification message");
+            Assert.IsTrue(pusherMock.Notifications[0].Message.Contains("You are running more Activities than your capacity right now."), "Unexpected notification message");
         }
     }
 }

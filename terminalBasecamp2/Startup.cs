@@ -27,6 +27,7 @@ namespace terminalBasecamp2
         public void Configuration(IAppBuilder app, bool selfHost)
         {
             ConfigureProject(selfHost, StructureMapBootstrapper.LiveMode);
+            SwaggerConfig.Register(_configuration);
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
             app.UseWebApi(_configuration);

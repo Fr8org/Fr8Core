@@ -10,6 +10,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
+using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Infrastructure.Behaviors;
 using Fr8.TerminalBase.Models;
 using Fr8.TerminalBase.Services;
@@ -21,6 +22,7 @@ namespace terminalSalesforce.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("81c02e05-6561-4e3e-ab10-e327a5c601e9"),
             Version = "1",
             Name = "Mail_Merge_From_Salesforce",
             Label = "Mail Merge from Salesforce",
@@ -29,7 +31,8 @@ namespace terminalSalesforce.Actions
             MinPaneWidth = 500,
             Tags = Tags.UsesReconfigureList,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[] { ActivityCategories.Solution }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -38,6 +41,7 @@ namespace terminalSalesforce.Actions
         private const string SolutionBody = @"<p>Pull data from a variety of sources, including Excel files, 
                                             Google Sheets, and databases, and merge the data into your Salesforce template. 
                                             You can link specific fields from your source data to Salesforce fields</p>";
+        private const string TerminalDisplayName = "Salesforce";
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public DropDownList SalesforceObjectSelector { get; set; }
@@ -183,8 +187,7 @@ namespace terminalSalesforce.Actions
         private async Task<ActivityPayload> CreateProcessingActivity(ReconfigurationContext context)
         {
             var loopActivity = await HubCommunicator.AddAndConfigureChildActivity(context.SolutionActivity, await HubCommunicator.GetActivityTemplate("terminalFr8Core", "Loop"), "Loop", "Loop", 2);
-            var crateStorage = loopActivity.CrateStorage;
-            var loopConfigControls = ControlHelper.GetConfigurationControls(crateStorage);
+            var loopConfigControls = ActivityConfigurator.GetConfigurationControls(loopActivity);
             var crateChooser = loopConfigControls.Controls.OfType<CrateChooser>().Single();
             var firstActivity = context.SolutionActivity.ChildrenActivities.OrderBy(x => x.Ordering).First();
             var firstActivityCrates = firstActivity.CrateStorage.CrateContentsOfType<CrateDescriptionCM>().FirstOrDefault();
@@ -230,6 +233,12 @@ namespace terminalSalesforce.Actions
                 context.SolutionActivity,
                 getSalesforceDataActivityTemplate,
                 order: 1);
+            if (dataSourceActivity.CrateStorage.Where(a => a.ManifestType.Id == (int)MT.StandardAuthentication).FirstOrDefault() != null)
+            {
+                await HubCommunicator.ApplyNewToken(dataSourceActivity.Id, Guid.Parse(AuthorizationToken.Id));
+                dataSourceActivity = await HubCommunicator.ConfigureActivity(dataSourceActivity);
+            }
+
             //This config call will make SF Get_Data activity to load properties of the selected object (and removes filter)
             CopySolutionUiValuesToSalesforceActivity(context.SolutionActivity, dataSourceActivity);
             dataSourceActivity = await HubCommunicator.ConfigureChildActivity(context.SolutionActivity, dataSourceActivity);
@@ -244,16 +253,16 @@ namespace terminalSalesforce.Actions
         }
 
         private void CopySolutionUiValuesToSalesforceActivity(ActivityPayload solutionActivity, ActivityPayload salesforceActivity)
-            {
+        {
             var storage = salesforceActivity.CrateStorage;
-                var controlsCrate = storage.FirstCrate<StandardConfigurationControlsCM>();
-                var activityUi = new Get_Data_v1.ActivityUi().ClonePropertiesFrom(controlsCrate.Content) as Get_Data_v1.ActivityUi;
+            var controlsCrate = storage.FirstCrate<StandardConfigurationControlsCM>();
+            var activityUi = new Get_Data_v1.ActivityUi().ClonePropertiesFrom(controlsCrate.Content) as Get_Data_v1.ActivityUi;
             var solutionActivityUi = new ActivityUi().ClonePropertiesFrom(solutionActivity.CrateStorage.FirstCrate<StandardConfigurationControlsCM>().Content) as ActivityUi;
-                activityUi.SalesforceObjectSelector.selectedKey = solutionActivityUi.SalesforceObjectSelector.selectedKey;
-                activityUi.SalesforceObjectSelector.Value = solutionActivityUi.SalesforceObjectSelector.Value;
-                activityUi.SalesforceObjectFilter.Value = solutionActivityUi.SalesforceObjectFilter.Value;
-                storage.ReplaceByLabel(Crate.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray())));
-            }
+            activityUi.SalesforceObjectSelector.selectedKey = solutionActivityUi.SalesforceObjectSelector.selectedKey;
+            activityUi.SalesforceObjectSelector.Value = solutionActivityUi.SalesforceObjectSelector.Value;
+            activityUi.SalesforceObjectFilter.Value = solutionActivityUi.SalesforceObjectFilter.Value;
+            storage.ReplaceByLabel(Crate.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray())));
+        }
 
         private async Task ConfigureSolutionActivityUi()
         {
@@ -273,8 +282,7 @@ namespace terminalSalesforce.Actions
             var selectedObjectProperties = await _salesforceManager.GetProperties(selectedObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
             var queryFilterCrate = Crate<FieldDescriptionsCM>.FromContent(
                 QueryFilterCrateLabel,
-                new FieldDescriptionsCM(selectedObjectProperties),
-                AvailabilityType.Configuration
+                new FieldDescriptionsCM(selectedObjectProperties)
             );
 
             Storage.ReplaceByLabel(queryFilterCrate);
@@ -308,7 +316,7 @@ namespace terminalSalesforce.Actions
         {
             if (documentationType.Contains("MainPage"))
             {
-                var curSolutionPage = new DocumentationResponseDTO(SolutionName, SolutionVersion, TerminalName, SolutionBody);
+                var curSolutionPage = new DocumentationResponseDTO(SolutionName, SolutionVersion, TerminalDisplayName, SolutionBody);
                 return Task.FromResult(curSolutionPage);
 
             }

@@ -7,23 +7,23 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
-using StructureMap;
 
 namespace Fr8.TerminalBase.Services
 {
+    /// <summary>
+    /// Service that stores and manages information about the current terminal and registered activities
+    /// Service is registered as a singleton within the DI container.This service is available globally.
+    /// See https://github.com/Fr8org/Fr8Core/blob/dev/Docs/ForDevelopers/SDK/.NET/Reference/IActivityStore.md
+    /// </summary>
     public class ActivityStore : IActivityStore
     {
         private readonly ConcurrentDictionary<ActivityRegistrationKey, IActivityFactory> _activityRegistrations = new ConcurrentDictionary<ActivityRegistrationKey, IActivityFactory>();
-        private readonly IContainer _container;
 
         public TerminalDTO Terminal { get; }
 
-        public ActivityStore(TerminalDTO terminal, IContainer container)
+        public ActivityStore(TerminalDTO terminal)
         {
             Terminal = terminal;
-            _container = container;
-
-            Terminal.PublicIdentifier = CloudConfigurationManager.GetSetting("TerminalId") ?? ConfigurationManager.AppSettings[terminal.Name + "TerminalId"];
         }
 
         public void RegisterActivity(ActivityTemplateDTO activityTemplate, IActivityFactory activityFactory)
@@ -44,10 +44,10 @@ namespace Fr8.TerminalBase.Services
             RegisterActivity(activityTemplate, new DefaultActivityFactory(typeof(T)));
         }
 
-        public IActivityFactory GetFactory(ActivityTemplateDTO activityTemplate)
+        public IActivityFactory GetFactory(string name, string version)
         {
             IActivityFactory factory;
-            if (!_activityRegistrations.TryGetValue(new ActivityRegistrationKey(activityTemplate), out factory))
+            if (!_activityRegistrations.TryGetValue(new ActivityRegistrationKey(name, version), out factory))
             {
                 return null;
             }

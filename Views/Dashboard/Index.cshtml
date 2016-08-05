@@ -3,11 +3,11 @@
 <!--[if IE 8]> <html lang="en" class="ie8 no-js" data-ng-app="app"> <![endif]-->
 <!--[if IE 9]> <html lang="en" class="ie9 no-js" data-ng-app="app"> <![endif]-->
 <!--[if !IE]><!-->
-<html lang="en" data-ng-app="app" ng-strict-di>
+<html lang="en" ng-strict-di>
 <!--<![endif]-->
 <!-- BEGIN HEAD -->
 <head>
-    <title data-ng-bind="'Dockyard | ' + $state.current.data.pageTitle"></title>
+    <title data-ng-bind="'Fr8 | ' + $state.current.data.pageTitle"></title>
 
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">                           
@@ -55,7 +55,7 @@
             <div class="page-content">
                 <div class="container-fluid">
 
-                    <div ui-view="maincontainer">
+                    <div ui-view="maincontainer" ng-controller="NotifierController">
                         <div ng-include="'/AngularTemplate/MainContainer_AS'"></div>
                     </div>
 
@@ -67,11 +67,9 @@
 
     <!-- END CONTAINER -->
     <!-- BEGIN FOOTER -->
-    <footer id="footer" class="section">
-        <div class="container">
-            <p class="copyright">@DateTime.Now.Year © The Fr8 Company. All Rights Reserved.</p>
-        </div>
-    </footer>
+    <div ui-view="footer">
+        <div ng-include="'/AngularTemplate/footer'"></div>
+    </div>
     <!-- END FOOTER -->
     <!-- BEGIN JAVASCRIPTS(Load javascripts at bottom, this will reduce page load time) -->
     <!-- BEGIN CORE JQUERY PLUGINS -->
@@ -91,8 +89,8 @@
 
     </script>
 <script type="text/javascript">
-    var segmentKey = "@(Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey"))";
-    if (segmentKey != "") {
+    var segmentKey = '@Fr8.Infrastructure.Utilities.Configuration.CloudConfigurationManager.GetSetting("SegmentWriteKey")';
+    if (segmentKey !== "") {
         window.analytics = window.analytics || [], window.analytics.methods = ["identify", "group", "track", "page", "pageview", "alias", "ready", "on", "once", "off", "trackLink", "trackForm", "trackClick", "trackSubmit"], window.analytics.factory = function(t) {
             return function() {
                 var a = Array.prototype.slice.call(arguments);

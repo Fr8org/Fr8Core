@@ -11,7 +11,7 @@ namespace PortSetter
 {
     class Program
     {
-        static string solutionFolderName = "fr8company";
+        static string solutionFolderName = "Fr8Core";
         static string solutionPath = "";
         static string hubWebPort = "30643";
         static string configFilePath = @"\config\applicationhost.config";

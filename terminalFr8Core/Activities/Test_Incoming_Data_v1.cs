@@ -14,6 +14,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.BaseClasses;
 using Newtonsoft.Json;
+using Fr8.Infrastructure.Data.Helpers;
 
 namespace terminalFr8Core.Activities
 {
@@ -21,30 +22,25 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("62087361-da08-44f4-9826-70f5e26a1d5a"),
             Name = "Test_Incoming_Data",
             Label = "Test Incoming Data",
             Category = ActivityCategory.Processors,
             Version = "1",
             MinPaneWidth = 550,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Process,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
         public Test_Incoming_Data_v1(ICrateManager crateManager)
             : base(crateManager)
         {
-        }
-
-        protected List<KeyValueDTO> GetAllPayloadFields()
-        {
-            var valuesCrates = Payload.CrateContentsOfType<StandardPayloadDataCM>();
-            var curValues = new List<KeyValueDTO>();
-            foreach (var valuesCrate in valuesCrates)
-            {
-                curValues.AddRange(valuesCrate.AllValues());
-            }
-            return curValues;
         }
 
         private bool Evaluate(string criteria, Guid processId, IEnumerable<KeyValueDTO> values)
@@ -86,7 +82,7 @@ namespace terminalFr8Core.Activities
             if (left is string && right is string)
             {
                 decimal v1;
-                decimal v2; 
+                decimal v2;
                 if (decimal.TryParse((string)left, out v1) && decimal.TryParse((string)right, out v2))
                 {
                     return v1.CompareTo(v2);
@@ -95,7 +91,7 @@ namespace terminalFr8Core.Activities
             }
             return -2;
         }
-        
+
         protected Expression ParseCriteriaExpression(FilterConditionDTO condition, IQueryable<KeyValueDTO> queryableData)
         {
             var curType = typeof(KeyValueDTO);
@@ -151,7 +147,7 @@ namespace terminalFr8Core.Activities
             return whereCallExpression;
         }
 
-        protected virtual Crate CreateControlsCrate()
+        protected virtual void CreateControls()
         {
             var fieldFilterPane = new FilterPane()
             {
@@ -160,13 +156,13 @@ namespace terminalFr8Core.Activities
                 Required = true,
                 Source = new FieldSourceDTO
                 {
-                    Label = "Queryable Criteria",
+                    Label = "Upstream Terminal-Provided Fields",
                     ManifestType = CrateManifestTypes.StandardDesignTimeFields,
                     RequestUpstream = true
                 }
             };
 
-            return PackControlsCrate(fieldFilterPane);
+            AddControls(fieldFilterPane);
         }
 
         public override async Task Run()
@@ -181,13 +177,13 @@ namespace terminalFr8Core.Activities
             {
                 RaiseError("No control found with Type == \"filterPane\"");
             }
-            var curValues = GetAllPayloadFields();
+            
             // Prepare envelope data.
             // Evaluate criteria using Contents json body of found Crate.
             bool result = false;
             try
             {
-                result = Evaluate(filterPaneControl.Value, ExecutionContext.ContainerId, curValues);
+                result = Evaluate(filterPaneControl.Value, ExecutionContext.ContainerId, filterPaneControl.ResolvedUpstreamFields.AsQueryable());
             }
             catch (Exception)
             {
@@ -195,7 +191,7 @@ namespace terminalFr8Core.Activities
 
             if (!result)
             {
-                TerminateHubExecution();
+                RequestPlanExecutionTermination();
                 return;
             }
 
@@ -204,8 +200,7 @@ namespace terminalFr8Core.Activities
 
         public override async Task Initialize()
         {
-            var configurationControlsCrate = CreateControlsCrate();
-            Storage.Add(configurationControlsCrate);
+            CreateControls();
         }
 
         public override Task FollowUp()

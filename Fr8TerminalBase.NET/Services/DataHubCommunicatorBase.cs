@@ -54,7 +54,7 @@ namespace Fr8.TerminalBase.Services
             }
         }
 
-        public Task<PlanEmptyDTO> LoadPlan(JToken planContents)
+        public Task<PlanNoChildrenDTO> LoadPlan(PlanDTO planContents)
         {
             throw new NotImplementedException();
         }
@@ -191,8 +191,7 @@ namespace Fr8.TerminalBase.Services
         {
             var crates = await GetCratesByDirection<CrateDescriptionCM>(activityId, direction);
             var availableData = new IncomingCratesDTO();
-
-            availableData.AvailableFields.AddRange(crates.SelectMany(x => x.Content.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0).SelectMany(x => x.Fields));
+            
             availableData.AvailableCrates.AddRange(crates.SelectMany(x => x.Content.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
 
             return availableData;
@@ -203,12 +202,12 @@ namespace Fr8.TerminalBase.Services
             throw new NotImplementedException();
         }
 
-        public Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload)
+        public Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload, bool force)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload)
+        public Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload, bool force)
         {
             throw new NotImplementedException();
         }
@@ -218,12 +217,12 @@ namespace Fr8.TerminalBase.Services
             throw new NotImplementedException();
         }
 
-        public Task<PlanDTO> CreatePlan(PlanEmptyDTO planDTO)
+        public Task<PlanDTO> CreatePlan(PlanNoChildrenDTO planDTO)
         {
             throw new NotImplementedException();
         }
 
-        public Task RunPlan(Guid planId, List<CrateDTO> payload)
+        public Task RunPlan(Guid planId, IEnumerable<Crate> payload)
         {
             throw new NotImplementedException();
         }
@@ -238,12 +237,12 @@ namespace Fr8.TerminalBase.Services
             throw new NotImplementedException();
         }
 
-        public Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan)
+        public Task<PlanDTO> UpdatePlan(PlanNoChildrenDTO plan)
         {
             throw new NotImplementedException();
         }
 
-        public Task NotifyUser(TerminalNotificationDTO notificationMessage)
+        public Task NotifyUser(NotificationMessageDTO notificationMessage)
         {
             return Task.FromResult(0);
         }
@@ -318,7 +317,7 @@ namespace Fr8.TerminalBase.Services
             throw new NotImplementedException();
         }
 
-        public Task ScheduleEvent(string externalAccountId, string minutes, bool triggerImmediately = false, string additionalConfigAttributes = null)
+        public Task ScheduleEvent(string externalAccountId, string minutes, bool triggerImmediately = false, string additionalConfigAttributes = null, string additionToJobId = null)
         {
             throw new NotImplementedException();
         }

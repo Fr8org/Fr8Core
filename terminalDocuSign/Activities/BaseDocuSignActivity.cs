@@ -23,7 +23,7 @@ namespace terminalDocuSign.Activities
         }
 
        
-        protected List<KeyValueDTO> CreateDocuSignEventValues(DocuSignEnvelopeCM_v2 envelope, string label = null)
+        protected List<KeyValueDTO> CreateDocuSignEventValues(DocuSignEnvelopeCM_v2 envelope)
         {
             string curRecipientEmail = "";
             string curRecipientUserName = "";
@@ -94,14 +94,14 @@ namespace terminalDocuSign.Activities
             return DocuSignManager.GetTemplateRecipientsAndTabs(conf, templateId).Select(x => new FieldDTO(x.Key) {Tags = x.Tags});
         }
 
-        public IEnumerable<KeyValueDTO> GetEnvelopeData(string templateId, string envelopeId = null)
+        public IEnumerable<KeyValueDTO> GetEnvelopeData(string envelopeId)
         {
-            if (String.IsNullOrEmpty(templateId))
+            if (String.IsNullOrEmpty(envelopeId))
             {
-                throw new ArgumentNullException(nameof(templateId));
+                throw new ArgumentNullException(nameof(envelopeId));
             }
             var conf = DocuSignManager.SetUp(AuthorizationToken);
-            return DocuSignManager.GetEnvelopeRecipientsAndTabs(conf, templateId);
+            return DocuSignManager.GetEnvelopeRecipientsAndTabs(conf, envelopeId);
         }
 
         public void AddOrUpdateUserDefinedFields(string templateId, string envelopeId = null, List<KeyValueDTO> allFields = null)
@@ -111,18 +111,20 @@ namespace terminalDocuSign.Activities
             {
                 var conf = DocuSignManager.SetUp(AuthorizationToken);
                 var userDefinedFields = DocuSignManager.GetTemplateRecipientsAndTabs(conf, templateId);
+
                 if (allFields != null)
                 {
                     allFields.AddRange(userDefinedFields);
                 }
-                Storage.Add(CrateManager.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", userDefinedFields.ToArray()));
+
+                Storage.Add("DocuSignTemplateUserDefinedFields", new KeyValueListCM(userDefinedFields));
             }
         }
 
-        public void FillDocuSignTemplateSource(Crate configurationCrate, string controlName)
+        public void FillDocuSignTemplateSource(string controlName)
         {
-            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
-            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            var control = ConfigurationControls.FindByNameNested<DropDownList>(controlName);
+
             if (control != null)
             {
                 var conf = DocuSignManager.SetUp(AuthorizationToken);

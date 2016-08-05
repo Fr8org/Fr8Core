@@ -6,6 +6,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
+using log4net;
 using StructureMap;
 using System;
 using System.Collections.Generic;
@@ -24,12 +25,12 @@ namespace terminalGoogle.Services
         private PlanDTO monitorTerminalSubmissions;
         private ActivityTemplateDTO monitorFormResponsesTmpl, buildMessageTmpl, saveJiraIssueTmpl, publishToSlackTmpl;
         private AuthenticationTokenTerminalDTO googleTokens, atlassianTokens, slackTokens;
+        private static readonly ILog Logger = LogManager.GetLogger("terminalGoogle");
 
         public GoogleMTSFPlan(string userId,IHubCommunicator hubCommunicator, params string[] slackChannels)
         {
             _userId = userId;
             _hubCommunicator = hubCommunicator;
-            _hubCommunicator.Authorize( _userId);
             _slackChannels = slackChannels;
 
         }
@@ -48,12 +49,12 @@ namespace terminalGoogle.Services
 
         public async Task InitialPlanConfiguration()
         {
-            var emptyMonitorPlan = new PlanEmptyDTO
+            var emptyMonitorPlan = new PlanNoChildrenDTO
             {
                 Name = "MonitorSubmissionTerminalForm",
                 Description = "MonitorSubmissionTerminalForm",
-                PlanState = PlanState.Running,
-                Visibility = PlanVisibility.Internal
+                PlanState = PlanState.Active,
+                Visibility = new PlanVisibilityDTO() { Hidden = true }
             };
 
             monitorTerminalSubmissions = await _hubCommunicator.CreatePlan(emptyMonitorPlan);
@@ -68,7 +69,7 @@ namespace terminalGoogle.Services
         {
             activitiesCount++;
             var googleToken = googleTokens.AuthTokens.Where(t => t.ExternalAccountName == name).FirstOrDefault() != null ? googleTokens.AuthTokens.Where(t => t.ExternalAccountName == name).FirstOrDefault() : googleTokens.AuthTokens.FirstOrDefault();
-            var monitorGoogle = await _hubCommunicator.CreateAndConfigureActivity(monitorFormResponsesTmpl.Id, "Monitor Terminal Submission Form", activitiesCount, monitorTerminalSubmissions.Plan.StartingSubPlanId, false, googleToken.Id);
+            var monitorGoogle = await _hubCommunicator.CreateAndConfigureActivity(monitorFormResponsesTmpl.Id, "Monitor Terminal Submission Form", activitiesCount, monitorTerminalSubmissions.StartingSubPlanId, false, googleToken.Id);
             SetDDL(monitorGoogle, "Selected_Google_Form", "Terminal Submission Form");
             await _hubCommunicator.ConfigureActivity(monitorGoogle);
         }
@@ -77,69 +78,109 @@ namespace terminalGoogle.Services
         {
             activitiesCount++;
             await CreateAndConfigureMessageActivity(buildMessageTmpl.Id,
-                 "Message for email", activitiesCount, monitorTerminalSubmissions.Plan.StartingSubPlanId, "mail", "mailto:[Author email address]");
+                 "Message for email", activitiesCount, monitorTerminalSubmissions.StartingSubPlanId, "mail", "mailto:[Author email address]");
             activitiesCount++;
             await CreateAndConfigureMessageActivity(buildMessageTmpl.Id,
-                 "Jira description", activitiesCount, monitorTerminalSubmissions.Plan.StartingSubPlanId,
+                 "Jira description", activitiesCount, monitorTerminalSubmissions.StartingSubPlanId,
                 "jira description",
                 "*Github Pull Request URL*: [Github Pull Request URL] \\\\ *Terminal Name*: [Terminal Name] \\\\ *Author email address*: [mail] \\\\ *Author github ID*: [Author github ID] \\\\ *Description of Activity Functionality*:[Description of Activity Functionality]");
 
             activitiesCount++;
             await CreateAndConfigureMessageActivity(buildMessageTmpl.Id,
-                 "Jira summary", activitiesCount, monitorTerminalSubmissions.Plan.StartingSubPlanId, "jira summary", "Terminal submission for [Terminal Name]");
+                 "Jira summary", activitiesCount, monitorTerminalSubmissions.StartingSubPlanId, "jira summary", "Terminal submission for [Terminal Name]");
         }
 
         public async Task CreateAndActivateNewMTSFPlan()
         {
-            var plans = await _hubCommunicator.GetPlansByName("MonitorSubmissionTerminalForm", PlanVisibility.Internal);
-            var tokens = await _hubCommunicator.GetTokens();
+            try
+            {
+                Logger.Info("Star Creating Plan");
+                var plans = await _hubCommunicator.GetPlansByName("MonitorSubmissionTerminalForm", PlanVisibility.Internal);
+                var tokens = await _hubCommunicator.GetTokens();
 
-            googleTokens = tokens.Where(t => t.Name == "terminalGoogle").FirstOrDefault();
-            atlassianTokens = tokens.Where(t => t.Name == "terminalAtlassian").FirstOrDefault();
-            slackTokens = tokens.Where(t => t.Name == "terminalSlack").FirstOrDefault();
-            if (plans.Count() == 0)
-            {
-                await PlanConfiguration();
-                await RunPlan();
+                googleTokens = tokens.Where(t => t.Name == "terminalGoogle").FirstOrDefault();
+                atlassianTokens = tokens.Where(t => t.Name == "terminalAtlassian").FirstOrDefault();
+                slackTokens = tokens.Where(t => t.Name == "terminalSlack").FirstOrDefault();
+                if (plans.Count() == 0)
+                {
+                    await ConfigureAndRunPlan();
+                }
+                else
+                {
+                    Logger.Info("Plan already exist");
+                    var plan = plans.FirstOrDefault();
+                    if (plan.SubPlans.FirstOrDefault().Activities.Count < 8)
+                    {
+                        Logger.Info("Deleting incomplete Plan");
+                        await _hubCommunicator.DeletePlan(plan.Id);
+
+                        await ConfigureAndRunPlan();
+                    }
+                    Logger.Info("trying to reapply tokens");
+                    //Reapllying tokens if they were revoked previously
+                    await ReApplyTokens(plans.FirstOrDefault());
+                }
             }
-            else
+            catch (Exception e)
             {
-                //Reapllying tokens if they were revoked previously
-                await ReApplyTokens(plans.FirstOrDefault());
+                Logger.Error("Couldn't create MonitorTerminalSubmissionForm Plan", e);
+                throw new ApplicationException("Couldn't create MonitorTerminalSubmissionForm Plan", e);
             }
+        }
+
+        public async Task ConfigureAndRunPlan()
+        {
+            await PlanConfiguration();
+            Logger.Info("new MonitorTerminalSubmissionPlan created");
+
+            Logger.Info("Run MonitorTerminalSubmissionPlan Plan");
+            await RunPlan();
+            Logger.Info("MonitorTerminalSubmissionPlan Plan activeted");
         }
 
         public async Task ReApplyTokens(PlanDTO plan)
         {
-            var curentGToken = googleTokens.AuthTokens.Where(t => t.Id == plan.Plan.SubPlans.FirstOrDefault().Activities.FirstOrDefault().AuthTokenId).FirstOrDefault();
-            if (curentGToken == null)
+            var planMTSF = plan.SubPlans.FirstOrDefault();
+            if (planMTSF !=null)
             {
-                var gToken = googleTokens.AuthTokens.Where(t => t.ExternalAccountName == "ga_admin@fr8.co").FirstOrDefault();
-                if (gToken != null)
+                var googleActivity = planMTSF.Activities.FirstOrDefault();
+                if(googleActivity != null)
                 {
-                    await _hubCommunicator.ApplyNewToken(plan.Plan.SubPlans.FirstOrDefault().Activities.FirstOrDefault().Id, gToken.Id);
-                }
-            }
-
-            var curentAToken = atlassianTokens.AuthTokens.Where(t => t.Id == plan.Plan.SubPlans.FirstOrDefault().Activities[4].AuthTokenId).FirstOrDefault();
-            if (curentAToken == null)
-            {
-                var aToken = atlassianTokens.AuthTokens.FirstOrDefault();
-                if (aToken != null)
-                {
-                    await _hubCommunicator.ApplyNewToken(plan.Plan.SubPlans.FirstOrDefault().Activities[4].Id, aToken.Id);
-                }
-            }
-
-            foreach (var slack in plan.Plan.SubPlans.FirstOrDefault().Activities.Where(term => term.ActivityTemplate.Terminal.Name == "terminalSlack"))
-            {
-                var curentSToken = slackTokens.AuthTokens.Where(t => t.Id == slack.AuthTokenId).FirstOrDefault();
-                if (curentAToken == null)
-                {
-                    var sToken = slackTokens.AuthTokens.FirstOrDefault();
-                    if (sToken != null)
+                    var curentGToken = googleTokens.AuthTokens.Where(t => t.Id == googleActivity.AuthTokenId).FirstOrDefault();
+                    if (curentGToken == null)
                     {
-                        await _hubCommunicator.ApplyNewToken(slack.Id, sToken.Id);
+                        var gToken = googleTokens.AuthTokens.Where(t => t.ExternalAccountName == "ga_admin@fr8.co").FirstOrDefault();
+                        if (gToken != null)
+                        {
+                            await _hubCommunicator.ApplyNewToken(googleActivity.Id, gToken.Id);
+                        }
+                    }
+                }
+
+                var atlassianActivity = planMTSF.Activities[4];
+                if(atlassianActivity != null)
+                {
+                    var curentAToken = atlassianTokens.AuthTokens.Where(t => t.Id == atlassianActivity.AuthTokenId).FirstOrDefault();
+                    if (curentAToken == null)
+                    {
+                        var aToken = atlassianTokens.AuthTokens.FirstOrDefault();
+                        if (aToken != null)
+                        {
+                            await _hubCommunicator.ApplyNewToken(atlassianActivity.Id, aToken.Id);
+                        }
+                    }
+                }
+
+                foreach (var slack in planMTSF.Activities.Where(term => term.ActivityTemplate.TerminalName == "terminalSlack"))
+                {
+                    var curentSToken = slackTokens.AuthTokens.FirstOrDefault(t => t.Id == slack.AuthTokenId);
+                    if (curentSToken == null)
+                    {
+                        var sToken = slackTokens.AuthTokens.FirstOrDefault();
+                        if (sToken != null)
+                        {
+                            await _hubCommunicator.ApplyNewToken(slack.Id, sToken.Id);
+                        }
                     }
                 }
             }
@@ -147,13 +188,13 @@ namespace terminalGoogle.Services
 
         public async Task RunPlan()
         {
-            await _hubCommunicator.RunPlan(monitorTerminalSubmissions.Plan.Id, new List<CrateDTO>());
+            await _hubCommunicator.RunPlan(monitorTerminalSubmissions.Id, null);
         }
 
         public async Task CreateAndConfigureSlackActivity(string slackChannel)
         {
             activitiesCount++;
-            var slackActivity = await _hubCommunicator.CreateAndConfigureActivity(publishToSlackTmpl.Id, HttpUtility.UrlEncode("post to " + slackChannel), activitiesCount, monitorTerminalSubmissions.Plan.StartingSubPlanId, false, slackTokens.AuthTokens.FirstOrDefault().Id);
+            var slackActivity = await _hubCommunicator.CreateAndConfigureActivity(publishToSlackTmpl.Id, HttpUtility.UrlEncode("post to " + slackChannel), activitiesCount, monitorTerminalSubmissions.StartingSubPlanId, false, slackTokens.AuthTokens.FirstOrDefault().Id);
             SetDDL(slackActivity, slackActivity.CrateStorage.FirstCrateOrDefault<StandardConfigurationControlsCM>().Content.Controls[0].Name, slackChannel);
             var data = await _hubCommunicator.GetAvailableData(slackActivity.Id, CrateDirection.Upstream, AvailabilityType.NotSet);
             SetUpstream(slackActivity, slackActivity.CrateStorage.FirstCrateOrDefault<StandardConfigurationControlsCM>().Content.Controls[1].Name, "slack message", data);
@@ -164,13 +205,13 @@ namespace terminalGoogle.Services
         {
             activitiesCount++;
             await CreateAndConfigureMessageActivity(buildMessageTmpl.Id,
-                "Message for slack", activitiesCount, monitorTerminalSubmissions.Plan.StartingSubPlanId, "slack message", message);
+                "Message for slack", activitiesCount, monitorTerminalSubmissions.StartingSubPlanId, "slack message", message);
         }
 
         public async Task CreateAndConfigureSaveToJiraActivity(string jiraProjectName)
         {
             activitiesCount++;
-            var saveJira = await _hubCommunicator.CreateAndConfigureActivity(saveJiraIssueTmpl.Id, "Save to jira", activitiesCount, monitorTerminalSubmissions.Plan.StartingSubPlanId, false, atlassianTokens.AuthTokens.FirstOrDefault().Id);
+            var saveJira = await _hubCommunicator.CreateAndConfigureActivity(saveJiraIssueTmpl.Id, "Save to jira", activitiesCount, monitorTerminalSubmissions.StartingSubPlanId, false, atlassianTokens.AuthTokens.FirstOrDefault().Id);
             SetDDL(saveJira, "AvailableProjects", jiraProjectName);
             saveJira = await _hubCommunicator.ConfigureActivity(saveJira);
             SetDDL(saveJira, "AvailableIssueTypes", "Improvement");
@@ -198,6 +239,7 @@ namespace terminalGoogle.Services
             var field = data.AvailableCrates.Where(c => c.Fields.Where(f => f.Name == fieldKey).FirstOrDefault() != null).FirstOrDefault().Fields.Where(f => f.Name == fieldKey).FirstOrDefault();
             nameTextBox.ValueSource = "upstream";
             nameTextBox.SelectedItem = field;
+            nameTextBox.selectedKey = field.Name;
         }
 
         private void SetDDL(ActivityPayload payload, string name, string key)

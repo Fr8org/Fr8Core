@@ -17,6 +17,7 @@
         focusOutSet: (focusElem: any) => void;
 
         rootElem: any;
+        isDisabled:boolean;
     }
 
     export function QueryBuilderCondition(): ng.IDirective {
@@ -31,7 +32,8 @@
                 requestUpstream: '=?',
                 operators: '=',
                 isSingle: '=',
-                onRemoveCondition: '&'
+                onRemoveCondition: '&',
+                isDisabled: '='
             },
             link: (scope: IQueryBuilderConditionScope,
                 elem: ng.IAugmentedJQuery,
@@ -123,46 +125,6 @@
                         }
                     });
 
-                    var loadUpstreamFields = () => {
-                        var availabilityType = 'NotSet';
-
-                        return UpstreamExtractor
-                            .getAvailableData($scope.currentAction.id, availabilityType)
-                            .then((data: model.IncomingCratesDTO) => {
-                                var fields: Array<model.FieldDTO> = [];
-
-                                angular.forEach(data.availableCrates, (ct) => {
-                                    angular.forEach(ct.fields, (f) => {
-                                        var i, j;
-                                        var found = false;
-                                        for (i = 0; i < fields.length; ++i) {
-                                            if (fields[i].key === f.key) {
-                                                found = true;
-                                                break;
-                                            }
-                                        }
-                                        if (!found) {
-                                            fields.push(f);
-                                        }
-                                    });
-                                });
-
-                                fields.sort((x, y) => {
-                                    if (x.key < y.key) {
-                                        return -1;
-                                    }
-                                    else if (x.key > y.key) {
-                                        return 1;
-                                    }
-                                    else {
-                                        return 0;
-                                    }
-                                });
-
-                                $scope.fields = fields;
-                            });
-                    };
-
                     $scope.toggle = false;
                     $scope.toggleDropDown = $select => {
                         if (!$scope.focusOutSet) {
@@ -171,30 +133,16 @@
                             $scope.focusOutSet(focusElem);
                         }
 
-                        if (!$scope.toggle
-                            && $scope.requestUpstream) {
 
-                            $select.open = false;
-
-                            loadUpstreamFields().then(() => { //parameter isSilent false, since we want to see error messages
-                                $select.open = !$scope.toggle;
-                                $scope.toggle = !$scope.toggle;
-                            });
-                        }
-                        else {
                             $select.open = !$scope.toggle;
                             $scope.toggle = !$scope.toggle;
-                        }
+
                     };
 
                     var isFocusOutFunc = focusElem => {
                         focusElem.focusout(() => {
                             $scope.toggle = false;
                         });
-                    }
-
-                    if ($scope.requestUpstream) {
-                        $scope.fields = [];
                     }
                 }
             ]

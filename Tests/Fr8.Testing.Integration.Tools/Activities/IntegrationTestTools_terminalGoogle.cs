@@ -61,7 +61,7 @@ namespace Fr8.Testing.Integration.Tools.Activities
                 activityUi.UpstreamCrateChooser.CrateDescriptions.First(x => x.Label == crateDescriptionLabelToUse && x.ManifestType == manifestTypeToUse).Selected = true;
                 //Set the name of new spreadheet that need to be created
                 activityUi.NewSpreadsheetName.Value = newSpeadsheetName;
-                crateStorage.Add(Crate<StandardConfigurationControlsCM>.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
+                crateStorage.Add(Crate<StandardConfigurationControlsCM>.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray())));
             }
 
             saveToGoogleSheetActivityDTO = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/save", saveToGoogleSheetActivityDTO);
@@ -126,7 +126,7 @@ namespace Fr8.Testing.Integration.Tools.Activities
                 activityUi.SpreadsheetList.selectedKey = spreadsheetName;
                 activityUi.SpreadsheetList.Value = spreadsheetUri;
 
-                crateStorage.Add(Crate<StandardConfigurationControlsCM>.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
+                crateStorage.Add(Crate<StandardConfigurationControlsCM>.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray())));
             }
 
             if (!string.IsNullOrEmpty(worksheetName))
@@ -147,7 +147,7 @@ namespace Fr8.Testing.Integration.Tools.Activities
                     activityUi.WorksheetList.selectedKey = worksheetName;
                     activityUi.WorksheetList.Value = worksheetUri;
 
-                    crateStorage.Add(Crate<StandardConfigurationControlsCM>.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
+                    crateStorage.Add(Crate<StandardConfigurationControlsCM>.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray())));
                 }
             }
 
@@ -177,13 +177,22 @@ namespace Fr8.Testing.Integration.Tools.Activities
             var activityCategoryParam = (int)activityCategory;
             var activityTemplates = await _baseHubITest
                 .HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseHubITest.GetHubApiBaseUrl() + "webservices?id=" + activityCategoryParam);
-            var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == activityName);
+            var apmActivityTemplate = activityTemplates
+                .SelectMany(a => a.Activities)
+                .Select(x => new ActivityTemplateSummaryDTO
+                {
+                    Name = x.Name,
+                    Version = x.Version,
+                    TerminalName = x.Terminal.Name,
+                    TerminalVersion = x.Terminal.Version
+                })
+                .Single(a => a.Name == activityName);
             googleActivityDTO.ActivityTemplate = apmActivityTemplate;
 
             //connect current activity with a plan
-            var subPlan = plan.Plan.SubPlans.FirstOrDefault();
+            var subPlan = plan.SubPlans.FirstOrDefault();
             googleActivityDTO.ParentPlanNodeId = subPlan.SubPlanId;
-            googleActivityDTO.RootPlanNodeId = plan.Plan.Id;
+            googleActivityDTO.RootPlanNodeId = plan.Id;
             googleActivityDTO.Ordering = ordering;
 
             //call initial configuration to server

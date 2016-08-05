@@ -19,6 +19,7 @@ using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Errors;
 using Fr8.TerminalBase.Models;
+using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Services.New_Api
 {
@@ -31,15 +32,23 @@ namespace terminalDocuSign.Services.New_Api
     public class DocuSignManager : IDocuSignManager
     {
         public const string DocusignTerminalName = "terminalDocuSign";
-        private static readonly string[] DefaultControlNames = new[] { "Text","Checkbox", "Check Box", "Radio Group", "List", "Drop Down", "Note", "Number", "Data Field" };
+        private static readonly string[] DefaultControlNames = new[] { "Text", "Checkbox", "Check Box", "Radio Group", "List", "Drop Down", "Note", "Number", "Data Field" };
         const string DefaultTemplateNameRegex = @"\s*\d+$";
+
+        public DocuSignApiConfiguration SetUp(string authToken)
+        {
+            return SetUp(JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authToken));
+        }
 
         public DocuSignApiConfiguration SetUp(AuthorizationToken authToken)
         {
+            return SetUp(JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authToken.Token));
+        }
+
+        public DocuSignApiConfiguration SetUp(DocuSignAuthTokenDTO docuSignAuthDTO)
+        {
             string baseUrl = string.Empty;
             string integratorKey = string.Empty;
-
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authToken.Token);
             //create configuration for future api calls
             if (docuSignAuthDTO.IsDemoAccount)
             {
@@ -62,9 +71,9 @@ namespace terminalDocuSign.Services.New_Api
                 AuthenticationApi authApi = new AuthenticationApi(conf);
                 try
                 {
-                LoginInformation loginInfo = authApi.Login();
-                result.AccountId = loginInfo.LoginAccounts[0].AccountId; //it seems that althought one DocuSign account can have multiple users - only one is returned, the one that oAuth token was created for
-            }
+                    LoginInformation loginInfo = authApi.Login();
+                    result.AccountId = loginInfo.LoginAccounts[0].AccountId; //it seems that althought one DocuSign account can have multiple users - only one is returned, the one that oAuth token was created for
+                }
                 catch (Exception ex)
                 {
                     throw new AuthorizationTokenExpiredOrInvalidException();
@@ -72,6 +81,28 @@ namespace terminalDocuSign.Services.New_Api
             }
 
             return result;
+        }
+
+
+        public DocuSignEnvelopeCM_v2 GetEnvelope(DocuSignApiConfiguration config, string envelopeId)
+        {
+            DocuSignEnvelopeCM_v2 envelope;
+            EnvelopesApi api = new EnvelopesApi(config.Configuration);
+            //Templates
+            var templates = api.ListTemplates(config.AccountId, envelopeId);
+            var recipients = api.ListRecipients(config.AccountId, envelopeId);
+
+            var filled_envelope = DocuSignEventParser.ParseAPIresponsesIntoCM(out envelope, templates, recipients);
+
+            var envelopestatus = api.GetEnvelope(config.AccountId, envelopeId);
+            filled_envelope.CreateDate = DateTime.Parse(envelopestatus.CreatedDateTime);
+            filled_envelope.SentDate = DateTime.Parse(envelopestatus.SentDateTime);
+            filled_envelope.StatusChangedDateTime = DateTime.Parse(envelopestatus.StatusChangedDateTime);
+            envelope.Subject = envelopestatus.EmailSubject;
+            envelope.EnvelopeId = envelopestatus.EnvelopeId;
+            envelope.Status = envelopestatus.Status;
+
+            return filled_envelope;
         }
 
         public List<KeyValueDTO> GetTemplatesList(DocuSignApiConfiguration conf)
@@ -89,10 +120,18 @@ namespace terminalDocuSign.Services.New_Api
 
         public JObject DownloadDocuSignTemplate(DocuSignApiConfiguration config, string selectedDocusignTemplateId)
         {
-            // we probably need to make multiple calls to api to collect all template info, i.e. recipients, tabs etc.
-            //return Mapper.Map<DocuSignTemplateDTO>(jObjTemplate);
-
-            throw new NotImplementedException();
+            var templatesApi = new TemplatesApi(config.Configuration);
+            var template = templatesApi.Get(config.AccountId, selectedDocusignTemplateId);
+            foreach (var doc in template.Documents)
+            {
+                var document = templatesApi.GetDocument(config.AccountId, selectedDocusignTemplateId, doc.DocumentId);
+                var ms = new MemoryStream();
+                document.CopyTo(ms);
+                string base64 = Convert.ToBase64String(ms.ToArray());
+                template.Documents.Where(a => a.DocumentId == doc.DocumentId).FirstOrDefault().DocumentBase64 = base64;
+            }
+            var result = JsonConvert.SerializeObject(template);
+            return JObject.Parse(result);
         }
 
         public IEnumerable<KeyValueDTO> GetEnvelopeRecipientsAndTabs(DocuSignApiConfiguration conf, string envelopeId)
@@ -255,7 +294,7 @@ namespace terminalDocuSign.Services.New_Api
                 }
             }
 
-            var percentOfTemplateNames = ((double) defaultTemplateNamesCount/ (double) totalTemplateNamesCount * 100);
+            var percentOfTemplateNames = ((double)defaultTemplateNamesCount / (double)totalTemplateNamesCount * 100);
             return percentOfTemplateNames >= 80;
         }
 
@@ -268,16 +307,16 @@ namespace terminalDocuSign.Services.New_Api
         {
             try
             {
-            var result = new List<KeyValueDTO>();
-            var recipients = GetRecipients(conf, api, id);
-            result.AddRange(MapRecipientsToFieldDTO(recipients));
-            foreach (var recipient in recipients.Signers)
-            {
-                result.AddRange(GetTabs(conf, api, id, recipient));
-            }
+                var result = new List<KeyValueDTO>();
+                var recipients = GetRecipients(conf, api, id);
+                result.AddRange(MapRecipientsToFieldDTO(recipients));
+                foreach (var recipient in recipients.Signers)
+                {
+                    result.AddRange(GetTabs(conf, api, id, recipient));
+                }
 
-            return result;
-        }
+                return result;
+            }
             catch (Exception ex)
             {
                 throw new AuthorizationTokenExpiredOrInvalidException();
@@ -303,7 +342,7 @@ namespace terminalDocuSign.Services.New_Api
         {
             var envelopesApi = api as EnvelopesApi;
             var templatesApi = api as TemplatesApi;
-            var docutabs = envelopesApi != null 
+            var docutabs = envelopesApi != null
                             ? envelopesApi.ListTabs(conf.AccountId, id, recipient.RecipientId)
                             : templatesApi.ListTabs(conf.AccountId, id, recipient.RecipientId, new Tabs());
 

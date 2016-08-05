@@ -143,17 +143,6 @@ namespace HubWeb.Controllers
             return View("~/shared/401.cshtml");
         }
 
-        //Validate emailAddress and meetingInfo then call Generate() parameterized method in BookingRequest controller
-        [HttpPost]
-        public ActionResult ProcessHomePageBookingRequest(string emailAddress, string meetingInfo)
-        {
-            RegexUtilities.ValidateEmailAddress(_configRepository, emailAddress);
-            if (meetingInfo.Trim().Length < 30)
-                return Json(new { Message = "Meeting information must have at least 30 characters" });
-
-            return RedirectToAction("CreateViaHomePage", "BookingRequest", new { emailAddress = emailAddress, meetingInfo = meetingInfo });
-        }
-
         //  EmailAddress  is valid then send mail .    
         // return "success" or  error 
         public async Task<ActionResult> ProcessSubmittedEmail(string name, string emailId, string message)
@@ -180,12 +169,12 @@ namespace HubWeb.Controllers
             catch (ValidationException ex)
             {
                 result = "You need to provide a valid Email Address.";
-                Logger.LogWarning("Invalid email provided: " + emailId);
+                Logger.GetLogger().Warn("Invalid email provided: " + emailId);
             }
             catch (Exception ex)
             {
                 result = "Something went wrong with our effort to send this message. Sorry! Please try emailing your message directly to support@fr8.co";
-                Logger.LogError($"Error processing a home page email form submission. Name = {name}; EmailId = {emailId}; Exception = {ex}");
+                Logger.GetLogger().Error($"Error processing a home page email form submission. Name = {name}; EmailId = {emailId}; Exception = {ex}");
             }
             return Content(result);
         }

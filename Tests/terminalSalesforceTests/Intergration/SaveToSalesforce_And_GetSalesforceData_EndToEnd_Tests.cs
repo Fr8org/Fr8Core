@@ -61,9 +61,9 @@ namespace terminalSalesforceTests.Intergration
                 await PrepareGetData(plan);
 
                 //execute the plan
-                Debug.WriteLine("Executing plan " + plan.Plan.Name);
-                var container = await HttpPostAsync<string, ContainerDTO>(_baseUrl + "plans/run?planId=" + plan.Plan.Id.ToString(), null);
-                Debug.WriteLine("Executing plan " + plan.Plan.Name + " successful.");
+                Debug.WriteLine("Executing plan " + plan.Name);
+                var container = await HttpPostAsync<string, ContainerDTO>(_baseUrl + "plans/run?planId=" + plan.Id.ToString(), null);
+                Debug.WriteLine("Executing plan " + plan.Name + " successful.");
 
                 //get the payload of the executed plan
                 var payload = await HttpGetAsync<PayloadDTO>(_baseUrl + "Containers/payload?id=" + container.Id.ToString());
@@ -72,7 +72,7 @@ namespace terminalSalesforceTests.Intergration
                 //Assert
                 Debug.WriteLine("Asserting initial payload.");
                 var payloadList = Crate.GetUpdatableStorage(payload).CratesOfType<StandardPayloadDataCM>().ToList();
-                Assert.AreEqual(3, payloadList.Count, "The payload does not contian all activities payload");
+                Assert.AreEqual(1, payloadList.Count, "The payload does not contain all activities payload");
                 Assert.IsTrue(payloadList.Any(pl => pl.Label.Equals("Lead is saved in Salesforce.com")), "Save Data is Failed to save the lead.");
 
                 Debug.WriteLine("Asserting Save To Salesforce payload.");
@@ -110,7 +110,7 @@ namespace terminalSalesforceTests.Intergration
             Debug.WriteLine("Got required activity templates.");
 
             //create initial plan
-            var initialPlan = await HttpPostAsync<PlanEmptyDTO, PlanDTO>(_baseUrl + "plans", new PlanEmptyDTO()
+            var initialPlan = await HttpPostAsync<PlanNoChildrenDTO, PlanDTO>(_baseUrl + "plans", new PlanNoChildrenDTO()
             {
                 Name = "SaveToAndGetFromSalesforce"
             });
@@ -119,7 +119,7 @@ namespace terminalSalesforceTests.Intergration
             string mainUrl = _baseUrl + "activities/create";
             var postUrl = "?activityTemplateId={0}&createPlan=false";
             var formattedPostUrl = string.Format(postUrl, atSave.Id);
-            formattedPostUrl += "&parentNodeId=" + initialPlan.Plan.StartingSubPlanId;
+            formattedPostUrl += "&parentNodeId=" + initialPlan.StartingSubPlanId;
             formattedPostUrl += "&authorizationTokenId=" + authToken.Id.ToString();
             formattedPostUrl += "&order=" + 1;
             formattedPostUrl = mainUrl + formattedPostUrl;
@@ -130,7 +130,7 @@ namespace terminalSalesforceTests.Intergration
             mainUrl = _baseUrl + "activities/create";
             postUrl = "?activityTemplateId={0}&createPlan=false";
             formattedPostUrl = string.Format(postUrl, atGet.Id);
-            formattedPostUrl += "&parentNodeId=" + initialPlan.Plan.StartingSubPlanId;
+            formattedPostUrl += "&parentNodeId=" + initialPlan.StartingSubPlanId;
             formattedPostUrl += "&authorizationTokenId=" + authToken.Id.ToString();
             formattedPostUrl += "&order=" + 2;
             formattedPostUrl = mainUrl + formattedPostUrl;
@@ -138,7 +138,7 @@ namespace terminalSalesforceTests.Intergration
             Assert.IsNotNull(getDataActivity, "Initial Create and Configure of Get Data activity is failed.");
             Debug.WriteLine("Create and Initial Configure of Get Data activity is successful.");
 
-            return initialPlan.Plan.Id;
+            return initialPlan.Id;
         }
 
         private async Task CleanUp(AuthorizationToken authToken, Guid initialPlanId, string newLeadId)
@@ -162,7 +162,7 @@ namespace terminalSalesforceTests.Intergration
 
         private async Task PrepareSaveToLead(PlanDTO plan)
         {
-            var saveActivity = plan.Plan.SubPlans.First().Activities.First();
+            var saveActivity = plan.SubPlans.First().Activities.First();
 
             //set lead and do the follow up config
             using (var updatableStorage = Crate.GetUpdatableStorage(saveActivity))
@@ -189,12 +189,12 @@ namespace terminalSalesforceTests.Intergration
             saveActivity = await ConfigureActivity(saveActivity);
             Debug.WriteLine("Save to Salesforce Follow up config is successfull with required fields set.");
 
-            plan.Plan.SubPlans.First().Activities[0] = saveActivity;
+            plan.SubPlans.First().Activities[0] = saveActivity;
         }
 
         private async Task PrepareGetData(PlanDTO plan)
         {
-            var getDataActivity = plan.Plan.SubPlans.First().Activities.Last();
+            var getDataActivity = plan.SubPlans.First().Activities.Last();
             //set lead and do the follow up config
             using (var crateStorage = Crate.GetUpdatableStorage(getDataActivity))
             {
@@ -216,7 +216,7 @@ namespace terminalSalesforceTests.Intergration
 
             getDataActivity = await ConfigureActivity(getDataActivity);
             Debug.WriteLine("Get Data Follow up config is successfull with selection query fields set.");
-            plan.Plan.SubPlans.First().Activities[1] = getDataActivity;
+            plan.SubPlans.First().Activities[1] = getDataActivity;
         }
     }
 }

@@ -2,7 +2,12 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.Http.Controllers;
+using System.Web.Http.Dispatcher;
 using Microsoft.Owin;
 using Microsoft.Owin.Hosting;
 using Owin;
@@ -11,6 +16,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
+using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Infrastructure;
@@ -21,15 +27,32 @@ using Hangfire;
 using Hangfire.StructureMap;
 using Hub.StructureMap;
 using HubWeb.App_Start;
+using GlobalConfiguration = Hangfire.GlobalConfiguration;
+using System.Globalization;
+using System.Threading;
+using PlanDirectory.Infrastructure;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 
 namespace HubWeb
 {
-    public partial class Startup
+    public class Startup : IHttpControllerActivator
     {
         public void Configuration(IAppBuilder app)
         {
+            //fix to IIS hanging on MemoryCache initialization
+            //taken from here https://www.zpqrtbnk.net/posts/appdomains-threads-cultureinfos-and-paracetamol
+            var currentCulture = CultureInfo.CurrentCulture;
+            var invariantCulture = currentCulture;
+            while (invariantCulture.Equals(CultureInfo.InvariantCulture) == false)
+                invariantCulture = invariantCulture.Parent;
+            if (!(ReferenceEquals(invariantCulture, CultureInfo.InvariantCulture)))
+            {
+                var thread = Thread.CurrentThread;
+                thread.CurrentCulture = CultureInfo.GetCultureInfo(thread.CurrentCulture.Name);
+                thread.CurrentUICulture = CultureInfo.GetCultureInfo(thread.CurrentUICulture.Name);
+            }
+
             Configuration(app, false);
         }
 
@@ -37,6 +60,11 @@ namespace HubWeb
         {
             ObjectFactory.Configure(Fr8.Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
+            
+            //For PlanDirectory merge
+            ObjectFactory.Configure(PlanDirectoryBootStrapper.LiveConfiguration);
+
+
             ObjectFactory.GetInstance<AutoMapperBootStrapper>().ConfigureAutoMapper();
 
             var db = ObjectFactory.GetInstance<DbContext>();
@@ -49,17 +77,27 @@ namespace HubWeb
             incidentReporter.SubscribeToAlerts();
             
             StartupMigration.CreateSystemUser();
-            StartupMigration.MoveSalesforceRefreshTokensIntoKeyVault();
+            StartupMigration.UpdateTransitionNames();
 
             SetServerUrl();
 
             OwinInitializer.ConfigureAuth(app, "/DockyardAccount/Index");
-            
-            ConfigureHangfire(app, "DockyardDB");
+
+            if (!selfHostMode)
+            {
+                System.Web.Http.GlobalConfiguration.Configure(ConfigureControllerActivator);
+            }
+
+            ConfigureHangfire(app, "Fr8LocalDB");
 
 #pragma warning disable 4014
             RegisterTerminalActions(selfHostMode);
 #pragma warning restore 4014
+        }
+
+        public void ConfigureControllerActivator(HttpConfiguration configuration)
+        {
+            configuration.Services.Replace(typeof(IHttpControllerActivator), this);
         }
 
         private void SetServerUrl()
@@ -176,8 +214,11 @@ namespace HubWeb
         //        }
         //    }
         //}
-
-       
+        
+        public IHttpController Create(HttpRequestMessage request, HttpControllerDescriptor controllerDescriptor, Type controllerType)
+        {
+            return ObjectFactory.GetInstance(controllerType) as IHttpController;
+        }
 
         public static IDisposable CreateServer(string url)
         {

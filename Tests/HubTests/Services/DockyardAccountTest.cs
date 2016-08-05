@@ -276,8 +276,8 @@ namespace HubTests.Services
         [Test]
         public async Task CanAddAuthenticateGuestUser()
         {
-            LoginStatus loginStatus   = await _fr8Account.CreateAuthenticateGuestUser();
-            Assert.AreEqual(loginStatus, LoginStatus.Successful);
+            Tuple<LoginStatus,string> resultTuple   = await _fr8Account.CreateAuthenticateGuestUser();
+            Assert.AreEqual(resultTuple.Item1, LoginStatus.Successful);
         }
 
         [Test]

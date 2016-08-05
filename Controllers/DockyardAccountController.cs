@@ -1,10 +1,11 @@
-
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Http.Controllers;
 using System.Web.Mvc;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Logging;
@@ -12,6 +13,7 @@ using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Services;
 using HubWeb.ViewModels;
+using Microsoft.AspNet.Identity;
 using StructureMap;
 
 namespace HubWeb.Controllers
@@ -21,11 +23,13 @@ namespace HubWeb.Controllers
     {
         private readonly Fr8Account _account;
         private readonly IOrganization _organization;
+        private readonly PlanDirectoryService _planDirectory;
 
         public DockyardAccountController()
         {
             _account = ObjectFactory.GetInstance<Fr8Account>();
             _organization = ObjectFactory.GetInstance<IOrganization>();
+            _planDirectory = ObjectFactory.GetInstance<PlanDirectoryService>();
         }
 
         [AllowAnonymous]
@@ -67,12 +71,12 @@ namespace HubWeb.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult LogOff()
+        public async Task<ActionResult> LogOff()
         {
             this.Logout();
-            return RedirectToAction("Index", "DockyardAccount");
+            return RedirectToAction("Index");
         }
-
+       
         [AllowAnonymous]
         public ActionResult Confirm(RegistrationVM model)
         {
@@ -101,7 +105,7 @@ namespace HubWeb.Controllers
                         {
                             organizationDO = _organization.GetOrCreateOrganization(uow, submittedRegData.OrganizationName, out isNewOrganization);
                         }
-                        
+
                         if (!String.IsNullOrWhiteSpace(submittedRegData.GuestUserTempEmail))
                         {
                             curRegStatus = await _account.UpdateGuestUserRegistration(uow, submittedRegData.Email.Trim()
@@ -110,7 +114,7 @@ namespace HubWeb.Controllers
                         }
                         else
                         {
-                            curRegStatus = _account.ProcessRegistrationRequest(uow, submittedRegData.Email.Trim(), submittedRegData.Password.Trim(), organizationDO, isNewOrganization);
+                            curRegStatus = _account.ProcessRegistrationRequest(uow, submittedRegData.Email.Trim(), submittedRegData.Password.Trim(), organizationDO, isNewOrganization, submittedRegData.AnonimousId);
                         }
 
                         uow.SaveChanges();
@@ -156,8 +160,9 @@ namespace HubWeb.Controllers
                 {
 
                     string username = model.Email.Trim();
-                    LoginStatus curLoginStatus =
-                        await _account.ProcessLoginRequest(username, model.Password, model.RememberMe);
+                    var resultTuple = await _account.ProcessLoginRequest(username, model.Password, model.RememberMe);
+                    LoginStatus curLoginStatus = resultTuple.Item1;
+
                     switch (curLoginStatus)
                     {
                         case LoginStatus.InvalidCredential:
@@ -185,6 +190,7 @@ Please register first.");
                                 }
                                 else
                                 {
+                                    TempData["guestUserId"] = resultTuple.Item2;
                                     return RedirectToAction("Index", "Welcome");
                                 }
                             }
@@ -278,7 +284,7 @@ Please register first.");
                 catch (Exception ex)
                 {
                     //Logger.GetLogger().Error("ForgotPassword failed.", ex);
-                    Logger.LogError($"ForgotPassword failed. Exception = {ex}");
+                    Logger.GetLogger().Error($"ForgotPassword failed. Exception = {ex}");
                     ModelState.AddModelError("", ex);
                 }
             }
@@ -331,7 +337,7 @@ Please register first.");
                 catch (Exception ex)
                 {
                     //Logger.GetLogger().Error("ResetPassword failed.", ex);
-                    Logger.LogError($"ResetPassword failed. Email = {viewModel.Email}; UserId = {viewModel.UserId} Exception = {ex}");
+                    Logger.GetLogger().Error($"ResetPassword failed. Email = {viewModel.Email}; UserId = {viewModel.UserId} Exception = {ex}");
                     ModelState.AddModelError("", ex);
                 }
             }
@@ -350,7 +356,9 @@ Please register first.");
         [AllowAnonymous]
         public async Task<ActionResult> ProcessGuestUserMode()
         {
-            LoginStatus loginStatus = await _account.CreateAuthenticateGuestUser();
+            Tuple<LoginStatus, string> resultTuple = await _account.CreateAuthenticateGuestUser();
+            TempData["guestUserId"] = resultTuple.Item2;
+            TempData["mode"] = "guestUser";
             return RedirectToAction("Index", "Welcome");
         }
     }

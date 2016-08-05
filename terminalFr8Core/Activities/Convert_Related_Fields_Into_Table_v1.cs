@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Control;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.Helpers;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
@@ -13,18 +14,27 @@ using Fr8.TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Activities
 {
+    //////////////////
+    /// DISABLED (needs rethinking)
+    //////////////////
 
     public class Convert_Related_Fields_Into_Table_v1 : ExplicitTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("51e59b13-b164-4a4a-9a37-f528cb05e0fb"),
             Name = "Convert_Related_Fields_Into_Table",
             Label = "Convert Related Fields Into a Table",
             Category = ActivityCategory.Processors,
             Version = "1",
             MinPaneWidth = 400,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Process,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -40,11 +50,11 @@ namespace terminalFr8Core.Activities
 
         private string GetRowPrefix()
         {
-            return ConfigurationControls.Controls.Single(c => c.Name == "Selected_Table_Prefix").Value;            
+            return ConfigurationControls.Controls.Single(c => c.Name == "Selected_Table_Prefix").Value;
         }
-        
-      
-        private Crate PackCrate_ConfigurationControls()
+
+
+        private void CreateConfigurationControls()
         {
             var actionExplanation = new TextBlock()
             {
@@ -55,7 +65,7 @@ namespace terminalFr8Core.Activities
             {
                 Name = "Upstream_data_chooser",
                 Label = "Please select data type",
-                Events = new List<ControlEvent>(){ControlEvent.RequestConfig}
+                Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
             };
             var fieldSelectPrefix = new TextBox()
             {
@@ -70,13 +80,31 @@ namespace terminalFr8Core.Activities
             };
 
 
-            return PackControlsCrate(actionExplanation, upstreamDataChooser, fieldSelectPrefix, fieldExplanation);
+            AddControls(actionExplanation, upstreamDataChooser, fieldSelectPrefix, fieldExplanation);
         }
 
 
         public Convert_Related_Fields_Into_Table_v1(ICrateManager crateManager)
             : base(crateManager)
         {
+        }
+
+        private IEnumerable<KeyValueDTO> GetFields(IEnumerable<Crate> crates)
+        {
+            var fields = new List<KeyValueDTO>();
+
+            foreach (var crate in crates)
+            {
+                //let's pass unknown manifests for now
+                if (!crate.IsKnownManifest)
+                {
+                    continue;
+                }
+
+                fields.AddRange(Fr8ReflectionHelper.FindFieldsRecursive(crate.Get()));
+            }
+
+            return fields;
         }
 
         public override async Task Run()
@@ -95,7 +123,7 @@ namespace terminalFr8Core.Activities
                 filteredCrates = filteredCrates.Where(s => s.Label == upstreamDataChooser.SelectedLabel);
             }
 
-            var fieldList = CrateManager.GetFields(filteredCrates);
+            var fieldList = GetFields(filteredCrates);
 
 
             if (upstreamDataChooser.SelectedFieldType != null)
@@ -108,7 +136,7 @@ namespace terminalFr8Core.Activities
             var prefixValue = GetRowPrefix();
             if (prefixValue == null)
             {
-                RaiseError(/*, "This action can't run without a selected column prefix"*/);
+                RaiseError("This action can't run without a selected column prefix");
                 return;
             }
 
@@ -136,8 +164,7 @@ namespace terminalFr8Core.Activities
                     }).ToList()
                 });
 
-            var tableDataCrate = CrateManager.CreateStandardTableDataCrate("AssembledTableData", false, rows.ToArray());
-            Payload.Add(tableDataCrate);
+            Payload.Add("AssembledTableData", new StandardTableDataCM(false, rows.ToArray()));
 
             Success();
         }
@@ -145,13 +172,12 @@ namespace terminalFr8Core.Activities
         public override async Task Initialize()
         {
             //build a controls crate to render the pane
-            var configurationControlsCrate = PackCrate_ConfigurationControls();
-            Storage.Add(configurationControlsCrate);
+            CreateConfigurationControls();
         }
 
         public override async Task FollowUp()
         {
-           
+
         }
     }
 }

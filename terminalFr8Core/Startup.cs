@@ -14,7 +14,7 @@ using terminalFr8Core.Activities;
 
 namespace terminalFr8Core
 {
-    public class Startup: BaseConfiguration
+    public class Startup : BaseConfiguration
     {
         public Startup()
             : base(TerminalData.TerminalDTO)
@@ -32,7 +32,8 @@ namespace terminalFr8Core
 
             Container.Configure(x => x.AddRegistry<Hub.StructureMap.StructureMapBootStrapper.LiveMode>());
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
-            
+
+            SwaggerConfig.Register(_configuration);
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
 
@@ -52,21 +53,20 @@ namespace terminalFr8Core
             ActivityStore.RegisterActivity<Build_Message_v1>(Build_Message_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Build_Query_v1>(Build_Query_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Connect_To_Sql_v1>(Connect_To_Sql_v1.ActivityTemplateDTO);
-            ActivityStore.RegisterActivity<Convert_Related_Fields_Into_Table_v1>(Convert_Related_Fields_Into_Table_v1.ActivityTemplateDTO);
+            //ActivityStore.RegisterActivity<Convert_Related_Fields_Into_Table_v1>(Convert_Related_Fields_Into_Table_v1.ActivityTemplateDTO); FR-4669
             ActivityStore.RegisterActivity<Execute_Sql_v1>(Execute_Sql_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Extract_Table_Field_v1>(Extract_Table_Field_v1.ActivityTemplateDTO);
-            ActivityStore.RegisterActivity<Filter_Object_List_By_Incoming_Message_v1>(Filter_Object_List_By_Incoming_Message_v1.ActivityTemplateDTO);            
+            ActivityStore.RegisterActivity<Filter_Object_List_By_Incoming_Message_v1>(Filter_Object_List_By_Incoming_Message_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Get_Data_From_Fr8_Warehouse_v1>(Get_Data_From_Fr8_Warehouse_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Get_File_From_Fr8_Store_v1>(Get_File_From_Fr8_Store_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Loop_v1>(Loop_v1.ActivityTemplateDTO);
-            ActivityStore.RegisterActivity<Manage_Plan_v1>(Manage_Plan_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Monitor_Fr8_Events_v1>(Monitor_Fr8_Events_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Query_Fr8_Warehouse_v1>(Query_Fr8_Warehouse_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Save_To_Fr8_Warehouse_v1>(Save_To_Fr8_Warehouse_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Search_Fr8_Warehouse_v1>(Search_Fr8_Warehouse_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Select_Fr8_Object_v1>(Select_Fr8_Object_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Set_Delay_v1>(Set_Delay_v1.ActivityTemplateDTO);
-            ActivityStore.RegisterActivity<Show_Report_Onscreen_v1>(Show_Report_Onscreen_v1.ActivityTemplateDTO);
+            //ActivityStore.RegisterActivity<Show_Report_Onscreen_v1>(Show_Report_Onscreen_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Store_File_v1>(Store_File_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Make_A_Decision_v1>(Make_A_Decision_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Test_Incoming_Data_v1>(Test_Incoming_Data_v1.ActivityTemplateDTO);

@@ -19,6 +19,7 @@ using Fr8.Testing.Unit;
 
 namespace terminalPapertrail.Tests.Actions
 {
+    [Ignore]
     [TestFixture]
     [Category("terminalPapertrailActions")]
     public class Write_To_LogTests : BaseTest

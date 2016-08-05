@@ -64,7 +64,7 @@
                 var i, j;
                 var terminalName;
                 for (i = 0; i < _activities.length; ++i) {
-                    terminalName = _activities[i].activityTemplate.terminal.name;
+                    terminalName = _activities[i].activityTemplate.terminalName;
                     for (j = 0; j < $scope.terminals.length; ++j) {
                         if ($scope.terminals[j].name === terminalName) {
                             data.push({
@@ -230,7 +230,7 @@
 
                 var result = authTokenTerminals.filter((it) => {
                     for (var i = 0; i < $scope.activities.length; ++i) {
-                        if ($scope.activities[i].activityTemplate.terminal.name === it.name) {
+                        if ($scope.activities[i].activityTemplate.terminalName === it.name) {
                             return true;
                         }
                     }
@@ -253,8 +253,8 @@
 
                 for (var i = 0; i < activities.length; ++i) {
                     var terminal;
-                    if ((terminal = hasTerminal(allTerminals, activities[i].activityTemplate.terminal.name))
-                        && !hasTerminal(result, activities[i].activityTemplate.terminal.name)) {
+                    if ((terminal = hasTerminal(allTerminals, activities[i].activityTemplate.terminalName))
+                        && !hasTerminal(result, activities[i].activityTemplate.terminalName)) {
 
                         var item = new model.AuthenticationTokenTerminalDTO(
                             terminal.name,
@@ -274,22 +274,13 @@
                 return result;
             };
 
-            var _reloadTerminals = function (preselectedTokens?: Array<{ terminalName: string, authTokenId: number }>) {
+            var _reloadTerminals = function (preselectedTokens?: Array<{ terminalName: string, authTokenId: number, isMain: boolean }>) {
                 var activities = $scope.activities || [];
                 _activities = activities;
 
                 _loading = true;
 
-                var selectedAuthTokens: Array<{ terminalName: string, authTokenId: number }> = [];
-
-                activities.forEach((it) => {
-                    if (it.authTokenId) {
-                        selectedAuthTokens.push({
-                            terminalName: it.activityTemplate.terminal.name,
-                            authTokenId: <any>it.authTokenId
-                        });
-                    }
-                });
+                var selectedAuthTokens: Array<{ terminalName: string, authTokenId: number, isMain: boolean }> = [];
 
                 // Fill with preselected auth tokens.
                 if (preselectedTokens) {
@@ -300,11 +291,13 @@
 
                 // Save previously selected auth tokens.
                 if ($scope.terminals) {
+                    console.log($scope.terminals);
                     angular.forEach($scope.terminals, function (term) {
-                        if (term.selectedAuthTokenId) {
+                        if (term.authTokens.length !== 0) {
                             selectedAuthTokens.push({
                                 terminalName: term.name,
-                                authTokenId: term.selectedAuthTokenId
+                                authTokenId: term.selectedAuthTokenId,
+                                isMain: (<any>term).isMain
                             });
                         }
                     });
@@ -327,6 +320,7 @@
                                     for (i = 0; i < term.authTokens.length; ++i) {
                                         if (term.authTokens[i].isSelected) {
                                             term.selectedAuthTokenId = term.authTokens[i].id;
+                                            (<any>term).isMain = selectedAuthTokens[i].isMain
                                             break;
                                         }
                                     }
@@ -340,6 +334,7 @@
                                         for (i = 0; i < selectedAuthTokens.length; ++i) {
                                             if (selectedAuthTokens[i].terminalName == term.name) {
                                                 term.selectedAuthTokenId = selectedAuthTokens[i].authTokenId;
+                                                (<any>term).isMain = selectedAuthTokens[i].isMain
                                                 break;
                                             }
                                         }

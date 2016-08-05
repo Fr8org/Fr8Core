@@ -23,6 +23,7 @@ namespace terminalExcel.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("d6089960-a33d-4e8c-be60-8734e5f3d2fc"),
             Name = "Set_Excel_Template",
             Label = "Set Excel Template",
             Version = "1",
@@ -30,7 +31,12 @@ namespace terminalExcel.Activities
             Category = ActivityCategory.Processors,
             Terminal = TerminalData.TerminalDTO,
             Tags = "Table Data Generator,Skip At Run-Time",
-            WebService = TerminalData.WebServiceDTO
+            WebService = TerminalData.WebServiceDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Process,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -101,10 +107,10 @@ namespace terminalExcel.Activities
             // Read file from repository
             var fileAsByteArray = file.Retrieve(curFileDO);*/
 
-            return CreateStandardTableCMFromExcelFile(new byte[] {}/*fileAsByteArray*/, extension);
+            return CreateStandardTableCMFromExcelFile(new byte[] { }/*fileAsByteArray*/, extension);
         }
 
-       
+
 
         //private async Task<StandardTableDataCM> GetUpstreamTableData()
         //{
@@ -134,11 +140,13 @@ namespace terminalExcel.Activities
         public override async Task Initialize()
         {
             Storage.Clear();
-            Storage.Add(PackControls(new ActivityUi()));
+
+            AddControls(new ActivityUi().Controls);
+
             Storage.Add(GetAvailableRunTimeTableCrate(DataTableLabel));
         }
 
-        
+
 
         //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
         public override async Task FollowUp()
@@ -163,12 +171,13 @@ namespace terminalExcel.Activities
             }
 
             Storage.Remove<StandardConfigurationControlsCM>();
-            Storage.Add(PackControls(new ActivityUi(fileName, uploadFilePath)));
+
+            AddControls(new ActivityUi(fileName, uploadFilePath).Controls);
 
             if (!string.IsNullOrEmpty(uploadFilePath))
             {
                 var generatedTable = CreateStandardTableDataCM();
-                var tableCrate = Crate.FromContent(DataTableLabel, generatedTable, AvailabilityType.Always);
+                var tableCrate = Crate.FromContent(DataTableLabel, generatedTable);
                 Storage.Add(tableCrate);
             }
         }
@@ -181,8 +190,9 @@ namespace terminalExcel.Activities
                         ManifestType = MT.StandardTableData.GetEnumDisplayName(),
                         Label = descriptionLabel,
                         ManifestId = (int)MT.StandardTableData,
-                        ProducedBy = "Set_Excel_Template_v1"
-                    }), AvailabilityType.Always);
+                        ProducedBy = "Set_Excel_Template_v1",
+                        Availability = AvailabilityType.Always
+                    }));
 
             return availableRunTimeCrates;
         }

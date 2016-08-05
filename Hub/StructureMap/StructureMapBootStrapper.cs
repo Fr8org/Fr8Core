@@ -104,6 +104,7 @@ namespace Hub.StructureMap
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Hub.Services.Event>();
                 For<IActivityTemplate>().Use<ActivityTemplate>().Singleton();
+                For<IActivityCategory>().Use<ActivityCategory>().Singleton();
                 For<IFile>().Use<InternalClass.File>();
                 For<ITerminal>().Use<Terminal>().Singleton();
                 For<ICrateManager>().Use<CrateManager>();
@@ -119,12 +120,13 @@ namespace Hub.StructureMap
                 For<TelemetryClient>().Use<TelemetryClient>();
                 For<IJobDispatcher>().Use<HangfireJobDispatcher>();
                 // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
-                For<IPlanTemplates>().Use<PlanTemplates>();
                 For<IUtilizationMonitoringService>().Use<UtilizationMonitoringService>().Singleton();
                 For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
                 For<ITimer>().Use<Win32Timer>();
                 For<IManifestRegistryMonitor>().Use<ManifestRegistryMonitor>().Singleton();
+                For<IUpstreamDataExtractionService>().Use<UpstreamDataExtractionService>().Singleton();
+                For<IPlanDirectoryService>().Use<PlanDirectoryService>().Singleton();
                 
             }
         }
@@ -169,6 +171,7 @@ namespace Hub.StructureMap
                 var terminalTransmitterMock = new Mock<ITerminalTransmitter>();
                 For<ITerminalTransmitter>().Use(terminalTransmitterMock.Object).Singleton();
                 For<IActivityTemplate>().Use<ActivityTemplate>().Singleton();
+                For<IActivityCategory>().Use<ActivityCategory>().Singleton();
                 For<IEvent>().Use<Hub.Services.Event>();
                 //For<ITemplate>().Use<Services.Template>();
                 For<IFile>().Use<InternalClass.File>();
@@ -189,14 +192,14 @@ namespace Hub.StructureMap
                 For<IPageDefinition>().Use<PageDefinition>();
 
                 For<TelemetryClient>().Use<TelemetryClient>();
-                For<ITerminal>().Use(x=>new TerminalServiceForTests(x.GetInstance<IConfigRepository>())).Singleton();
+                For<ITerminal>().Use(x=>new TerminalServiceForTests(x.GetInstance<IConfigRepository>(), x.GetInstance<ISecurityServices>())).Singleton();
                 For<IJobDispatcher>().Use<MockJobDispatcher>();
                 // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
-                For<IPlanTemplates>().Use<PlanTemplates>();
                 For<IUtilizationMonitoringService>().Use<UtilizationMonitoringService>().Singleton();
                 For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
                 For<ITimer>().Use<Win32Timer>();
-                
+                For<IUpstreamDataExtractionService>().Use<UpstreamDataExtractionService>().Singleton();
+                For<IPlanDirectoryService>().Use<PlanDirectoryService>().Singleton();
             }
         }
 
@@ -212,19 +215,19 @@ namespace Hub.StructureMap
         {
             private readonly ITerminal _terminal;
 
-            public TerminalServiceForTests(IConfigRepository configRepository)
+            public TerminalServiceForTests(IConfigRepository configRepository, ISecurityServices securityServices)
             {
-                _terminal = new Terminal(configRepository);
+                _terminal = new Terminal(configRepository, securityServices);
             }
 
-            public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal)
+            public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal, string userId)
             {
                 return new Dictionary<string, string>();
             }
 
-            public Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId)
+            public Task<TerminalDO> GetByToken(string token)
             {
-                return Task.FromResult(new TerminalDO());
+                return _terminal.GetByToken(token);
             }
 
             public IEnumerable<TerminalDO> GetAll()
@@ -251,13 +254,6 @@ namespace Hub.StructureMap
             {
                 return _terminal.GetByKey(terminalId);
             }
-
-            public Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId)
-            {
-                return _terminal.IsUserSubscribedToTerminal(terminalId, userId);
-
-            }
-
             public Task<List<DocumentationResponseDTO>> GetSolutionDocumentations(string terminalName)
             {
                 return _terminal.GetSolutionDocumentations(terminalName);

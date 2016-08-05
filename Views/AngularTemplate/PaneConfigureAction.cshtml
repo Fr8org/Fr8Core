@@ -1,5 +1,5 @@
-﻿<div id="ap-pane" class="pane-configure-action" block-if="processing === true" ng-click="reloadConfiguration()">
-      <div ng-if="!(currentAction.activityTemplate.category==='Solution' && mode !== 'solution')">
+﻿<div id="ap-pane" class="pane-configure-action" block-if="processing === true" ng-click="reloadConfiguration()" ui-blocker active="plan.planState==2 || plan.planState==4" plan="plan">
+    <div ng-if="!(myActivityTemplate.category==='Solution' && mode !== 'solution')">
         <div ng-if="!currentAction.currentView" ng-repeat="field in currentAction.configurationControls.fields">
             <configuration-control plan="plan" sub-plan="subPlan" current-action="currentAction" field="field" ng-if="!field.isHidden"/>
         </div>
@@ -9,17 +9,18 @@
             </div>
         </div>
     </div>
-    <div class="pane-configure-action-returnToSolution" ng-if="currentAction.activityTemplate.category==='Solution' && mode !== 'solution'" ng-init="populateAllActivities()">
+    <div class="pane-configure-action-returnToSolution" ng-if="myActivityTemplate.category==='Solution' && mode !== 'solution'" ng-init="populateAllActivities()">
         <label ng-if="allActivities.length != 0">This solution has {{allActivities.length}} {{allActivities.length > 1 ? "parts" : "part"}}: </label>
         <div class="solution-parts">
-            <label ng-repeat="childAction in allActivities">
-                {{$index +1}}. {{childAction.activityTemplate.label}}
+            <label ng-repeat="childEnvelope in allActivities">
+                {{$index +1}}. {{childEnvelope.activityTemplate.label}}
             </label>
         </div>
     </div>
-    <div class="return-to-solution-container" ng-if="currentAction.activityTemplate.category==='Solution' && mode !== 'solution'">
+    <div class="return-to-solution-container" ng-if="myActivityTemplate.category==='Solution' && mode !== 'solution'">
         <a stop-click-propagation ng-click="setSolutionMode()">
             <span class="return-to-solution">Return to Solution Introduction</span>
         </a>
     </div>
 </div>
+

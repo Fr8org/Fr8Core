@@ -11,14 +11,15 @@
         externalEventSubscription: Array<number>;
         startingSubPlanId: number;
         subPlans: Array<SubPlanDTO>;
-        visibility: PlanVisibility;
+        visibility: { hidden: boolean, public: boolean };
         category: string;
     }
 
     export enum PlanState {
         Inactive = 1,
-        Running = 2,
-        Saving_Changes = 3
+        Executing = 2,
+        Saving_Changes = 3,
+        Active = 4
     }
 
     export enum PlanVisibility {

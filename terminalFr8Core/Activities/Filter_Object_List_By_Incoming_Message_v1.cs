@@ -22,6 +22,7 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("36470147-05e3-4f32-94ef-bf203b6c53af"),
             Name = "Filter_Object_List_By_Incoming_Message",
             Label = "Filter Object List by Incoming Message",
             Version = "1",
@@ -29,7 +30,12 @@ namespace terminalFr8Core.Activities
             NeedsAuthentication = false,
             MinPaneWidth = 400,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Process,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -306,14 +312,14 @@ namespace terminalFr8Core.Activities
             {
                 throw new ActivityExecutionException("Data source activity is missing");
             }
-            var datasourceActivity = ActivityContext.ActivityPayload.ChildrenActivities.OrderBy(x => x.Ordering).ToList()[0];
+            /*var datasourceActivity = ActivityContext.ActivityPayload.ChildrenActivities.OrderBy(x => x.Ordering).ToList()[0];
             if (datasourceActivity.ActivityTemplate.Id != Guid.Parse(SelectedDataSourceActivityId))
             {
                 throw new ActivityExecutionException("Data source activity is other than specified in data source");
-            }
+            }*/
         }
         //Wrappers for control properties
-        private string IncomingText => Payload.FindField(ActivityUI.IncomingTextSelector.selectedKey);
+        private string IncomingText => ActivityUI.IncomingTextSelector.Value;
 
         private string SelectedDataSourceActivityId => ActivityUI.DataSourceSelector.Value;
         

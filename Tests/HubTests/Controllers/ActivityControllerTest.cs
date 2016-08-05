@@ -10,6 +10,7 @@ using Data.Interfaces;
 using HubTests.Controllers.Api;
 using Data.States;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.States;
 using Hub.Interfaces;
 using HubWeb.Controllers;
 using Fr8.Testing.Unit.Fixtures;
@@ -20,17 +21,9 @@ namespace HubTests.Controllers
     [Category("ActionController")]
     public class ActivityControllerTest : ApiControllerTestBase
     {
-
-        private IActivity _activity;
-
-        public ActivityControllerTest()
-        {
-
-        }
         public override void SetUp()
         {
             base.SetUp();
-            _activity = ObjectFactory.GetInstance<IActivity>();
             // DO-1214
             //CreateEmptyActionList();
             CreateActivityTemplate();
@@ -40,13 +33,6 @@ namespace HubTests.Controllers
         public void ActivityController_ShouldHaveFr8ApiAuthorize()
         {
             ShouldHaveFr8ApiAuthorize(typeof(ActivitiesController));
-        }
-
-        [Test]
-        public void ActivityController_ShouldHaveHMACOnCreateMethod()
-        {
-            var createMethod = typeof(ActivitiesController).GetMethod("Create", new[] { typeof(Guid), typeof(string), typeof(string), typeof(int?), typeof(Guid?), typeof(Guid?) });
-            ShouldHaveFr8HMACAuthorizeOnFunction(createMethod);
         }
 
         [Test]
@@ -65,8 +51,21 @@ namespace HubTests.Controllers
                 var plan = FixtureData.TestPlan1();
 
                 uow.PlanRepository.Add(plan);
+                var activityTemplate = FixtureData.TestActivityTemplateDTOV2();
+                var activityTemplateDO = new ActivityTemplateDO
+                {
+                    Name = activityTemplate.Name,
+                    Version = activityTemplate.Version,
+                    Terminal = new TerminalDO
+                    {
+                        Name = activityTemplate.TerminalName,
+                        Version = activityTemplate.TerminalVersion,
+                        TerminalStatus = TerminalStatus.Active,
+                        Label = "dummy"
+                    }
 
-
+                };
+                uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 plan.ChildNodes.Add(subPlan);
                 uow.SaveChanges();
             }
@@ -76,7 +75,7 @@ namespace HubTests.Controllers
             var actualAction = CreateActivityWithId(FixtureData.GetTestGuidById(1));
             actualAction.ParentPlanNodeId = subPlan.Id;
 
-            var controller = new ActivitiesController();
+            var controller = ObjectFactory.GetInstance<ActivitiesController>();
             var result = (OkNegotiatedContentResult<ActivityDTO>)await controller.Save(actualAction);
             var savedAction = result.Content;
 
@@ -106,6 +105,23 @@ namespace HubTests.Controllers
                 subplan = FixtureData.TestSubPlanDO1();
                 plan.ChildNodes.Add(subplan);
 
+                var activityTemplate = FixtureData.TestActivityTemplateDTOV2();
+                var activityTemplateDO = new ActivityTemplateDO
+                {
+                    Name = activityTemplate.Name,
+                    Version = activityTemplate.Version,
+                    Terminal = new TerminalDO
+                    {
+                        Name = activityTemplate.TerminalName,
+                        Version = activityTemplate.TerminalVersion,
+                        TerminalStatus = TerminalStatus.Active,
+                        Label = "dummy"
+                    }
+                    
+                };
+
+                uow.ActivityTemplateRepository.Add(activityTemplateDO);
+
                 //Arrange
                 //Add one test action
                 var activity = FixtureData.TestActivity1();
@@ -116,7 +132,7 @@ namespace HubTests.Controllers
             var actualAction = CreateActivityWithId(FixtureData.GetTestGuidById(2));
             actualAction.ParentPlanNodeId = subplan.Id;
 
-            var controller = new ActivitiesController();
+            var controller = ObjectFactory.GetInstance<ActivitiesController>();
             var result = (OkNegotiatedContentResult<ActivityDTO>)await controller.Save(actualAction);
             var savedAction = result.Content;
 
@@ -143,15 +159,13 @@ namespace HubTests.Controllers
 
             var plan = new PlanDO
             {
-                PlanState = PlanState.Running,
+                PlanState = PlanState.Executing,
                 Name = "name",
                 ChildNodes = { activity }
             };
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-
-
                 uow.PlanRepository.Add(plan);
                 uow.SaveChanges();
             }
@@ -160,7 +174,7 @@ namespace HubTests.Controllers
 
             actualAction.ParentPlanNodeId = plan.Id;
 
-            var controller = new ActivitiesController();
+            var controller = ObjectFactory.GetInstance<ActivitiesController>();
             controller.Save(actualAction);
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -186,7 +200,7 @@ namespace HubTests.Controllers
                 activityMock.Setup(a => a.Delete(It.IsAny<Guid>())).Returns(Task.FromResult(0));
 
                 ActivityDO activityDO = new FixtureData(uow).TestActivity3();
-                var controller = new ActivitiesController(activityMock.Object);
+                var controller = new ActivitiesController(activityMock.Object, ObjectFactory.GetInstance<IPlan>(), ObjectFactory.GetInstance<IUnitOfWorkFactory>());
                 await controller.Delete(activityDO.Id);
                 activityMock.Verify(a => a.Delete(activityDO.Id));
             }
@@ -200,9 +214,10 @@ namespace HubTests.Controllers
             {
                 Mock<IActivity> actionMock = new Mock<IActivity>();
                 actionMock.Setup(a => a.GetById(It.IsAny<IUnitOfWork>(), It.IsAny<Guid>()));
+                actionMock.Setup(x => x.Exists(It.IsAny<Guid>())).Returns(true);
 
                 ActivityDO activityDO = new FixtureData(uow).TestActivity3();
-                var controller = new ActivitiesController(actionMock.Object);
+                var controller = new ActivitiesController(actionMock.Object, ObjectFactory.GetInstance<IPlan>(), ObjectFactory.GetInstance<IUnitOfWorkFactory>());
                 controller.Get(activityDO.Id);
                 actionMock.Verify(a => a.GetById(It.IsAny<IUnitOfWork>(), activityDO.Id));
             }
@@ -251,7 +266,7 @@ namespace HubTests.Controllers
         public async Task ActivityController_GetConfigurationSettings_ValidActionDesignDTO()
         {
 
-            var controller = new ActivitiesController();
+            var controller = ObjectFactory.GetInstance<ActivitiesController>();
             ActivityDTO actionDesignDTO = CreateActivityWithId(FixtureData.GetTestGuidById(2));
             actionDesignDTO.ActivityTemplate = FixtureData.TestActivityTemplateDTOV2();
 
@@ -269,7 +284,7 @@ namespace HubTests.Controllers
         [ExpectedException(ExpectedException = typeof(ArgumentException), ExpectedMessage = "Current activity was not found.")]
         public async Task ActivityController_GetConfigurationSettings_IdIsMissing()
         { 
-            var controller = new ActivitiesController();
+            var controller = ObjectFactory.GetInstance<ActivitiesController>();
             ActivityDTO actionDesignDTO = CreateActivityWithId(FixtureData.GetTestGuidById(2));
             actionDesignDTO.Id = Guid.Empty;
 
@@ -287,7 +302,7 @@ namespace HubTests.Controllers
         [ExpectedException(ExpectedException = typeof(ArgumentException))]
         public async Task ActivityController_GetConfigurationSettings_ActionTemplateNameAndVersionIsMissing()
         {
-            var controller = new ActivitiesController();
+            var controller = ObjectFactory.GetInstance<ActivitiesController>();
             ActivityDTO actionDesignDTO = CreateActivityWithId(FixtureData.GetTestGuidById(2));
             var actionResult = await controller.Configure(actionDesignDTO);
 

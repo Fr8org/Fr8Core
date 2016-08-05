@@ -41,7 +41,7 @@ app.directive('blockIf', function () {
         restrict: 'A',
         link: function (_scope, _element, attrs) {
             var expr = attrs['blockIf'];
-            _scope.$watch(expr, function (value) {
+            _scope.$watch(expr, (value) => {
                 if (attrs['class'] === "plan-loading-message" && _scope.$eval(expr) == null) {
                     Metronic.blockUI({ target: _element, animate: true });
                 }
@@ -55,6 +55,31 @@ app.directive('blockIf', function () {
         }
     };
 });
+
+
+
+app.directive('fr8Click', ['$parse', '$timeout',($parse: ng.IParseService) => {
+    return {
+        restrict: 'A',
+        require: '^configurationControl',
+        compile: ($element: ng.IAugmentedJQuery, attr) => {
+            var fn = $parse(attr['fr8Click']);
+            return (scope, element: ng.IAugmentedJQuery, attr, cc: dockyard.directives.paneConfigureAction.IConfigurationControlController) => {
+                element.on('click', (event) => {
+                    if (cc.isThereOnGoingConfigRequest()) {
+                        cc.queueClick(element);
+                    } else {
+                        //lets call callback function immediately
+                        scope.$apply(() => {
+                            fn(scope, { $event: event });
+                        });
+                    }
+                });
+            };
+        }
+    };
+}]);
+
 
 app.directive("checkboxGroup", function () {
     return {
@@ -327,6 +352,58 @@ app.directive('eventPlanbuilder', ['$timeout', '$window', function ($timeout, $w
             if ($window.analytics != null) {
                 $window.analytics.page("Visited Page - Plan Builder");
             }
+        }
+    };
+}]);
+
+app.directive('eventPlandashboard', ['$timeout', '$window', function ($timeout, $window) {
+    return {
+        restrict: 'A',
+        link: function (scope, element) {
+            if ($window.analytics != null) {
+                $window.analytics.page("Visited Page - Plan Dashboard");
+            }
+        }
+    };
+}]);
+
+//== scroll grey area of PB vertically and horizontally 
+app.directive('pbScrollPane', ['$timeout', '$window', function ($timeout, $window) {
+    return {
+        restrict: 'A',
+        link: function (scope, element) {
+            let _validScrollFlag = false;
+            let $scroller = null;
+            let curSrollTop = 0;
+            let curScrollLeft = 0;
+
+            $scroller = (<any>$(element)).kinetic();
+
+            $(element).on('mousedown', function (e) {
+                let startObj = e.target,
+                    posX = e.pageX,
+                    posY = e.pageY;
+
+                curSrollTop = $(element).scrollTop();
+                curScrollLeft = $(element).scrollLeft();
+
+                var impossibleObjs = $('#scrollPane .action');                
+
+                _validScrollFlag = true;               
+
+                angular.forEach(impossibleObjs, (elem) => {
+                    let w = $(elem).width(),
+                        h = $(elem).height(),
+                        objPos = $(elem).offset();
+
+                    if (posX >= objPos.left && posX <= objPos.left + w && posY >= objPos.top && posY <= objPos.top + h) {
+                        _validScrollFlag = false;                        
+                    }
+                });
+
+                if (_validScrollFlag) $scroller.kinetic('attach');
+                else $scroller.kinetic('detach');
+            });            
         }
     };
 }]);

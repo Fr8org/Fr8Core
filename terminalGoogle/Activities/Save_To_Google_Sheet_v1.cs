@@ -23,6 +23,7 @@ namespace terminalGoogle.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("120110db-b8dd-41ca-b88e-9865db315528"),
             Name = "Save_To_Google_Sheet",
             Label = "Save To Google Sheet",
             Version = "1",
@@ -30,7 +31,12 @@ namespace terminalGoogle.Activities
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             MinPaneWidth = 300,
-            WebService = TerminalData.GooogleWebServiceDTO
+            WebService = TerminalData.GooogleWebServiceDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.GooogleWebServiceDTO.Name, TerminalData.GooogleWebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -196,6 +202,7 @@ namespace terminalGoogle.Activities
                     ActivityUI.ExistingWorksheetsList.SelectByValue(firstWorksheet.Value);
                 }
                 SelectedSpreadsheet = ActivityUI.ExistingSpreadsheetsList.Value;
+                ActivityUI.ExistingSpreadsheetsList.ListItems = (await _googleSheet.GetSpreadsheets(GetGoogleAuthToken())).Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
             }
             else
             {

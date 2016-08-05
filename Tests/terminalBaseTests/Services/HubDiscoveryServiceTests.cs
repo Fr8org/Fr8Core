@@ -39,7 +39,7 @@ namespace terminaBaselTests.Services
             {
             }
 
-            public IActivityFactory GetFactory(ActivityTemplateDTO activityTemplate)
+            public IActivityFactory GetFactory(string name, string version)
             {
                 return null;
             }
@@ -128,6 +128,31 @@ namespace terminaBaselTests.Services
             {
                 throw new NotImplementedException();
             }
+
+            public void AddRequestSignature(IRequestSignature signature)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void ClearSignatures()
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        class FakeRestfulServiceClientFactory : IRestfulServiceClientFactory
+        {
+            private readonly RestfulClientStub _clientStub;
+
+            public FakeRestfulServiceClientFactory(RestfulClientStub clientStub)
+            {
+                _clientStub = clientStub;
+            }
+
+            public IRestfulServiceClient Create(IRequestSignature signature)
+            {
+                return _clientStub;
+            }
         }
 
 
@@ -139,13 +164,11 @@ namespace terminaBaselTests.Services
         {
             var activityStore = new ActivityStoreStub(new TerminalDTO
             {
-                PublicIdentifier = "test",
                 Endpoint = "http://test",
                 Name = "test"
             });
-
             _restfullServiceClient = new RestfulClientStub();
-            _hubDiscoveryService = new HubDiscoveryService(_restfullServiceClient, new Fr8HMACService(new JsonMediaTypeFormatter()), activityStore, new SingleRunRetryPolicy());
+            _hubDiscoveryService = new HubDiscoveryService(new FakeRestfulServiceClientFactory(_restfullServiceClient), activityStore, new SingleRunRetryPolicy());
         }
 
         [Test]

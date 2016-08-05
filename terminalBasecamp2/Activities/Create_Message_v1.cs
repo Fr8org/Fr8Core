@@ -21,6 +21,7 @@ namespace terminalBasecamp2.Activities
 
         public static ActivityTemplateDTO ActivityTemplate = new ActivityTemplateDTO
         {
+            Id = new Guid("E6633D9B-5159-46BD-A367-E2A5497E5F56"),
             Name = "Create_Message",
             Label = "Create Message",
             Category = ActivityCategory.Forwarders,
@@ -28,7 +29,12 @@ namespace terminalBasecamp2.Activities
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
-            NeedsAuthentication = true
+            NeedsAuthentication = true,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
 
         public class ActivityUi : StandardConfigurationControlsCM
@@ -142,8 +148,8 @@ namespace terminalBasecamp2.Activities
                 var message = await _basecampApiClient.CreateMessage(
                                                                      ActivityUI.AccountSelector.Value,
                                                                      ActivityUI.ProjectSelector.Value,
-                                                                     ActivityUI.MessageSubject.GetValue(Payload),
-                                                                     ActivityUI.MessageContent.GetValue(Payload),
+                                                                     ActivityUI.MessageSubject.TextValue,
+                                                                     ActivityUI.MessageContent.TextValue,
                                                                      AuthorizationToken)
                                                       .ConfigureAwait(false);
                 Payload.Add(Crate.FromContent(RuntimeCrateLabel, new StandardPayloadDataCM(new KeyValueDTO { Key = "id", Value = message.Id.ToString() },
@@ -152,7 +158,7 @@ namespace terminalBasecamp2.Activities
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Failed to create new message. Basecamp user - {AuthorizationToken.ExternalAccountName}, Fr8 User Id - {CurrentUserId}, Details - {ex}");
+                Logger.GetLogger().Error($"Failed to create new message. Basecamp user - {AuthorizationToken.ExternalAccountName}, Fr8 User Id - {CurrentUserId}, Details - {ex}");
                 throw;
             }
         }

@@ -21,15 +21,17 @@ namespace Hub.Services
         #region Fields
 
         private readonly ICrateManager _crate;
+        private readonly ITerminal _terminal;
         private readonly IActivityTemplate _activityTemplate;
         private const string ValidationErrorsLabel = "Validation Errors";
 
         #endregion
 
-        public PlanNode()
+        public PlanNode(ICrateManager crateManager, IActivityTemplate activityTemplate, ITerminal terminal)
         {
-            _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
-            _crate = ObjectFactory.GetInstance<ICrateManager>();
+            _terminal = terminal;
+            _activityTemplate = activityTemplate;
+            _crate = crateManager;
         }
 
         public List<PlanNodeDO> GetUpstreamActivities(IUnitOfWork uow, PlanNodeDO curActivityDO)
@@ -84,25 +86,20 @@ namespace Hub.Services
 
             return availableData;
         }
-        
+
         public List<CrateDescriptionCM> GetCrateManifestsByDirection(
             Guid activityId,
             CrateDirection direction,
             AvailabilityType availability,
             bool includeCratesFromActivity = true
-                ) 
+                )
         {
             Func<Crate<CrateDescriptionCM>, bool> cratePredicate;
 
-            if (availability == AvailabilityType.NotSet)
-            {
-                //validation errors don't need to be present as available data, so remove Validation Errors
-                cratePredicate = f => f.Label != ValidationErrorsLabel && f.Availability != AvailabilityType.Configuration;
-            }
-            else
-            {
-                cratePredicate = f => (f.Availability & availability) != 0;
-            }
+
+            //validation errors don't need to be present as available data, so remove Validation Errors
+            cratePredicate = f => f.Label != ValidationErrorsLabel;
+
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -128,25 +125,18 @@ namespace Hub.Services
                     .SelectMany(x => _crate.GetStorage(x).CratesOfType<CrateDescriptionCM>().Where(cratePredicate))
                     .Select(x =>
                     {
-                        if (x.Content.CrateDescriptions.Count > 0)
+                        foreach (var crateDescription in x.Content.CrateDescriptions)
                         {
-                            foreach (var field in x.Content.CrateDescriptions[0].Fields)
-                            {
-                                if (field.SourceCrateLabel == null)
-                                {
-                                    field.SourceCrateLabel = x.Content.CrateDescriptions[0].Label ?? x.Content.CrateDescriptions[0].ProducedBy;
-                                    field.SourceActivityId = x.SourceActivityId;
-                                }
-                            }
+                            crateDescription.Label = crateDescription.Label ?? crateDescription.ProducedBy;
                         }
                         return x.Content;
                     })
                     .ToList();
-                            
+
                 return result;
             }
         }
-        
+
         private List<PlanNodeDO> GetActivitiesByDirection(IUnitOfWork uow, CrateDirection direction, PlanNodeDO curActivityDO)
         {
             switch (direction)
@@ -175,7 +165,6 @@ namespace Hub.Services
             {
                 GetDownstreamRecusive(planNodeDo, nodes);
             }
-
 
             while (curActivityDO != null)
             {
@@ -207,14 +196,14 @@ namespace Hub.Services
                 return null;
             }
 
-            return currentActivity.ParentPlanNode.GetOrderedChildren().FirstOrDefault(x => x.Runnable && x.Ordering > currentActivity.Ordering);
+            return currentActivity.ParentPlanNode.GetOrderedChildren().FirstOrDefault(x => x.Ordering > currentActivity.Ordering);
         }
 
         public PlanNodeDO GetFirstChild(PlanNodeDO currentActivity)
         {
             if (currentActivity.ChildNodes.Count != 0)
             {
-                return currentActivity.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault(x => x.Runnable);
+                return currentActivity.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault();
             }
 
             return null;
@@ -287,7 +276,7 @@ namespace Hub.Services
             foreach (PlanNodeDO child in parent.ChildNodes)
                 TraverseActivity(child, visitAction);
         }
-       
+
         public IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, IFr8AccountDO curAccount)
         {
             IEnumerable<ActivityTemplateDTO> curActivityTemplates;
@@ -330,7 +319,7 @@ namespace Hub.Services
             IEnumerable<ActivityTemplateDTO> curActivityTemplates;
             curActivityTemplates = _activityTemplate
                 .GetAll()
-                .Where(at => at.Category == ActivityCategory.Solution
+                .Where(at => at.Category == Fr8.Infrastructure.Data.States.ActivityCategory.Solution
                     && at.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
                 .OrderBy(t => t.Category)
                 .Select(Mapper.Map<ActivityTemplateDTO>)
@@ -364,7 +353,38 @@ namespace Hub.Services
                     Name = c.Key.ToString()
                 })
                 .ToList();
+
             return curActivityTemplates;
+        }
+
+        public IEnumerable<ActivityTemplateCategoryDTO> GetActivityTemplatesGroupedByCategories()
+        {
+            var availableTerminalIds = _terminal.GetAll().Select(x => x.Id).ToList();
+
+            var categories = _activityTemplate
+                .GetQuery()
+                .Where(x => availableTerminalIds.Contains(x.TerminalId) && x.Categories != null)
+                .SelectMany(x => x.Categories)
+                .Select(x => new { x.ActivityCategory.Name, x.ActivityCategory.IconPath })
+                .OrderBy(x => x.Name)
+                .Distinct()
+                .ToList();
+
+            var result = categories
+                .Select(x => new ActivityTemplateCategoryDTO()
+                {
+                    Name = x.Name,
+                    IconPath = x.IconPath,
+                    Activities = _activityTemplate.GetQuery()
+                        .Where(y => y.Categories != null && y.Categories.Any(z => z.ActivityCategory.Name == x.Name))
+                        .GroupBy(y => y.Name)
+                        .Select(y => Mapper.Map<ActivityTemplateDTO>(y.OrderByDescending(z => Int32.Parse(z.Version)).First()))
+                        .OrderBy(y => y.Label)
+                        .ToList()
+                })
+                .ToList();
+
+            return result;
         }
     }
 }

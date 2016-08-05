@@ -150,7 +150,7 @@ namespace HubTests.Security
                     Id = FixtureData.GetTestGuidById(23),
                     Description = "HealthDemo Integration Test",
                     Name = "StandardEventTesting",
-                    PlanState = PlanState.Running,
+                    PlanState = PlanState.Executing,
                     Fr8Account = uow.UserRepository.GetByKey(tokenDO.UserID)
                 };
                 uow.PlanRepository.Add(planDO);
@@ -174,7 +174,7 @@ namespace HubTests.Security
                 uow.SaveChanges();
 
                 activityDTO.Id = activityDO.Id;
-                activityDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(activityTemplateDO);
+                activityDTO.ActivityTemplate = Mapper.Map<ActivityTemplateSummaryDTO>(activityTemplateDO);
             }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -205,7 +205,7 @@ namespace HubTests.Security
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Running,
+                    PlanState = PlanState.Executing,
                     ChildNodes = { activityDO }
                 });
 
@@ -302,7 +302,7 @@ namespace HubTests.Security
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Running,
+                    PlanState = PlanState.Executing,
                     ChildNodes = { activityDO }
                 });
                 uow.SaveChanges();
@@ -360,14 +360,14 @@ namespace HubTests.Security
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Running,
+                    PlanState = PlanState.Executing,
                     ChildNodes = { activityDO }
                 });
 
                 uow.SaveChanges();
 
                 activityDTO.Id = activityDO.Id;
-                activityDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(activityTemplateDO);
+                activityDTO.ActivityTemplate = Mapper.Map<ActivityTemplateSummaryDTO>(activityTemplateDO);
             }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -397,14 +397,14 @@ namespace HubTests.Security
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Running,
+                    PlanState = PlanState.Executing,
                     ChildNodes = { activityDO }
                 });
 
                 uow.SaveChanges();
 
                 activityDTO.Id = activityDO.Id;
-                activityDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(activityTemplateDO);
+                activityDTO.ActivityTemplate = Mapper.Map<ActivityTemplateSummaryDTO>(activityTemplateDO);
             }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

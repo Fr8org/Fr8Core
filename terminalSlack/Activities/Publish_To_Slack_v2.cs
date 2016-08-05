@@ -12,6 +12,7 @@ using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Services;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
+using System;
 
 namespace terminalSlack.Activities
 {
@@ -19,6 +20,7 @@ namespace terminalSlack.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("0e21b4e8-3f08-41b1-bb6b-399ef4c2b683"),
             Name = "Publish_To_Slack",
             Label = "Publish To Slack",
             Tags = "Notifier",
@@ -27,7 +29,12 @@ namespace terminalSlack.Activities
             NeedsAuthentication = true,
             Version = "2",
             WebService = TerminalData.WebServiceDTO,
-            MinPaneWidth = 330
+            MinPaneWidth = 330,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -93,7 +100,7 @@ namespace terminalSlack.Activities
         public override async Task Run()
         {
             var channel = ActivityUI.ChannelSelector.Value;
-            var message = ActivityUI.MessageSource.GetValue(Payload);
+            var message = ActivityUI.MessageSource.TextValue;
             var success = await _slackIntegration.PostMessageToChat(AuthorizationToken.Token, channel, message).ConfigureAwait(false);
             if (!success)
             {

@@ -11,7 +11,10 @@ namespace terminalDocuSign.Services.New_Api
 {
     public interface IDocuSignManager
     {
+        DocuSignApiConfiguration SetUp(DocuSignAuthTokenDTO authToken);
+        DocuSignApiConfiguration SetUp(string token);
         DocuSignApiConfiguration SetUp(AuthorizationToken authTokenDO);
+        DocuSignEnvelopeCM_v2 GetEnvelope(DocuSignApiConfiguration config, string envelopeId);
         List<KeyValueDTO> GetTemplatesList(DocuSignApiConfiguration conf);
         JObject DownloadDocuSignTemplate(DocuSignApiConfiguration config, string selectedDocusignTemplateId);
         IEnumerable<KeyValueDTO> GetEnvelopeRecipientsAndTabs(DocuSignApiConfiguration conf, string envelopeId);

@@ -53,7 +53,17 @@ namespace Hub.Security.ObjectDecorators
         {
             return _target.IsMonitoringPlan(uow, planDo);
         }
-        
+
+        public bool IsPlanActiveOrExecuting(Guid planNodeId)
+        {
+            return _target.IsPlanActiveOrExecuting(planNodeId);
+        }
+
+        public int? GetPlanState(IUnitOfWork uow, Guid planNodeId)
+        {
+            return _target.GetPlanState(uow, planNodeId);
+        }
+
         public PlanDO Create(IUnitOfWork uow, string name, string category = "", string ownerId = "", PlanVisibility visibility = PlanVisibility.Standard)
         {
             //TODO: probably worth add a check that only admin can create plan with specific owner Id and internal plan visibility

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Constants;
@@ -9,7 +10,6 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.Errors;
-using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Infrastructure.States;
 using Fr8.TerminalBase.Interfaces;
@@ -18,7 +18,10 @@ using Fr8.TerminalBase.Services;
 
 namespace Fr8.TerminalBase.BaseClasses
 {
-    // Almost minimal activity implementation
+    /// <summary>
+    /// The most low level base class for developing activities. 
+    /// See https://github.com/Fr8org/Fr8Core/blob/dev/Docs/ForDevelopers/SDK/.NET/Reference/TerminalActivityBase.md
+    /// </summary>
     public abstract class TerminalActivityBase : IActivity
     {
         /**********************************************************************************/
@@ -27,14 +30,15 @@ namespace Fr8.TerminalBase.BaseClasses
 
         public const string ConfigurationControlsLabel = "Configuration_Controls";
         public const string ValidationCrateLabel = "Validation Results";
+        public const string EventSubscriptionsCrateLabel = "Standard Event Subscriptions";
 
         /**********************************************************************************/
 
         private OperationalStateCM _operationalState;
         private ActivityContext _activityContext;
         private ContainerExecutionContext _containerExecutionContext;
-        private ControlHelper _controlHelper;
-        
+        private EventSubscriptionCM _eventSubscriptions;
+
         /**********************************************************************************/
 
         protected ICrateStorage Payload
@@ -74,10 +78,10 @@ namespace Fr8.TerminalBase.BaseClasses
         protected bool DisableValidationOnFollowup { get; set; }
         protected ICrateManager CrateManager { get; private set;}
         protected int LoopIndex => GetLoopIndex();
-        protected ControlHelper ControlHelper => _controlHelper ?? (_controlHelper = new ControlHelper(ActivityContext));
         protected ValidationManager ValidationManager { get; private set; }
         protected Guid ActivityId => ActivityContext.ActivityPayload.Id;
         protected string CurrentUserId => ActivityContext.UserId;
+        protected UiBuilder UiBuilder { get; }
 
         protected abstract ActivityTemplateDTO MyTemplate { get; }
 
@@ -125,12 +129,48 @@ namespace Fr8.TerminalBase.BaseClasses
         }
 
         /**********************************************************************************/
+
+        public EventSubscriptionCM EventSubscriptions
+        {
+            get
+            {
+                if (_eventSubscriptions == null)
+                {
+                    _eventSubscriptions = Storage.FirstCrateContentOrDefault<EventSubscriptionCM>(x => x.Label == EventSubscriptionsCrateLabel);
+
+                    if (_eventSubscriptions == null)
+                    {
+                        if (!IsRuntime)
+                        {
+                            _eventSubscriptions = new EventSubscriptionCM();
+                            Storage.Add(EventSubscriptionsCrateLabel, _eventSubscriptions);
+                        }
+                    }
+                    else if (_eventSubscriptions.Subscriptions == null)
+                    {
+                        _eventSubscriptions.Subscriptions = new List<string>();
+                    }
+                }
+                
+                return _eventSubscriptions;
+            }
+            set
+            {
+                Storage.Remove(x => x.Label == EventSubscriptionsCrateLabel);
+
+                _eventSubscriptions = value;
+                Storage.Add(EventSubscriptionsCrateLabel, _eventSubscriptions);
+            }
+        }
+        
+        /**********************************************************************************/
         // Functions
         /**********************************************************************************/
 
         protected TerminalActivityBase(ICrateManager crateManager)
         {
             CrateManager = crateManager;
+            UiBuilder = new UiBuilder();
         }
 
         /**********************************************************************************/
@@ -348,11 +388,11 @@ namespace Fr8.TerminalBase.BaseClasses
             {
                 if (string.IsNullOrWhiteSpace(AuthorizationToken?.Token))
                 {
-                    ErrorInvalidToken("No AuthToken provided.");
+                    RaiseInvalidTokenError("No AuthToken provided.");
                 }
                 else
                 {
-                    ErrorInvalidToken("Authorization token is invalid");
+                    RaiseInvalidTokenError("Authorization token is invalid");
                 }
                 
                 return;
@@ -391,7 +431,7 @@ namespace Fr8.TerminalBase.BaseClasses
                     await AfterRun(ex);
                 }
 
-                ErrorInvalidToken(ex.Message);
+                RaiseInvalidTokenError(ex.Message);
             }
             catch (ActivityExecutionException ex)
             {
@@ -400,7 +440,7 @@ namespace Fr8.TerminalBase.BaseClasses
                     await AfterRun(ex);
                 }
 
-                Error(ex.Message, ex.ErrorCode);
+                RaiseError(ex.Message, ex.ErrorCode);
             }
             catch (AggregateException ex)
             {
@@ -413,12 +453,12 @@ namespace Fr8.TerminalBase.BaseClasses
                 {
                     if (IsInvalidTokenException(innerException))
                     {
-                        ErrorInvalidToken(ex.Message);
+                        RaiseInvalidTokenError(ex.Message);
                         return;
                     }
                 }
 
-                Error(ex.Flatten().Message);
+                RaiseError(ex.Flatten().Message);
             }
             catch (Exception ex)
             {
@@ -429,11 +469,11 @@ namespace Fr8.TerminalBase.BaseClasses
 
                 if (IsInvalidTokenException(ex))
                 {
-                    ErrorInvalidToken(ex.Message);
+                    RaiseInvalidTokenError(ex.Message);
                 }
                 else
                 {
-                    Error(ex.Message);
+                    RaiseError(ex.Message);
                 }
             }
         }
@@ -632,7 +672,7 @@ namespace Fr8.TerminalBase.BaseClasses
         /// <summary>
         /// Creates a suspend request for hub execution
         /// </summary>
-        protected void SuspendHubExecution(string message = null)
+        protected void RequestPlanExecutionSuspension(string message = null)
         {
             SetResponse(ActivityResponse.RequestSuspend, message);
         }
@@ -642,21 +682,11 @@ namespace Fr8.TerminalBase.BaseClasses
         /// Creates a terminate request for hub execution
         /// after that we could stop throwing exceptions on actions
         /// </summary>
-        protected void TerminateHubExecution(string message = null)
+        protected void RequestPlanExecutionTermination(string message = null)
         {
             SetResponse(ActivityResponse.RequestTerminate, message);
         }
-
-        /**********************************************************************************/
-        /// <summary>
-        /// Creates a terminate request for hub execution
-        /// after that we could stop throwing exceptions on actions
-        /// </summary>
-        protected void RequestHubExecutionTermination(string message = null)
-        {
-            TerminateHubExecution(message);
-        }
-
+        
         /**********************************************************************************/
         /// <summary>
         /// returns success to hub
@@ -668,10 +698,10 @@ namespace Fr8.TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        protected void ExecuteClientActivity(string clientActionName)
+        protected void RequestClientActivityExecution(string clientActionName)
         {
             SetResponse(ActivityResponse.ExecuteClientActivity);
-            OperationalState.CurrentClientActivityName = clientActionName;
+            OperationalState.CurrentActivityResponse.Body = clientActionName;
         }
 
         /**********************************************************************************/
@@ -721,7 +751,7 @@ namespace Fr8.TerminalBase.BaseClasses
         /// Jumps to another plan
         /// </summary>
         /// <returns></returns>
-        protected void LaunchPlan(Guid targetPlanId)
+        protected void RequestLaunchPlan(Guid targetPlanId)
         {
             SetResponse(ActivityResponse.LaunchAdditionalPlan);
             OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetPlanId });
@@ -738,44 +768,7 @@ namespace Fr8.TerminalBase.BaseClasses
                 OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Message = message, Details = details });
             }
         }
-
-        /**********************************************************************************/
-        /// <summary>
-        /// returns error to hub
-        /// </summary>
-        protected void Error(string errorMessage = null, ActivityErrorCode? errorCode = null)
-        {
-            SetResponse(ActivityResponse.Error);
-            OperationalState.CurrentActivityErrorCode = errorCode;
-            OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, ErrorType.Generic, errorCode.ToString(), null, null, null));
-        }
-
-        /**********************************************************************************/
-        /// <summary>
-        /// returns error to hub
-        /// </summary>
-        protected void ErrorInvalidToken(string instructionsToUser = null)
-        {
-            SetResponse(ActivityResponse.Error);
-            var errorCode = ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID;
-            OperationalState.CurrentActivityErrorCode = errorCode;
-            OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(instructionsToUser, ErrorType.Authentication, errorCode.ToString(), null, null, null));
-        }
-
-        /**********************************************************************************/
-        /// <summary>
-        /// returns error to hub
-        /// </summary>
-        /// <param name="errorMessage"></param>
-        /// <param name="errorCode"></param>
-        /// <param name="currentActivity">Activity where the error occured</param>
-        /// <param name="currentTerminal">Terminal where the error occured</param>
-        /// <returns></returns>
-        protected void RaiseError(string errorMessage = null, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
-        {
-            RaiseError(errorMessage, ErrorType.Generic, errorCode, currentActivity, currentTerminal);
-        }
-
+        
         /**********************************************************************************/
         /// <summary>
         /// returns error to hub
@@ -786,23 +779,12 @@ namespace Fr8.TerminalBase.BaseClasses
         /// <param name="errorMessage"></param>
         /// <param name="errorType"></param>
         /// <returns></returns>
-        protected void RaiseError(string errorMessage, ErrorType errorType, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
+        protected void RaiseError(string errorMessage, ActivityErrorCode? errorCode = null, ErrorType errorType = ErrorType.Generic)
         {
-            OperationalState.CurrentActivityErrorCode = errorCode;
-            OperationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Error);
-            OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, errorType, errorCode.ToString(), null, currentActivity, currentTerminal));
+            SetResponse(ActivityResponse.Error);
+            OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, errorType, errorCode.ToString(), null, MyTemplate.Name, MyTemplate.Terminal?.Name));
         }
-
-        /**********************************************************************************/
-        /// <summary>
-        /// Returns Needs authentication error to hub
-        /// </summary>
-        /// <returns></returns>
-        protected void RaiseNeedsAuthenticationError()
-        {
-            RaiseError("No AuthToken provided.", ErrorType.Authentication, ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID);
-        }
-
+        
         /**********************************************************************************/
         /// <summary>
         /// Returns authentication error to hub
@@ -810,7 +792,7 @@ namespace Fr8.TerminalBase.BaseClasses
         /// <returns></returns>
         protected void RaiseInvalidTokenError(string instructionsToUser = null)
         {
-            RaiseError(instructionsToUser, ErrorType.Authentication, ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID);
+            RaiseError(instructionsToUser, ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID, ErrorType.Authentication);
         }
 
         /**********************************************************************************/

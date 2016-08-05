@@ -12,11 +12,11 @@ namespace terminalSalesforce.Services
 {
     public class Event : IEvent
     {
-        private readonly IHubEventReporter _eventReporter;
+        private readonly IHubLoggerService _loggerService;
 
-        public Event(IHubEventReporter eventReporter)
+        public Event(IHubLoggerService loggerService)
         {
-            _eventReporter = eventReporter;
+            _loggerService = loggerService;
         }
 
         public async Task<Crate> ProcessEvent(string curExternalEventPayload)
@@ -36,7 +36,6 @@ namespace terminalSalesforce.Services
                 var eventReportContent = new EventReportCM
                 {
                     EventNames = GetEventNames(curEventEnvelope),
-                    ContainerDoId = "",
                     EventPayload = ExtractEventPayload(curEventEnvelope),
                     ExternalAccountId = accountId,
                     Manufacturer = "Salesforce",
@@ -46,7 +45,7 @@ namespace terminalSalesforce.Services
             }
             catch (Exception e)
             {
-                await _eventReporter.ReportTerminalError(e);
+                await _loggerService.ReportTerminalError(e);
                 throw new Exception($"Error while processing. \r\n{curExternalEventPayload}");
             }
         }

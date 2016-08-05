@@ -15,6 +15,7 @@ using terminalGoogle.DataTransferObjects;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Control;
+using Fr8.Infrastructure.Utilities.Logging;
 
 namespace terminalGoogle.Activities
 {
@@ -29,6 +30,7 @@ namespace terminalGoogle.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("d547401f-a4e3-47cd-9851-7fb98e16c94a"),
             Name = "Monitor_Gmail_Inbox",
             Label = "Monitor Gmail Inbox",
             Version = "1",
@@ -36,7 +38,12 @@ namespace terminalGoogle.Activities
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             WebService = TerminalData.GmailWebServiceDTO,
-            MinPaneWidth = 300
+            MinPaneWidth = 300,
+            Categories = new[]
+            {
+                ActivityCategories.Monitor,
+                new ActivityCategoryDTO(TerminalData.GooogleWebServiceDTO.Name, TerminalData.GooogleWebServiceDTO.IconPath)
+            }
         };
 
         private IGoogleGmailPolling _gmailPollingService;
@@ -47,12 +54,8 @@ namespace terminalGoogle.Activities
 
         public async override Task Initialize()
         {
-            Storage.Remove<EventSubscriptionCM>();
-            Storage.Add
-                (CrateManager.CreateStandardEventSubscriptionsCrate(
-                "Standard Event Subscriptions",
-                "Google",
-                "GmailInbox"));
+            EventSubscriptions.Manufacturer = "Google";
+            EventSubscriptions.Add("GmailInbox");
 
             CrateSignaller.MarkAvailableAtRuntime<StandardEmailMessageCM>(RuntimeCrateLabel);
         }
@@ -60,6 +63,7 @@ namespace terminalGoogle.Activities
 
         public override async Task Activate()
         {
+            Logger.GetLogger().Info("Monitor_Gmail_Inbox activty is activated. Sending a request for polling");
             await _gmailPollingService.SchedulePolling(HubCommunicator, AuthorizationToken.ExternalAccountId, true);
         }
 
@@ -72,7 +76,7 @@ namespace terminalGoogle.Activities
 
             if (mail == null)
             {
-                TerminateHubExecution("Letter was not found in the payload.");
+                RequestPlanExecutionTermination("Letter was not found in the payload.");
             }
 
             Payload.Add(Crate.FromContent(RuntimeCrateLabel, mail));

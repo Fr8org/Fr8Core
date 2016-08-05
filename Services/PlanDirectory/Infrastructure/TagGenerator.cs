@@ -2,17 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using StructureMap;
-using Microsoft.AspNet.Identity;
-using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using Fr8.Infrastructure.Data.DataTransferObjects.PlanTemplates;
 
 namespace PlanDirectory.Infrastructure
 {
@@ -30,10 +25,9 @@ namespace PlanDirectory.Infrastructure
         /// WebServiceTemplateTag: Z
         /// WebServiceTemplateTag: Y, Z
         /// </summary>
-
-        public async Task<List<TemplateTag>> GetTags(PlanTemplateCM planTemplateCM, string fr8AccountId)
+        public async Task<TemplateTagStorage> GetTags(PlanTemplateCM planTemplateCM, string fr8AccountId)
         {
-            var result = new List<TemplateTag>();
+            var result = new TemplateTagStorage();
 
             //requesting all activity templates
             var hmacService = ObjectFactory.GetInstance<IHMACService>();
@@ -51,32 +45,80 @@ namespace PlanDirectory.Infrastructure
             var activityCategories = await client.GetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(
                uri, headers: headers);
 
-            var activityDict = activityCategories.SelectMany(a => a.Activities).ToDictionary(k => k.Id);
+            var activityDict = activityCategories
+                .SelectMany(a => a.Activities)
+                .ToDictionary(k => $"{k.Name};{k.Version};{k.Terminal.Name}:{k.Terminal.Version}");
 
             //1. getting ids of used templates
-            var planTemplateDTO = JsonConvert.DeserializeObject<PlanTemplateDTO>(planTemplateCM.PlanContents);
-            if (planTemplateDTO.PlanNodeDescriptions == null || planTemplateDTO.PlanNodeDescriptions.Count == 0) return new List<TemplateTag>();
+            var plan = planTemplateCM.PlanContents;
+            var usedActivityTemplatesIds = new HashSet<string>();
 
-            var usedActivityTemplatesIds = planTemplateDTO.PlanNodeDescriptions.Select(a => a.ActivityDescription.ActivityTemplateId).Distinct().ToList();
+            if (plan.SubPlans != null)
+            {
+                foreach (var subplan in plan.SubPlans)
+                {
+                    CollectActivityTemplateIds(subplan, usedActivityTemplatesIds);
+                }
+            }
+
+            if (usedActivityTemplatesIds.Count == 0)
+            {
+                return new TemplateTagStorage();
+            }
+
             //2. getting used templates
             var usedActivityTemplates = usedActivityTemplatesIds.Intersect(activityDict.Keys)
                                      .Select(k => activityDict[k])
-                                     .Distinct()
+                                     .Distinct(ActivityTemplateDTO.IdComparer)
                                      .OrderBy(a => a.Name)
                                      .ToList();
-
             if (usedActivityTemplates.Count != usedActivityTemplatesIds.Count)
                 throw new ApplicationException("Template references activity that is not registered in Hub");
             //3. adding tags for activity templates
             var activityTemplatesCombinations = GetCombinations<ActivityTemplateDTO>(usedActivityTemplates);
-            activityTemplatesCombinations.ForEach(a => result.Add(new ActivityTemplateTag(a)));
+            activityTemplatesCombinations.ForEach(a => result.ActivityTemplateTags.Add(new ActivityTemplateTag(a)));
 
             //4. adding tags for webservices
-            var usedWebServices = usedActivityTemplates.Select(a => a.WebService).Distinct().OrderBy(b => b.Name).ToList();
+            var usedWebServices = usedActivityTemplates.Select(a => a.WebService).Distinct(WebServiceDTO.NameComparer).OrderBy(b => b.Name).ToList();
             var webServicesCombination = GetCombinations<WebServiceDTO>(usedWebServices);
-            webServicesCombination.ForEach(a => result.Add(new WebServiceTemplateTag(a)));
+            webServicesCombination.ForEach(a => result.WebServiceTemplateTags.Add(new WebServiceTemplateTag(a)));
 
             return result;
+        }
+
+        private void CollectActivityTemplateIds(FullSubplanDto subplan, HashSet<string> ids)
+        {
+            if (subplan.Activities == null)
+            {
+                return;
+            }
+
+            foreach (var activity in subplan.Activities)
+            {
+                CollectActivityTemplateIds(activity, ids);
+            }
+        }
+
+        private void CollectActivityTemplateIds(ActivityDTO activity, HashSet<string> ids)
+        {
+            var at = activity.ActivityTemplate;
+            if (at != null && !string.IsNullOrEmpty(at.Name) 
+                && !string.IsNullOrEmpty(at.Version) 
+                && !string.IsNullOrEmpty(at.TerminalName)
+                && !string.IsNullOrEmpty(at.TerminalVersion))
+            {
+                ids.Add($"{at.Name};{at.Version};{at.TerminalName}:{at.TerminalVersion}");
+            }
+
+            if (activity.ChildrenActivities == null)
+            {
+                return;
+            }
+
+            foreach (var child in activity.ChildrenActivities)
+            {
+                CollectActivityTemplateIds(child, ids);
+            }
         }
 
         /// <summary>
@@ -112,45 +154,5 @@ namespace PlanDirectory.Infrastructure
             }
             return result;
         }
-
-    }
-
-
-
-    public class ActivityTemplateTag : TemplateTag
-    {
-        //id, WebServiceId, name
-        private List<Tuple<Guid, int, string>> _values = new List<Tuple<Guid, int, string>>();
-
-        [JsonIgnore]
-        public override string Values { get { return string.Join(", ", _values.Select(a => a.Item3).ToArray()); } }
-
-        public ActivityTemplateTag(List<ActivityTemplateDTO> values)
-        {
-            values.ForEach(a =>
-            { _values.Add(new Tuple<Guid, int, string>(a.Id, a.WebService.Id, a.Name)); });
-        }
-
-    }
-
-    public class WebServiceTemplateTag : TemplateTag
-    {
-        //id, iconPath, name
-        private List<Tuple<int, string, string>> _values = new List<Tuple<int, string, string>>();
-
-        [JsonIgnore]
-        public override string Values { get { return string.Join(", ", _values.Select(a => a.Item3).ToArray()); } }
-
-        public WebServiceTemplateTag(List<WebServiceDTO> values)
-        {
-            values.ForEach(a =>
-            { _values.Add(new Tuple<int, string, string>(a.Id, a.IconPath, a.Name)); });
-        }
-    }
-
-    public abstract class TemplateTag
-    {
-        [JsonIgnore]
-        public abstract string Values { get; }
     }
 }

@@ -44,13 +44,13 @@ namespace Fr8.Testing.Integration.Tools.Activities
         public async Task<Tuple<ActivityDTO, PlanDTO, Guid>> CreateAndConfigure_MailMergeIntoDocuSign_Solution(string dataSourceValue,
             string dataSourceSelectedKey, string docuSignTemplateValue, string docuSignTemplateSelectedKey, bool addNewDocuSignTemplate)
         {
-            var solutionCreateUrl = _baseHubITest.GetHubApiBaseUrl() + "plans?solution_name=Mail_Merge_Into_DocuSign";
+            var solutionCreateUrl = _baseHubITest.GetHubApiBaseUrl() + "plans?solutionName=Mail_Merge_Into_DocuSign";
 
             //
             // Create solution
             //
             var plan = await _baseHubITest.HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
-            var solution = plan.Plan.SubPlans.FirstOrDefault().Activities.FirstOrDefault();
+            var solution = plan.SubPlans.FirstOrDefault().Activities.FirstOrDefault();
 
             //
             // Send configuration request without authentication token
@@ -63,8 +63,13 @@ namespace Fr8.Testing.Integration.Tools.Activities
             var tokenGuid = Guid.Empty;
             if (!defaultDocuSignAuthTokenExists)
             {
+                var terminalSummaryDTO = new TerminalSummaryDTO
+                {
+                    Name = solution.ActivityTemplate.TerminalName,
+                    Version = solution.ActivityTemplate.TerminalVersion
+                };
                 // Authenticate with DocuSign
-                tokenGuid = await _terminalDocuSignTestTools.AuthenticateDocuSignAndAssociateTokenWithAction(solution.Id, _baseHubITest.GetDocuSignCredentials(), solution.ActivityTemplate.Terminal);
+                tokenGuid = await _terminalDocuSignTestTools.AuthenticateDocuSignAndAssociateTokenWithAction(solution.Id, _baseHubITest.GetDocuSignCredentials(), terminalSummaryDTO);
             }
 
             //
@@ -102,10 +107,10 @@ namespace Fr8.Testing.Integration.Tools.Activities
             //
             //Rename plan to include a dateTimeStamp in the name
             //
-            var newName = plan.Plan.Name + " | " + DateTime.UtcNow.ToShortDateString() + " " +
+            var newName = plan.Name + " | " + DateTime.UtcNow.ToShortDateString() + " " +
                 DateTime.UtcNow.ToShortTimeString();
-            await _baseHubITest.HttpPostAsync<object, PlanFullDTO>(_baseHubITest.GetHubApiBaseUrl() + "plans?id=" + plan.Plan.Id,
-                new { id = plan.Plan.Id, name = newName });
+            await _baseHubITest.HttpPostAsync<object, PlanDTO>(_baseHubITest.GetHubApiBaseUrl() + "plans?id=" + plan.Id,
+                new { id = plan.Id, name = newName });
 
             //
             // Configure solution
@@ -126,7 +131,16 @@ namespace Fr8.Testing.Integration.Tools.Activities
         {
             var queryDocuSignActivity = FixtureData.Query_DocuSign_v1_InitialConfiguration();
             var activityTemplates = await _baseHubITest.HttpGetAsync<ActivityTemplateCategoryDTO[]>(_baseHubITest.GetHubApiBaseUrl() + "/activity_templates");
-            var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).FirstOrDefault(a => a.Name == "Query_DocuSign" && a.Version == version.ToString());
+            var apmActivityTemplate = activityTemplates
+                .SelectMany(a => a.Activities)
+                .Select(x => new ActivityTemplateSummaryDTO
+                {
+                    Name = x.Name,
+                    Version = x.Version,
+                    TerminalName = x.Terminal.Name,
+                    TerminalVersion = x.Terminal.Version
+                })
+                .FirstOrDefault(a => a.Name == "Query_DocuSign" && a.Version == version.ToString());
 
             if (apmActivityTemplate == null)
             {
@@ -136,9 +150,9 @@ namespace Fr8.Testing.Integration.Tools.Activities
             queryDocuSignActivity.ActivityTemplate = apmActivityTemplate;
 
             //connect current activity with a plan
-            var subPlan = plan.Plan.SubPlans.FirstOrDefault();
+            var subPlan = plan.SubPlans.FirstOrDefault();
             queryDocuSignActivity.ParentPlanNodeId = subPlan.SubPlanId;
-            queryDocuSignActivity.RootPlanNodeId = plan.Plan.Id;
+            queryDocuSignActivity.RootPlanNodeId = plan.Id;
             queryDocuSignActivity.Ordering = ordering;
 
             //call initial configuration to server
@@ -149,13 +163,18 @@ namespace Fr8.Testing.Integration.Tools.Activities
             var initialcrateStorage = _baseHubITest.Crate.FromDto(queryDocuSignActivity.CrateStorage);
 
             var stAuthCrate = initialcrateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
-            bool defaultDocuSignAuthTokenExists = stAuthCrate == null;
+;
 
             //if (!defaultDocuSignAuthTokenExists)
             //{
             var terminalDocuSignTools = new Fr8.Testing.Integration.Tools.Terminals.IntegrationTestTools_terminalDocuSign(_baseHubITest);
             // queryDocuSignActivity.AuthToken = await terminalDocuSignTools.GenerateAuthToken("fr8test@gmail.com", "fr8mesomething", queryDocuSignActivity.ActivityTemplate.Terminal);
-            queryDocuSignActivity.AuthToken = await terminalDocuSignTools.GenerateAuthToken("freight.testing@gmail.com", "I6HmXEbCxN", queryDocuSignActivity.ActivityTemplate.Terminal);
+            var terminalSummaryDTO = new TerminalSummaryDTO
+            {
+                Name = queryDocuSignActivity.ActivityTemplate.TerminalName,
+                Version = queryDocuSignActivity.ActivityTemplate.TerminalVersion
+            };
+            queryDocuSignActivity.AuthToken = await terminalDocuSignTools.GenerateAuthToken("freight.testing@gmail.com", "I6HmXEbCxN", terminalSummaryDTO);
 
             var applyToken = new AuthenticationTokenGrantDTO()
             {

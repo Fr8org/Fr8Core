@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Entities;
@@ -32,35 +33,21 @@ namespace terminalSlackTests.Fixtures
             return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
-        public static ActivityTemplateDTO Monitor_Channel_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Monitor_Channel_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO
+            return new ActivityTemplateSummaryDTO
             {
-                Id = Guid.NewGuid(),
                 Name = "Monitor_Channel_TEST",
-                Label = "Monitor Channel",
-                Category = ActivityCategory.Monitors,
-                Terminal = new TerminalDTO
-                {
-                    AuthenticationType = AuthenticationType.Internal
-                },
                 Version = "1"
             };
         }
 
-        public static ActivityTemplateDTO Publish_To_Slack_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Publish_To_Slack_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO
+            return new ActivityTemplateSummaryDTO
             {
-                Id = Guid.NewGuid(),
                 Name = "Publish_To_Slack_TEST",
-                Label = "Publish To Slack",
-                Category = ActivityCategory.Forwarders,
-                Version = "1",
-                Terminal = new TerminalDTO
-                {
-                    AuthenticationType = AuthenticationType.Internal
-                }
+                Version = "1"
             };
         }
 
@@ -68,7 +55,7 @@ namespace terminalSlackTests.Fixtures
         {
             return new AuthorizationTokenDTO
             {
-                Token = @"xoxp-9815816992-9816213634-14997343526-d99a1c9198"
+                Token = ConfigurationManager.AppSettings["SlackAuthToken"]
             };
         }
 
@@ -81,7 +68,7 @@ namespace terminalSlackTests.Fixtures
                new KeyValueDTO("team_id", "T07F83QLE"),
                new KeyValueDTO("team_domain", "dockyardteam"),
                new KeyValueDTO("service_id", "16193135954"),
-               new KeyValueDTO("channel_id", "C09Q069KL"),
+               new KeyValueDTO("channel_id", "C07F83S86"),
                new KeyValueDTO("channel_name", "slack - plugin - test"),
                new KeyValueDTO("timestamp", "1449594901.000014"),
                new KeyValueDTO("user_id"," U0BNK9P1N"),

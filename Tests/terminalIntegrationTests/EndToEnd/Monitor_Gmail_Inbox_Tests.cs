@@ -1,5 +1,6 @@
 ﻿using Data.Entities;
 using Data.Interfaces;
+using Data.Repositories.SqlBased;
 using Data.States;
 using Fr8.Infrastructure.Data.Control;
 using Fr8.Infrastructure.Data.Crates;
@@ -7,11 +8,13 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Fr8.TerminalBase.Models;
 using Fr8.Testing.Integration;
 using Fr8.Testing.Integration.Tools.Activities;
 using Fr8.Testing.Integration.Tools.Plans;
 using Fr8.Testing.Unit.Fixtures;
+using Hangfire;
 using Hub.Interfaces;
 using Hub.Services;
 using Newtonsoft.Json;
@@ -50,7 +53,7 @@ namespace terminalIntegrationTests.EndToEnd
         }
 
         // this test requires internet connection
-        [Test, Category("Integration.terminalGoogle")]
+        [Test ,Category("Integration.terminalGoogle")]
         public async Task Monitor_Gmail_Inbox_Test()
         {
             Fr8AccountDO currentUser = null;
@@ -67,7 +70,7 @@ namespace terminalIntegrationTests.EndToEnd
             saveToFr8WarehouseActivity = await HttpPostAsync<ActivityDTO, ActivityDTO>(GetHubApiBaseUrl() + "activities/configure", saveToFr8WarehouseActivity);
 
             //run the plan
-            await _plansHelper.RunPlan(testPlan.Plan.Id);
+            await _plansHelper.RunPlan(testPlan.Id);
             await Task.Delay(10000);
 
             //sending an email
@@ -105,6 +108,18 @@ namespace terminalIntegrationTests.EndToEnd
                     await HttpDeleteAsync(GetHubApiBaseUrl() + $"/plans?id={plan.Id}");
                 }
             }
+
+            //cleaning hangfire job
+            string connString = (string)ObjectFactory.GetInstance<ISqlConnectionProvider>().ConnectionInfo;
+
+            JobStorage.Current = new Hangfire.SqlServer.SqlServerStorage(connString);
+            string terminalSecret = "";
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                terminalSecret = uow.TerminalRepository.GetQuery().Where(a => a.Name == "terminalGoogle").FirstOrDefault().Secret;
+            }
+            string jobId = terminalSecret + "|" + token.ExternalAccountId;
+            RecurringJob.RemoveIfExists(jobId);
         }
 
         private static void SendAnEmailToMonitoredAccountViaGoogle()

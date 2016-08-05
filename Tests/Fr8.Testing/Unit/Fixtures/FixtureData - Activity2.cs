@@ -53,38 +53,24 @@ namespace Fr8.Testing.Unit.Fixtures
                 Version = "1"
             };
         }
-        public static ActivityTemplateDTO ActivityTemplate2()
+        public static ActivityTemplateSummaryDTO ActivityTemplate2()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = GetTestGuidById(1),
                 Name = "Send an Email",
-                Terminal = new TerminalDTO
-                {
-                    Name = "Send an Email",
-                    Label = "Send an Email",
-                    Version = "1",
-                    Endpoint = "",
-                    TerminalStatus = TerminalStatus.Active
-                },
+                TerminalName = "Send an Email",
+                TerminalVersion = "1",
                 Version = "1"
             };
         }
 
-        public static ActivityTemplateDTO ActivityTemplateDummy()
+        public static ActivityTemplateSummaryDTO ActivityTemplateDummy()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = GetTestGuidById(1),
                 Name = "Test",
-                Terminal = new TerminalDTO
-                {
-                    Name = "Test",
-                    Label = "Test",
-                    Version = "1",
-                    Endpoint = "",
-                    TerminalStatus = TerminalStatus.Active,
-                },
+                TerminalName = "Test",
+                TerminalVersion = "1",
                 Version = "1"
             };
         }
@@ -298,9 +284,8 @@ namespace Fr8.Testing.Unit.Fixtures
 
         public static ActivityContext TestActivityContext1()
         {
-            var activityTemplateDTO = new ActivityTemplateDTO
+            var activityTemplateDTO = new ActivityTemplateSummaryDTO
             {
-                Id = GetTestGuidById(1),
                 Name = "Type1",
                 Version = "1"
             };
@@ -429,7 +414,7 @@ namespace Fr8.Testing.Unit.Fixtures
                 Id = GetTestGuidById(1),
                 Name = "A",
                 Description = "B",
-                PlanState = PlanState.Running
+                PlanState = PlanState.Executing
             };
 
             var containerDO = new ContainerDO()
@@ -494,7 +479,7 @@ namespace Fr8.Testing.Unit.Fixtures
                 Id = GetTestGuidById(1),
                 Description = "descr 1",
                 Name = "template1",
-                PlanState = PlanState.Running,
+                PlanState = PlanState.Executing,
                 Fr8Account = FixtureData.TestDockyardAccount1()
             };
 

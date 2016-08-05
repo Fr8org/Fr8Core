@@ -24,6 +24,8 @@ using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Exceptions;
+using Fr8.Infrastructure.Utilities;
+using Hub.Managers.APIManagers.Packagers;
 
 namespace Hub.Services
 {
@@ -31,14 +33,14 @@ namespace Hub.Services
     {
         private const int DefaultPlanPageSize = 10;
         private const int MinPlanPageSize = 5;
-        
+
         private readonly InternalInterface.IContainerService _containerService;
         private readonly Fr8Account _dockyardAccount;
         private readonly IActivity _activity;
         private readonly ICrateManager _crate;
         private readonly ISecurityServices _security;
         private readonly IJobDispatcher _dispatcher;
-        private readonly IPusherNotifier _pusher;
+        private readonly IPusherNotifier _pusherNotifier;
 
         public Plan(IContainerService containerService, Fr8Account dockyardAccount, IActivity activity,
             ICrateManager crate, ISecurityServices security, IJobDispatcher dispatcher, IPusherNotifier pusher)
@@ -49,7 +51,7 @@ namespace Hub.Services
             _crate = crate;
             _security = security;
             _dispatcher = dispatcher;
-            _pusher = pusher;
+            _pusherNotifier = pusher;
         }
 
         public PlanResultDTO GetForUser(IUnitOfWork unitOfWork, Fr8AccountDO account, PlanQueryDTO planQueryDTO, bool isAdmin = false)
@@ -86,7 +88,7 @@ namespace Hub.Services
                 ? planQuery.Where(pt => pt.PlanState != PlanState.Deleted)
                 : planQuery.Where(pt => pt.PlanState == planQueryDTO.Status);
 
-            //lets allow ordering with just name for now
+            // Lets allow ordering with just name for now
             if (planQueryDTO.OrderBy == "name")
             {
                 planQuery = planQueryDTO.IsDescending.Value
@@ -107,18 +109,31 @@ namespace Hub.Services
 
             return new PlanResultDTO
             {
-                Plans = planQuery.ToList().Select(Mapper.Map<PlanEmptyDTO>).ToList(),
+                Plans = planQuery.ToList().Select(Mapper.Map<PlanNoChildrenDTO>).ToList(),
                 CurrentPage = planQueryDTO.Page.Value,
                 TotalPlanCount = totalPlanCountForCurrentCriterias
             };
 
         }
 
+        public int UserPlansCount(IUnitOfWork uow,string userId)
+        {
+            return uow.PlanRepository.GetPlanQueryUncached().Where(p => p.Fr8AccountId == userId && p.Visibility == PlanVisibility.Standard).Count();
+        }
+
+        public int? GetPlanState(IUnitOfWork uow, Guid planNodeId)
+        {
+            var existingNode = uow.PlanRepository.GetById<PlanNodeDO>(planNodeId);
+            var root = existingNode?.GetTreeRoot() as PlanDO;
+
+            return root?.PlanState;
+        }
+
         public bool IsMonitoringPlan(IUnitOfWork uow, PlanDO plan)
         {
             var initialActivity = plan.StartingSubplan.GetDescendantsOrdered()
                 .OfType<ActivityDO>()
-                .FirstOrDefault(x => uow.ActivityTemplateRepository.GetByKey(x.ActivityTemplateId).Category != ActivityCategory.Solution);
+                .FirstOrDefault(x => uow.ActivityTemplateRepository.GetByKey(x.ActivityTemplateId).Category != Fr8.Infrastructure.Data.States.ActivityCategory.Solution);
 
             if (initialActivity == null)
             {
@@ -127,14 +142,14 @@ namespace Hub.Services
 
             var activityTemplate = uow.ActivityTemplateRepository.GetByKey(initialActivity.ActivityTemplateId);
 
-            if (activityTemplate.Category == ActivityCategory.Monitors)
+            if (activityTemplate.Category == Fr8.Infrastructure.Data.States.ActivityCategory.Monitors)
             {
                 return true;
             }
 
             var storage = _crate.GetStorage(initialActivity.CrateStorage);
 
-            // first activity has event subsribtions. This means that this plan can be triggered by external event
+            // First activity has event subsribtions. This means that this plan can be triggered by external event
             if (storage.CrateContentsOfType<EventSubscriptionCM>().Any(x => x.Subscriptions?.Count > 0))
             {
                 return true;
@@ -168,6 +183,10 @@ namespace Hub.Services
                 submittedPlan.Id = Guid.NewGuid();
                 submittedPlan.PlanState = PlanState.Inactive;
                 submittedPlan.Fr8Account = _security.GetCurrentAccount(uow);
+                if (string.IsNullOrEmpty(submittedPlan.Name))
+                {
+                    submittedPlan.Name = "Untitled Plan " + (UserPlansCount(uow, _security.GetCurrentUser()) + 1);
+                }
 
                 submittedPlan.ChildNodes.Add(new SubplanDO(true)
                 {
@@ -180,7 +199,6 @@ namespace Hub.Services
             else
             {
                 var curPlan = uow.PlanRepository.GetById<PlanDO>(submittedPlan.Id);
-
                 if (curPlan == null)
                 {
                     throw new EntityNotFoundException();
@@ -211,7 +229,6 @@ namespace Hub.Services
             };
 
             uow.PlanRepository.Add(plan);
-
             return plan;
         }
 
@@ -288,7 +305,7 @@ namespace Hub.Services
                     {
                         if (e is InvalidTokenRuntimeException)
                         {
-                            ReportAuthError(plan.Fr8Account, (InvalidTokenRuntimeException)e);
+                            ReportAuthError(uow, plan.Fr8Account, (InvalidTokenRuntimeException)e);
                         }
                     }
 
@@ -297,11 +314,11 @@ namespace Hub.Services
                 }
                 catch (InvalidTokenRuntimeException ex)
                 {
-                    ReportAuthError(plan.Fr8Account, (InvalidTokenRuntimeException)ex);
+                    ReportAuthError(uow, plan.Fr8Account, (InvalidTokenRuntimeException)ex);
                     EventManager.PlanActivationFailed(plan, "Unable to activate plan");
                     throw;
                 }
-                
+
                 foreach (var resultActivate in activitiesTask.Select(x => x.Result))
                 {
                     var errors = new ValidationErrorsDTO(ExtractValidationErrors(resultActivate));
@@ -312,9 +329,9 @@ namespace Hub.Services
                     }
                 }
 
-                if (result.ValidationErrors.Count == 0 && plan.PlanState != PlanState.Running)
+                if (result.ValidationErrors.Count == 0 && plan.PlanState != PlanState.Executing)
                 {
-                    plan.PlanState = PlanState.Running;
+                    plan.PlanState = IsMonitoringPlan(uow, plan) ? PlanState.Active : PlanState.Executing;
                     plan.LastUpdated = DateTimeOffset.UtcNow;
                     uow.SaveChanges();
                 }
@@ -335,14 +352,25 @@ namespace Hub.Services
             return crateStorage.CrateContentsOfType<ValidationResultsCM>().SelectMany(x => x.ValidationErrors);
         }
 
+        public bool IsPlanActiveOrExecuting(Guid planNodeId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var planState = GetPlanState(uow, planNodeId);
+                if (planState == PlanState.Executing || planState == PlanState.Active)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
         public async Task Deactivate(Guid planId)
         {
             var deactivateTasks = new List<Task>();
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var plan = uow.PlanRepository.GetById<PlanDO>(planId);
-
                 plan.PlanState = PlanState.Inactive;
                 uow.SaveChanges();
 
@@ -364,7 +392,6 @@ namespace Hub.Services
             EventManager.PlanDeactivated(planId);
         }
 
-
         public IList<PlanDO> GetMatchingPlans(string userId, EventReportCM curEventReport)
         {
             if (String.IsNullOrEmpty(userId))
@@ -381,7 +408,6 @@ namespace Hub.Services
 
             return MatchEvents(curPlans, curEventReport);
             //3. Get ActivityDO
-
         }
 
         public List<PlanDO> MatchEvents(List<PlanDO> curPlans, EventReportCM curEventReport)
@@ -389,7 +415,7 @@ namespace Hub.Services
             List<PlanDO> subscribingPlans = new List<PlanDO>();
             foreach (var curPlan in curPlans)
             {
-                //get the 1st activity
+                // Get the first activity
                 var actionDO = GetFirstActivityWithEventSubscriptions(curPlan.Id);
 
                 if (actionDO != null)
@@ -436,7 +462,6 @@ namespace Hub.Services
                         var storage = _crate.GetStorage(x.CrateStorage);
                         return storage.CratesOfType<EventSubscriptionCM>().Any();
                     });
-
             }
         }
 
@@ -444,28 +469,28 @@ namespace Hub.Services
         {
             return (PlanDO)uow.PlanRepository.GetById<PlanNodeDO>(id).GetTreeRoot();
         }
-        
+
         public void Enqueue(Guid curPlanId, params Crate[] curEventReport)
         {
-            //We convert incoming data to DTO objects because HangFire will serialize method parameters into JSON and serializing of Crate objects is forbidden
+            // We convert incoming data to DTO objects because HangFire will serialize method parameters into JSON and serializing of Crate objects is forbidden
             var curEventReportDTO = curEventReport.Select(x => CrateStorageSerializer.Default.ConvertToDto(x)).ToArray();
-            //We don't await this call as it will be awaited inside HangFire after job is launched
+            // We don't await this call as it will be awaited inside HangFire after job is launched
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-             _dispatcher.Enqueue(() => LaunchPlanCallback(curPlanId, curEventReportDTO));
+            _dispatcher.Enqueue(() => LaunchPlanCallback(curPlanId, curEventReportDTO));
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
-        
+
         public static async Task LaunchPlanCallback(Guid planId, params CrateDTO[] curPayload)
         {
-            Logger.LogInfo($"Starting executing plan {planId} as a reaction to external event");
+            Logger.GetLogger().Info($"Starting executing plan {planId} as a reaction to external event");
 
             if (planId == default(Guid))
             {
-                Logger.LogError("Can't lanunch plan with empty id");
+                Logger.GetLogger().Error("Can't lanunch plan with empty id");
             }
 
-            // we "eat" this exception to make Hangfire thinks that everthying is good and job is completed
-            // this exception should be already logged somewhere
+            // We "eat" this exception to make Hangfire thinks that everthying is good and job is completed
+            // This exception should be already logged somewhere
             var planService = ObjectFactory.GetInstance<Plan>();
 
             try
@@ -476,10 +501,10 @@ namespace Hub.Services
 
                     if (plan == null)
                     {
-                        Logger.LogError($"Unable to find plan: {planId}");
+                        Logger.GetLogger().Error($"Unable to find plan: {planId}");
                         return;
                     }
-                    
+
                     await planService.Run(uow, plan, curPayload.Select(x => CrateStorageSerializer.Default.ConvertFromDto(x)).ToArray());
                 }
             }
@@ -500,15 +525,18 @@ namespace Hub.Services
                 if (monitoringPlan != null)
                 {
                     await planService.Deactivate(planId);
-                    Logger.LogError($"Plan {planId} was deactivated due to authentication problems.");
-                    planService.ReportAuthDeactivation(monitoringPlan, ex);
+                    Logger.GetLogger().Error($"Plan {planId} was deactivated due to authentication problems.");
+                    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                    {
+                        await planService.ReportAuthDeactivation(uow, monitoringPlan, ex);
+                    }
                 }
             }
             catch
             {
             }
 
-            Logger.LogInfo($"Finished executing plan {planId} as a reaction to external event");
+            Logger.GetLogger().Info($"Finished executing plan {planId} as a reaction to external event");
         }
 
         private async Task<ContainerDO> Run(IUnitOfWork uow, PlanDO plan, Crate[] curPayload)
@@ -522,7 +550,7 @@ namespace Hub.Services
 
             if (activationResults.ValidationErrors.Count > 0)
             {
-                Logger.LogError($"Failed to run {plan.Name}:{plan.Id} plan due to activation errors.");
+                Logger.GetLogger().Error($"Failed to run {plan.Name}:{plan.Id} plan due to activation errors.");
 
                 return new ContainerDO
                 {
@@ -534,9 +562,21 @@ namespace Hub.Services
             var container = _containerService.Create(uow, plan, curPayload);
             await _containerService.Run(uow, container);
 
+            // Publishing message to indicate monitoring continues
+            if ( IsMonitoringPlan(uow, plan) )
+            {
+                _pusherNotifier.NotifyUser(new NotificationMessageDTO
+                {
+                    NotificationType = NotificationType.GenericSuccess,
+                    Subject = "Trigger Activated",
+                    Message = "Plan execution complete. Monitoring continues.",
+                    Collapsed = false
+                }, plan.Fr8AccountId);
+            }
+
             return container;
         }
-        
+
         public async Task<ContainerDTO> Run(Guid planId, Crate[] payload, Guid? containerId)
         {
             var activationResults = await Activate(planId, false);
@@ -557,7 +597,13 @@ namespace Hub.Services
 
                         if (activity != null)
                         {
-                            var label = string.IsNullOrWhiteSpace(activity.Label) ? activity.Name : activity.Label;
+                            
+                            var label = string.IsNullOrWhiteSpace(activity.Label) ? activity.ActivityTemplate?.Name : activity.Label;
+                            if (label == null)
+                            {
+                                var template = uow.ActivityTemplateRepository.GetByKey(activity.ActivityTemplateId);
+                                label = template.Name;
+                            }
 
                             if (string.IsNullOrWhiteSpace(label))
                             {
@@ -572,9 +618,13 @@ namespace Hub.Services
 
                     var activitiesList = string.Join(", ", failedActivities);
 
-                    _pusher.NotifyUser($"Validation failed for activities: {activitiesList} from plan \"{plan.Name}\". See activity configuration pane for details.",
-                        NotificationChannel.GenericFailure,
-                        currentUserId);
+                    _pusherNotifier.NotifyUser(new NotificationMessageDTO
+                    {
+                        NotificationType = NotificationType.GenericFailure,
+                        Subject = "Plan Failed",
+                        Message = $"Validation failed for activities: {activitiesList} from plan \"{plan.Name}\". See activity configuration pane for details.",
+                        Collapsed = false
+                    }, currentUserId);
                 }
 
                 return new ContainerDTO
@@ -616,11 +666,13 @@ namespace Hub.Services
                             // Just return empty container
                             if (currentPlanType == PlanType.Monitoring)
                             {
-                                _pusher.NotifyUser(new { Message = $"Plan \"{plan.Name}\" activated. It will wait and respond to specified external events." ,
-                                                         Collapsed = false
-                                                        },
-                                    NotificationChannel.GenericSuccess,
-                                    currentUserId);
+                                _pusherNotifier.NotifyUser(new NotificationMessageDTO
+                                {
+                                    NotificationType = NotificationType.GenericSuccess,
+                                    Subject = "Success",
+                                    Message = $"Plan \"{plan.Name}\" activated. It will wait and respond to specified external events.",
+                                    Collapsed = false
+                                }, currentUserId);
 
                                 return new ContainerDTO
                                 {
@@ -633,27 +685,39 @@ namespace Hub.Services
                         }
                         else
                         {
-                            _pusher.NotifyUser(new  {   Message = $"Continue execution of the suspended Plan \"{plan.Name}\"",
-                                                        Collapsed = false
-                                                    },
-                                                NotificationChannel.GenericSuccess,
-                                                currentUserId);
+                            _pusherNotifier.NotifyUser(new NotificationMessageDTO
+                            {
+                                NotificationType = NotificationType.GenericSuccess,
+                                Subject = "Success",
+                                Message = $"Continue execution of the suspended Plan \"{plan.Name}\"",
+                                Collapsed = false
+                            }, currentUserId);
 
                             await _containerService.Continue(uow, container);
                         }
 
-                        var response = _crate.GetContentType<OperationalStateCM>(container.CrateStorage);
+                        var response = _crate.GetStorage(container.CrateStorage).FirstCrateOrDefault<OperationalStateCM>()?.Content;
                         var responseMsg = GetResponseMessage(response);
 
                         if (container.State != State.Failed)
                         {
-                        _pusher.NotifyUser(new {    Message = $"Complete processing for Plan \"{plan.Name}\".{responseMsg}",
-                                                    Collapsed = false
-                                                }, NotificationChannel.GenericSuccess, currentUserId);
+                            _pusherNotifier.NotifyUser(new NotificationMessageDTO
+                            {
+                                NotificationType = NotificationType.GenericSuccess,
+                                Subject = "Success",
+                                Message = $"Complete processing for Plan \"{plan.Name}\".{responseMsg}",
+                                Collapsed = false
+                            }, currentUserId);
                         }
                         else
                         {
-                            _pusher.NotifyUser($"Failed executing plan \"{plan.Name}\"", NotificationChannel.GenericFailure, currentUserId);
+                            _pusherNotifier.NotifyUser(new NotificationMessageDTO
+                            {
+                                NotificationType = NotificationType.GenericFailure,
+                                Subject = "Plan Failed",
+                                Message = $"Failed executing plan \"{plan.Name}\"",
+                                Collapsed = false
+                            }, currentUserId);
                         }
 
                         var containerDTO = Mapper.Map<ContainerDTO>(container);
@@ -675,8 +739,8 @@ namespace Hub.Services
                     if (currentPlanType == PlanType.Monitoring)
                     {
                         await Deactivate(planId);
-                        Logger.LogError($"Plan {planId} was deactivated due to authentication problems.");
-                        ReportAuthDeactivation(plan, exception);
+                        Logger.GetLogger().Error($"Plan {planId} was deactivated due to authentication problems.");
+                        ReportAuthDeactivation(uow, plan, exception);
                     }
 
                     // Do not notify -- it happens in Plan.cs
@@ -741,8 +805,13 @@ namespace Hub.Services
                 messageToNotify = errorMessage;
             }
 
-            var message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, messageToNotify);
-            _pusher.NotifyUser(message, NotificationChannel.GenericFailure, userId);
+            _pusherNotifier.NotifyUser(new NotificationMessageDTO
+            {
+                NotificationType = NotificationType.GenericFailure,
+                Subject = "Plan Failed",
+                Message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, messageToNotify),
+                Collapsed = false
+            }, userId);
 
         }
 
@@ -773,9 +842,13 @@ namespace Hub.Services
                     return x;
                 }));
 
-                _pusher.NotifyUser($"Validation of activity '{activityLabel}' from plan \"{planName}\" failed: {errors}",
-                       NotificationChannel.GenericFailure,
-                       userId);
+                _pusherNotifier.NotifyUser(new NotificationMessageDTO
+                {
+                    NotificationType = NotificationType.GenericFailure,
+                    Subject = "Plan Failed",
+                    Message = $"Validation of activity '{activityLabel}' from plan \"{planName}\" failed: {errors}",
+                    Collapsed = false
+                }, userId);
             }
         }
 
@@ -792,7 +865,7 @@ namespace Hub.Services
                 }
 
                 var cloneTag = "Cloned From " + planId;
-                
+
                 //we should clone this plan for current user
                 //let's clone the plan entirely
                 var clonedPlan = (PlanDO)PlanTreeHelper.CloneWithStructure(targetPlan);
@@ -868,12 +941,23 @@ namespace Hub.Services
             }
         }
 
-        private void ReportAuthError(Fr8AccountDO user, InvalidTokenRuntimeException ex)
+        private void ReportAuthError(IUnitOfWork uow, Fr8AccountDO user, InvalidTokenRuntimeException ex)
         {
-            string errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with " +
-                    $"{ex?.FailedActivityDTO.ActivityTemplate.WebService.Name}. ";
+            var activityTemplate = ex?.FailedActivityDTO.ActivityTemplate;
+            string webServiceName = null;
+            if (activityTemplate != null)
+            {
+                var webService = uow.ActivityTemplateRepository.GetQuery()
+                    .Where(x => x.Name == activityTemplate.Name && x.Version == activityTemplate.Version)
+                    .Select(x => x.WebService)
+                    .FirstOrDefault();
+                webServiceName = webService?.Name;
+            }
 
-            errorMessage += $"Please re-authorize Fr8 to connect to {ex?.FailedActivityDTO.ActivityTemplate.WebService.Name} " +
+            string errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with " +
+                    $"{webServiceName}. ";
+
+            errorMessage += $"Please re-authorize Fr8 to connect to {webServiceName} " +
                     $"by clicking on the Settings dots in the upper " +
                     $"right corner of the activity and then selecting Choose Authentication. ";
 
@@ -884,17 +968,66 @@ namespace Hub.Services
                 errorMessage += ex.Message;
             }
 
-            _pusher.NotifyUser(errorMessage, NotificationChannel.GenericFailure, user.Id);
+            _pusherNotifier.NotifyUser(new NotificationMessageDTO
+            {
+                NotificationType = NotificationType.GenericFailure,
+                Subject = "Plan Failed",
+                Message = errorMessage,
+                Collapsed = false
+            }, user.Id);
         }
 
-        private void ReportAuthDeactivation(PlanDO plan, InvalidTokenRuntimeException ex)
+        private async Task ReportAuthDeactivation(IUnitOfWork uow, PlanDO plan, InvalidTokenRuntimeException ex)
         {
+            var activityTemplate = ex?.FailedActivityDTO.ActivityTemplate;
+            string webServiceName = null;
+            if (activityTemplate != null)
+            {
+                var webService = uow.ActivityTemplateRepository.GetQuery()
+                    .Where(x => x.Name == activityTemplate.Name && x.Version == activityTemplate.Version)
+                    .Select(x => x.WebService)
+                    .FirstOrDefault();
+                webServiceName = webService?.Name;
+            }
+
             string errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with " +
-                    $"{ex?.FailedActivityDTO.ActivityTemplate.WebService.Name}. ";
+                    $"{webServiceName}. ";
 
             errorMessage += $"Plan \"{plan.Name}\" which contains failed activity was deactivated.";
 
-            _pusher.NotifyUser(errorMessage, NotificationChannel.GenericFailure, plan.Fr8AccountId);
+            _pusherNotifier.NotifyUser(new NotificationMessageDTO
+            {
+                NotificationType = NotificationType.GenericFailure,
+                Subject = "Plan Failed",
+                Message = errorMessage,
+                Collapsed = false
+            }, plan.Fr8AccountId);
+
+            //Sending an Email
+            
+            var account = uow.UserRepository.GetQuery().FirstOrDefault(a => a.Id == plan.Fr8AccountId);
+            try
+            {
+                var userEmail = account.UserName;
+                var emailDO = new EmailDO();
+                IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+                string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
+                var emailAddressDO = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress);
+                emailDO.From = emailAddressDO;
+                emailDO.FromID = emailAddressDO.Id;
+                emailDO.AddEmailRecipient(EmailParticipantType.To,
+                    uow.EmailAddressRepository.GetOrCreateEmailAddress(userEmail));
+                emailDO.Subject = "Your plan was deactivated due to authentication expiration";
+                string htmlText = $"Plan “{plan.Name}” was deactivated due to authentication problems. <br>If you would like to keep it active, please reauthenticate <a href='{Server.ServerUrl}dashboard/plans/{plan.Id}/builder?viewMode=plan'>here</a>";
+                emailDO.HTMLText = htmlText;
+
+                uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, "PlanDeactivated_Template");
+                uow.SaveChanges();
+
+                await ObjectFactory.GetInstance<IEmailPackager>().Send(new EnvelopeDO { Email = emailDO });
+            }
+
+            catch { Logger.GetLogger().Error($"Couldn't send email to user {account.Id} to notify him about plan deactivation"); }
         }
     }
 }

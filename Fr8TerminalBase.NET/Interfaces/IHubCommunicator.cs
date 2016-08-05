@@ -13,11 +13,7 @@ namespace Fr8.TerminalBase.Interfaces
 {
     public interface IHubCommunicator
     {
-        string UserId { get; }
-
-        void Authorize(string userId);
-
-        Task<PlanEmptyDTO> LoadPlan(JToken planContents);
+        Task<PlanNoChildrenDTO> LoadPlan(PlanDTO planContents);
         Task<PayloadDTO> GetPayload(Guid containerId);
         Task<List<AuthenticationTokenTerminalDTO>> GetTokens();
         Task<UserDTO> GetCurrentUser();
@@ -29,13 +25,12 @@ namespace Fr8.TerminalBase.Interfaces
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category, bool getLatestsVersionsOnly = false);
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, bool getLatestsVersionsOnly = false);
         //Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields);
-        Task<AuthorizationToken> GetAuthToken(string authTokenId);
-        Task ScheduleEvent(string externalAccountId, string minutes, bool triggerImmediately = false, string additionalConfigAttributes = null);
-        Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload);
-        Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload);
+        Task ScheduleEvent(string externalAccountId, string minutes, bool triggerImmediately = false, string additionalConfigAttributes = null, string additionToJobId = null);
+        Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload, bool force = false); // force flag is used to save or configure activity even if plan is in Running state. 
+        Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload, bool force = false);  // force flag is used to save or configure activity even if plan is in Running state. 
         Task<ActivityPayload> CreateAndConfigureActivity(Guid templateId, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null);
-        Task<PlanDTO> CreatePlan(PlanEmptyDTO planDTO);
-        Task RunPlan(Guid planId, List<CrateDTO> payload);
+        Task<PlanDTO> CreatePlan(PlanNoChildrenDTO planDTO);
+        Task RunPlan(Guid planId, IEnumerable<Crate> payload);
         Task<List<CrateDTO>> GetStoredManifests(List<CrateDTO> cratesForMTRequest);
         Task<IEnumerable<PlanDTO>> GetPlansByName(string name, PlanVisibility visibility = PlanVisibility.Standard);
         Task<FileDTO> SaveFile(string name, Stream stream);
@@ -46,13 +41,12 @@ namespace Fr8.TerminalBase.Interfaces
         Task DeleteActivity(Guid curActivityId);
         Task DeleteExistingChildNodesFromActivity(Guid curActivityId);
         Task<PlanDTO> GetPlansByActivity(string activityId);
-        Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan);
-        Task NotifyUser(TerminalNotificationDTO notificationMessage);
+        Task<PlanDTO> UpdatePlan(PlanNoChildrenDTO plan);
+        Task NotifyUser(NotificationMessageDTO notificationMessage);
         Task RenewToken(AuthorizationTokenDTO token);
         Task SendEvent(Crate eventPayload);
         Task<List<TManifest>> QueryWarehouse<TManifest>(List<FilterConditionDTO> query) where TManifest : Manifest;
         Task AddOrUpdateWarehouse(params Manifest[] manifests);
         Task DeleteFromWarehouse<TManifest>(List<FilterConditionDTO> query) where TManifest : Manifest;
-        Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri);
     }
 }

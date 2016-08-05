@@ -1,8 +1,5 @@
 ﻿using System;
 using Data.Repositories;
-using Data.Repositories.Plan;
-using StructureMap;
-using Data.Repositories.PlanDescriptions;
 
 namespace Data.Interfaces
 {
@@ -50,11 +47,6 @@ namespace Data.Interfaces
         //ActivityRepository ActivityRepository { get; }
         ActivityTemplateRepository ActivityTemplateRepository { get; }
     
-        IActivityDescriptionRepository ActivityDescriptionRepository { get; }
-        INodeTransitionRepository NodeTransitionRepository { get; }
-        IPlanTemplateRepository PlanTemplateRepository { get; }
-        IPlanNodeDescriptionsRepository PlanNodeDescriptionsRepository { get; }
-
         IFileRepository FileRepository { get; }
         IProfileRepository ProfileRepository { get; }
         IPermissionSetRepository PermissionSetRepository { get; }
@@ -78,7 +70,10 @@ namespace Data.Interfaces
 
         TerminalRegistrationRepository TerminalRegistrationRepository { get; }
 
-	    /// <summary>
+        IActivityCategoryRepository ActivityCategoryRepository { get; }
+        IActivityCategorySetRepository ActivityCategorySetRepository { get; }
+
+        /// <summary>
         /// Call this to commit the unit of work
         /// </summary>
         void Commit();

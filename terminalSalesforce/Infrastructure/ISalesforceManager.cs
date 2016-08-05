@@ -11,11 +11,9 @@ namespace terminalSalesforce.Infrastructure
     {
         Task<string> Create(SalesforceObjectType type, IDictionary<string, object> @object, AuthorizationToken authToken);
 
-        Task<StandardTableDataCM> Query(SalesforceObjectType type, IEnumerable<string> propertiesToRetrieve, string filter, AuthorizationToken authToken);
+        Task<StandardTableDataCM> Query(SalesforceObjectType type, IList<FieldDTO> propertiesToRetrieve, string filter, AuthorizationToken authToken);
         
         Task<List<FieldDTO>> GetProperties(SalesforceObjectType type, AuthorizationToken authToken, bool updatableOnly = false, string label = null);
-
-        T CreateSalesforceDTO<T>(ActivityPayload activity, PayloadDTO payload) where T : new();
 
         Task<string> PostToChatter(string message, string parentObjectId, AuthorizationToken authToken);
 

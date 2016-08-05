@@ -23,6 +23,7 @@ namespace terminalDocuSign.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("8AC0A48C-C4B5-43E4-B585-2870D814BA86"),
             Version = "1",
             Name = "Send_DocuSign_Envelope",
             Label = "Send DocuSign Envelope",
@@ -31,7 +32,12 @@ namespace terminalDocuSign.Actions
             NeedsAuthentication = true,
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -194,15 +200,16 @@ namespace terminalDocuSign.Actions
 
         public override async Task Initialize()
         {
-                // Only do it if no existing MT.FieldDescription crate is present to avoid loss of existing settings
-                // Two crates are created
-                // One to hold the ui controls
-            if (Storage.All(c => c.ManifestType.Id != (int)MT.FieldDescription))
-                {
-                var configurationCrate = await CreateDocusignTemplateConfigurationControls();
-                FillDocuSignTemplateSource(configurationCrate, "target_docusign_template");
+            // Only do it if no existing MT.FieldDescription crate is present to avoid loss of existing settings
+            // Two crates are created
+            // One to hold the ui controls
+            if (Storage.All(c => c.ManifestType.Id != (int) MT.FieldDescription))
+            {
                 Storage.Clear();
-                Storage.Add(configurationCrate);
+
+                CreateDocusignTemplateConfigurationControls();
+
+                FillDocuSignTemplateSource("target_docusign_template");
             }
         }
 
@@ -218,19 +225,13 @@ namespace terminalDocuSign.Actions
             {
                 return;
             }
-
-            // Try to find Configuration_Controls.
-            var stdCfgControlCrate = Storage.CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-            if (stdCfgControlCrate == null)
-            {
-                return;
-            }
+            
 
             //update docusign templates list to get if new templates were provided by DS
-            FillDocuSignTemplateSource(stdCfgControlCrate, "target_docusign_template");
+            FillDocuSignTemplateSource("target_docusign_template");
             // Try to find DocuSignTemplate drop-down.
-            var stdCfgControlMS = stdCfgControlCrate.Get<StandardConfigurationControlsCM>();
-            var dropdownControlDTO = stdCfgControlMS.FindByName("target_docusign_template");
+            
+            var dropdownControlDTO = ConfigurationControls.FindByName("target_docusign_template");
             if (dropdownControlDTO == null)
             {
                 return;
@@ -245,13 +246,9 @@ namespace terminalDocuSign.Actions
             var tabsandfields = DocuSignManager.GetTemplateRecipientsTabsAndDocuSignTabs(conf, docusignTemplateId);
 
             var roles = tabsandfields.Item1.Where(a => a.Tags.Contains(DocuSignConstants.DocuSignSignerTag));
-            var crateRolesDTO = CrateManager.CreateDesignTimeFieldsCrate(
-              "DocuSignTemplateRolesFields",
-              roles.ToArray()
-            );
 
             Storage.RemoveByLabel("DocuSignTemplateRolesFields");
-            Storage.Add(crateRolesDTO);
+            Storage.Add("DocuSignTemplateRolesFields", new KeyValueListCM(roles));
 
 
             var envelopeDataDTO = tabsandfields.Item2;
@@ -278,14 +275,9 @@ namespace terminalDocuSign.Actions
 
                 Storage.Add(Crate.FromContent("Advisories", currentAdvisoryResults));
             }
-
-            var crateUserDefinedDTO = CrateManager.CreateDesignTimeFieldsCrate(
-                "DocuSignTemplateUserDefinedFields",
-               userDefinedFields.Concat(roles).ToArray()
-            );
-
+            
             Storage.RemoveByLabel("DocuSignTemplateUserDefinedFields");
-            Storage.Add(crateUserDefinedDTO);
+            Storage.Add("DocuSignTemplateUserDefinedFields", new KeyValueListCM(userDefinedFields.Concat(roles)));
 
             //Create TextSource controls for ROLES
             var rolesMappingBehavior = new TextSourceMappingBehavior(Storage, "RolesMapping", true);
@@ -377,7 +369,7 @@ namespace terminalDocuSign.Actions
             return Task.FromResult(0);
         }
 
-        protected virtual async Task<Crate> CreateDocusignTemplateConfigurationControls()
+        protected virtual void CreateDocusignTemplateConfigurationControls()
         {
             var fieldSelectDocusignTemplateDTO = new DropDownList
             {
@@ -390,13 +382,8 @@ namespace terminalDocuSign.Actions
                 },
                 Source = null
             };
-
-            var fieldsDTO = new List<ControlDefinitionDTO>
-            {
-                fieldSelectDocusignTemplateDTO
-            };
-
-            return CrateManager.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
+            
+            AddControls(fieldSelectDocusignTemplateDTO);
         }
     }
 }

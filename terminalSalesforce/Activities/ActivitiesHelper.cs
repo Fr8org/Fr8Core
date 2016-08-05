@@ -32,10 +32,9 @@ namespace terminalSalesforce.Actions
             
         }
 
-        public static void GetAvailableFields(Crate configurationCrate, string controlName)
+        public static void GetAvailableFields(StandardConfigurationControlsCM configurationControls, string controlName)
         {
-            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
-            GetAvailableFields(configurationControl.FindByNameNested<DropDownList>(controlName));
+            GetAvailableFields(configurationControls.FindByNameNested<DropDownList>(controlName));
         }
 
         public static void GetAvailableFields(DropDownList dropDownControl)
@@ -47,14 +46,13 @@ namespace terminalSalesforce.Actions
         }
 
         public static IDictionary<string, object> GenerateSalesforceObjectDictionary(IEnumerable<FieldDTO> fieldsList, 
-                                                                                     IEnumerable<TextSource> fieldControlsList, 
-                                                                                    ICrateStorage payloadStorage)
+                                                                                     IEnumerable<TextSource> fieldControlsList)
         {
             var jsonInputObject = new Dictionary<string, object>();
             fieldsList.ToList().ForEach(field =>
             {
                 var jsonKey = field.Name;
-                var jsonValue = fieldControlsList.Single(ts => ts.Name.Equals(jsonKey)).GetValue(payloadStorage);
+                var jsonValue = fieldControlsList.Single(ts => ts.Name.Equals(jsonKey)).TextValue;
 
                 if (!string.IsNullOrEmpty(jsonValue))
                 {

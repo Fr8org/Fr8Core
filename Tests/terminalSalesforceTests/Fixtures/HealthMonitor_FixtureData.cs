@@ -28,6 +28,7 @@ namespace terminalSalesforceTests.Fixtures
 
             return new AuthorizationTokenDTO()
             {
+                ExternalAccountId = "611998545425677937",
                 Token = JsonConvert.SerializeObject(new { AccessToken = auth.AccessToken }),
                 AdditionalAttributes = string.Format("instance_url={0};api_version={1}", auth.InstanceUrl, auth.ApiVersion)
             };                                                                                                                            
@@ -55,6 +56,7 @@ namespace terminalSalesforceTests.Fixtures
 
                 var tokenDO = new AuthorizationTokenDO()
                 {
+                    ExternalAccountId = tokenDTO.ExternalAccountId,
                     Token = tokenDTO.Token,
                     TerminalID = terminalId,
                     UserID = userDO.Id,
@@ -68,25 +70,21 @@ namespace terminalSalesforceTests.Fixtures
             }
         }
 
-        public static ActivityTemplateDTO Get_Data_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Get_Data_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
                 Version = "1",
-                Name = "Get_Data_TEST",
-                Label = "Get Data from Salesforce",
-                NeedsAuthentication = true
+                Name = "Get_Data_TEST"
             };
         }
 
-        public static ActivityTemplateDTO Post_To_Chatter_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Post_To_Chatter_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
                 Version = "1",
-                Name = "Post_To_Chatter_TEST",
-                Label = "Post To Chatter",
-                NeedsAuthentication = true
+                Name = "Post_To_Chatter_TEST"
             };
         }
 

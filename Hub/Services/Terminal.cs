@@ -5,7 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using Data.States;
 using Data.Utility;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
@@ -22,6 +24,7 @@ namespace Hub.Services
     /// </summary>
     public class Terminal : ITerminal
     {
+        private readonly ISecurityServices _securityServices;
         private readonly Dictionary<int, TerminalDO> _terminals = new Dictionary<int, TerminalDO>();
         private bool _isInitialized;
         private string _serverUrl;
@@ -32,8 +35,9 @@ namespace Hub.Services
             private set;
         }
 
-        public Terminal(IConfigRepository configRepository)
+        public Terminal(IConfigRepository configRepository, ISecurityServices securityServices)
         {
+            _securityServices = securityServices;
             IsATandTCacheDisabled = string.Equals(CloudConfigurationManager.GetSetting("DisableATandTCache"), "true", StringComparison.InvariantCultureIgnoreCase);
 
             var serverProtocol = configRepository.Get("ServerProtocol", String.Empty);
@@ -135,6 +139,8 @@ namespace Hub.Services
 
             lock (_terminals)
             {
+                var isRegisterTerminal = false;
+                TerminalDO terminal;
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     var existingTerminal = uow.TerminalRepository.FindOne(x => x.Name == terminalDo.Name);
@@ -143,6 +149,7 @@ namespace Hub.Services
                     {
                         terminalDo.Id = 0;
                         uow.TerminalRepository.Add(existingTerminal = terminalDo);
+                        isRegisterTerminal = true;
                     }
                     else
                     {
@@ -152,15 +159,24 @@ namespace Hub.Services
 
                     uow.SaveChanges();
 
-                    var terminal = Clone(existingTerminal);
+                    terminal = Clone(existingTerminal);
                     _terminals[existingTerminal.Id] = terminal;
-
-                    return terminal;
                 }
+
+                if (isRegisterTerminal)
+                {
+                    //add ownership for this new terminal to current user
+                    _securityServices.SetDefaultRecordBasedSecurityForObject(Roles.OwnerOfCurrentObject, terminal.Id.ToString(), nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
+
+                    //make it visible for Fr8 Admins
+                    _securityServices.SetDefaultRecordBasedSecurityForObject(Roles.Admin, terminal.Id.ToString(), nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
+                }
+
+                return terminal;
             }
         }
 
-        public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal)
+        public Dictionary<string, string> GetRequestHeaders(TerminalDO terminal, string userId)
         {
             Initialize();
 
@@ -168,14 +184,15 @@ namespace Hub.Services
             {
                 if (!_terminals.TryGetValue(terminal.Id, out terminal))
                 {
-                    throw new KeyNotFoundException(string.Format("Unable to find terminal with id {0}", terminal.Id));
+                    throw new KeyNotFoundException($"Unable to find terminal with id {terminal.Id}");
                 }
             }
 
             return new Dictionary<string, string>
             {
                 {"Fr8HubCallbackSecret", terminal.Secret},
-                {"Fr8HubCallBackUrl", _serverUrl}
+                {"Fr8HubCallBackUrl", _serverUrl},
+                {"Fr8UserId", userId }
             };
         }
 
@@ -195,6 +212,8 @@ namespace Hub.Services
             lock (_terminals)
             {
                 return _terminals.Values.ToArray();
+                //filter terminals and show only allowed for current logged user
+//                return _securityServices.GetAllowedTerminalsByUser(terminals);
             }
         }
 
@@ -205,29 +224,6 @@ namespace Hub.Services
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
             var standardFr8TerminalCM = await restClient.GetAsync<StandardFr8TerminalCM>(new Uri(uri, UriKind.Absolute));
             return standardFr8TerminalCM.Activities.Select(Mapper.Map<ActivityTemplateDO>).ToList();
-        }
-
-        public async Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId)
-        {
-            Initialize();
-
-            lock (_terminals)
-            {
-                return _terminals.Values.FirstOrDefault(t => t.PublicIdentifier == terminalId);
-            }
-        }
-
-        public async Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId)
-        {
-            Initialize();
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var subscription = await uow.TerminalSubscriptionRepository.GetQuery()
-                    .FirstOrDefaultAsync(s => s.Terminal.PublicIdentifier == terminalId && s.UserDO.Id == userId);
-                return subscription != null;
-            }
-
         }
 
         public async Task<List<DocumentationResponseDTO>> GetSolutionDocumentations(string terminalName)
@@ -241,7 +237,7 @@ namespace Hub.Services
                     new ActivityDTO
                     {
                         Documentation = "MainPage",
-                        ActivityTemplate = new ActivityTemplateDTO {Name = solutionName }
+                        ActivityTemplate = new ActivityTemplateSummaryDTO {Name = solutionName }
                     }, true);
                 if (solutionPageDTO != null)
                 {
@@ -250,6 +246,16 @@ namespace Hub.Services
             }
             return solutionPages;
         }
-       
+
+        public async Task<TerminalDO> GetByToken(string token)
+        {
+            Initialize();
+
+            lock (_terminals)
+            {
+                return _terminals.Values.FirstOrDefault(t => t.Secret == token);
+            }
+        }
+
     }
 }

@@ -9,7 +9,7 @@
 <!--[if gt IE 8]><!-->
 <html ng-app="PlanDirectoryApp">
 <head>
-    <meta name="viewport" content="width=device-width"/>
+    <meta name="viewport" content="width=device-width" />
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Fr8 Plan Directory</title>
@@ -22,13 +22,13 @@
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Dosis:300,400,500,600,700|Open+Sans:300,400,400italic,600,700,800|Francois+One|Didact+Gothic|Droid+Sans|CabinFjalla+One|Cantarell|Ubuntu|Hind|Roboto|Roboto+Condensed:700|Nunito&subset=latin,cyrillic"
           rel="stylesheet" type="text/css">
-    <link href="~/Content/css/additionalcss/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css"/>
-    <link href="~/Content/css/additionalcss/font-awesome/css/style.css" rel="stylesheet" type="text/css"/>
+    <link href="~/Content/css/additionalcss/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/css/additionalcss/font-awesome/css/style.css" rel="stylesheet" type="text/css" />
 
     <link rel="shortcut icon" type="image/x-icon" href="/Content/img/favicon.ico" />
-    <link rel="stylesheet" href="~/bower_components/bootstrap/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="~/Content/metronic/components.css"/>
-    <link rel="stylesheet" href="~/Content/css/plan-directory.css"/>
+    <link rel="stylesheet" href="~/bower_components/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Content/metronic/components.css" />
+    <link rel="stylesheet" href="~/Content/css/plan-directory.css" />
     <link rel="stylesheet" href="~/Content/css/shared/main.css" />
 
     <script src="~/bower_components/jquery/dist/jquery.min.js"></script>
@@ -62,43 +62,46 @@
             <div class="inner-bg full-size-bg"></div>
             <div class="container full-height-block">
                 <div class="inner-wrap centered base-block-white">
-                        <!-- SEARCH BAR-->
-                        <div class="search-bar-container">
-                                <div style="display: inline-block">
-                                    <h2>Plan Directory</h2>
-                                    <form ng-submit="submitSearch(1)">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" ng-model="searchForm.searchText" placeholder="Search for Plans" />
-                                            <span class="input-group-btn">
-                                                <button type="submit" class="btn btn-primary">Search</button>
-                                            </span>
-                                        </div>
-                                    </form>
+                    <!-- SEARCH BAR-->
+                    <div class="search-bar-container">
+                        <div style="display: inline-block">
+                            <h2>Plan Directory</h2>
+                            <form ng-submit="submitSearch(1)">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" ng-model="searchForm.searchText" placeholder="Search for Plans" />
+                                    <span class="input-group-btn">
+                                        <button type="submit" class="btn btn-primary">Search</button>
+                                        <button type="button" class="btn btn-primary" style="margin-left: 1em" ng-if="privileged" ng-click="generatePages()">Generate Pages</button>
+                                    </span>
                                 </div>
-                                <hr />
+                            </form>
                         </div>
-                        <!-- SEARCH RESULTS-->
-                        <div class="result-container">
-                            <div class="item" ng-repeat="plan in planTemplates">
-                                <button class="btn green create-plan-btn" ng-click="createPlan(plan)">Create</button>
-                                <div class="info-row first">
-                                    <div class="label">Name:</div> {{plan.Name}}
-                                </div>
-                                <div class="info-row" ng-if="plan.Owner">
-                                    <div class="label">Created by:</div> {{plan.Owner}}
-                                </div>
-                                <div class="info-row" ng-if="plan.Description">
-                                    <div class="label">Description:</div>
-                                    <div class="value">{{plan.Description}}</div>
-                                </div>
+                        <hr />
+                    </div>
+                    <!-- SEARCH RESULTS-->
 
+                    <div class="result-container">
+                        <div class="item" ng-repeat="plan in planTemplates">
+                            <button class="btn green create-plan-btn" ng-class="{'privileged': privileged}" ng-click="createPlan(plan)">Create</button>
+                            <button type="button" class="btn red remove-plan-btn" ng-click="removePlan(plan)" ng-if="privileged">Delete</button>
+                            <div class="info-row first">
+                                <div class="label">Name:</div> {{plan.Name}}
                             </div>
-                            <div class="pager" ng-if="pages && pages.length > 1">
-                                <div class="btn-group">
-                                    <button type="button" class="btn" ng-class="{ 'btn-default': page !== currentPage, 'green': page === currentPage }" ng-repeat="page in pages" ng-click="submitSearch(page)">{{page}}</button>
-                                </div>
+                            <div class="info-row" ng-if="plan.Owner">
+                                <div class="label">Created by:</div> {{plan.Owner}}
+                            </div>
+                            <div class="info-row" ng-if="plan.Description">
+                                <div class="label">Description:</div>
+                                <div class="value">{{plan.Description}}</div>
+                            </div>
+
+                        </div>
+                        <div class="pager" ng-if="pages && pages.length > 1">
+                            <div class="btn-group">
+                                <button type="button" class="btn" ng-class="{ 'btn-default': page !== currentPage, 'green': page === currentPage }" ng-repeat="page in pages" ng-click="submitSearch(page)">{{page}}</button>
                             </div>
                         </div>
+                    </div>
                 </div>
             </div>
         </section>

@@ -27,6 +27,7 @@ namespace terminalExcel
         public void Configuration(IAppBuilder app, bool selfHost)
         {
             ConfigureProject(selfHost, TerminalExcelStructureMapRegistries.LiveConfiguration);
+            SwaggerConfig.Register(_configuration);
             RoutesConfig.Register(_configuration);
 
             app.UseWebApi(_configuration);

@@ -13,7 +13,7 @@ using Fr8.TerminalBase.Services;
 using terminalBox;
 using terminalBox.Actions;
 
-[assembly: OwinStartup(typeof(terminalBox.Startup))]
+[assembly: OwinStartup(typeof(terminalBox.Startup))] 
 
 namespace terminalBox
 {
@@ -32,6 +32,8 @@ namespace terminalBox
         public void Configuration(IAppBuilder app, bool selfHost)
         {
             ConfigureProject(selfHost, BoxStructureMapBootstrapper.LiveConfiguration);
+
+            SwaggerConfig.Register(_configuration);
 
             RoutesConfig.Register(_configuration);
 

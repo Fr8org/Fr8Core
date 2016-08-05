@@ -20,6 +20,7 @@ module dockyard.directives.dropDownListBox {
         toggleDropDown: (select) => void;
         focusOutSet: (focusElem: any) => void;
         reconfigure: () => void;
+        isDisabled: string;
     }
 
     export function DropDownListBox(): ng.IDirective {
@@ -34,6 +35,7 @@ module dockyard.directives.dropDownListBox {
                 };
 
                 $scope.setSelectedItem = (item: model.DropDownListItem) => {
+                  
                     let field = {
                         value: null,
                         key: null
@@ -120,6 +122,11 @@ module dockyard.directives.dropDownListBox {
 
                 $scope.toggleDropDown = $select => {
 
+                        // added by Tony
+                    if ($scope.isDisabled) {
+                        return false;
+                    }
+
                     if (!$scope.focusOutSet) {
                         var focusElem = angular.element($select.focusInput);
                         $scope.focusOutSet = isFocusOutFunc;
@@ -201,7 +208,8 @@ module dockyard.directives.dropDownListBox {
                 currentAction: '=',
                 field: '=',
                 change: '&',
-                click: '&'
+                click: '&',
+                isDisabled: '='
             }
         };
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.TerminalBase.Helpers;
@@ -61,13 +62,13 @@ namespace Fr8.TerminalBase.Services
                 _hubCommunicator = new TestMonitoringHubCommunicator(curDataDTO.ExplicitData, CrateManager);
                 activityTemplate.Name = activityTemplate.Name.Substring(0, activityTemplate.Name.Length - "_TEST".Length);
 
-                factory = _activityStore.GetFactory(activityTemplate);
+                factory = _activityStore.GetFactory(activityTemplate.Name, activityTemplate.Version);
 
                 activityTemplate.Name = originalName;
             }
             else
             {
-                factory = _activityStore.GetFactory(curDataDTO.ActivityDTO.ActivityTemplate);
+                factory = _activityStore.GetFactory(curDataDTO.ActivityDTO.ActivityTemplate.Name, curDataDTO.ActivityDTO.ActivityTemplate.Version);
             }
 
 
@@ -83,9 +84,6 @@ namespace Fr8.TerminalBase.Services
             });
 
             var activity = factory.Create(_container);
-
-            _hubCommunicator.Authorize(activityContext.UserId);
-
             activityContext.HubCommunicator = _hubCommunicator;
 
             var scope = parameters != null && parameters.Any(x => x.Key == "scope")
@@ -148,7 +146,7 @@ namespace Fr8.TerminalBase.Services
 
             return new ContainerExecutionContext
             {
-                PayloadStorage = CrateManager.GetUpdatableStorage(payload),
+                PayloadStorage = CrateStorageSerializer.Default.ConvertFromDto(payload?.CrateStorage),
                 ContainerId = containerId
             };
         }

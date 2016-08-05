@@ -1,4 +1,7 @@
-﻿using System.Web.Http;
+﻿using System.Net;
+using System.Web.Http;
+using System.Web.Http.Description;
+using Swashbuckle.Swagger.Annotations;
 using WebApi.OutputCache.V2;
 
 namespace HubWeb.Controllers.Api
@@ -8,8 +11,8 @@ namespace HubWeb.Controllers.Api
         /// <summary>
         /// Returns instrumentation key for the telemetry service 
         /// </summary>
-        /// <returns></returns>
         [ActionName("instrumentation-key"), CacheOutput(ServerTimeSpan = 600, ClientTimeSpan = 600, ExcludeQueryStringFromCacheKey = true)]
+        [SwaggerResponse(HttpStatusCode.OK, "String containing instrumentation key", typeof(string))]
         public IHttpActionResult GetTelemetryInstrumentationKey()
         {
             string fileName = "~/ApplicationInsights.config";

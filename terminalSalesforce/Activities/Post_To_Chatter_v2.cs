@@ -13,6 +13,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.Errors;
+using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Services;
 using log4net;
@@ -25,6 +26,7 @@ namespace terminalSalesforce.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("5052fc23-c867-4d5a-8fbb-b6b64b5ad688"),
             Version = "2",
             Name = "Post_To_Chatter",
             Label = "Post To Salesforce Chatter",
@@ -32,7 +34,12 @@ namespace terminalSalesforce.Actions
             Category = ActivityCategory.Forwarders,
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -153,14 +160,12 @@ namespace terminalSalesforce.Actions
             var selectedObjectProperties = await _salesforceManager.GetProperties(SelectedChatter.ToEnum<SalesforceObjectType>(), AuthorizationToken,false,PostedFeedCrateLabel);
             var queryFilterCrate = Crate<FieldDescriptionsCM>.FromContent(
                 QueryFilterCrateLabel,
-                new FieldDescriptionsCM(selectedObjectProperties),
-                AvailabilityType.Configuration);
+                new FieldDescriptionsCM(selectedObjectProperties));
             Storage.ReplaceByLabel(queryFilterCrate);
 
             var objectPropertiesCrate = Crate<FieldDescriptionsCM>.FromContent(
                 SalesforceObjectFieldsCrateLabel,
-                new FieldDescriptionsCM(selectedObjectProperties),
-                AvailabilityType.RunTime);
+                new FieldDescriptionsCM(selectedObjectProperties));
             Storage.ReplaceByLabel(objectPropertiesCrate);
             this[nameof(SelectedChatter)] = SelectedChatter;
             //Publish information for downstream activities
@@ -189,8 +194,8 @@ namespace terminalSalesforce.Actions
                 try
                 {
                     var chatters = await _salesforceManager.Query(SelectedChatter.ToEnum<SalesforceObjectType>(),
-                                                              new[] { "Id" },
-                                                              ControlHelper.ParseConditionToText(JsonConvert.DeserializeObject<List<FilterConditionDTO>>(ChatterFilter)),
+                                                              new[] { new FieldDTO("Id") },
+                                                              FilterConditionHelper.ParseConditionToText(JsonConvert.DeserializeObject<List<FilterConditionDTO>>(ChatterFilter)),
                                                               AuthorizationToken);
                     var tasks = new List<Task<string>>(chatters.Table.Count);
                     foreach (var chatterId in chatters.DataRows.Select(x => x.Row[0].Cell.Value))
@@ -263,11 +268,11 @@ namespace terminalSalesforce.Actions
             set { ActivityUI.ChatterSelector.ListItems = value; }
         }
 
-        private string FeedText => ActivityUI.FeedTextSource.GetValue(Payload);
+        private string FeedText => ActivityUI.FeedTextSource.TextValue;
 
         private string ChatterFilter => ActivityUI.ChatterFilter.Value;
 
-        private string IncomingChatterId => Payload.FindField(ActivityUI.IncomingChatterIdSelector.selectedKey);
+        private string IncomingChatterId => ActivityUI.IncomingChatterIdSelector.Value;
 
         #endregion
     }

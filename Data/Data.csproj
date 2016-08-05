@@ -253,14 +253,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\ActivityCategoryDO.cs" />
+    <Compile Include="Entities\ActivityCategorySetDO.cs" />
     <Compile Include="Entities\AspNetUserClaimDO.cs" />
     <Compile Include="Entities\EncryptedAuthorizationData.cs" />
     <Compile Include="Entities\OrganizationDO.cs" />
     <Compile Include="Entities\PageDefinitionDO.cs" />
-    <Compile Include="Entities\PlanTemplates\ActivityDescriptionDO.cs" />
-    <Compile Include="Entities\PlanTemplates\NodeTransitionDO.cs" />
-    <Compile Include="Entities\PlanTemplates\PlanTemplateDO.cs" />
-    <Compile Include="Entities\PlanTemplates\PlanNodeDescriptionDO.cs" />
     <Compile Include="Entities\PermissionSetDO.cs" />
     <Compile Include="Entities\PlanNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
@@ -721,8 +719,66 @@
     <Compile Include="Migrations\201606300937169_AddPageDefinition.Designer.cs">
       <DependentUpon>201606300937169_AddPageDefinition.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201607041029473_ActivityCategory.cs" />
+    <Compile Include="Migrations\201607041029473_ActivityCategory.Designer.cs">
+      <DependentUpon>201607041029473_ActivityCategory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607151938218_UpdateActivityTemplateIds.cs" />
+    <Compile Include="Migrations\201607151938218_UpdateActivityTemplateIds.Designer.cs">
+      <DependentUpon>201607151938218_UpdateActivityTemplateIds.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607170250191_IsFr8OwnTerminal_Property.cs" />
+    <Compile Include="Migrations\201607170250191_IsFr8OwnTerminal_Property.Designer.cs">
+      <DependentUpon>201607170250191_IsFr8OwnTerminal_Property.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607181342049_AddPlanTemplatesReferenceToPageDefinitions.cs" />
+    <Compile Include="Migrations\201607181342049_AddPlanTemplatesReferenceToPageDefinitions.Designer.cs">
+      <DependentUpon>201607181342049_AddPlanTemplatesReferenceToPageDefinitions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607190941340_RemovedTerminalIdentifierFromTerminalTable.cs" />
+    <Compile Include="Migrations\201607190941340_RemovedTerminalIdentifierFromTerminalTable.Designer.cs">
+      <DependentUpon>201607190941340_RemovedTerminalIdentifierFromTerminalTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607261330178_RemovedObsoleteActivityDOProperties.cs" />
+    <Compile Include="Migrations\201607261330178_RemovedObsoleteActivityDOProperties.Designer.cs">
+      <DependentUpon>201607261330178_RemovedObsoleteActivityDOProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607271152557_FixManifestDescriptionTypos.cs" />
+    <Compile Include="Migrations\201607271152557_FixManifestDescriptionTypos.Designer.cs">
+      <DependentUpon>201607271152557_FixManifestDescriptionTypos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607291915038_RemovePlanTemplateEntities.cs" />
+    <Compile Include="Migrations\201607291915038_RemovePlanTemplateEntities.Designer.cs">
+      <DependentUpon>201607291915038_RemovePlanTemplateEntities.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607300016510_RemoveNodeTransitions.cs" />
+    <Compile Include="Migrations\201607300016510_RemoveNodeTransitions.Designer.cs">
+      <DependentUpon>201607300016510_RemoveNodeTransitions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607301037088_PlanDTO_PlanFullDTO_Refactoring.cs" />
+    <Compile Include="Migrations\201607301037088_PlanDTO_PlanFullDTO_Refactoring.Designer.cs">
+      <DependentUpon>201607301037088_PlanDTO_PlanFullDTO_Refactoring.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607310758516_Standard_Permissions_for_Terminals.cs" />
+    <Compile Include="Migrations\201607310758516_Standard_Permissions_for_Terminals.Designer.cs">
+      <DependentUpon>201607310758516_Standard_Permissions_for_Terminals.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607311227053_ChangeRoleName_Customer_to_StandardUser.cs" />
+    <Compile Include="Migrations\201607311227053_ChangeRoleName_Customer_to_StandardUser.Designer.cs">
+      <DependentUpon>201607311227053_ChangeRoleName_Customer_to_StandardUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608021530462_RemoveRunnable.cs" />
+    <Compile Include="Migrations\201608021530462_RemoveRunnable.Designer.cs">
+      <DependentUpon>201608021530462_RemoveRunnable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608030857168_RemovedNameAndCurrentViewFromActivityDO.cs" />
+    <Compile Include="Migrations\201608030857168_RemovedNameAndCurrentViewFromActivityDO.Designer.cs">
+      <DependentUpon>201608030857168_RemovedNameAndCurrentViewFromActivityDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
+    <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
+    <Compile Include="Repositories\ActivityCategory\ActivityCategorySetRepository.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenChangeTracker.cs" />
@@ -738,10 +794,6 @@
     <Compile Include="Repositories\EnvelopeRepository.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtObjectStorage.Queries.cs" />
     <Compile Include="Repositories\PageDefinitionRepository.cs" />
-    <Compile Include="Repositories\PlanTemplates\ActivityDescriptionRepository.cs" />
-    <Compile Include="Repositories\PlanTemplates\NodeTransitionRepository.cs" />
-    <Compile Include="Repositories\PlanTemplates\PlanNodeDescriptionsRepository.cs" />
-    <Compile Include="Repositories\PlanTemplates\PlanTemplateRepository.cs" />
     <Compile Include="Repositories\ProfileRepository.cs" />
     <Compile Include="Repositories\Cache\ICacheExpirationStrategy.cs" />
     <Compile Include="Repositories\Cache\IExpirationToken.cs" />
@@ -838,7 +890,6 @@
     <Compile Include="States\ActivityTemplateState.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
     <Compile Include="States\DefaultProfiles.cs" />
-    <Compile Include="States\NotificationChannel.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
     <Compile Include="Entities\EnvelopeDO.cs" />
@@ -982,7 +1033,6 @@
     <Compile Include="Utility\TagDO.cs" />
     <Compile Include="Validations\ActionValidator.cs" />
     <Compile Include="Validations\ContainerValidator.cs" />
-    <Compile Include="Validations\SubrouteValidator.cs" />
     <Compile Include="Validations\IncidentValidator.cs" />
     <Compile Include="Validations\OutboundEmailValidatorBase.cs" />
     <Compile Include="Validations\OutboundHtmlEmailValidator.cs" />
@@ -996,6 +1046,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <Content Include="LICENSE" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -1334,6 +1385,48 @@
     <EmbeddedResource Include="Migrations\201606300937169_AddPageDefinition.resx">
       <DependentUpon>201606300937169_AddPageDefinition.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607041029473_ActivityCategory.resx">
+      <DependentUpon>201607041029473_ActivityCategory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607151938218_UpdateActivityTemplateIds.resx">
+      <DependentUpon>201607151938218_UpdateActivityTemplateIds.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607170250191_IsFr8OwnTerminal_Property.resx">
+      <DependentUpon>201607170250191_IsFr8OwnTerminal_Property.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607181342049_AddPlanTemplatesReferenceToPageDefinitions.resx">
+      <DependentUpon>201607181342049_AddPlanTemplatesReferenceToPageDefinitions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607190941340_RemovedTerminalIdentifierFromTerminalTable.resx">
+      <DependentUpon>201607190941340_RemovedTerminalIdentifierFromTerminalTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607261330178_RemovedObsoleteActivityDOProperties.resx">
+      <DependentUpon>201607261330178_RemovedObsoleteActivityDOProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607271152557_FixManifestDescriptionTypos.resx">
+      <DependentUpon>201607271152557_FixManifestDescriptionTypos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607291915038_RemovePlanTemplateEntities.resx">
+      <DependentUpon>201607291915038_RemovePlanTemplateEntities.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607300016510_RemoveNodeTransitions.resx">
+      <DependentUpon>201607300016510_RemoveNodeTransitions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607301037088_PlanDTO_PlanFullDTO_Refactoring.resx">
+      <DependentUpon>201607301037088_PlanDTO_PlanFullDTO_Refactoring.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607310758516_Standard_Permissions_for_Terminals.resx">
+      <DependentUpon>201607310758516_Standard_Permissions_for_Terminals.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607311227053_ChangeRoleName_Customer_to_StandardUser.resx">
+      <DependentUpon>201607311227053_ChangeRoleName_Customer_to_StandardUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608021530462_RemoveRunnable.resx">
+      <DependentUpon>201608021530462_RemoveRunnable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608030857168_RemovedNameAndCurrentViewFromActivityDO.resx">
+      <DependentUpon>201608030857168_RemovedNameAndCurrentViewFromActivityDO.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Fr8Infrastructure.NET\Fr8Infrastructure.NET.csproj">
@@ -1353,6 +1446,8 @@
   <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
     <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
     <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
+  </Target>
+  <Target Name="BeforeBuild">
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -15,6 +15,7 @@ using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Interfaces;
 using Hub.Managers;
+using Fr8.Infrastructure.Data.States;
 
 namespace Hub.Services
 {
@@ -86,43 +87,43 @@ namespace Hub.Services
             //If start attempt is already in progress we just reuse it and wait for the result
             if (Interlocked.CompareExchange(ref _isRunning, 1, 0) != 0)
             {
-                Logger.LogInfo($"{ManifestMonitoringPrefix}Plan creation is in progress, skipping the new attempt");
+                Logger.GetLogger().Info($"{ManifestMonitoringPrefix}Plan creation is in progress, skipping the new attempt");
                 return await _currentRun.Task;
             }
             //Otherwise we run a new attempt
             try
             {
                 _currentRun = new TaskCompletionSource<ManifestRegistryMonitorResult>();
-                Logger.LogInfo($"{ManifestMonitoringPrefix}Retrieving system user");
+                Logger.GetLogger().Info($"{ManifestMonitoringPrefix}Retrieving system user");
                 var systemUser = _fr8Account.GetSystemUser();
                 if (systemUser == null)
                 {
-                    Logger.LogError($"{ManifestMonitoringPrefix}System user doesn't exists");
+                    Logger.GetLogger().Error($"{ManifestMonitoringPrefix}System user doesn't exists");
                     throw new ApplicationException("System user doesn't exist");
                 }
                 var isNewPlanCreated = false;
-                Logger.LogInfo($"{ManifestMonitoringPrefix}Trying to find existing plan");
+                Logger.GetLogger().Info($"{ManifestMonitoringPrefix}Trying to find existing plan");
                 var plan = GetExistingPlan(systemUser);
                 if (plan == null)
                 {
-                    Logger.LogInfo($"{ManifestMonitoringPrefix}No existing plan found. Creating new plan");
+                    Logger.GetLogger().Info($"{ManifestMonitoringPrefix}No existing plan found. Creating new plan");
                     isNewPlanCreated = true;
                     plan = await CreateAndConfigureNewPlan(systemUser);
-                    Logger.LogInfo($"{ManifestMonitoringPrefix}New plan was created (Id - {plan.Id})");
+                    Logger.GetLogger().Info($"{ManifestMonitoringPrefix}New plan was created (Id - {plan.Id})");
                 }
                 else
                 {
-                    Logger.LogInfo($"{ManifestMonitoringPrefix}Existing plan was found (Id - {plan.Id})");
+                    Logger.GetLogger().Info($"{ManifestMonitoringPrefix}Existing plan was found (Id - {plan.Id})");
                 }
                 try
                 {
-                    Logger.LogInfo($"{ManifestMonitoringPrefix}Trying to launch the plan");
+                    Logger.GetLogger().Info($"{ManifestMonitoringPrefix}Trying to launch the plan");
                     await RunPlan(plan);
-                    Logger.LogInfo($"{ManifestMonitoringPrefix}Plan was successfully launched");
+                    Logger.GetLogger().Info($"{ManifestMonitoringPrefix}Plan was successfully launched");
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"{ManifestMonitoringPrefix}Failed to launch a plan. {ex}");
+                    Logger.GetLogger().Error($"{ManifestMonitoringPrefix}Failed to launch a plan. {ex}");
                     if (isNewPlanCreated)
                     {
                         await _plan.Delete(plan.Id);
@@ -144,7 +145,7 @@ namespace Hub.Services
 
         private async Task RunPlan(PlanDO plan)
         {
-            if (plan.PlanState == PlanState.Running)
+            if (plan.PlanState == PlanState.Executing || plan.PlanState == PlanState.Active)
             {
                 return;
             }
@@ -157,15 +158,15 @@ namespace Hub.Services
             {
                 var activityTemplates = uow.ActivityTemplateRepository.GetQuery().ToArray();
                 var result = await CreatePlanWithMonitoringActivity(uow, systemUser, activityTemplates).ConfigureAwait(false);
-                Logger.LogInfo($"{ManifestMonitoringPrefix}Created a plan");
+                Logger.GetLogger().Info($"{ManifestMonitoringPrefix}Created a plan");
                 try
                 {
                     await ConfigureMonitoringActivity(uow, systemUser, result.ChildNodes[0].ChildNodes[0] as ActivityDO).ConfigureAwait(false);
-                    Logger.LogInfo($"{ManifestMonitoringPrefix}Configured Monitor Form Response activity");
+                    Logger.GetLogger().Info($"{ManifestMonitoringPrefix}Configured Monitor Form Response activity");
                     await ConfigureBuildMessageActivity(uow, systemUser, activityTemplates, result.Id).ConfigureAwait(false);
-                    Logger.LogInfo($"{ManifestMonitoringPrefix}Configured Build Message activity");
+                    Logger.GetLogger().Info($"{ManifestMonitoringPrefix}Configured Build Message activity");
                     await ConfigureSaveJiraActivity(uow, systemUser, activityTemplates, result.Id).ConfigureAwait(false);
-                    Logger.LogInfo($"{ManifestMonitoringPrefix}Configured Save Jira activity");
+                    Logger.GetLogger().Info($"{ManifestMonitoringPrefix}Configured Save Jira activity");
                 }
                 catch
                 {
@@ -196,7 +197,7 @@ namespace Hub.Services
                 {
                     throw new ApplicationException("Save Jira Issue doesn't contain project selector");
                 }
-                projectSelector.SelectByKey("Fr8");
+                projectSelector.SelectByKey("fr8test");
             }
             saveJiraActivity = Mapper.Map<ActivityDO>(await _activity.Configure(uow, systemUser.Id, saveJiraActivity).ConfigureAwait(false));
             using (var storage = _crateManager.GetUpdatableStorage(saveJiraActivity))
@@ -350,3 +351,4 @@ namespace Hub.Services
         }
     }
 }
+

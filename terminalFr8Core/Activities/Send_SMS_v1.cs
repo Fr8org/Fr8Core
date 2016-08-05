@@ -14,6 +14,7 @@ using PhoneNumbers;
 using StructureMap;
 using terminalUtilities.Twilio;
 using Twilio;
+using Fr8.TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
@@ -21,14 +22,20 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("61774e73-9151-4c58-8a56-dd6653bc2e8c"),
             Name = "Send_SMS",
-            Label = "Send SMS using Fr8 core account",
+            Label = "Send SMS",
             Version = "1",
             Category = ActivityCategory.Forwarders,
             NeedsAuthentication = false,
             MinPaneWidth = 400,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -83,6 +90,20 @@ namespace terminalFr8Core.Activities
         {
         }
 
+        protected override Task Validate()
+        {
+            ValidationManager.Reset();
+            if (ActivityUI.SmsNumber.HasValue)
+            {
+                ValidationManager.ValidatePhoneNumber(GeneralisePhoneNumber(ActivityUI.SmsNumber.TextValue), ActivityUI.SmsNumber);
+            }
+            else
+            {
+                ValidationManager.SetError("No SMS Number Provided", ActivityUI.SmsNumber);
+            }
+            return Task.FromResult(0);
+        }
+
         public override async Task Run()
         {
             Message curMessage;
@@ -113,8 +134,8 @@ namespace terminalFr8Core.Activities
 
         public KeyValueDTO ParseSMSNumberAndMsg()
         {
-            var smsNumber = GeneralisePhoneNumber(ActivityUI.SmsNumber.GetValue(Payload).Trim());
-            var smsBody = ActivityUI.SmsBody.GetValue(Payload);
+            var smsNumber = GeneralisePhoneNumber(ActivityUI.SmsNumber.TextValue.Trim());
+            var smsBody = ActivityUI.SmsBody.TextValue;
 
             return new KeyValueDTO(smsNumber, smsBody);
         }

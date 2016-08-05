@@ -7,6 +7,7 @@ using StructureMap;
 using Hub.Infrastructure;
 using PlanDirectory.Infrastructure;
 using System.Web.Http.Dispatcher;
+using PlanDirectory.Interfaces;
 
 namespace PlanDirectory
 {
@@ -14,7 +15,7 @@ namespace PlanDirectory
     {
         public class SelfHostStartup
         {
-            public void Configuration(IAppBuilder app)
+            public void Configuration(IAppBuilder app) 
             {
                 var configuration = new HttpConfiguration();
                 // Web API routes
@@ -23,8 +24,6 @@ namespace PlanDirectory
                 WebApiConfig.Register(configuration);
                 app.SetDataProtectionProvider(new DpapiDataProtectionProvider());
 
-                OwinInitializer.ConfigureAuth(app, "/Reauthenticate");
-                app.UseWebApi(configuration);
 
                 ObjectFactory.Initialize();
                 ObjectFactory.Configure(Fr8.Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
@@ -33,6 +32,8 @@ namespace PlanDirectory
 
                 ObjectFactory.GetInstance<ISearchProvider>().Initialize(true).Wait();
 
+                OwinInitializer.ConfigureAuth(app, "/Reauthenticate");
+                app.UseWebApi(configuration);
             }
         }
 

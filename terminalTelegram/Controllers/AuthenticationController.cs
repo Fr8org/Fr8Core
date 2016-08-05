@@ -5,14 +5,18 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Utilities.Logging;
+using log4net;
 using Newtonsoft.Json;
 using terminalTelegram.TelegramIntegration;
 
 namespace terminalTelegram.Controllers
 {
     [RoutePrefix("authentication")]
-    public class AuthenticationController: ApiController
+    public class AuthenticationController : ApiController
     {
+        private static readonly ILog Logger = LogManager.GetLogger("terminalTelegram");
+
         private readonly ITelegramIntegration _telegramIntegration;
 
         public AuthenticationController(ITelegramIntegration telegramIntegration)
@@ -26,20 +30,39 @@ namespace terminalTelegram.Controllers
         {
             try
             {
-                await _telegramIntegration.ConnectAsync();
-                var hash = await _telegramIntegration.GetHashAsync(credentialsDTO.PhoneNumber);
-
-                credentialsDTO.ClientId = hash;
-
-                credentialsDTO.Message = "* Verification code has been sent to your Telegram mobile app.";
-
-                return credentialsDTO;
+                return await CreateTelegramConnection(credentialsDTO);
             }
             catch (Exception ex)
             {
-                credentialsDTO.Error = "An error occurred while trying to send login code, please try again later.";
-                return credentialsDTO;
+                try
+                {
+                    // Telegram SDK contains a bug, so somethimes we need to send two auth codes to phone number
+                    if (ex.Message == "STORE_INVALID_OBJECT_TYPE")
+                    {
+                        return await CreateTelegramConnection(credentialsDTO);
+                    }
+                    throw;
+                }
+                catch (Exception exception)
+                {
+                    credentialsDTO.Error = "An error occurred while trying to send login code, please try again later.";
+                    credentialsDTO.Message = exception.Message + Environment.NewLine + exception.StackTrace;
+                    Logger.Error(exception.Message);
+                    return credentialsDTO;
+                }
             }
+        }
+
+        private async Task<PhoneNumberCredentialsDTO> CreateTelegramConnection(PhoneNumberCredentialsDTO credentialsDTO)
+        {
+            await _telegramIntegration.ConnectAsync();
+            var hash = await _telegramIntegration.GetHashAsync(credentialsDTO.PhoneNumber);
+
+            credentialsDTO.ClientId = hash;
+
+            credentialsDTO.Message = "* Verification code has been sent to your Telegram mobile app.";
+
+            return credentialsDTO;
         }
 
         [HttpPost]
@@ -65,6 +88,8 @@ namespace terminalTelegram.Controllers
             }
             catch (Exception ex)
             {
+                Logger.Error(ex.Message);
+                credentialsDTO.Message = ex.Message;
                 return new AuthorizationTokenDTO()
                 {
                     Error = "An error occurred while trying to authorize, please try again later."

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http.Validation.Providers;
@@ -15,12 +16,16 @@ namespace Hub.Services
 {
     public class PageDefinition : IPageDefinition
     {
-        private const string TagsSeparator = "-";
-        private const string PageExtension = ".html";
+        private readonly IUnitOfWorkFactory _uowFactory;
+
+        public PageDefinition(IUnitOfWorkFactory uowFactory)
+        {
+            _uowFactory = uowFactory;
+        }
 
         public IEnumerable<PageDefinitionDO> GetAll()
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var uow = _uowFactory.Create())
             {
                 return uow.PageDefinitionRepository.GetAll();
             }
@@ -28,19 +33,25 @@ namespace Hub.Services
 
         public PageDefinitionDO Get(int id)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var uow = _uowFactory.Create())
             {
                 return uow.PageDefinitionRepository.GetByKey(id);
             }
         }
 
+        public IList<PageDefinitionDO> Get(Expression<Func<PageDefinitionDO, bool>> filter)
+        {
+            using (var uow = _uowFactory.Create())
+            {
+                return uow.PageDefinitionRepository.GetQuery().Where(filter).ToArray();
+            }
+        }
+
         public void CreateOrUpdate(PageDefinitionDO pageDefinitionDO)
         {
-            pageDefinitionDO.PageName = GeneratePageNameFromTags(pageDefinitionDO);
             if (pageDefinitionDO.Id > 0)
             {
-
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                using (var uow = _uowFactory.Create())
                 {
                     var pageDefinitionToUpdate = uow.PageDefinitionRepository.GetByKey(pageDefinitionDO.Id);
                     pageDefinitionToUpdate.Title = pageDefinitionDO.Title;
@@ -50,38 +61,43 @@ namespace Hub.Services
                     pageDefinitionToUpdate.Type = pageDefinitionDO.Type;
                     pageDefinitionToUpdate.Url = pageDefinitionDO.Url;
                     pageDefinitionToUpdate.LastUpdated = DateTimeOffset.Now;
+                    pageDefinitionToUpdate.PlanTemplatesIds.AddRange(pageDefinitionDO.PlanTemplatesIds);
                     uow.SaveChanges();
                 }
             }
             else
             {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                using (var uow = _uowFactory.Create())
                 {
-                    uow.PageDefinitionRepository.Add(pageDefinitionDO);
-                    uow.SaveChanges();
+                    var existedPd = uow.PageDefinitionRepository.FindOne(x => x.PageName == pageDefinitionDO.PageName && x.Type == pageDefinitionDO.Type);
+                    if (existedPd == null)
+                    {
+                        uow.PageDefinitionRepository.Add(pageDefinitionDO);
+                        uow.SaveChanges();
+                    }
+                    else
+                    {
+                        existedPd.Title = pageDefinitionDO.Title;
+                        existedPd.Description = pageDefinitionDO.Description;
+                        existedPd.PageName = pageDefinitionDO.PageName;
+                        existedPd.Tags = pageDefinitionDO.Tags;
+                        existedPd.Type = pageDefinitionDO.Type;
+                        existedPd.Url = pageDefinitionDO.Url;
+                        existedPd.LastUpdated = DateTimeOffset.Now;
+                        existedPd.PlanTemplatesIds.AddRange(pageDefinitionDO.PlanTemplatesIds);
+                        uow.SaveChanges();
+                    }
                 }
             }
         }
 
         public void Delete(int id)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var uow = _uowFactory.Create())
             {
                 var pageDefinitionToRemove = uow.PageDefinitionRepository.GetByKey(id);
                 uow.PageDefinitionRepository.Remove(pageDefinitionToRemove);
             }
-        }
-
-        /// <summary>
-        /// Generates pageName from tags
-        /// </summary>
-        /// <param name="pageDefinitionDO"></param>
-        /// <returns></returns>
-        private static string GeneratePageNameFromTags(PageDefinitionDO pageDefinitionDO)
-        {
-            return string.Join(
-                TagsSeparator,
-                pageDefinitionDO.Tags.Select(x => x.ToLower()).OrderBy(x => x)) + PageExtension;
         }
     }
 }

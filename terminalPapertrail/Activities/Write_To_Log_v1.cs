@@ -23,13 +23,19 @@ namespace terminalPapertrail.Actions
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("82689803-f577-47cd-9a7a-dd728f72acfe"),
             Version = "1",
             Name = "Write_To_Log",
             Label = "Write To Log",
             Category = ActivityCategory.Forwarders,
             Terminal = TerminalData.TerminalDTO,
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO
+            WebService = TerminalData.WebServiceDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -49,9 +55,7 @@ namespace terminalPapertrail.Actions
                 Required = true
             };
 
-            var curControlsCrate = PackControlsCrate(targetUrlTextBlock);
-
-            Storage.Add(curControlsCrate);
+            AddControls(targetUrlTextBlock);
         }
 
         public override async Task Run()

@@ -8,6 +8,7 @@ using Fr8.TerminalBase.BaseClasses;
 using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Services;
 using terminalTelegram.TelegramIntegration;
+using System;
 
 namespace terminalTelegram.Activities
 {
@@ -15,6 +16,7 @@ namespace terminalTelegram.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("08252B74-F829-48D5-B25E-69F97604BF67"),
             Name = "Post_To_Telegram",
             Label = "Post To Telegram",
             Tags = "Notifier",
@@ -23,7 +25,12 @@ namespace terminalTelegram.Activities
             Version = "1",
             WebService = TerminalData.WebServiceDTO,
             MinPaneWidth = 330,
-            NeedsAuthentication = true
+            NeedsAuthentication = true,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
 
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -80,7 +87,7 @@ namespace terminalTelegram.Activities
             // Phone to send message
             var phoneNumber = ActivityUI.PhoneNumber.Value;
             // Message
-            var message = ActivityUI.MessageSource.GetValue(Payload);
+            var message = ActivityUI.MessageSource.TextValue;
 
             await _telegramIntegration.ConnectAsync();
 

@@ -35,11 +35,13 @@ namespace terminalTest.Actions
         public override async Task Initialize()
         {
             var templates = await HubCommunicator.GetActivityTemplates();
-            var activityTemplate = templates.First(x => x.Name == "SimpleActivity");
-
-            //var atdo = AutoMapper.Mapper.Map<ActivityTemplateDTO, ActivityTemplateDO>(activityTemplate);
-
-            string emptyCrateStorage = CrateManager.CrateStorageAsStr(new CrateStorage(Crate.FromContent("Configuration Controls", new SimpleActivity_v1.ActivityUi())));
+            var activityTemplate = templates.Select(x => new ActivityTemplateSummaryDTO
+            {
+                Name = x.Name,
+                Version = x.Version,
+                TerminalName = x.Terminal.Name,
+                TerminalVersion = x.Terminal.Version
+            }).First(x => x.Name == "SimpleActivity");
 
             ActivityPayload.ChildrenActivities.Add(new ActivityPayload
             {

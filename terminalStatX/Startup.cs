@@ -28,6 +28,7 @@ namespace terminalStatX
         public void Configuration(IAppBuilder app, bool selfHost)
         {
             ConfigureProject(selfHost, TerminalStatXBootstrapper.ConfigureLive);
+            SwaggerConfig.Register(_configuration);
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
             app.UseWebApi(_configuration);
@@ -50,6 +51,7 @@ namespace terminalStatX
         {
             ActivityStore.RegisterActivity<Update_Stat_v1>(Update_Stat_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Monitor_Stat_Changes_v1>(Monitor_Stat_Changes_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Create_Stat_v1>(Create_Stat_v1.ActivityTemplateDTO);
         }
     }
 }

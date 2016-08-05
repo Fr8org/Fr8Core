@@ -14,6 +14,7 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("4059e018-d8a5-4927-9712-8430ffba0b73"),
             Name = "Set_Delay",
             Label = "Delay Action Processing",
             Category = ActivityCategory.Processors,
@@ -21,7 +22,12 @@ namespace terminalFr8Core.Activities
             MinPaneWidth = 330,
             Type = ActivityType.Standard,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Process,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -48,7 +54,7 @@ namespace terminalFr8Core.Activities
             return manifestTypeDropdown.Value;
         }
 
-        private Crate CreateControlsCrate()
+        private void CreateControls()
         {
             var duration = new Duration
             {
@@ -56,7 +62,7 @@ namespace terminalFr8Core.Activities
                 Name = "Delay_Duration"
             };
 
-            return PackControlsCrate(duration);
+            AddControls(duration);
         }
 
         public Set_Delay_v1(ICrateManager crateManager)
@@ -84,15 +90,15 @@ namespace terminalFr8Core.Activities
 
             OperationalState.CallStack.StoreLocalData("Delay", "suspended");
 
-            SuspendHubExecution();
+            RequestPlanExecutionSuspension();
             }
 
         public override Task Initialize()
-            {
-            var configurationControlsCrate = CreateControlsCrate();
-            Storage.Add(configurationControlsCrate);
+        {
+            CreateControls();
+
             return Task.FromResult(0);
-            }
+        }
 
         public override Task FollowUp()
         {

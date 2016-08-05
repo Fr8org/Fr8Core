@@ -12,6 +12,7 @@ module dockyard.directives.upstreamDataChooser {
         openModal: () => void;
         createModal: () => void;
         getGroupValue: (item: model.FieldDTO) => string;
+        isDisabled:boolean;
     }
 
     import pca = dockyard.directives.paneConfigureAction;
@@ -140,12 +141,13 @@ module dockyard.directives.upstreamDataChooser {
         public link: (scope: IUpstreamFieldChooserButtonScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public controller: any;
 
-        public template = '<div style="padding:5px 0"><button class="btn btn-primary btn-xs" ng-click="openModal()">Select</button><span>{{field.value}}</span></div>';
+        public template = '<span><button class="btn btn-primary btn-xs" ng-click="openModal()">incoming data</button><a href="/documentation/UpstreamCrates.html" class="documentation-link"><i class="fa fa-question-circle"></i></a><span></br>{{field.value}}  {{field.selectedItem.sourceCrateLabel}}</span></span>';
         public restrict = 'E';
         public scope = {
             field: '=',
             currentAction: '=',
-            change: '&'
+            change: '&',
+            isDisabled:'='
         }
 
         private CrateHelper: services.CrateHelper;

@@ -30,7 +30,7 @@ namespace terminalSalesforceTests.Activities
             base.SetUp();
             TerminalBootstrapper.ConfigureTest();
             var salesforceManagerMock = new Mock<ISalesforceManager>();
-            salesforceManagerMock.Setup(x => x.Query(SalesforceObjectType.Account, It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationToken>()))
+            salesforceManagerMock.Setup(x => x.Query(SalesforceObjectType.Account, It.IsAny<IList<FieldDTO>>(), It.IsAny<string>(), It.IsAny<AuthorizationToken>()))
                                  .Returns(Task.FromResult(new StandardTableDataCM
                                                           {
                                                               Table = new List<TableRowDTO>
@@ -69,14 +69,13 @@ namespace terminalSalesforceTests.Activities
             };
             await activity.Configure(activityContext);
             
-            var helper = new ControlHelper(activityContext);
 
-            helper.GetControl<ControlDefinitionDTO>(helper.GetConfigurationControls(activityContext.ActivityPayload.CrateStorage), "FeedTextSource").Value = null;
+            ActivityConfigurator.GetControl<ControlDefinitionDTO>(activityContext.ActivityPayload, "FeedTextSource").Value = null;
             
             activity = New<Post_To_Chatter_v2>();
             
             await activity.Run(activityContext, executionContext);
-            var operationalState = new CrateManager().GetOperationalState(executionContext.PayloadStorage);
+            var operationalState = executionContext.PayloadStorage.FirstCrateContentOrDefault<OperationalStateCM>();
             Assert.AreEqual(ActivityResponse.Error.ToString(), operationalState.CurrentActivityResponse.Type, "Run must fail if message is empty");
         }
 
@@ -110,7 +109,7 @@ namespace terminalSalesforceTests.Activities
             activity = New<Post_To_Chatter_v2>();
 
             await activity.Run(activityContext, executionContext);
-            var operationalState = new CrateManager().GetOperationalState(executionContext.PayloadStorage);
+            var operationalState = executionContext.PayloadStorage.FirstCrateContentOrDefault<OperationalStateCM>();
             Assert.AreEqual(ActivityResponse.Error.ToString(), operationalState.CurrentActivityResponse.Type, "Run must fail if chatter is not specified is empty");
         }
 
@@ -185,7 +184,7 @@ namespace terminalSalesforceTests.Activities
                 x.ChatterFilter.Value = string.Empty;
                 x.ChatterSelector.selectedKey = SalesforceObjectType.Account.ToString();
             });
-            ObjectFactory.GetInstance<Mock<ISalesforceManager>>().Setup(x => x.Query(It.IsAny<SalesforceObjectType>(), It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationToken>()))
+            ObjectFactory.GetInstance<Mock<ISalesforceManager>>().Setup(x => x.Query(It.IsAny<SalesforceObjectType>(), It.IsAny<IList<FieldDTO>>(), It.IsAny<string>(), It.IsAny<AuthorizationToken>()))
                          .Returns(Task.FromResult(new StandardTableDataCM { Table = new List<TableRowDTO>() }));
             await activity.Run(activityContext, executionContext);
             var payloadStorage = executionContext.PayloadStorage;

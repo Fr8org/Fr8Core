@@ -3,10 +3,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8.Infrastructure.Data.Control;
-using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.TerminalBase.Models;
@@ -21,44 +18,54 @@ using Fr8.TerminalBase.Interfaces;
 using Fr8.Infrastructure.Utilities;
 using Newtonsoft.Json;
 using AutoMapper;
+using Fr8.Infrastructure.Utilities.Logging;
+using log4net;
 
 namespace terminalSalesforce.Services
 {
     public class SalesforceManager : ISalesforceManager
     {
         private readonly Authentication _authentication;
-        private readonly ICrateManager _crateManager;
         private readonly IHubCommunicator _hubCommunicator;
+        private readonly ILog _logger;
 
-        public SalesforceManager(ICrateManager crateManager, Authentication authentication, IHubCommunicator hubCommunicator)
+        public SalesforceManager(Authentication authentication, IHubCommunicator hubCommunicator)
         {
-            _crateManager = crateManager;
             _authentication = authentication;
             _hubCommunicator = hubCommunicator;
+            _logger = Logger.GetLogger(nameof(SalesforceManager));
         }
-        
+
         public async Task<string> Create(SalesforceObjectType type, IDictionary<string, object> @object, AuthorizationToken authToken)
         {
             var result = await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.CreateAsync(type.ToString(), @object), authToken);
             return result?.Id ?? string.Empty;
         }
 
-        public async Task<StandardTableDataCM> Query(SalesforceObjectType type, IEnumerable<string> propertiesToRetrieve, string filter, AuthorizationToken authToken)
+        public async Task<StandardTableDataCM> Query(SalesforceObjectType type, IList<FieldDTO> propertiesToRetrieve, string filter, AuthorizationToken authToken)
         {
-            var whatToSelect = (propertiesToRetrieve ?? new string[0]).ToArray();
+            var whatToSelect = propertiesToRetrieve?.Select(p => p.Name).ToArray() ?? new string[0];
             var selectQuery = $"SELECT {(whatToSelect.Length == 0 ? "*" : string.Join(", ", whatToSelect))} FROM {type}";
             if (!string.IsNullOrEmpty(filter))
             {
-                selectQuery += " WHERE " + filter;
+                selectQuery += " WHERE " + NormalizeFilterByFiedType(propertiesToRetrieve, filter);
             }
-            var result = await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.QueryAsync<object>(selectQuery), authToken);
-            var table = ParseQueryResult(result);
-            table.FirstRowHeaders = true;
-            var headerRow = whatToSelect.Length > 0
-                                ? whatToSelect.Select(x => new TableCellDTO { Cell = new KeyValueDTO(x, x)}).ToList()
-                                : (await GetProperties(type, authToken)).Select(x => new TableCellDTO { Cell = new KeyValueDTO(x.Name, x.Label) }).ToList();
-            table.Table.Insert(0, new TableRowDTO { Row = headerRow });
-            return table;
+            try
+            {
+                var result = await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.QueryAsync<object>(selectQuery), authToken);
+                var table = ParseQueryResult(result);
+                table.FirstRowHeaders = true;
+                var headerRow = whatToSelect.Length > 0
+                    ? whatToSelect.Select(x => new TableCellDTO {Cell = new KeyValueDTO(x, x)}).ToList()
+                    : (await GetProperties(type, authToken)).Select(x => new TableCellDTO {Cell = new KeyValueDTO(x.Name, x.Label)}).ToList();
+                table.Table.Insert(0, new TableRowDTO {Row = headerRow});
+                return table;
+            }
+            catch (ForceException ex)
+            {
+                _logger.Error($"Failed to execute Salesforce query for object type {type} and filter {filter}", ex);
+                throw;
+            }
         }
 
         public async Task<List<FieldDTO>> GetProperties(SalesforceObjectType type, AuthorizationToken authToken, bool updatableOnly = false, string label = null)
@@ -70,7 +77,7 @@ namespace terminalSalesforce.Services
             {
                 if (updatableOnly)
                 {
-                    resultFields = new JArray(resultFields.Where(fieldDescription => (fieldDescription.Value<bool>("updateable") == true)));
+                    resultFields = new JArray(resultFields.Where(fieldDescription => fieldDescription.Value<bool>("updateable")));
                 }
 
                 var fields = resultFields
@@ -106,6 +113,12 @@ namespace terminalSalesforce.Services
 
                 objectFields.AddRange(fields);
             }
+            else
+            {
+                var errorMessage = "Request to Salesforce object properties returned unexpected results";
+                _logger.Error(errorMessage);
+                throw new ApplicationException(errorMessage);
+            }
             return objectFields;
         }
 
@@ -115,7 +128,9 @@ namespace terminalSalesforce.Services
             {
                 case "picklist":
                     return FieldType.PickList;
-
+                case "date":
+                case "datetime":
+                    return FieldType.Date;
                 default:
                     return FieldType.String;
             }
@@ -143,57 +158,18 @@ namespace terminalSalesforce.Services
             return null;
         }
         
-        public T CreateSalesforceDTO<T>(ActivityPayload curActivity, PayloadDTO curPayload) where T : new()
-        {
-            var requiredType = typeof(T);
-            var requiredObject = (T)Activator.CreateInstance(requiredType);
-            var requiredProperties = requiredType.GetProperties().Where(p => !p.Name.Equals("Id"));
-
-            var designTimeCrateStorage = curActivity.CrateStorage;
-            var runTimeCrateStorage = _crateManager.FromDto(curPayload.CrateStorage);
-            var controls = designTimeCrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-
-            if (controls == null)
-            {
-                throw new InvalidOperationException("Failed to find configuration controls crate");
-            }
-
-            requiredProperties.ToList().ForEach(prop =>
-            {
-                try
-                {
-                    var textSourceControl = controls.Controls.SingleOrDefault(c => c.Name == prop.Name) as TextSource;
-
-                    if (textSourceControl == null)
-                    {
-                        throw new InvalidOperationException($"Unable to find TextSource control with name '{prop.Name}'");
-                    }
-
-                    var propValue = textSourceControl.GetValue(runTimeCrateStorage);
-                    prop.SetValue(requiredObject, propValue);
-                }
-                catch (ApplicationException applicationException)
-                {
-                    //If it can not extract the property, user did not enter any value for this property.
-                    //No problems. We can treat that value as empty and continue.
-                    if (applicationException.Message.Equals("Could not extract recipient, unknown recipient mode."))
-                    {
-                        prop.SetValue(requiredObject, string.Empty);
-                    }
-                    else if (applicationException.Message.StartsWith("No field found with specified key:"))
-                    {
-                        //FR-2502 - This else case handles, the user asked to pick up the value from the current payload.
-                        //But the payload does not contain the value of this property. In that case, set it as "Not Available"
-                        prop.SetValue(requiredObject, "Not Available");
-                    }
-                }
-            });
-
-            return requiredObject;
-        }
         public async Task<string> PostToChatter(string message, string parentObjectId, AuthorizationToken authToken)
         {
-            var currentChatterUser = await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.MeAsync<UserDetail>(), authToken);
+            UserDetail currentChatterUser;
+            try
+            {
+                currentChatterUser = await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.MeAsync<UserDetail>(), authToken);
+            }
+            catch (ForceException ex)
+            {
+                _logger.Error("Failed to retrieve information about current Salesforce user", ex);
+                throw;
+            }
             //set the message segment with the given feed text
             var messageSegment = new MessageSegmentInput
             {
@@ -203,15 +179,23 @@ namespace terminalSalesforce.Services
             //prepare the body
             var body = new MessageBodyInput { MessageSegments = new List<MessageSegmentInput> { messageSegment } };
             //prepare feed item input by setting the given parent object id
-            var feedItemInput = new FeedItemInput()
+            var feedItemInput = new FeedItemInput
             {
                 Attachment = null,
                 Body = body,
                 SubjectId = parentObjectId,
                 FeedElementType = "FeedItem"
             };
-            var feedItem = await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.PostFeedItemAsync<FeedItem>(feedItemInput, currentChatterUser.id), authToken);
-            return feedItem?.Id ?? string.Empty;
+            try
+            {
+                var feedItem = await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.PostFeedItemAsync<FeedItem>(feedItemInput, currentChatterUser.id), authToken);
+                return feedItem?.Id ?? string.Empty;
+            }
+            catch (ForceException ex)
+            {
+                _logger.Error($"Failed to post message '{message}' to the chatter of object '{parentObjectId}'", ex);
+                throw;
+            }
         }
 
         public IEnumerable<FieldDTO> GetSalesforceObjectTypes(SalesforceObjectOperations filterByOperations = SalesforceObjectOperations.None, SalesforceObjectProperties filterByProperties = SalesforceObjectProperties.None)
@@ -227,9 +211,9 @@ namespace terminalSalesforce.Services
             }
         }
 
-        public IEnumerable<FieldDTO> GetObjectProperties()
+        public IEnumerable<FieldDTO> GetObjectList()
         {
-            return objectDescriptions ?? (objectDescriptions = new FieldDTO[]
+            return _objectDescriptions ?? (_objectDescriptions = new[]
                                                 {
                                                     new FieldDTO("Account"),
                                                     new FieldDTO("Case"),
@@ -248,7 +232,15 @@ namespace terminalSalesforce.Services
 
         public async Task<bool> Delete(SalesforceObjectType objectType, string objectId, AuthorizationToken authToken)
         {
-            return await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.DeleteAsync(objectType.ToString(), objectId), authToken);
+            try
+            {
+                return await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.DeleteAsync(objectType.ToString(), objectId), authToken);
+            }
+            catch (ForceException ex)
+            {
+                _logger.Error($"Failed to delete {objectType} with Id {objectId}", ex);
+                throw;
+            }
         }
         [Obsolete("Use Task<StandardTableDataCM> Query(SalesforceObjectType, IEnumerable<string>, string, AuthorizationTokenDO) instead")]
         public async Task<IList<KeyValueDTO>> GetUsersAndGroups(AuthorizationToken authToken)
@@ -258,8 +250,17 @@ namespace terminalSalesforce.Services
             chatterObjectSelectPredicate.Add("users", x => new KeyValueDTO(x.Value<string>("displayName"), x.Value<string>("id")));
             var chatterNamesList = new List<KeyValueDTO>();
             //get chatter groups and persons
-            var chatterObjects = (JObject)await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.GetGroupsAsync<object>(), authToken);
-            chatterObjects.Merge((JObject)await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.GetUsersAsync<object>(), authToken));
+            JObject chatterObjects;
+            try
+            {
+                chatterObjects = (JObject) await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.GetGroupsAsync<object>(), authToken);
+                chatterObjects.Merge((JObject) await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.GetUsersAsync<object>(), authToken));
+            }
+            catch (ForceException ex)
+            {
+                _logger.Error("Failed to retrieve list of Salesforce users and groups", ex);
+                throw;
+            }
             foreach (var predicatePair in chatterObjectSelectPredicate)
             {
                 JToken requiredChatterObjects;
@@ -272,6 +273,33 @@ namespace terminalSalesforce.Services
         }
 
         #region Implemetation details
+
+        private string NormalizeFilterByFiedType(IEnumerable<FieldDTO> fields, string filter)
+        {
+            //split the filter by " AND "
+            var filterList = filter.Split(new string[] { " AND " }, StringSplitOptions.None).ToList();
+
+            foreach (FieldDTO field in fields)
+            {
+                //if filed exists in the filter list and field type is Date, normalize it to Salesforce expected date.
+                if (filterList.Any(filterItem => filterItem.Contains(field.Name) && field.FieldType.Equals(FieldType.Date)))
+                {
+                    var matchedFilter = filterList.Single(stringToCheck => stringToCheck.Contains(field.Name));
+                    if (!string.IsNullOrEmpty(matchedFilter))
+                    {
+                        var requiredDateFormat = matchedFilter.Substring(matchedFilter.IndexOf("'")).Replace("'", "");
+
+                        var normalizedValue = matchedFilter.Substring(0, matchedFilter.IndexOf("'")) +
+                                           DateTime.ParseExact(requiredDateFormat, "dd-MM-yyyy", System.Globalization.CultureInfo.InvariantCulture).ToString("yyyy-MM-ddTHH:mm:ssZ");
+
+                        filterList[filterList.IndexOf(matchedFilter)] = normalizedValue;
+                    }
+                }
+            }
+
+            return string.Join(" AND ", filterList.ToArray()); ;
+        }
+
         private StandardTableDataCM ParseQueryResult(QueryResult<object> queryResult)
         {
             var parsedObjects = new List<JObject>();
@@ -279,19 +307,37 @@ namespace terminalSalesforce.Services
             {
                 parsedObjects = queryResult.Records.Select(record => ((JObject)record)).ToList();
             }
+        
+            var countOfObjectTableCell = new TableCellDTO()
+            {
+                Cell = new KeyValueDTO()
+                {
+                    Key = "Count of Objects",
+                    Value = queryResult.Records.Count.ToString()
+                }
+            };
+
+            List<TableRowDTO> list = new List<TableRowDTO>();
+            foreach (var row in parsedObjects.Select(parsedObject => parsedObject.Properties().Where(y => y.Value.Type == JTokenType.String && !string.IsNullOrEmpty(y.Value.Value<string>())).Select(y => new TableCellDTO
+            {
+                Cell = new KeyValueDTO
+                {
+                    Key = y.Name, Value = y.Value.Value<string>()
+                }
+            }).ToList()))
+            {
+                row.Add(countOfObjectTableCell);
+                list.Add(new TableRowDTO() { Row = row });
+            }
+
+            if (!queryResult.Records.Any())
+            {
+                list.Add(new TableRowDTO() {Row = new List<TableCellDTO>() {countOfObjectTableCell}});
+            }
+
             return new StandardTableDataCM
             {
-                Table = parsedObjects.Select(x => x.Properties()
-                                            .Where(y => y.Value.Type == JTokenType.String && !string.IsNullOrEmpty(y.Value.Value<string>()))
-                                            .Select(y => new TableCellDTO
-                                            { Cell = new KeyValueDTO
-                                                {
-                                                    Key = y.Name,
-                                                    Value = y.Value.Value<string>()
-                                                }
-                                            }))
-                                     .Select(x => new TableRowDTO { Row = x.ToList() })
-                                     .ToList()
+                Table = list
             };
         }
 
@@ -315,10 +361,7 @@ namespace terminalSalesforce.Services
                     client = await clientProvider(authToken, true);
                     goto Execution;
                 }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
         }
 
@@ -358,12 +401,12 @@ namespace terminalSalesforce.Services
             return token;
         }
 
-        private IEnumerable<FieldDTO> objectDescriptions;
+        private IEnumerable<FieldDTO> _objectDescriptions;
 
         private SalesforceAuthToken ToSalesforceToken(AuthorizationToken ourToken)
         {
-            var startIndexOfInstanceUrl = ourToken.AdditionalAttributes.IndexOf("instance_url");
-            var startIndexOfApiVersion = ourToken.AdditionalAttributes.IndexOf("api_version");
+            var startIndexOfInstanceUrl = ourToken.AdditionalAttributes.IndexOf("instance_url", StringComparison.InvariantCulture);
+            var startIndexOfApiVersion = ourToken.AdditionalAttributes.IndexOf("api_version", StringComparison.InvariantCulture);
             var instanceUrl = ourToken.AdditionalAttributes.Substring(startIndexOfInstanceUrl, (startIndexOfApiVersion - 1 - startIndexOfInstanceUrl));
             var apiVersion = ourToken.AdditionalAttributes.Substring(startIndexOfApiVersion, ourToken.AdditionalAttributes.Length - startIndexOfApiVersion);
             instanceUrl = instanceUrl.Replace("instance_url=", "");

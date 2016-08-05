@@ -20,7 +20,7 @@ namespace Data.Infrastructure
     [DbConfigurationType(typeof(Fr8DbConfiguration))]
     public class DockyardDbContext : IdentityDbContext<IdentityUser>, IDBContext
     {
-        public static string DefaultConnectionStringName => "DockyardDB";
+        public static string DefaultConnectionStringName => "Fr8LocalDB";
 
         //This is to ensure compile will break if the reference to sql server is removed
         private static Type m_SqlProvider = typeof(SqlProviderServices);
@@ -264,6 +264,8 @@ namespace Data.Infrastructure
             modelBuilder.Entity<SubplanDO>().ToTable("SubPlans");
             modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");
             modelBuilder.Entity<ActivityTemplateDO>().ToTable("ActivityTemplate");
+            modelBuilder.Entity<ActivityCategoryDO>().ToTable("ActivityCategory");
+            modelBuilder.Entity<ActivityCategorySetDO>().ToTable("ActivityCategorySet");
             modelBuilder.Entity<WebServiceDO>().ToTable("WebServices");
             modelBuilder.Entity<TerminalSubscriptionDO>().ToTable("TerminalSubscription");
             modelBuilder.Entity<EncryptedAuthorizationData>().ToTable("EncryptedAuthorizationData");
@@ -356,10 +358,6 @@ namespace Data.Infrastructure
                 .HasForeignKey(x => x.OrganizationId)
                 .WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<ActivityDescriptionDO>().ToTable("ActivityDescriptions");
-            modelBuilder.Entity<NodeTransitionDO>().ToTable("NodeTransitions");
-            modelBuilder.Entity<PlanNodeDescriptionDO>().ToTable("PlanNodeDescriptions");
-            modelBuilder.Entity<PlanTemplateDO>().ToTable("PlanTemplates");
             modelBuilder.Entity<PageDefinitionDO>().ToTable("PageDefinitions");
             modelBuilder.Entity<TerminalRegistrationDO>().ToTable("TerminalRegistration");
 

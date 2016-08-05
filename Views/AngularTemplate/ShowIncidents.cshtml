@@ -25,16 +25,16 @@
              </div>
          </md-toolbar>
 
-         <md-toolbar class="md-table-toolbar md-default">
+         <md-toolbar class="md-table-toolbar md-default" ng-if="canSeeOtherUserIncidents">
              <div class="md-toolbar-tools" style="font-size: 15px;">
                  <md-radio-group ng-model="query.isCurrentUser" ng-change="getHistory()">
-                     <md-radio-button ng-value="false" class="md-primary">Show all logs</md-radio-button>
-                     <md-radio-button ng-value="true">Show current user's logs</md-radio-button>
+                     <md-radio-button ng-value="false" class="md-primary">Show incidents of all users</md-radio-button>
+                     <md-radio-button ng-value="true">Show only my incidents</md-radio-button>
                  </md-radio-group>
              </div>
          </md-toolbar>
 
-         <md-table-container>
+         <md-table-container ng-show="isAllowedToSeeResults">
              <table md-row-select ng-model="selected" md-table md-progress="promise">
                  <thead md-head md-order="orderBy" md-on-reorder="getHistory">
                  <tr md-row>
@@ -63,7 +63,11 @@
              </table>
          </md-table-container>
 
-         <md-table-pagination md-limit="query.itemPerPage" md-limit-options="[5, 10, 15, 20, 50, 100]" md-page="query.page" md-total="{{(result.totalItemCount || result.totalItemCount === 0) ? result.totalItemCount : 'NaN'}}" md-on-paginate="getHistory" md-page-select></md-table-pagination>
-     
+         <md-table-pagination ng-show="isAllowedToSeeResults" md-limit="query.itemPerPage" md-limit-options="[5, 10, 15, 20, 50, 100]" md-page="query.page" md-total="{{(result.totalItemCount || result.totalItemCount === 0) ? result.totalItemCount : 'NaN'}}" md-on-paginate="getHistory" md-page-select></md-table-pagination>
+         <md-toolbar class="md-table-toolbar md-default" ng-show="!isAllowedToSeeResults">
+             <div class="md-toolbar-tools">
+                 <h2 class="md-title font-green-haze text-right">You don't have permissions to see incidents of other users</h2>
+             </div>
+         </md-toolbar>
      </md-content>
  </div>

@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
 
 namespace HubTests.Services
@@ -73,6 +74,10 @@ namespace HubTests.Services
         public Task<string> PutAsync(Uri requestUri, HttpContent content, string CorrelationId = null, Dictionary<string, string> headers = null)
         {
             throw new NotImplementedException();
+        }
+
+        public void AddRequestSignature(IRequestSignature signature)
+        {
         }
 
         public Task<TResponse> PutAsync<TResponse>(Uri requestUri, HttpContent content, string CorrelationId = null, Dictionary<string, string> headers = null)

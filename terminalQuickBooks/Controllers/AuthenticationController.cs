@@ -12,14 +12,14 @@ namespace terminalQuickBooks.Controllers
     public class AuthenticationController : ApiController
     {
         private readonly IAuthenticator _authenticator;
-        private readonly IHubEventReporter _eventReporter;
+        private readonly IHubLoggerService _loggerService;
 
-        public AuthenticationController(IAuthenticator authenticator, IHubEventReporter eventReporter)
+        public AuthenticationController(IAuthenticator authenticator, IHubLoggerService loggerService)
         {
-            _eventReporter = eventReporter;
+            _loggerService = loggerService;
             _authenticator = authenticator;
         }
-
+        
         [HttpPost]
         [Route("request_url")]
         public ExternalAuthUrlDTO GenerateOAuthInitiationURL()
@@ -62,7 +62,7 @@ namespace terminalQuickBooks.Controllers
             }
             catch (Exception ex)
             {
-                await _eventReporter.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
+                await _loggerService.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {

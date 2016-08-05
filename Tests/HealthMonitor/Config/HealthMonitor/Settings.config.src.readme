@@ -24,7 +24,7 @@
   <!-- Common settings (these are not copied from the terminal configuration 
 files for predictability) -->
   <add key="HubApiVersion" value="v1" />
-  <add key="CoreWebServerUrl" value="http://localhost:30643/" />
+  <add key="DefaultHubUrl" value="http://localhost:30643/" />
 
   <!-- Terminal Secret-Id -->
   <add key="terminalAtlassianTerminalSecret" value="f747e49c-63a8-4a1b-8347-dd2e436c3b36" />
@@ -113,7 +113,8 @@ files for predictability) -->
 
   <!-- terminalGoogle settings -->
   <include src="Config\terminalGoogle\Settings.config"/>
-  <include src="..\..\terminalGoogle\web.config" only="terminalGoogle.TerminalEndpoint , GoogleRedirectUri , GoogleFormEventWebServerUrl"/>
+  <!-- We need actual GoogleFormEventWebServerUrl value for the current configuration -->
+  <include src="..\..\terminalGoogle\obj\Dev\TransformWebConfig\transformed\web.config" only="terminalGoogle.TerminalEndpoint , GoogleRedirectUri , GoogleFormEventWebServerUrl"/>
 
   <!-- terminalPapertrail settings -->
   <include src="Config\terminalPapertrail\Settings.config"/>

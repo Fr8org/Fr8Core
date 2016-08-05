@@ -14,6 +14,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Utilities;
 using Fr8.TerminalBase.BaseClasses;
+using Fr8.TerminalBase.Helpers;
 using Fr8.TerminalBase.Models;
 using Fr8.TerminalBase.Services;
 using Newtonsoft.Json;
@@ -24,10 +25,14 @@ using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSign.Activities
 {
+    /// <summary>
+    ///  Not in service, but may provide useful ideas and insights
+    /// </summary>
     public class Generate_DocuSign_Report_v1 : ExplicitTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("582A519E-7B1F-4424-B67B-EAA526C6953C"),
             Version = "1",
             Name = "Generate_DocuSign_Report",
             Label = "Generate DocuSign Report",
@@ -35,7 +40,12 @@ namespace terminalDocuSign.Activities
             NeedsAuthentication = true,
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Receive,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
@@ -219,7 +229,7 @@ namespace terminalDocuSign.Activities
             // Update report crate.
             Payload.Add(Crate.FromContent("Sql Query Result", searchResult));
 
-            ExecuteClientActivity("ShowTableReport");
+            RequestClientActivityExecution("ShowTableReport");
 
         }
 
@@ -368,7 +378,7 @@ namespace terminalDocuSign.Activities
 
         public override async Task Initialize()
         {
-            Storage.Add(PackControls(new ActivityUi()));
+            AddControls(new ActivityUi().Controls);
             Storage.AddRange(PackDesignTimeData());
             var plan = await _planService.UpdatePlanCategory(ActivityId, "report");
         }
@@ -452,7 +462,7 @@ namespace terminalDocuSign.Activities
                         var operationalStatus = new OperationalStateCM();
                         operationalStatus.CurrentActivityResponse =
                             ActivityResponseDTO.Create(ActivityResponse.ExecuteClientActivity);
-                        operationalStatus.CurrentClientActivityName = "RunImmediately";
+                        operationalStatus.CurrentActivityResponse.Body = "RunImmediately";
                     var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
                     Storage.Add(operationsCrate);
 
@@ -494,7 +504,7 @@ namespace terminalDocuSign.Activities
             return Crate<StandardQueryCM>.FromContent(QueryCrateLabel, queryCM);
         }
 
-        private async Task<PlanFullDTO> UpdatePlanName()
+        private async Task<PlanDTO> UpdatePlanName()
         {
             if (ConfigurationControls != null)
             {
@@ -506,7 +516,7 @@ namespace terminalDocuSign.Activities
 
                 if (criteria.Count > 0)
                 {
-                    return await _planService.UpdatePlanName(ActivityId, "Generate a DocuSign Report", ControlHelper.ParseConditionToText(criteria));
+                    return await _planService.UpdatePlanName(ActivityId, "Generate a DocuSign Report", FilterConditionHelper.ParseConditionToText(criteria));
                 }
             }
 

@@ -24,6 +24,7 @@ namespace terminalSalesforce.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
+            Id = new Guid("802bfcb5-f778-4187-82d3-b941a738a464"),
             Version = "1",
             Name = "Save_To_SalesforceDotCom",
             Label = "Save to Salesforce.Com",
@@ -31,7 +32,12 @@ namespace terminalSalesforce.Actions
             Category = ActivityCategory.Forwarders,
             MinPaneWidth = 330,
             WebService = TerminalData.WebServiceDTO,
-            Terminal = TerminalData.TerminalDTO
+            Terminal = TerminalData.TerminalDTO,
+            Categories = new[]
+            {
+                ActivityCategories.Forward,
+                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+            }
         };
 
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
@@ -46,9 +52,20 @@ namespace terminalSalesforce.Actions
         
         public override async Task Initialize()
         {
-                //In initial config, just create a DDLB 
-                //to let the user select which object they want to save.
-            CreateInitialControls(Storage);
+            //In initial config, just create a DDLB 
+            //to let the user select which object they want to save.
+            var whatKindOfData = new DropDownList
+            {
+                Name = "sfObjectType",
+                Required = true,
+                Label = "Which object do you want to save to Salesforce.com?",
+                Source = null,
+                Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") }
+            };
+
+            AddControls(whatKindOfData);
+            
+            ActivitiesHelper.GetAvailableFields(ConfigurationControls, "sfObjectType");
         }
 
         public override async Task FollowUp()
@@ -73,7 +90,7 @@ namespace terminalSalesforce.Actions
             //clear any existing TextSources. This is required when user changes the object in DDLB
             ConfigurationControls.Controls.RemoveAll(ctl => ctl is TextSource);
             chosenObjectFieldsList.ToList().ForEach(selectedObjectField =>
-                AddControl(ControlHelper.CreateTextSourceControl(selectedObjectField.Label, selectedObjectField.Name, string.Empty, addRequestConfigEvent: true, requestUpstream: true)));
+                AddControl(UiBuilder.CreateSpecificOrUpstreamValueChooser(selectedObjectField.Label, selectedObjectField.Name, string.Empty, addRequestConfigEvent: true, requestUpstream: true)));
 
             Storage.RemoveByLabelPrefix("Salesforce Object Fields - ");
             Storage.Add("Salesforce Object Fields - " + chosenObject, new FieldDescriptionsCM(chosenObjectFieldsList));
@@ -102,10 +119,7 @@ namespace terminalSalesforce.Actions
             //for each required field's control, check its value source
             requiredFieldControlsList.ToList().ForEach(c =>
             {
-                if (!c.HasValue || (c.CanGetValue(ValidationManager.Payload) && string.IsNullOrWhiteSpace(c.GetValue(ValidationManager.Payload))))
-                {
-                    ValidationManager.SetError($"{c.Label} must be provided for creating {chosenObject}", c);
-                }
+                ValidationManager.ValidateTextSourceNotEmpty(c, $"{c.Label} must be provided for creating {chosenObject}");
             });
 
             var controls = ConfigurationControls.Controls.Where(c => c.Name.Contains("Phone") || c.Name == "Fax");
@@ -135,7 +149,7 @@ namespace terminalSalesforce.Actions
             var fieldControlsList = ConfigurationControls.Controls.OfType<TextSource>();
 
             //get <Field> <Value> key value pair for the non empty field
-            var jsonInputObject = ActivitiesHelper.GenerateSalesforceObjectDictionary(fieldsList, fieldControlsList, Payload);
+            var jsonInputObject = ActivitiesHelper.GenerateSalesforceObjectDictionary(fieldsList, fieldControlsList);
 
             string result;
 
@@ -159,36 +173,7 @@ namespace terminalSalesforce.Actions
 
             RaiseError("Saving " + chosenObject + " to Salesforce.com is failed.");
         }
-
-        /// <summary>
-        /// Creates Initial config controls
-        /// </summary>
-        private void CreateInitialControls(ICrateStorage crateStorage)
-        {
-            AddSFObjectChooserControl(crateStorage);
-        }
-
-        /// <summary>
-        /// Clears the storage and adds StandardConfigurationControlsCM crate with only DDLB control named sfObjectType
-        /// </summary>
-        private void AddSFObjectChooserControl(ICrateStorage crateStorage)
-        {
-            crateStorage.Clear();
-            //DDLB for What Salesforce Object to be considered
-            var whatKindOfData = new DropDownList
-            {
-                Name = "sfObjectType",
-                Required = true,
-                Label = "Which object do you want to save to Salesforce.com?",
-                Source = null,
-                Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") }
-            };
-
-            var configurationControls = PackControlsCrate(whatKindOfData);
-            ActivitiesHelper.GetAvailableFields(configurationControls, "sfObjectType");
-            crateStorage.ReplaceByLabel(configurationControls);
-        }
-
+        
         /// <summary>
         /// Extracts current selected SF Object by the user
         /// </summary>

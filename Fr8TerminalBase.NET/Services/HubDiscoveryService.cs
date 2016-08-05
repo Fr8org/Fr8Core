@@ -7,11 +7,18 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities;
 using Fr8.Infrastructure.Utilities.Configuration;
+using Fr8.TerminalBase.Infrastructure;
 using Fr8.TerminalBase.Interfaces;
 using log4net;
+using StructureMap;
 
 namespace Fr8.TerminalBase.Services
 {
+    /// <summary>
+    /// Service that allows to gain access to multiple Hubs in those where the current terminal is registered.
+    /// Service is registered as a singleton within the DI container.This service is available globally.
+    /// See https://github.com/Fr8org/Fr8Core/blob/dev/Docs/ForDevelopers/SDK/.NET/Reference/IHubDiscoveryService.md
+    /// </summary>
     public class HubDiscoveryService : IHubDiscoveryService
     {
         /**********************************************************************************/
@@ -20,7 +27,7 @@ namespace Fr8.TerminalBase.Services
 
         private static readonly ILog Logger = Fr8.Infrastructure.Utilities.Logging.Logger.GetCurrentClassLogger();
         private readonly IRestfulServiceClient _restfulServiceClient;
-        private readonly IHMACService _hmacService;
+        private readonly IRestfulServiceClientFactory _restfulServiceClientFactory;
         private readonly IActivityStore _activityStore;
         private readonly IRetryPolicy _hubDiscoveryRetryPolicy;
         private readonly Dictionary<string, TaskCompletionSource<string>> _hubSecrets = new Dictionary<string, TaskCompletionSource<string>>(StringComparer.InvariantCultureIgnoreCase);
@@ -34,14 +41,14 @@ namespace Fr8.TerminalBase.Services
         // Functions
         /**********************************************************************************/
 
-        public HubDiscoveryService(IRestfulServiceClient restfulServiceClient, IHMACService hmacService, IActivityStore activityStore, IRetryPolicy hubDiscoveryRetryPolicy)
+        public HubDiscoveryService(IRestfulServiceClientFactory restfulServiceClientFactory, IActivityStore activityStore, IRetryPolicy hubDiscoveryRetryPolicy)
         {
-            _restfulServiceClient = restfulServiceClient;
-            _hmacService = hmacService;
+            _restfulServiceClientFactory = restfulServiceClientFactory;
+            _restfulServiceClient = _restfulServiceClientFactory.Create(null);
             _activityStore = activityStore;
             _hubDiscoveryRetryPolicy = hubDiscoveryRetryPolicy;
             _apiSuffix = $"/api/{CloudConfigurationManager.GetSetting("HubApiVersion")}";
-            _masterHubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl");
+            _masterHubUrl = CloudConfigurationManager.GetSetting("DefaultHubUrl");
         }
 
         /**********************************************************************************/
@@ -72,8 +79,8 @@ namespace Fr8.TerminalBase.Services
             }
             
             var secret = await setSecretTask.Task;
-
-            return new DefaultHubCommunicator(_restfulServiceClient, _hmacService, string.Concat(hubUrl, _apiSuffix), _activityStore.Terminal.PublicIdentifier, secret);
+            var restfulServiceClient = _restfulServiceClientFactory.Create(new HubAuthenticationHeaderSignature(secret, null));
+            return new DefaultHubCommunicator(restfulServiceClient, string.Concat(hubUrl, _apiSuffix), secret, null);
         }
 
         /**********************************************************************************/
@@ -87,6 +94,8 @@ namespace Fr8.TerminalBase.Services
 
         public void SetHubSecret(string hubUrl, string secret)
         {
+            Logger.Info($"Received the secret for Hub at '{hubUrl}'.");
+
             TaskCompletionSource<string> setSecretTask;
             var originalUrl = hubUrl;
 
@@ -137,9 +146,6 @@ namespace Fr8.TerminalBase.Services
                 }
 
                 var hubCommunicator = await GetMasterHubCommunicator();
-
-                hubCommunicator.Authorize(_activityStore.Terminal.PublicIdentifier);
-
                 var hubs = await hubCommunicator.QueryWarehouse<HubSubscriptionCM>(new List<FilterConditionDTO>());
 
                 if (hubs != null)
@@ -210,15 +216,13 @@ namespace Fr8.TerminalBase.Services
                 Logger.Info($"Terminal '{_activityStore.Terminal.Name}' wants to add Hub at '{hubUrl}' to subscription list");
 
                 var masterHubCommunicator = await GetMasterHubCommunicator();
-
-                masterHubCommunicator.Authorize(_activityStore.Terminal.PublicIdentifier);
                 await masterHubCommunicator.AddOrUpdateWarehouse(new HubSubscriptionCM(hubUrl.ToLower()));
 
                 Logger.Info($"Terminal '{_activityStore.Terminal.Name}' sucessfully added Hub '{hubUrl}' to subscription list");
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to add hub '{hubUrl}' to the subscription list of terminal {_activityStore.Terminal.Name} ({_activityStore.Terminal.PublicIdentifier})", ex);
+                Logger.Error($"Failed to add hub '{hubUrl}' to the subscription list of terminal {_activityStore.Terminal.Name} ({_activityStore.Terminal.Version})", ex);
             }
         }
 
@@ -229,11 +233,7 @@ namespace Fr8.TerminalBase.Services
             try
             {
                 Logger.Info($"Terminal '{_activityStore.Terminal.Name}' wants to remove Hub at '{hubUrl}' from subscription list");
-
                 var masterHubCommunicator = await GetMasterHubCommunicator();
-
-                masterHubCommunicator.Authorize(_activityStore.Terminal.PublicIdentifier);
-
                 await masterHubCommunicator.DeleteFromWarehouse<HubSubscriptionCM>(new List<FilterConditionDTO>
                 {
                     new FilterConditionDTO
@@ -243,12 +243,11 @@ namespace Fr8.TerminalBase.Services
                         Value = hubUrl.ToLower()
                     }
                 });
-
                 Logger.Info($"Terminal '{_activityStore.Terminal.Name}' sucessfully removed Hub '{hubUrl}' from subscription list");
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to remove hub '{hubUrl}' from the subscription list of terminal {_activityStore.Terminal.Name} ({_activityStore.Terminal.PublicIdentifier})", ex);
+                Logger.Error($"Failed to remove hub '{hubUrl}' from the subscription list of terminal {_activityStore.Terminal.Name} ({_activityStore.Terminal.Version})", ex);
             }
         }
         
@@ -282,7 +281,7 @@ namespace Fr8.TerminalBase.Services
 
                     if (_hubSecrets.TryGetValue(hubUrl, out setSecretTask))
                     {
-                        Logger.Error($"Hub at '{hubUrl}' refused to call terminal discovery endpoint: {lastException.Message}");
+                        Logger.Error($"Terminal {_activityStore.Terminal.Name}({_activityStore.Terminal.Version}): Hub at '{hubUrl}' refused to call terminal discovery endpoint: {lastException.Message}");
                         setSecretTask.TrySetException(new Exception($"Failed to request discovery from the Hub at : {hubUrl}", lastException));
                     }
                 }
@@ -304,13 +303,13 @@ namespace Fr8.TerminalBase.Services
 
                         if (_hubSecrets.TryGetValue(hubUrl, out setSecretTask))
                         {
-                            shouldUnubscribe = setSecretTask.TrySetException(new Exception($"Hub '{hubUrl}' failed to respond with discovery request within a given period of time."));
+                            shouldUnubscribe = setSecretTask.TrySetException(new Exception($"Terminal { _activityStore.Terminal.Name }({ _activityStore.Terminal.Version}): Hub '{hubUrl}' failed to respond with discovery request within a given period of time."));
                         }
                     }
 
                     if (shouldUnubscribe)
                     {
-                        Logger.Error($"Hub at '{hubUrl}'failed to respond with discovery request within a given period of time");
+                        Logger.Error($"Terminal { _activityStore.Terminal.Name }({ _activityStore.Terminal.Version}): Hub at '{hubUrl}'failed to respond with discovery request within a given period of time");
                         UnsubscribeFromHub(hubUrl);
                     }
                 });
