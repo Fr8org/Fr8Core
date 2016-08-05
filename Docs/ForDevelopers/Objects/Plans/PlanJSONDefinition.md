@@ -93,7 +93,7 @@ The JSON representation of this plan is:
   "tag": null,
   "description": null,
   "lastUpdated": "2016-08-02T19:52:46.2268865+00:00",
-  "planState": 1,
+  "planState": "Inactive",
   "startingSubPlanId": "e26e374e-2691-4625-89fe-79d5200b4e89",
   "visibility": {
     "hidden": false,
@@ -113,9 +113,10 @@ Describes properties of the [plan](/Docs/ForDevelopers/Objects/Plans/Plans.md) i
 * **lastUpdated** - Last time this plan was changed
 * **startingSubPlanId** - Identifier of the subplan, activities of which will be executed when the user requests the plan execution.
 * **planState** - state of the plan. Can be:   
-	* **1** - *Inactive*. Plan is created, but it is not being executed right now
-    * **2** - *Running*. Plan is being executed.
-    * **3** - *Deleted*. Plan was deleted. In Fr8, when user deletes the plan its content stays in the DB untouched. The only thing changes is the plan state. Fr8 marks such plan as deleted and stops displaying and processing it. 
+	* **Inactive**. Plan is created, but it is not being executed right now
+    * **Running**. Plan is being executed.
+	* **Active**. This is monitoring plan and this plan has been sucessfully activated. Now it is waiting for trigger event to start execution.
+    * **Deleted**. Plan was deleted. In Fr8, when user deletes the plan its content stays in the DB untouched. The only thing changes is the plan state. Fr8 marks such plan as deleted and stops displaying and processing it. 
 
 ### Visibility
 
