@@ -262,7 +262,6 @@
     <Compile Include="Entities\PermissionSetDO.cs" />
     <Compile Include="Entities\PlanNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
-    <Compile Include="Entities\TerminalRegistrationDO.cs" />
     <Compile Include="Entities\TerminalSubscriptionDO.cs" />
     <Compile Include="Entities\WebServiceDO.cs" />
     <Compile Include="Expressions\ConversionMethods.cs" />
@@ -763,10 +762,6 @@
     <Compile Include="Migrations\201607301037088_PlanDTO_PlanFullDTO_Refactoring.Designer.cs">
       <DependentUpon>201607301037088_PlanDTO_PlanFullDTO_Refactoring.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201608011644376_TerminalRegistrationEnhancements.cs" />
-    <Compile Include="Migrations\201608011644376_TerminalRegistrationEnhancements.Designer.cs">
-      <DependentUpon>201608011644376_TerminalRegistrationEnhancements.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201607310758516_Standard_Permissions_for_Terminals.cs" />
     <Compile Include="Migrations\201607310758516_Standard_Permissions_for_Terminals.Designer.cs">
       <DependentUpon>201607310758516_Standard_Permissions_for_Terminals.cs</DependentUpon>
@@ -778,6 +773,14 @@
     <Compile Include="Migrations\201608021530462_RemoveRunnable.cs" />
     <Compile Include="Migrations\201608021530462_RemoveRunnable.Designer.cs">
       <DependentUpon>201608021530462_RemoveRunnable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608042155503_TerminalEndpoints.cs" />
+    <Compile Include="Migrations\201608042155503_TerminalEndpoints.Designer.cs">
+      <DependentUpon>201608042155503_TerminalEndpoints.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608042335095_Terminals_RemoveRequiredAttribute.cs" />
+    <Compile Include="Migrations\201608042335095_Terminals_RemoveRequiredAttribute.Designer.cs">
+      <DependentUpon>201608042335095_Terminals_RemoveRequiredAttribute.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -890,7 +893,6 @@
     <Compile Include="Repositories\Utilization\SqlUtilizationDataProvider.cs" />
     <Compile Include="Repositories\WebServiceRepository.cs" />
     <Compile Include="States\ParticipationState.cs" />
-    <Compile Include="States\OperationalState.cs" />
     <Compile Include="States\ActivationState.cs" />
     <Compile Include="States\ActivityTemplateState.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
@@ -936,7 +938,6 @@
     <Compile Include="States\PermissionType.cs" />
     <Compile Include="States\SubscriptionState.cs" />
     <Compile Include="States\Templates\_ParticipationStateTemplate.cs" />
-    <Compile Include="States\Templates\_OperationalStateTemplate.cs" />
     <Compile Include="States\Templates\_PermissionTypeTemplate.cs" />
     <Compile Include="States\Templates\_SubscriptionStateTemplate.cs" />
     <Compile Include="States\ContainerState.cs" />
@@ -1430,11 +1431,14 @@
     <EmbeddedResource Include="Migrations\201607311227053_ChangeRoleName_Customer_to_StandardUser.resx">
       <DependentUpon>201607311227053_ChangeRoleName_Customer_to_StandardUser.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201608011644376_TerminalRegistrationEnhancements.resx">
-      <DependentUpon>201608011644376_TerminalRegistrationEnhancements.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201608021530462_RemoveRunnable.resx">
       <DependentUpon>201608021530462_RemoveRunnable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608042155503_TerminalEndpoints.resx">
+      <DependentUpon>201608042155503_TerminalEndpoints.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608042335095_Terminals_RemoveRequiredAttribute.resx">
+      <DependentUpon>201608042335095_Terminals_RemoveRequiredAttribute.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

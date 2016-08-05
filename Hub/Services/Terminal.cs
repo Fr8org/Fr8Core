@@ -143,7 +143,7 @@ namespace Hub.Services
                 TerminalDO terminal;
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    var existingTerminal = uow.TerminalRepository.FindOne(x => x.Name == terminalDo.Name);
+                    var existingTerminal = uow.TerminalRepository.FindOne(x => x.Endpoint == terminalDo.Endpoint);
 
                     if (existingTerminal == null)
                     {

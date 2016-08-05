@@ -4,6 +4,8 @@
         name: string;
         label: string;
         endpoint: string;
+        prodUrl: string;
+        devUrl: string;
         description: string;
         version: string;
         terminalStatus: number;

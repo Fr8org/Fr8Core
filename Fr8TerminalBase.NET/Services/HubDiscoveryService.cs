@@ -261,7 +261,7 @@ namespace Fr8.TerminalBase.Services
             {
                 Logger.Info($"Terminal {_activityStore.Terminal.Name} is requesting discovery for endpoint '{_activityStore.Terminal.Endpoint}' from Hub at '{hubUrl}' ");
 
-                var response = await _hubDiscoveryRetryPolicy.Do(() => _restfulServiceClient.PostAsync<string, ResponseMessageDTO>(new Uri(string.Concat(hubUrl, _apiSuffix, "/terminals/forceDiscover")), _activityStore.Terminal.Endpoint, (string) null));
+                var response = await _hubDiscoveryRetryPolicy.Do(() => _restfulServiceClient.PostAsync<TerminalDTO, ResponseMessageDTO>(new Uri(string.Concat(hubUrl, _apiSuffix, "/terminals/forceDiscover")), _activityStore.Terminal, (string) null));
                 
                 if (!string.IsNullOrWhiteSpace(response?.ErrorCode))
                 {

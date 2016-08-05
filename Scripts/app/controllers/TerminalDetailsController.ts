@@ -29,6 +29,7 @@ module dockyard.controllers {
             private TerminalService: services.ITerminalService) {
 
             TerminalService.get({ id: $state.params['id'] }).$promise.then(function (data) {
+                debugger;
                 $scope.terminal = data;
             });
 

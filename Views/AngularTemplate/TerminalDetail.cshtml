@@ -33,10 +33,18 @@
                             </div>
                             <div class="form-group">
                                 <label class="control-label">Name</label>
-                                <input type="text" placeholder="" disabled="disabled" maxlength="100" class="form-control" ng-model="terminal.label"/>
+                                <input type="text" placeholder="" disabled="disabled" maxlength="100" class="form-control" ng-model="terminal.label" />
                             </div>
                             <div class="form-group">
-                                <label class="control-label">Development Endpoint</label>
+                                <label class="control-label">Development URL</label>
+                                <input type="text" placeholder="" disabled="disabled" maxlength="100" class="form-control" ng-model="terminal.devUrl" />
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Production URL</label>
+                                <input type="text" placeholder="" disabled="disabled" maxlength="100" class="form-control" ng-model="terminal.prodUrl" />
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Currently used URL<sup>*</sup> (read-only)</label>
                                 <input type="text" placeholder="" disabled="disabled" maxlength="100" class="form-control" ng-model="terminal.endpoint" />
                             </div>
                             <div class="margiv-top-10">
@@ -47,6 +55,12 @@
                                     Close
                                 </a>
                             </div>
+                            <div>
+                                <sup>*</sup> Currently used URL denotes the URL which is used by the Hub to access the terminal at this moment. 
+                                It can be equal to the Production URL or the Development URL or some other URL depending on terminal participation state 
+                                and deployment status.  
+                            </div>
+
                         </form>
                     </div>
                     <!-- END PROCESS FORM -->

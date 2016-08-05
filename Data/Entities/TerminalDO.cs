@@ -17,13 +17,10 @@ namespace Data.Entities
 
         public string Secret { get; set; }
         
-        [Required]
         public string Name { get; set; }
 
-        [Required]
         public string Version { get; set; }
 
-        [Required]
         public string Label { get; set; }
 
         [ForeignKey("TerminalStatusTemplate")]
@@ -46,7 +43,6 @@ namespace Data.Entities
         public string UserId { get; set; }
         public string Description { get; set; }
 
-        [Required]
         [ForeignKey("AuthenticationTypeTemplate")]
         public int AuthenticationType { get; set; }
 

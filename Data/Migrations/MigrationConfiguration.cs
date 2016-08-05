@@ -77,32 +77,32 @@ namespace Data.Migrations
         private void RegisterTerminals(UnitOfWork uow)
         {
             // Example of terminal registration: RegisterTerminal (uow, "localhost:12345");   
-            RegisterTerminal(uow, "localhost:10109");
-            RegisterTerminal(uow, "localhost:56785");
-            RegisterTerminal(uow, "localhost:46281");
-            RegisterTerminal(uow, "localhost:61121");
-            RegisterTerminal(uow, "localhost:54642");
-            RegisterTerminal(uow, "localhost:39504");
-            RegisterTerminal(uow, "localhost:53234");
-            RegisterTerminal(uow, "localhost:30700");
-            RegisterTerminal(uow, "localhost:51234");
-            RegisterTerminal(uow, "localhost:50705");
-            RegisterTerminal(uow, "localhost:10601");
-            RegisterTerminal(uow, "localhost:30699");
-            RegisterTerminal(uow, "localhost:25923");
-            RegisterTerminal(uow, "localhost:47011");
-            RegisterTerminal(uow, "localhost:19760");
-            RegisterTerminal(uow, "localhost:30701");
-            RegisterTerminal(uow, "localhost:39768");
-            RegisterTerminal(uow, "localhost:48317");
-            RegisterTerminal(uow, "localhost:39555");
-            RegisterTerminal(uow, "localhost:64879");
-            RegisterTerminal(uow, "localhost:50479");
-            RegisterTerminal(uow, "localhost:22555");
-            RegisterTerminal(uow, "localhost:48675");
-            RegisterTerminal(uow, "localhost:22666");
-            RegisterTerminal(uow, "localhost:59022");
-            RegisterTerminal(uow, "localhost:38080");
+            RegisterFr8OwnTerminal(uow, "localhost:10109");
+            RegisterFr8OwnTerminal(uow, "localhost:56785");
+            RegisterFr8OwnTerminal(uow, "localhost:46281");
+            RegisterFr8OwnTerminal(uow, "localhost:61121");
+            RegisterFr8OwnTerminal(uow, "localhost:54642");
+            RegisterFr8OwnTerminal(uow, "localhost:39504");
+            RegisterFr8OwnTerminal(uow, "localhost:53234");
+            RegisterFr8OwnTerminal(uow, "localhost:30700");
+            RegisterFr8OwnTerminal(uow, "localhost:51234");
+            RegisterFr8OwnTerminal(uow, "localhost:50705");
+            RegisterFr8OwnTerminal(uow, "localhost:10601");
+            RegisterFr8OwnTerminal(uow, "localhost:30699");
+            RegisterFr8OwnTerminal(uow, "localhost:25923");
+            RegisterFr8OwnTerminal(uow, "localhost:47011");
+            RegisterFr8OwnTerminal(uow, "localhost:19760");
+            RegisterFr8OwnTerminal(uow, "localhost:30701");
+            RegisterFr8OwnTerminal(uow, "localhost:39768");
+            RegisterFr8OwnTerminal(uow, "localhost:48317");
+            RegisterFr8OwnTerminal(uow, "localhost:39555");
+            RegisterFr8OwnTerminal(uow, "localhost:64879");
+            RegisterFr8OwnTerminal(uow, "localhost:50479");
+            RegisterFr8OwnTerminal(uow, "localhost:22555");
+            RegisterFr8OwnTerminal(uow, "localhost:48675");
+            RegisterFr8OwnTerminal(uow, "localhost:22666");
+            RegisterFr8OwnTerminal(uow, "localhost:59022");
+            RegisterFr8OwnTerminal(uow, "localhost:38080");
         }
 
         private string ExtractPort(string url)
@@ -122,7 +122,7 @@ namespace Data.Migrations
         }
 
         // ReSharper disable once UnusedMember.Local
-        private void RegisterTerminal(UnitOfWork uow, string terminalEndpoint)
+        private void RegisterFr8OwnTerminal(UnitOfWork uow, string terminalEndpoint)
         {
             var terminalRegistration = new TerminalDO();
             string terminalPort = ExtractPort(terminalEndpoint);
@@ -139,7 +139,7 @@ namespace Data.Migrations
 
             terminalRegistration.Endpoint = terminalEndpoint;
             terminalRegistration.IsFr8OwnTerminal = true;
-            terminalRegistration.TerminalStatus = TerminalStatus.Active;
+            terminalRegistration.TerminalStatus = TerminalStatus.Undiscovered;
             terminalRegistration.ParticipationState = ParticipationState.Approved;
 
             uow.TerminalRepository.Add(terminalRegistration);
