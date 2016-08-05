@@ -1,6 +1,8 @@
 ﻿<#@ template language="C#" #>
-    <#@ assembly name="$(SolutionDir)\bin\Fr8Infrastructure.NET.dll" #>
-        <#@ parameter name="planTemplate" type="Fr8.Infrastructure.Data.DataTransferObjects.PublishPlanTemplateDTO" #>
+<#@ assembly name="$(SolutionDir)\bin\Fr8Infrastructure.NET.dll" #>
+<#@ assembly name="$(ProjectDir)\bin\PlanDirectory.dll" #>
+<#@ import namespace="PlanDirectory.ViewModels" #>
+<#@ parameter name="planTemplate" type="Fr8.Infrastructure.Data.DataTransferObjects.PublishPlanTemplateDTO" #>
 <!DOCTYPE html>
 <html>
 
@@ -32,7 +34,7 @@
                 <div class="container">
                     <!-- NAVIGATION BAR LOGO -->
                     <div class="navbar-header">
-                        <a href="http://dev.fr8.co" class="navbar-brand">
+                        <a href="<#=NavLinks.BaseUrl#>" class="navbar-brand">
                             <img src="../Content/img/dockyard_logo_white.png" alt="FR8">
                             <h1 class="hide">FR8 Company</h1>
                         </a>
@@ -43,14 +45,14 @@
                         <!-- MENU -->
                         <ul class="nav navbar-nav navbar-right">
                             <!--How It Works-->
-                            <li><a href="http://dev.fr8.co/#about">How it Works</a></li>
+                            <li><a href="<#=NavLinks.BaseUrl#>/#about">How it Works</a></li>
                             <!--Services-->
                             <li data-scroll="scrolling" class="dropdown">
                                 <a data-target="#" href="/" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Services">Services <span class="caret"></span></a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="http://dev.fr8.co/Services/DocuSign">DocuSign</a></li>
-                                    <li><a href="http://dev.fr8.co/Services/Salesforce">Salesforce.com</a></li>
-                                    <li><a href="http://dev-directory.fr8.co">Plan Directory</a></li>
+                                    <li><a href="<#=NavLinks.BaseUrl#>/Services/DocuSign">DocuSign</a></li>
+                                    <li><a href="<#=NavLinks.BaseUrl#>/Services/Salesforce">Salesforce.com</a></li>
+                                    <li><a href="<#=NavLinks.PlanDirectory#>">Plan Directory</a></li>
                                 </ul>
                             </li>
                             <!--Developers-->
@@ -59,23 +61,17 @@
                             <li data-scroll="scrolling" class="dropdown">
                                 <a href="/" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Company">Company <span class="caret"></span></a>
                                 <ul class="dropdown-menu">
-                                    <li data-scroll="scrolling"><a href="http://dev.fr8.co/Company/#vision">Vision</a></li>
-                                    <li data-scroll="scrolling"><a href="http://dev.fr8.co/Company/#team">Team</a></li>
-                                    <li data-scroll="scrolling"><a href="http://dev.fr8.co/Company/#press">Press Releases</a></li>
-                                    <li data-scroll="scrolling"><a href="http://dev.fr8.co/Company/#location">Location</a></li>
-                                    <li data-scroll="scrolling"><a href="http://dev.fr8.co/Company/#jobs">Jobs</a></li>
+                                    <li data-scroll="scrolling"><a href="<#=NavLinks.BaseUrl#>/Company/#vision">Vision</a></li>
+                                    <li data-scroll="scrolling"><a href="<#=NavLinks.BaseUrl#>/Company/#team">Team</a></li>
+                                    <li data-scroll="scrolling"><a href="<#=NavLinks.BaseUrl#>/Company/#press">Press Releases</a></li>
+                                    <li data-scroll="scrolling"><a href="<#=NavLinks.BaseUrl#>/Company/#location">Location</a></li>
+                                    <li data-scroll="scrolling"><a href="<#=NavLinks.BaseUrl#>/Company/#jobs">Jobs</a></li>
                                 </ul>
                             </li>
                             <!--Contact-->
-                            <li><a href="http://dev.fr8.co/Support" title="Contact">Contact</a></li>
+                            <li><a href="<#=NavLinks.BaseUrl#>/Support" title="Contact">Contact</a></li>
                             <!--Blog-->
-                            <li><a href="http://blog.fr8.co" target="_blank">Blog</a></li>
-                            <!--Login Button on Right-->
-                            <li>
-                                <p class="navbar-btn">
-                                    <a href="http://dev.fr8.co/DockyardAccount" class="btn btn-danger">Login/Register</a>
-                                </p>
-                            </li>
+                            <li><a href="<#=NavLinks.Blog#>" target="_blank">Blog</a></li>
                         </ul>
                     </div>
                 </div>
