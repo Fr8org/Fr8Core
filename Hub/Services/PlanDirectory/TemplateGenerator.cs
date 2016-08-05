@@ -4,7 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Hub.Interfaces;
 
-namespace Hub.Services
+namespace Hub.Services.PlanDirectory
 {
     public class TemplateGenerator : ITemplateGenerator
     {

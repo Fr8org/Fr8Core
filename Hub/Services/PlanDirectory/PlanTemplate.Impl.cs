@@ -10,7 +10,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Hub.Interfaces;
 using StructureMap;
 
-namespace Hub.Services
+namespace Hub.Services.PlanDirectory
 {
     public class PlanTemplate : IPlanTemplate
     {

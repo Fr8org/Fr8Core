@@ -7,10 +7,9 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
-using HubWeb.CategoryPages;
-using HubWeb.Infrastructure_PD.Interfaces;
+using Hub.Resources;
 
-namespace HubWeb.Infrastructure_PD.Infrastructure
+namespace Hub.Services.PlanDirectory
 {
     public class WebservicesPageGenerator : IWebservicesPageGenerator
     {

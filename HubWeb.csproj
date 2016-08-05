@@ -393,11 +393,6 @@
     <Compile Include="App_Start\StartupMigration.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="CategoryPages\PlanCategoryTemplate.cs">
-      <DependentUpon>PlanCategoryTemplate.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Controllers\Api\ActivitiesController.cs" />
     <Compile Include="Controllers\Api\ActivityTemplatesController.cs" />
     <Compile Include="Controllers\Api\DocumentationController.cs" />
@@ -512,28 +507,14 @@
     <Compile Include="Infrastructure_HubWeb\Fr8TerminalAuthenticationAttribute.cs" />
     <Compile Include="Infrastructure_HubWeb\Fr8Identity.cs" />
     <Compile Include="Infrastructure_HubWeb\HtmlHelpers.cs" />
-    <Compile Include="Infrastructure_PD\Infrastructure\ActivityTemplateTag.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\AuthTokenManager.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\HubAuthenticationPDHeaderSignature.cs" />
-    <Compile Include="Infrastructure_PD\Infrastructure\ManifestPageGenerator.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\PlanDirectoryAuthorizeAttribute.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\PlanDirectoryBootstrapper.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\PlanDirectoryHMACAuthenticateAttribute.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\PlanDirectoryHubCommunicatorFactory.cs" />
-    <Compile Include="Infrastructure_PD\Infrastructure\TagGenerator.cs" />
-    <Compile Include="Infrastructure_PD\Infrastructure\TemplateTag.cs" />
-    <Compile Include="Infrastructure_PD\Infrastructure\TemplateTagStorage.cs" />
-    <Compile Include="Infrastructure_PD\Infrastructure\WebservicesPageGenerator.cs" />
-    <Compile Include="Infrastructure_PD\Infrastructure\WebServiceTemplateTag.cs" />
-    <Compile Include="Infrastructure_PD\Interfaces\CreatePlanDTO.cs" />
     <Compile Include="Infrastructure_PD\Interfaces\IAuthTokenManager.cs" />
     <Compile Include="Infrastructure_PD\Interfaces\IHubCommunicatorFactory.cs" />
-    <Compile Include="Infrastructure_PD\Interfaces\ITagGenerator.cs" />
-    <Compile Include="ManifestPages\ManifestDescriptionTemplate.cs">
-      <DependentUpon>ManifestDescriptionTemplate.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="ViewModels\AuthenticationErrorVM.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />
@@ -558,14 +539,6 @@
     <Compile Include="ExceptionHandling\WebApiExceptionFilterAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="CategoryPages\basecamp2.html" />
-    <Content Include="CategoryPages\built-in services-slack.html" />
-    <Content Include="CategoryPages\built-in services.html" />
-    <Content Include="CategoryPages\PlanCategoryTemplate.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>PlanCategoryTemplate.cs</LastGenOutput>
-    </Content>
-    <Content Include="CategoryPages\slack.html" />
     <Content Include="Content\css\CDNRelatedStyles.css" />
     <Content Include="Content\css\dockyard\activity-stream.css" />
     <Content Include="Content\css\dockyard\authentication-dialog.css" />
@@ -765,10 +738,6 @@
     <Content Include="Content\videos\motion_1920.jpg" />
     <Content Include="Content\videos\motion_1920.mp4" />
     <Content Include="Content\img\Management\Rob_Bailey.png" />
-    <Content Include="ManifestPages\ManifestDescriptionTemplate.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>ManifestDescriptionTemplate.cs</LastGenOutput>
-    </Content>
     <Content Include="Scripts\ai.0.15.0-build58334.js" />
     <Content Include="Scripts\ai.0.15.0-build58334.min.js" />
     <Content Include="Scripts\homejs\bootstrap.min.js" />
@@ -4435,11 +4404,12 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
+    <Folder Include="CategoryPages\" />
     <Folder Include="Content\img\forms\" />
     <Folder Include="Content\templates\metronic\assets\global\plugins\angularjs\plugins\angular-file-upload\uploads\" />
     <Folder Include="Content\templates\metronic\demo\" />
     <Folder Include="Controllers\Templates\" />
-    <Folder Include="Infrastructure_PD\Exceptions\" />
+    <Folder Include="ManifestPages\" />
     <Folder Include="Scripts\app\directives\filters\" />
     <Folder Include="Scripts\tests\templates\" />
     <Folder Include="ViewModelServices\" />

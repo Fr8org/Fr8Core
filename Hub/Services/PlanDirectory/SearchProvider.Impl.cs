@@ -9,7 +9,7 @@ using Hub.Interfaces;
 using Microsoft.Azure.Search;
 using Microsoft.Azure.Search.Models;
 
-namespace Hub.Services
+namespace Hub.Services.PlanDirectory
 {
     public class SearchProvider : ISearchProvider
     {

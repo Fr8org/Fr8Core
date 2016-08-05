@@ -8,11 +8,9 @@ using Fr8.Infrastructure.Data.Manifests;
 using Hub.Enums;
 using Hub.Exceptions;
 using Hub.Interfaces;
-using HubWeb.Infrastructure_PD.Interfaces;
-using HubWeb.ManifestPages;
+using Hub.Resources;
 
-
-namespace PlanDirectory.Infrastructure
+namespace Hub.Services.PlanDirectory
 {
     public class ManifestPageGenerator : IManifestPageGenerator
     {

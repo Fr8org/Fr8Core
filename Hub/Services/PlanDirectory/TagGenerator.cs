@@ -7,10 +7,9 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
-using HubWeb.Infrastructure_PD.Interfaces;
 using StructureMap;
 
-namespace HubWeb.Infrastructure_PD.Infrastructure
+namespace Hub.Services.PlanDirectory
 {
     public class TagGenerator : ITagGenerator
     {

@@ -7,8 +7,7 @@ using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
 using Hub.Services;
-using HubWeb.Infrastructure_PD.Infrastructure;
-using HubWeb.Infrastructure_PD.Interfaces;
+using Hub.Services.PlanDirectory;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 

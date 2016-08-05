@@ -4,7 +4,7 @@ using System.Linq;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Newtonsoft.Json;
 
-namespace HubWeb.Infrastructure_PD.Infrastructure
+namespace Hub.Services.PlanDirectory
 {
     public class ActivityTemplateTag : TemplateTag
     {

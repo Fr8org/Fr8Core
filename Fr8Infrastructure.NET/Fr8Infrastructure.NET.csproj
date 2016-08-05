@@ -210,6 +210,7 @@
     <Compile Include="Data\DataTransferObjects\PayloadDTO.cs" />
     <Compile Include="Data\DataTransferObjects\PermissionDTO.cs" />
     <Compile Include="Data\DataTransferObjects\PhoneNumberCredentialsDTO.cs" />
+    <Compile Include="Data\DataTransferObjects\PlanDirectory\CreatePlanDTO.cs" />
     <Compile Include="Data\DataTransferObjects\PlanDirectory\SearchItemDTO.cs" />
     <Compile Include="Data\DataTransferObjects\PlanDirectory\SearchRequestDTO.cs" />
     <Compile Include="Data\DataTransferObjects\PlanDirectory\SearchResultDTO.cs" />
