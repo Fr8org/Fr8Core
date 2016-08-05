@@ -43,9 +43,9 @@
                         <md-icon md-font-icon="fa-play" class="fa fa-2x" style="color:green"></md-icon>
                     </md-button>
                 </span>
-                <span ng-click="deactivatePlan()" ng-if="plan.planState === 2">
+                <span ng-click="deactivatePlan()" ng-if="plan.planState === 2 || plan.planState === 4">
                     <strong><span class="plan-state-text">{{plan.planState | PlanState}}</span></strong>
-                    <md-button class="md-icon-button" ng-show="plan.planState === 2">
+                    <md-button class="md-icon-button">
                       <md-icon md-font-icon="fa fa-stop" class="fa fa-2x" style="color:black;margin-top:-3px"></md-icon>
                       <span style="font-size:10px; margin-top:-12.5px; display:block;">stop</span>
                     </md-button>

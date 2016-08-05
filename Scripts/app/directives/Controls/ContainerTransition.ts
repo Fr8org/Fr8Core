@@ -240,7 +240,9 @@ module dockyard.directives.containerTransition {
             };
 
             $scope.addTransition = () => {
-                $scope.field.transitions.push(new model.ContainerTransitionField());
+                var newTransition = new model.ContainerTransitionField();
+                newTransition.name = "transition_" + $scope.field.transitions.length;
+                $scope.field.transitions.push(newTransition);
             };
             var buildJumpTargets = (): Array<model.ActivityJumpTarget> => {
                 var targets = new Array<model.ActivityJumpTarget>();
@@ -285,6 +287,7 @@ module dockyard.directives.containerTransition {
             $scope.onTargetChange = (transition: model.ContainerTransitionField) => {
                 var dd = <model.DropDownList>(<any>transition)._dummySecondaryOperationDD;
                 transition.targetNodeId = dd.value;
+                transition.errorMessage = null;
                 triggerChange();
 
                 if ((<any>transition)._dummyOperationDD.value === ContainerTransitions.JumpToSubplan.toString()
@@ -300,7 +303,12 @@ module dockyard.directives.containerTransition {
 
             $scope.onOperationChange = (transition: model.ContainerTransitionField) => {
                 var dd = <model.DropDownList>(<any>transition)._dummyOperationDD;
+                var targetNodeDd = <model.DropDownList>(<any>transition)._dummySecondaryOperationDD;
+                targetNodeDd.value = null;
+                targetNodeDd.selectedKey = null;
+                transition.targetNodeId = null;
                 transition.transition = parseInt(dd.value);
+                transition.errorMessage = "";
                 processTransition(transition);
                 triggerChange();
                 return angular.noop;
@@ -338,6 +346,9 @@ module dockyard.directives.containerTransition {
             };
             $scope.removeTransition = (index: number) => {
                 $scope.field.transitions.splice(index, 1);
+                $scope.field.transitions.forEach((tran, index) => {
+                    tran.name = "transition_" + index;
+                });
                 triggerChange();
             };
 

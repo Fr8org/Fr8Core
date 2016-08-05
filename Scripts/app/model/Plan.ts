@@ -17,8 +17,9 @@
 
     export enum PlanState {
         Inactive = 1,
-        Running = 2,
-        Saving_Changes = 3
+        Executing = 2,
+        Saving_Changes = 3,
+        Active = 4
     }
 
     export enum PlanVisibility {
