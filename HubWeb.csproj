@@ -512,9 +512,6 @@
     <Compile Include="Infrastructure_HubWeb\Fr8TerminalAuthenticationAttribute.cs" />
     <Compile Include="Infrastructure_HubWeb\Fr8Identity.cs" />
     <Compile Include="Infrastructure_HubWeb\HtmlHelpers.cs" />
-    <Compile Include="Infrastructure_PD\Exceptions\ManifestGenerationException.cs" />
-    <Compile Include="Infrastructure_PD\Exceptions\ManifestNotFoundException.cs" />
-    <Compile Include="Infrastructure_PD\Exceptions\ManifestPageNotFoundException.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\ActivityTemplateTag.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\AuthTokenManager.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\HubAuthenticationPDHeaderSignature.cs" />
@@ -523,27 +520,15 @@
     <Compile Include="Infrastructure_PD\Infrastructure\PlanDirectoryBootstrapper.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\PlanDirectoryHMACAuthenticateAttribute.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\PlanDirectoryHubCommunicatorFactory.cs" />
-    <Compile Include="Infrastructure_PD\Infrastructure\PlanTemplate.Impl.cs" />
-    <Compile Include="Infrastructure_PD\Infrastructure\SearchProvider.Impl.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\TagGenerator.cs" />
-    <Compile Include="Infrastructure_PD\Infrastructure\TemplateGenerator.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\TemplateTag.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\TemplateTagStorage.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\WebservicesPageGenerator.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\WebServiceTemplateTag.cs" />
     <Compile Include="Infrastructure_PD\Interfaces\CreatePlanDTO.cs" />
-    <Compile Include="Infrastructure_PD\Interfaces\GenerateMode.cs" />
     <Compile Include="Infrastructure_PD\Interfaces\IAuthTokenManager.cs" />
     <Compile Include="Infrastructure_PD\Interfaces\IHubCommunicatorFactory.cs" />
-    <Compile Include="Infrastructure_PD\Interfaces\IManifestPageGenerator.cs" />
-    <Compile Include="Infrastructure_PD\Interfaces\IPlanTemplate.cs" />
-    <Compile Include="Infrastructure_PD\Interfaces\ISearchProvider.cs" />
     <Compile Include="Infrastructure_PD\Interfaces\ITagGenerator.cs" />
-    <Compile Include="Infrastructure_PD\Interfaces\ITemplateGenerator.cs" />
-    <Compile Include="Infrastructure_PD\Interfaces\IWebservicesPageGenerator.cs" />
-    <Compile Include="Infrastructure_PD\Interfaces\SearchItemDTO.cs" />
-    <Compile Include="Infrastructure_PD\Interfaces\SearchRequestDTO.cs" />
-    <Compile Include="Infrastructure_PD\Interfaces\SearchResultDTO.cs" />
     <Compile Include="ManifestPages\ManifestDescriptionTemplate.cs">
       <DependentUpon>ManifestDescriptionTemplate.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -4454,6 +4439,7 @@
     <Folder Include="Content\templates\metronic\assets\global\plugins\angularjs\plugins\angular-file-upload\uploads\" />
     <Folder Include="Content\templates\metronic\demo\" />
     <Folder Include="Controllers\Templates\" />
+    <Folder Include="Infrastructure_PD\Exceptions\" />
     <Folder Include="Scripts\app\directives\filters\" />
     <Folder Include="Scripts\tests\templates\" />
     <Folder Include="ViewModelServices\" />

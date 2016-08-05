@@ -66,7 +66,7 @@ namespace HubWeb.Infrastructure_PD.Infrastructure
                         publishPlanTemplateDTO.Name,
                         publishPlanTemplateDTO.Description ?? publishPlanTemplateDTO.Name,
                         CloudConfigurationManager.GetSetting("HubApiUrl").Replace("/api/v1/", "")
-                        + "/dashboard/plans/" + publishPlanTemplateDTO.ParentPlanId + "/builder?viewMode=plan"));
+                        + "dashboard/plans/" + publishPlanTemplateDTO.ParentPlanId + "/builder?viewMode=plan"));
                 }
                 await _templateGenerator.Generate(new PlanCategoryTemplate(), pageName, new Dictionary<string, object>
                 {

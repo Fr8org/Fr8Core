@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HubWeb.Infrastructure_PD.Interfaces
+namespace Fr8.Infrastructure.Data.DataTransferObjects.PlanDirectory
 {
     public class SearchItemDTO
     {

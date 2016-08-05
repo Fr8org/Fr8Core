@@ -96,7 +96,6 @@ namespace Hub.Services
                 PlanContents = planDto
             };
 
-
             //var planTemplateCM = await _planTemplate.CreateOrUpdate(userId, dto);
             //await _searchProvider.CreateOrUpdate(planTemplateCM);
             //await _webservicesPageGenerator.Generate(planTemplateCM, userId);
@@ -116,7 +115,7 @@ namespace Hub.Services
             await _client.PostAsync(uri, dto, headers: headers);
 
             // Notify user with directing him to PlanDirectory with related search query
-            var url = CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/PlanDirectory#?planSearch=" + HttpUtility.UrlEncode(dto.Name);
+            var url = CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/Plan_directory#?planSearch=" + HttpUtility.UrlEncode(dto.Name);
             _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
                 NotificationType = NotificationType.GenericSuccess,

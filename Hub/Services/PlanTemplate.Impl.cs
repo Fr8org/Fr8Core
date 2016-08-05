@@ -7,10 +7,10 @@ using Data.Interfaces;
 using Data.States;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
-using HubWeb.Infrastructure_PD.Interfaces;
+using Hub.Interfaces;
 using StructureMap;
 
-namespace HubWeb.Infrastructure_PD.Infrastructure
+namespace Hub.Services
 {
     public class PlanTemplate : IPlanTemplate
     {

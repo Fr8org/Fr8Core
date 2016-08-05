@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.DataTransferObjects.PlanDirectory;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities.Configuration;
-using HubWeb.Infrastructure_PD.Interfaces;
+using Hub.Interfaces;
 using Microsoft.Azure.Search;
 using Microsoft.Azure.Search.Models;
 
-namespace PlanDirectory.Infrastructure
+namespace Hub.Services
 {
     public class SearchProvider : ISearchProvider
     {
