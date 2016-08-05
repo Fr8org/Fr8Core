@@ -27,7 +27,8 @@ namespace terminalPapertrail.Actions
             Version = "1",
             Name = "Write_To_Log",
             Label = "Write To Log",
-            Category = ActivityCategory.Forwarders,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Forwarders,
             Terminal = TerminalData.TerminalDTO,
             MinPaneWidth = 330,
             // TODO: FR-4943, remove this.

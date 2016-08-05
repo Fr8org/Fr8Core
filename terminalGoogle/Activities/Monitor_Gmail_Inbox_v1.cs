@@ -34,7 +34,8 @@ namespace terminalGoogle.Activities
             Name = "Monitor_Gmail_Inbox",
             Label = "Monitor Gmail Inbox",
             Version = "1",
-            Category = ActivityCategory.Monitors,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Monitors,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             // TODO: FR-4943, remove this.

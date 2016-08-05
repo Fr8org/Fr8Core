@@ -13,7 +13,8 @@ namespace terminalDocuSign.Tests.Fixtures
                 Name = "Generate_DocuSign_Report",
                 Label = "Generate a DocuSign Report",
                 Version = "1",
-                Category = ActivityCategory.Solution,
+                // TODO: FR-4943, remove this.
+                // Category = ActivityCategory.Solution,
                 NeedsAuthentication = true,
                 MinPaneWidth = 550,
                 Tags = "HideChildren",

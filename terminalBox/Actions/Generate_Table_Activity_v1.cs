@@ -17,7 +17,8 @@ namespace terminalBox.Actions
             Id = new Guid("CADEAC51-3E10-4FC8-AF5D-5265D9A8EA71"),
             Name = "Generate_Table_Activity",
             Label = "Generate Table Activity",
-            Category = ActivityCategory.Receivers,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Receivers,
             Version = "1",
             // TODO: FR-4943, remove this.
             // WebService = TerminalData.WebServiceDTO,

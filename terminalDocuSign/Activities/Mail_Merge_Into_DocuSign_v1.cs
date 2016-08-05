@@ -30,7 +30,8 @@ namespace terminalDocuSign.Actions
             Label = "Mail Merge Into DocuSign",
             Version = "1",
             NeedsAuthentication = true,
-            Category = ActivityCategory.Solution,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Solution,
             MinPaneWidth = 500,
             Tags = Tags.UsesReconfigureList,
             // TODO: FR-4943, remove this.

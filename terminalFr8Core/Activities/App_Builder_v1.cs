@@ -31,7 +31,8 @@ namespace terminalFr8Core.Activities
             Name = "App_Builder",
             Label = "App Builder",
             Version = "1",
-            Category = ActivityCategory.Processors,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Processors,
             NeedsAuthentication = false,
             MinPaneWidth = 320,
             // TODO: FR-4943, remove this.

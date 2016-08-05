@@ -22,7 +22,8 @@ namespace terminalDocuSign.Activities
             Version = "1",
             Name = "Get_DocuSign_Template",
             Label = "Get DocuSign Template",
-            Category = ActivityCategory.Receivers,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Receivers,
             NeedsAuthentication = true,
             MinPaneWidth = 330,
             // TODO: FR-4943, remove this.

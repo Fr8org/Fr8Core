@@ -31,7 +31,8 @@ namespace terminalSalesforce.Actions
             Name = "Post_To_Chatter",
             Label = "Post To Salesforce Chatter",
             NeedsAuthentication = true,
-            Category = ActivityCategory.Forwarders,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Forwarders,
             MinPaneWidth = 330,
             // TODO: FR-4943, remove this.
             // WebService = TerminalData.WebServiceDTO,

@@ -23,7 +23,8 @@ namespace terminalDocuSign.Activities
             Name = "Extract_Data_From_Envelopes",
             Label = "Extract Data From Envelopes",
             Version = "1",
-            Category = ActivityCategory.Solution,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Solution,
             MinPaneWidth = 380,
             NeedsAuthentication = true,
             // TODO: FR-4943, remove this.
@@ -187,7 +188,7 @@ namespace terminalDocuSign.Activities
 
         private async Task<List<ListItem>> GetFinalActionListItems()
         {
-            var templates = await HubCommunicator.GetActivityTemplates(ActivityCategory.Forwarders, true);
+            var templates = await HubCommunicator.GetActivityTemplates(ActivityCategories.ForwardId, true);
             return templates.OrderBy(x => x.Label).Select(x => new ListItem { Key = x.Label, Value = x.Id.ToString() }).ToList();
         }
         #endregion

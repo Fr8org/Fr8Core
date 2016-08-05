@@ -31,7 +31,8 @@ namespace terminalDocuSign.Activities
             Name = "Track_DocuSign_Recipients",
             Label = "Track DocuSign Recipients",
             Version = "2",
-            Category = ActivityCategory.Solution,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Solution,
             NeedsAuthentication = true,
             MinPaneWidth = 380,
             // TODO: FR-4943, remove this.

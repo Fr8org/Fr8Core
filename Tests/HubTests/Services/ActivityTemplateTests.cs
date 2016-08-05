@@ -51,7 +51,8 @@ namespace HubTests.Services
         {
             return a.NeedsAuthentication == b.NeedsAuthentication &&
                    a.ActivityTemplateState == b.ActivityTemplateState &&
-                   a.Category == b.Category &&
+                   // TODO: FR-4943, remove this.
+                   // a.Category == b.Category &&
                    a.Description == b.Description &&
                    (skipId || a.Id == b.Id) &&
                    a.Label == b.Label &&
@@ -194,7 +195,8 @@ namespace HubTests.Services
             {
                 Id = id,
                 ActivityTemplateState = 1,
-                Category = Fr8.Infrastructure.Data.States.ActivityCategory.Forwarders,
+                // TODO: FR-4943, remove this.
+                // Category = Fr8.Infrastructure.Data.States.ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
                 Description = prefix + "des" + id,
                 Name = "name" + id,

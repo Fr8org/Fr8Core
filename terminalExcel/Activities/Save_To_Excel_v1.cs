@@ -211,7 +211,8 @@ namespace terminalExcel.Actions
             Name = "Save_To_Excel",
             Label = "Save to Excel",
             Version = "1",
-            Category = ActivityCategory.Forwarders,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Forwarders,
             Terminal = TerminalData.TerminalDTO,
             MinPaneWidth = 300,
             // TODO: FR-4943, remove this.

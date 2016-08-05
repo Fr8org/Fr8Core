@@ -27,7 +27,8 @@ namespace terminalAzure.Activities
             Id = new Guid("7150a1e3-a32a-4a0b-a632-42529e5fd24d"),
             Name = "Write_To_Sql_Server",
             Label = "Write to Azure Sql Server",
-            Category = ActivityCategory.Forwarders,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Forwarders,
             Version = "1",
             MinPaneWidth = 330,
             // TODO: FR-4943, remove this.

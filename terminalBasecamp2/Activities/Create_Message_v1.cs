@@ -24,7 +24,8 @@ namespace terminalBasecamp2.Activities
             Id = new Guid("E6633D9B-5159-46BD-A367-E2A5497E5F56"),
             Name = "Create_Message",
             Label = "Create Message",
-            Category = ActivityCategory.Forwarders,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Forwarders,
             Version = "1",
             MinPaneWidth = 330,
             // TODO: FR-4943, remove this.

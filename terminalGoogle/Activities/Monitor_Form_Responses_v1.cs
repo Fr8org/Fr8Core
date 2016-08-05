@@ -62,7 +62,8 @@ namespace terminalGoogle.Actions
             Name = "Monitor_Form_Responses",
             Label = "Monitor Form Responses",
             Version = "1",
-            Category = ActivityCategory.Monitors,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Monitors,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             // TODO: FR-4943, remove this.

@@ -25,7 +25,8 @@ namespace terminalStatX.Activities
             Name = "Monitor_Stat_Changes",
             Label = "Monitor Stat Changes",
             Version = "1",
-            Category = ActivityCategory.Monitors,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Monitors,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             MinPaneWidth = 300,

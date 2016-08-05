@@ -20,7 +20,8 @@ namespace terminalTelegram.Activities
             Name = "Post_To_Telegram",
             Label = "Post To Telegram",
             Tags = "Notifier",
-            Category = ActivityCategory.Forwarders,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Forwarders,
             Terminal = TerminalData.TerminalDTO,
             Version = "1",
             // TODO: FR-4943, remove this.

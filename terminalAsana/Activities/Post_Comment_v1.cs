@@ -31,7 +31,8 @@ namespace terminalAsana.Activities
             Id = new Guid("0ee8bf8f-941e-4861-beb8-d7d98536eba8"),
             Name = "Post_Comment",
             Label = "Post Comment",
-            Category = ActivityCategory.Forwarders,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Forwarders,
             Version = "1",
             MinPaneWidth = 330,
             // TODO: FR-4943, remove this.

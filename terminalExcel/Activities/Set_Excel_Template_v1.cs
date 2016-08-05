@@ -28,7 +28,8 @@ namespace terminalExcel.Activities
             Label = "Set Excel Template",
             Version = "1",
             MinPaneWidth = 330,
-            Category = ActivityCategory.Processors,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Processors,
             Terminal = TerminalData.TerminalDTO,
             Tags = "Table Data Generator,Skip At Run-Time",
             // TODO: FR-4943, remove this.

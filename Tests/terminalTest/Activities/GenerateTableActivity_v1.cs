@@ -14,7 +14,8 @@ namespace terminalTest.Actions
         {
             Name = "GenerateTableActivity",
             Label = "GenerateTableActivity",
-            Category = ActivityCategory.Processors,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Processors,
             Version = "1",
             // TODO: FR-4943, remove this.
             // WebService = TerminalData.WebServiceDTO,

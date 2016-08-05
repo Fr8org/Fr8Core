@@ -17,7 +17,8 @@ namespace terminalFr8Core.Activities
             Id = new Guid("4059e018-d8a5-4927-9712-8430ffba0b73"),
             Name = "Set_Delay",
             Label = "Delay Action Processing",
-            Category = ActivityCategory.Processors,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Processors,
             Version = "1",
             MinPaneWidth = 330,
             Type = ActivityType.Standard,

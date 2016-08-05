@@ -23,7 +23,8 @@ namespace terminalGoogle.Activities
             Name = "Get_Google_Sheet_Data",
             Label = "Get Google Sheet Data",
             Version = "1",
-            Category = ActivityCategory.Receivers,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Receivers,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             MinPaneWidth = 300,

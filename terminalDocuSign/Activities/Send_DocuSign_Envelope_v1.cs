@@ -27,7 +27,8 @@ namespace terminalDocuSign.Actions
             Version = "1",
             Name = "Send_DocuSign_Envelope",
             Label = "Send DocuSign Envelope",
-            Category = ActivityCategory.Forwarders,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Forwarders,
             Tags = string.Join(",", Tags.EmailDeliverer),
             NeedsAuthentication = true,
             MinPaneWidth = 330,

@@ -25,7 +25,8 @@ namespace terminalAtlassian.Actions
             Name = "Save_Jira_Issue",
             Label = "Save Jira Issue",
             NeedsAuthentication = true,
-            Category = ActivityCategory.Forwarders,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Forwarders,
             MinPaneWidth = 330,
             // TODO: FR-4943, remove this.
             // WebService = TerminalData.WebServiceDTO,

@@ -775,9 +775,9 @@
     <Compile Include="Migrations\201608030857168_RemovedNameAndCurrentViewFromActivityDO.Designer.cs">
       <DependentUpon>201608030857168_RemovedNameAndCurrentViewFromActivityDO.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201608050525599_Remove_WebServiceDO.cs" />
-    <Compile Include="Migrations\201608050525599_Remove_WebServiceDO.Designer.cs">
-      <DependentUpon>201608050525599_Remove_WebServiceDO.cs</DependentUpon>
+    <Compile Include="Migrations\201608050903514_Remove_WebServiceDO_ActivityCategoryEnum.cs" />
+    <Compile Include="Migrations\201608050903514_Remove_WebServiceDO_ActivityCategoryEnum.Designer.cs">
+      <DependentUpon>201608050903514_Remove_WebServiceDO_ActivityCategoryEnum.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1431,8 +1431,8 @@
     <EmbeddedResource Include="Migrations\201608030857168_RemovedNameAndCurrentViewFromActivityDO.resx">
       <DependentUpon>201608030857168_RemovedNameAndCurrentViewFromActivityDO.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201608050525599_Remove_WebServiceDO.resx">
-      <DependentUpon>201608050525599_Remove_WebServiceDO.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201608050903514_Remove_WebServiceDO_ActivityCategoryEnum.resx">
+      <DependentUpon>201608050903514_Remove_WebServiceDO_ActivityCategoryEnum.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

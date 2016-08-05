@@ -24,7 +24,8 @@ namespace terminalSlack.Activities
             Name = "Publish_To_Slack",
             Label = "Publish To Slack",
             Tags = "Notifier",
-            Category = ActivityCategory.Forwarders,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Forwarders,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             Version = "2",

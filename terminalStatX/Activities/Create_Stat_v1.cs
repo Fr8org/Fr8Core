@@ -34,7 +34,8 @@ namespace terminalStatX.Activities
             Name = "Create_Stat",
             Label = "Create Stat",
             Version = "1",
-            Category = ActivityCategory.Forwarders,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Forwarders,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             MinPaneWidth = 300,

@@ -32,7 +32,8 @@ namespace terminalFr8Core.Activities
             Id = new Guid("ad46fa79-eb0b-4990-ad01-76ebf9d471da"),
             Name = "Query_Fr8_Warehouse",
             Label = "Query Fr8 Warehouse",
-            Category = Fr8.Infrastructure.Data.States.ActivityCategory.Processors,
+            // TODO: FR-4943, remove this.
+            // Category = Fr8.Infrastructure.Data.States.ActivityCategory.Processors,
             Version = "1",
             MinPaneWidth = 550,
             // TODO: FR-4943, remove this.

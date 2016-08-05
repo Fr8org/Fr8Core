@@ -25,7 +25,8 @@ namespace terminalFr8Core.Activities
             Id = new Guid("51e59b13-b164-4a4a-9a37-f528cb05e0fb"),
             Name = "Convert_Related_Fields_Into_Table",
             Label = "Convert Related Fields Into a Table",
-            Category = ActivityCategory.Processors,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Processors,
             Version = "1",
             MinPaneWidth = 400,
             // TODO: FR-4943, remove this.

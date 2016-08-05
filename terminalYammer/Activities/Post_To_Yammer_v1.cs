@@ -24,7 +24,8 @@ namespace terminalYammer.Actions
             Name = "Post_To_Yammer",
             Label = "Post To Yammer",
             Tags = "Notifier",
-            Category = ActivityCategory.Forwarders,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Forwarders,
             NeedsAuthentication = true,
             Version = "1",
             MinPaneWidth = 330,

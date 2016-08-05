@@ -25,7 +25,8 @@ namespace terminalDocuSign.Activities
             Name = "Query_DocuSign",
             Label = "Query DocuSign",
             Version = "2",
-            Category = ActivityCategory.Receivers,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Receivers,
             NeedsAuthentication = true,
             MinPaneWidth = 380,
             // TODO: FR-4943, remove this.

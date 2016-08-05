@@ -29,7 +29,8 @@ namespace terminalSendGrid.Activities
             Version = "1",
             Tags = string.Join(",", Tags.Notifier, Tags.EmailDeliverer),
             Terminal = TerminalData.TerminalDTO,
-            Category = ActivityCategory.Forwarders,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Forwarders,
             MinPaneWidth = 330,
             // TODO: FR-4943, remove this.
             // WebService = TerminalData.WebServiceDTO,

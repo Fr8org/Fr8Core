@@ -16,7 +16,8 @@ namespace terminalTest.Actions
         {
             Name = "SimpleHierarchicalActivity",
             Label = "SimpleHierarchicalActivity",
-            Category = ActivityCategory.Processors,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Processors,
             Version = "1",
             // TODO: FR-4943, remove this.
             // WebService = TerminalData.WebServiceDTO,

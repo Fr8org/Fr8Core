@@ -26,7 +26,8 @@ namespace terminalFr8Core.Activities
             Name = "Filter_Object_List_By_Incoming_Message",
             Label = "Filter Object List by Incoming Message",
             Version = "1",
-            Category = ActivityCategory.Processors,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Processors,
             NeedsAuthentication = false,
             MinPaneWidth = 400,
             // TODO: FR-4943, remove this.

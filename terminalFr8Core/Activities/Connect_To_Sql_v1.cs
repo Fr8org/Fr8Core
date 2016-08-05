@@ -20,7 +20,8 @@ namespace terminalFr8Core.Activities
             Id = new Guid("bb019231-435a-49c3-96db-ab4ae9e7fb23"),
             Name = "Connect_To_Sql",
             Label = "Connect To SQL",
-            Category = ActivityCategory.Processors,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Processors,
             Version = "1",
             Tags = Tags.Internal,
             Terminal = TerminalData.TerminalDTO,

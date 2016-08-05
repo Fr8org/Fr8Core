@@ -65,7 +65,8 @@ namespace terminalDocuSignTests.Integration
                    Name = "Get Google Sheet Data",
                    Label = "Get Google Sheet Data",
                    Tags = "Table Data Generator",
-                   Category = ActivityCategory.Receivers,
+                   // TODO: FR-4943, remove this.
+                   // Category = ActivityCategory.Receivers,
                    Categories = new[] { ActivityCategories.Receive }
                }
            );

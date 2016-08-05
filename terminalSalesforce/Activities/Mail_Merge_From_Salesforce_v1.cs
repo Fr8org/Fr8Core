@@ -27,7 +27,8 @@ namespace terminalSalesforce.Actions
             Name = "Mail_Merge_From_Salesforce",
             Label = "Mail Merge from Salesforce",
             NeedsAuthentication = true,
-            Category = ActivityCategory.Solution,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Solution,
             MinPaneWidth = 500,
             Tags = Tags.UsesReconfigureList,
             // TODO: FR-4943, remove this.

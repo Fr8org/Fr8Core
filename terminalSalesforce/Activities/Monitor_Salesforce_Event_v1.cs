@@ -22,7 +22,8 @@ namespace terminalSalesforce.Actions
             Name = "Monitor_Salesforce_Event",
             Label = "Monitor Salesforce Events",
             NeedsAuthentication = true,
-            Category = ActivityCategory.Monitors,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Monitors,
             MinPaneWidth = 330,
             // TODO: FR-4943, remove this.
             // WebService = TerminalData.WebServiceDTO,

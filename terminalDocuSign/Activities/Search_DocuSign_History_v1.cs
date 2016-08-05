@@ -36,7 +36,8 @@ namespace terminalDocuSign.Activities
             Name = "Search_DocuSign_History",
             Label = "Search DocuSign History",
             Version = "1",
-            Category = ActivityCategory.Receivers,
+            // TODO: FR-4943, remove this.
+            // Category = ActivityCategory.Receivers,
             NeedsAuthentication = true,
             MinPaneWidth = 380,
             Tags = Tags.Internal,
