@@ -34,6 +34,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities;
 using Hub.Security.ObjectDecorators;
+using Hub.Services.PlanDirectory;
 using Hub.Services.Timers;
 
 namespace Hub.StructureMap
@@ -126,6 +127,13 @@ namespace Hub.StructureMap
                 For<ITimer>().Use<Win32Timer>();
                 For<IManifestRegistryMonitor>().Use<ManifestRegistryMonitor>().Singleton();
                 For<IUpstreamDataExtractionService>().Use<UpstreamDataExtractionService>().Singleton();
+
+
+                //PD services
+                For<IPlanTemplate>().Use<PlanTemplate>().Singleton();
+                For<ISearchProvider>().Use<SearchProvider>().Singleton();
+                For<IWebservicesPageGenerator>().Use<WebservicesPageGenerator>().Singleton();
+
                 For<IPlanDirectoryService>().Use<PlanDirectoryService>().Singleton();
                 
             }

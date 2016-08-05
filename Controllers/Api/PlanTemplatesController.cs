@@ -37,7 +37,6 @@ namespace HubWeb.Controllers.Api
 
         [HttpPost]
         [Fr8ApiAuthorize]
-        [PlanDirectoryHMACAuthenticate]
         public async Task<IHttpActionResult> Post(PublishPlanTemplateDTO dto)
         {
             var fr8AccountId = User.Identity.GetUserId();
@@ -49,7 +48,6 @@ namespace HubWeb.Controllers.Api
 
         [HttpDelete]
         [Fr8ApiAuthorize]
-        [PlanDirectoryHMACAuthenticate]
         public async Task<IHttpActionResult> Delete(Guid id)
         {
             var identity = User.Identity as ClaimsIdentity;
@@ -73,7 +71,6 @@ namespace HubWeb.Controllers.Api
 
         [HttpGet]
         [Fr8ApiAuthorize]
-        [PlanDirectoryHMACAuthenticate]
         public async Task<IHttpActionResult> Get(Guid id)
         {
             var fr8AccountId = User.Identity.GetUserId();
@@ -100,7 +97,6 @@ namespace HubWeb.Controllers.Api
 
         [HttpPost]
         [Fr8ApiAuthorize]
-        [PlanDirectoryHMACAuthenticate]
         public async Task<IHttpActionResult> CreatePlan(Guid id)
         {
             try
