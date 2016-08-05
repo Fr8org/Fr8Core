@@ -16,7 +16,6 @@ namespace Hub.Security.ObjectDecorators
 {
     public class PlanSecurityDecorator : IPlan
     {
-
         private readonly IPlan _target;
         private readonly ISecurityServices _securityServices;
 
