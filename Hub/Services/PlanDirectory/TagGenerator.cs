@@ -13,6 +13,13 @@ namespace Hub.Services.PlanDirectory
 {
     public class TagGenerator : ITagGenerator
     {
+        private readonly IPlanNode _activity;
+
+        public TagGenerator(IPlanNode activity)
+        {
+            _activity = activity;
+        }
+
         /// <summary>
         /// The result of this method is a a list of ActivityTemplateTag and WebServiceTemplateTag classes
         /// For a plan, that consists of activity named "A" of a webservice "Y"
@@ -30,20 +37,21 @@ namespace Hub.Services.PlanDirectory
             var result = new TemplateTagStorage();
 
             //requesting all activity templates
-            var hmacService = ObjectFactory.GetInstance<IHMACService>();
-            var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+            //var hmacService = ObjectFactory.GetInstance<IHMACService>();
+            //var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
-            var uri = new Uri(CloudConfigurationManager.GetSetting("HubApiUrl") + "/activitytemplates");
-            var headers = await hmacService.GenerateHMACHeader(
-                uri,
-                "PlanDirectory",
-                CloudConfigurationManager.GetSetting("PlanDirectorySecret"),
-                fr8AccountId,
-                null
-            );
+            //var uri = new Uri(CloudConfigurationManager.GetSetting("HubApiUrl") + "/activitytemplates");
+            //var headers = await hmacService.GenerateHMACHeader(
+            //    uri,
+            //    "PlanDirectory",
+            //    CloudConfigurationManager.GetSetting("PlanDirectorySecret"),
+            //    fr8AccountId,
+            //    null
+            //);
 
-            var activityCategories = await client.GetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(
-               uri, headers: headers);
+            var activityCategories = _activity.GetAvailableActivityGroups();
+               // await client.GetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(
+               //uri, headers: headers);
 
             var activityDict = activityCategories
                 .SelectMany(a => a.Activities)

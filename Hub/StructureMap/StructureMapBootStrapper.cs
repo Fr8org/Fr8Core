@@ -133,6 +133,8 @@ namespace Hub.StructureMap
                 For<IPlanTemplate>().Use<PlanTemplate>().Singleton();
                 For<ISearchProvider>().Use<SearchProvider>().Singleton();
                 For<IWebservicesPageGenerator>().Use<WebservicesPageGenerator>().Singleton();
+                For<IPageDefinition>().Use<PageDefinition>().Singleton();
+                //For<IPageDefinitionRepository>().Use<PageDefinitionRepository>().Singleton();
 
                 For<IPlanDirectoryService>().Use<PlanDirectoryService>().Singleton();
                 

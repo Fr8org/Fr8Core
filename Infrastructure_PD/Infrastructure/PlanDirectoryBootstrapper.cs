@@ -21,10 +21,11 @@ namespace PlanDirectory.Infrastructure
             {
                 For<IFr8Account>().Use<Fr8Account>().Singleton();
                 //For<IAuthTokenManager>().Use<AuthTokenManager>().Singleton();
-                For<IPlanTemplate>().Use<PlanTemplate>().Singleton();
-                For<ISearchProvider>().Use<SearchProvider>();
-                For<ITagGenerator>().Use<TagGenerator>().Singleton();
-                For<IPageDefinition>().Use<PageDefinition>().Singleton();
+                //For<IPlanTemplate>().Use<PlanTemplate>().Singleton();
+                //For<ISearchProvider>().Use<SearchProvider>();
+                //For<ITagGenerator>().Use<TagGenerator>().Singleton();
+
+                //For<IPageDefinition>().Use<PageDefinition>().Singleton();
                 For<IPageDefinitionRepository>().Use<PageDefinitionRepository>().Singleton();
                 //For<IHubCommunicatorFactory>().Use(
                 //    x => new PlanDirectoryHubCommunicatorFactory(
@@ -33,6 +34,7 @@ namespace PlanDirectory.Infrastructure
                 //        CloudConfigurationManager.GetSetting("PlanDirectorySecret")
                 //    )
                 //);
+
                 var serverPath = GetServerPath();
 
                 //now it is hub
