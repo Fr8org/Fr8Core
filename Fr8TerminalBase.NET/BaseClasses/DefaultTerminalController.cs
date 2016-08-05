@@ -3,6 +3,10 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.TerminalBase.Services;
+using Newtonsoft.Json.Serialization;
+using System.Collections.Generic;
+using System;
+using Newtonsoft.Json;
 
 namespace Fr8.TerminalBase.BaseClasses
 {
@@ -40,7 +44,16 @@ namespace Fr8.TerminalBase.BaseClasses
                 _hubDiscovery.SetHubSecret(hubUrl, secret);
             }
 
-            return Json(curStandardFr8TerminalCM);
+            return Json(curStandardFr8TerminalCM, new JsonSerializerSettings() { ContractResolver = new ExcludeTerminalContractResolver() });
+        }
+
+        public class ExcludeTerminalContractResolver : Newtonsoft.Json.Serialization.DefaultContractResolver
+        {
+            protected override IList<JsonProperty> CreateProperties(Type type, Newtonsoft.Json.MemberSerialization memberSerialization)
+            {
+                IList<JsonProperty> properties = base.CreateProperties(type, memberSerialization);
+                return properties.Where(p => p.PropertyName != "terminal").ToList();
+            }
         }
     }
 }

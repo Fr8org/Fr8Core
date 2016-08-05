@@ -10,9 +10,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
             AuthenticationType = States.AuthenticationType.None;
             Roles = new List<string>();
         }
-
-        [JsonProperty("id")]
-        public string PublicIdentifier { get; set; }
+        
         [JsonProperty("InternalId")]
         public int InternalId { get; set; }
         [JsonProperty("name")]

@@ -5,6 +5,8 @@ module dockyard.services {
 
     export interface IActivityTemplateService extends ng.resource.IResourceClass<interfaces.IActivityTemplateVM> {
         getAvailableActivities: () => ng.resource.IResource<Array<interfaces.IActivityCategoryDTO>>;
+        //TODO inspect this - why do we have 2 different methods returning different responses by similar names?
+        getAvailableActivitiesByCategory: () => ng.resource.IResource<Array<interfaces.IActivityCategoryDTO>>;
     }
 
     app.factory('ActivityTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IActivityTemplateService =>
@@ -14,11 +16,18 @@ module dockyard.services {
                     method: 'GET',
                     url: '/api/activity_templates',
                     isArray: true
+                },
+                'getAvailableActivitiesByCategory': {
+                    method: 'GET',
+                    url: '/api/activity_templates/by_categories',
+                    isArray: true
                 }
             })
     ]);
 
     export interface IActivityTemplateHelperService {
+        getAvailableActivityTemplatesByCategory: () => ng.IPromise<Array<interfaces.IActivityCategoryDTO>>;
+        getAvailableActivityTemplatesInCategories: () => Array<interfaces.IActivityCategoryDTO>;
         getActivityTemplate: (activity: interfaces.IActivityDTO) => interfaces.IActivityTemplateVM;
         toSummary: (activityTemplate: interfaces.IActivityTemplateVM) => model.ActivityTemplateSummary;
         equals: (activityTemplateSummary: model.ActivityTemplateSummary, activityTemplate: interfaces.IActivityTemplateVM) => boolean;
@@ -27,8 +36,9 @@ module dockyard.services {
     class ActivityTemplateHelperService implements IActivityTemplateHelperService {
 
         private activityTemplateCache: Array<interfaces.IActivityTemplateVM> = [];
+        private activityTemplateByCategoryCache: Array<interfaces.IActivityCategoryDTO> = null;
 
-        constructor(private ActivityTemplates: Array<interfaces.IActivityCategoryDTO>) {
+        constructor(private ActivityTemplates: Array<interfaces.IActivityCategoryDTO>, private $q: ng.IQService, private activityTemplateService: IActivityTemplateService) {
             //lineralize data
             for (var i = 0; i < this.ActivityTemplates.length; i++) {
                 for (var j = 0; j < this.ActivityTemplates[i].activities.length; j++){
@@ -66,44 +76,27 @@ module dockyard.services {
             }
             return false;
         }
-        
 
-        //private loadActivities() {
+        public getAvailableActivityTemplatesInCategories() {
+            return this.ActivityTemplates;
+        }
 
-        //    this.ActivityTemplateService.getAvailableActivities().$promise.then((data: Array<interfaces.IActivityCategoryDTO>) => {
-        //        var list = [];
-        //        for (var i = 0; i < data.length; i++) {
-        //            list.push(data[i].activities);
-        //        }
-        //        this.activityTemplateCache = list;
-        //        for (var i = 0; i < this.waiters.length; i++) {
-        //            this.waiters[i].resolve(this.activityTemplateCache);
-        //        }
-        //    }, () => {
-        //        for (var i = 0; i < this.waiters.length; i++) {
-        //            this.waiters[i].reject();
-        //        }
-        //    });
-        //}
-
-        
-
-        //public getActivities(): ng.IPromise<Array<interfaces.IActivityTemplateVM>> {
-        //    var deferred = this.$q.defer<Array<interfaces.IActivityTemplateVM>>();
-
-        //    if (this.activityTemplateCache === null) {
-        //        this.waiters.push(deferred);
-        //        //this is initial call - we should load templates
-        //        if(this.waiters.length === 1){
-        //            this.loadActivities();
-        //        }
-        //    } else {
-        //        deferred.resolve(this.activityTemplateCache);
-        //    }
-        //    return deferred.promise;
-        //}
+        public getAvailableActivityTemplatesByCategory() {
+            var deferred = this.$q.defer<Array<interfaces.IActivityCategoryDTO>>();
+            if (this.activityTemplateByCategoryCache != null) {
+                deferred.resolve(this.activityTemplateByCategoryCache);
+            } else {
+                this.activityTemplateService.getAvailableActivitiesByCategory().$promise.then((data) => {
+                    this.activityTemplateByCategoryCache = data;
+                    deferred.resolve(data);
+                }, (err) => {
+                    deferred.reject(err);
+                });
+            }
+            return deferred.promise;
+        }
 
     }
 
-    app.factory('ActivityTemplateHelperService', ['ActivityTemplates', (ActivityTemplates: Array<interfaces.IActivityCategoryDTO>): IActivityTemplateHelperService => new ActivityTemplateHelperService(ActivityTemplates)]);
+    app.factory('ActivityTemplateHelperService', ['ActivityTemplates', '$q', 'ActivityTemplateService', (ActivityTemplates: Array<interfaces.IActivityCategoryDTO>, $q: ng.IQService, ActivityTemplateService: IActivityTemplateService): IActivityTemplateHelperService => new ActivityTemplateHelperService(ActivityTemplates, $q, ActivityTemplateService)]);
 }

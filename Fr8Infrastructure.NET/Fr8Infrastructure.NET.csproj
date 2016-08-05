@@ -406,6 +406,7 @@
     <None Include="Config\terminalYammer\Settings.Demo.config" />
     <None Include="Config\terminalYammer\Settings.Dev.config" />
     <None Include="Config\terminalYammer\Settings.Release.config" />
+    <Content Include="LICENSE" />
     <None Include="packages.config" />
     <None Include="Utilities\regexes.yaml" />
   </ItemGroup>

@@ -782,6 +782,10 @@
     <Compile Include="Migrations\201608042335095_Terminals_RemoveRequiredAttribute.Designer.cs">
       <DependentUpon>201608042335095_Terminals_RemoveRequiredAttribute.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201608030857168_RemovedNameAndCurrentViewFromActivityDO.cs" />
+    <Compile Include="Migrations\201608030857168_RemovedNameAndCurrentViewFromActivityDO.Designer.cs">
+      <DependentUpon>201608030857168_RemovedNameAndCurrentViewFromActivityDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -1054,6 +1058,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <Content Include="LICENSE" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -1433,6 +1438,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201608021530462_RemoveRunnable.resx">
       <DependentUpon>201608021530462_RemoveRunnable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608030857168_RemovedNameAndCurrentViewFromActivityDO.resx">
+      <DependentUpon>201608030857168_RemovedNameAndCurrentViewFromActivityDO.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201608042155503_TerminalEndpoints.resx">
       <DependentUpon>201608042155503_TerminalEndpoints.cs</DependentUpon>

@@ -84,10 +84,11 @@ namespace Hub.Services
             {
                 var node = _uow.PlanRepository.GetById<PlanNodeDO>(nodeId);
                 string nodeName = "undefined";
-
+                
                 if (node is ActivityDO)
                 {
-                    nodeName = "Activity: " + ((ActivityDO) node).Name;
+                    var activityTemplate = _uow.ActivityTemplateRepository.GetByKey(((ActivityDO)node).ActivityTemplateId);
+                    nodeName = "Activity: " + activityTemplate.Name +" Version:" + activityTemplate.Version;
                 }
 
                 if (node is SubplanDO)
@@ -211,7 +212,9 @@ namespace Hub.Services
 
                         if (curActivity != null)
                         {
-                            throw new ActivityExecutionException(Mapper.Map<ContainerDO, ContainerDTO>(_container), Mapper.Map<ActivityDO, ActivityDTO>(curActivity), string.Empty, e);
+                            var activityDTO = Mapper.Map<ActivityDO, ActivityDTO>(curActivity);
+                            activityDTO.ActivityTemplate = Mapper.Map<ActivityTemplateSummaryDTO>(_uow.ActivityTemplateRepository.GetByKey(curActivity.ActivityTemplateId));
+                            throw new ActivityExecutionException(Mapper.Map<ContainerDO, ContainerDTO>(_container), activityDTO, string.Empty, e);
                         }
 
                         throw;

@@ -4,12 +4,10 @@
         parentPlanNodeId: string;
         id: string;
         label: string;
-        name: string;
         authTokenId: string;
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;
         activityTemplate: ActivityTemplateSummary;
-        currentView: string;
         childrenActivities: Array<interfaces.IActivityDTO>;
         height: number = 300;
         ordering: number;
@@ -53,7 +51,6 @@
             result.configurationControls = dataObject.configurationControls;
             result.id = dataObject.id;
             result.label = dataObject.label;
-            result.name = dataObject.name;
             result.parentPlanNodeId = dataObject.parentPlanNodeId;
             result.ordering = dataObject.ordering;
             return result;

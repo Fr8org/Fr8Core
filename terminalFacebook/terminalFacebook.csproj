@@ -180,6 +180,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\terminalFacebook\Settings.config.readme" />
+    <Content Include="LICENSE" />
     <None Include="Web.Demo.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
