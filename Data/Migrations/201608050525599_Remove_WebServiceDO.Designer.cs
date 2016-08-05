@@ -13,7 +13,7 @@ namespace Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201608020813425_Remove_WebServiceDO"; }
+            get { return "201608050525599_Remove_WebServiceDO"; }
         }
         
         string IMigrationMetadata.Source

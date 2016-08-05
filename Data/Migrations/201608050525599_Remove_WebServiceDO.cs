@@ -7,19 +7,12 @@ namespace Data.Migrations
     {
         public override void Up()
         {
-            // TODO: FR-4943, remove this.
-            // AddColumn("dbo.ActivityCategory", "WebServiceId", c => c.Int(true));
-            // Sql("INSERT INTO [dbo].[ActivityCategory]")
-
             DropForeignKey("dbo.ActivityTemplate", "WebServiceId", "dbo.WebServices");
             DropIndex("dbo.ActivityTemplate", new[] { "WebServiceId" });
             DropColumn("dbo.ActivityTemplate", "WebServiceId");
             DropTable("dbo.WebServices");
-
-            // TODO: FR-4943, remove this.
-            // DropColumn("dbo.ActivityCategory", "WebServiceId");
         }
-
+        
         public override void Down()
         {
             CreateTable(
