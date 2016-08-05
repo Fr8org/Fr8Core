@@ -38,7 +38,7 @@ foreach ($config in $configs.Split(",")) {
 	{  
 	   Write-Host "Adding database connection string to $configPath" 
 	   $xml = [xml](Get-Content $configPath)
-	   $node = $xml.configuration.connectionStrings.add | where {$_.name -eq 'DockyardDB'}
+	   $node = $xml.configuration.connectionStrings.add | where {$_.name -eq 'Fr8LocalDB'}
 	   $node.connectionString="$connectionString"
 	   try
 	   {
