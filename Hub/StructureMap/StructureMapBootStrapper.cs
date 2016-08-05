@@ -132,7 +132,6 @@ namespace Hub.StructureMap
                 //PD services
                 For<IPlanTemplate>().Use<PlanTemplate>().Singleton();
                 For<ISearchProvider>().Use<SearchProvider>().Singleton();
-                For<IWebservicesPageGenerator>().Use<WebservicesPageGenerator>().Singleton();
                 For<IPageDefinition>().Use<PageDefinition>().Singleton();
                 //For<IPageDefinitionRepository>().Use<PageDefinitionRepository>().Singleton();
 
@@ -211,10 +210,16 @@ namespace Hub.StructureMap
                 For<IUpstreamDataExtractionService>().Use<UpstreamDataExtractionService>().Singleton();
 
                 //PD bootstrap
+                //tony.yakovets: will it work? or some tests check generated templates?
+                var templateGenerator = new Mock<ITemplateGenerator>().Object;
+                For<IWebservicesPageGenerator>().Use<WebservicesPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
+                For<IManifestPageGenerator>().Use<ManifestPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
+
                 For<IPlanTemplate>().Use<PlanTemplate>().Singleton();
                 For<ISearchProvider>().Use<SearchProvider>().Singleton();
-                For<IWebservicesPageGenerator>().Use<WebservicesPageGenerator>().Singleton();
                 For<IPageDefinition>().Use<PageDefinition>().Singleton();
+                For<ITemplateGenerator>().Use<TemplateGenerator>().Singleton();
+                
                 For<IPlanDirectoryService>().Use<PlanDirectoryService>().Singleton();
             }
         }
