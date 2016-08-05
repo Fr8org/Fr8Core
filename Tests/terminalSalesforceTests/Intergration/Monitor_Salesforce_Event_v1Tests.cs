@@ -43,7 +43,7 @@ namespace terminalSalesforceTests.Intergration
 			             		            <sf:Id>003i000000W8jx3AAB</sf:Id>
 			             		            <sf:Email>salesforce-payload @fr8.com</sf:Email>
 			             		            <sf:LastName>Fr8-Test-User</sf:LastName>
-                                             <sf:OwnerId>" + ConfigurationManager.AppSettings["GoogleTestAccountToken"] + @"</sf:OwnerId>
+                                             <sf:OwnerId>" + ConfigurationManager.AppSettings["OwnerId"] + @"</sf:OwnerId>
 			             	            </sObject>
 			                         </Notification>
 		                         </notifications>
