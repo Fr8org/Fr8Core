@@ -5,8 +5,8 @@ namespace HubWeb.Documentation.Swagger
 {
     public class CredentialsSampleFactory : ISwaggerSampleFactory<CredentialsDTO>
     {
-        private readonly ISwaggerSampleFactory<TerminalDTO> _terminalSampleFactory;
-        public CredentialsSampleFactory(ISwaggerSampleFactory<TerminalDTO> terminalSampleFactory)
+        private readonly ISwaggerSampleFactory<TerminalSummaryDTO> _terminalSampleFactory;
+        public CredentialsSampleFactory(ISwaggerSampleFactory<TerminalSummaryDTO> terminalSampleFactory)
         {
             _terminalSampleFactory = terminalSampleFactory;
         }

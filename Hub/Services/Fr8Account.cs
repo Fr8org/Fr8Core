@@ -16,6 +16,7 @@ using System.Web;
 using System.Net.Http;
 using Fr8.Infrastructure.Utilities;
 using Hub.Interfaces;
+using Fr8.Infrastructure.Data.States;
 
 namespace Hub.Services
 {
@@ -89,11 +90,8 @@ namespace Hub.Services
             String[] acceptableRoles = { };
             switch (minAuthLevel)
             {
-                case "Customer":
-                    acceptableRoles = new[] { "Customer", "Booker", "Admin" };
-                    break;
-                case "Booker":
-                    acceptableRoles = new[] { "Booker", "Admin" };
+                case "StandardUser":
+                    acceptableRoles = new[] { "StandardUser", "Admin" };
                     break;
                 case "Admin":
                     acceptableRoles = new[] { "Admin" };
@@ -280,13 +278,13 @@ namespace Hub.Services
                 }
                 else
                 {
-                    newFr8Account = Register(uow, email, email, email, password, Roles.Customer, organizationDO);
+                    newFr8Account = Register(uow, email, email, email, password, Roles.StandardUser, organizationDO);
                     curRegStatus = RegistrationStatus.Successful;
                 }
             }
             else
             {
-                newFr8Account = Register(uow, email, email, email, password, Roles.Customer, organizationDO);
+                newFr8Account = Register(uow, email, email, email, password, Roles.StandardUser, organizationDO);
                 curRegStatus = RegistrationStatus.Successful;
             }
 
@@ -467,10 +465,8 @@ namespace Hub.Services
                 string userRole = "";
                 if (getRoles.Select(e => e.Name).Contains("Admin"))
                     userRole = "Admin";
-                else if (getRoles.Select(e => e.Name).Contains("Booker"))
-                    userRole = "Booker";
-                else if (getRoles.Select(e => e.Name).Contains("Customer"))
-                    userRole = "Customer";
+                else if (getRoles.Select(e => e.Name).Contains("StandardUser"))
+                    userRole = "StandardUser";
                 return userRole;
             }
         }
@@ -489,7 +485,8 @@ namespace Hub.Services
                 var planQuery = unitOfWork.PlanRepository.GetPlanQueryUncached().Include(i => i.Fr8Account);
 
                 planQuery
-                    .Where(pt => pt.PlanState == PlanState.Running)//1.
+                    .Where(pt => pt.PlanState == PlanState.Executing ||
+                                 pt.PlanState == PlanState.Active)//1.
                     .Where(id => id.Fr8Account.Id == userId);//2
 
                 activePlans = planQuery.ToList();
@@ -556,7 +553,7 @@ namespace Hub.Services
 
                 uow.AspNetUserRolesRepository.RevokeRoleFromUser(Roles.Guest, existingUserDO.Id);
                 // Add new role
-                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, existingUserDO.Id);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.StandardUser, existingUserDO.Id);
             }
 
             uow.SaveChanges();

@@ -108,7 +108,7 @@ namespace Fr8.Testing.Unit.Fixtures
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var guestUserFr8Account = _dockyardAccount.Register(uow, guestUserEmail, firstName, lastName, password, Roles.Guest);
-                uow.AspNetUserRolesRepository.RevokeRoleFromUser(Roles.Customer,guestUserFr8Account.Id);
+                uow.AspNetUserRolesRepository.RevokeRoleFromUser(Roles.StandardUser, guestUserFr8Account.Id);
                 uow.SaveChanges();
 
                 return guestUserFr8Account;

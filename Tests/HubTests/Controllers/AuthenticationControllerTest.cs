@@ -125,7 +125,7 @@ namespace HubTests.Controllers
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Running,
+                    PlanState = PlanState.Executing,
                     ChildNodes = { activityDO }
                 });
 
@@ -139,7 +139,7 @@ namespace HubTests.Controllers
                 Password = "Password",
                 Username = "Username",
                 Domain = "Domain",
-                Terminal = Mapper.Map<TerminalDTO>(activityTemplateDO.Terminal)
+                Terminal = Mapper.Map<TerminalSummaryDTO>(activityTemplateDO.Terminal)
             };
 
             var result = _authenticationController.Authenticate(credentialsDTO);

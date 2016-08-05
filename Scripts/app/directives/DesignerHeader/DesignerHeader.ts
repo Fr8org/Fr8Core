@@ -23,14 +23,15 @@ module dockyard.directives.designerHeader {
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     export function DesignerHeader(): ng.IDirective {
 
-        var controller = ['$rootScope', '$scope', '$element', '$attrs', '$http', 'ngToast', 'PlanService', (
+        var controller = ['$rootScope', '$scope', '$element', '$attrs', '$http', 'ngToast', 'PlanService', 'ActivityTemplateHelperService', (
                 $rootScope: interfaces.IAppRootScope,
                 $scope: IDesignerHeaderScope,
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes,
                 $http: ng.IHttpService,
                 ngToast: any,
-                PlanService: services.IPlanService) => {
+                PlanService: services.IPlanService,
+                ActivityTemplateHelperService: services.IActivityTemplateHelperService) => {
 
                 $scope.$watch('plan.planState', function (newValue, oldValue) {
                     switch (newValue) {
@@ -61,15 +62,18 @@ module dockyard.directives.designerHeader {
 
                 $scope.runPlan = () => {
                     // mark plan as Active                  
-                    $scope.plan.planState = 2;                   
+                    $scope.plan.planState = model.PlanState.Executing;                   
                     var promise = PlanService.runAndProcessClientAction($scope.plan.id);
                     
                     promise.then((container: model.ContainerDTO) => {
                         //if we have validation errors - reset plan state to Inactive. Plans with errors can't be activated   
+                        if (container.currentPlanType === model.PlanType.OnGoing) {
+                            $scope.plan.planState = model.PlanState.Active;
+                        }
                         if (container.validationErrors && container.validationErrors != null) {
                             for (var key in container.validationErrors) {
                                 if (container.validationErrors.hasOwnProperty(key)) {
-                                    $scope.plan.planState = 1;
+                                    $scope.plan.planState = model.PlanState.Inactive;
                                     break;
                                 }
                             }
@@ -99,8 +103,8 @@ module dockyard.directives.designerHeader {
                         $scope.plan.planState = 1;
                         return;
                     }
-
-                    if (initialActivity.activityTemplate.category.toLowerCase() === "solution") {
+                    var at = ActivityTemplateHelperService.getActivityTemplate(<model.ActivityDTO>initialActivity);
+                    if (at.category.toLowerCase() === "solution") {
                         initialActivity = initialActivity.childrenActivities[0];
                         if (initialActivity == null) {
                             // mark plan as Inactive
@@ -109,7 +113,7 @@ module dockyard.directives.designerHeader {
                         }
                     }
 
-                    if (initialActivity.activityTemplate.category.toLowerCase() !== "monitors") {
+                    if (at.category.toLowerCase() !== "monitors") {
                         // mark plan as Inactive
                         $scope.plan.planState = 1;
                     }

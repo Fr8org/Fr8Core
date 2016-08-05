@@ -28,6 +28,8 @@ namespace Hub.Services
         private readonly IPlan _planService;
         private readonly IActivityTemplate _activityTemplate;
 
+
+
         public PlanDirectoryService(IHMACService hmac, 
                                     IRestfulServiceClient client, 
                                     IPusherNotifier pusherNotifier,
@@ -45,7 +47,7 @@ namespace Hub.Services
 
         public async Task<string> GetToken(string UserId)
         {
-            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/authentication/token");
+            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/v1/authentication/token");
             var headers =
                 await
                     _hmacService.GenerateHMACHeader(uri, "PlanDirectory",
@@ -64,7 +66,7 @@ namespace Hub.Services
 
         public async Task<PublishPlanTemplateDTO> GetTemplate(Guid id, string userId)
         {
-            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/plan_templates?id=" + id);
+            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/v1/plan_templates?id=" + id);
             var headers = await _hmacService.GenerateHMACHeader(
                 uri,
                 "PlanDirectory",
@@ -94,7 +96,15 @@ namespace Hub.Services
                 PlanContents = planDto
             };
 
-            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/plan_templates/");
+
+            //var planTemplateCM = await _planTemplate.CreateOrUpdate(userId, dto);
+            //await _searchProvider.CreateOrUpdate(planTemplateCM);
+            //await _webservicesPageGenerator.Generate(planTemplateCM, userId);
+
+
+            // @tony.yakovets: for now i left this request to itself because classes above to tight coupled to PlanDirectory project
+            // even if it is a hub
+            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/v1/plan_templates/");
             var headers = await _hmacService.GenerateHMACHeader(
                 uri,
                 "PlanDirectory",
@@ -106,11 +116,11 @@ namespace Hub.Services
             await _client.PostAsync(uri, dto, headers: headers);
 
             // Notify user with directing him to PlanDirectory with related search query
-            var url = CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/#?planSearch=" + HttpUtility.UrlEncode(dto.Name);
+            var url = CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/PlanDirectory#?planSearch=" + HttpUtility.UrlEncode(dto.Name);
             _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
                 NotificationType = NotificationType.GenericSuccess,
-                NotificationArea = NotificationArea.ActivityStream,
+                Subject = "Success",
                 Message = $"Plan Shared. To view, click on " + url,
                 Collapsed = false
             }, userId);
@@ -118,7 +128,7 @@ namespace Hub.Services
 
         public async Task Unpublish(Guid planId, string userId)
         {
-            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/plan_templates/?id=" + planId);
+            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/v1/plan_templates/?id=" + planId);
             var headers = await _hmacService.GenerateHMACHeader(
                 uri,
                 "PlanDirectory",
@@ -132,7 +142,7 @@ namespace Hub.Services
             _pusherNotifier.NotifyUser(new NotificationMessageDTO
             {
                 NotificationType = NotificationType.GenericSuccess,
-                NotificationArea = NotificationArea.ActivityStream,
+                Subject = "Success", 
                 Message = $"Plan Unpublished.",
                 Collapsed = false
             }, userId);
@@ -259,7 +269,7 @@ namespace Hub.Services
 
                     if (!_activityTemplate.TryGetByKey(activity.ActivityTemplateId, out activityTemplate))
                     {
-                        throw new KeyNotFoundException($"Activity '{activity.Name}' use activity template '{activity.ActivityTemplate?.Name}' with id = '{activity.ActivityTemplateId}' that is unknown to this Hub");
+                        throw new KeyNotFoundException($"Activity '{activity.Id}' use activity template '{activity.ActivityTemplate?.Name}' with id = '{activity.ActivityTemplateId}' that is unknown to this Hub");
                     }
 
                     activity.CrateStorage = UpdateCrateStorage(activity.CrateStorage, idsMap);

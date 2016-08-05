@@ -9,7 +9,8 @@
             private $rootScope: ng.IScope,
             private $interval: ng.IIntervalService,
             private $modal,
-            private ConfigureTrackerService: services.ConfigureTrackerService
+            private ConfigureTrackerService: services.ConfigureTrackerService,
+            private ActivityTemplateHelperService: services.IActivityTemplateHelperService
             ) {
 
             var self = this;
@@ -76,14 +77,14 @@
                 return false;
             }
 
-            var activity = subPlan.activities[0];
+            var activity = <model.ActivityDTO>subPlan.activities[0];
             if (!activity || !activity.activityTemplate) {
                 return false;
             }
-
-            if (activity.activityTemplate.category === 'Solution'
+            var at = this.ActivityTemplateHelperService.getActivityTemplate(activity);
+            if (at.category === 'Solution'
                 // Second clause to force new algorithm work only for specific activities.
-                && activity.activityTemplate.tags === 'UsesReconfigureList') {
+                && at.tags === 'UsesReconfigureList') {
 
                 return true;
             }
@@ -157,6 +158,7 @@ app.service(
         '$interval',
         '$modal',
         'ConfigureTrackerService',
+        'ActivityTemplateHelperService',
         dockyard.services.AuthService
     ]
 );

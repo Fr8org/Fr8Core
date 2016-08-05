@@ -84,10 +84,11 @@ namespace Hub.Services
             {
                 var node = _uow.PlanRepository.GetById<PlanNodeDO>(nodeId);
                 string nodeName = "undefined";
-
+                
                 if (node is ActivityDO)
                 {
-                    nodeName = "Activity: " + ((ActivityDO) node).Name;
+                    var activityTemplate = _uow.ActivityTemplateRepository.GetByKey(((ActivityDO)node).ActivityTemplateId);
+                    nodeName = "Activity: " + activityTemplate.Name +" Version:" + activityTemplate.Version;
                 }
 
                 if (node is SubplanDO)
@@ -211,7 +212,9 @@ namespace Hub.Services
 
                         if (curActivity != null)
                         {
-                            throw new ActivityExecutionException(Mapper.Map<ContainerDO, ContainerDTO>(_container), Mapper.Map<ActivityDO, ActivityDTO>(curActivity), string.Empty, e);
+                            var activityDTO = Mapper.Map<ActivityDO, ActivityDTO>(curActivity);
+                            activityDTO.ActivityTemplate = Mapper.Map<ActivityTemplateSummaryDTO>(_uow.ActivityTemplateRepository.GetByKey(curActivity.ActivityTemplateId));
+                            throw new ActivityExecutionException(Mapper.Map<ContainerDO, ContainerDTO>(_container), activityDTO, string.Empty, e);
                         }
 
                         throw;
@@ -240,11 +243,11 @@ namespace Hub.Services
                 // If we are already processing children of the currentNode, selecte the next one
                 if (currentChild != null)
                 {
-                    return currentNode.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault(x => x.Ordering > currentChild.Ordering && x.Runnable);
+                    return currentNode.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault(x => x.Ordering > currentChild.Ordering);
                 }
 
                 // or, if we have not processed any child yet - select the first one if any
-                return currentNode.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault(x => x.Runnable);
+                return currentNode.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault();
             }
 
             /**********************************************************************************/
@@ -401,7 +404,7 @@ namespace Hub.Services
                         {
                             // find activity that is preceeding the one we are jumping to.
                             // so the next iteration of run cycle will exectute the activity we are jumping to
-                            var prevToJump = currentNode.ParentPlanNode.ChildNodes.OrderByDescending(x => x.Ordering).FirstOrDefault(x => x.Ordering < targetNode.Ordering && x.Runnable);
+                            var prevToJump = currentNode.ParentPlanNode.ChildNodes.OrderByDescending(x => x.Ordering).FirstOrDefault(x => x.Ordering < targetNode.Ordering);
 
                             _callStack.TopFrame.CurrentChildId = prevToJump?.Id;
                         }

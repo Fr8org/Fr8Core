@@ -133,11 +133,9 @@ module dockyard.directives.paneConfigureAction {
         configurationControls: ng.resource.IResource<model.ControlsList> | model.ControlsList;
         mapFields: (scope: IPaneConfigureActionScope) => void;
         processing: boolean;
-
         isConfigRequestQueued: boolean;
         configControlOperationQueue: { [controlName: string]: Array<paneConfigureAction.ConfigurationControlOperation>; }
         configControlHandles: { [controlName: string]: paneConfigureAction.IConfigurationControlController; };
-
         configurationWatchUnregisterer: Function;
         mode: string;
         reconfigureChildrenActions: boolean;
@@ -145,10 +143,11 @@ module dockyard.directives.paneConfigureAction {
         currentActiveElement: model.ControlDefinitionDTO;
         collapsed: boolean;
         populateAllActivities: () => void;
-        allActivities: Array<interfaces.IActivityDTO>;
+        allActivities: Array<model.ActivityEnvelope>;
         view: string;
         plan: model.PlanDTO;
         showAdvisoryPopup: boolean;
+        myActivityTemplate: interfaces.IActivityTemplateVM;
     }
     
     export class CancelledEventArgs extends CancelledEventArgsBase { }
@@ -185,19 +184,21 @@ module dockyard.directives.paneConfigureAction {
 
     export class PaneConfigureActionController implements IPaneConfigureActionController {
 
-        static $inject = ['$scope', 'ActionService', 'AuthService', 'ConfigureTrackerService', 'CrateHelper', '$filter',
-            '$timeout', '$modal', '$window', '$http', '$q', 'LayoutService'];
+        static $inject = ['$scope', 'ActivityService', 'AuthService', 'ConfigureTrackerService', 'CrateHelper', '$filter',
+            '$timeout', '$modal', '$window', '$http', '$q', 'LayoutService', 'ActivityTemplateHelperService'];
 
         private configLoadingError: boolean = false;
         private ignoreConfigurationChange: boolean = false;
 
-        constructor(private $scope: IPaneConfigureActionScope, private ActionService: services.IActionService,
+        constructor(private $scope: IPaneConfigureActionScope, private ActivityService: services.IActivityService,
             private AuthService: services.AuthService, private ConfigureTrackerService: services.ConfigureTrackerService,
             private crateHelper: services.CrateHelper, private $filter: ng.IFilterService,
             private $timeout: ng.ITimeoutService, private $modal,
             private $window: ng.IWindowService, private $http: ng.IHttpService,
-            private $q: ng.IQService, private LayoutService: services.ILayoutService)
+            private $q: ng.IQService, private LayoutService: services.ILayoutService,
+            private ActivityTemplateHelperService: services.IActivityTemplateHelperService)
         {
+            $scope.myActivityTemplate = this.ActivityTemplateHelperService.getActivityTemplate($scope.currentAction);
             $scope.collapsed = false;
             $scope.showAdvisoryPopup = false;
             $scope.isConfigRequestQueued = false;
@@ -216,7 +217,7 @@ module dockyard.directives.paneConfigureAction {
             $scope.processConfiguration = <() => void>angular.bind(this, this.processConfiguration);
             $scope.setSolutionMode = <() => void>angular.bind(this, this.setSolutionMode);
             $scope.populateAllActivities = <() => void>angular.bind(this, this.populateAllActivities);
-            $scope.allActivities = Array<model.ActivityDTO>();
+            $scope.allActivities = Array<model.ActivityEnvelope>();
 
             $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], (event: ng.IAngularEvent, reConfigureActionEventArgs: ActionReconfigureEventArgs) => {
                 //this might be a general reconfigure command
@@ -300,6 +301,8 @@ module dockyard.directives.paneConfigureAction {
                     $scope.processConfiguration();
                 }
             }
+
+            
         }
 
         public isThereOnGoingConfigRequest(): boolean {
@@ -365,8 +368,7 @@ module dockyard.directives.paneConfigureAction {
 
                 this.$scope.currentAction.crateStorage.crateDTO = this.$scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
 
-                this.ActionService.save({ id: this.$scope.currentAction.id }, this.$scope.currentAction, null, null)
-                    .$promise
+                this.ActivityService.save(this.$scope.currentAction)
                     .then(() => {
                         
                         if (this.$scope.currentAction.childrenActivities
@@ -463,11 +465,12 @@ module dockyard.directives.paneConfigureAction {
             }
         }
 
-        private allActivities = Array<interfaces.IActivityDTO>();
+        private allActivities = Array<model.ActivityEnvelope>();
 
         private getAllActivities(activities: Array<interfaces.IActivityDTO>) {
             for (var activity of activities) {
-                this.allActivities.push(activity);
+                var at = this.ActivityTemplateHelperService.getActivityTemplate(activity);
+                this.allActivities.push(new model.ActivityEnvelope(activity, at));
                 if (activity.childrenActivities.length > 0) {
                     this.getAllActivities(activity.childrenActivities);
                 }
@@ -490,15 +493,15 @@ module dockyard.directives.paneConfigureAction {
             if (this.$scope.configurationWatchUnregisterer) {
                 this.$scope.configurationWatchUnregisterer();
             }
-
+            
             this.ConfigureTrackerService.configureCallStarted(
                 this.$scope.currentAction.id,
-                this.$scope.currentAction.activityTemplate.needsAuthentication
+                this.$scope.myActivityTemplate.needsAuthentication
             );
 
             this.$scope.$broadcast(MessageType[MessageType.PaneConfigureAction_ConfigureStarting]);
     
-            this.ActionService.configure(this.$scope.currentAction).$promise
+            this.ActivityService.configure(this.$scope.currentAction)
                 .then((res: interfaces.IActionVM) => {
                     //lets reset config control handles
                     //they will re register themselves after initializing
@@ -539,7 +542,7 @@ module dockyard.directives.paneConfigureAction {
                         //in case of reconfiguring the solution check the child actions again
 
                         //not needed in case of Loop action
-                        if (this.$scope.currentAction.name !== "Loop") {
+                        if (this.$scope.currentAction.activityTemplate.name !== "Loop") {
                             this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
                         }
                     }

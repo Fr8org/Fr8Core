@@ -759,6 +759,22 @@
     <Compile Include="Migrations\201607301037088_PlanDTO_PlanFullDTO_Refactoring.Designer.cs">
       <DependentUpon>201607301037088_PlanDTO_PlanFullDTO_Refactoring.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201607310758516_Standard_Permissions_for_Terminals.cs" />
+    <Compile Include="Migrations\201607310758516_Standard_Permissions_for_Terminals.Designer.cs">
+      <DependentUpon>201607310758516_Standard_Permissions_for_Terminals.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607311227053_ChangeRoleName_Customer_to_StandardUser.cs" />
+    <Compile Include="Migrations\201607311227053_ChangeRoleName_Customer_to_StandardUser.Designer.cs">
+      <DependentUpon>201607311227053_ChangeRoleName_Customer_to_StandardUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608021530462_RemoveRunnable.cs" />
+    <Compile Include="Migrations\201608021530462_RemoveRunnable.Designer.cs">
+      <DependentUpon>201608021530462_RemoveRunnable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608030857168_RemovedNameAndCurrentViewFromActivityDO.cs" />
+    <Compile Include="Migrations\201608030857168_RemovedNameAndCurrentViewFromActivityDO.Designer.cs">
+      <DependentUpon>201608030857168_RemovedNameAndCurrentViewFromActivityDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -1030,6 +1046,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <Content Include="LICENSE" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -1397,6 +1414,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201607301037088_PlanDTO_PlanFullDTO_Refactoring.resx">
       <DependentUpon>201607301037088_PlanDTO_PlanFullDTO_Refactoring.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607310758516_Standard_Permissions_for_Terminals.resx">
+      <DependentUpon>201607310758516_Standard_Permissions_for_Terminals.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607311227053_ChangeRoleName_Customer_to_StandardUser.resx">
+      <DependentUpon>201607311227053_ChangeRoleName_Customer_to_StandardUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608021530462_RemoveRunnable.resx">
+      <DependentUpon>201608021530462_RemoveRunnable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608030857168_RemovedNameAndCurrentViewFromActivityDO.resx">
+      <DependentUpon>201608030857168_RemovedNameAndCurrentViewFromActivityDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -5,11 +5,10 @@ namespace terminalPapertrailTests.Fixtures
 {
     public class HealthMonitor_FixtureData
     {
-        public static ActivityTemplateDTO Write_To_Log_v1_ActivityTemplate()
+        public static ActivityTemplateSummaryDTO Write_To_Log_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
                 Name = "Write_To_Log_TEST",
                 Version = "1"
             };
