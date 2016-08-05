@@ -12,9 +12,9 @@
 
 //    it('should register', function () {
 //        return accountHelper.register().then(function () {
-//            registrationPage.setEmail("testuser_00075@fr8.co");
-//            registrationPage.setPassword("123qwe");
-//            registrationPage.setConfirmPassword("123qwe");
+//            registrationPage.setEmail(browser.params.username);
+//            registrationPage.setPassword(browser.params.password);
+//            registrationPage.setConfirmPassword(browser.params.password);
 //            registrationPage.setOrganization();
 //            return registrationPage.register().click().then(function () {
 //                expect(browser.getCurrentUrl()).toContain('/Welcome');
@@ -32,6 +32,7 @@
 //            });
 //        });
 //    });
+
 
 
 //});

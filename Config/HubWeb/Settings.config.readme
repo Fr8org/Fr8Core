@@ -32,6 +32,10 @@ exclude them from .gitignore.
   <!-- Plan Directory connection. This secret must match the secret specified 
   in the PlanDirectory configuration file.-->
   <add key="PlanDirectorySecret" value="" />
+  
+  <add key="AzureSearchServiceName" value="" />
+  <add key="AzureSearchApiKey" value="" />
+  <add key="AzureSearchIndexName" value="" />
 
   <!-- System user account -->
   <add key="SystemUserEmail" value="system1@fr8.co" />
