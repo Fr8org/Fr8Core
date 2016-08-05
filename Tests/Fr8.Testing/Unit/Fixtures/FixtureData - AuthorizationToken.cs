@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
@@ -33,7 +34,8 @@ namespace Fr8.Testing.Unit.Fixtures
         {
             return new ActivityTemplateDO("Test", "test", "v1", "test", 1)
             {
-                Id = FixtureData.GetTestGuidById(1)
+                Id = FixtureData.GetTestGuidById(1),
+                Categories = new List<ActivityCategorySetDO>()
             };
         }
 
