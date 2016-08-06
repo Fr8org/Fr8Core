@@ -474,6 +474,7 @@
     <Compile Include="Services\UpstreamValueExtractors\TextSourceValueExtractror.cs" />
     <Compile Include="Services\UpstreamValueExtractors\UpstreamValueExtractorBaseT.cs" />
     <Compile Include="Services\UpstreamValueExtractors\UpstremFieldChooserValueExtractror.cs" />
+    <Compile Include="StructureMap\PlanDirectoryBootstrapper.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
     <Compile Include="Interfaces\IActivityExecutionRateLimitingService.cs" />
     <Compile Include="Interfaces\IUtilizationMonitoringService.cs" />

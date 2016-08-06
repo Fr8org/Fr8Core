@@ -510,7 +510,6 @@
     <Compile Include="Infrastructure_PD\Infrastructure\AuthTokenManager.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\HubAuthenticationPDHeaderSignature.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\PlanDirectoryAuthorizeAttribute.cs" />
-    <Compile Include="Infrastructure_PD\Infrastructure\PlanDirectoryBootstrapper.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\PlanDirectoryHMACAuthenticateAttribute.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\PlanDirectoryHubCommunicatorFactory.cs" />
     <Compile Include="Infrastructure_PD\Interfaces\IAuthTokenManager.cs" />

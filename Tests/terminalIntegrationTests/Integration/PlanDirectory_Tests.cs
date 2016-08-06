@@ -67,6 +67,7 @@ namespace terminalIntegrationTests.Integration
             finally
             {
                 await HttpDeleteAsync(_baseUrl + "plan_templates/?id=" + planTemplateDTO.ParentPlanId.ToString());
+                
             }
         }
 
