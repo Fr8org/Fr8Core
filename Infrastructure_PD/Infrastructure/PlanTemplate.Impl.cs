@@ -52,7 +52,7 @@ namespace HubWeb.Infrastructure_PD.Infrastructure
 
                 if (existingPlanTemplateCM == null && objectId.HasValue)
                 {
-                    ObjectFactory.GetInstance<ISecurityServices>().SetDefaultRecordBasedSecurityForObject(Roles.OwnerOfCurrentObject, objectId.ToString(), "Plan Template");
+                    ObjectFactory.GetInstance<ISecurityServices>().SetDefaultRecordBasedSecurityForObject(Roles.OwnerOfCurrentObject, objectId.Value, "Plan Template");
                 }
 
                 return Task.FromResult(planTemplateCM);

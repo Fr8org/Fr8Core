@@ -110,7 +110,7 @@ namespace HubTests.Security
         [Test]
         public void GetTokenByUserIdAndTerminalIdIsNull()
         {
-            var token = _authorization.GetToken("null", 0);
+            var token = _authorization.GetToken("null", Guid.Empty);
             Assert.IsNull(token);
         }
 

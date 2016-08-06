@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace Fr8.Infrastructure
 {
@@ -6,7 +7,7 @@ namespace Fr8.Infrastructure
     {
 
         [JsonProperty("terminalId")]
-        public int TerminalId { get; set; }
+        public Guid TerminalId { get; set; }
 
         [JsonProperty("terminalName")]
         public string TerminalName { get; set; }

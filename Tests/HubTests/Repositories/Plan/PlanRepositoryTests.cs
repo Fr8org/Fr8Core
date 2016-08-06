@@ -137,14 +137,14 @@ namespace HubTests.Repositories.Plan
                         Id = NewGuid(1),
                         ActivityTemplate = new ActivityTemplateDO
                         {
-                            TerminalId = 1,
+                            TerminalId = FixtureData.GetTestGuidById(1),
                             Id = FixtureData.GetTestGuidById(1),
                             Name = "New template",
                         },
                         ActivityTemplateId = FixtureData.GetTestGuidById(1),
                         AuthorizationToken = new AuthorizationTokenDO
                         {
-                             TerminalID = 1,
+                             TerminalID = FixtureData.GetTestGuidById(1),
                             Id = NewGuid(34),
                         },
                         AuthorizationTokenId = NewGuid(34),
@@ -163,7 +163,7 @@ namespace HubTests.Repositories.Plan
                             {
                                 ActivityTemplate = new ActivityTemplateDO
                                 {
-                                    TerminalId = 1,
+                                    TerminalId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(1),
                                     Name = "New template",
                                 },
@@ -182,7 +182,7 @@ namespace HubTests.Repositories.Plan
                             {
                                 ActivityTemplate = new ActivityTemplateDO
                                 {
-                                    TerminalId = 1,
+                                    TerminalId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(1),
                                     Name = "New template",
                                 },
@@ -373,7 +373,7 @@ namespace HubTests.Repositories.Plan
             {
                 uow.ActivityTemplateRepository.Add(new ActivityTemplateDO
                 {
-                    TerminalId = 1,
+                    TerminalId = FixtureData.GetTestGuidById(1),
 
                     Id = FixtureData.GetTestGuidById(1),
                     Name = "New template",
@@ -387,7 +387,7 @@ namespace HubTests.Repositories.Plan
 
                 uow.TerminalRepository.Add(new TerminalDO()
                 {
-                    Id = 1,
+                    Id = FixtureData.GetTestGuidById(1),
                     TerminalStatus = TerminalStatus.Active,
                     Name = "terminal",
                     Label = "term",
@@ -397,7 +397,7 @@ namespace HubTests.Repositories.Plan
 
                 uow.AuthorizationTokenRepository.Add(new AuthorizationTokenDO
                 {
-                    TerminalID = 1,
+                    TerminalID = FixtureData.GetTestGuidById(1),
                     Id = NewGuid(34),
                 });
 
@@ -406,7 +406,7 @@ namespace HubTests.Repositories.Plan
                     Name = "asdfasdf",
                     Label = "asdf",
                     Version = "1",
-                    Id = 1,
+                    Id = FixtureData.GetTestGuidById(1),
                     TerminalStatus = 1
                 });
                 uow.PlanRepository.Add(plan);

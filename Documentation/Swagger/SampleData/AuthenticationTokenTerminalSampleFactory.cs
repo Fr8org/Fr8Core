@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace HubWeb.Documentation.Swagger
@@ -17,7 +18,7 @@ namespace HubWeb.Documentation.Swagger
             return new AuthenticationTokenTerminalDTO
             {
                 Name = "terminalFr8Core",
-                Id = 1,
+                Id = Guid.Parse("2757F870-A508-429E-A706-9EE826D92237"),
                 Label = "Display Name",
                 Version = "1",
                 AuthenticationType = 0,

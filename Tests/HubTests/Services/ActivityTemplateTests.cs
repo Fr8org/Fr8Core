@@ -103,11 +103,11 @@ namespace HubTests.Services
         {
             for (int id = 1; id <= count; id++)
             {
-                yield return CreateTerminal(id, prefix);
+                yield return CreateTerminal(FixtureData.GetTestGuidById(id), prefix);
             }
         }
 
-        private TerminalDO CreateTerminal(int id, string prefix = "")
+        private TerminalDO CreateTerminal(Guid id, string prefix = "")
         {
             return new TerminalDO
             {
@@ -255,7 +255,7 @@ namespace HubTests.Services
         {
             var template = CreateActivityTemplate(
                 Guid.NewGuid(),
-                CreateTerminal(-234, "new"),
+                CreateTerminal(FixtureData.GetTestGuidById(1), "new"),
                 CreateWebService(234234, "new")
             );
             template.WebServiceId = -2344;
@@ -290,7 +290,7 @@ namespace HubTests.Services
         {
             GenerateSeedData();
 
-            var template = CreateActivityTemplate(FixtureData.GetTestGuidById(1), CreateTerminal(-234), CreateWebService(234234));
+            var template = CreateActivityTemplate(FixtureData.GetTestGuidById(1), CreateTerminal(FixtureData.GetTestGuidById(1)), CreateWebService(234234));
 
             template.WebServiceId = -2344;
             template.Id  = Guid.NewGuid();

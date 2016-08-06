@@ -25,7 +25,7 @@ namespace Hub.Services
     public class Terminal : ITerminal
     {
         private readonly ISecurityServices _securityServices;
-        private readonly Dictionary<int, TerminalDO> _terminals = new Dictionary<int, TerminalDO>();
+        private readonly Dictionary<Guid, TerminalDO> _terminals = new Dictionary<Guid, TerminalDO>();
         private bool _isInitialized;
         private string _serverUrl;
 
@@ -84,7 +84,7 @@ namespace Hub.Services
             }
         }
 
-        public TerminalDO GetByKey(int terminalId)
+        public TerminalDO GetByKey(Guid terminalId)
         {
             Initialize();
 
@@ -147,7 +147,7 @@ namespace Hub.Services
 
                     if (existingTerminal == null)
                     {
-                        terminalDo.Id = 0;
+                        terminalDo.Id = Guid.Empty;
                         uow.TerminalRepository.Add(existingTerminal = terminalDo);
                         isRegisterTerminal = true;
                     }
@@ -166,10 +166,10 @@ namespace Hub.Services
                 if (isRegisterTerminal)
                 {
                     //add ownership for this new terminal to current user
-                    _securityServices.SetDefaultRecordBasedSecurityForObject(Roles.OwnerOfCurrentObject, terminal.Id.ToString(), nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
+                    _securityServices.SetDefaultRecordBasedSecurityForObject(Roles.OwnerOfCurrentObject, terminal.Id, nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
 
                     //make it visible for Fr8 Admins
-                    _securityServices.SetDefaultRecordBasedSecurityForObject(Roles.Admin, terminal.Id.ToString(), nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
+                    _securityServices.SetDefaultRecordBasedSecurityForObject(Roles.Admin, terminal.Id, nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
                 }
 
                 return terminal;

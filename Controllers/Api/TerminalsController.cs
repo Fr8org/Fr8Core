@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
@@ -86,11 +87,11 @@ namespace HubWeb.Controllers
         [HttpGet]
         [Fr8ApiAuthorize]
         [ResponseType(typeof(TerminalDTO))]
-        public IHttpActionResult Get(int id)
+        public IHttpActionResult Get(Guid id)
         {
             var terminalDTO = Mapper.Map<TerminalDTO>(_terminal.GetByKey(id));
 
-            terminalDTO.Roles = _security.GetAllowedUserRolesForSecuredObject(id.ToString(), nameof(TerminalDO));
+            terminalDTO.Roles = _security.GetAllowedUserRolesForSecuredObject(id, nameof(TerminalDO));
 
             return Ok(terminalDTO);
         }

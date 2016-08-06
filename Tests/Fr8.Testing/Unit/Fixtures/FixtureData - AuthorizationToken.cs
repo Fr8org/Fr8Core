@@ -16,7 +16,7 @@ namespace Fr8.Testing.Unit.Fixtures
             {
                 uow.TerminalRepository.Add(new TerminalDO
                 {
-                    Id = 1,
+                    Id = FixtureData.GetTestGuidById(1),
                     Name = "testTerminal",
                     Label = "test",
                     Version = "v1",
@@ -31,7 +31,7 @@ namespace Fr8.Testing.Unit.Fixtures
 
         public static ActivityTemplateDO GetTestActivityTemplateDO()
         {
-            return new ActivityTemplateDO("Test", "test", "v1", "test", 1)
+            return new ActivityTemplateDO("Test", "test", "v1", "test", FixtureData.GetTestGuidById(1))
             {
                 Id = FixtureData.GetTestGuidById(1)
             };
@@ -44,7 +44,7 @@ namespace Fr8.Testing.Unit.Fixtures
                 var tokenDO = new AuthorizationTokenDO()
                 {
                     UserID = user.Id,
-                    TerminalID = 1,
+                    TerminalID = FixtureData.GetTestGuidById(1),
                     AuthorizationTokenState = AuthorizationTokenState.Active,
                     ExpiresAt = null,
                     Token = @"{""Email"":""64684b41-bdfd-4121-8f81-c825a6a03582"",""ApiPassword"":""HyCXOBeGl/Ted9zcMqd7YEKoN0Q=""}",
