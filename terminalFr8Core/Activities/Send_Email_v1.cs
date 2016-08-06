@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Control;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
@@ -12,7 +14,6 @@ using StructureMap;
 using terminalUtilities.Infrastructure;
 using terminalUtilities.Interfaces;
 using terminalUtilities.Models;
-using System;
 
 namespace terminalFr8Core.Activities
 {
@@ -30,6 +31,7 @@ namespace terminalFr8Core.Activities
             MinPaneWidth = 400,
             // TODO: FR-4943, remove this.
             // WebService = TerminalData.WebServiceDTO,
+            Tags = Tags.Notifier,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
