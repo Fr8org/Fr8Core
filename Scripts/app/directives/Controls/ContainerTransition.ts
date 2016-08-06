@@ -316,7 +316,6 @@ module dockyard.directives.containerTransition {
                 transition.errorMessage = "";
                 processTransition(transition);
                 triggerChange();
-                $scope.onTargetChange(transition);
                 $scope.reconfigure();
                 return angular.noop;
             };
