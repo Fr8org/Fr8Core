@@ -40,7 +40,7 @@ namespace HubWeb.Infrastructure_PD.Infrastructure
             {
                 throw new ArgumentException("Value can't be empty", nameof(fileName));
             }
-            template.Session = parameters ?? new Dictionary<string, object>(0); ;
+            template.Session = parameters ?? new Dictionary<string, object>(0);
             template.Initialize();
             var pageContent = (string)template.TransformText();
             if (!Directory.Exists(OutputFolder))

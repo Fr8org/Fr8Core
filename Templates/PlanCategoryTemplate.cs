@@ -7,7 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 // ------------------------------------------------------------------------------
-namespace HubWeb.CategoryPages
+namespace HubWeb.Templates
 {
     using System;
     
@@ -15,7 +15,7 @@ namespace HubWeb.CategoryPages
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+    #line 1 "d:\Dev\Fr8Core\Templates\PlanCategoryTemplate.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "14.0.0.0")]
     public partial class PlanCategoryTemplate : PlanCategoryTemplateBase
     {
@@ -49,14 +49,14 @@ namespace HubWeb.CategoryPages
     <div class=""container"">        
         <p style=""font-size: 30px"">Plan Directory - ");
             
-            #line 27 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 27 "d:\Dev\Fr8Core\Templates\PlanCategoryTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Name));
             
             #line default
             #line hidden
             this.Write("</p>\r\n        <div class=\"icons\">\r\n\t\t\t");
             
-            #line 29 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 29 "d:\Dev\Fr8Core\Templates\PlanCategoryTemplate.tt"
  int i = 0;
 			foreach (var tag in Tags)
 			{ 
@@ -65,14 +65,14 @@ namespace HubWeb.CategoryPages
             #line hidden
             this.Write("\t\t\t<img class=\"web-service-icon\" src=\"..");
             
-            #line 32 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 32 "d:\Dev\Fr8Core\Templates\PlanCategoryTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(tag.Value));
             
             #line default
             #line hidden
             this.Write("\"/>\t\t\r\n\t\t\t\t");
             
-            #line 33 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 33 "d:\Dev\Fr8Core\Templates\PlanCategoryTemplate.tt"
  if (i < Tags.Count - 1)
 				{ 
             
@@ -80,7 +80,7 @@ namespace HubWeb.CategoryPages
             #line hidden
             this.Write("\t\t\t\t<img src=\"../Content/icons/plus.png\"/>\r\n\t\t\t\t");
             
-            #line 36 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 36 "d:\Dev\Fr8Core\Templates\PlanCategoryTemplate.tt"
  i++;
 				} 
             
@@ -88,7 +88,7 @@ namespace HubWeb.CategoryPages
             #line hidden
             this.Write("                        \r\n\t\t");
             
-            #line 38 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 38 "d:\Dev\Fr8Core\Templates\PlanCategoryTemplate.tt"
  } 
             
             #line default
@@ -109,7 +109,7 @@ namespace HubWeb.CategoryPages
                 <tbody>
                     ");
             
-            #line 53 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 53 "d:\Dev\Fr8Core\Templates\PlanCategoryTemplate.tt"
  int number = 1;
                     foreach (var plan in RelatedPlans) 
                     {
@@ -118,28 +118,28 @@ namespace HubWeb.CategoryPages
             #line hidden
             this.Write("                    <tr>\r\n                        <th scope=\"row\">");
             
-            #line 57 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 57 "d:\Dev\Fr8Core\Templates\PlanCategoryTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(number++));
             
             #line default
             #line hidden
             this.Write("</th>\r\n                        <td>");
             
-            #line 58 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 58 "d:\Dev\Fr8Core\Templates\PlanCategoryTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(plan.Item1));
             
             #line default
             #line hidden
             this.Write("</td>\r\n                        <td>");
             
-            #line 59 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 59 "d:\Dev\Fr8Core\Templates\PlanCategoryTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(plan.Item2));
             
             #line default
             #line hidden
             this.Write("</td>\r\n                        <td><a href=\"");
             
-            #line 60 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 60 "d:\Dev\Fr8Core\Templates\PlanCategoryTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(plan.Item3));
             
             #line default
@@ -147,7 +147,7 @@ namespace HubWeb.CategoryPages
             this.Write("\">Create</a></td>\r\n                    </tr>                   \r\n                " +
                     "    ");
             
-            #line 62 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 62 "d:\Dev\Fr8Core\Templates\PlanCategoryTemplate.tt"
  } 
             
             #line default
@@ -157,7 +157,7 @@ namespace HubWeb.CategoryPages
             return this.GenerationEnvironment.ToString();
         }
         
-        #line 1 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+        #line 1 "d:\Dev\Fr8Core\Templates\PlanCategoryTemplate.tt"
 
 private string _NameField;
 

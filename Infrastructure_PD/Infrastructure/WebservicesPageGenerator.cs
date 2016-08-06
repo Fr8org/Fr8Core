@@ -7,8 +7,8 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
-using HubWeb.CategoryPages;
 using HubWeb.Infrastructure_PD.Interfaces;
+using HubWeb.Templates;
 
 namespace HubWeb.Infrastructure_PD.Infrastructure
 {
@@ -23,7 +23,11 @@ namespace HubWeb.Infrastructure_PD.Infrastructure
         private readonly ITemplateGenerator _templateGenerator;
         private readonly ITagGenerator _tagGenerator;
 
-        public WebservicesPageGenerator(IPageDefinition pageDefinitionService, IPlanTemplate planTemplateService, ITemplateGenerator templateGenerator, ITagGenerator tagGenerator)
+        public WebservicesPageGenerator(
+            IPageDefinition pageDefinitionService,
+            IPlanTemplate planTemplateService,
+            ITemplateGenerator templateGenerator,
+            ITagGenerator tagGenerator)
         {
             _pageDefinitionService = pageDefinitionService;
             _planTemplateService = planTemplateService;
@@ -56,7 +60,9 @@ namespace HubWeb.Infrastructure_PD.Infrastructure
                 var curRelatedPlans = new List<PublishPlanTemplateDTO>();
                 foreach (var planTemplateId in curPageDefinition.PlanTemplatesIds)
                 {
-                    curRelatedPlans.Add(_planTemplateService.GetPlanTemplateDTO(fr8AccountId, Guid.Parse(planTemplateId)).Result);
+                    var planDto = _planTemplateService.GetPlanTemplateDTO(fr8AccountId, Guid.Parse(planTemplateId)).Result;
+                    if (planDto != null)
+                        curRelatedPlans.Add(planDto);
                 }
                 var relatedPlans = new List<Tuple<string, string, string>>();
                 foreach (var publishPlanTemplateDTO in curRelatedPlans)

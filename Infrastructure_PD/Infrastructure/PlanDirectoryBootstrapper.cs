@@ -45,6 +45,7 @@ namespace PlanDirectory.Infrastructure
 
                 ConfigureManifestPageGenerator(planDirectoryUrl, serverPath);
                 ConfigurePlanPageGenerator(planDirectoryUrl, serverPath);
+                ConfigurePlanTemplateDetailsPageGenerator(planDirectoryUrl, serverPath);
             }
 
             private void ConfigurePlanPageGenerator(Uri planDirectoryUrl, string serverPath)
@@ -57,6 +58,12 @@ namespace PlanDirectory.Infrastructure
             {
                 var templateGenerator = new TemplateGenerator(new Uri($"{planDirectoryUrl}manifestpages"), $"{serverPath}/manifestpages");
                 For<IManifestPageGenerator>().Use<ManifestPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
+            }
+
+            private void ConfigurePlanTemplateDetailsPageGenerator(Uri planDirectoryUrl, string serverPath)
+            {
+                var templateGenerator = new TemplateGenerator(new Uri($"{planDirectoryUrl}details"), $"{serverPath}/details");
+                For<IPlanTemplateDetailsGenerator>().Use<PlanTemplateDetailsGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
             }
 
             private static string GetServerPath()

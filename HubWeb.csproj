@@ -393,7 +393,7 @@
     <Compile Include="App_Start\StartupMigration.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="CategoryPages\PlanCategoryTemplate.cs">
+    <Compile Include="Templates\PlanCategoryTemplate.cs">
       <DependentUpon>PlanCategoryTemplate.tt</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -524,6 +524,7 @@
     <Compile Include="Infrastructure_PD\Infrastructure\PlanDirectoryHMACAuthenticateAttribute.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\PlanDirectoryHubCommunicatorFactory.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\PlanTemplate.Impl.cs" />
+    <Compile Include="Infrastructure_PD\Infrastructure\PlanTemplateDetailsGenerator.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\SearchProvider.Impl.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\TagGenerator.cs" />
     <Compile Include="Infrastructure_PD\Infrastructure\TemplateGenerator.cs" />
@@ -537,6 +538,7 @@
     <Compile Include="Infrastructure_PD\Interfaces\IHubCommunicatorFactory.cs" />
     <Compile Include="Infrastructure_PD\Interfaces\IManifestPageGenerator.cs" />
     <Compile Include="Infrastructure_PD\Interfaces\IPlanTemplate.cs" />
+    <Compile Include="Infrastructure_PD\Interfaces\IPlanTemplateDetailsGenerator.cs" />
     <Compile Include="Infrastructure_PD\Interfaces\ISearchProvider.cs" />
     <Compile Include="Infrastructure_PD\Interfaces\ITagGenerator.cs" />
     <Compile Include="Infrastructure_PD\Interfaces\ITemplateGenerator.cs" />
@@ -550,6 +552,11 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="SelfHostFactory.cs" />
+    <Compile Include="Templates\PlanTemplateDetailsTemplate.cs">
+      <DependentUpon>PlanTemplateDetailsTemplate.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="ViewModels\AuthenticationErrorVM.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />
     <Compile Include="ViewModels\HomeVM.cs" />
@@ -573,14 +580,10 @@
     <Compile Include="ExceptionHandling\WebApiExceptionFilterAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="CategoryPages\basecamp2.html" />
-    <Content Include="CategoryPages\built-in services-slack.html" />
-    <Content Include="CategoryPages\built-in services.html" />
-    <Content Include="CategoryPages\PlanCategoryTemplate.tt">
+    <Content Include="Templates\PlanCategoryTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>PlanCategoryTemplate.cs</LastGenOutput>
     </Content>
-    <Content Include="CategoryPages\slack.html" />
     <Content Include="Content\css\CDNRelatedStyles.css" />
     <Content Include="Content\css\dockyard\activity-stream.css" />
     <Content Include="Content\css\dockyard\authentication-dialog.css" />
@@ -827,6 +830,10 @@
     <Content Include="Scripts\tests\e2e\shared\consoleLog.js" />
     <Content Include="Scripts\tests\e2e\shared\manageAuthTokens.js" />
     <Content Include="Scripts\tests\e2e\shared\uiHelpers.js" />
+    <Content Include="Templates\PlanTemplateDetailsTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>PlanTemplateDetailsTemplate.cs</LastGenOutput>
+    </Content>
     <Content Include="Views\AngularTemplate\DatePicker.cshtml" />
     <Content Include="ApplicationInsights.config">
       <TransformOnBuild>true</TransformOnBuild>
