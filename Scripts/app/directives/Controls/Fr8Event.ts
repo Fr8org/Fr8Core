@@ -1,7 +1,7 @@
 ﻿/// <reference path="../../_all.ts" />
 module dockyard.directives {
     'use strict';
-
+    import designHeaderEvents = dockyard.Fr8Events.DesignerHeader;
     export interface IFr8EventScope extends ng.IScope {
         color: string;
         event: any;
@@ -39,6 +39,7 @@ module dockyard.directives {
                 case dockyard.enums.NotificationType.GenericFailure:
                     $scope.color = 'red';
                     $scope.icon = 'fa-times';
+                    $scope.$emit(<any>designHeaderEvents.PLAN_EXECUTION_FAILED);
                     break;
                 case dockyard.enums.NotificationType.GenericInfo:
                     $scope.eventSubHeader = $scope.event.ActivityName;

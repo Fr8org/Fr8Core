@@ -84,9 +84,16 @@ namespace Hub.Services
                 planQuery = planQuery.Where(c => c.Name.Contains(planQueryDTO.Filter) || c.Description.Contains(planQueryDTO.Filter));
             }
 
-            planQuery = planQueryDTO.Status == null
+            int? planState = null;
+
+            if (planQueryDTO.Status != null)
+            {
+                planState = PlanState.StringToInt(planQueryDTO.Status);
+            }
+
+            planQuery = planState == null
                 ? planQuery.Where(pt => pt.PlanState != PlanState.Deleted)
-                : planQuery.Where(pt => pt.PlanState == planQueryDTO.Status);
+                : planQuery.Where(pt => pt.PlanState == planState);
 
             // Lets allow ordering with just name for now
             if (planQueryDTO.OrderBy == "name")

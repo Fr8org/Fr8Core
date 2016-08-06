@@ -5,7 +5,7 @@
             id: '89EBF277-0CC4-4D6D-856B-52457F10C686',
             name: "MockPlan",
             description: "MockPlan",
-            planState: 1,
+            planState: model.PlanState.Inactive,
             subscribedDocuSignTemplates: [],
             externalEventSubscription: [],
             startingSubPlanId: 1
@@ -16,14 +16,14 @@
         public static updatedPlan = <interfaces.IPlanVM>{
             'name': 'Updated',
             'description': 'Description',
-            'planState': 1,
+            'planState': model.PlanState.Inactive,
             'subscribedDocuSignTemplates': ['58521204-58af-4e65-8a77-4f4b51fef626']
         }
 
         public static fullPlan = <interfaces.IPlanVM>{
             'name': 'Updated',
             'description': 'Description',
-            'planState': 1,
+            'planState': model.PlanState.Inactive,
             'subscribedDocuSignTemplates': ['58521204-58af-4e65-8a77-4f4b51fef626'],
             subPlans: [
                 <model.SubPlanDTO>{
