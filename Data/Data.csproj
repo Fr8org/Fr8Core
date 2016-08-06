@@ -775,6 +775,10 @@
     <Compile Include="Migrations\201608030857168_RemovedNameAndCurrentViewFromActivityDO.Designer.cs">
       <DependentUpon>201608030857168_RemovedNameAndCurrentViewFromActivityDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201608061311565_ConvertedTerminalIdToGuid.cs" />
+    <Compile Include="Migrations\201608061311565_ConvertedTerminalIdToGuid.Designer.cs">
+      <DependentUpon>201608061311565_ConvertedTerminalIdToGuid.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -1426,6 +1430,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201608030857168_RemovedNameAndCurrentViewFromActivityDO.resx">
       <DependentUpon>201608030857168_RemovedNameAndCurrentViewFromActivityDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608061311565_ConvertedTerminalIdToGuid.resx">
+      <DependentUpon>201608061311565_ConvertedTerminalIdToGuid.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
