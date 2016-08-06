@@ -278,7 +278,6 @@
 
 .jump-target-text {
     padding-top: 15px; 
-    margin-left: 60px;
 }
 
 .transition-seperator {
@@ -482,6 +481,13 @@ div.action-header {
     position: absolute;
     top: 81px;
     right: -66px;
+}
+
+.jumptarget{
+    display: inline-block; 
+    height: 50px; 
+    margin-top: 84px; 
+    max-width:500px;
 }
 
 .action-add-button-link {
