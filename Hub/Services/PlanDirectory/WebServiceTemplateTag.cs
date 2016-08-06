@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Newtonsoft.Json;
-using PlanDirectory.Infrastructure;
 
-namespace HubWeb.Infrastructure_PD.Infrastructure
+namespace Hub.Services.PlanDirectory
 {
     public class WebServiceTemplateTag : TemplateTag
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace HubWeb.Infrastructure_PD.Interfaces
+namespace Hub.Interfaces
 {
     public interface ITemplateGenerator
     {

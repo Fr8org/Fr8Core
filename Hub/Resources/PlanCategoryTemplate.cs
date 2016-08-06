@@ -7,15 +7,14 @@
 //     the code is regenerated.
 // </auto-generated>
 // ------------------------------------------------------------------------------
-namespace PlanDirectory.Templates
+
+namespace Hub.Resources
 {
-    using System;
-    
     /// <summary>
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
+    #line 1 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "14.0.0.0")]
     public partial class PlanCategoryTemplate : PlanCategoryTemplateBase
     {
@@ -40,7 +39,7 @@ namespace PlanDirectory.Templates
     <title></title>
     <meta charset=""utf-8""/>
 </head>
-<body>
+<body
 	 <div class=""header-container"">
         <div class=""header"">
             <div class=""logo""></div>                        
@@ -49,14 +48,14 @@ namespace PlanDirectory.Templates
     <div class=""container"">        
         <p style=""font-size: 30px"">Plan Directory - ");
             
-            #line 27 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
+            #line 27 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Name));
             
             #line default
             #line hidden
             this.Write("</p>\r\n        <div class=\"icons\">\r\n\t\t\t");
             
-            #line 29 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
+            #line 29 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
  int i = 0;
 			foreach (var tag in Tags)
 			{ 
@@ -65,14 +64,14 @@ namespace PlanDirectory.Templates
             #line hidden
             this.Write("\t\t\t<img class=\"web-service-icon\" src=\"..");
             
-            #line 32 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
+            #line 32 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(tag.Value));
             
             #line default
             #line hidden
             this.Write("\"/>\t\t\r\n\t\t\t\t");
             
-            #line 33 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
+            #line 33 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
  if (i < Tags.Count - 1)
 				{ 
             
@@ -80,7 +79,7 @@ namespace PlanDirectory.Templates
             #line hidden
             this.Write("\t\t\t\t<img src=\"../Content/icons/plus.png\"/>\r\n\t\t\t\t");
             
-            #line 36 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
+            #line 36 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
  i++;
 				} 
             
@@ -88,7 +87,7 @@ namespace PlanDirectory.Templates
             #line hidden
             this.Write("                        \r\n\t\t");
             
-            #line 38 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
+            #line 38 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
  } 
             
             #line default
@@ -109,7 +108,7 @@ namespace PlanDirectory.Templates
                 <tbody>
                     ");
             
-            #line 53 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
+            #line 53 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
  int number = 1;
                     foreach (var plan in RelatedPlans) 
                     {
@@ -118,28 +117,28 @@ namespace PlanDirectory.Templates
             #line hidden
             this.Write("                    <tr>\r\n                        <th scope=\"row\">");
             
-            #line 57 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
+            #line 57 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(number++));
             
             #line default
             #line hidden
             this.Write("</th>\r\n                        <td>");
             
-            #line 58 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
+            #line 58 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(plan.Item1));
             
             #line default
             #line hidden
             this.Write("</td>\r\n                        <td>");
             
-            #line 59 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
+            #line 59 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(plan.Item2));
             
             #line default
             #line hidden
             this.Write("</td>\r\n                        <td><a href=\"");
             
-            #line 60 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
+            #line 60 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(plan.Item3));
             
             #line default
@@ -147,7 +146,7 @@ namespace PlanDirectory.Templates
             this.Write("\">Create</a></td>\r\n                    </tr>                   \r\n                " +
                     "    ");
             
-            #line 62 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
+            #line 62 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
  } 
             
             #line default
@@ -157,7 +156,7 @@ namespace PlanDirectory.Templates
             return this.GenerationEnvironment.ToString();
         }
         
-        #line 1 "D:\Dev\Fr8Core\Services\PlanDirectory\Templates\PlanCategoryTemplate.tt"
+        #line 1 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
 
 private string _NameField;
 

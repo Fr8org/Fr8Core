@@ -4,10 +4,10 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Data.DataTransferObjects.PlanDirectory;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Infrastructure;
 using Hub.Interfaces;
-using HubWeb.Infrastructure_PD.Interfaces;
 using log4net;
 using Microsoft.AspNet.Identity;
 using PlanDirectory.Infrastructure;
@@ -39,7 +39,6 @@ namespace HubWeb.Controllers.Api
 
         [HttpPost]
         [Fr8ApiAuthorize]
-        [PlanDirectoryHMACAuthenticate]
         public async Task<IHttpActionResult> Post(PublishPlanTemplateDTO dto)
         {
             var fr8AccountId = User.Identity.GetUserId();
@@ -52,7 +51,6 @@ namespace HubWeb.Controllers.Api
 
         [HttpDelete]
         [Fr8ApiAuthorize]
-        [PlanDirectoryHMACAuthenticate]
         public async Task<IHttpActionResult> Delete(Guid id)
         {
             var identity = User.Identity as ClaimsIdentity;
@@ -76,7 +74,6 @@ namespace HubWeb.Controllers.Api
 
         [HttpGet]
         [Fr8ApiAuthorize]
-        [PlanDirectoryHMACAuthenticate]
         public async Task<IHttpActionResult> Get(Guid id)
         {
             var fr8AccountId = User.Identity.GetUserId();
@@ -103,7 +100,6 @@ namespace HubWeb.Controllers.Api
 
         [HttpPost]
         [Fr8ApiAuthorize]
-        [PlanDirectoryHMACAuthenticate]
         public async Task<IHttpActionResult> CreatePlan(Guid id)
         {
             try

@@ -7,8 +7,7 @@ using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
 using Hub.Services;
-using HubWeb.Infrastructure_PD.Infrastructure;
-using HubWeb.Infrastructure_PD.Interfaces;
+using Hub.Services.PlanDirectory;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 
@@ -21,27 +20,11 @@ namespace PlanDirectory.Infrastructure
             public LiveMode()
             {
                 For<IFr8Account>().Use<Fr8Account>().Singleton();
-                //For<IAuthTokenManager>().Use<AuthTokenManager>().Singleton();
-                For<IPlanTemplate>().Use<PlanTemplate>().Singleton();
-                For<ISearchProvider>().Use<SearchProvider>();
-                For<ITagGenerator>().Use<TagGenerator>().Singleton();
-                For<IPageDefinition>().Use<PageDefinition>().Singleton();
                 For<IPageDefinitionRepository>().Use<PageDefinitionRepository>().Singleton();
-                //For<IHubCommunicatorFactory>().Use(
-                //    x => new PlanDirectoryHubCommunicatorFactory(
-                //        ObjectFactory.GetInstance<IRestfulServiceClientFactory>(),
-                //        CloudConfigurationManager.GetSetting("HubApiUrl"),
-                //        CloudConfigurationManager.GetSetting("PlanDirectorySecret")
-                //    )
-                //);
+
                 var serverPath = GetServerPath();
 
-                //now it is hub
-                var protocol = CloudConfigurationManager.GetSetting("ServerProtocol");
-                var server = CloudConfigurationManager.GetSetting("ServerDomainName");
-                var port = CloudConfigurationManager.GetSetting("ServerPort");
-                var planDirectoryUrl = new Uri(protocol + server + port);
-                //var planDirectoryUrl = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl"));
+                var planDirectoryUrl = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl"));
 
                 ConfigureManifestPageGenerator(planDirectoryUrl, serverPath);
                 ConfigurePlanPageGenerator(planDirectoryUrl, serverPath);
@@ -50,13 +33,13 @@ namespace PlanDirectory.Infrastructure
 
             private void ConfigurePlanPageGenerator(Uri planDirectoryUrl, string serverPath)
             {
-                var templateGenerator = new TemplateGenerator(new Uri($"{planDirectoryUrl}categorypages"), $"{serverPath}/categorypages");
+                var templateGenerator = new TemplateGenerator(new Uri($"{planDirectoryUrl}/categorypages"), $"{serverPath}/categorypages");
                 For<IWebservicesPageGenerator>().Use<WebservicesPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
             }
 
             private void ConfigureManifestPageGenerator(Uri planDirectoryUrl, string serverPath)
             {
-                var templateGenerator = new TemplateGenerator(new Uri($"{planDirectoryUrl}manifestpages"), $"{serverPath}/manifestpages");
+                var templateGenerator = new TemplateGenerator(new Uri($"{planDirectoryUrl}/manifestpages"), $"{serverPath}/manifestpages");
                 For<IManifestPageGenerator>().Use<ManifestPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
             }
 

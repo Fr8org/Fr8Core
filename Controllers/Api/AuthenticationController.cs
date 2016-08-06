@@ -21,6 +21,7 @@ using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;
 using System.Web.Http.Description;
 using Fr8.Infrastructure;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Services;
 using Newtonsoft.Json;
 using Swashbuckle.Swagger.Annotations;
@@ -127,6 +128,7 @@ namespace HubWeb.Controllers
         {
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
+                Logger.GetLogger().Warn($"Username or password is not specified");
                 return BadRequest("Username or password is not specified");
             }
 
@@ -151,6 +153,7 @@ namespace HubWeb.Controllers
                     }
                 }
             }
+            Logger.GetLogger().Warn($"Loging failed for {username}");
             return StatusCode(HttpStatusCode.Forbidden);
         }
 
