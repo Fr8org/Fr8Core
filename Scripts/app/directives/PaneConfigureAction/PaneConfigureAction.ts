@@ -382,13 +382,13 @@ module dockyard.directives.paneConfigureAction {
                 
                 // save request will stop running plans, so FE should know that
                 // commented out because of FR-4352, now running plan locks activities configuration
-                //if (this.$scope.plan.planState === 2) {
-                //    this.$scope.plan.planState = 1;
+                //if (this.$scope.plan.planState === model.PlanState.Executing) {
+                //    this.$scope.plan.planState = model.PlanState.Inactive;
                 //}
 
                 // the save request is sent, so we can run the plan
-                if (this.$scope.plan.planState === 3) {
-                    this.$scope.plan.planState = 1;
+                if (this.$scope.plan.planState === model.PlanState.Saving_Changes) {
+                    this.$scope.plan.planState = model.PlanState.Inactive;
                 }
             }
 
@@ -542,7 +542,7 @@ module dockyard.directives.paneConfigureAction {
                         //in case of reconfiguring the solution check the child actions again
 
                         //not needed in case of Loop action
-                        if (this.$scope.currentAction.name !== "Loop") {
+                        if (this.$scope.currentAction.activityTemplate.name !== "Loop") {
                             this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
                         }
                     }
@@ -647,7 +647,7 @@ module dockyard.directives.paneConfigureAction {
             }
 
             this.$timeout.cancel(this.timeoutPromise);  //does nothing, if timeout alrdy done
-            this.$scope.plan.planState = 3; // a control value is changed, the plan should not be run after the change request is sent to server
+            this.$scope.plan.planState = model.PlanState.Saving_Changes; // a control value is changed, the plan should not be run after the change request is sent to server
             this.timeoutPromise = this.$timeout(() => {   //Set timeout to prevent sending more than one save requests for changes lasts less than 1 sec.
                 this.$scope.onConfigurationChanged(newValue, oldValue);
             }, 1000);

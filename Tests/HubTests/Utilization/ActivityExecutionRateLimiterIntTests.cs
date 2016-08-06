@@ -110,7 +110,7 @@ namespace HubTests.Utilization
                     }
                 });
 
-                plan.PlanState = PlanState.Running;
+                plan.PlanState = PlanState.Executing;
                 plan.StartingSubplan = (SubplanDO) plan.ChildNodes[0];
                 plan.Fr8Account = userAcct;
 

@@ -6,7 +6,7 @@
         tag: string;
         lastUpdated: string;
         description: string;
-        planState: PlanState;
+        planState: string;
         subscribedDocuSignTemplates: Array<string>;
         externalEventSubscription: Array<number>;
         startingSubPlanId: number;
@@ -15,10 +15,11 @@
         category: string;
     }
 
-    export enum PlanState {
-        Inactive = 1,
-        Running = 2,
-        Saving_Changes = 3
+    export class PlanState {
+        static Inactive = "Inactive";
+        static Executing = "Executing";
+        static Saving_Changes = "Saving_Changes";
+        static Active = "Active";
     }
 
     export enum PlanVisibility {
@@ -34,7 +35,7 @@
         id: string;
         page: number;
         planPerPage: number;
-        status:number;
+        status:string;
         category: string;
         orderBy: string;
         isDescending: boolean;

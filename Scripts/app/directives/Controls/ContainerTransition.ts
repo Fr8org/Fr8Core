@@ -34,7 +34,7 @@ module dockyard.directives.containerTransition {
                 <button class="btn btn-default" ng-click="$dismiss()">Okay</button>\
             </div>';
 
-        var controller = ['$scope', '$timeout', 'PlanService', '$modal', ($scope: IContainerTransitionScope, $timeout: ng.ITimeoutService, PlanService: services.IPlanService, $modal: any) => {
+        var controller = ['$scope', '$timeout', 'PlanService', '$modal', 'ActivityTemplateHelperService', ($scope: IContainerTransitionScope, $timeout: ng.ITimeoutService, PlanService: services.IPlanService, $modal: any, ActivityTemplateHelperService: services.IActivityTemplateHelperService) => {
 
             var planOptions = new Array<model.DropDownListItem>();
 
@@ -142,11 +142,13 @@ module dockyard.directives.containerTransition {
                 var subplanActivities = new Array<model.DropDownListItem>();
                 for (var i = 0; i < subplan.activities.length; i++) {
                     var current = subplan.activities[i];
-                    subplanActivities.push(new model.DropDownListItem(current.name, current.id));
+                    var currentAt = ActivityTemplateHelperService.getActivityTemplate(current);
+                    subplanActivities.push(new model.DropDownListItem(currentAt.label, current.id));
                     if (!isThisCurrentLevel(subplan.activities[i])) {
                         var childActivityTree = getActivityTree(current);
                         for (var j = 0; j < childActivityTree.length; j++) {
-                            subplanActivities.push(new model.DropDownListItem(childActivityTree[j].name, childActivityTree[j].id));
+                            var childAT = ActivityTemplateHelperService.getActivityTemplate(childActivityTree[j]);
+                            subplanActivities.push(new model.DropDownListItem(childAT.label, childActivityTree[j].id));
                         }
                     }
                 }
@@ -238,7 +240,9 @@ module dockyard.directives.containerTransition {
             };
 
             $scope.addTransition = () => {
-                $scope.field.transitions.push(new model.ContainerTransitionField());
+                var newTransition = new model.ContainerTransitionField();
+                newTransition.name = "transition_" + $scope.field.transitions.length;
+                $scope.field.transitions.push(newTransition);
             };
             var buildJumpTargets = (): Array<model.ActivityJumpTarget> => {
                 var targets = new Array<model.ActivityJumpTarget>();
@@ -283,6 +287,7 @@ module dockyard.directives.containerTransition {
             $scope.onTargetChange = (transition: model.ContainerTransitionField) => {
                 var dd = <model.DropDownList>(<any>transition)._dummySecondaryOperationDD;
                 transition.targetNodeId = dd.value;
+                transition.errorMessage = null;
                 triggerChange();
 
                 if ((<any>transition)._dummyOperationDD.value === ContainerTransitions.JumpToSubplan.toString()
@@ -298,7 +303,12 @@ module dockyard.directives.containerTransition {
 
             $scope.onOperationChange = (transition: model.ContainerTransitionField) => {
                 var dd = <model.DropDownList>(<any>transition)._dummyOperationDD;
+                var targetNodeDd = <model.DropDownList>(<any>transition)._dummySecondaryOperationDD;
+                targetNodeDd.value = null;
+                targetNodeDd.selectedKey = null;
+                transition.targetNodeId = null;
                 transition.transition = parseInt(dd.value);
+                transition.errorMessage = "";
                 processTransition(transition);
                 triggerChange();
                 return angular.noop;
@@ -336,6 +346,9 @@ module dockyard.directives.containerTransition {
             };
             $scope.removeTransition = (index: number) => {
                 $scope.field.transitions.splice(index, 1);
+                $scope.field.transitions.forEach((tran, index) => {
+                    tran.name = "transition_" + index;
+                });
                 triggerChange();
             };
 

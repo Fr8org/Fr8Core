@@ -1,0 +1,68 @@
+﻿<#@ template language="C#" #>
+<#@ parameter name="Name" type="System.String" #>
+<#@ parameter name="Tags" type="System.Collections.Generic.IDictionary<System.String, System.String>" #>
+<#@ parameter name="RelatedPlans" type="System.Collections.Generic.IList<System.Tuple<System.String, System.String, System.String>>" #>
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="../Content/metronic/components.css"/>
+
+    <link href='https://fonts.googleapis.com/css?family=Francois+One' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Didact+Gothic' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" href="../Content/css/plan-category.css" />
+	<link rel="stylesheet" href="../Content/css/plan-directory.css" />
+
+    <title></title>
+    <meta charset="utf-8"/>
+</head>
+<body
+	 <div class="header-container">
+        <div class="header">
+            <div class="logo"></div>                        
+        </div>
+    </div>
+    <div class="container">        
+        <p style="font-size: 30px">Plan Directory - <#=Name#></p>
+        <div class="icons">
+			<# int i = 0;
+			foreach (var tag in Tags)
+			{ #>
+			<img class="web-service-icon" src="..<#=tag.Value #>"/>		
+				<# if (i < Tags.Count - 1)
+				{ #>
+				<img src="../Content/icons/plus.png"/>
+				<# i++;
+				} #>                        
+		<# } #>
+        </div>
+        <br/>
+        <p style="font-size: 15px">Plan Definition Description</p>
+        <p style="font-size: 22px">Related Plans</p>
+            <table class="table"> 
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Plan Name</th>
+                        <th>Plan Description</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <# int number = 1;
+                    foreach (var plan in RelatedPlans) 
+                    {#>
+                    <tr>
+                        <th scope="row"><#=number++#></th>
+                        <td><#=plan.Item1#></td>
+                        <td><#=plan.Item2#></td>
+                        <td><a href="<#=plan.Item3#>">Create</a></td>
+                    </tr>                   
+                    <# } #>
+                    
+                </tbody>
+            </table>
+</div>
+</body>
+</html>
