@@ -72,7 +72,6 @@ namespace terminalIntegrationTests.Integration
         }
 
         [Test]
-        //TODO: investigate why parent plan is not in database and how to place it there, fix this test
         public async Task PlanDirectory_CreatePlan()
         {
             var planTemplateDTO = PlanTemplateDTO_1();
