@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Data.Interfaces;
 using Data.States.Templates;
@@ -13,7 +14,7 @@ namespace Data.Entities
         }
 
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         public string Secret { get; set; }
         
