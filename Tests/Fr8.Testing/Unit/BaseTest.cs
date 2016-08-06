@@ -12,6 +12,7 @@ using Data.Infrastructure.AutoMapper;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Entities;
+using Data.States;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.States;
 using Fr8.Infrastructure.Data.Managers;
@@ -159,7 +160,7 @@ namespace Fr8.Testing.Unit
                 .ForMember(a => a.Description, opts => opts.ResolveUsing(ad => ad.Description))
                 .ForMember(a => a.LastUpdated, opts => opts.ResolveUsing(ad => ad.LastUpdated))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
-                .ForMember(a => a.PlanState, opts => opts.ResolveUsing(ad => ad.PlanState))
+                .ForMember(a => a.PlanState, opts => opts.ResolveUsing(ad => PlanState.IntToString(ad.PlanState)))
                 .ForMember(a => a.StartingSubPlanId, opts => opts.ResolveUsing(ad => ad.StartingSubPlanId))
                 .ForMember(a => a.Tag, opts => opts.ResolveUsing(ad => ad.Tag))
                 .ForMember(a => a.Visibility, opts => opts.ResolveUsing(ad => new PlanVisibilityDTO() { Hidden = ad.Visibility.BooleanValue() }));
@@ -169,7 +170,7 @@ namespace Fr8.Testing.Unit
                 .ForMember(a => a.Description, opts => opts.ResolveUsing(ad => ad.Description))
                 .ForMember(a => a.LastUpdated, opts => opts.ResolveUsing(ad => ad.LastUpdated))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
-                .ForMember(a => a.PlanState, opts => opts.ResolveUsing(ad => ad.PlanState))
+                .ForMember(a => a.PlanState, opts => opts.ResolveUsing(ad => PlanState.StringToInt(ad.PlanState)))
                 .ForMember(a => a.StartingSubPlanId, opts => opts.ResolveUsing(ad => ad.StartingSubPlanId))
                 .ForMember(a => a.Tag, opts => opts.ResolveUsing(ad => ad.Tag))
                 .ForMember(a => a.Visibility, opts => opts.ResolveUsing(ad => ad.Visibility?.PlanVisibilityValue()));
