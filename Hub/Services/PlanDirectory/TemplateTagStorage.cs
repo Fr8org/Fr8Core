@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace HubWeb.Infrastructure_PD.Infrastructure
+namespace Hub.Services.PlanDirectory
 {
     public class TemplateTagStorage
     {

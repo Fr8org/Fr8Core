@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Hub.Enums;
 
-namespace HubWeb.Infrastructure_PD.Interfaces
+namespace Hub.Interfaces
 {
     public interface IManifestPageGenerator
     {

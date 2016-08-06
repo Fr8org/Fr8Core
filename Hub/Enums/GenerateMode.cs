@@ -1,4 +1,4 @@
-namespace HubWeb.Infrastructure_PD.Interfaces
+namespace Hub.Enums
 {
     public enum GenerateMode
     {

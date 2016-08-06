@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.DataTransferObjects.PlanDirectory;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities.Configuration;
+using Hub.Interfaces;
 using Microsoft.Azure.Search;
 using Microsoft.Azure.Search.Models;
-using PlanDirectory.Interfaces;
 
 namespace PlanDirectory.Infrastructure
 {

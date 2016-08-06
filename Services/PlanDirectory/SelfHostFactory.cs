@@ -7,7 +7,7 @@ using StructureMap;
 using Hub.Infrastructure;
 using PlanDirectory.Infrastructure;
 using System.Web.Http.Dispatcher;
-using PlanDirectory.Interfaces;
+using Hub.Interfaces;
 
 namespace PlanDirectory
 {
