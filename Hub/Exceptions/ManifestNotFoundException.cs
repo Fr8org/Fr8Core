@@ -1,4 +1,4 @@
-﻿namespace HubWeb.Infrastructure_PD.Exceptions
+﻿namespace Hub.Exceptions
 {
     public class ManifestNotFoundException : ManifestGenerationException
     {

@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Manifests;
-using HubWeb.Infrastructure_PD.Infrastructure;
+using Hub.Services.PlanDirectory;
 
-namespace HubWeb.Infrastructure_PD.Interfaces
+namespace Hub.Interfaces
 {
     public interface ITagGenerator
     {

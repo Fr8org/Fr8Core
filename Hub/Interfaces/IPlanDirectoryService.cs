@@ -21,7 +21,7 @@ namespace Hub.Interfaces
 
         Task<PublishPlanTemplateDTO> GetTemplate(Guid id, string userId); 
         Task Share(Guid planId, string userId);
-        Task Unpublish(Guid planId, string userId);
+        Task Unpublish(Guid planId, string userId, bool privileged);
         PlanDTO CrateTemplate(Guid planId, string userId);
         PlanNoChildrenDTO CreateFromTemplate(PlanDTO plan, string userId);
     }

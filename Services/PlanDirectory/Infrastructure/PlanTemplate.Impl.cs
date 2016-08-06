@@ -10,7 +10,8 @@ using Data.Interfaces;
 using Data.States;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
-using PlanDirectory.Interfaces;
+using Hub.Interfaces;
+
 
 namespace PlanDirectory.Infrastructure
 {
