@@ -9,6 +9,8 @@
         description: string;
         version: string;
         terminalStatus: number;
+        isFr8OwnTerminal: boolean;
+        participationState: enums.ParticipationState;
         authenticationType: number;
         roles: Array<string>;
         

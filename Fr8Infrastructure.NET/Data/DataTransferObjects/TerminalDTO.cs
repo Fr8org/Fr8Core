@@ -33,6 +33,8 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         public string DevUrl { get; set; }
         [JsonProperty("prodUrl")]
         public string ProdUrl { get; set; }
+        [JsonProperty("isFr8OwnTerminal")]
+        public bool IsFr8OwnTerminal { get; set; }
         /// <summary>
         /// Allowed roles for users, determing Terminal Permissions
         /// </summary>

@@ -1,8 +1,6 @@
-﻿namespace Data.States
-{
-    // When adding or changing items in this enum please also do the same in PermissionType.ts.
-    public enum PermissionType
-    {
+﻿module dockyard.enums {
+    // Don't forget to add corresponding items to PermissionType.cs
+    export enum PermissionType {
         CreateObject = 1,
         ReadObject = 2,
         EditObject = 3,
@@ -14,5 +12,5 @@
         ManageInternalUsers = 9,
         EditPageDefinitions = 10,
         UseTerminal = 11
-    }
+    };
 }

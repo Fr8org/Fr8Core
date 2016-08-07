@@ -10,13 +10,15 @@ namespace Data.Migrations
             AlterColumn("dbo.Terminals", "Name", c => c.String());
             AlterColumn("dbo.Terminals", "Version", c => c.String());
             AlterColumn("dbo.Terminals", "Label", c => c.String());
+            AlterColumn("dbo.Terminals", "AuthenticationType", c => c.Int());
         }
-        
+
         public override void Down()
         {
             AlterColumn("dbo.Terminals", "Label", c => c.String(nullable: false));
             AlterColumn("dbo.Terminals", "Version", c => c.String(nullable: false));
             AlterColumn("dbo.Terminals", "Name", c => c.String(nullable: false));
+            AlterColumn("dbo.Terminals", "AuthenticationType", c => c.Int(nullable: false));
         }
     }
 }

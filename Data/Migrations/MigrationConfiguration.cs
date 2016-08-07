@@ -354,7 +354,6 @@ namespace Data.Migrations
         private static void AddAdmins(IUnitOfWork unitOfWork)
         {
             CreateAdmin("alex@edelstein.org", "foobar", unitOfWork);
-            CreateAdmin("d1984v@gmail.com", "dmitry123", unitOfWork);
             CreateAdmin("y.gnusin@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("alexavrutin@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("bahadir.bb@gmail.com", "123456ab", unitOfWork);
@@ -366,7 +365,6 @@ namespace Data.Migrations
             CreateAdmin("maki.gjuroski@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("fr8system_monitor@fr8.company", "123qwe", unitOfWork);
             CreateAdmin("teh.netaholic@gmail.com", "123qwe", unitOfWork);
-            CreateAdmin("farrukh.normuradov@gmail.com", "123qwe", unitOfWork);
         }
 
         /// <summary>
@@ -376,11 +374,11 @@ namespace Data.Migrations
         /// <returns>True if created successfully otherwise false</returns>
         private static void AddDockyardAccounts(IUnitOfWork unitOfWork)
         {
-            CreateDockyardAccount("alexlucre1@gmail.com", "lucrelucre", unitOfWork);
-            CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", unitOfWork);
-            CreateDockyardAccount("fileupload@dockyard.company", "test123", unitOfWork);
-            CreateDockyardAccount("sacre", "printf", unitOfWork);
-            CreateDockyardAccount("integration_test_runner@fr8.company", "fr8#s@lt!", unitOfWork);
+            CreateFr8Account("alexlucre1@gmail.com", "lucrelucre", unitOfWork);
+            CreateFr8Account("diagnostics_monitor@dockyard.company", "testpassword", unitOfWork);
+            CreateFr8Account("fileupload@dockyard.company", "test123", unitOfWork);
+            CreateFr8Account("sacre", "printf", unitOfWork);
+            CreateFr8Account("integration_test_runner@fr8.company", "fr8#s@lt!", unitOfWork);
         }
         /// <summary>
         /// Add test user with 'Admin' role
@@ -428,7 +426,7 @@ namespace Data.Migrations
         /// <param name="curPassword"></param>
         /// <param name="uow"></param>
         /// <returns></returns>
-        public static Fr8AccountDO CreateDockyardAccount(string userEmail, string curPassword, IUnitOfWork uow)
+        public static Fr8AccountDO CreateFr8Account(string userEmail, string curPassword, IUnitOfWork uow)
         {
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
             uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
@@ -719,8 +717,8 @@ namespace Data.Migrations
                 Name = name,
                 ProfileId = profileId,
                 ObjectType = objectType,
-                CreateDate = DateTimeOffset.Now,
-                LastUpdated = DateTimeOffset.Now,
+                CreateDate = DateTimeOffset.UtcNow,
+                LastUpdated = DateTimeOffset.UtcNow,
                 HasFullAccess = isFullSet
             };
 
@@ -735,7 +733,7 @@ namespace Data.Migrations
             if (isFullSet)
             {
                 permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int)PermissionType.ViewAllObjects));
-                permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int)PermissionType.ModifyAllObjects));
+                permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int)PermissionType.EditAllObjects));
                 permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int)PermissionType.EditPageDefinitions));
             }
 

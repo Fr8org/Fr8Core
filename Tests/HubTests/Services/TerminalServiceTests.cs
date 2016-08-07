@@ -142,7 +142,7 @@ namespace HubTests.Services
 
             t.Id = 0;
 
-            var terminal = terminalService.RegisterOrUpdate(t);
+            var terminal = terminalService.RegisterOrUpdate(t, false);
 
             Assert.IsTrue(terminal.Id > 0);
             
@@ -165,12 +165,12 @@ namespace HubTests.Services
         {
             var terminalService = new Terminal(_configRepository, _securityServices);
             var t = GenerateTerminals(1).First();
-            var terminal = terminalService.RegisterOrUpdate(t);
+            var terminal = terminalService.RegisterOrUpdate(t, false);
 
             var tNew = GenerateTerminals(10).Last();
             tNew.Id = t.Id;
 
-            var newTerminal = terminalService.RegisterOrUpdate(tNew);
+            var newTerminal = terminalService.RegisterOrUpdate(tNew, false);
 
             Assert.IsTrue(terminal.Id != newTerminal.Id);
 
@@ -190,7 +190,7 @@ namespace HubTests.Services
             
             foreach (var terminal in GenerateTerminals(2))
             {
-                terminalService.RegisterOrUpdate(terminal);
+                terminalService.RegisterOrUpdate(terminal, false);
             }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -250,7 +250,7 @@ namespace HubTests.Services
 
             foreach (var terminal in reference)
             {
-                terminalService.RegisterOrUpdate(terminal);
+                terminalService.RegisterOrUpdate(terminal, false);
             }
             
             var terminalsFromService = terminalService.GetAll().ToArray();

@@ -786,6 +786,10 @@
     <Compile Include="Migrations\201608030857168_RemovedNameAndCurrentViewFromActivityDO.Designer.cs">
       <DependentUpon>201608030857168_RemovedNameAndCurrentViewFromActivityDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201608070217556_EmptyMigration1.cs" />
+    <Compile Include="Migrations\201608070217556_EmptyMigration1.Designer.cs">
+      <DependentUpon>201608070217556_EmptyMigration1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -1447,6 +1451,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201608042335095_Terminals_RemoveRequiredAttribute.resx">
       <DependentUpon>201608042335095_Terminals_RemoveRequiredAttribute.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608070217556_EmptyMigration1.resx">
+      <DependentUpon>201608070217556_EmptyMigration1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

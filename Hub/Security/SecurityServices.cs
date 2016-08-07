@@ -144,8 +144,8 @@ namespace Hub.Security
         #region Permissions Related Methods
 
         /// <summary>
-        /// For every new created object setup default security with permissions for Read Object, Edit Object, Delete Object 
-        /// and Role. For setup ownership to a record use Role OwnerOfCurrentObject
+        /// For every new created object sets up default security with permissions for Read Object, Edit Object, Delete Object 
+        /// and Role. For set up the ownership to a record use Role OwnerOfCurrentObject
         /// </summary>
         /// <param name="roleName">User role</param>
         /// <param name="dataObjectId"></param>
@@ -379,7 +379,7 @@ namespace Hub.Security
                         {
                             var permissionSetOrg = (from x in rolePermissions.Where(x => x.Role.RoleName != Roles.OwnerOfCurrentObject) where roles.Contains(x.Role.RoleName) from i in x.PermissionSet.Permissions.Select(m => m.Id) select i).ToList();
 
-                            var modifyAllData = permissionSetOrg.FirstOrDefault(x => x == (int)PermissionType.ModifyAllObjects);
+                            var modifyAllData = permissionSetOrg.FirstOrDefault(x => x == (int)PermissionType.EditAllObjects);
                             var viewAllData = permissionSetOrg.FirstOrDefault(x => x == (int)PermissionType.ViewAllObjects);
                             if (viewAllData != 0 && permissionType == PermissionType.ReadObject) return true;
                             if (modifyAllData != 0) return true;
@@ -398,7 +398,7 @@ namespace Hub.Security
                         return currentPermission != 0;
                     }
 
-                    var modifyAllData = permissionSet.FirstOrDefault(x => x == (int)PermissionType.ModifyAllObjects);
+                    var modifyAllData = permissionSet.FirstOrDefault(x => x == (int)PermissionType.EditAllObjects);
                     var viewAllData = permissionSet.FirstOrDefault(x => x == (int)PermissionType.ViewAllObjects);
                     if (viewAllData != 0 && permissionType == PermissionType.ReadObject) return true;
                     if (modifyAllData != 0) return true;
@@ -447,7 +447,7 @@ namespace Hub.Security
                 return currentPermission != 0;
             }
 
-            var modifyAllData = permissionSet.FirstOrDefault(x => x == (int)PermissionType.ModifyAllObjects);
+            var modifyAllData = permissionSet.FirstOrDefault(x => x == (int)PermissionType.EditAllObjects);
             var viewAllData = permissionSet.FirstOrDefault(x => x == (int)PermissionType.ViewAllObjects);
             if (viewAllData != 0 && permissionType == PermissionType.ReadObject) return true;
             if (modifyAllData != 0) return true;

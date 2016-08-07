@@ -98,14 +98,15 @@ namespace HubWeb.Controllers
         /// <summary>
         /// Registers terminal endpoint in the current hub and performs initial terminal discovery process using this endpoint
         /// </summary>
-        /// <param name="registration">Terminal endpoint</param>
+        /// <param name="terminal">Terminal endpoint</param>
         [HttpPost]
         //[Fr8ApiAuthorize]
         [SwaggerResponse(HttpStatusCode.OK, "Terminal was registered and discovery process was successfully performed")]
         [SwaggerResponseRemoveDefaults]
-        public async Task<IHttpActionResult> Post([FromBody]TerminalDTO registration)
+        public async Task<IHttpActionResult> Post([FromBody]TerminalDTO terminal)
         {
-            await _terminalDiscovery.RegisterTerminal(registration.Endpoint);
+
+            await _terminalDiscovery.SaveOrRegister(terminal);
             return Ok();
         }
         /// <summary>
@@ -117,7 +118,7 @@ namespace HubWeb.Controllers
         [ResponseType(typeof(ResponseMessageDTO))]
         public async Task<ResponseMessageDTO> ForceDiscover([FromBody] string callbackUrl)
         {
-            if (!await _terminalDiscovery.Discover(callbackUrl))
+            if (!await _terminalDiscovery.Discover(callbackUrl, false))
             {
                 return ErrorDTO.InternalError($"Failed to call /discover for enpoint {callbackUrl}");
             }

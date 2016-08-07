@@ -261,7 +261,7 @@ namespace HubTests.Services
             template.WebServiceId = -2344;
 
             var terminalService = ObjectFactory.GetInstance<Terminal>();
-            template.Terminal = terminalService.RegisterOrUpdate(template.Terminal);
+            template.Terminal = terminalService.RegisterOrUpdate(template.Terminal, false);
             template.TerminalId = template.Terminal.Id;
 
             var service = ObjectFactory.GetInstance<ActivityTemplate>();
@@ -296,7 +296,7 @@ namespace HubTests.Services
             template.Id  = Guid.NewGuid();
 
             var terminalService = ObjectFactory.GetInstance<Terminal>();
-            template.Terminal = terminalService.RegisterOrUpdate(template.Terminal);
+            template.Terminal = terminalService.RegisterOrUpdate(template.Terminal, false);
             template.TerminalId = template.Terminal.Id;
 
             var service = ObjectFactory.GetInstance<ActivityTemplate>();

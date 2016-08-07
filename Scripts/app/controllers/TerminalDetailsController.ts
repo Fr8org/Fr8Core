@@ -5,8 +5,12 @@ module dockyard.controllers {
 
     export interface ITerminalDetailsScope extends ng.IScope {
         terminal: model.TerminalDTO;
+        canEditAllTerminals: boolean;
+        approved: boolean;
+        participationStateText: string;
         openPermissionsSetterModal: (terminal: model.TerminalDTO) => void;
-        submit: (isValid: boolean) => void;
+        save: ($event: MouseEvent, terminal: model.TerminalDTO) => void;
+        prodUrlChanged: (terminal: model.TerminalDTO) => void;
         cancel: () => void;
     }
 
@@ -19,23 +23,80 @@ module dockyard.controllers {
             '$scope',
             '$state',
             '$modal',
-            'TerminalService'
+            'TerminalService',
+            'UserService',
+            '$mdDialog'
         ];
 
         constructor(
             private $scope: ITerminalDetailsScope,
             private $state: ng.ui.IStateService,
             private $modal: any,
-            private TerminalService: services.ITerminalService) {
+            private TerminalService: services.ITerminalService,
+            private UserService: services.IUserService,
+            private $mdDialog: ng.material.IDialogService) {
 
-            TerminalService.get({ id: $state.params['id'] }).$promise.then(function (data) {
-                debugger;
-                $scope.terminal = data;
+            TerminalService.get({ id: $state.params['id'] }).$promise.then(function (terminal) {
+                $scope.terminal = terminal;
+                $scope.approved = terminal.participationState === enums.ParticipationState.Approved;
+                $scope.participationStateText = dockyard.enums.ParticipationState[terminal.participationState];
             });
 
-            $scope.cancel = function () {
+            // Whether user has terminal administration priviledges, show additional UI elements
+            UserService.checkPermission({ permissionType: dockyard.enums.PermissionType.EditAllObjects, objectType: 'TerminalDO' })
+                .$promise.then(function (data) {
+                    $scope.canEditAllTerminals = data;
+                });
+
+            $scope.prodUrlChanged = (terminal: model.TerminalDTO) => {
+                if (terminal.prodUrl.length > 0) {
+                    $scope.approved = true;
+                }
+                else {
+                    $scope.approved = false;
+                }
+            }
+
+            $scope.cancel = () => {
                 $state.go('terminals');
             };
+
+            $scope.save = ($event: MouseEvent, terminal: model.TerminalDTO) => {
+                if (!$scope.canEditAllTerminals) {
+                    if ($scope.terminal.devUrl.indexOf('localhost') > 0) {
+                        let confirmDialog = this.$mdDialog.alert()
+                            .title('Input error')
+                            .textContent('Endpoint URL cannot contain the string "localhost".')
+                            .targetEvent($event)
+                            .ok('Ok');
+                        this.$mdDialog.show(confirmDialog);
+                        return;
+                    }
+                }
+
+                if ($scope.approved) {
+                    if (terminal.participationState != enums.ParticipationState.Approved) {
+                        this.showConfigurationDialog($event, "approve", terminal.name).then(() => {
+                            terminal.participationState = enums.ParticipationState.Approved;
+                            this.saveTerminal(terminal);
+                        });
+                    }
+                    else {
+                        this.saveTerminal(terminal);
+                    }
+                }
+                else {
+                    if (terminal.participationState == enums.ParticipationState.Approved) {
+                        this.showConfigurationDialog($event, "recall your approval", terminal.name).then(() => {
+                            terminal.participationState = enums.ParticipationState.Unapproved;
+                            this.saveTerminal(terminal);
+                        });
+                    }
+                    else {
+                        this.saveTerminal(terminal);
+                    }
+                }
+            }
 
             $scope.openPermissionsSetterModal = (terminal: model.TerminalDTO) => {
                 var modalInstance = $modal.open({
@@ -49,12 +110,30 @@ module dockyard.controllers {
                 modalInstance.result.then(function (terminal: model.TerminalDTO) {
                     //TerminalServire.setPermissions(terminal);
                 });
+
             }
+        }
+
+        private saveTerminal(terminal: model.TerminalDTO) {
+            this.TerminalService.save(terminal).$promise.then(() => {
+                this.$state.go('terminals');
+            });
+        }
+
+        private showConfigurationDialog(event: MouseEvent, action: string, terminalName: string) {
+            // Appending dialog to document.body to cover sidenav in docs app
+            let confirmDialog = this.$mdDialog.confirm()
+                .title('Terminal participation state change')
+                .textContent('Are you sure that you wish to change the state of <b>' + terminalName + '</b>')
+                .targetEvent(event)
+                .ok('Yes')
+                .cancel('Cancel');
+            return this.$mdDialog.show(confirmDialog);
         }
     }
 
     app.controller('TerminalDetailsController', TerminalDetailsController);
-    app.controller('PermissionsSetterModalController', ['$scope', '$modalInstance','terminal' , ($scope: any, $modalInstance: any, terminal : model.TerminalDTO): void => {
+    app.controller('PermissionsSetterModalController', ['$scope', '$modalInstance', 'terminal', ($scope: any, $modalInstance: any, terminal: model.TerminalDTO): void => {
 
         $scope.terminal = terminal;
 

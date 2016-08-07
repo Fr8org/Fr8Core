@@ -297,6 +297,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\ConflictException.cs" />
     <Compile Include="Exceptions\AmbiguityException.cs" />
     <Compile Include="Exceptions\AuthenticationExeception.cs" />
     <Compile Include="Exceptions\ErrorResponseException.cs" />

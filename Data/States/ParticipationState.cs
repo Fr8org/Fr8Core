@@ -1,5 +1,6 @@
 ﻿namespace Data.States
 {
+    // If you add, change or remove items, please do the same in ParticipationState.ts
     public class ParticipationState
     {
         public const int Unapproved = 0;

@@ -27,6 +27,7 @@ namespace Data.Migrations
             CreateIndex("dbo.Terminals", "ParticipationState");
             AddForeignKey("dbo.Terminals", "ParticipationState", "dbo._ParticipationStateTemplate", "Id", cascadeDelete: true);
             DropTable("dbo.TerminalRegistration");
+            Sql("UPDATE Terminals SET DevUrl = Endpoint WHERE IsFr8OwnTerminal = 1");
         }
         
         public override void Down()
