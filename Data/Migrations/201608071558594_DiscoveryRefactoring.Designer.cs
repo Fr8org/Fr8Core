@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class TerminalEndpoints : IMigrationMetadata
+    public sealed partial class DiscoveryRefactoring : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(TerminalEndpoints));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(DiscoveryRefactoring));
         
         string IMigrationMetadata.Id
         {
-            get { return "201608042155503_TerminalEndpoints"; }
+            get { return "201608071558594_DiscoveryRefactoring"; }
         }
         
         string IMigrationMetadata.Source

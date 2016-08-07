@@ -35,6 +35,7 @@ namespace Data.Entities
         /// by deployment scripts or by promoting the terminal from Dev to Production 
         /// while ProdUrl/DevUrl contains  whatever user or administrator have supplied.
         /// </remarks>
+        [Required]
         public string Endpoint { get; set; }
         
         public virtual Fr8AccountDO UserDO { get; set; }
@@ -63,6 +64,5 @@ namespace Data.Entities
         [ForeignKey("ParticipationStateTemplate")]
         public int ParticipationState { get; set; }
         public virtual _ParticipationStateTemplate ParticipationStateTemplate { get; set; }
-
     }
 }

@@ -127,17 +127,22 @@ namespace Data.Migrations
             var terminalRegistration = new TerminalDO();
             string terminalPort = ExtractPort(terminalEndpoint);
 
-            terminalEndpoint = ExtractTerminalAuthority(terminalEndpoint);
+            terminalEndpoint = NormalizeUrl(terminalEndpoint);
+            var existingTerminal = uow.TerminalRepository.GetAll().FirstOrDefault(
+                x => x.DevUrl != null &&
+                     (string.Equals(NormalizeUrl(x.DevUrl), terminalEndpoint, StringComparison.OrdinalIgnoreCase) 
+                     ||
+                     (ExtractPort(x.DevUrl) != null && ExtractPort(terminalEndpoint) != null &&
+                         string.Equals(ExtractPort(x.DevUrl), terminalPort, StringComparison.OrdinalIgnoreCase)
+            )));
 
-            if (uow.TerminalRepository.GetAll().FirstOrDefault(x =>
-                    string.Equals(ExtractTerminalAuthority(x.Endpoint), terminalEndpoint, StringComparison.OrdinalIgnoreCase) ||
-                    (ExtractPort(x.Endpoint) != null && ExtractPort(terminalEndpoint) != null && string.Equals(ExtractPort(x.Endpoint), terminalPort, StringComparison.OrdinalIgnoreCase))
-                ) != null)
+            if (existingTerminal != null)
             {
                 return;
             }
 
             terminalRegistration.Endpoint = terminalEndpoint;
+            terminalRegistration.DevUrl = terminalEndpoint;
             terminalRegistration.IsFr8OwnTerminal = true;
             terminalRegistration.TerminalStatus = TerminalStatus.Undiscovered;
             terminalRegistration.ParticipationState = ParticipationState.Approved;
@@ -146,8 +151,13 @@ namespace Data.Migrations
             uow.SaveChanges();
         }
 
-        private static string ExtractTerminalAuthority(string terminalUrl)
+        private static string NormalizeUrl(string terminalUrl)
         {
+            if (string.IsNullOrEmpty(terminalUrl))
+            {
+                return string.Empty;
+            }
+
             var terminalAuthority = terminalUrl;
 
             if (!terminalUrl.Contains("http:") & !terminalUrl.Contains("https:"))

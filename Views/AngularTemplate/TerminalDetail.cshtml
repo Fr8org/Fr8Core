@@ -33,7 +33,7 @@
                             </div>
                             <div class="form-group">
                                 <md-checkbox ng-model="terminal.isFr8OwnTerminal" ng-show="canEditAllTerminals" aria-label="This is a Fr8 own terminal">
-                                    This is a Fr8 own C# terminal or deployed with those<strong>{{participationStateText}}</strong>)
+                                    This is a Fr8 own C# terminal or is deployed along with those
                                 </md-checkbox>
                             </div>
                             <div class="form-group">
@@ -44,9 +44,14 @@
                                 <label class="control-label">{{ terminal.isFr8OwnTerminal ? "Local" : "Development"}} URL</label>
                                 <input type="text" ng-required="terminal.isFr8OwnTerminal || terminal.participationState == 0" placeholder="{{terminal.isFr8OwnTerminal ? 'Example: http://localhost:xxxx' : ''}}" maxlength="255" class="form-control" ng-model="terminal.devUrl" />
                             </div>
+                            <div ng-show="terminal.isFr8OwnTerminal" style="padding-bottom: 10px;">
+                                For Fr8 own terminals specify a <code>http://localhost:xxxx</code> URL in the Production URL textbox
+                                if the terminal is approved, or in the Development URL textbox if the terminal is not approved.
+                            </div>
                             <div class="form-group">
                                 <label class="control-label">Production URL</label>
-                                <input type="text" ng-required="terminal.participationState == 1" placeholder="" ng-disabled="!canEditAllTerminals" ng-change="prodUrlChanged(terminal)" maxlength="255" class="form-control" ng-model="terminal.prodUrl" />
+                                <input type="text" ng-required="terminal.participationState == 1 && canEditAllTerminals" placeholder="" ng-disabled="!canEditAllTerminals" ng-keyup="prodUrlChanged(terminal)" maxlength="255" class="form-control" ng-model="terminal.prodUrl" />
+                                <span ng-show="!canEditAllTerminals">Please contact Support to get the Production URL updated.</span>
                             </div>
                             <div class="form-group">
                                 <md-checkbox ng-model="approved" ng-show="canEditAllTerminals" aria-label="Approve terminal">
@@ -55,7 +60,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="control-label">Current URL<sup ng-show="canEditAllTerminals">*</sup></label>
-                                <input type="text" placeholder="" ng-disabled="disabled" class="form-control" ng-model="terminal.endpoint" />
+                                <input type="text" placeholder="" disabled="disabled" class="form-control" ng-model="terminal.endpoint" />
                             </div>
                             <div class="margiv-top-10">
                                 <button type="button" ng-click="openPermissionsSetterModal(terminal)" class="btn green-haze">
@@ -64,17 +69,13 @@
                                 <button type="button" ng-click="showPublishTerminalModal()" class="btn green-haze">
                                     Publish Terminal
                                 </button>
-                                <a ui-sref="terminals" class="btn default">
-                                    Return
+                                <a ui-sref="terminals" class="btn default">Return</a>
                                 <button type="button" ng-click="save($event, terminal)" class="btn green-haze">
                                     Save
                                 </button>
 
                             </div>
-                            <div ng-show="canEditAllTerminals" class="margiv-top-10">
-                                <strong>For Fr8 own terminals specify a <code>http://localhost:xxxx</code> URL in the Production URL textbox
-                                if the terminal is approved, or in the Development URL textbox if the terminal is not approved.</div>
-                            <div ng-show="canEditAllTerminals" class="margiv-top-10">
+                            <div ng-show="canEditAllTerminals" style="padding-top: 20px;">
                                 <sup>*</sup> Currently used URL denotes the URL which is used by the Hub to access the terminal at this moment.
                                 It can be equal to the Production URL or the Development URL or some other URL depending on terminal participation state
                                 and deployment status.

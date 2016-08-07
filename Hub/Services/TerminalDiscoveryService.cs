@@ -165,7 +165,7 @@ namespace Hub.Services
             Logger.Info($"Registration of terminal at '{curEndpoint}' is requested.");
 
             var terminalDo = new TerminalDO();
-            terminal.Endpoint = curEndpoint;
+            terminalDo.Endpoint = terminal.Endpoint = curEndpoint;
 
             //Check whether we save an existing terminal or register a new one
             if (terminal.InternalId == 0)
@@ -184,7 +184,6 @@ namespace Hub.Services
                 // while ProdUrl/DevUrl contains  whatever user or administrator have supplied.   
 
                 // Set properties which can be safely set by any user             
-                terminalDo.Endpoint = curEndpoint;
                 terminalDo.DevUrl = terminal.DevUrl;
 
                 if (UserHasTerminalAdministratorPermission())

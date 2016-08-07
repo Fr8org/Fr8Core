@@ -12,7 +12,7 @@ module dockyard.services {
         getProfiles: () => Array<interfaces.IProfileDTO>,
         updateUserProfile: (data: interfaces.IUserDTO) => any,
         update: (data: { oldPassword: string, newPassword: string, confirmPassword: string }) => any;
-        checkPermission: (data: { permissionType: enums.PermissionType, objectType: string }) => angular.resource.IResource<boolean>;
+        checkPermission: (data: { permissionType: enums.PermissionType, objectType: string }) => any;
     }
 
     app.factory('UserService', [

@@ -27,7 +27,8 @@ module dockyard.controllers {
             '$modal',
             'TerminalService',
             'UserService',
-            '$mdDialog'
+            '$mdDialog',
+            '$http'
         ];
 
         constructor(
@@ -36,7 +37,8 @@ module dockyard.controllers {
             private $modal: any,
             private TerminalService: services.ITerminalService,
             private UserService: services.IUserService,
-            private $mdDialog: ng.material.IDialogService) {
+            private $mdDialog: ng.material.IDialogService,
+            private $http: ng.IHttpService) {
 
             TerminalService.get({ id: $state.params['id'] }).$promise.then(function (terminal) {
                 $scope.terminal = terminal;
@@ -45,13 +47,13 @@ module dockyard.controllers {
             });
 
             // Whether user has terminal administration priviledges, show additional UI elements
-            UserService.checkPermission({ permissionType: dockyard.enums.PermissionType.EditAllObjects, objectType: 'TerminalDO' })
-                .$promise.then(function (data) {
-                    $scope.canEditAllTerminals = data;
-                });
+            $http.get('/api/users/checkpermission', { params: { permissionType: dockyard.enums.PermissionType.EditAllObjects, objectType: 'TerminalDO' } })
+                .then(function (resp) {
+                    $scope.canEditAllTerminals = <boolean>resp.data;
+            });
 
             $scope.prodUrlChanged = (terminal: model.TerminalDTO) => {
-                if (terminal.prodUrl.length > 0) {
+                if (terminal.prodUrl && terminal.prodUrl.length > 0) {
                     $scope.approved = true;
                 }
                 else {
@@ -135,7 +137,7 @@ module dockyard.controllers {
             // Appending dialog to document.body to cover sidenav in docs app
             let confirmDialog = this.$mdDialog.confirm()
                 .title('Terminal participation state change')
-                .textContent('Are you sure that you wish to change the state of <b>' + terminalName + '</b>')
+                .textContent('Are you sure that you wish to change the state of ' + terminalName)
                 .targetEvent(event)
                 .ok('Yes')
                 .cancel('Cancel');

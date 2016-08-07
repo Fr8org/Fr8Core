@@ -774,21 +774,13 @@
     <Compile Include="Migrations\201608021530462_RemoveRunnable.Designer.cs">
       <DependentUpon>201608021530462_RemoveRunnable.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201608042155503_TerminalEndpoints.cs" />
-    <Compile Include="Migrations\201608042155503_TerminalEndpoints.Designer.cs">
-      <DependentUpon>201608042155503_TerminalEndpoints.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201608042335095_Terminals_RemoveRequiredAttribute.cs" />
-    <Compile Include="Migrations\201608042335095_Terminals_RemoveRequiredAttribute.Designer.cs">
-      <DependentUpon>201608042335095_Terminals_RemoveRequiredAttribute.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201608030857168_RemovedNameAndCurrentViewFromActivityDO.cs" />
     <Compile Include="Migrations\201608030857168_RemovedNameAndCurrentViewFromActivityDO.Designer.cs">
       <DependentUpon>201608030857168_RemovedNameAndCurrentViewFromActivityDO.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201608070217556_EmptyMigration1.cs" />
-    <Compile Include="Migrations\201608070217556_EmptyMigration1.Designer.cs">
-      <DependentUpon>201608070217556_EmptyMigration1.cs</DependentUpon>
+    <Compile Include="Migrations\201608071558594_DiscoveryRefactoring.cs" />
+    <Compile Include="Migrations\201608071558594_DiscoveryRefactoring.Designer.cs">
+      <DependentUpon>201608071558594_DiscoveryRefactoring.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1446,14 +1438,8 @@
     <EmbeddedResource Include="Migrations\201608030857168_RemovedNameAndCurrentViewFromActivityDO.resx">
       <DependentUpon>201608030857168_RemovedNameAndCurrentViewFromActivityDO.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201608042155503_TerminalEndpoints.resx">
-      <DependentUpon>201608042155503_TerminalEndpoints.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201608042335095_Terminals_RemoveRequiredAttribute.resx">
-      <DependentUpon>201608042335095_Terminals_RemoveRequiredAttribute.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201608070217556_EmptyMigration1.resx">
-      <DependentUpon>201608070217556_EmptyMigration1.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201608071558594_DiscoveryRefactoring.resx">
+      <DependentUpon>201608071558594_DiscoveryRefactoring.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

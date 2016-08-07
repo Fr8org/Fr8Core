@@ -366,7 +366,6 @@
     <Compile Include="Utilities\Serializers\Json\JsonSerializer.cs" />
     <Compile Include="Utilities\Server.cs" />
     <Compile Include="Utilities\StopwordsRemover.cs" />
-    <Compile Include="Utilities\TypeSafeEnum.cs" />
     <Compile Include="Utilities\UAParser\UAParser.cs" />
   </ItemGroup>
   <ItemGroup>
