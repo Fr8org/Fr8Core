@@ -216,13 +216,18 @@ namespace Hub.StructureMap
                 //For<IWebservicesPageGenerator>().Use<WebservicesPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
                 //For<IManifestPageGenerator>().Use<ManifestPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
 
+                var webservicesPageGeneratorMock = new Mock<IWebservicesPageGenerator>().Object;
+                var manifestPageGeneratorMock = new Mock<IManifestPageGenerator>().Object;
+
                 For<ITagGenerator>().Use<TagGenerator>().Singleton();
                 For<IPlanTemplate>().Use<PlanTemplate>().Singleton();
                 For<ISearchProvider>().Use<SearchProvider>().Singleton();
                 For<IPageDefinition>().Use<PageDefinition>().Singleton();
                 For<ITemplateGenerator>().Use<TemplateGenerator>().Singleton();
-                
-                For<IPlanDirectoryService>().Use<PlanDirectoryService>().Singleton();
+
+                For<IPlanDirectoryService>().Use<PlanDirectoryService>().Singleton()
+                    .Ctor<IWebservicesPageGenerator>().Is(webservicesPageGeneratorMock)
+                    .Ctor<IManifestPageGenerator>().Is(manifestPageGeneratorMock);
             }
         }
 
