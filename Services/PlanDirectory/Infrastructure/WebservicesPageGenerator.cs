@@ -7,7 +7,6 @@ using Data.Entities;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities.Configuration;
-using Hub.Interfaces;
 using PlanDirectory.CategoryPages;
 using PlanDirectory.Interfaces;
 
@@ -19,12 +18,12 @@ namespace PlanDirectory.Infrastructure
         private const string PageExtension = ".html";
         private const string PageType = "WebService";
 
-        private readonly IPageDefinition _pageDefinitionService;
+        private readonly Hub.Interfaces.IPageDefinition _pageDefinitionService;
         private readonly IPlanTemplate _planTemplateService;
         private readonly ITemplateGenerator _templateGenerator;
         private readonly ITagGenerator _tagGenerator;
 
-        public WebservicesPageGenerator(IPageDefinition pageDefinitionService, IPlanTemplate planTemplateService, ITemplateGenerator templateGenerator, ITagGenerator tagGenerator)
+        public WebservicesPageGenerator(Hub.Interfaces.IPageDefinition pageDefinitionService, IPlanTemplate planTemplateService, ITemplateGenerator templateGenerator, ITagGenerator tagGenerator)
         {
             _pageDefinitionService = pageDefinitionService;
             _planTemplateService = planTemplateService;

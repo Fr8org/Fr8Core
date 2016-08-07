@@ -11,7 +11,7 @@ namespace Fr8.Testing.Unit.Fixtures
             {
                 Name = string.IsNullOrEmpty(planName) ? "plan1" : planName,
                 Description = "Description for test plan",
-                PlanState = 1,
+                PlanState = "Inactive",
                 Visibility = new PlanVisibilityDTO() { Hidden = false }
                 //DockyardAccount = FixtureData.TestDockyardAccount1()
             };

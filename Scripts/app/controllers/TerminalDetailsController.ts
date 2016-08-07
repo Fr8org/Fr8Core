@@ -11,6 +11,8 @@ module dockyard.controllers {
         openPermissionsSetterModal: (terminal: model.TerminalDTO) => void;
         save: ($event: MouseEvent, terminal: model.TerminalDTO) => void;
         prodUrlChanged: (terminal: model.TerminalDTO) => void;
+        showPublishTerminalModal: () => void;
+        submit: (isValid: boolean) => void;
         cancel: () => void;
     }
 
@@ -98,6 +100,15 @@ module dockyard.controllers {
                 }
             }
 
+            $scope.showPublishTerminalModal = () => {
+                $modal.open({
+                    animation: true,
+                    templateUrl: '/AngularTemplate/TerminalPublishForm',
+                    controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
+                        $scope.cancel = () => { $modalInstance.dismiss('cancel'); }
+                    }]
+                })
+            }
             $scope.openPermissionsSetterModal = (terminal: model.TerminalDTO) => {
                 var modalInstance = $modal.open({
                     animation: true,

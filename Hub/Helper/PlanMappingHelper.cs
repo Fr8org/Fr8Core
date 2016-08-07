@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using AutoMapper;
 using Data.Entities;
+using Data.States;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.States;
 
@@ -22,14 +23,13 @@ namespace Hub.Helper
 
                     return pntDTO;
                 }).ToList();
-
-
+            
             var result = new PlanDTO()
             {
                     Description = curPlanDO.Description,
                     Id = curPlanDO.Id,
                     Name = curPlanDO.Name,
-                    PlanState = curPlanDO.PlanState,
+                    PlanState = PlanState.IntToString(curPlanDO.PlanState),
                     Visibility = new PlanVisibilityDTO() { Hidden = curPlanDO.Visibility.BooleanValue() },
                     StartingSubPlanId = curPlanDO.StartingSubPlanId,
                     SubPlans = subPlanDTOList,

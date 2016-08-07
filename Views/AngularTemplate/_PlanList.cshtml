@@ -42,9 +42,9 @@
                     <td md-cell>{{ plan.lastUpdated | date:"MM/dd/yyyy h:mm:ss a"}}</td>
                     <td md-cell>
                         <span class="bold font-green-haze">
-                            <span ng-if="plan.planState == 2">Executing</span>
-                            <span ng-if="plan.planState == 4">Active</span>
-                            <span ng-if="plan.planState == 1">Inactive</span>
+                            <span ng-if="plan.planState == 'Executing'">Executing</span>
+                            <span ng-if="plan.planState == 'Active'">Active</span>
+                            <span ng-if="plan.planState == 'Inactive'">Inactive</span>
                         </span>
                     </td>
                     <td md-cell style="display: flex;">
@@ -116,12 +116,12 @@
                 </tr>
             </thead>
             <tbody md-body>
-                <tr md-row ng-repeat="plan in inActivePlans.plans | filter: {planState:1}">
+                <tr md-row ng-repeat="plan in inActivePlans.plans | filter: {planState:'Inactive'}">
                     <td md-cell class="column-spacer">{{ plan.name }}</td>
                     <td md-cell class="column-spacer">{{ plan.description }}</td>
                     <td md-cell>{{ plan.lastUpdated | date:"MM/dd/yyyy h:mm:ss a"}}</td>
                     <td md-cell>
-                        <span class="bold">{{plan.planState == 2 ? 'Running' : 'Inactive' }}</span>
+                        <span class="bold">{{plan.planState == 'Executing' ? 'Running' : 'Inactive' }}</span>
                     </td>
                     <td md-cell style="display: flex;">
                         <md-button class="md-icon-button md-table-fr8-button" ng-click="goToPlanPage(plan.id);">
