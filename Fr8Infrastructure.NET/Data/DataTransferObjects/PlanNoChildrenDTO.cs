@@ -24,7 +24,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         public DateTimeOffset LastUpdated { get; set; }
 
         [JsonProperty("planState")]
-        public int PlanState { get; set; }
+        public string PlanState { get; set; }
 
         [JsonProperty("startingSubPlanId")]
         public Guid StartingSubPlanId { get; set; }

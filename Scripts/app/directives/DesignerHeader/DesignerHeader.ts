@@ -100,7 +100,7 @@ module dockyard.directives.designerHeader {
                     var initialActivity: interfaces.IActivityDTO = subPlan ? subPlan.activities[0] : null;
                     if (initialActivity == null) {
                         // mark plan as Inactive
-                        $scope.plan.planState = 1;
+                        $scope.plan.planState = model.PlanState.Inactive;
                         return;
                     }
                     var at = ActivityTemplateHelperService.getActivityTemplate(<model.ActivityDTO>initialActivity);
@@ -108,26 +108,26 @@ module dockyard.directives.designerHeader {
                         initialActivity = initialActivity.childrenActivities[0];
                         if (initialActivity == null) {
                             // mark plan as Inactive
-                            $scope.plan.planState = 1;
+                            $scope.plan.planState = model.PlanState.Inactive;
                             return;
                         }
                     }
 
                     if (at.category.toLowerCase() !== "monitors") {
                         // mark plan as Inactive
-                        $scope.plan.planState = 1;
+                        $scope.plan.planState = model.PlanState.Inactive;
                     }
                 };
 
                 $scope.$on(<any>designHeaderEvents.PLAN_IS_DEACTIVATED,
-                    (event: ng.IAngularEvent, eventArgs: model.PlanDTO) => { $scope.plan.planState = 1;});
+                    (event: ng.IAngularEvent, eventArgs: model.PlanDTO) => { $scope.plan.planState = model.PlanState.Inactive;});
 
                 $scope.deactivatePlan = () => {
                     var result = PlanService.deactivate({ planId: $scope.plan.id });
                     result.$promise.then((data) => {                        
 
                         // mark plan as inactive
-                        $scope.plan.planState = 1;
+                        $scope.plan.planState = model.PlanState.Inactive;
                         var messageToShow = "Plan successfully deactivated";
                         ngToast.success(messageToShow);
                     })

@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using HubWeb.Infrastructure_PD.Interfaces;
+using Hub.Interfaces;
 
-namespace HubWeb.Infrastructure_PD.Infrastructure
+namespace Hub.Services.PlanDirectory
 {
     public class TemplateGenerator : ITemplateGenerator
     {

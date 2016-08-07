@@ -7,10 +7,9 @@
 //     the code is regenerated.
 // </auto-generated>
 // ------------------------------------------------------------------------------
-namespace HubWeb.CategoryPages
+
+namespace Hub.Resources
 {
-    using System;
-    
     /// <summary>
     /// Class to produce the template output
     /// </summary>
