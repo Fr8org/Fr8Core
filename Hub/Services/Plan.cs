@@ -84,9 +84,16 @@ namespace Hub.Services
                 planQuery = planQuery.Where(c => c.Name.Contains(planQueryDTO.Filter) || c.Description.Contains(planQueryDTO.Filter));
             }
 
-            planQuery = planQueryDTO.Status == null
+            int? planState = null;
+
+            if (planQueryDTO.Status != null)
+            {
+                planState = PlanState.StringToInt(planQueryDTO.Status);
+            }
+
+            planQuery = planState == null
                 ? planQuery.Where(pt => pt.PlanState != PlanState.Deleted)
-                : planQuery.Where(pt => pt.PlanState == planQueryDTO.Status);
+                : planQuery.Where(pt => pt.PlanState == planState);
 
             // Lets allow ordering with just name for now
             if (planQueryDTO.OrderBy == "name")
@@ -329,9 +336,9 @@ namespace Hub.Services
                     }
                 }
 
-                if (result.ValidationErrors.Count == 0 && plan.PlanState != PlanState.Running)
+                if (result.ValidationErrors.Count == 0 && plan.PlanState != PlanState.Executing)
                 {
-                    plan.PlanState = PlanState.Running;
+                    plan.PlanState = IsMonitoringPlan(uow, plan) ? PlanState.Active : PlanState.Executing;
                     plan.LastUpdated = DateTimeOffset.UtcNow;
                     uow.SaveChanges();
                 }
@@ -350,6 +357,19 @@ namespace Hub.Services
         {
             var crateStorage = _crate.GetStorage(curActivityDTO);
             return crateStorage.CrateContentsOfType<ValidationResultsCM>().SelectMany(x => x.ValidationErrors);
+        }
+
+        public bool IsPlanActiveOrExecuting(Guid planNodeId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var planState = GetPlanState(uow, planNodeId);
+                if (planState == PlanState.Executing || planState == PlanState.Active)
+                {
+                    return true;
+                }
+                return false;
+            }
         }
 
         public async Task Deactivate(Guid planId)

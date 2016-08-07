@@ -6,6 +6,7 @@ module dockyard.controllers {
     export interface ITerminalDetailsScope extends ng.IScope {
         terminal: model.TerminalDTO;
         openPermissionsSetterModal: (terminal: model.TerminalDTO) => void;
+        showPublishTerminalModal: () => void;
         submit: (isValid: boolean) => void;
         cancel: () => void;
     }
@@ -32,10 +33,15 @@ module dockyard.controllers {
                 $scope.terminal = data;
             });
 
-            $scope.cancel = function () {
-                $state.go('terminals');
-            };
-
+            $scope.showPublishTerminalModal = () => {
+                $modal.open({
+                    animation: true,
+                    templateUrl: '/AngularTemplate/TerminalPublishForm',
+                    controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
+                        $scope.cancel = () => { $modalInstance.dismiss('cancel'); }
+                    }]
+                })
+            }
             $scope.openPermissionsSetterModal = (terminal: model.TerminalDTO) => {
                 var modalInstance = $modal.open({
                     animation: true,

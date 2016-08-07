@@ -26,12 +26,12 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="plan in activePlansCategory | filter: {planState:2}">
+                            <tr ng-repeat="plan in activePlansCategory | filter: {planState:'Executing'}">
                                 <td ng-click="goToPlanDetailsPage(plan.id)">{{ plan.name }}</td>
                                 <td ng-click="goToPlanDetailsPage(plan.id)">{{ plan.description }}</td>
                                 <td ng-click="goToPlanDetailsPage(plan.id)">{{ plan.lastUpdated }}</td>
                                 <td ng-click="goToPlanDetailsPage(plan.id)">
-                                    <span class="bold font-green-haze">{{plan.planState == 2 ? 'Running' : 'Inactive' }}</span>
+                                    <span class="bold font-green-haze">{{plan.planState == 'Executing' ? 'Running' : 'Inactive' }}</span>
                                 </td>
                                 <td>
                                     <div>
@@ -75,12 +75,12 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr ng-repeat="plan in inActivePlansCategory | filter: {planState:1}">
+                                <tr ng-repeat="plan in inActivePlansCategory | filter: {planState:'Inactive'}">
                                     <td ng-click="goToPlanDetailsPage(plan.id)">{{ plan.name }}</td>
                                     <td ng-click="goToPlanDetailsPage(plan.id)">{{ plan.description }}</td>
                                     <td ng-click="goToPlanDetailsPage(plan.id)">{{ plan.lastUpdated }}</td>
                                     <td ng-click="goToPlanDetailsPage(plan.id)">
-                                    <span class="bold font-green-haze">{{plan.planState == 2 ? 'Running' : 'Inactive' }}</span>
+                                    <span class="bold font-green-haze">{{plan.planState == 'Executing' ? 'Running' : 'Inactive' }}</span>
                                     <td>
                                         <div>
                                             <button type="button" class="btn btn-sm red" ng-click="deletePlan(plan.id,plan.planState);">Delete</button>
