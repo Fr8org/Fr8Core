@@ -61,9 +61,10 @@ namespace terminalAsanaTests.Fixtures
         {
             var token = SampleAuthorizationToken();
 
-            var activityTemplate = new ActivityTemplateDTO()
+            var activityTemplate = new ActivityTemplateSummaryDTO()
             {
-                Id = Guid.NewGuid(),
+                TerminalName = "terminalAsana",
+                TerminalVersion = "1",
                 Name = "Get_Tasks_TEST",
                 Version = "1"
             };
