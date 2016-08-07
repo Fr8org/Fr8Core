@@ -13,12 +13,12 @@ namespace terminalMailChimp.Controllers
     public class AuthenticationController : ApiController
     {
         private readonly IMailChimpIntegration _mailChimpIntegration;
-        private readonly IHubEventReporter _eventReporter;
+        private readonly IHubLoggerService _hubLoggerService;
 
-        public AuthenticationController(IHubEventReporter eventReporter, IMailChimpIntegration mailChimpIntegration)
+        public AuthenticationController(IHubLoggerService hubLoggerService, IMailChimpIntegration mailChimpIntegration)
         {
             _mailChimpIntegration = mailChimpIntegration;
-            _eventReporter = eventReporter;
+            _hubLoggerService = hubLoggerService;
         }
 
         [HttpPost]
@@ -47,7 +47,7 @@ namespace terminalMailChimp.Controllers
             }
             catch (Exception ex)
             {
-                await _eventReporter.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
+                await _hubLoggerService.ReportTerminalError(ex, externalAuthDTO.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {

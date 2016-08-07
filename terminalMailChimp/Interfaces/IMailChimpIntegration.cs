@@ -11,7 +11,9 @@ namespace terminalMailChimp.Interfaces
         ExternalAuthUrlDTO GenerateOAuthInitialUrl();
         Task<AuthorizationTokenDTO> GetAuthToken(string code, string state);
         Task<List<MailChimpList>> GetLists(AuthorizationToken authorizationToken);
+        Task<List<TemplateSection>> GetTemplateSections(AuthorizationToken authorizationToken, string templateId);
+        Task<List<Template>> GetTemplates(AuthorizationToken authorizationToken);
         Task CreateList(AuthorizationToken authorizationToken, MailChimpList mailChimpList);
-        Task UpdateListWithNewSubscriber(AuthorizationToken authorizationToken, Subscriber subscriber);
+        Task UpdateListWithNewMember(AuthorizationToken authorizationToken, Member member);
     }
 }

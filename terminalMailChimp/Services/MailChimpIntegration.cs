@@ -90,14 +90,99 @@ namespace terminalMailChimp.Services
             }
         }
 
+
+        public async Task<List<Template>> GetTemplates(AuthorizationToken authorizationToken)
+        {
+            try
+            {
+                var responseUrl = new Uri($"{MailChimpDataCenterApiEndpoint}/templates");
+
+                var listsResponse = await _restfulServiceClient.GetAsync(responseUrl, null,
+                    new Dictionary<string, string>() { { "Authorization", $"apikey {authorizationToken.Token}" } });
+
+                //parse templates
+                var jsonObj = JsonConvert.DeserializeObject<JObject>(listsResponse);
+
+                var jsonListToken = jsonObj.GetValue("templates");
+
+                return jsonListToken.Select(listItem => 
+                    new Template()
+                    {
+                        Id = listItem["id"]?.ToString(),
+                        Name = listItem["name"]?.ToString(),
+                        Type = listItem["type"]?.ToString()
+                    }).ToList();
+            }
+            catch (Exception ex)
+            {
+                //extract the error messsage and send to activity stream
+                //properties:
+                //status
+                //type
+                //detail
+                throw ex;
+            }
+        }
+
+        public async Task<List<TemplateSection>> GetTemplateSections(AuthorizationToken authorizationToken, string templateId)
+        {
+            try
+            {
+                var responseUrl = new Uri($"{MailChimpDataCenterApiEndpoint}/templates/{templateId}/default-content");
+
+                var listsResponse = await _restfulServiceClient.GetAsync(responseUrl, null,
+                    new Dictionary<string, string>() { { "Authorization", $"apikey {authorizationToken.Token}" } });
+
+                //parse templates
+                var jsonObj = JsonConvert.DeserializeObject<JObject>(listsResponse);
+
+                var jsonListToken = jsonObj.GetValue("templates");
+
+                return jsonListToken.Select(listItem =>
+                    new TemplateSection()
+                    {
+                        
+                    }).ToList();
+            }
+            catch (Exception ex)
+            {
+                //extract the error messsage and send to activity stream
+                //properties:
+                //status
+                //type
+                //detail
+                throw ex;
+            }
+        }
+
         public Task CreateList(AuthorizationToken authorizationToken, MailChimpList mailChimpList)
         {
             throw new NotImplementedException();
         }
 
-        public Task UpdateListWithNewSubscriber(AuthorizationToken authorizationToken, Subscriber subscriber)
+        public async Task UpdateListWithNewMember(AuthorizationToken authorizationToken, Member member)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var updatelistWithMemberUri = new Uri($"{MailChimpDataCenterApiEndpoint}/lists/{member.ListId}/members");
+
+                var response = await _restfulServiceClient.PostAsync<Member,string>(updatelistWithMemberUri, member, null,
+                    new Dictionary<string, string>() { { "Authorization", $"apikey {authorizationToken.Token}" } });
+
+                var jsonObj = JsonConvert.DeserializeObject<JObject>(response);
+                //todo :check response
+            }
+            catch (Exception ex)
+            {
+                //extract the error messsage and send to activity stream
+                //properties:
+                //status
+                //type
+                //detail
+                throw ex;
+
+                //todo: extract errors
+            }
         }
 
         public async Task<AuthorizationTokenDTO> GetAuthToken(string code, string state)

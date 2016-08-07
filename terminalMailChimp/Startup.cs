@@ -25,6 +25,7 @@ namespace terminalMailChimp
         public void Configuration(IAppBuilder app, bool selfHost)
         {
             ConfigureProject(selfHost, TerminalMailChimpBootstrapper.ConfigureLive);
+            SwaggerConfig.Register(_configuration);
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
             app.UseWebApi(_configuration);
@@ -48,7 +49,7 @@ namespace terminalMailChimp
         protected override void RegisterActivities()
         {
             ActivityStore.RegisterActivity<Update_List_v1>(Update_List_v1.ActivityTemplateDTO);
-            ActivityStore.RegisterActivity<Send_Using_MailChimp_Template_v1>(Send_Using_MailChimp_Template_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Send_Email_Using_MailChimp_Template_v1>(Send_Email_Using_MailChimp_Template_v1.ActivityTemplateDTO);
         }
     }
 }

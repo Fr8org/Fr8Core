@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using Microsoft.Owin.Hosting;
 using Owin;
 
@@ -20,7 +17,7 @@ namespace terminalMailChimp
 
         public static IDisposable CreateServer(string url)
         {
-            return WebApp.Start<SelfHostFactory.SelfHostStartup>(url: url);
+            return WebApp.Start<SelfHostStartup>(url: url);
         }
     }
 }
