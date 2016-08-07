@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.Control;
 using Fr8.Infrastructure.Data.DataTransferObjects;
@@ -12,7 +13,7 @@ using StructureMap;
 using terminalUtilities.Infrastructure;
 using terminalUtilities.Interfaces;
 using terminalUtilities.Models;
-using System;
+using Fr8.Infrastructure.Data.Constants;
 
 namespace terminalFr8Core.Activities
 {
@@ -29,6 +30,7 @@ namespace terminalFr8Core.Activities
             MinPaneWidth = 400,
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
+            Tags = Tags.Notifier,
             Categories = new[]
             {
                 ActivityCategories.Forward,
