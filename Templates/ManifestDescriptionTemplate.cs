@@ -8,15 +8,17 @@
 // </auto-generated>
 // ------------------------------------------------------------------------------
 
-namespace Hub.Resources
+using Newtonsoft.Json;
+
+namespace HubWeb.Templates
 {
     /// <summary>
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+    #line 1 "C:\dev\Work\fr8company\ManifestPages\ManifestDescriptionTemplate.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "14.0.0.0")]
-    public partial class PlanCategoryTemplate : PlanCategoryTemplateBase
+    public partial class ManifestDescriptionTemplate : ManifestDescriptionTemplateBase
     {
 #line hidden
         /// <summary>
@@ -24,6 +26,12 @@ namespace Hub.Resources
         /// </summary>
         public virtual string TransformText()
         {
+            
+            #line 6 "C:\dev\Work\fr8company\ManifestPages\ManifestDescriptionTemplate.tt"
+var manifestName = Manifests[0].Name;
+            
+            #line default
+            #line hidden
             this.Write(@"<!DOCTYPE html>
 <html>
 <head>
@@ -36,164 +44,105 @@ namespace Hub.Resources
     <link rel=""stylesheet"" href=""../Content/css/plan-category.css"" />
 	<link rel=""stylesheet"" href=""../Content/css/plan-directory.css"" />
 
-    <title></title>
-    <meta charset=""utf-8""/>
-</head>
-<body
-	 <div class=""header-container"">
-        <div class=""header"">
-            <div class=""logo""></div>                        
-        </div>
-    </div>
-    <div class=""container"">        
-        <p style=""font-size: 30px"">Plan Directory - ");
+    <title>Fr8 - ");
             
-            #line 27 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Name));
+            #line 19 "C:\dev\Work\fr8company\ManifestPages\ManifestDescriptionTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(manifestName));
             
             #line default
             #line hidden
-            this.Write("</p>\r\n        <div class=\"icons\">\r\n\t\t\t");
+            this.Write("</title>\r\n    <meta charset=\"utf-8\"/>\r\n</head>\r\n<body>\r\n    <div class=\"header-co" +
+                    "ntainer\">\r\n        <div class=\"header\">\r\n            <div class=\"logo\"></div>\r\n " +
+                    "       </div>\r\n    </div>\r\n    <div class=\"container\">\r\n        <h1>Manifest - <" +
+                    "em>");
             
-            #line 29 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
- int i = 0;
-			foreach (var tag in Tags)
-			{ 
-            
-            #line default
-            #line hidden
-            this.Write("\t\t\t<img class=\"web-service-icon\" src=\"..");
-            
-            #line 32 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(tag.Value));
+            #line 29 "C:\dev\Work\fr8company\ManifestPages\ManifestDescriptionTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(manifestName));
             
             #line default
             #line hidden
-            this.Write("\"/>\t\t\r\n\t\t\t\t");
+            this.Write("</em></h1>\r\n\t\t");
             
-            #line 33 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
- if (i < Tags.Count - 1)
-				{ 
-            
-            #line default
-            #line hidden
-            this.Write("\t\t\t\t<img src=\"../Content/icons/plus.png\"/>\r\n\t\t\t\t");
-            
-            #line 36 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
- i++;
-				} 
+            #line 30 "C:\dev\Work\fr8company\ManifestPages\ManifestDescriptionTemplate.tt"
+foreach (var manifest in Manifests)
+		{
             
             #line default
             #line hidden
-            this.Write("                        \r\n\t\t");
+            this.Write("        <div class=\"row\">\r\n            <div class=\"col-md-12\">\r\n                <" +
+                    "hr />\r\n            </div>\r\n        </div>\r\n        <div class=\"row\">\r\n          " +
+                    "  <div class=\"col-md-12\">\r\n                <h3>V");
             
-            #line 38 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+            #line 39 "C:\dev\Work\fr8company\ManifestPages\ManifestDescriptionTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(manifest.Version));
+            
+            #line default
+            #line hidden
+            this.Write(" Registered By ");
+            
+            #line 39 "C:\dev\Work\fr8company\ManifestPages\ManifestDescriptionTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(manifest.RegisteredBy));
+            
+            #line default
+            #line hidden
+            this.Write("</h3>\r\n            </div>\r\n        </div>\r\n        <div class=\"row\">\r\n           " +
+                    " <div class=\"col-md-12\">\r\n                <p>\r\n                    <em>");
+            
+            #line 45 "C:\dev\Work\fr8company\ManifestPages\ManifestDescriptionTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(manifest.Description));
+            
+            #line default
+            #line hidden
+            this.Write("</em>\r\n                </p>\r\n            </div>\r\n        </div>\r\n        <div cla" +
+                    "ss=\"row\">\r\n            <div class=\"col-md-12\">\r\n                <strong>Sample J" +
+                    "SON</strong>\r\n            </div>\r\n        </div>\r\n\t\t");
+            
+            #line 54 "C:\dev\Work\fr8company\ManifestPages\ManifestDescriptionTemplate.tt"
+ 
+		var resultJson = manifest.SampleJSON;
+		try
+		{
+			resultJson = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(manifest.SampleJSON), Formatting.Indented);
+		}
+		catch
+		{
+			//If we can't format manifest JSON we leave it as-is
+		}
+		
+            
+            #line default
+            #line hidden
+            this.Write("        <div class=\"row\">\r\n            <div class=\"col-md-12\">\r\n                <" +
+                    "pre>\r\n");
+            
+            #line 68 "C:\dev\Work\fr8company\ManifestPages\ManifestDescriptionTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(resultJson));
+            
+            #line default
+            #line hidden
+            this.Write("\r\n                </pre>\r\n            </div>\r\n        </div>\r\n\t\t");
+            
+            #line 72 "C:\dev\Work\fr8company\ManifestPages\ManifestDescriptionTemplate.tt"
  } 
             
             #line default
             #line hidden
-            this.Write(@"        </div>
-        <br/>
-        <p style=""font-size: 15px"">Plan Definition Description</p>
-        <p style=""font-size: 22px"">Related Plans</p>
-            <table class=""table""> 
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Plan Name</th>
-                        <th>Plan Description</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ");
-            
-            #line 53 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
- int number = 1;
-                    foreach (var plan in RelatedPlans) 
-                    {
-            
-            #line default
-            #line hidden
-            this.Write("                    <tr>\r\n                        <th scope=\"row\">");
-            
-            #line 57 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(number++));
-            
-            #line default
-            #line hidden
-            this.Write("</th>\r\n                        <td>");
-            
-            #line 58 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(plan.Item1));
-            
-            #line default
-            #line hidden
-            this.Write("</td>\r\n                        <td>");
-            
-            #line 59 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(plan.Item2));
-            
-            #line default
-            #line hidden
-            this.Write("</td>\r\n                        <td><a href=\"");
-            
-            #line 60 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(plan.Item3));
-            
-            #line default
-            #line hidden
-            this.Write("\">Create</a></td>\r\n                    </tr>                   \r\n                " +
-                    "    ");
-            
-            #line 62 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
- } 
-            
-            #line default
-            #line hidden
-            this.Write("                    \r\n                </tbody>\r\n            </table>\r\n</div>\r\n</b" +
-                    "ody>\r\n</html>\r\n");
+            this.Write("    </div>\r\n</body>\r\n</html>\r\n");
             return this.GenerationEnvironment.ToString();
         }
         
-        #line 1 "C:\dev\Work\fr8company\CategoryPages\PlanCategoryTemplate.tt"
+        #line 1 "C:\dev\Work\fr8company\ManifestPages\ManifestDescriptionTemplate.tt"
 
-private string _NameField;
+private global::System.Collections.Generic.IList<Fr8.Infrastructure.Data.Manifests.ManifestDescriptionCM> _ManifestsField;
 
 /// <summary>
-/// Access the Name parameter of the template.
+/// Access the Manifests parameter of the template.
 /// </summary>
-private string Name
+private global::System.Collections.Generic.IList<Fr8.Infrastructure.Data.Manifests.ManifestDescriptionCM> Manifests
 {
     get
     {
-        return this._NameField;
-    }
-}
-
-private global::System.Collections.Generic.IDictionary<System.String, System.String> _TagsField;
-
-/// <summary>
-/// Access the Tags parameter of the template.
-/// </summary>
-private global::System.Collections.Generic.IDictionary<System.String, System.String> Tags
-{
-    get
-    {
-        return this._TagsField;
-    }
-}
-
-private global::System.Collections.Generic.IList<System.Tuple<System.String, System.String, System.String>> _RelatedPlansField;
-
-/// <summary>
-/// Access the RelatedPlans parameter of the template.
-/// </summary>
-private global::System.Collections.Generic.IList<System.Tuple<System.String, System.String, System.String>> RelatedPlans
-{
-    get
-    {
-        return this._RelatedPlansField;
+        return this._ManifestsField;
     }
 }
 
@@ -205,46 +154,18 @@ public virtual void Initialize()
 {
     if ((this.Errors.HasErrors == false))
     {
-bool NameValueAcquired = false;
-if (this.Session.ContainsKey("Name"))
+bool ManifestsValueAcquired = false;
+if (this.Session.ContainsKey("Manifests"))
 {
-    this._NameField = ((string)(this.Session["Name"]));
-    NameValueAcquired = true;
+    this._ManifestsField = ((global::System.Collections.Generic.IList<Fr8.Infrastructure.Data.Manifests.ManifestDescriptionCM>)(this.Session["Manifests"]));
+    ManifestsValueAcquired = true;
 }
-if ((NameValueAcquired == false))
+if ((ManifestsValueAcquired == false))
 {
-    object data = global::System.Runtime.Remoting.Messaging.CallContext.LogicalGetData("Name");
+    object data = global::System.Runtime.Remoting.Messaging.CallContext.LogicalGetData("Manifests");
     if ((data != null))
     {
-        this._NameField = ((string)(data));
-    }
-}
-bool TagsValueAcquired = false;
-if (this.Session.ContainsKey("Tags"))
-{
-    this._TagsField = ((global::System.Collections.Generic.IDictionary<System.String, System.String>)(this.Session["Tags"]));
-    TagsValueAcquired = true;
-}
-if ((TagsValueAcquired == false))
-{
-    object data = global::System.Runtime.Remoting.Messaging.CallContext.LogicalGetData("Tags");
-    if ((data != null))
-    {
-        this._TagsField = ((global::System.Collections.Generic.IDictionary<System.String, System.String>)(data));
-    }
-}
-bool RelatedPlansValueAcquired = false;
-if (this.Session.ContainsKey("RelatedPlans"))
-{
-    this._RelatedPlansField = ((global::System.Collections.Generic.IList<System.Tuple<System.String, System.String, System.String>>)(this.Session["RelatedPlans"]));
-    RelatedPlansValueAcquired = true;
-}
-if ((RelatedPlansValueAcquired == false))
-{
-    object data = global::System.Runtime.Remoting.Messaging.CallContext.LogicalGetData("RelatedPlans");
-    if ((data != null))
-    {
-        this._RelatedPlansField = ((global::System.Collections.Generic.IList<System.Tuple<System.String, System.String, System.String>>)(data));
+        this._ManifestsField = ((global::System.Collections.Generic.IList<Fr8.Infrastructure.Data.Manifests.ManifestDescriptionCM>)(data));
     }
 }
 
@@ -265,7 +186,7 @@ if ((RelatedPlansValueAcquired == false))
     /// Base class for this transformation
     /// </summary>
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "14.0.0.0")]
-    public class PlanCategoryTemplateBase
+    public class ManifestDescriptionTemplateBase
     {
         #region Fields
         private global::System.Text.StringBuilder generationEnvironmentField;

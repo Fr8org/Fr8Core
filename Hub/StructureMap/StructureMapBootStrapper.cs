@@ -212,9 +212,9 @@ namespace Hub.StructureMap
 
                 //PD bootstrap
                 //tony.yakovets: will it work? or some tests check generated templates?
-                var templateGenerator = new Mock<ITemplateGenerator>().Object;
-                For<IWebservicesPageGenerator>().Use<WebservicesPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
-                For<IManifestPageGenerator>().Use<ManifestPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
+                //var templateGenerator = new Mock<ITemplateGenerator>().Object;
+                //For<IWebservicesPageGenerator>().Use<WebservicesPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
+                //For<IManifestPageGenerator>().Use<ManifestPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
 
                 For<ITagGenerator>().Use<TagGenerator>().Singleton();
                 For<IPlanTemplate>().Use<PlanTemplate>().Singleton();

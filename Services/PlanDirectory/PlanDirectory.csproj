@@ -272,10 +272,6 @@
     <Content Include="Content\metronic\loading.gif" />
     <Content Include="Content\metronic\ui.js" />
     <Content Include="Content\css\plan-category.css" />
-    <Content Include="Templates\PlanCategoryTemplate.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>PlanCategoryTemplate.cs</LastGenOutput>
-    </Content>
     <Content Include="Global.asax" />
     <Content Include="gulpfile.js" />
     <Content Include="ManifestPages\ManifestDescriptionTemplate.tt">
@@ -288,6 +284,14 @@
     <Content Include="PreBuild.bat" />
     <Content Include="Scripts\main.js" />
     <Content Include="Scripts\PlanDirectoryApp.js" />
+    <Content Include="Templates\ManifestDescriptionTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>ManifestDescriptionTemplate.cs</LastGenOutput>
+    </Content>
+    <Content Include="Templates\PlanCategoryTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>PlanCategoryTemplate.cs</LastGenOutput>
+    </Content>
     <Content Include="Templates\PlanTemplateDetailsTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>PlanTemplateDetailsTemplate.cs</LastGenOutput>
@@ -339,11 +343,6 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Infrastructure\PlanTemplateDetailsGenerator.cs" />
     <Compile Include="Interfaces\IPlanTemplateDetailsGenerator.cs" />
-    <Compile Include="Templates\PlanCategoryTemplate.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>PlanCategoryTemplate.tt</DependentUpon>
-    </Compile>
     <Compile Include="Controllers\AngularTemplateController.cs" />
     <Compile Include="Controllers\Api\AuthenticationController.cs" />
     <Compile Include="Controllers\Api\PageGenerationController.cs" />
@@ -393,6 +392,16 @@
     <Compile Include="Infrastructure\PlanTemplate.Impl.cs" />
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Templates\ManifestDescriptionTemplate.cs">
+      <DependentUpon>ManifestDescriptionTemplate.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Templates\PlanCategoryTemplate.cs">
+      <DependentUpon>PlanCategoryTemplate.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Templates\PlanTemplateDetailsTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

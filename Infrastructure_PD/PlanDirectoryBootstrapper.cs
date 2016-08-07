@@ -3,15 +3,15 @@ using System.IO;
 using System.Reflection;
 using System.Web.Hosting;
 using Data.Repositories;
-using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
 using Hub.Services;
 using Hub.Services.PlanDirectory;
+using HubWeb.Infrastructure_PD.TemplateGenerators;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 
-namespace PlanDirectory.Infrastructure
+namespace HubWeb.Infrastructure_PD
 {
     public class PlanDirectoryBootStrapper
     {

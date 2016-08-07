@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 
-namespace HubWeb.Infrastructure_PD.Interfaces
+namespace Hub.Interfaces
 {
     public interface IPlanTemplateDetailsGenerator
     {

@@ -54,7 +54,7 @@ namespace PlanDirectory.Infrastructure
             private void ConfigurePlanTemplateDetailsPageGenerator(Uri planDirectoryUrl, string serverPath)
             {
                 var templateGenerator = new TemplateGenerator(new Uri($"{planDirectoryUrl}details"), $"{serverPath}/details");
-                For<IPlanTemplateDetailsGenerator>().Use<PlanTemplateDetailsGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
+                //For<IPlanTemplateDetailsGenerator>().Use<PlanTemplateDetailsGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
             }
 
             private static string GetServerPath()

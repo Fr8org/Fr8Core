@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using HubWeb.Infrastructure_PD.Interfaces;
+using Hub.Interfaces;
 using HubWeb.Templates;
 
-namespace HubWeb.Infrastructure_PD.Infrastructure
+namespace HubWeb.Infrastructure_PD.TemplateGenerators
 {
     public class PlanTemplateDetailsGenerator : IPlanTemplateDetailsGenerator
     {

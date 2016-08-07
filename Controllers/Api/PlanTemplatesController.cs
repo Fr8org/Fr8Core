@@ -10,7 +10,6 @@ using Hub.Infrastructure;
 using Hub.Interfaces;
 using log4net;
 using Microsoft.AspNet.Identity;
-using PlanDirectory.Infrastructure;
 using StructureMap;
 
 namespace HubWeb.Controllers.Api

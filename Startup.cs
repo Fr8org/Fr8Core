@@ -30,7 +30,7 @@ using HubWeb.App_Start;
 using GlobalConfiguration = Hangfire.GlobalConfiguration;
 using System.Globalization;
 using System.Threading;
-using PlanDirectory.Infrastructure;
+using HubWeb.Infrastructure_PD;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 

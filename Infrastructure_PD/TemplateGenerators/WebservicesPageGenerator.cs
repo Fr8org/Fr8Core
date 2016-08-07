@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Entities;
@@ -9,13 +8,8 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
 using HubWeb.Templates;
-using PlanDirectory.Templates;
-using IPlanTemplate = PlanDirectory.Interfaces.IPlanTemplate;
-using ITagGenerator = PlanDirectory.Interfaces.ITagGenerator;
-using ITemplateGenerator = PlanDirectory.Interfaces.ITemplateGenerator;
-using IWebservicesPageGenerator = PlanDirectory.Interfaces.IWebservicesPageGenerator;
 
-namespace PlanDirectory.Infrastructure
+namespace HubWeb.Infrastructure_PD.TemplateGenerators
 {
     public class WebservicesPageGenerator : IWebservicesPageGenerator
     {
@@ -23,7 +17,7 @@ namespace PlanDirectory.Infrastructure
         private const string PageExtension = ".html";
         private const string PageType = "WebService";
 
-        private readonly Hub.Interfaces.IPageDefinition _pageDefinitionService;
+        private readonly IPageDefinition _pageDefinitionService;
         private readonly IPlanTemplate _planTemplateService;
         private readonly ITemplateGenerator _templateGenerator;
         private readonly ITagGenerator _tagGenerator;
@@ -76,8 +70,8 @@ namespace PlanDirectory.Infrastructure
                         Tuple<string, string, string>(
                         publishPlanTemplateDTO.Name,
                         publishPlanTemplateDTO.Description ?? publishPlanTemplateDTO.Name,
-                        CloudConfigurationManager.GetSetting("HubApiBaseUrl").Replace("/api/v1/", "")
-                        + "/dashboard/plans/" + publishPlanTemplateDTO.ParentPlanId + "/builder?viewMode=plan"));
+                        CloudConfigurationManager.GetSetting("HubApiUrl").Replace("/api/v1/", "")
+                        + "dashboard/plans/" + publishPlanTemplateDTO.ParentPlanId + "/builder?viewMode=plan"));
                 }
                 await _templateGenerator.Generate(new PlanCategoryTemplate(), pageName, new Dictionary<string, object>
                 {

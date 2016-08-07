@@ -514,7 +514,26 @@
     <Compile Include="Infrastructure_PD\Infrastructure\PlanDirectoryHubCommunicatorFactory.cs" />
     <Compile Include="Infrastructure_PD\Interfaces\IAuthTokenManager.cs" />
     <Compile Include="Infrastructure_PD\Interfaces\IHubCommunicatorFactory.cs" />
+    <Compile Include="Infrastructure_PD\PlanDirectoryBootstrapper.cs" />
+    <Compile Include="Infrastructure_PD\TemplateGenerators\ManifestPageGenerator.cs" />
+    <Compile Include="Infrastructure_PD\TemplateGenerators\PlanTemplateDetailsGenerator.cs" />
+    <Compile Include="Infrastructure_PD\TemplateGenerators\WebservicesPageGenerator.cs" />
     <Compile Include="SelfHostFactory.cs" />
+    <Compile Include="Templates\ManifestDescriptionTemplate.cs">
+      <DependentUpon>ManifestDescriptionTemplate.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Templates\PlanCategoryTemplate.cs">
+      <DependentUpon>PlanCategoryTemplate.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Templates\PlanTemplateDetailsTemplate.cs">
+      <DependentUpon>PlanTemplateDetailsTemplate.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="ViewModels\AuthenticationErrorVM.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />
     <Compile Include="ViewModels\HomeVM.cs" />
@@ -780,6 +799,18 @@
     <Content Include="Scripts\tests\e2e\shared\consoleLog.js" />
     <Content Include="Scripts\tests\e2e\shared\manageAuthTokens.js" />
     <Content Include="Scripts\tests\e2e\shared\uiHelpers.js" />
+    <Content Include="Templates\ManifestDescriptionTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>ManifestDescriptionTemplate.cs</LastGenOutput>
+    </Content>
+    <Content Include="Templates\PlanCategoryTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>PlanCategoryTemplate.cs</LastGenOutput>
+    </Content>
+    <Content Include="Templates\PlanTemplateDetailsTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>PlanTemplateDetailsTemplate.cs</LastGenOutput>
+    </Content>
     <Content Include="Views\AngularTemplate\DatePicker.cshtml" />
     <Content Include="ApplicationInsights.config">
       <TransformOnBuild>true</TransformOnBuild>
@@ -4403,12 +4434,10 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
-    <Folder Include="CategoryPages\" />
     <Folder Include="Content\img\forms\" />
     <Folder Include="Content\templates\metronic\assets\global\plugins\angularjs\plugins\angular-file-upload\uploads\" />
     <Folder Include="Content\templates\metronic\demo\" />
     <Folder Include="Controllers\Templates\" />
-    <Folder Include="ManifestPages\" />
     <Folder Include="Scripts\app\directives\filters\" />
     <Folder Include="Scripts\tests\templates\" />
     <Folder Include="ViewModelServices\" />

@@ -1,5 +1,6 @@
 ﻿<#@ template language="C#" #>
 <#@ assembly name="$(SolutionDir)\bin\Fr8Infrastructure.NET.dll" #>
+<#@ assembly name="$(ProjectDir)\bin\HubWeb.dll" #>
 <#@ import namespace="HubWeb.ViewModels" #>
 <#@ parameter name="planTemplate" type="Fr8.Infrastructure.Data.DataTransferObjects.PublishPlanTemplateDTO" #>
 <!DOCTYPE html>
@@ -13,12 +14,12 @@
     <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="../Content/metronic/components.css" />
     <link rel="stylesheet" href="../Content/css/plan-directory.css" />
-    <link rel="stylesheet" href="../Content/css/shared/PlanDirectoryMain.css" />
+    <link rel="stylesheet" href="../Content/css/shared/main.css" />
     <script src="../bower_components/jquery/dist/jquery.min.js"></script>
     <script src="../Content/metronic/jquery.blockui.min.js"></script>
     <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="../Content/metronic/ui.js"></script>
-    <script src="../Scripts/PlanDirectoryMain.js"></script>
+    <script src="../Scripts/main.js"></script>
     <title>Fr8 - Plan Template Details -
         <#=planTemplate.Name#>
     </title>
@@ -81,23 +82,25 @@
             <div class="container full-height-block">
                 <div class="inner-wrap centered base-block-white">
                     <!-- SEARCH BAR-->
-                    <div class="search-bar-container" style="display:inline;">
+                    <div class="search-bar-container">
                         <div>
                             <h2 style="width:100%">Details - <em><#=planTemplate.Name#></em></h2>
-                        </div>                        
+                        </div>
+                        <hr/>
                     </div>
-					<hr/>
-					<br/>
                     <!-- SEARCH RESULTS-->
-                    <div class="result-container" style="display:inline;">
+                    <div class="result-container">
                         <div class="item">
                             <button class="btn green create-plan-btn">Create</button>                            
                             <div class="info-row first">
-                                <div class="label">Name:</div> <#=planTemplate.Name#>
-                            </div>                            
+                                <div class="label">Name:</div> {{planTemplate.Name}}
+                            </div>
+                            <div class="info-row">
+                                <div class="label">Created by:</div> {{planTemplate.Owner}}
+                            </div>
                             <div class="info-row">
                                 <div class="label">Description:</div>
-                                <div class="value"><#=planTemplate.Description#></div>
+                                <div class="value">{{planTemplate.Description}}</div>
                             </div>
                         </div>             
                     </div>
