@@ -102,6 +102,7 @@ namespace Data.Migrations
             RegisterTerminal(uow, "localhost:22666");
             RegisterTerminal(uow, "localhost:59022");
             RegisterTerminal(uow, "localhost:38080");
+            RegisterTerminal(uow, "localhost:12421");
         }
 
         private string ExtractPort(string url)
