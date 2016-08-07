@@ -362,10 +362,6 @@
       <Project>{bba91af2-7636-41b6-87c4-c1575ae8b04b}</Project>
       <Name>Fr8Infrastructure.NET</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Services\PlanDirectory\PlanDirectory.csproj">
-      <Project>{2b78433b-ba79-470b-bef6-dba5c1904865}</Project>
-      <Name>PlanDirectory</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\terminalFacebook\terminalFacebook.csproj">
       <Project>{c982a6fe-6fd4-47fa-a69d-91ffa80fedaa}</Project>
       <Name>terminalFacebook</Name>
