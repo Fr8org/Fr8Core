@@ -1,4 +1,8 @@
-﻿.table-linkrows > tbody > tr {
+﻿.action-picker-container-blocker {
+    display:inline;
+}
+
+.table-linkrows > tbody > tr {
     cursor: pointer;
 }
 
