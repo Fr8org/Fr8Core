@@ -444,11 +444,13 @@ namespace Hub.Services
                     // We're updating existing ActivityTemplate.
                     else
                     {
-                        if (activity.Id != activityTemplateDo.Id)
-                        {
-                            throw new InvalidOperationException($"Existent activity with same Name ({activity.Name}) and Version ({activity.Version}) that we passed "
-                            + $"has different Id. (ExistentId = {activity.Id}. Passed Id = {activityTemplateDo.Id}. Changing of activity template Id is not possible. If you need to have another Id please update the version number or create new activity template");
-                        }
+                        // TODO: FR-4943, this breaks DEV's activity registration, commented out for now.
+                        // if (activity.Id != activityTemplateDo.Id)
+                        // {
+                        //     throw new InvalidOperationException($"Existent activity with same Name ({activity.Name}) and Version ({activity.Version}) that we passed "
+                        //     + $"has different Id. (ExistentId = {activity.Id}. Passed Id = {activityTemplateDo.Id}. Changing of activity template Id is not possible. If you need to have another Id please update the version number or create new activity template");
+                        // }
+
                         // This is for updating activity template
                         CopyPropertiesHelper.CopyProperties(activityTemplateDo, activity, false, x => x.Name != "Id");
                         activity.ActivityTemplateState = ActivityTemplateState.Active;
