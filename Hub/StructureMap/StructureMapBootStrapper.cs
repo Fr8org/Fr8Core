@@ -34,6 +34,7 @@ using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities;
 using Hub.Security.ObjectDecorators;
+using Hub.Services.PlanDirectory;
 using Hub.Services.Timers;
 
 namespace Hub.StructureMap
@@ -126,6 +127,15 @@ namespace Hub.StructureMap
                 For<ITimer>().Use<Win32Timer>();
                 For<IManifestRegistryMonitor>().Use<ManifestRegistryMonitor>().Singleton();
                 For<IUpstreamDataExtractionService>().Use<UpstreamDataExtractionService>().Singleton();
+
+
+                //PD services
+                For<ITagGenerator>().Use<TagGenerator>().Singleton();
+                For<IPlanTemplate>().Use<PlanTemplate>().Singleton();
+                For<ISearchProvider>().Use<SearchProvider>().Singleton();
+                For<IPageDefinition>().Use<PageDefinition>().Singleton();
+                //For<IPageDefinitionRepository>().Use<PageDefinitionRepository>().Singleton();
+
                 For<IPlanDirectoryService>().Use<PlanDirectoryService>().Singleton();
                 
             }
@@ -199,6 +209,19 @@ namespace Hub.StructureMap
                 For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
                 For<ITimer>().Use<Win32Timer>();
                 For<IUpstreamDataExtractionService>().Use<UpstreamDataExtractionService>().Singleton();
+
+                //PD bootstrap
+                //tony.yakovets: will it work? or some tests check generated templates?
+                var templateGenerator = new Mock<ITemplateGenerator>().Object;
+                For<IWebservicesPageGenerator>().Use<WebservicesPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
+                For<IManifestPageGenerator>().Use<ManifestPageGenerator>().Singleton().Ctor<ITemplateGenerator>().Is(templateGenerator);
+
+                For<ITagGenerator>().Use<TagGenerator>().Singleton();
+                For<IPlanTemplate>().Use<PlanTemplate>().Singleton();
+                For<ISearchProvider>().Use<SearchProvider>().Singleton();
+                For<IPageDefinition>().Use<PageDefinition>().Singleton();
+                For<ITemplateGenerator>().Use<TemplateGenerator>().Singleton();
+                
                 For<IPlanDirectoryService>().Use<PlanDirectoryService>().Singleton();
             }
         }
