@@ -60,6 +60,7 @@ Activity template version
 Categories field specifies a list of Activity Categories to which current Activity belongs to.
 
 By default, following four categories are available:
+
 Category |	Description | JSON sample	
 --- | --- | ---
 Monitors |	Activities that wait for an external event notification to arrive |	{ "iconPath": "/Content/icons/monitor-icon-64x64.png", "name": "Monitor" }
