@@ -104,7 +104,7 @@ module dockyard.directives.designerHeader {
                         return;
                     }
                     var at = ActivityTemplateHelperService.getActivityTemplate(<model.ActivityDTO>initialActivity);
-                    if (at.category.toLowerCase() === "solution") {
+                    if (at.categories.some((value) => { return value.name.toLowerCase() === "solution"; })) {
                         initialActivity = initialActivity.childrenActivities[0];
                         if (initialActivity == null) {
                             // mark plan as Inactive
@@ -113,7 +113,7 @@ module dockyard.directives.designerHeader {
                         }
                     }
 
-                    if (at.category.toLowerCase() !== "monitors") {
+                    if (!at.categories.some((value) => { return value.name.toLowerCase() === "monitors"; })) {
                         // mark plan as Inactive
                         $scope.plan.planState = model.PlanState.Inactive;
                     }

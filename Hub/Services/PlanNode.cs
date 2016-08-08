@@ -402,7 +402,7 @@ namespace Hub.Services
                 .GetQuery()
                 .Where(x => availableTerminalIds.Contains(x.TerminalId) && x.Categories != null)
                 .SelectMany(x => x.Categories)
-                .Select(x => new { x.ActivityCategory.Name, x.ActivityCategory.IconPath })
+                .Select(x => new { x.ActivityCategory.Id, x.ActivityCategory.Name, x.ActivityCategory.IconPath })
                 .OrderBy(x => x.Name)
                 .Distinct()
                 .ToList();
@@ -410,6 +410,7 @@ namespace Hub.Services
             var result = categories
                 .Select(x => new ActivityTemplateCategoryDTO()
                 {
+                    Id = x.Id,
                     Name = x.Name,
                     IconPath = x.IconPath,
                     Activities = _activityTemplate.GetQuery()
