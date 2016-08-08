@@ -12,7 +12,7 @@ Actions are added to Plans during the Design stage. They are ordered in a linear
 
 [Development Guide – Activities](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/ActivityDevelopmentGuide.md)
 
-[Activities Library](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/ActivitiesLibrary.md)
+
 
 ### Core Concepts
 
