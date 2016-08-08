@@ -49,7 +49,8 @@ namespace HubTests.Security
                     TerminalStatus = 1,
                     Endpoint = "localhost:39504",
                     AuthenticationType = authType,
-                    Secret = Guid.NewGuid().ToString()
+                    Secret = Guid.NewGuid().ToString(),
+                    ParticipationState = ParticipationState.Approved
                 };
 
                 uow.TerminalRepository.Add(terminalDO);

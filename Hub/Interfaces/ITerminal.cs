@@ -11,7 +11,7 @@ namespace Hub.Interfaces
         Task<IList<ActivityTemplateDO>> GetAvailableActivities(string uri);
         TerminalDO GetByKey(int terminalId);
         TerminalDO GetByNameAndVersion(string name, string version);
-        TerminalDO RegisterOrUpdate(TerminalDO terminalDo);
+        TerminalDO RegisterOrUpdate(TerminalDO terminalDo, bool isDiscovery);
         Dictionary<string, string> GetRequestHeaders(TerminalDO terminal, string userId);
         Task<TerminalDO> GetByToken(string token);
         Task<List<DocumentationResponseDTO>> GetSolutionDocumentations(string terminalName);
