@@ -484,8 +484,19 @@ div.action-header {
     right: -66px;
 }
 
+.jumptarget{
+    display: inline-block; 
+    height: 50px; 
+    margin-top: 84px; 
+    max-width:500px;
+}
+
 .action-add-button-link {
     padding: 25px 0 15px 0;
+}
+
+.action-add-button-disabled {
+    background: #dcdcdc !important;
 }
 
 .action-add-button {

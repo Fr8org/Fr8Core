@@ -87,13 +87,13 @@ The JSON representation of this plan is:
       "name": "Starting Subplan"
     }
   ],
-  "fr8UserId": "fbb00d37-5c03-4296-9569-a32aeab70443",
+  "ownerId": "fbb00d37-5c03-4296-9569-a32aeab70443",
   "id": "5c1499ce-4b21-4ca3-ab81-6924e0d55a84",
   "name": "Plan with loops",
   "tag": null,
   "description": null,
   "lastUpdated": "2016-08-02T19:52:46.2268865+00:00",
-  "planState": 1,
+  "planState": "Inactive",
   "startingSubPlanId": "e26e374e-2691-4625-89fe-79d5200b4e89",
   "visibility": {
     "hidden": false,
@@ -106,16 +106,17 @@ The JSON representation of this plan is:
 ## Plan node JSON
 Describes properties of the [plan](/Docs/ForDevelopers/Objects/Plans/Plans.md) itself.  
 * **subPlans** - one or more subplans. Each plan must have at least one subplan.
-* **fr8UserId** - Id of the owner user
+* **ownerId** - Id of the owner user
 * **id** - Id of the plan.
 * **name** - Name of the plan. Value of this property is shown in the UI.
 * **description** - Optional free form text, describing what this plan is doing.
 * **lastUpdated** - Last time this plan was changed
 * **startingSubPlanId** - Identifier of the subplan, activities of which will be executed when the user requests the plan execution.
 * **planState** - state of the plan. Can be:   
-	* **1** - *Inactive*. Plan is created, but it is not being executed right now
-    * **2** - *Running*. Plan is being executed.
-    * **3** - *Deleted*. Plan was deleted. In Fr8, when user deletes the plan its content stays in the DB untouched. The only thing changes is the plan state. Fr8 marks such plan as deleted and stops displaying and processing it. 
+	* **Inactive**. Plan is created, but it is not being executed right now
+    * **Running**. Plan is being executed.
+	* **Active**. This is monitoring plan and this plan has been sucessfully activated. Now it is waiting for trigger event to start execution.
+    * **Deleted**. Plan was deleted. In Fr8, when user deletes the plan its content stays in the DB untouched. The only thing changes is the plan state. Fr8 marks such plan as deleted and stops displaying and processing it. 
 
 ### Visibility
 

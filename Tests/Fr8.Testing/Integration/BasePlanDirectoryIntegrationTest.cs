@@ -41,7 +41,7 @@ namespace Fr8.Testing.Integration
 
         private string GetPlanDirectoryBaseApiUrl()
         {
-            return ConfigurationManager.AppSettings["PlanDirectoryBaseApiUrl"];
+            return ConfigurationManager.AppSettings["PlanDirectoryBaseApiUrl"];            
         }
 
         private Uri GetPlanDirectoryBaseUri()

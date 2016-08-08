@@ -10,6 +10,7 @@ using Hub.StructureMap;
 using NUnit.Framework;
 using StructureMap;
 using Fr8.Testing.Unit;
+using Data.States;
 
 namespace HubTests.Repositories
 {
@@ -95,7 +96,9 @@ namespace HubTests.Repositories
                     Version = "v1",
                     Name = "Test terminal",
                     Label = "Test",
-                    Secret = Guid.NewGuid().ToString()
+                    Secret = Guid.NewGuid().ToString(),
+                    Endpoint="http://localhost",
+                    ParticipationState = ParticipationState.Approved
                 });
 
                 uow.SaveChanges();

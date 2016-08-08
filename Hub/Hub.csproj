@@ -139,6 +139,10 @@
     <Reference Include="Microsoft.AspNet.Identity.Owin">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.0.1\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Azure.Search, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Azure.Search.1.1.2\lib\net45\Microsoft.Azure.Search.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
@@ -154,6 +158,18 @@
     </Reference>
     <Reference Include="Microsoft.Owin.Security.Cookies, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.Security.Cookies.3.0.1\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Rest.ClientRuntime, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Rest.ClientRuntime.1.8.1\lib\net45\Microsoft.Rest.ClientRuntime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Rest.ClientRuntime.Azure, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Rest.ClientRuntime.Azure.2.5.2\lib\net45\Microsoft.Rest.ClientRuntime.Azure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Spatial, Version=6.13.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Spatial.6.13.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.Spatial.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Threading.Tasks">
@@ -297,11 +313,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\GenerateMode.cs" />
+    <Compile Include="Exceptions\ConflictException.cs" />
     <Compile Include="Exceptions\AmbiguityException.cs" />
     <Compile Include="Exceptions\AuthenticationExeception.cs" />
     <Compile Include="Exceptions\ErrorResponseException.cs" />
     <Compile Include="Exceptions\ActivityExecutionException.cs" />
     <Compile Include="Exceptions\InvalidTokenException.cs" />
+    <Compile Include="Exceptions\ManifestGenerationException.cs" />
+    <Compile Include="Exceptions\ManifestNotFoundException.cs" />
+    <Compile Include="Exceptions\ManifestPageNotFoundException.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
     <Compile Include="Helper\PlanMappingHelper.cs" />
@@ -309,15 +330,21 @@
     <Compile Include="Infrastructure\CustomSelector.cs" />
     <Compile Include="Infrastructure\FilterConditionPredicateBuilder.cs" />
     <Compile Include="Infrastructure\Fr8Identity.cs" />
-    <Compile Include="Infrastructure\Fr8Principle.cs" />
+    <Compile Include="Infrastructure\Fr8Principal.cs" />
     <Compile Include="Infrastructure\Fr8ApiAuthorizeAttribute.cs" />
     <Compile Include="Infrastructure\OwinInitializer.cs" />
     <Compile Include="Interfaces\IActivityCategory.cs" />
+    <Compile Include="Interfaces\IManifestPageGenerator.cs" />
     <Compile Include="Interfaces\IManifestRegistryMonitor.cs" />
     <Compile Include="Interfaces\IPageDefinition.cs" />
     <Compile Include="Interfaces\IPlanDirectoryService.cs" />
+    <Compile Include="Interfaces\IPlanTemplate.cs" />
+    <Compile Include="Interfaces\ISearchProvider.cs" />
+    <Compile Include="Interfaces\ITagGenerator.cs" />
+    <Compile Include="Interfaces\ITemplateGenerator.cs" />
     <Compile Include="Interfaces\ITimer.cs" />
     <Compile Include="Interfaces\IUpstreamDataExtractionService.cs" />
+    <Compile Include="Interfaces\IWebservicesPageGenerator.cs" />
     <Compile Include="Managers\APIManagers\Packagers\IEmailPackager.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SendGrid\SendGridPackager.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportFactory.cs" />
@@ -326,6 +353,16 @@
     <Compile Include="Interfaces\IJobDispatcher.cs" />
     <Compile Include="Interfaces\IFact.cs" />
     <Compile Include="Interfaces\IOrganization.cs" />
+    <Compile Include="Resources\ManifestDescriptionTemplate.cs">
+      <DependentUpon>ManifestDescriptionTemplate.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Resources\PlanCategoryTemplate.cs">
+      <DependentUpon>PlanCategoryTemplate.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Security\AuthorizeActivityInterceptor.cs" />
     <Compile Include="Security\HangFireAuthorizationFilter.cs" />
     <Compile Include="Interfaces\IAuthorization.cs" />
@@ -398,6 +435,13 @@
     <Compile Include="Services\PlanBased\ManifestRegistryMonitor.cs" />
     <Compile Include="Services\PageDefinition.cs" />
     <Compile Include="Services\PlanDirectoryService.cs" />
+    <Compile Include="Services\PlanDirectory\ActivityTemplateTag.cs" />
+    <Compile Include="Services\PlanDirectory\ManifestPageGenerator.cs" />
+    <Compile Include="Services\PlanDirectory\TagGenerator.cs" />
+    <Compile Include="Services\PlanDirectory\TemplateTag.cs" />
+    <Compile Include="Services\PlanDirectory\TemplateTagStorage.cs" />
+    <Compile Include="Services\PlanDirectory\WebservicesPageGenerator.cs" />
+    <Compile Include="Services\PlanDirectory\WebServiceTemplateTag.cs" />
     <Compile Include="Services\PlanNode.cs" />
     <Compile Include="Services\Organization.cs" />
     <Compile Include="Services\Activity.cs" />
@@ -408,7 +452,10 @@
     <Compile Include="Services\Email.cs" />
     <Compile Include="Services\Event.cs" />
     <Compile Include="Interfaces\ITerminal.cs" />
+    <Compile Include="Services\PlanDirectory\PlanTemplate.Impl.cs" />
+    <Compile Include="Services\PlanDirectory\SearchProvider.Impl.cs" />
     <Compile Include="Services\Tag.cs" />
+    <Compile Include="Services\PlanDirectory\TemplateGenerator.cs" />
     <Compile Include="Services\Terminal.cs" />
     <Compile Include="Services\File.cs" />
     <Compile Include="Services\Notification.cs" />
@@ -428,6 +475,7 @@
     <Compile Include="Services\UpstreamValueExtractors\TextSourceValueExtractror.cs" />
     <Compile Include="Services\UpstreamValueExtractors\UpstreamValueExtractorBaseT.cs" />
     <Compile Include="Services\UpstreamValueExtractors\UpstremFieldChooserValueExtractror.cs" />
+    <Compile Include="StructureMap\PlanDirectoryBootstrapper.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
     <Compile Include="Interfaces\IActivityExecutionRateLimitingService.cs" />
     <Compile Include="Interfaces\IUtilizationMonitoringService.cs" />
@@ -445,6 +493,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\PlanCategoryTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>PlanCategoryTemplate.cs</LastGenOutput>
+    </Content>
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
@@ -460,12 +512,15 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\ManifestDescriptionTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>ManifestDescriptionTemplate.cs</LastGenOutput>
+    </Content>
     <Content Include="Resources\perfect-krawsant.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Crates\" />
     <Folder Include="Diagnostics\" />
-    <Folder Include="Enums\" />
     <Folder Include="Managers\APIManagers\Packagers\Docusign\" />
     <Folder Include="Managers\Crates\" />
     <Folder Include="UserAlerting\" />
