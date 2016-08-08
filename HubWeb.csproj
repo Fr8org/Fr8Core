@@ -910,6 +910,7 @@
     <Content Include="Views\AngularTemplate\TerminalDetail.cshtml" />
     <Content Include="Views\AngularTemplate\TerminalPublishForm.cshtml" />
     <Content Include="Views\PlanDirectory\Index.cshtml" />
+    <Content Include="_PowerShellScripts\Set-Endpoints.ps1" />
     <None Include="_PowerShellScripts\Swap-CloudService.ps1" />
     <Content Include="_PowerShellScripts\Update-HostnameInTerminalRegistration.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
