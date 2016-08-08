@@ -89,7 +89,8 @@ namespace terminalSalesforceTests.Intergration
             PlanDTO plan = null;
             try
             {
-                var authToken = await Fixtures.HealthMonitor_FixtureData.CreateSalesforceAuthToken();
+                
+                var authToken = await terminalIntegrationTests.Fixtures.HealthMonitor_FixtureData.CreateSalesforceAuthToken();
                 plan = await CreateMonitoringPlan(authToken.Id);
                 await _plansHelper.RunPlan(plan.Id);
 

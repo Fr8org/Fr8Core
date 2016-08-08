@@ -39,7 +39,7 @@ namespace terminalSalesforceTests.Intergration
             string newLeadId = string.Empty;
             try
             {
-                authTokenDO = await Fixtures.HealthMonitor_FixtureData.CreateSalesforceAuthToken();
+                authTokenDO = await terminalIntegrationTests.Fixtures.HealthMonitor_FixtureData.CreateSalesforceAuthToken();
                 authorizationToken = new AuthorizationToken
                 {
                     UserId = authTokenDO.UserID,

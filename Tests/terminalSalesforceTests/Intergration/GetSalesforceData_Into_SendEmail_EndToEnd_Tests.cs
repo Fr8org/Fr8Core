@@ -33,7 +33,7 @@ namespace terminalSalesforceTests.Intergration
             Guid initialPlanId = Guid.Empty;
             try
             {
-                authTokenDO = await Fixtures.HealthMonitor_FixtureData.CreateSalesforceAuthToken();
+                authTokenDO = await terminalIntegrationTests.Fixtures.HealthMonitor_FixtureData.CreateSalesforceAuthToken();
 
                 //Create the required plan
                 initialPlanId = await CreatePlan_GetSalesforceDataIntoSendEmail(authTokenDO);
