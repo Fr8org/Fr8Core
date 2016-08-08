@@ -11,6 +11,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.TerminalBase.Interfaces;
 using Moq;
 using Newtonsoft.Json;
+using System.Configuration;
 
 namespace terminalSalesforceTests.Fixtures
 {
@@ -21,14 +22,14 @@ namespace terminalSalesforceTests.Fixtures
         {
             var auth = new AuthenticationClient();
             await auth.UsernamePasswordAsync(
-                "3MVG9KI2HHAq33RzZO3sQ8KU8JPwmpiZBpe_fka3XktlR5qbCWstH3vbAG.kLmaldx8L1V9OhqoAYUedWAO_e",
-                "611998545425677937",
-                "alex@dockyard.company",
-                "thales@123");
+               ConfigurationManager.AppSettings["OwnerClientId"],
+               ConfigurationManager.AppSettings["OwnerId"],
+               ConfigurationManager.AppSettings["OwnerEmail"],
+               ConfigurationManager.AppSettings["OwnerPassword"]);
 
             return new AuthorizationTokenDTO()
             {
-                ExternalAccountId = "611998545425677937",
+                ExternalAccountId = ConfigurationManager.AppSettings["OwnerId"],
                 Token = JsonConvert.SerializeObject(new { AccessToken = auth.AccessToken }),
                 AdditionalAttributes = string.Format("instance_url={0};api_version={1}", auth.InstanceUrl, auth.ApiVersion)
             };                                                                                                                            

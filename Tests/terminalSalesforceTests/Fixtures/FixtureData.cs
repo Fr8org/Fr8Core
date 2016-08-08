@@ -8,6 +8,7 @@ using Fr8.TerminalBase.Models;
 using Salesforce.Common;
 using StructureMap;
 using Newtonsoft.Json;
+using System.Configuration;
 
 namespace terminalSalesforceTests.Fixtures
 {
@@ -17,10 +18,10 @@ namespace terminalSalesforceTests.Fixtures
         {
             var auth = new AuthenticationClient();
             await auth.UsernamePasswordAsync(
-                "3MVG9KI2HHAq33RzZO3sQ8KU8JPwmpiZBpe_fka3XktlR5qbCWstH3vbAG.kLmaldx8L1V9OhqoAYUedWAO_e",
-                "611998545425677937",
-                "alex@dockyard.company",
-                "thales@123");
+               ConfigurationManager.AppSettings["OwnerClientId"],
+               ConfigurationManager.AppSettings["OwnerId"],
+               ConfigurationManager.AppSettings["OwnerEmail"],
+               ConfigurationManager.AppSettings["OwnerPassword"]);
 
             return new AuthorizationToken()
             {
