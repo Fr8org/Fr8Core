@@ -34,6 +34,32 @@ namespace Data.Migrations
             AlterColumn("dbo.Terminals", "Label", c => c.String());
             AlterColumn("dbo.Terminals", "AuthenticationType", c => c.Int());
             AlterColumn("dbo.Terminals", "Endpoint", c => c.String(nullable: false));
+
+            Sql(@"
+                SET NOCOUNT ON
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalAtlassian.fr8.co' WHERE [DevUrl] LIKE '%localhost:39768%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalAzure.fr8.co' WHERE [DevUrl] LIKE '%localhost:46281%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalBasecamp2.fr8.co' WHERE [DevUrl] LIKE '%localhost:61121%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalDocuSign.fr8.co' WHERE [DevUrl] LIKE '%localhost:53234%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalDropbox.fr8.co' WHERE [DevUrl] LIKE '%localhost:19760%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalExcel.fr8.co' WHERE [DevUrl] LIKE '%localhost:47011%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalFacebook.fr8.co' WHERE [DevUrl] LIKE '%localhost:22666%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalFr8Core.fr8.co' WHERE [DevUrl] LIKE '%localhost:50705%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalPapertrail.fr8.co' WHERE [DevUrl] LIKE '%localhost:30701%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalQuickBooks.fr8.co' WHERE [DevUrl] LIKE '%localhost:48317%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalSalesforce.fr8.co' WHERE [DevUrl] LIKE '%localhost:51234%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalSendGrid.fr8.co' WHERE [DevUrl] LIKE '%localhost:10601%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalSlack.fr8.co' WHERE [DevUrl] LIKE '%localhost:39504%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalTelegram.fr8.co' WHERE [DevUrl] LIKE '%localhost:59022%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalTwilio.fr8.co' WHERE [DevUrl] LIKE '%localhost:30699%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalAsana.fr8.co' WHERE [DevUrl] LIKE '%localhost:56785%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalGoogle.fr8.co' WHERE [DevUrl] LIKE '%localhost:25923%'	
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalYammer.fr8.co' WHERE [DevUrl] LIKE '%localhost:39555%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalInstagram.fr8.co' WHERE [DevUrl] LIKE '%localhost:10109%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalBox.fr8.co' WHERE [DevUrl] LIKE '%localhost:54642%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalStatX.fr8.co' WHERE [DevUrl] LIKE '%localhost:48675%'
+                SET NOCOUNT OFF
+            ");
         }
 
         public override void Down()
