@@ -62,6 +62,7 @@ namespace Data.Migrations
 	[Value48] [nvarchar](max) NULL,
 	[Value49] [nvarchar](max) NULL,
 	[Value50] [nvarchar](max) NULL,
+    [OldId] [nvarchar](max) NULL,
 	 CONSTRAINT [PK_dbo.MTData_PK] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
@@ -124,7 +125,8 @@ namespace Data.Migrations
 	                [Value47],
 	                [Value48],
 	                [Value49],
-	                [Value50])
+	                [Value50],
+                    [OldId])
                 SELECT
                     newid() as [Id],
 	                [mt].[Type],
@@ -181,13 +183,24 @@ namespace Data.Migrations
 	                [mt].[Value47],
 	                [mt].[Value48],
 	                [mt].[Value49],
-	                [mt].[Value50]
+	                [mt].[Value50],
+                    [mt].[Id] as [OldId]
                 FROM [dbo].[OldMTData] AS [mt]";
         public override void Up()
         {
             RenameTable("dbo.MTData", "OldMTData");
             Sql(CreateMTDataTableQuery);
             Sql(CopyDataFromOldMtDataQuery);
+
+            //Copy ids of PlanTemplates to ObjectRolePermissions
+            Sql(@"UPDATE o SET o.ObjectId = t.Id
+                    FROM ObjectRolePermissions o
+                    INNER JOIN MtData t ON
+                    o.ObjectId = t.OldId
+		            WHERE LEN(ObjectId) != 36 AND o.Type = 'Plan Template'");
+
+            //Remove leftovers
+            DropColumn("dbo.MtData", "OldId");
             DropTable("dbo.OldMTData");
         }
         

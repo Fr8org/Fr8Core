@@ -35,9 +35,9 @@ namespace Data.Migrations
                     OldId = c.Int(nullable: false)
                 })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo._AuthenticationTypeTemplate", t => t.AuthenticationType, cascadeDelete: true)
-                .ForeignKey("dbo._TerminalStatusTemplate", t => t.TerminalStatus, cascadeDelete: true)
-                .ForeignKey("dbo.Users", t => t.UserDO_Id)
+                .ForeignKey("dbo._AuthenticationTypeTemplate", t => t.AuthenticationType, true, "FK_dbo.Terminals_dbo._AuthenticationTypeTemplate_AuthenticationType_")
+                .ForeignKey("dbo._TerminalStatusTemplate", t => t.TerminalStatus, true, "FK_dbo.Terminals_dbo._TerminalStatusTemplate_TerminalStatus_")
+                .ForeignKey("dbo.Users", t => t.UserDO_Id, false, "FK_dbo.Terminals_dbo._Users_UserDO_Id_")
                 .Index(t => t.TerminalStatus)
                 .Index(t => t.AuthenticationType)
                 .Index(t => t.UserDO_Id);
@@ -106,6 +106,13 @@ namespace Data.Migrations
             AddForeignKey("dbo.TerminalSubscription", "TerminalId", "dbo.Terminals", "Id");
             DropColumn("dbo.TerminalSubscription", "OldTerminalId");
 
+            //Modify ObjectRolePermission ObjectId for terminals
+            Sql(@"UPDATE o SET o.ObjectId = t.Id
+                    FROM ObjectRolePermissions o
+                    INNER JOIN Terminals t ON
+                    o.ObjectId = t.OldId
+		            WHERE o.Type = 'TerminalDO'");
+            
             //Remove leftovers
             DropColumn("dbo.Terminals", "OldId");
             DropTable("dbo.OldTerminals");
