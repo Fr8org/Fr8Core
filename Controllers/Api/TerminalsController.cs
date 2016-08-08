@@ -63,8 +63,7 @@ namespace HubWeb.Controllers
                 var terminals = uow.TerminalRepository.GetAll()
                     .Select(Mapper.Map<TerminalDTO>)
                     .ToList();
-
-
+                
                 return Ok(terminals);
             }
         }
