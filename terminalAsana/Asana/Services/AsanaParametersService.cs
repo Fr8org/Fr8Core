@@ -49,8 +49,8 @@ namespace terminalAsana.Asana.Services
             AsanaClientId = CloudConfigurationManager.GetSetting("AsanaClientId") ?? "";
 
             MinutesBeforeTokenRenewal = CloudConfigurationManager.GetSetting("MinutesBeforeTokenRenewal") ?? "10";
-            AsanaOriginalRedirectUrl = (CloudConfigurationManager.GetSetting("DefaultHubUrl") + CloudConfigurationManager.GetSetting("AsanaOriginalRedirectUrl")) ?? "";
-            AsanaOAuthCodeUrl = CloudConfigurationManager.GetSetting("AsanaOAuthCodeUrl")?.Replace("%ASANA_CLIENT_ID%",AsanaClientId) ?? "";
+            AsanaOriginalRedirectUrl = CloudConfigurationManager.GetSetting("DefaultHubUrl") + ( CloudConfigurationManager.GetSetting("AsanaOriginalRedirectUrl") ?? "AuthenticationCallback/ProcessSuccessfulOAuthResponse?terminalName=terminalAsana%26terminalVersion=1");
+            AsanaOAuthCodeUrl = (CloudConfigurationManager.GetSetting("AsanaOAuthCodeUrl") ?? "https://app.asana.com/-/oauth_authorize?response_type=code&amp;client_id=%ASANA_CLIENT_ID%&amp;state=%STATE%&amp;redirect_uri=%REDIRECT_URI%").Replace("%ASANA_CLIENT_ID%", AsanaClientId);
             AsanaOAuthTokenUrl = CloudConfigurationManager.GetSetting("AsanaOAuthTokenUrl") ?? "https://app.asana.com/-/oauth_token";
 
         }

@@ -22,8 +22,8 @@ namespace terminalAsanaTests.Integration
         private void AssertConfigurationControls(StandardConfigurationControlsCM control)
         {
             Assert.AreEqual(4, control.Controls.Count, "Control count is not 4");
-            Assert.IsTrue(control.Controls.Select(x=> x is DropDownList).Count() == 3);
-            Assert.IsTrue(control.Controls.Select(x => x is TextBlock).Count() == 1);
+            Assert.IsTrue(control.Controls.Where(x=> x is DropDownList).Count() == 3);
+            Assert.IsTrue(control.Controls.Where(x => x is TextBlock).Count() == 1);
         }
 
 
@@ -42,10 +42,28 @@ namespace terminalAsanaTests.Integration
 
             var fieldsToPayload = crateStorage.CratesOfType<CrateDescriptionCM>().ToList();
 
-            Assert.AreEqual(2,fieldsToPayload.Count);
 
-            Assert.IsTrue(fieldsToPayload.Where(x=> x.ManifestType == CrateManifestType.FromEnum(MT.AsanaTaskList)).Count() == 1);
-            Assert.IsTrue(fieldsToPayload.Where(x => x.ManifestType == CrateManifestType.FromEnum(MT.StandardTableData)).Count() == 1);
+            // there should be one field of MT.AsanaTaskList and one feild of MT.StandardTableData
+            Assert.AreEqual(1,fieldsToPayload.Count);
+
+            var asanaTaskMTId = (int)MT.AsanaTaskList;
+            var AsanaTaskListPayloadCount = fieldsToPayload
+                    .FirstOrDefault()
+                    .Content
+                    .CrateDescriptions
+                    .Count(x => x.ManifestId == asanaTaskMTId);
+
+            Assert.AreEqual(AsanaTaskListPayloadCount, 1);
+
+
+            var tableDataMTId = (int)MT.StandardTableData;
+            var TableDataPayloadCount = fieldsToPayload
+                    .FirstOrDefault()
+                    .Content
+                    .CrateDescriptions
+                    .Count(x => x.ManifestId == asanaTaskMTId);
+
+            Assert.AreEqual(TableDataPayloadCount, 1);
         }
 
 
@@ -55,7 +73,7 @@ namespace terminalAsanaTests.Integration
         [Test]
         public async Task Get_Taks_v1_FollowUp_Configuration_Check_Crate_Structure()
         {
-            //var configureUrl = GetTerminalConfigureUrl();
+            var configureUrl = GetTerminalConfigureUrl();
             //var responseDTO = await CompleteInitialConfiguration();
             //responseDTO.AuthToken = FixtureData.Facebook_AuthToken();
             //var dataDTO = new Fr8DataDTO
