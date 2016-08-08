@@ -6,7 +6,7 @@
 
 module dockyard.services {
     export interface IStringService {
-        plan: dictionary;
+        terminal: dictionary;
     }
 
     export interface dictionary {
@@ -14,10 +14,13 @@ module dockyard.services {
     }
 
     var strings: IStringService = {
-        plan: {
-            error404: "Sorry, the Plan was not found. Perhaps it has been deleted.",
+        terminal: {
+            error404: "The terminal was not found. Please make sure that you have the permissions to access it.",
             error400: "Some of the specified data were invalid. Please verify your entry and try again.",
-            error: "Plan cannot be saved. Please try again in a few minutes."
+            error: "Terminal cannot be saved. Please try again in a few minutes.",
+            localhost_dev: " cannot contain the string 'localhost'. Please correct the URL and try again.",
+            localhost_prod: " cannot contain the string 'localhost'. Please correct the URL and try again."
+
         }
     };
 
