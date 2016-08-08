@@ -27,6 +27,7 @@ namespace Data.Migrations
             CreateIndex("dbo.Terminals", "ParticipationState");
             AddForeignKey("dbo.Terminals", "ParticipationState", "dbo._ParticipationStateTemplate", "Id", cascadeDelete: true);
             DropTable("dbo.TerminalRegistration");
+            Sql("UPDATE Terminals SET IsFr8OwnTerminal = 1 WHERE [Endpoint] LIKE '%localhost:%' OR [Endpoint] LIKE '%fr8.co:%'"); 
             Sql("UPDATE Terminals SET DevUrl = [Endpoint] WHERE [Endpoint] LIKE '%localhost%'"); // for local env
             Sql("UPDATE Terminals SET DevUrl = [Endpoint] WHERE [Endpoint] LIKE '%dev-terminals.fr8.co%'"); // for dev env
             Sql(@"
