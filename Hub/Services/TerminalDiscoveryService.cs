@@ -189,6 +189,7 @@ namespace Hub.Services
                 {
                     // Set properties which can only be set by Administrator
                     terminalDo.ParticipationState = terminal.ParticipationState;
+                    terminalDo.IsFr8OwnTerminal = terminal.IsFr8OwnTerminal;
                     terminalDo.ProdUrl = terminal.ProdUrl;
                 }
                 else
