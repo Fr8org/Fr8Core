@@ -21,7 +21,7 @@ namespace HubWeb.Infrastructure_PD.TemplateGenerators
 
         public async Task Generate(PublishPlanTemplateDTO publishPlanTemplateDto)
         {
-            var pageName = publishPlanTemplateDto.Name + ".html";
+            var pageName = publishPlanTemplateDto.Name + "-" + publishPlanTemplateDto.ParentPlanId + ".html";
             if (publishPlanTemplateDto.Description == null)
                 publishPlanTemplateDto.Description = publishPlanTemplateDto.Name;
             await _templateGenerator.Generate(new PlanTemplateDetailsTemplate(), pageName, new Dictionary<string, object>

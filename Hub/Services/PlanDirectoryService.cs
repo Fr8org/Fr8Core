@@ -31,6 +31,7 @@ namespace Hub.Services
         private readonly IPlanTemplate _planTemplate;
         private readonly ISearchProvider _searchProvider;
         private readonly IWebservicesPageGenerator _webservicesPageGenerator;
+        private readonly IPlanTemplateDetailsGenerator _planTemplateDetailsGenerator;
 
 
 
@@ -42,7 +43,8 @@ namespace Hub.Services
                                     IActivityTemplate activityTemplate,
                                     IPlanTemplate planTemplate,
                                     ISearchProvider searchProvider,
-                                    IWebservicesPageGenerator webservicesPageGenerator)
+                                    IWebservicesPageGenerator webservicesPageGenerator,
+                                    IPlanTemplateDetailsGenerator planTemplateDetailsGenerator)
         {
             _hmacService = hmac;
             _client = client;
@@ -54,6 +56,7 @@ namespace Hub.Services
             _planTemplate = planTemplate;
             _searchProvider = searchProvider;
             _webservicesPageGenerator = webservicesPageGenerator;
+            _planTemplateDetailsGenerator = planTemplateDetailsGenerator;
         }
 
         public async Task<string> GetToken(string UserId)
@@ -110,6 +113,7 @@ namespace Hub.Services
             var planTemplateCM = await _planTemplate.CreateOrUpdate(userId, dto);
             await _searchProvider.CreateOrUpdate(planTemplateCM);
             await _webservicesPageGenerator.Generate(planTemplateCM, userId);
+            await _planTemplateDetailsGenerator.Generate(dto);
 
 
             // @tony.yakovets: for now i left this request to itself because classes above to tight coupled to PlanDirectory project

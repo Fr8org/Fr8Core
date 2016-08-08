@@ -37,12 +37,12 @@ namespace HubWeb.Templates
     <link rel=""stylesheet"" href=""../bower_components/bootstrap/dist/css/bootstrap.min.css"" />
     <link rel=""stylesheet"" href=""../Content/metronic/components.css"" />
     <link rel=""stylesheet"" href=""../Content/css/plan-directory.css"" />
-    <link rel=""stylesheet"" href=""../Content/css/shared/main.css"" />
+    <link rel=""stylesheet"" href=""../Content/css/shared/PlanDirectoryMain.css"" />
     <script src=""../bower_components/jquery/dist/jquery.min.js""></script>
     <script src=""../Content/metronic/jquery.blockui.min.js""></script>
     <script src=""../bower_components/bootstrap/dist/js/bootstrap.min.js""></script>
     <script src=""../Content/metronic/ui.js""></script>
-    <script src=""../Scripts/main.js""></script>
+    <script src=""../Scripts/PlanDirectoryMain.js""></script>
     <title>Fr8 - Plan Template Details -
         ");
             
@@ -211,14 +211,23 @@ namespace HubWeb.Templates
                         <div class=""item"">
                             <button class=""btn green create-plan-btn"">Create</button>                            
                             <div class=""info-row first"">
-                                <div class=""label"">Name:</div> {{planTemplate.Name}}
-                            </div>
-                            <div class=""info-row"">
-                                <div class=""label"">Created by:</div> {{planTemplate.Owner}}
-                            </div>
-                            <div class=""info-row"">
-                                <div class=""label"">Description:</div>
-                                <div class=""value"">{{planTemplate.Description}}</div>
+                                <div class=""label"">Name:</div> ");
+            
+            #line 96 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(planTemplate.Name));
+            
+            #line default
+            #line hidden
+            this.Write("\r\n                            </div>                           \r\n                " +
+                    "            <div class=\"info-row\">\r\n                                <div class=\"" +
+                    "label\">Description:</div>\r\n                                <div class=\"value\">");
+            
+            #line 100 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(planTemplate.Description));
+            
+            #line default
+            #line hidden
+            this.Write(@"</div>
                             </div>
                         </div>             
                     </div>
@@ -233,7 +242,7 @@ namespace HubWeb.Templates
             <p class=""copyright"">
                 ");
             
-            #line 116 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 113 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(DateTime.Now.Year));
             
             #line default

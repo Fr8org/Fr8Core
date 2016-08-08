@@ -14,12 +14,12 @@
     <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="../Content/metronic/components.css" />
     <link rel="stylesheet" href="../Content/css/plan-directory.css" />
-    <link rel="stylesheet" href="../Content/css/shared/main.css" />
+    <link rel="stylesheet" href="../Content/css/shared/PlanDirectoryMain.css" />
     <script src="../bower_components/jquery/dist/jquery.min.js"></script>
     <script src="../Content/metronic/jquery.blockui.min.js"></script>
     <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="../Content/metronic/ui.js"></script>
-    <script src="../Scripts/main.js"></script>
+    <script src="../Scripts/PlanDirectoryMain.js"></script>
     <title>Fr8 - Plan Template Details -
         <#=planTemplate.Name#>
     </title>
@@ -93,14 +93,11 @@
                         <div class="item">
                             <button class="btn green create-plan-btn">Create</button>                            
                             <div class="info-row first">
-                                <div class="label">Name:</div> {{planTemplate.Name}}
-                            </div>
-                            <div class="info-row">
-                                <div class="label">Created by:</div> {{planTemplate.Owner}}
-                            </div>
+                                <div class="label">Name:</div> <#=planTemplate.Name#>
+                            </div>                           
                             <div class="info-row">
                                 <div class="label">Description:</div>
-                                <div class="value">{{planTemplate.Description}}</div>
+                                <div class="value"><#=planTemplate.Description#></div>
                             </div>
                         </div>             
                     </div>
