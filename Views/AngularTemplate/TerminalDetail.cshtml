@@ -41,15 +41,11 @@
                                 <input type="text" placeholder="" disabled="disabled" class="form-control" ng-model="terminal.label" />
                             </div>
                             <div ng-class="(form.devUrl.$error.required && form.$submitted) ? 'has-error' : ''" class="form-group">
-                                <label class="control-label">{{ terminal.isFr8OwnTerminal ? "Local" : "Development"}} URL</label>
+                                <label class="control-label">Development URL</label>
                                 <div class="input-icon right">
                                     <i class="fa fa-warning" ng-show="form.devUrl.$error.required && form.$submitted"></i>
                                     <input type="text" name="devUrl" auto-focus required="required" placeholder="{{terminal.isFr8OwnTerminal ? 'Example: http://localhost:xxxx' : 'https://'}}" maxlength="255" class="form-control" ng-model="terminal.devUrl" />
                                 </div>
-                            </div>
-                            <div ng-show="terminal.isFr8OwnTerminal" class="margin-bottom-10">
-                                For Fr8 own terminals specify a <code>http://localhost:xxxx</code> URL in the Production URL textbox
-                                if the terminal is approved, or in the Development URL textbox if the terminal is not approved.
                             </div>
                             <div ng-class="(form.prodUrl.$error.required && form.$submitted) ? 'has-error' : ''" class="form-group">
                                 <label class="control-label">Production URL</label>
@@ -58,6 +54,12 @@
                                     <input type="text" name="prodUrl" ng-required="approved && canEditAllTerminals" placeholder="https://" ng-disabled="!canEditAllTerminals" ng-keyup="prodUrlChanged(terminal)" maxlength="255" class="form-control" ng-model="terminal.prodUrl" />
                                 </div>
                                 <span ng-show="!canEditAllTerminals">Please contact Support to get the Production URL updated.</span>
+                            </div>
+                            <div ng-show="terminal.isFr8OwnTerminal && canEditAllTerminals" class="margin-bottom-10">
+                                If you run the terminal on the <b>local machine</b>, specify the local URL e.g. <code>http://localhost:12345</code>
+                                in <b>both</b> Production URL and Development URL textboxes. If you add the terminal on the shared <b>Development</b> instance,
+                                specify the Development URL e.g. <code>http://dev-terminals.fr8.co:12345</code>in <b>both</b> textboxes. On the <b>Production</b> environment, specify the development and production URLs,
+                                respectively.
                             </div>
                             <div class="form-group">
                                 <md-checkbox ng-model="approved" ng-show="canEditAllTerminals" aria-label="Approve terminal">
@@ -81,7 +83,7 @@
                                 </a>
                             </div>
                             <div ng-show="canEditAllTerminals" class="margin-bottom-20">
-                                <sup>*</sup> Currently used URL denotes the URL which is used by the Hub to access the terminal at this moment.
+                                <sup>*</sup> This is the URL which is used by the Hub to access the terminal at this moment.
                                 It can be equal to the Production URL or the Development URL or some other URL depending on terminal participation state
                                 and deployment status.
                             </div>

@@ -23,7 +23,7 @@
                             </thead>
                             <tbody>
                                 <tr ng-repeat="terminal in terminals" ng-click="openDetails(terminal)" style="cursor: pointer">
-                                    <td>{{terminal.label}}</td>
+                                    <td><span ng-show="terminal.label != null">{{terminal.label}}</span><span ng-show="terminal.label == null && terminal.terminalStatus == 0"><i>not yet discovered</i></span><span ng-show="terminal.label == null && terminal.terminalStatus != 0"><i>title not available</i></span></td>
                                     <td>{{terminal.endpoint}}</td>
                                 </tr>
                             </tbody>
