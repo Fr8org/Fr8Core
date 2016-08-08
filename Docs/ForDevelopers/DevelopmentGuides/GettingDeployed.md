@@ -8,7 +8,7 @@ If you've built a useful Terminal, we'd like to get it deployed and available to
 2) You can deploy it yourselve and invite The Fr8 Company to configure the production fr8.co Hub to discover it at your hosting endpoint
 
 
-Getting Fr8.co To Deploy Your Terminal
+Getting Fr8.co To Deploy Your Terminal to Production
 ===================================
 
 During development, it only takes a few mouse clicks on the Terminal Registration page to get the Fr8 Dev server to recognize your local Terminal (assuming
@@ -17,4 +17,5 @@ you've used something like ngrok to expose a public URL to it). Once you're done
 To start this process, create a normal Pull Request and indicate in your description that you've written a new Terminal.
 
 The Fr8 Company dev team will evaluate the Terminal. If it appears to be useful, we'll assign it to one of our devops people and deploy it.
+
 
