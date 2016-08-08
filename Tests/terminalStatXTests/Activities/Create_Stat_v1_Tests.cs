@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Fr8.Infrastructure.Data.Control;
 using Fr8.Infrastructure.Data.Crates;
-using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.TerminalBase.Interfaces;
 using Fr8.TerminalBase.Models;
@@ -19,23 +20,35 @@ using terminalStatXTests.Fixtures;
 namespace terminalStatXTests.Activities
 {
     [TestFixture, Category("terminalStatX")]
-    public class Monitor_Stat_Changes_v1_Tests : BaseTest
+    public class Create_Stat_v1_Tests : BaseTest
     {
-        private static readonly AuthorizationToken AuthorizationToken = new AuthorizationToken { Token = "{\"authToken\":\"1\", \"apiKey\":\"1\"}" };
+        private static readonly AuthorizationToken AuthorizationToken = new AuthorizationToken
+        {
+            Token = "{\"authToken\":\"1\", \"apiKey\":\"1\"}"
+        };
 
         public override void SetUp()
         {
             base.SetUp();
+
             var hubCommunicatorMock = new Mock<IHubCommunicator>();
             ObjectFactory.Container.Inject(hubCommunicatorMock);
             ObjectFactory.Container.Inject(hubCommunicatorMock.Object);
             FixtureData.ConfigureHubToReturnEmptyPayload();
             var statXIntegrationMock = new Mock<IStatXIntegration>();
             statXIntegrationMock.Setup(x => x.GetGroups(It.IsAny<StatXAuthDTO>()))
-                                .Returns(Task.FromResult(new List<StatXGroupDTO> { new StatXGroupDTO() {Id = Guid.NewGuid().ToString(), Name = "Test Group"} }));
+                .Returns(
+                    Task.FromResult(new List<StatXGroupDTO>
+                    {
+                        new StatXGroupDTO() {Id = Guid.NewGuid().ToString(), Name = "Test Group"}
+                    }));
 
             statXIntegrationMock.Setup(x => x.GetStatsForGroup(It.IsAny<StatXAuthDTO>(), It.IsAny<string>()))
-                    .Returns(Task.FromResult(new List<BaseStatDTO> { new GeneralStatWithItemsDTO() { Id = Guid.NewGuid().ToString(), Title = "Test Stat" } }));
+                .Returns(
+                    Task.FromResult(new List<BaseStatDTO>
+                    {
+                        new GeneralStatWithItemsDTO() {Id = Guid.NewGuid().ToString(), Title = "Test Stat"}
+                    }));
             ObjectFactory.Container.Inject(statXIntegrationMock);
             ObjectFactory.Container.Inject(statXIntegrationMock.Object);
             ObjectFactory.Container.Inject(new Mock<IStatXPolling>().Object);
@@ -44,7 +57,7 @@ namespace terminalStatXTests.Activities
         [Test]
         public async Task Initialize_Always_LoadsGroupList()
         {
-            var activity = New<Monitor_Stat_Changes_v1>();
+            var activity = New<Create_Stat_v1>();
             var activityContext = new ActivityContext
             {
                 HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
@@ -55,13 +68,14 @@ namespace terminalStatXTests.Activities
                 AuthorizationToken = AuthorizationToken
             };
             await activity.Configure(activityContext);
-            ObjectFactory.GetInstance<Mock<IStatXIntegration>>().Verify(x => x.GetGroups(It.IsAny<StatXAuthDTO>()), "Stats Group list was not loaded from StatX");
+            ObjectFactory.GetInstance<Mock<IStatXIntegration>>()
+                .Verify(x => x.GetGroups(It.IsAny<StatXAuthDTO>()), "Stats Group list was not loaded from StatX");
         }
 
         [Test]
-        public async Task Followup_Always_HasEventSubscriptonCrate()
+        public async Task Initialize_Always_Include_Standard_StatType()
         {
-            var activity = New<Monitor_Stat_Changes_v1>();
+            var activity = New<Create_Stat_v1>();
             var activityContext = new ActivityContext
             {
                 HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
@@ -74,19 +88,19 @@ namespace terminalStatXTests.Activities
             await activity.Configure(activityContext);
 
             var currentActivityStorage = activityContext.ActivityPayload.CrateStorage;
-            var standardConfiguraitonControlsCrate = currentActivityStorage.FirstCrateOrDefault<StandardConfigurationControlsCM>();
+            var standardConfiguraitonControlsCrate =
+                currentActivityStorage.FirstCrateOrDefault<StandardConfigurationControlsCM>();
 
-            standardConfiguraitonControlsCrate.Content.Controls.First(x => x.Name == "ExistingGroupsList").Value = "selectedGroup1";
-
-            await activity.Configure(activityContext);
-
-            Assert.IsNotNull(activityContext.ActivityPayload.CrateStorage.FirstCrateOrDefault<EventSubscriptionCM>(), "Event subscription was not created");
+            var typesDropDown =
+                standardConfiguraitonControlsCrate.Content.Controls.OfType<DropDownList>()
+                    .First(x => x.Name == "StatTypesList");
+            Assert.AreEqual(typesDropDown.ListItems.Count, 5, "Default StatTypes are missing an Item");
         }
 
         [Test]
-        public async Task Followup_Always_ReportsRuntimeAvailableFields()
+        public async Task Followup_Should_Generate_Dynamic_Controls()
         {
-            var activity = New<Monitor_Stat_Changes_v1>();
+            var activity = New<Create_Stat_v1>();
             var activityContext = new ActivityContext
             {
                 HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
@@ -99,15 +113,17 @@ namespace terminalStatXTests.Activities
             await activity.Configure(activityContext);
 
             var currentActivityStorage = activityContext.ActivityPayload.CrateStorage;
-            var standardConfigControls = currentActivityStorage.FirstCrateOrDefault<StandardConfigurationControlsCM>();
+            var standardConfiguraitonControlsCrate =
+                currentActivityStorage.FirstCrateOrDefault<StandardConfigurationControlsCM>();
 
-            standardConfigControls.Content.Controls.First(x => x.Name == "ExistingGroupsList").Value = "selectedGroup1";
+            standardConfiguraitonControlsCrate.Content.Controls.OfType<DropDownList>().First(x => x.Name == "StatTypesList").Value = "NUMBER";
 
             await activity.Configure(activityContext);
+            currentActivityStorage = activityContext.ActivityPayload.CrateStorage;
+            standardConfiguraitonControlsCrate =
+                currentActivityStorage.FirstCrateOrDefault<StandardConfigurationControlsCM>();
 
-            var runtimeCratesDescriptionCrate = currentActivityStorage.FirstCrateOrDefault<CrateDescriptionCM>();
-            Assert.IsNotNull(runtimeCratesDescriptionCrate, "Runtime crates description crate was not created");
-            Assert.IsTrue(runtimeCratesDescriptionCrate.Content.CrateDescriptions[0].Fields.Count > 0, "Runtime available fields were not reported");
+            Assert.IsNotEmpty(standardConfiguraitonControlsCrate.Content.Controls.OfType<TextSource>().ToList(), "Dynamic Text Sources for Number Stat were not generated");
         }
     }
 }
