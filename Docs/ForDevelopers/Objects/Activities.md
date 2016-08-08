@@ -29,6 +29,7 @@ Actions are added to Plans during the Design stage. They are ordered in a linear
 ### Advanced Concepts
 
 [Activity Branching](/Docs/ForDevelopers/Branching.md)
+
 [Loop](/Docs/ForDevelopers/Objects/Activities/Loop.md)   
 [Views](/Docs/ForDevelopers/ActivitiesViews.md)
 
