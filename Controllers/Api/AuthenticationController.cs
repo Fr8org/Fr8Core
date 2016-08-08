@@ -158,25 +158,6 @@ namespace HubWeb.Controllers
         }
 
 
-        //Used internally to pass existing authentication to PlanDirectory. Doesn't show up in API listing
-
-        /// <summary>
-        /// Passes existing authentication to PlanDirectory
-        /// </summary>
-        /// <remarks>Fr8 authentication headers must be provided</remarks>
-        /// <response code="200">Authorization token</response>
-        /// <response code="403">Unauthorized request</response>
-        [HttpPost]
-        [Fr8ApiAuthorize]
-        [Fr8TerminalAuthentication]
-        [ResponseType(typeof(TokenWrapper))]
-        public async Task<IHttpActionResult> AuthenticatePlanDirectory()
-        {
-            var userId = User.Identity.GetUserId();
-            var token = await _planDirectoryService.GetToken(userId);
-            return Ok(new TokenWrapper { Token = token });
-        }
-
         /// <summary>
         /// Updates existing authorization token with new values provided
         /// </summary>
