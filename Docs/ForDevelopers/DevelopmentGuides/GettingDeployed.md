@@ -18,5 +18,14 @@ To start this process, create a normal Pull Request and indicate in your descrip
 
 The Fr8 Company dev team will evaluate the Terminal. If it appears to be useful, we'll assign it to one of our devops people and deploy it.
 
+Steps
 
-![/terminal_details.png]
+1. Go to My Terminals page on the Developer menu
+2. click on the Terminal you want to deploy
+3. Click on the Publish Terminal button:
+
+![](terminal_details.png)
+
+4. Fill out the Google Form, including the URL to a pull request corresponding to your working branch for your Terminal
+5. Wait for a devops admin at The Fr8 Company to look over your pull request.
+
