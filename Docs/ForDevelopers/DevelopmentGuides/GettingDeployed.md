@@ -4,6 +4,7 @@ Getting your Terminal Deployed at Fr8.co
 If you've built a useful Terminal, we'd like to get it deployed and available to Fr8 users. There are two basic ways to do this:
 
 1) You can invite The Fr8 Company to deploy it at fr8.co
+
 2) You can deploy it yourselve and invite The Fr8 Company to configure the production fr8.co Hub to discover it at your hosting endpoint
 
 
