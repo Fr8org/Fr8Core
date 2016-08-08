@@ -78,6 +78,7 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
                 .ForMember(x => x.NeedsAuthentication, opts => opts.ResolveUsing(x => x.NeedsAuthentication))
                 .ForMember(x => x.ShowDocumentation, opts => opts.Ignore())
+                .ForMember(x => x.Description, opts => opts.ResolveUsing(x => x.Description))
                 .ForMember(
                     x => x.Categories,
                     opts => opts.ResolveUsing((ActivityTemplateDO x) =>
