@@ -11,7 +11,7 @@
 	(so use the Azure PowerShell action in VSO to add the script). 
 	
 	.EXAMPLE
-	.\Set-Config.ps1 -as:HubApiBaseUrl "http://localhost" -as:AzureSearchApiKey "IDKLSWOVC" -cs:DockyardDB "Data Source=.;Initial Catalog=DockyardDB2;Integrated Security=SSPI;Transaction Binding=Explicit Unbind;"	
+	.\Set-Config.ps1 -as:HubApiBaseUrl "http://localhost" -as:AzureSearchApiKey "IDKLSWOVC" -cs:Fr8LocalDB "Data Source=.;Initial Catalog=Fr8LocalDB;Integrated Security=SSPI;Transaction Binding=Explicit Unbind;"	
 #>
 
 $connectionStrings = @{}
