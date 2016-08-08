@@ -144,6 +144,12 @@ namespace HubWeb.Controllers
         [ResponseType(typeof(ResponseMessageDTO))]
         public async Task<ResponseMessageDTO> ForceDiscover([FromBody] string callbackUrl)
         {
+            if (string.IsNullOrEmpty(callbackUrl))
+            {
+                Logger.Error($"A terminal has submitted the /forcediscovery request with an empty callbackUrl.");
+                return ErrorDTO.InternalError("Request failed: the callbackUrl parameter was expected but is null.");
+            }
+
             if (!await _terminalDiscovery.Discover(callbackUrl, false))
             {
                 return ErrorDTO.InternalError($"Failed to call /discover for enpoint {callbackUrl}");

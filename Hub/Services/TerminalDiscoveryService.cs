@@ -263,7 +263,7 @@ namespace Hub.Services
             {
                 if (!_knownTerminals.Contains(uri.Authority))
                 {
-                    Logger.Info($"Terminalat at '{terminalUrl}' was not registered within the Hub. Discovery request declied.");
+                    Logger.Info($"Terminal at at '{terminalUrl}' was not registered within the Hub. Discovery request declied.");
                     return false;
                 }
             }
