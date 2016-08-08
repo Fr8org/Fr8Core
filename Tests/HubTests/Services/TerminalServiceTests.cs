@@ -11,6 +11,7 @@ using NUnit.Framework;
 using StructureMap;
 
 using Fr8.Testing.Unit;
+using Data.States;
 using Fr8.Testing.Unit.Fixtures;
 
 namespace HubTests.Services
@@ -50,14 +51,18 @@ namespace HubTests.Services
                    a.TerminalStatus == b.TerminalStatus &&
                    a.Version == b.Version;
         }
-
         public IEnumerable<TerminalDO> GenerateTerminals(int count, string prefix = "")
+        {
+            return GenerateTerminals(count, false, prefix);
+        }
+
+        public IEnumerable<TerminalDO> GenerateTerminals(int count, bool nullifyIds, string prefix = "")
         {
             for (int i = 1; i <= count; i ++)
             {
                 yield return new TerminalDO
                 {
-                    Id = FixtureData.GetTestGuidById(i),
+                    Id = nullifyIds ? Guid.Empty : FixtureData.GetTestGuidById(i),
                     AuthenticationType =1,
                     Endpoint = prefix+"ep" + i,
                     Description = prefix + "desc" + i,
@@ -65,6 +70,7 @@ namespace HubTests.Services
                     Label = prefix + "Label" + i,
                     Version = prefix + "Ver" + i,
                     TerminalStatus = 1,
+                    ParticipationState = ParticipationState.Approved,
                 };
             }
         }
@@ -144,7 +150,7 @@ namespace HubTests.Services
 
             t.Id = Guid.Empty;
 
-            var terminal = terminalService.RegisterOrUpdate(t);
+            var terminal = terminalService.RegisterOrUpdate(t, false);
 
             Assert.IsTrue(terminal.Id != Guid.Empty);
             
@@ -155,24 +161,28 @@ namespace HubTests.Services
             }
         }
 
-        [Test]
+        [Test, Ignore("FR-4945 - We have to be more strict with terminal ids " +
+            "after merging TerminalDO and TerminalRegistrationDO. " +
+            "This test should be deleted after Aug 2016.")]
         public void CanIssueNewIdForNewTerminalsWithInvalidIdWithoutCache()
         {
             ConfigureNoCache();
             CanIssueNewIdForNewTerminalsWithInvalidId();
         }
 
-        [Test]
+        [Test, Ignore("FR-4945 - We have to be more strict with terminal ids " + 
+            "after merging TerminalDO and TerminalRegistrationDO. " + 
+            "This test should be deleted after Aug 2016.")]
         public void CanIssueNewIdForNewTerminalsWithInvalidId()
         {
             var terminalService = new Terminal(_configRepository, _securityServices);
             var t = GenerateTerminals(1).First();
-            var terminal = terminalService.RegisterOrUpdate(t);
+            var terminal = terminalService.RegisterOrUpdate(t, false);
 
             var tNew = GenerateTerminals(10).Last();
             tNew.Id = t.Id;
 
-            var newTerminal = terminalService.RegisterOrUpdate(tNew);
+            var newTerminal = terminalService.RegisterOrUpdate(tNew, false);
 
             Assert.IsTrue(terminal.Id != newTerminal.Id);
 
@@ -190,9 +200,9 @@ namespace HubTests.Services
             TerminalDO[] terminals;
             var terminalService = new Terminal(_configRepository, _securityServices);
             
-            foreach (var terminal in GenerateTerminals(2))
+            foreach (var terminal in GenerateTerminals(2, true))
             {
-                terminalService.RegisterOrUpdate(terminal);
+                terminalService.RegisterOrUpdate(terminal, false);
             }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -252,7 +262,7 @@ namespace HubTests.Services
 
             foreach (var terminal in reference)
             {
-                terminalService.RegisterOrUpdate(terminal);
+                terminalService.RegisterOrUpdate(terminal, false);
             }
             
             var terminalsFromService = terminalService.GetAll().ToArray();

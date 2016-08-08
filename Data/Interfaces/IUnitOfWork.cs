@@ -68,8 +68,6 @@ namespace Data.Interfaces
 
         IPageDefinitionRepository PageDefinitionRepository { get; }
 
-        TerminalRegistrationRepository TerminalRegistrationRepository { get; }
-
         IActivityCategoryRepository ActivityCategoryRepository { get; }
         IActivityCategorySetRepository ActivityCategorySetRepository { get; }
 

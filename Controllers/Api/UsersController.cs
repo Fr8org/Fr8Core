@@ -18,6 +18,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using StructureMap;
 using System.Web.Http.Description;
 using Swashbuckle.Swagger.Annotations;
+using WebApi.OutputCache.V2;
 
 namespace HubWeb.Controllers
 {
@@ -200,6 +201,23 @@ namespace HubWeb.Controllers
             }
 
             return Ok();
+        }
+
+        /// <summary>
+        /// Checks if User has the specified permission for the specified object. 
+        /// </summary>
+        /// <remarks>
+        /// User must be logged in
+        /// </remarks>
+        /// <param name="objectType">Class name to check permissions against (e.g. TerminalDO, PlanNodeDO, etc).</param>
+        /// <param name="permissionType"></param>
+        [HttpGet]
+        [SwaggerResponse(HttpStatusCode.OK, "true if the current user has the specified permission, and false if not.")]
+        [SwaggerResponseRemoveDefaults]
+        [CacheOutput(ServerTimeSpan = 300, ClientTimeSpan = 300)]
+        public IHttpActionResult CheckPermission(PermissionType permissionType, string objectType)
+        {
+            return Ok(_securityServices.UserHasPermission(permissionType, objectType));
         }
 
         #endregion

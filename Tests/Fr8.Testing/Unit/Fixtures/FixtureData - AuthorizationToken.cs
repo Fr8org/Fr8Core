@@ -21,7 +21,9 @@ namespace Fr8.Testing.Unit.Fixtures
                     Label = "test",
                     Version = "v1",
                     Secret = "test",
-                    TerminalStatus = 1
+                    TerminalStatus = 1,
+                    ParticipationState = ParticipationState.Approved,
+                    Endpoint="http://localhost:11111"
                 });
                 uow.SaveChanges();
                 uow.ActivityTemplateRepository.Add(GetTestActivityTemplateDO());

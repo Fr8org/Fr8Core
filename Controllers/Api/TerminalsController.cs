@@ -14,11 +14,18 @@ using System.Net;
 using System.Web.Http.Description;
 using Data.Entities;
 using Swashbuckle.Swagger.Annotations;
+using System;
+using log4net;
+using Microsoft.AspNet.Identity;
+using System.Threading;
+using Hub.Exceptions;
 
 namespace HubWeb.Controllers
 {
     public class TerminalsController : ApiController
     {
+        private static readonly ILog Logger = Fr8.Infrastructure.Utilities.Logging.Logger.GetCurrentClassLogger();
+
         private readonly ISecurityServices _security = ObjectFactory.GetInstance<ISecurityServices>();
         private readonly ITerminal _terminal = ObjectFactory.GetInstance<ITerminal>();
         private readonly ITerminalDiscoveryService _terminalDiscovery = ObjectFactory.GetInstance<ITerminalDiscoveryService>();
@@ -49,13 +56,13 @@ namespace HubWeb.Controllers
         /// <response code="403">Unauthorized request</response>
 	    [HttpGet]
         [Fr8ApiAuthorize]
-        [ResponseType(typeof(List<TerminalRegistrationDTO>))]
+        [ResponseType(typeof(List<TerminalDTO>))]
         public IHttpActionResult Registrations()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var terminals = uow.TerminalRegistrationRepository.GetAll()
-                    .Select(Mapper.Map<TerminalRegistrationDTO>)
+                var terminals = uow.TerminalRepository.GetAll()
+                    .Select(Mapper.Map<TerminalDTO>)
                     .ToList();
 
 
@@ -99,14 +106,39 @@ namespace HubWeb.Controllers
         /// <summary>
         /// Registers terminal endpoint in the current hub and performs initial terminal discovery process using this endpoint
         /// </summary>
-        /// <param name="registration">Terminal endpoint</param>
+        /// <param name="terminal">Terminal endpoint</param>
         [HttpPost]
         //[Fr8ApiAuthorize]
-        [SwaggerResponse(HttpStatusCode.OK, "Terminal was registered and discovery process was successfully performed")]
+        [SwaggerResponse(HttpStatusCode.OK, "Terminal has been registered and discovery process has been successfully performed.")]
         [SwaggerResponseRemoveDefaults]
-        public async Task<IHttpActionResult> Post([FromBody]TerminalRegistrationDTO registration)
+        public async Task<IHttpActionResult> Post([FromBody]TerminalDTO terminal)
         {
-            await _terminalDiscovery.RegisterTerminal(registration.Endpoint);
+            try
+            {
+                await _terminalDiscovery.SaveOrRegister(terminal);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest("An error has occurred while validating terminal data. Please make sure that the form fields are filled out correctly.");
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return NotFound();
+            }
+            catch (InvalidOperationException)
+            {
+                return BadRequest("Terminal URL cannot contain the string 'localhost'. Please correct your terminal URL and try again.");
+            }
+            catch (ConflictException)
+            {
+                return Conflict();
+            }
+            catch (Exception ex)
+            {
+                var username = Thread.CurrentPrincipal.Identity.GetUserName();
+                Logger.Error($"An error has occurred while adding user's terminal on the Terminal's page. Terminal DevURL: {terminal.DevUrl}, ProdURL: {terminal.ProdUrl}, Username: {username}");
+                return InternalServerError();
+            }
             return Ok();
         }
         /// <summary>
@@ -118,7 +150,13 @@ namespace HubWeb.Controllers
         [ResponseType(typeof(ResponseMessageDTO))]
         public async Task<ResponseMessageDTO> ForceDiscover([FromBody] string callbackUrl)
         {
-            if (!await _terminalDiscovery.Discover(callbackUrl))
+            if (string.IsNullOrEmpty(callbackUrl))
+            {
+                Logger.Error($"A terminal has submitted the /forcediscovery request with an empty callbackUrl.");
+                return ErrorDTO.InternalError("Request failed: the callbackUrl parameter was expected but is null.");
+            }
+
+            if (!await _terminalDiscovery.Discover(callbackUrl, false))
             {
                 return ErrorDTO.InternalError($"Failed to call /discover for enpoint {callbackUrl}");
             }

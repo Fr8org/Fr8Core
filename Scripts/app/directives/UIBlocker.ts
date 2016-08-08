@@ -14,15 +14,21 @@ module dockyard.directives.UIBlocker {
         var controller = ['$scope', '$rootScope', 'UIHelperService', 'PlanService', ($scope: IUIBlockerScope, $rootScope: interfaces.IAppRootScope, UIHelperService: services.IUIHelperService, PlanService: services.IPlanService) => {
             var alertMessage = new model.AlertDTO();
             alertMessage.title = "Plan is disabled";
-            alertMessage.body = "You can't modify this Plan while it's running. Would you like to stop it now?";
             alertMessage.isOkCancelVisible = true;
 
             $scope.showPlanIsDisabledDialog = () => {
-                UIHelperService
-                    .openConfirmationModal(alertMessage)
-                    .then(() => {
-                        $scope.deactivatePlan();
-                    });
+                if ($scope.plan.planState === model.PlanState.Active) {
+                    alertMessage.body = "You can't modify this Plan while it's running. Would you like to stop it now?"
+                    UIHelperService
+                        .openConfirmationModal(alertMessage)
+                        .then(() => {
+                            $scope.deactivatePlan();
+                        });
+                }
+                else {
+                    alertMessage.body = "You can't modify this Plan while it's running."
+                    UIHelperService.openConfirmationModal(alertMessage);
+                }
             }
 
             $scope.deactivatePlan = () => {

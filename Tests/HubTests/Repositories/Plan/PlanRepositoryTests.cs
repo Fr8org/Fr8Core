@@ -391,8 +391,9 @@ namespace HubTests.Repositories.Plan
                     TerminalStatus = TerminalStatus.Active,
                     Name = "terminal",
                     Label = "term",
-                    Version = "1"
-
+                    Version = "1",
+                    ParticipationState = ParticipationState.Approved,
+                    Endpoint = "http://localhost:11111"
                 });
 
                 uow.AuthorizationTokenRepository.Add(new AuthorizationTokenDO
@@ -407,7 +408,9 @@ namespace HubTests.Repositories.Plan
                     Label = "asdf",
                     Version = "1",
                     Id = FixtureData.GetTestGuidById(1),
-                    TerminalStatus = 1
+                    TerminalStatus = 1,
+                    ParticipationState = ParticipationState.Approved,
+                    Endpoint = "http://localhost:11111"
                 });
                 uow.PlanRepository.Add(plan);
                 uow.SaveChanges();

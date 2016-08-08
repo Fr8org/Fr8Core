@@ -117,7 +117,7 @@ namespace Hub.Services
             }
         }
 
-        public TerminalDO RegisterOrUpdate(TerminalDO terminalDo)
+        public TerminalDO RegisterOrUpdate(TerminalDO terminalDo, bool isUserInitiated)
         {
             if (terminalDo == null)
             {
@@ -139,20 +139,20 @@ namespace Hub.Services
 
             lock (_terminals)
             {
-                var isRegisterTerminal = false;
-                TerminalDO terminal;
+                var doRegisterTerminal = false;
+                TerminalDO terminal, existingTerminal;
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    var existingTerminal = uow.TerminalRepository.FindOne(x => x.Name == terminalDo.Name);
-
-                    if (existingTerminal == null)
+                    if (terminalDo.Id == Guid.Empty)
                     {
                         terminalDo.Id = Guid.NewGuid();
-                        uow.TerminalRepository.Add(existingTerminal = terminalDo);
-                        isRegisterTerminal = true;
+                        uow.TerminalRepository.Add(terminalDo);
+                        doRegisterTerminal = true;
+                        existingTerminal = terminalDo;
                     }
                     else
                     {
+                        existingTerminal = uow.TerminalRepository.FindOne(x => x.Id == terminalDo.Id);
                         // this is for updating terminal
                         CopyPropertiesHelper.CopyProperties(terminalDo, existingTerminal, false, x => x.Name != "Id");
                     }
@@ -163,10 +163,13 @@ namespace Hub.Services
                     _terminals[existingTerminal.Id] = terminal;
                 }
 
-                if (isRegisterTerminal)
+                if (doRegisterTerminal)
                 {
-                    //add ownership for this new terminal to current user
-                    _securityServices.SetDefaultRecordBasedSecurityForObject(Roles.OwnerOfCurrentObject, terminal.Id, nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
+                    if (isUserInitiated)
+                    {
+                        //add ownership for this new terminal to current user
+                        _securityServices.SetDefaultRecordBasedSecurityForObject(Roles.OwnerOfCurrentObject, terminal.Id, nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });
+                    }
 
                     //make it visible for Fr8 Admins
                     _securityServices.SetDefaultRecordBasedSecurityForObject(Roles.Admin, terminal.Id, nameof(TerminalDO), new List<PermissionType>() { PermissionType.UseTerminal });

@@ -15,6 +15,7 @@ using Fr8.Testing.Unit.Fixtures;
 
 using HubWeb.ViewModels.RequestParameters;
 using System.Text.RegularExpressions;
+using Data.States;
 
 namespace HubTests.Controllers
 {
@@ -322,8 +323,9 @@ namespace HubTests.Controllers
                     TerminalStatus = TerminalStatus.Active,
                     Name = "terminal",
                     Label = "term",
-                    Version = "1"
-
+                    Version = "1",
+                    ParticipationState = ParticipationState.Approved,
+                    Endpoint = "http://localhost:11111"
                 });
                 uow.UserRepository.Add(curPlanDO.Fr8Account);
                 uow.PlanRepository.Add(curPlanDO);
