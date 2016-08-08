@@ -144,6 +144,8 @@ namespace Hub.Services
                             );
                         }
 
+                        _activityCategories[activityCategoryById.Id] = Clone(activityCategoryById);
+
                         uow.SaveChanges();
 
                         return activityCategoryById;
@@ -165,6 +167,8 @@ namespace Hub.Services
                         {
                             activityCategoryByName.IconPath = activityCategory.IconPath;
                         }
+
+                        _activityCategories[activityCategoryByName.Id] = Clone(activityCategoryByName);
 
                         uow.SaveChanges();
 
