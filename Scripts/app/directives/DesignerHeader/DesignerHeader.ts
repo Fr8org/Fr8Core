@@ -51,11 +51,16 @@ module dockyard.directives.designerHeader {
                 });
 
                 $scope.editTitle = () => {
-                    $scope.editing = true;
+                    if (!$scope.editing) {
+                        $scope.editing = !$scope.editing;
+                    }
                 };
 
                 $scope.onTitleChange = () => {
-                    $scope.editing = false;
+                    if ($scope.editing) {
+                        $scope.editing = !$scope.editing;
+                    }
+
                     var result = PlanService.update({ id: $scope.plan.id, name: $scope.plan.name, description: null });
                     result.$promise.then(() => { });
                 };
