@@ -47,7 +47,8 @@ namespace Fr8.Testing.Unit.Fixtures
                     Version = "1",
                     Endpoint = "",
                     TerminalStatus = TerminalStatus.Active,
-                    Secret = Guid.NewGuid().ToString()
+                    Secret = Guid.NewGuid().ToString(),
+                    Id = FixtureData.GetTestGuidById(1)
                 },
 
                 Version = "1"

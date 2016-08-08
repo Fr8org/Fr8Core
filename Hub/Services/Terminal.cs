@@ -147,7 +147,7 @@ namespace Hub.Services
 
                     if (existingTerminal == null)
                     {
-                        terminalDo.Id = Guid.Empty;
+                        terminalDo.Id = Guid.NewGuid();
                         uow.TerminalRepository.Add(existingTerminal = terminalDo);
                         isRegisterTerminal = true;
                     }

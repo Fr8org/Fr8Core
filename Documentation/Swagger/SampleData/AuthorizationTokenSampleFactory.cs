@@ -19,7 +19,7 @@ namespace HubWeb.Documentation.Swagger
                 ExternalDomainId = "D123456",
                 ExternalDomainName = "somedomain",
                 ExternalStateToken = "CBFF1688-99E8-4FC2-A526-C02D98CB5944",
-                TerminalID = 5,
+                TerminalID = Guid.Parse("B125F7D4-7A3F-47B2-90D5-932AC1CE5F48"),
                 Token = "QWERTYUIOPASDFGGHJKLZXCBNM",
                 UserId = "6115F7D4-7A3F-47B2-90D5-932AC1CE5F48"
             };
