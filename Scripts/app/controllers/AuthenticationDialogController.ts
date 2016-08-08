@@ -4,6 +4,7 @@
         activities: Array<model.ActivityDTO>;
         terminals: Array<model.AuthenticationTokenTerminalDTO>;
         isWaitingForResponse: boolean;
+        canBeAppliedToMultipleActivitieis: boolean;
 
         isLoading: () => boolean;
         isAllSelected: () => boolean;
@@ -64,13 +65,15 @@
                 var i, j;
                 var terminalName;
                 for (i = 0; i < _activities.length; ++i) {
-                    terminalName = _activities[i].activityTemplate.terminalName;
+                    var activity = _activities[i];
+                    terminalName = activity.activityTemplate.terminalName;
                     for (j = 0; j < $scope.terminals.length; ++j) {
-                        if ($scope.terminals[j].name === terminalName) {
+                        var terminal = $scope.terminals[j];
+                        if (terminal.name === terminalName && ((<any>terminal).useForAllActivities || (<any>activity).authorizeIsRequested)) {
                             data.push({
-                                actionId: _activities[i].id,
-                                authTokenId: $scope.terminals[j].selectedAuthTokenId,
-                                isMain: (<any>$scope.terminals[j]).isMain
+                                actionId: activity.id,
+                                authTokenId: terminal.selectedAuthTokenId,
+                                isMain: (<any>terminal).isMain
                             });
                             break;
                         }
@@ -268,6 +271,16 @@
                         result.push(item);
                     }
                 }
+                //We check what activities are related to this terminal. If there are several activities and only part of them are manually requested authorization for
+                //then we show advanced options and allow user to choose whether to apply auth token to all activities of the plan or only to the requested ones
+                result.forEach(terminal => {
+                    var terminalActivities = activities.filter(x => x.activityTemplate.terminalName === terminal.name);
+                    var explicitlyRequestedActivities = terminalActivities
+                        .filter(x => (<any>x).authorizeIsRequested === true);
+                    (<any>terminal).showAdvancedOptions = explicitlyRequestedActivities.length < terminalActivities.length;
+                    (<any>terminal).advancedOptionsAreExpanded = false;
+                    (<any>terminal).useForAllActivities = true;
+                });
 
                 result = result.sort((x, y) => x.name < y.name ? -1 : x.name > y.name ? 1 : 0);
 
