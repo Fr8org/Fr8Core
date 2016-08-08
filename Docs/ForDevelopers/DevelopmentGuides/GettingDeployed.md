@@ -19,3 +19,4 @@ To start this process, create a normal Pull Request and indicate in your descrip
 The Fr8 Company dev team will evaluate the Terminal. If it appears to be useful, we'll assign it to one of our devops people and deploy it.
 
 
+![terminal_details.png]
