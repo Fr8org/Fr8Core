@@ -30,7 +30,7 @@ API
 [Development Guides](ForDevelopers/DevGuideHome.md)  
 -----------------------------
 
-[Platform SDKs (.NET, Java, Ruby, Python](ForDevelopers/SDKHome.md)
+[Platform SDKs (.NET, Java, Ruby, Python)](ForDevelopers/SDKHome.md)
 ----------------------------------
 
 [Roadmap](/Docs/Roadmap)
