@@ -21,15 +21,10 @@ namespace terminalSalesforceTests.Fixtures
         public static async Task<AuthorizationTokenDTO> Salesforce_AuthToken()
         {
             var auth = new AuthenticationClient();
-            await auth.UsernamePasswordAsync(
-               ConfigurationManager.AppSettings["OwnerClientId"],
-               ConfigurationManager.AppSettings["OwnerId"],
-               ConfigurationManager.AppSettings["OwnerEmail"],
-               ConfigurationManager.AppSettings["OwnerPassword"]);
+
 
             return new AuthorizationTokenDTO()
             {
-                ExternalAccountId = ConfigurationManager.AppSettings["OwnerId"],
                 Token = JsonConvert.SerializeObject(new { AccessToken = auth.AccessToken }),
                 AdditionalAttributes = string.Format("instance_url={0};api_version={1}", auth.InstanceUrl, auth.ApiVersion)
             };                                                                                                                            

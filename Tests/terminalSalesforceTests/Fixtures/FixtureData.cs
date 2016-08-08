@@ -17,11 +17,6 @@ namespace terminalSalesforceTests.Fixtures
         public static async Task<AuthorizationToken>  Salesforce_AuthToken()
         {
             var auth = new AuthenticationClient();
-            await auth.UsernamePasswordAsync(
-               ConfigurationManager.AppSettings["OwnerClientId"],
-               ConfigurationManager.AppSettings["OwnerId"],
-               ConfigurationManager.AppSettings["OwnerEmail"],
-               ConfigurationManager.AppSettings["OwnerPassword"]);
 
             return new AuthorizationToken()
             {
