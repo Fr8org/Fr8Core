@@ -11,6 +11,7 @@ using NUnit.Framework;
 using StructureMap;
 using Fr8.Testing.Unit;
 using Fr8.Testing.Unit.Fixtures;
+using Data.States;
 
 namespace HubTests.Services
 {
@@ -119,6 +120,7 @@ namespace HubTests.Services
                 Label = prefix + "Label" + id,
                 Version = prefix + "Ver" + id,
                 TerminalStatus = 1,
+                ParticipationState = ParticipationState.Approved
             };
         }
 

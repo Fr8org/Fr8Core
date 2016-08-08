@@ -143,7 +143,7 @@ namespace Hub.Services
                 TerminalDO terminal, existingTerminal;
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    if (terminalDo.Id == 0)
+                    if (terminalDo.Id <= 0)
                     {
                         uow.TerminalRepository.Add(terminalDo);
                         doRegisterTerminal = true;

@@ -107,7 +107,7 @@ namespace Hub.Services
                         var terminalTempDo = uow.TerminalRepository.GetByKey(terminal.InternalId); //TODO: check user permissions here!!
                         if (terminalTempDo == null)
                         {
-                            throw new ArgumentException("Terminal with the specified id is not found.", nameof(terminal.InternalId));
+                            throw new ArgumentOutOfRangeException($"Terminal with the id {terminal.InternalId} is not found.", nameof(terminal.InternalId));
                         }
                         safeParticipationState = terminalTempDo.ParticipationState;
                     }
@@ -120,7 +120,7 @@ namespace Hub.Services
             {
                 if (string.IsNullOrWhiteSpace(terminal.ProdUrl))
                 {
-                    throw new ArgumentException("Production endpoint must be specified for the terminals in the Approved state.", nameof(terminal.ProdUrl));
+                    throw new ArgumentNullException("Production endpoint must be specified for the terminals in the Approved state.", nameof(terminal.ProdUrl));
                 }
                 curEndpoint = NormalizeUrl(terminal.ProdUrl);
             }
@@ -128,7 +128,7 @@ namespace Hub.Services
             {
                 if (string.IsNullOrWhiteSpace(terminal.DevUrl))
                 {
-                    throw new ArgumentException("Development endpoint must be specified for the terminals in the Unapproved state.", nameof(terminal.DevUrl));
+                    throw new ArgumentNullException("Development endpoint must be specified for the terminals in the Unapproved state.", nameof(terminal.DevUrl));
                 }
                 curEndpoint = NormalizeUrl(terminal.DevUrl);
             }
@@ -351,7 +351,7 @@ namespace Hub.Services
 
                 foreach (var curItem in activityTemplates)
                 {
-                    Logger.Error($"Registering activity '{curItem.Name}' from terminal at '{terminalUrl}'");
+                    Logger.Info($"Registering activity '{curItem.Name}' from terminal at '{terminalUrl}'");
                     try
                     {
                         curItem.Terminal = terminalDo;

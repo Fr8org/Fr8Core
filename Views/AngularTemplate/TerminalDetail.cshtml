@@ -24,7 +24,7 @@
                 <div class="portlet-body">
                     <!-- PROCESS FORM -->
                     <div class="tab-pane active" id="tab_1_1">
-                        <form role="form" ng-submit="submit(form.$valid)" name="form" novalidate>
+                        <form role="form" ng-submit="submit($event, form.$valid)" name="form" novalidate>
                             <div class="alert alert-danger" ng-show="form.$submitted && !form.$valid">
                                 Some fields do not contain correct data. Please check below.
                             </div>
@@ -38,44 +38,49 @@
                             </div>
                             <div class="form-group">
                                 <label class="control-label">Name</label>
-                                <input type="text" placeholder="" disabled="disabled" maxlength="100" class="form-control" ng-model="terminal.label" />
+                                <input type="text" placeholder="" disabled="disabled" class="form-control" ng-model="terminal.label" />
                             </div>
-                            <div class="form-group">
+                            <div ng-class="(form.devUrl.$error.required && form.$submitted) ? 'has-error' : ''" class="form-group">
                                 <label class="control-label">{{ terminal.isFr8OwnTerminal ? "Local" : "Development"}} URL</label>
-                                <input type="text" ng-required="terminal.isFr8OwnTerminal || terminal.participationState == 0" placeholder="{{terminal.isFr8OwnTerminal ? 'Example: http://localhost:xxxx' : ''}}" maxlength="255" class="form-control" ng-model="terminal.devUrl" />
+                                <div class="input-icon right">
+                                    <i class="fa fa-warning" ng-show="form.devUrl.$error.required && form.$submitted"></i>
+                                    <input type="text" name="devUrl" auto-focus required="required" placeholder="{{terminal.isFr8OwnTerminal ? 'Example: http://localhost:xxxx' : 'https://'}}" maxlength="255" class="form-control" ng-model="terminal.devUrl" />
+                                </div>
                             </div>
-                            <div ng-show="terminal.isFr8OwnTerminal" style="padding-bottom: 10px;">
+                            <div ng-show="terminal.isFr8OwnTerminal" class="margin-bottom-10">
                                 For Fr8 own terminals specify a <code>http://localhost:xxxx</code> URL in the Production URL textbox
                                 if the terminal is approved, or in the Development URL textbox if the terminal is not approved.
                             </div>
-                            <div class="form-group">
+                            <div ng-class="(form.prodUrl.$error.required && form.$submitted) ? 'has-error' : ''" class="form-group">
                                 <label class="control-label">Production URL</label>
-                                <input type="text" ng-required="terminal.participationState == 1 && canEditAllTerminals" placeholder="" ng-disabled="!canEditAllTerminals" ng-keyup="prodUrlChanged(terminal)" maxlength="255" class="form-control" ng-model="terminal.prodUrl" />
+                                <div class="input-icon right">
+                                    <i class="fa fa-warning" ng-show="form.prodUrl.$error.required && form.$submitted"></i>
+                                    <input type="text" name="prodUrl" ng-required="approved && canEditAllTerminals" placeholder="https://" ng-disabled="!canEditAllTerminals" ng-keyup="prodUrlChanged(terminal)" maxlength="255" class="form-control" ng-model="terminal.prodUrl" />
+                                </div>
                                 <span ng-show="!canEditAllTerminals">Please contact Support to get the Production URL updated.</span>
                             </div>
                             <div class="form-group">
                                 <md-checkbox ng-model="approved" ng-show="canEditAllTerminals" aria-label="Approve terminal">
                                     Approve terminal (the current state is <strong>{{participationStateText}}</strong>)
-                                </md-checkbox>                               
+                                </md-checkbox>
                             </div>
                             <div class="form-group">
                                 <label class="control-label">Current URL<sup ng-show="canEditAllTerminals">*</sup></label>
-                                <input type="text" placeholder="" disabled="disabled" class="form-control" ng-model="terminal.endpoint" />
+                                <input type="text" disabled="disabled" class="form-control" ng-model="terminal.endpoint" />
                             </div>
-                            <div class="margiv-top-10">
-                                <button type="button" ng-click="openPermissionsSetterModal(terminal)" class="btn green-haze">
-                                    Set Permissions
-                                </button>
-                                <button type="button" ng-click="showPublishTerminalModal()" class="btn green-haze">
-                                    Publish Terminal
-                                </button>
+                            <div class="margin-top-10">
+                                <button type="submit" class="btn green-haze">Save</button>
                                 <a ui-sref="terminals" class="btn default">Return</a>
-                                <button type="button" ng-click="save($event, terminal)" class="btn green-haze">
-                                    Save
-                                </button>
-
                             </div>
-                            <div ng-show="canEditAllTerminals" style="padding-top: 20px;">
+                            <div class="margin-top-10">You can also
+                                <a href="#" ng-click="openPermissionsSetterModal(terminal)" class="btn btn-link">
+                                    Set Permissions
+                                </a> |
+                                <a href="#" ng-click="showPublishTerminalModal()" class="btn btn-link">
+                                    Publish Terminal
+                                </a>
+                            </div>
+                            <div ng-show="canEditAllTerminals" class="margin-bottom-20">
                                 <sup>*</sup> Currently used URL denotes the URL which is used by the Hub to access the terminal at this moment.
                                 It can be equal to the Production URL or the Development URL or some other URL depending on terminal participation state
                                 and deployment status.

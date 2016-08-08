@@ -12,8 +12,9 @@ module dockyard.controllers {
         save: ($event: MouseEvent, terminal: model.TerminalDTO) => void;
         prodUrlChanged: (terminal: model.TerminalDTO) => void;
         showPublishTerminalModal: () => void;
-        submit: (isValid: boolean) => void;
+        submit: ($event: MouseEvent, isValid: boolean) => void;
         cancel: () => void;
+        errorMessage: string;
     }
 
     class TerminalDetailsController {
@@ -28,7 +29,8 @@ module dockyard.controllers {
             'TerminalService',
             'UserService',
             '$mdDialog',
-            '$http'
+            '$http',
+            'StringService'
         ];
 
         constructor(
@@ -38,7 +40,8 @@ module dockyard.controllers {
             private TerminalService: services.ITerminalService,
             private UserService: services.IUserService,
             private $mdDialog: ng.material.IDialogService,
-            private $http: ng.IHttpService) {
+            private $http: ng.IHttpService,
+            private StringService: dockyard.services.IStringService) {
 
             TerminalService.get({ id: $state.params['id'] }).$promise.then(function (terminal) {
                 $scope.terminal = terminal;
@@ -50,7 +53,7 @@ module dockyard.controllers {
             $http.get('/api/users/checkpermission', { params: { permissionType: dockyard.enums.PermissionType.EditAllObjects, objectType: 'TerminalDO' } })
                 .then(function (resp) {
                     $scope.canEditAllTerminals = <boolean>resp.data;
-            });
+                });
 
             $scope.prodUrlChanged = (terminal: model.TerminalDTO) => {
                 if (terminal.prodUrl && terminal.prodUrl.length > 0) {
@@ -65,39 +68,52 @@ module dockyard.controllers {
                 $state.go('terminals');
             };
 
-            $scope.save = ($event: MouseEvent, terminal: model.TerminalDTO) => {
-                if (!$scope.canEditAllTerminals) {
-                    if ($scope.terminal.devUrl.indexOf('localhost') > 0) {
-                        let confirmDialog = this.$mdDialog.alert()
-                            .title('Input error')
-                            .textContent('Endpoint URL cannot contain the string "localhost".')
-                            .targetEvent($event)
-                            .ok('Ok');
-                        this.$mdDialog.show(confirmDialog);
-                        return;
-                    }
+            $scope.submit = ($event: MouseEvent, isValid: boolean) => {
+                if (!isValid) {
+                    return;
                 }
 
+                if (!$scope.terminal.isFr8OwnTerminal && $scope.terminal.devUrl.indexOf('localhost') >= 0) {
+                    $scope.errorMessage = 'Development URL' + this.StringService.terminal["localhost"];
+                    return;
+                }
+
+                if ($scope.terminal.prodUrl.indexOf('localhost') >= 0) {
+                    $scope.errorMessage = 'Production URL' + this.StringService.terminal["localhost"];
+                    return;
+                }
+                //if (!$scope.canEditAllTerminals) {
+                //    if ($scope.terminal.devUrl.indexOf('localhost') >= 0) {
+                //        let confirmDialog = this.$mdDialog.alert()
+                //            .title('Input error')
+                //            .textContent('Endpoint URL cannot contain the string "localhost".')
+                //            .targetEvent($event)
+                //            .ok('Ok');
+                //        this.$mdDialog.show(confirmDialog);
+                //        return;
+                //    }
+                //}
+
                 if ($scope.approved) {
-                    if (terminal.participationState != enums.ParticipationState.Approved) {
-                        this.showConfigurationDialog($event, "approve", terminal.name).then(() => {
-                            terminal.participationState = enums.ParticipationState.Approved;
-                            this.saveTerminal(terminal);
+                    if ($scope.terminal.participationState != enums.ParticipationState.Approved) {
+                        this.showConfigurationDialog($event, "approve", $scope.terminal.name).then(() => {
+                            $scope.terminal.participationState = enums.ParticipationState.Approved;
+                            this.saveTerminal($scope.terminal);
                         });
                     }
                     else {
-                        this.saveTerminal(terminal);
+                        this.saveTerminal($scope.terminal);
                     }
                 }
                 else {
-                    if (terminal.participationState == enums.ParticipationState.Approved) {
-                        this.showConfigurationDialog($event, "recall your approval", terminal.name).then(() => {
-                            terminal.participationState = enums.ParticipationState.Unapproved;
-                            this.saveTerminal(terminal);
+                    if ($scope.terminal.participationState == enums.ParticipationState.Approved) {
+                        this.showConfigurationDialog($event, "recall your approval of", $scope.terminal.name).then(() => {
+                            $scope.terminal.participationState = enums.ParticipationState.Unapproved;
+                            this.saveTerminal($scope.terminal);
                         });
                     }
                     else {
-                        this.saveTerminal(terminal);
+                        this.saveTerminal($scope.terminal);
                     }
                 }
             }
@@ -128,19 +144,36 @@ module dockyard.controllers {
         }
 
         private saveTerminal(terminal: model.TerminalDTO) {
+            let that = this;
             this.TerminalService.save(terminal).$promise.then(() => {
                 this.$state.go('terminals');
-            });
+            })
+                .catch((e) => {
+                    switch (e.status) {
+                        case 404:
+                            that.$scope.errorMessage = that.StringService.terminal["error404"];
+                            break;
+                        case 400:
+                            that.$scope.errorMessage = that.StringService.terminal["error400"];
+                            if (e.data.message) {
+                                that.$scope.errorMessage += " Additional information: " + e.data.message;
+                            }
+                            break;
+                        default:
+                            that.$scope.errorMessage = that.StringService.terminal["error"];
+                            break;
+                    }
+                });
         }
 
         private showConfigurationDialog(event: MouseEvent, action: string, terminalName: string) {
             // Appending dialog to document.body to cover sidenav in docs app
             let confirmDialog = this.$mdDialog.confirm()
                 .title('Terminal participation state change')
-                .textContent('Are you sure that you wish to change the state of ' + terminalName)
+                .textContent('Are you sure that you wish to ' + action + ' ' + terminalName + '?')
                 .targetEvent(event)
                 .ok('Yes')
-                .cancel('Cancel');
+                .cancel('No');
             return this.$mdDialog.show(confirmDialog);
         }
     }
