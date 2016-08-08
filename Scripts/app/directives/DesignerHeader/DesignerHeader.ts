@@ -35,13 +35,15 @@ module dockyard.directives.designerHeader {
 
                 $scope.$watch('plan.planState', function (newValue, oldValue) {
                     switch (newValue) {
-                        case 1:
+                        case model.PlanState.Inactive:
                             // emit evet to control liner-progress bar
                             $rootScope.$broadcast(<any>designHeaderEvents.PLAN_EXECUTION_STOPPED);
                             break;
-                        case 2:
+                        case model.PlanState.Executing:
                             // emit evet to control liner-progress bar
                             $rootScope.$broadcast(<any>designHeaderEvents.PLAN_EXECUTION_STARTED);
+                            break;
+                        case model.PlanState.Active:
                             break;
                         default:
                             // emit evet to control liner-progress bar
