@@ -27,7 +27,33 @@ namespace Data.Migrations
             CreateIndex("dbo.Terminals", "ParticipationState");
             AddForeignKey("dbo.Terminals", "ParticipationState", "dbo._ParticipationStateTemplate", "Id", cascadeDelete: true);
             DropTable("dbo.TerminalRegistration");
-            Sql("UPDATE Terminals SET DevUrl = Endpoint WHERE [Endpoint] LIKE '%localhost%'");
+            Sql("UPDATE Terminals SET DevUrl = [Endpoint] WHERE [Endpoint] LIKE '%localhost%'"); // for local env
+            Sql("UPDATE Terminals SET DevUrl = [Endpoint] WHERE [Endpoint] LIKE '%dev-terminals.fr8.co%'"); // for dev env
+            Sql(@"
+                SET NOCOUNT ON
+                UPDATE [dbo].[Terminals] SET DevUrl = 'http://localhost:39768' WHERE [Endpoint] LIKE '%terminalAtlassian.fr8.co%'
+                UPDATE [dbo].[Terminals] SET DevUrl = 'http://localhost:46281' WHERE [Endpoint] LIKE '%terminalAzure.fr8.co%'
+                UPDATE [dbo].[Terminals] SET DevUrl = 'http://localhost:61121' WHERE [Endpoint] LIKE '%terminalBasecamp2.fr8.co%'
+                UPDATE [dbo].[Terminals] SET DevUrl = 'http://localhost:53234' WHERE [Endpoint] LIKE '%terminalDocuSign.fr8.co%'
+                UPDATE [dbo].[Terminals] SET DevUrl = 'http://localhost:19760' WHERE [Endpoint] LIKE '%terminalDropbox.fr8.co%'
+                UPDATE [dbo].[Terminals] SET DevUrl = 'http://localhost:47011' WHERE [Endpoint] LIKE '%terminalExcel.fr8.co%'
+                UPDATE [dbo].[Terminals] SET DevUrl = 'http://localhost:22666' WHERE [Endpoint] LIKE '%terminalFacebook.fr8.co%'
+                UPDATE [dbo].[Terminals] SET DevUrl = 'http://localhost:50705' WHERE [Endpoint] LIKE '%terminalFr8Core.fr8.co%'
+                UPDATE [dbo].[Terminals] SET DevUrl = 'http://localhost:30701' WHERE [Endpoint] LIKE '%terminalPapertrail.fr8.co%'
+                UPDATE [dbo].[Terminals] SET DevUrl = 'http://localhost:48317' WHERE [Endpoint] LIKE '%terminalQuickBooks.fr8.co%'
+                UPDATE [dbo].[Terminals] SET DevUrl = 'http://localhost:51234' WHERE [Endpoint] LIKE '%terminalSalesforce.fr8.co%'
+                UPDATE [dbo].[Terminals] SET DevUrl = 'http://localhost:10601' WHERE [Endpoint] LIKE '%terminalSendGrid.fr8.co%'
+                UPDATE [dbo].[Terminals] SET DevUrl = 'http://localhost:39504' WHERE [Endpoint] LIKE '%terminalSlack.fr8.co%'
+                UPDATE [dbo].[Terminals] SET DevUrl = 'http://localhost:59022' WHERE [Endpoint] LIKE '%terminalTelegram.fr8.co%'
+                UPDATE [dbo].[Terminals] SET DevUrl = 'http://localhost:30699' WHERE [Endpoint] LIKE '%terminalTwilio.fr8.co%'
+                UPDATE [dbo].[Terminals] SET DevUrl = 'http://localhost:56785' WHERE [Endpoint] LIKE '%terminalAsana.fr8.co%'
+                UPDATE [dbo].[Terminals] SET DevUrl = 'http://localhost:25923' WHERE [Endpoint] LIKE '%terminalGoogle.fr8.co%'	
+                UPDATE [dbo].[Terminals] SET DevUrl = 'http://localhost:39555' WHERE [Endpoint] LIKE '%terminalYammer.fr8.co%'
+                UPDATE [dbo].[Terminals] SET DevUrl = 'http://localhost:10109' WHERE [Endpoint] LIKE '%terminalInstagram.fr8.co%'
+                UPDATE [dbo].[Terminals] SET DevUrl = 'http://localhost:54642' WHERE [Endpoint] LIKE '%terminalBox.fr8.co%'
+                UPDATE [dbo].[Terminals] SET DevUrl = 'http://localhost:48675' WHERE [Endpoint] LIKE '%terminalStatX.fr8.co%'
+                SET NOCOUNT OFF
+            "); // for Prod
 
             AlterColumn("dbo.Terminals", "Name", c => c.String());
             AlterColumn("dbo.Terminals", "Version", c => c.String());
@@ -37,27 +63,27 @@ namespace Data.Migrations
 
             Sql(@"
                 SET NOCOUNT ON
-                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalAtlassian.fr8.co' WHERE [DevUrl] LIKE '%localhost:39768%'
-                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalAzure.fr8.co' WHERE [DevUrl] LIKE '%localhost:46281%'
-                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalBasecamp2.fr8.co' WHERE [DevUrl] LIKE '%localhost:61121%'
-                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalDocuSign.fr8.co' WHERE [DevUrl] LIKE '%localhost:53234%'
-                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalDropbox.fr8.co' WHERE [DevUrl] LIKE '%localhost:19760%'
-                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalExcel.fr8.co' WHERE [DevUrl] LIKE '%localhost:47011%'
-                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalFacebook.fr8.co' WHERE [DevUrl] LIKE '%localhost:22666%'
-                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalFr8Core.fr8.co' WHERE [DevUrl] LIKE '%localhost:50705%'
-                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalPapertrail.fr8.co' WHERE [DevUrl] LIKE '%localhost:30701%'
-                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalQuickBooks.fr8.co' WHERE [DevUrl] LIKE '%localhost:48317%'
-                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalSalesforce.fr8.co' WHERE [DevUrl] LIKE '%localhost:51234%'
-                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalSendGrid.fr8.co' WHERE [DevUrl] LIKE '%localhost:10601%'
-                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalSlack.fr8.co' WHERE [DevUrl] LIKE '%localhost:39504%'
-                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalTelegram.fr8.co' WHERE [DevUrl] LIKE '%localhost:59022%'
-                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalTwilio.fr8.co' WHERE [DevUrl] LIKE '%localhost:30699%'
-                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalAsana.fr8.co' WHERE [DevUrl] LIKE '%localhost:56785%'
-                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalGoogle.fr8.co' WHERE [DevUrl] LIKE '%localhost:25923%'	
-                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalYammer.fr8.co' WHERE [DevUrl] LIKE '%localhost:39555%'
-                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalInstagram.fr8.co' WHERE [DevUrl] LIKE '%localhost:10109%'
-                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalBox.fr8.co' WHERE [DevUrl] LIKE '%localhost:54642%'
-                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalStatX.fr8.co' WHERE [DevUrl] LIKE '%localhost:48675%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalAtlassian.fr8.co' WHERE [DevUrl] LIKE '%:39768%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalAzure.fr8.co' WHERE [DevUrl] LIKE '%:46281%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalBasecamp2.fr8.co' WHERE [DevUrl] LIKE '%:61121%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalDocuSign.fr8.co' WHERE [DevUrl] LIKE '%:53234%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalDropbox.fr8.co' WHERE [DevUrl] LIKE '%:19760%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalExcel.fr8.co' WHERE [DevUrl] LIKE '%:47011%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalFacebook.fr8.co' WHERE [DevUrl] LIKE '%:22666%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalFr8Core.fr8.co' WHERE [DevUrl] LIKE '%:50705%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalPapertrail.fr8.co' WHERE [DevUrl] LIKE '%:30701%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalQuickBooks.fr8.co' WHERE [DevUrl] LIKE '%:48317%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalSalesforce.fr8.co' WHERE [DevUrl] LIKE '%:51234%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalSendGrid.fr8.co' WHERE [DevUrl] LIKE '%:10601%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalSlack.fr8.co' WHERE [DevUrl] LIKE '%:39504%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalTelegram.fr8.co' WHERE [DevUrl] LIKE '%:59022%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalTwilio.fr8.co' WHERE [DevUrl] LIKE '%:30699%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalAsana.fr8.co' WHERE [DevUrl] LIKE '%:56785%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalGoogle.fr8.co' WHERE [DevUrl] LIKE '%:25923%'	
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalYammer.fr8.co' WHERE [DevUrl] LIKE '%:39555%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalInstagram.fr8.co' WHERE [DevUrl] LIKE '%:10109%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalBox.fr8.co' WHERE [DevUrl] LIKE '%:54642%'
+                UPDATE [dbo].[Terminals] SET ProdUrl = 'https://terminalStatX.fr8.co' WHERE [DevUrl] LIKE '%:48675%'
                 SET NOCOUNT OFF
             ");
         }
