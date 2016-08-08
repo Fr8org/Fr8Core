@@ -6,7 +6,7 @@ module dockyard.tests.utils.fixtures {
         public static newPlan = <interfaces.IPlanVM>{
             name: 'Test',
             description: 'Description',
-            planState: 1
+            planState: model.PlanState.Inactive
         };
 
         public static filePickerField: model.File = {

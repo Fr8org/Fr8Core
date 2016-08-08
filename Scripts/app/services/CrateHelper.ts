@@ -196,7 +196,7 @@
             }
         }
         
-        private setFieldValidationErrors(field: model.ControlDefinitionDTO, validationResults: model.ValidationResults) {
+        private setFieldValidationErrors(field: model.ISupportsErrorMessage, validationResults: model.ValidationResults) {
             for (var j = 0; j < validationResults.validationErrors.length; j++) {
                 if (validationResults.validationErrors[j].controlNames == null) {
                     continue;
@@ -210,7 +210,7 @@
             }
         }
 
-        public resetValidationErrors(fields: Array<model.ControlDefinitionDTO>) {
+        public resetValidationErrors(fields: Array<model.ISupportsErrorMessage>) {
             for (var i = 0; i < fields.length; i++) {
 
                 fields[i].errorMessage = null;
@@ -223,10 +223,14 @@
                 if (field.radios) {
                     this.resetValidationErrors((<model.RadioButtonGroup>field).radios);
                 }
+                //If we have ContainerTransitions we check every individual transition
+                if (field.transitions) {
+                    this.resetValidationErrors((<model.ContainerTransition>field).transitions);
+                }
             }
         }
 
-        public setValidationErrors(fields: Array<model.ControlDefinitionDTO>, validationResults: model.ValidationResults) {
+        public setValidationErrors(fields: Array<model.ISupportsErrorMessage>, validationResults: model.ValidationResults) {
             for (var i = 0; i < fields.length; i++) {
 
                 fields[i].errorMessage = null;
@@ -240,6 +244,10 @@
                 // If we encountered radiobuttonGroup, we need to check every individual option if it has any nested fields
                 if (field.radios) {
                     this.setValidationErrors((<model.RadioButtonGroup>field).radios, validationResults);
+                }
+                //If we have ContainerTransitions we check every individual transition
+                if (field.transitions) {
+                    this.setValidationErrors((<model.ContainerTransition>field).transitions, validationResults);
                 }
             }
         }

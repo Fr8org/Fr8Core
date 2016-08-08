@@ -18,7 +18,7 @@ $RootDir = Split-Path -parent $PSCommandPath
 
 $cfg = [xml](gc $RootDir\..\web.config)
 
-$con= $cfg.configuration.connectionStrings.add|?{$_.name -eq "DockyardDB"};
+$con= $cfg.configuration.connectionStrings.add|?{$_.name -eq "Fr8LocalDB"};
 # Replace the content
 
 if ([String]::IsNullOrEmpty($overrideDbName) -eq $false)

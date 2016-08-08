@@ -20,7 +20,7 @@ namespace Data.Infrastructure
     [DbConfigurationType(typeof(Fr8DbConfiguration))]
     public class DockyardDbContext : IdentityDbContext<IdentityUser>, IDBContext
     {
-        public static string DefaultConnectionStringName => "DockyardDB";
+        public static string DefaultConnectionStringName => "Fr8LocalDB";
 
         //This is to ensure compile will break if the reference to sql server is removed
         private static Type m_SqlProvider = typeof(SqlProviderServices);

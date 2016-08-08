@@ -162,6 +162,7 @@ namespace HubWeb.Controllers
             }
             return Ok();
         }
+
         /// <summary>
         /// Updates user info
         /// </summary>

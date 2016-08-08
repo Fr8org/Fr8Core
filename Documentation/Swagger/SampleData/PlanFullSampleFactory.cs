@@ -22,7 +22,7 @@ namespace HubWeb.Documentation.Swagger
                 Description = "Plan Description",
                 LastUpdated = DateTimeOffset.Now,
                 Category = "Solutions",
-                PlanState = PlanState.Inactive,
+                PlanState = "Inactive",
                 StartingSubPlanId = Guid.Parse("39080509-1A69-43E6-910F-38C84B84324C"),
                 Tag = "some tags",
                 Visibility = new PlanVisibilityDTO() { Hidden = false },

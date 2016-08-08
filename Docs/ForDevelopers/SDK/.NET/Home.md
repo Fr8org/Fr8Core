@@ -14,6 +14,8 @@
 Additional Topics
 -----------------
 
+[Validation](/Docs/ForDevelopers/SDK/.NET/Validation.md)
+
 [Crate Manager](/Docs/ForDevelopers/SDK/.NET/Services/Crate%20Manager.md)
 
 [Supporting OAuth](/Docs/ForDevelopers/DevelopmentGuides/Terminals/dotNet/TerminalDeveloping-Authentication.md)
