@@ -19,9 +19,10 @@ General Resources
 [Objects](ForDevelopers/Objects/Objects.md)  
 -----------------------------------------
 
-Specifications  
-        * [Fr8 Hub Specification](/Docs/ForDevelopers/Specifications/Fr8HubSpecification.md)  
-        * [Terminal Specification](/Docs/ForDevelopers/Specifications/TerminalSpecification.md)  
+[API]
+-----------------------------------------
+* [Hub](https://fr8.co/swagger/ui/index)  
+* [Terminal](http://dev-terminals.fr8.co:25923/swagger/ui/index)  
         
 [Services](/Docs/ForDevelopers/ServicesHome.md)
 -----------------------------------------------
