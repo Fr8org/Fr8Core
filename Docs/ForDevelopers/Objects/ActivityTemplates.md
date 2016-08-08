@@ -57,22 +57,7 @@ Activity template version
 
 ##### categories
 
-Categories field specifies a list of Activity Categories to which current Activity belongs to.
-
-By default, following four categories are available:
-Category |	Description | JSON sample	
---- | --- | ---
-Monitors |	Activities that wait for an external event notification to arrive |	{ "iconPath": "/Content/icons/monitor-icon-64x64.png", "name": "Monitor" }
-Receivers |	Also known as “Getters”. Activities that attempt to load or acquire a piece of data from an external source | { "iconPath": "/Content/icons/get-icon-64x64.png", "name": "Get" } 	
-Processors |	Activities that focus on processing and transforming Container data at run-time. They are not forbidden from connecting to external sources, but they’re encouraged to focus on carrying out a single transform of the payload data | { "iconPath": "/Content/icons/process-icon-64x64.png", "name": "Process" }
-Senders |	Activities that push or send data to an external service or another Fr8 Container/Plan | { "iconPath": "/Content/icons/forward-icon-64x64.png", "name": "Forward" } 
-
-However, it is possible to specify more than one Category for single Activity.
-
-##### webService
-
-WebService shows us which external service does this activity belongs to.
-Please note, this attribute might get replaced with "categories" attribute in nearest future.
+See [Activity Categories](/Docs/ForDevelopers/Objects/Activities)
 
 ##### terminal
 
