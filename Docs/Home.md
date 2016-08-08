@@ -19,7 +19,7 @@ General Resources
 [Objects](ForDevelopers/Objects/Objects.md)  
 -----------------------------------------
 
-[API]
+API
 -----------------------------------------
 * [Hub](https://fr8.co/swagger/ui/index)  
 * [Terminal](http://dev-terminals.fr8.co:25923/swagger/ui/index)  
