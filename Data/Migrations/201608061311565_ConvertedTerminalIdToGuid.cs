@@ -106,6 +106,7 @@ namespace Data.Migrations
             AddForeignKey("dbo.TerminalSubscription", "TerminalId", "dbo.Terminals", "Id");
             DropColumn("dbo.TerminalSubscription", "OldTerminalId");
 
+            //Remove leftovers
             DropColumn("dbo.Terminals", "OldId");
             DropTable("dbo.OldTerminals");
         }
