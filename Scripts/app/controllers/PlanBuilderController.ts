@@ -424,7 +424,7 @@ module dockyard.controllers {
         private reloadFirstActions() {
             this.$timeout(() => {
                 var currentPlan = this.$scope.current.plan;
-                if (currentPlan.planState != dockyard.model.PlanState.Executing || currentPlan.planState != dockyard.model.PlanState.Active) {
+                if (currentPlan.planState !== dockyard.model.PlanState.Executing || currentPlan.planState !== dockyard.model.PlanState.Active) {
                     currentPlan.subPlans.forEach(
                         plan => {
                             if (plan.activities.length > 0) {
@@ -486,7 +486,10 @@ module dockyard.controllers {
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ChildActionsDetected], () => this.PaneConfigureAction_ChildActionsDetected());
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ExecutePlan], () => this.PaneConfigureAction_ExecutePlan());
 
-            this.$scope.$on(<any>designHeaderEvents.PLAN_EXECUTION_FAILED, () => this.reloadFirstActions());
+            this.$scope.$on(<any>designHeaderEvents.PLAN_EXECUTION_FAILED, () => {
+                this.$scope.current.plan.planState = model.PlanState.Inactive;
+                this.reloadFirstActions();
+            });
 
             // Handles Response from Configure call from PaneConfiguration
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ConfigureCallResponse],

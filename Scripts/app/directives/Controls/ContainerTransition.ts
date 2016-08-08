@@ -1,6 +1,7 @@
 ﻿/// <reference path="../../_all.ts" />
 module dockyard.directives.containerTransition {
     import ContainerTransitions = dockyard.model.ContainerTransitions;
+    import pca = dockyard.directives.paneConfigureAction;
     import planEvents = dockyard.Fr8Events.Plan;
     'use strict';
 
@@ -16,7 +17,8 @@ module dockyard.directives.containerTransition {
         currentAction: model.ActivityDTO;
         removeTransition: (index: number) => void;
         PCA: directives.paneConfigureAction.IPaneConfigureActionController;
-        isDisabled:boolean;
+        isDisabled: boolean;
+        reconfigure: () => void;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -37,6 +39,10 @@ module dockyard.directives.containerTransition {
         var controller = ['$scope', '$timeout', 'PlanService', '$modal', 'ActivityTemplateHelperService', ($scope: IContainerTransitionScope, $timeout: ng.ITimeoutService, PlanService: services.IPlanService, $modal: any, ActivityTemplateHelperService: services.IActivityTemplateHelperService) => {
 
             var planOptions = new Array<model.DropDownListItem>();
+
+            $scope.reconfigure = () => {
+                $scope.$emit(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure], new pca.ActionReconfigureEventArgs($scope.currentAction));
+            };
 
             //let's load and keep all plans in cache
             //TODO think about this - maybe we need to request data from PCA or PB
@@ -240,7 +246,9 @@ module dockyard.directives.containerTransition {
             };
 
             $scope.addTransition = () => {
-                $scope.field.transitions.push(new model.ContainerTransitionField());
+                var newTransition = new model.ContainerTransitionField();
+                newTransition.name = "transition_" + $scope.field.transitions.length;
+                $scope.field.transitions.push(newTransition);
             };
             var buildJumpTargets = (): Array<model.ActivityJumpTarget> => {
                 var targets = new Array<model.ActivityJumpTarget>();
@@ -285,6 +293,7 @@ module dockyard.directives.containerTransition {
             $scope.onTargetChange = (transition: model.ContainerTransitionField) => {
                 var dd = <model.DropDownList>(<any>transition)._dummySecondaryOperationDD;
                 transition.targetNodeId = dd.value;
+                transition.errorMessage = null;
                 triggerChange();
 
                 if ((<any>transition)._dummyOperationDD.value === ContainerTransitions.JumpToSubplan.toString()
@@ -294,15 +303,20 @@ module dockyard.directives.containerTransition {
                         template: warningMessageTemplate
                     });
                 }
-
                 return angular.noop;
             };
 
             $scope.onOperationChange = (transition: model.ContainerTransitionField) => {
                 var dd = <model.DropDownList>(<any>transition)._dummyOperationDD;
+                var targetNodeDd = <model.DropDownList>(<any>transition)._dummySecondaryOperationDD;
+                targetNodeDd.value = null;
+                targetNodeDd.selectedKey = null;
+                transition.targetNodeId = null;
                 transition.transition = parseInt(dd.value);
+                transition.errorMessage = "";
                 processTransition(transition);
                 triggerChange();
+                $scope.reconfigure();
                 return angular.noop;
             };
 
@@ -338,6 +352,9 @@ module dockyard.directives.containerTransition {
             };
             $scope.removeTransition = (index: number) => {
                 $scope.field.transitions.splice(index, 1);
+                $scope.field.transitions.forEach((tran, index) => {
+                    tran.name = "transition_" + index;
+                });
                 triggerChange();
             };
 
@@ -362,7 +379,8 @@ module dockyard.directives.containerTransition {
                 subPlan: '=',
                 field: '=',
                 currentAction: '=',
-                isDisabled: '='
+                isDisabled: '=',
+                change: '&'
             }
         };
     }

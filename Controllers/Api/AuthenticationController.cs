@@ -21,6 +21,7 @@ using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;
 using System.Web.Http.Description;
 using Fr8.Infrastructure;
+using Fr8.Infrastructure.Utilities.Logging;
 using Hub.Services;
 using Newtonsoft.Json;
 using Swashbuckle.Swagger.Annotations;
@@ -127,6 +128,7 @@ namespace HubWeb.Controllers
         {
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
+                Logger.GetLogger().Warn($"Username or password is not specified");
                 return BadRequest("Username or password is not specified");
             }
 
@@ -151,28 +153,10 @@ namespace HubWeb.Controllers
                     }
                 }
             }
+            Logger.GetLogger().Warn($"Loging failed for {username}");
             return StatusCode(HttpStatusCode.Forbidden);
         }
 
-
-        //Used internally to pass existing authentication to PlanDirectory. Doesn't show up in API listing
-
-        /// <summary>
-        /// Passes existing authentication to PlanDirectory
-        /// </summary>
-        /// <remarks>Fr8 authentication headers must be provided</remarks>
-        /// <response code="200">Authorization token</response>
-        /// <response code="403">Unauthorized request</response>
-        [HttpPost]
-        [Fr8ApiAuthorize]
-        [Fr8TerminalAuthentication]
-        [ResponseType(typeof(TokenWrapper))]
-        public async Task<IHttpActionResult> AuthenticatePlanDirectory()
-        {
-            var userId = User.Identity.GetUserId();
-            var token = await _planDirectoryService.GetToken(userId);
-            return Ok(new TokenWrapper { Token = token });
-        }
 
         /// <summary>
         /// Updates existing authorization token with new values provided
