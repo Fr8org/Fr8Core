@@ -36,7 +36,7 @@
                                                                    current-action="envelope.activity" mode="mode" processing="isReConfiguring"></pane-configure-action>
                                         </div>
                                     </div>
-                                    <div class="jumptarget-wrapper" ng-if="envelope.jumpTargets.length > 0" style="display: inline-block; height: 50px; margin: 84px 10px 0 7px; width: 55px;">
+                                    <div class="jumptarget-wrapper jumptarget" ng-if="envelope.jumpTargets.length > 0">
                                         <div class="action-arrow-right action-arrow-right-jumptarget"> </div>
                                         <div ng-repeat="jumpTarget in envelope.jumpTargets" class="col-md-12">
                                             <div class="action-arrow-right-{{jumpTarget.TransitionType}}"></div>
@@ -45,9 +45,9 @@
                                     </div>
                                     <div ng-if="envelope.allowsSiblings" class="action-arrow-right"></div>
                                     <div ng-if="!envelope.allowsSiblings && (!envelope.jumpTargets || envelope.jumpTargets.length < 1)" style="display: inline-block; height: 50px; margin: 84px 10px 0 7px; width: 1px;"></div>
-                                    <action-picker ng-if="$last"></action-picker>
+                                    <action-picker ng-if="$last" plan-state="{{current.plan.planState}}"></action-picker>
                                 </div>
-                                <action-picker ng-if="group.envelopes.length < 1"></action-picker>
+                                <action-picker ng-if="group.envelopes.length < 1" plan-state="{{current.plan.planState}}"></action-picker>
                                 <div class="dndPlaceholder">
                                     <div class="action" style="width: 330px; opacity: 0.6; background-color: black;"> </div>
                                     <div class="action-arrow-right"> </div>

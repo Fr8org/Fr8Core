@@ -77,7 +77,9 @@ module dockyard.controllers {
 
 
             $scope.unpublishPlan = () => {
-                if ($scope.current.plan.visibility.public) {
+                debugger;
+                //tony.yakovets: temporary crutch
+                if (!$scope.current.plan.visibility.hidden) {
                     PlanService.unpublish($stateParams.id)
                         .then(() => {
                             console.log('unpublishPlan: Success');
