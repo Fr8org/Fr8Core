@@ -31,7 +31,6 @@ namespace terminalFr8Core.Activities
             MinPaneWidth = 400,
             // TODO: FR-4943, remove this.
             // WebService = TerminalData.WebServiceDTO,
-            Tags = Tags.Notifier,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
