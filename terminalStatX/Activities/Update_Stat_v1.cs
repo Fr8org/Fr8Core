@@ -224,11 +224,16 @@ namespace terminalStatX.Activities
                 }
 
                 #region Refresh Stat Items to Track for Changes in app
+                SelectedStat = ActivityUI.ExistingGroupStats.Value;
+                ActivityUI.ExistingGroupStats.ListItems = stats.Select(x => new ListItem { Key = string.IsNullOrEmpty(x.Title) ? x.Id : x.Title, Value = x.Id }).ToList();
+                ActivityUI.ExistingGroupStats.Value = SelectedStat;
+                var statToCheck = stats.FirstOrDefault(x => x.Id == SelectedStat);
+
 
                 //check for changes in statValue Array
-                var statToCheck = stats.FirstOrDefault(x => x.Id == SelectedStat);
                 if (statToCheck != null)
                 {
+                    ActivityUI.ExistingGroupStats.selectedKey = string.IsNullOrEmpty(statToCheck.Title) ? statToCheck.Id : statToCheck.Title;
                     var statDTO = statToCheck as GeneralStatWithItemsDTO;
                     if (statDTO != null && statDTO.Items.Any())
                     {
@@ -238,7 +243,7 @@ namespace terminalStatX.Activities
                         if (statDTO.VisualType != StatTypes.PickList)
                         {
                             newStatNames = statDTO.Items.Select(x => x.Name).ToList();
-                            
+
                             //recreate new items 
                             var newItems = newStatNames.Where(x => !oldStatNames.Contains(x)).ToList();
                             var oldItemsToDelete = oldStatNames.Where(x => !newStatNames.Contains(x)).ToList();
@@ -268,10 +273,6 @@ namespace terminalStatX.Activities
                         }
                     }
                 }
-
-                SelectedStat = ActivityUI.ExistingGroupStats.Value;
-                ActivityUI.ExistingGroupStats.ListItems = stats.Select(x => new ListItem { Key = string.IsNullOrEmpty(x.Title) ? x.Id : x.Title, Value = x.Id }).ToList();
-                ActivityUI.ExistingGroupStats.Value = SelectedStat;
 
                 #endregion
             }
