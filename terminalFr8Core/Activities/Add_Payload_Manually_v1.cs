@@ -19,13 +19,9 @@ namespace terminalFr8Core.Activities
             Id = new Guid("315c3603-eb27-4217-a07e-f5c5a52bbfc7"),
             Name = "Add_Payload_Manually",
             Label = "Add Payload Manually",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Processors,
             Terminal = TerminalData.TerminalDTO,
             Version = "1",
             MinPaneWidth = 330,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Categories = new[]
             {
                 ActivityCategories.Process,

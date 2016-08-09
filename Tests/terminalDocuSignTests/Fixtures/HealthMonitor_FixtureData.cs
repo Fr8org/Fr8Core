@@ -233,8 +233,6 @@ namespace terminalDocuSignTests.Fixtures
                 Name = "Monitor_DocuSign_Envelope_Activity",
                 Version = "1",
                 Label = "Monitor DocuSign Envelope Activity",
-                // TODO: FR-4943, remove this.
-                // Category = ActivityCategory.Forwarders,
                 Categories = new[] { ActivityCategories.Forward }
             };
         }
@@ -247,8 +245,6 @@ namespace terminalDocuSignTests.Fixtures
                 Name = "Send_DocuSign_Envelope",
                 Label = "Send DocuSign Envelope",
                 Version = "1",
-                // TODO: FR-4943, remove this.
-                // Category = ActivityCategory.Forwarders,
                 Categories = new [] { ActivityCategories.Forward }
             };
         }

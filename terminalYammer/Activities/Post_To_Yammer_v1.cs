@@ -24,14 +24,10 @@ namespace terminalYammer.Actions
             Name = "Post_To_Yammer",
             Label = "Post To Yammer",
             Tags = "Notifier",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Forwarders,
             NeedsAuthentication = true,
             Version = "1",
             MinPaneWidth = 330,
             Terminal = TerminalData.TerminalDTO,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Categories = new[]
             {
                 ActivityCategories.Forward,

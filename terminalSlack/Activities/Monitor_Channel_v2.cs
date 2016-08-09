@@ -21,13 +21,9 @@ namespace terminalSlack.Activities
             Id = new Guid("af0c038c-3adc-4372-b07e-e04b71102aa7"),
             Name = "Monitor_Channel",
             Label = "Monitor Slack Messages",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Monitors,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             Version = "2",
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             MinPaneWidth = 330,
             Categories = new[]
             {

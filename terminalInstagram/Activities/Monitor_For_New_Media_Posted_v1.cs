@@ -21,13 +21,9 @@ namespace terminalInstagram.Actions
             Id = new Guid("07FE0129-1B8D-453E-9F80-4E47315A19E8"),
             Name = "Monitor_For_New_Media_Posted",
             Label = "Monitor For New Media Posted",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Monitors,
             NeedsAuthentication = true,
             Version = "1",
             MinPaneWidth = 330,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {

@@ -26,12 +26,8 @@ namespace terminalFr8Core.Activities
             Name = "Send_SMS",
             Label = "Send SMS",
             Version = "1",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Forwarders,
             NeedsAuthentication = false,
             MinPaneWidth = 400,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {

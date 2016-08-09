@@ -229,13 +229,9 @@ namespace terminalExcel.Activities
             Name = "Load_Excel_File",
             Label = "Load Excel File",
             Version = "1",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Receivers,
             Terminal = TerminalData.TerminalDTO,
             Tags = "Table Data Generator,Getter",
             MinPaneWidth = 300,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Categories = new[]
             {
                 ActivityCategories.Receive,

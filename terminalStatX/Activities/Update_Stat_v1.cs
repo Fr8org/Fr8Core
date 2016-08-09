@@ -26,13 +26,9 @@ namespace terminalStatX.Activities
             Name = "Update_Stat",
             Label = "Update Stat",
             Version = "1",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Forwarders,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             MinPaneWidth = 300,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Categories = new[]
             {
                 ActivityCategories.Forward,

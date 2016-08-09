@@ -174,37 +174,6 @@ namespace Hub.Services
 
                         return activityCategoryByName;
                     }
-
-                    // TODO: FR-4943, remove this.
-                    // var categoryNameUpper = activityCategory.Name.ToUpper(CultureInfo.InvariantCulture);
-                    // var category = uow.ActivityCategoryRepository
-                    //     .GetQuery()
-                    //     .FirstOrDefault(x => x.Name.ToUpper() == categoryNameUpper);
-                    // 
-                    // if (category == null)
-                    // {
-                    //     var newActivityCategory = new ActivityCategoryDO()
-                    //     {
-                    //         Id = Guid.NewGuid(),
-                    //         Name = activityCategory.Name,
-                    //         IconPath = activityCategory.IconPath
-                    //     };
-                    // 
-                    //     uow.ActivityCategoryRepository.Add(newActivityCategory);
-                    //     uow.SaveChanges();
-                    // 
-                    //     category = newActivityCategory;
-                    // }
-                    // else
-                    // {
-                    //     category.Name = activityCategory.Name;
-                    //     category.IconPath = activityCategory.IconPath;
-                    //     uow.SaveChanges();
-                    // }
-                    // 
-                    // _activityCategories[category.Id] = Clone(category);
-                    // 
-                    // return category;
                 }
             }
         }

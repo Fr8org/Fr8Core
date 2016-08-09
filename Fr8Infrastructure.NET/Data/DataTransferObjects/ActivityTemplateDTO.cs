@@ -46,10 +46,6 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
         [JsonProperty("version")]
         public string Version { get; set; }
 
-        // TODO: FR-4943, remove this.
-        // [JsonProperty("webService")]
-        // public WebServiceDTO WebService { get; set; }
-
         [JsonProperty("terminal")]
         public TerminalDTO Terminal { get; set; }
 
@@ -58,11 +54,6 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 
         [JsonProperty("categories")]
         public ActivityCategoryDTO[] Categories { get; set; }
-
-        // TODO: FR-4943, remove this.
-        // [JsonProperty("category")]
-        // [JsonConverter(typeof(StringEnumConverter))]
-        // public ActivityCategory Category { get; set; }
 
         [JsonProperty("type")]
         [JsonConverter(typeof(StringEnumConverter))]

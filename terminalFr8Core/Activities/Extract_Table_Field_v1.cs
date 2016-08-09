@@ -22,11 +22,7 @@ namespace terminalFr8Core.Activities
             Label = "Extract Table Field",
             Version = "1",
             MinPaneWidth = 330,
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Processors,
             NeedsAuthentication = false,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {

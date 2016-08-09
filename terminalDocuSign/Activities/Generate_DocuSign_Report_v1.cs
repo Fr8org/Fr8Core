@@ -36,12 +36,8 @@ namespace terminalDocuSign.Activities
             Version = "1",
             Name = "Generate_DocuSign_Report",
             Label = "Generate DocuSign Report",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Receivers,
             NeedsAuthentication = true,
             MinPaneWidth = 330,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {

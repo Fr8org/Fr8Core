@@ -52,8 +52,6 @@ namespace HubTests.Services
         {
             return a.NeedsAuthentication == b.NeedsAuthentication &&
                    a.ActivityTemplateState == b.ActivityTemplateState &&
-                   // TODO: FR-4943, remove this.
-                   // a.Category == b.Category &&
                    a.Description == b.Description &&
                    (skipId || a.Id == b.Id) &&
                    a.Label == b.Label &&
@@ -64,8 +62,6 @@ namespace HubTests.Services
                    AreEqual(a.Terminal, b.Terminal, skipId) &&
                    a.Type == b.Type &&
                    a.Version == b.Version &&
-                   // TODO: FR-4943, remove this.
-                   // (skipId || a.WebServiceId == b.WebServiceId) &&
                    AreEqual(a.Categories, b.Categories, skipId);
         }
 
@@ -126,27 +122,7 @@ namespace HubTests.Services
             Assert.IsNotNull(activityTemplate.Terminal);
             Assert.AreEqual(activityTemplate.Terminal.Id, activityTemplate.TerminalId);
 
-            // TODO: FR-4943, remove this.
-            // if (activityTemplate.WebServiceId != null)
-            // {
-            //     Assert.IsNotNull(activityTemplate.WebService);
-            //     Assert.AreEqual(activityTemplate.WebServiceId.Value, activityTemplate.WebService.Id);
-            // }
-            // else
-            // {
-            //     Assert.IsNull(activityTemplate.WebService);
-            // }
-
             AreEqual(activityTemplate.Terminal, ObjectFactory.GetInstance<ITerminal>().GetByKey(activityTemplate.TerminalId));
-
-            // TODO: FR-4943, remove this.
-            // using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            // {
-            //     if (activityTemplate.WebServiceId != null)
-            //     {
-            //         AreEqual(activityTemplate.WebService, uow.WebServiceRepository.GetByKey(activityTemplate.WebServiceId));
-            //     }
-            // }
         }
 
         public IEnumerable<TerminalDO> GenerateTerminals(int count, string prefix = "")
@@ -197,8 +173,6 @@ namespace HubTests.Services
             {
                 Id = id,
                 ActivityTemplateState = 1,
-                // TODO: FR-4943, remove this.
-                // Category = Fr8.Infrastructure.Data.States.ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
                 Description = prefix + "des" + id,
                 Name = "name" + id,
@@ -319,8 +293,6 @@ namespace HubTests.Services
                 CreateTerminal(-234, "new"),
                 CreateWebService(234234, "new")
             );
-            // TODO: FR-4943, remove this.
-            // template.WebServiceId = -2344;
 
             var terminalService = ObjectFactory.GetInstance<Terminal>();
             template.Terminal = terminalService.RegisterOrUpdate(template.Terminal, false);
@@ -353,9 +325,6 @@ namespace HubTests.Services
             GenerateSeedData();
 
             var template = CreateActivityTemplate(FixtureData.GetTestGuidById(1), CreateTerminal(-234), CreateWebService(234234));
-
-            // TODO: FR-4943, remove this.
-            // template.WebServiceId = -2344;
 
             template.Id  = Guid.NewGuid();
 

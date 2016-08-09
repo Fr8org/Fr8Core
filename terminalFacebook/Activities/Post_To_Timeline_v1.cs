@@ -26,12 +26,8 @@ namespace terminalFacebook.Activities
             Id = new Guid("9710de37-7f5a-471a-9e94-c1ade0f71474"),
             Name = "Post_To_Timeline",
             Label = "Post To Timeline",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Forwarders,
             Version = "1",
             MinPaneWidth = 330,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             Categories = new[]

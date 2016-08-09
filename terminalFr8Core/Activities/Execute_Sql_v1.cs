@@ -22,12 +22,8 @@ namespace terminalFr8Core.Activities
             Id = new Guid("23e0576e-7c51-42a6-89f2-e954c8499ca5"),
             Name = "Execute_Sql",
             Label = "Execute Sql Query",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Processors,
             Version = "1",
             Tags = Tags.Internal,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {

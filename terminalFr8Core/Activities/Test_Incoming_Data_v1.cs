@@ -25,12 +25,8 @@ namespace terminalFr8Core.Activities
             Id = new Guid("62087361-da08-44f4-9826-70f5e26a1d5a"),
             Name = "Test_Incoming_Data",
             Label = "Test Incoming Data",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Processors,
             Version = "1",
             MinPaneWidth = 550,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {

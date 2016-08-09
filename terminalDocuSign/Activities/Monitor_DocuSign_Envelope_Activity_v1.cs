@@ -26,12 +26,8 @@ namespace terminalDocuSign.Actions
             Version = "1",
             Name = "Monitor_DocuSign_Envelope_Activity",
             Label = "Monitor DocuSign Envelope Activity",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Monitors,
             NeedsAuthentication = true,
             MinPaneWidth = 380,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {

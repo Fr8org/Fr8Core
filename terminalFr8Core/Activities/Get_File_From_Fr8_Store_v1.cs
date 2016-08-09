@@ -23,13 +23,9 @@ namespace terminalFr8Core.Actions
             Id = new Guid("82a722b5-40a6-42d7-8296-aa5239f10173"),
             Name = "Get_File_From_Fr8_Store",
             Label = "Get File From Fr8 Store",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Receivers,
             Version = "1",
             Type = ActivityType.Standard,
             MinPaneWidth = 330,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {

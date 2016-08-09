@@ -23,12 +23,8 @@ namespace terminalFr8Core.Activities
             Name = "Make_A_Decision",
             Label = "Make a Decision",
             Version = "1",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Processors,
             NeedsAuthentication = false,
             MinPaneWidth = 550,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {

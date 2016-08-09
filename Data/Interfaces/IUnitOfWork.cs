@@ -60,9 +60,6 @@ namespace Data.Interfaces
 
         ISubscriptionRepository SubscriptionRepository { get; }
 
-        // TODO: FR-4943, remove this.
-        // IWebServiceRepository WebServiceRepository { get; }
-
         ITagRepository TagRepository { get; }
         IFileTagsRepository FileTagsRepository { get; }
         

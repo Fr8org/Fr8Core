@@ -27,13 +27,9 @@ namespace terminalGoogle.Activities
             Name = "Save_To_Google_Sheet",
             Label = "Save To Google Sheet",
             Version = "1",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Forwarders,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             MinPaneWidth = 300,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.GooogleWebServiceDTO,
             Categories = new[]
             {
                 ActivityCategories.Forward,

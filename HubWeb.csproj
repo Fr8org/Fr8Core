@@ -483,7 +483,6 @@
     <Compile Include="Documentation\Swagger\SampleData\ValidationErrorsSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\ValidationResultSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\WebServiceActivitySetSampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\WebServiceSampleFactory.cs" />
     <Compile Include="ExceptionHandling\ExeceptionHandler.cs" />
     <Compile Include="ExceptionHandling\Fr8ExceptionHandler.ErrorResult.cs" />
     <Compile Include="ExceptionHandling\Fr8ExceptionHandler.cs" />

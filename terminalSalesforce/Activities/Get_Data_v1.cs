@@ -26,12 +26,8 @@ namespace terminalSalesforce.Actions
             Name = "Get_Data",
             Label = "Get Data from Salesforce",
             NeedsAuthentication = true,
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Receivers,
             MinPaneWidth = 550,
             Tags = Tags.TableDataGenerator,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {

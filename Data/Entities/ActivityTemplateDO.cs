@@ -82,10 +82,6 @@ namespace Data.Entities
 
         public virtual TerminalDO Terminal { get; set; }
 
-        // TODO: FR-4943, remove this.
-        // [Required]
-        // public ActivityCategory Category { get; set; }
-
         [Required]
         public ActivityType Type { get; set; }
 
@@ -93,12 +89,5 @@ namespace Data.Entities
         public virtual IList<ActivityCategorySetDO> Categories { get; set; }
 
         public int MinPaneWidth { get; set; }
-
-        // TODO: FR-4943, remove this.
-        // [ForeignKey("WebService")]
-        // public int? WebServiceId { get; set; }
-
-        // TODO: FR-4943, remove this.
-        // public virtual WebServiceDO WebService { get; set; }
     }
 }

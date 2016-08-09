@@ -22,13 +22,9 @@ namespace terminalFr8Core.Activities
             Id = new Guid("00dc3a6e-3c08-4918-824f-d966d5ebfa91"),
             Name = "Build_Query",
             Label = "Build Query",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Processors,
             Version = "1",
             Tags = Tags.Internal,
             Terminal = TerminalData.TerminalDTO,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Categories = new[]
             {
                 ActivityCategories.Process,

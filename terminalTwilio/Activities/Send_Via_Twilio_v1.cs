@@ -25,13 +25,9 @@ namespace terminalTwilio.Activities
             Name = "Send_Via_Twilio",
             Label = "Send SMS Using Twilio Account",
             Tags = "Twillio,Notifier",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Forwarders,
             Version = "1",
             MinPaneWidth = 330,
             Terminal = TerminalData.TerminalDTO,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Categories = new[]
             {
                 ActivityCategories.Forward,

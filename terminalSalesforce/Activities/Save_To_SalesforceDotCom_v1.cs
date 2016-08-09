@@ -29,11 +29,7 @@ namespace terminalSalesforce.Actions
             Name = "Save_To_SalesforceDotCom",
             Label = "Save to Salesforce.Com",
             NeedsAuthentication = true,
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Forwarders,
             MinPaneWidth = 330,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {

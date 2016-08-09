@@ -25,14 +25,10 @@ namespace terminalFr8Core.Activities
             Id = new Guid("3d5dd0c5-6702-4b59-8c18-b8e2c5955c40"),
             Name = "Loop",
             Label = "Loop",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Processors,
             Version = "1",
             MinPaneWidth = 330,
             Type = ActivityType.Loop,
             Tags = Tags.AggressiveReload,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {

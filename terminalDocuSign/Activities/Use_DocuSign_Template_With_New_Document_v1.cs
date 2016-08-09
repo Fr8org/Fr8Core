@@ -23,13 +23,9 @@ namespace terminalDocuSign.Activities
             Version = "1",
             Name = "Use_DocuSign_Template_With_New_Document",
             Label = "Use DocuSign Template With New Document",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Forwarders,
             Tags = Tags.EmailDeliverer,
             NeedsAuthentication = true,
             MinPaneWidth = 380,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {

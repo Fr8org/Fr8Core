@@ -22,13 +22,9 @@ namespace terminalQuickBooks.Actions
             Version = "1",
             Name = "Create_Journal_Entry",
             Label = "Create Journal Entry",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Forwarders,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             MinPaneWidth = 330,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Categories = new[]
             {
                 ActivityCategories.Forward,

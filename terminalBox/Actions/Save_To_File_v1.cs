@@ -27,12 +27,8 @@ namespace terminalBox.Actions
             Name = "Save_To_File",
             Label = "Save To File",
             Version = "1",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Forwarders,
             NeedsAuthentication = true,
             MinPaneWidth = 300,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {

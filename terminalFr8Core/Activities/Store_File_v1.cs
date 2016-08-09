@@ -20,13 +20,9 @@ namespace terminalFr8Core.Activities
             Id = new Guid("1c4f979d-bc1c-4a4a-b370-049dbacd3678"),
             Name = "Store_File",
             Label = "Store File",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Processors,
             Version = "1",
             MinPaneWidth = 330,
             Type = ActivityType.Standard,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {

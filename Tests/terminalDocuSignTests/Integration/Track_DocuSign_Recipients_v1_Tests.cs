@@ -65,8 +65,6 @@ namespace terminalDocuSignTests.Integration
                 Version = "1",
                 Name = "Monitor_DocuSign_Envelope_Activity",
                 Label = "Monitor DocuSign Envelope Activity",
-                // TODO: FR-4943, remove this.
-                // Category = ActivityCategory.Monitors,
                 Categories = new[] { ActivityCategories.Monitor },
                 Terminal = terminal,
                 NeedsAuthentication = true,
@@ -78,8 +76,6 @@ namespace terminalDocuSignTests.Integration
                 Version = "1",
                 Name = "Set_Delay",
                 Label = "Delay Action Processing",
-                // TODO: FR-4943, remove this.
-                // Category = ActivityCategory.Processors,
                 Categories = new[] { ActivityCategories.Process },
                 Terminal = terminalCoreDO,
                 NeedsAuthentication = false,
@@ -91,8 +87,6 @@ namespace terminalDocuSignTests.Integration
                 Version = "1",
                 Name = "Test_Incoming_Data",
                 Label = "Test Incoming Data",
-                // TODO: FR-4943, remove this.
-                // Category = ActivityCategory.Processors,
                 Categories = new[] { ActivityCategories.Process },
                 Terminal = terminalCoreDO,
                 NeedsAuthentication = false
@@ -113,8 +107,6 @@ namespace terminalDocuSignTests.Integration
                 Version = "1",
                 Name = "Query_Fr8_Warehouse",
                 Label = "Query Fr8 Warehouse",
-                // TODO: FR-4943, remove this.
-                // Category = ActivityCategory.Processors,
                 Categories = new[] { ActivityCategories.Process },
                 Terminal = terminalCoreDO,
                 NeedsAuthentication = false,

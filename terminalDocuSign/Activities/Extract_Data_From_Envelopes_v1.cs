@@ -23,12 +23,8 @@ namespace terminalDocuSign.Activities
             Name = "Extract_Data_From_Envelopes",
             Label = "Extract Data From Envelopes",
             Version = "1",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Solution,
             MinPaneWidth = 380,
             NeedsAuthentication = true,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[] { ActivityCategories.Solution }
         };

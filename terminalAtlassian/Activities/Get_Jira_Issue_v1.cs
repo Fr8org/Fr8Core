@@ -23,11 +23,7 @@ namespace terminalAtlassian.Actions
             Name = "Get_Jira_Issue",
             Label = "Get Jira Issue",
             NeedsAuthentication = true,
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Receivers,
             MinPaneWidth = 330,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new [] {
                 ActivityCategories.Receive,

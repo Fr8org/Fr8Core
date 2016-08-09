@@ -34,13 +34,9 @@ namespace terminalFr8Core.Activities
             Name = "Search_Fr8_Warehouse",
             Label = "Search Fr8 Warehouse",
             Version = "1",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Solution,
             NeedsAuthentication = false,
             MinPaneWidth = 400,
             Tags = Tags.HideChildren,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {

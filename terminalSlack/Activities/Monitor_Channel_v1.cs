@@ -82,13 +82,9 @@ namespace terminalSlack.Actions
             Id = new Guid("246DF538-3B7E-4D1B-B045-72021BAA0D2D"),
             Name = "Monitor_Channel",
             Label = "Monitor Channel",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Monitors,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             Version = "1",
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             MinPaneWidth = 330,
             Categories = new[]
             {

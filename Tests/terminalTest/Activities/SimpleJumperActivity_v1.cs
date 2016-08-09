@@ -16,11 +16,7 @@ namespace terminalTest.Actions
         {
             Name = "SimpleJumperActivity",
             Label = "SimpleJumperActivity",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Processors,
             Version = "1",
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

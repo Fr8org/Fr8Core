@@ -266,10 +266,6 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ActivityTemplateDO>().ToTable("ActivityTemplate");
             modelBuilder.Entity<ActivityCategoryDO>().ToTable("ActivityCategory");
             modelBuilder.Entity<ActivityCategorySetDO>().ToTable("ActivityCategorySet");
-            
-            // TODO: FR-4943, remove this.
-            // modelBuilder.Entity<WebServiceDO>().ToTable("WebServices");
-
             modelBuilder.Entity<TerminalSubscriptionDO>().ToTable("TerminalSubscription");
             modelBuilder.Entity<EncryptedAuthorizationData>().ToTable("EncryptedAuthorizationData");
             modelBuilder.Entity<TagDO>().ToTable("Tags");
@@ -348,13 +344,6 @@ namespace Data.Infrastructure
                 .HasForeignKey(x => x.TerminalId)
 
                 .WillCascadeOnDelete(false);
-
-            // TODO: FR-4943, remove this.
-            // modelBuilder.Entity<ActivityTemplateDO>()
-            //     .HasOptional(x => x.WebService) // was HasRequired. In reality this relationship looks like to be optional.
-            //     .WithMany()
-            //     .HasForeignKey(x => x.WebServiceId)
-            //     .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<OrganizationDO>().ToTable("Organizations")
                 .HasMany(x => x.Fr8Accounts)

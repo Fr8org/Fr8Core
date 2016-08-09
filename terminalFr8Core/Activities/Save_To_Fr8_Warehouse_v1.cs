@@ -23,12 +23,8 @@ namespace terminalFr8Core.Activities
             Id = new Guid("005e5050-91f9-489a-ae9f-c1a182b6cffa"),
             Name = "Save_To_Fr8_Warehouse",
             Label = "Save To Fr8 Warehouse",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Processors,
             Version = "1",
             MinPaneWidth = 330,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {

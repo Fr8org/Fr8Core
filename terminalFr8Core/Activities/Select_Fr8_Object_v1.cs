@@ -26,13 +26,9 @@ namespace terminalFr8Core.Activities
             Id = new Guid("6238483f-2cef-418e-bd7e-a52ddb1e01e5"),
             Name = "Select_Fr8_Object",
             Label = "Select Fr8 Object",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Processors,
             Version = "1",
             MinPaneWidth = 330,
             Tags = Tags.Internal,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {

@@ -107,8 +107,6 @@ namespace Fr8.Testing.Unit.Fixtures
                 Name = "Mail_Merge_Into_DocuSign",
                 Label = "Mail Merge Into DocuSign",
                 Terminal = TerminalSeven(),
-                // TODO: FR-4943, remove this.
-                // Category = ActivityCategory.Solution,
                 Version = "1"
             };
             return curActivityDO;
@@ -120,8 +118,6 @@ namespace Fr8.Testing.Unit.Fixtures
                 Name = "Extract_Data_From_Envelopes",
                 Label = "Extract Data From Envelopes",
                 Terminal = TerminalSeven(),
-                // TODO: FR-4943, remove this.
-                // Category = ActivityCategory.Solution,
                 Version = "1"
             };
             return curActivityDO;

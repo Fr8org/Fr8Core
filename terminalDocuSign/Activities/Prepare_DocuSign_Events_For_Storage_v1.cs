@@ -22,13 +22,9 @@ namespace terminalDocuSign.Activities
             Name = "Prepare_DocuSign_Events_For_Storage",
             Label = "Prepare DocuSign Events For Storage",
             Version = "1",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Monitors,
             NeedsAuthentication = true,
             MinPaneWidth = 330,
             Tags = Tags.Internal,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {

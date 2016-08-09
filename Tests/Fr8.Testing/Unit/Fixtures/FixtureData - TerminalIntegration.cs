@@ -150,8 +150,6 @@ namespace Fr8.Testing.Unit.Fixtures
                 Name = "Record_DocuSign_Events",
                 Label = "Record DocuSign Events",
                 Version = "1",
-                // TODO: FR-4943, remove this.
-                // Category = ActivityCategory.Forwarders,
                 Terminal = TestTerminal_DocuSign(),
                 NeedsAuthentication = true,
                 MinPaneWidth = 330
@@ -165,8 +163,6 @@ namespace Fr8.Testing.Unit.Fixtures
                 Id = Guid.NewGuid(),
                 Name = "Save_To_Fr8_Warehouse",
                 Label = "Save To Fr8 Warehouse",
-                // TODO: FR-4943, remove this.
-                // Category = ActivityCategory.Processors,
                 Terminal = TestTerminal_Core(),
                 Version = "1"
             };
@@ -228,8 +224,6 @@ namespace Fr8.Testing.Unit.Fixtures
                 Name = "Monitor_Fr8_Events",
                 Label = "Monitor Fr8 Events",
                 Version = "1",
-                // TODO: FR-4943, remove this.
-                // Category = ActivityCategory.Monitors,
                 NeedsAuthentication = false,
                 Terminal = TestTerminal_Core(),
                 MinPaneWidth = 380

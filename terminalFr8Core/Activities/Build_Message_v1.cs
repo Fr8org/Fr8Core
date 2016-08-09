@@ -18,12 +18,8 @@ namespace terminalFr8Core.Activities
             Id = new Guid("36151a2a-baf3-4614-96f7-d147dd1a73cd"),
             Name = "Build_Message",
             Label = "Build a Message",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Processors,
             Version = "1",
             MinPaneWidth = 330,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {

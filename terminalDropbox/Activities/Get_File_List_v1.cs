@@ -46,11 +46,7 @@ namespace terminalDropbox.Actions
             Label = "Get File List",
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Receivers,
             MinPaneWidth = 330,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Categories = new[]
             {
                 ActivityCategories.Receive,

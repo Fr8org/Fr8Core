@@ -31,12 +31,8 @@ namespace terminalFr8Core.Activities
             Name = "App_Builder",
             Label = "App Builder",
             Version = "1",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Processors,
             NeedsAuthentication = false,
             MinPaneWidth = 320,
-            // TODO: FR-4943, remove this.
-            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {

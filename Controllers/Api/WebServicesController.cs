@@ -166,25 +166,6 @@ namespace HubWeb.Controllers
         /// </summary>
         /// <param name="webService">Web service data to create web service from</param>
         /// <response code="200">Web service was successfully saved</response>
-        // TODO: FR-4943, remove this.
-        // [HttpPost]
-        // [ResponseType(typeof(WebServiceDTO))]
-        // public IHttpActionResult Post(WebServiceDTO webService)
-        // {
-        //     WebServiceDO entity = Mapper.Map<WebServiceDO>(webService);
-        // 
-        //     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //     {
-        //         uow.WebServiceRepository.Add(entity);
-        // 
-        //         uow.SaveChanges();
-        //     }
-        // 
-        //     var model = Mapper.Map<WebServiceDTO>(entity);
-        // 
-        //     return Ok(model);
-        // }
-
         [HttpPost]
         [ResponseType(typeof(ActivityCategoryDTO))]
         public IHttpActionResult Post(ActivityCategoryDTO category)

@@ -20,12 +20,9 @@ namespace terminalFr8Core.Activities
             Name = "Monitor_Fr8_Events",
             Label = "Monitor Fr8 Events",
             Version = "1",
-            // TODO: FR-4943, remove this.
-            // Category = ActivityCategory.Monitors,
             NeedsAuthentication = false,
             MinPaneWidth = 380,
             Tags = Tags.Internal,
-            // WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
