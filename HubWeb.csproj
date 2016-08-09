@@ -499,6 +499,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\Api\ReportsController.cs" />
     <Compile Include="Controllers\TokenAuthController.cs" />
+    <Compile Include="Filters\RedirecLogedUserAttribute.cs" />
     <Compile Include="Infrastructure_HubWeb\AngularTemplateCacheAttribute.cs" />
     <Compile Include="Infrastructure_HubWeb\FileActionResult.cs" />
     <Compile Include="Infrastructure_HubWeb\Fr8PlanDirectoryAuthenticationAttribute.cs" />
