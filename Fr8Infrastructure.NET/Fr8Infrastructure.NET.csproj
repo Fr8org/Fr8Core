@@ -57,6 +57,10 @@
       <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Moq, Version=4.2.1507.118, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
       <Private>True</Private>
@@ -85,10 +89,15 @@
       <HintPath>..\packages\structuremap.3.1.6.186\lib\net40\StructureMap.Net4.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Swashbuckle.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cd1bb07a5ac7c7bc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Swashbuckle.Core.5.3.2\lib\net40\Swashbuckle.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
     <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Extensions.dll</HintPath>
       <Private>True</Private>
@@ -108,12 +117,20 @@
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.4.0.30506.0\lib\net40\System.Web.Http.WebHost.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebActivatorEx.2.0\lib\net40\WebActivatorEx.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="YamlDotNet, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\YamlDotNet.3.8.0\lib\net35\YamlDotNet.dll</HintPath>
       <Private>True</Private>
@@ -311,6 +328,55 @@
     <Compile Include="Data\States\PlanTemplateStatus.cs" />
     <Compile Include="Data\States\PlanVisibility.cs" />
     <Compile Include="Data\States\TerminalStatus.cs" />
+    <Compile Include="Documentation\Swagger\DocumentFilters\AddDefaultValuesDocumentFilter.cs" />
+    <Compile Include="Documentation\Swagger\DocumentFilters\RemoveDuplicatesDocumentFilter.cs" />
+    <Compile Include="Documentation\Swagger\OperationFilters\RemoveParameterModelNameOperationFilter.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\ActivitySampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\ActivityTemplateSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\ActivityTemplateSummarySampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\AuthenticationTokenGrantSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\AuthenticationTokenSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\AuthenticationTokenTerminalSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\AuthorizationTokenSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\ContainerSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\CrateDescriptionSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\CrateSampeFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\CrateStorageSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\CredentialsSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\DocumentationResponseSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\FactSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\FieldSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\FileSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\FilterConditionSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\FullSubplanSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\HistoryResultSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\IncidentSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\IncomingCratesSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\ISwaggerSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\ManifestDescriptionSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\OrganizationSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\PageDefinitionSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\PayloadSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\PhoneNumberCredentialsSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\PhoneNumberVerificationSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\PlanEmptySampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\PlanQuerySampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\PlanResultSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\PlanSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\PollingDataSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\ProfileSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\QuerySampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\ResponseMessageSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\SubplanSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\TerminalNotificationSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\TerminalSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\TerminalSummarySampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\TokenResponseSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\UrlResponseSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\UserSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\ValidationErrorsSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\ValidationResultSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\WebServiceActivitySetSampleFactory.cs" />
     <Compile Include="Interfaces\IHMACAuthenticator.cs" />
     <Compile Include="Interfaces\IHMACService.cs" />
     <Compile Include="Interfaces\IRequestSignature.cs" />
@@ -417,6 +483,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">

@@ -801,18 +801,6 @@
     <Compile Include="Migrations\201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.Designer.cs">
       <DependentUpon>201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201608090032216_OperationalState.cs" />
-    <Compile Include="Migrations\201608090032216_OperationalState.Designer.cs">
-      <DependentUpon>201608090032216_OperationalState.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201608091448300_Rename_The_Main_Bucket_Categories.cs" />
-    <Compile Include="Migrations\201608091448300_Rename_The_Main_Bucket_Categories.Designer.cs">
-      <DependentUpon>201608091448300_Rename_The_Main_Bucket_Categories.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201608090032216_OperationalState.cs" />
-    <Compile Include="Migrations\201608090032216_OperationalState.Designer.cs">
-      <DependentUpon>201608090032216_OperationalState.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
