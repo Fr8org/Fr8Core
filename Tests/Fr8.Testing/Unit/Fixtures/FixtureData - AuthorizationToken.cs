@@ -23,6 +23,7 @@ namespace Fr8.Testing.Unit.Fixtures
                     Secret = "test",
                     TerminalStatus = 1,
                     ParticipationState = ParticipationState.Approved,
+                    OperationalState = OperationalState.Active,
                     Endpoint="http://localhost:11111"
                 });
                 uow.SaveChanges();

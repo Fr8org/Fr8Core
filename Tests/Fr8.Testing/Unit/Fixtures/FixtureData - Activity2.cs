@@ -48,6 +48,7 @@ namespace Fr8.Testing.Unit.Fixtures
                     Endpoint = "",
                     TerminalStatus = TerminalStatus.Active,
                     Secret = Guid.NewGuid().ToString(),
+                    OperationalState = OperationalState.Active,
                     ParticipationState = ParticipationState.Approved
                 },
 
@@ -88,6 +89,7 @@ namespace Fr8.Testing.Unit.Fixtures
                     Label = "Send a Text (SMS) Message",
                     Version = "1",
                     Endpoint = "",
+                    OperationalState = OperationalState.Active,
                     TerminalStatus = TerminalStatus.Active,
                     Secret = Guid.NewGuid().ToString()
                 },

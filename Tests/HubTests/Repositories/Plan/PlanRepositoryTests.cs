@@ -393,6 +393,7 @@ namespace HubTests.Repositories.Plan
                     Label = "term",
                     Version = "1",
                     ParticipationState = ParticipationState.Approved,
+                    OperationalState = OperationalState.Active,
                     Endpoint = "http://localhost:11111"
                 });
 
@@ -409,6 +410,7 @@ namespace HubTests.Repositories.Plan
                     Version = "1",
                     Id = 1,
                     TerminalStatus = 1,
+                    OperationalState = OperationalState.Active,
                     ParticipationState = ParticipationState.Approved,
                     Endpoint = "http://localhost:11111"
                 });
