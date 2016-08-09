@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -801,6 +801,10 @@
     <Compile Include="Migrations\201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.Designer.cs">
       <DependentUpon>201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201608092230355_OperationalState1.cs" />
+    <Compile Include="Migrations\201608092230355_OperationalState1.Designer.cs">
+      <DependentUpon>201608092230355_OperationalState1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -938,7 +942,7 @@
     <Compile Include="Interfaces\IMailerDO.cs" />
     <Compile Include="Interfaces\ITerminalDO.cs" />
     <Compile Include="Interfaces\ISubscriptionDO.cs" />
-    <Compile Include="Migrations\DockyardDbMigration.cs" />
+    <Compile Include="Migrations\DbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActivityTemplateRepository.cs" />
     <Compile Include="Repositories\Plan\Internal\ActivityRepository.cs" />
@@ -1476,8 +1480,8 @@
     <EmbeddedResource Include="Migrations\201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.resx">
       <DependentUpon>201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201608090032216_OperationalState.resx">
-      <DependentUpon>201608090032216_OperationalState.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201608092230355_OperationalState1.resx">
+      <DependentUpon>201608092230355_OperationalState1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

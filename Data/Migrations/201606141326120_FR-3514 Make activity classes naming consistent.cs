@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class FR3514Makeactivityclassesnamingconsistent : DbMigration
+    public partial class FR3514Makeactivityclassesnamingconsistent : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {

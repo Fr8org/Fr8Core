@@ -6,7 +6,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class OwnerOfObject_Role_Data : DbMigration
+    public partial class OwnerOfObject_Role_Data : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {
