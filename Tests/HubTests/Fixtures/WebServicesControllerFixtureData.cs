@@ -6,7 +6,11 @@ namespace HubTests.Fixtures
     {
         public static ActivityCategoryDTO BasicWebServiceDTOWithoutId()
         {
-            var webServiceDTO = new ActivityCategoryDTO { Name = "IntegrationTestWebService", IconPath = "IntegrationTestIconPath" };
+            var webServiceDTO = new ActivityCategoryDTO
+            {
+                Name = "IntegrationTestWebService",
+                IconPath = "IntegrationTestIconPath"
+            };
 
             return webServiceDTO;
         }
