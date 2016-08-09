@@ -294,7 +294,7 @@ namespace Data.Repositories.MultiTenant.Sql
             }
         }
 
-        public int? GetObjectId(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode where)
+        public Guid? GetObjectId(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode where)
         {
             if (where == null)
             {
@@ -324,8 +324,7 @@ namespace Data.Repositories.MultiTenant.Sql
                         {
                             return null;
                         }
-
-                        return reader.GetInt32(0);
+                        return reader.GetGuid(0);
                     }
                 }
             }

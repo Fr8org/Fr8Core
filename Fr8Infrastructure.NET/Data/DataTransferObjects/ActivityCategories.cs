@@ -65,7 +65,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 
         public static string MonitorName
         {
-            get { return "Monitor"; }
+            get { return "Triggers"; }
         }
 
         public static ActivityCategoryDTO Monitor
@@ -80,7 +80,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 
         public static string ReceiveName
         {
-            get { return "Get"; }
+            get { return "Get Data"; }
         }
 
         public static ActivityCategoryDTO Receive
@@ -110,7 +110,7 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 
         public static string ForwardName
         {
-            get { return "Forward"; }
+            get { return "Ship Data"; }
         }
 
         public static ActivityCategoryDTO Forward

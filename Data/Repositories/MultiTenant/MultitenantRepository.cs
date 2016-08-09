@@ -195,7 +195,7 @@ namespace Data.Repositories.MultiTenant
             return _mtObjectsStorage.QueryScalar(_connectionProvider, fr8AccountId, mtType, ConvertToAst(where, mtType));
         }
 
-        public int? GetObjectId<T>(string fr8AccountId, Expression<Func<T, bool>> where)
+        public Guid? GetObjectId<T>(string fr8AccountId, Expression<Func<T, bool>> where)
             where T : Manifest
         {
             var mtType = _typeStorage.ResolveType(_connectionProvider, typeof(T), _typeStorageProvider, false);

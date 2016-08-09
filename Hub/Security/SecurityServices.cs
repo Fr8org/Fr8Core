@@ -151,7 +151,7 @@ namespace Hub.Security
         /// <param name="dataObjectId"></param>
         /// <param name="dataObjectType"></param>
         /// <param name="customPermissionTypes">You can define your own permission types for a object, or use default permission set for Standard Users</param>
-        public void SetDefaultRecordBasedSecurityForObject(string roleName, string dataObjectId, string dataObjectType, List<PermissionType> customPermissionTypes = null)
+        public void SetDefaultRecordBasedSecurityForObject(string roleName, Guid dataObjectId, string dataObjectType, List<PermissionType> customPermissionTypes = null)
         {
             if (!IsAuthenticated()) return;
 
@@ -172,7 +172,7 @@ namespace Hub.Security
                 if (orgId != 0) organizationId = orgId;
             }
 
-            _securityObjectStorageProvider.SetDefaultRecordBasedSecurityForObject(currentUserId, roleName, dataObjectId.ToString(), dataObjectType, Guid.Empty, organizationId, customPermissionTypes);
+            _securityObjectStorageProvider.SetDefaultRecordBasedSecurityForObject(currentUserId, roleName, dataObjectId, dataObjectType, Guid.Empty, organizationId, customPermissionTypes);
         }
 
         public IEnumerable<TerminalDO> GetAllowedTerminalsByUser(IEnumerable<TerminalDO> terminals)
@@ -188,7 +188,7 @@ namespace Hub.Security
             var allowedTerminals = new List<TerminalDO>();
             foreach (var terminal in terminals)
             {
-                var objRolePermissionWrapper = _securityObjectStorageProvider.GetRecordBasedPermissionSetForObject(terminal.Id.ToString(), nameof(TerminalDO));
+                var objRolePermissionWrapper = _securityObjectStorageProvider.GetRecordBasedPermissionSetForObject(terminal.Id, nameof(TerminalDO));
                 if (!objRolePermissionWrapper.RolePermissions.Any()) continue;
 
                 // first check if this user is the owner of the record
@@ -218,7 +218,7 @@ namespace Hub.Security
         /// <param name="objectId"></param>
         /// <param name="objectType"></param>
         /// <returns></returns>
-        public List<string> GetAllowedUserRolesForSecuredObject(string objectId, string objectType)
+        public List<string> GetAllowedUserRolesForSecuredObject(Guid objectId, string objectType)
         {
             return _securityObjectStorageProvider.GetAllowedUserRolesForSecuredObject(objectId, objectType);
         }
@@ -232,7 +232,7 @@ namespace Hub.Security
         /// <param name="curObjectType"></param>
         /// <param name="propertyName"></param>
         /// <returns></returns>
-        public bool AuthorizeActivity(PermissionType permissionType, string curObjectId, string curObjectType, string propertyName = null)
+        public bool AuthorizeActivity(PermissionType permissionType, Guid curObjectId, string curObjectType, string propertyName = null)
         {
             //check if user is authenticated. Unauthenticated users cannot pass security and come up to here, which means this is internal fr8 event, that need to be passed 
             if (!IsAuthenticated())
@@ -285,7 +285,7 @@ namespace Hub.Security
             return EvaluateProfilesPermissionSet(permissionType, permissionSets, fr8AccountId);
         }
 
-        private bool CheckForAppBuilderPlanAndBypassSecurity(string curObjectId, out string fr8AccountId)
+        private bool CheckForAppBuilderPlanAndBypassSecurity(Guid curObjectId, out string fr8AccountId)
         {
             //TODO: @makigjuro temp fix until FR-3008 is implemented 
             //bypass security on AppBuilder plan, because that one is visible for every user that has this url
@@ -293,10 +293,7 @@ namespace Hub.Security
             var activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Guid id;
-                if (!Guid.TryParse(curObjectId, out id)) return false;
-
-                var planNode = uow.PlanRepository.GetById<PlanNodeDO>(id);
+                var planNode = uow.PlanRepository.GetById<PlanNodeDO>(curObjectId);
                 fr8AccountId = planNode.Fr8AccountId;
                 var mainPlan = uow.PlanRepository.GetById<PlanDO>(planNode.RootPlanNodeId);
                 if (mainPlan.Visibility == PlanVisibility.Internal) return true;
