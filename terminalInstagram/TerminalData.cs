@@ -6,7 +6,7 @@ namespace terminalInstagram
 {
     public static class TerminalData
     {
-        public static WebServiceDTO WebServiceDTO = new WebServiceDTO
+        public static ActivityCategoryDTO ActivityCategoryDTO = new ActivityCategoryDTO
         {
             Name = "Instagram",
             IconPath = "/Content/icons/web_services/instagram-icon-64x64.png"

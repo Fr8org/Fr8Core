@@ -136,10 +136,10 @@ namespace Fr8.TerminalBase.Services
             return getLatestsVersionsOnly ? GetLatestsVersionsOnly(templates) : templates.ToList();
         }
 
-        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category, bool getLatestsVersionsOnly = false)
+        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(Guid category, bool getLatestsVersionsOnly = false)
         {
             var allTemplates = await GetActivityTemplates(getLatestsVersionsOnly);
-            var templates = allTemplates.Where(x => x.Category == category);
+            var templates = allTemplates.Where(x => x.Categories.Any(y => y.Id == category));
             return templates.ToList();
         }
 

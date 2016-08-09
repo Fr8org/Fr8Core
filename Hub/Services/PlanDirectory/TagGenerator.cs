@@ -87,9 +87,16 @@ namespace Hub.Services.PlanDirectory
             activityTemplatesCombinations.ForEach(a => result.ActivityTemplateTags.Add(new ActivityTemplateTag(a)));
 
             //4. adding tags for webservices
-            var usedWebServices = usedActivityTemplates.Select(a => a.WebService).Distinct(WebServiceDTO.NameComparer).OrderBy(b => b.Name).ToList();
-            var webServicesCombination = GetCombinations<WebServiceDTO>(usedWebServices);
-            webServicesCombination.ForEach(a => result.WebServiceTemplateTags.Add(new WebServiceTemplateTag(a)));
+            var usedWebServices = usedActivityTemplates
+                .SelectMany(x => x.Categories)
+                .Distinct(ActivityCategoryDTO.NameComparer)
+                .OrderBy(b => b.Name)
+                .ToList();
+
+            var webServicesCombination = GetCombinations<ActivityCategoryDTO>(usedWebServices);
+            webServicesCombination.ForEach(
+                a => result.WebServiceTemplateTags.Add(new WebServiceTemplateTag(a))
+            );
 
             return result;
         }

@@ -31,15 +31,13 @@ namespace terminalAsana.Activities
             Id = new Guid("4b21e180-8029-4352-a756-52973cd98717"),
             Name = "Get_Tasks",
             Label = "Get Tasks",
-            Category = ActivityCategory.Receivers,
             Version = "1",
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             Categories = new[] {
                 ActivityCategories.Receive,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

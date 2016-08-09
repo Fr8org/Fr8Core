@@ -23,13 +23,11 @@ namespace terminalAtlassian.Actions
             Name = "Get_Jira_Issue",
             Label = "Get Jira Issue",
             NeedsAuthentication = true,
-            Category = ActivityCategory.Receivers,
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new [] {
                 ActivityCategories.Receive,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

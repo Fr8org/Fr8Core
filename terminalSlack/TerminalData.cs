@@ -6,7 +6,7 @@ namespace terminalSlack
 {
     public static class TerminalData
     {
-        public static WebServiceDTO WebServiceDTO = new WebServiceDTO
+        public static ActivityCategoryDTO ActivityCategoryDTO = new ActivityCategoryDTO
         {
             Name = "Slack",
             IconPath = "/Content/icons/web_services/slack-icon-64x64.png"

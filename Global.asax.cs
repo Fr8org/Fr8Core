@@ -229,7 +229,7 @@ namespace HubWeb
             {
                 var claims = principal.Claims;
                 var roles = claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToArray();
-                var userPrincipal = new Fr8Principle(null, principal.Identity, roles);
+                var userPrincipal = new Fr8Principal(null, principal.Identity, roles);
                 /*
                 GenericPrincipal userPrincipal = new GenericPrincipal(principal.Identity,
                                          claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToArray());
