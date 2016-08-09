@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Fr8.Infrastructure.Data.Constants;
 using Fr8.Infrastructure.Data.Control;
 using Fr8.Infrastructure.Data.Crates;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Manifests;
+using Fr8.TerminalBase.Models;
 using Fr8.Testing.Integration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -85,37 +87,96 @@ namespace terminalAsanaTests.Integration
         [Test]
         public async Task Get_Taks_v1_FollowUp_Configuration_Check_Crate_Structure()
         {
+            // it is integration test so it will be oooho loooong.
             var configureUrl = GetTerminalConfigureUrl();
             var responseDTO = await CompleteInitialConfiguration();
-            var dataDTO = new Fr8DataDTO
-            {
-                ActivityDTO = responseDTO
-            };
-            // we need automapper here
+            
             var token = Fixtures.FixtureData.SampleAuthorizationToken();
 
+            var payload = Mapper.Map<ActivityPayload>(responseDTO);
+            var crates = payload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
+            var ddlb = crates.Controls.Find(x => x.Name.Equals("WorkspacesList")) as DropDownList;
+            ddlb.Value = ddlb.ListItems[0].Value;
 
-            //TODO: make changes in activity UI configuration 
-            //select workspace, manifestid 6 = configuration controls
-            //var controls = dataDTO.ActivityDTO.CrateStorage.Crates.FirstOrDefault(x=>x.ManifestId == 6).Contents;
-            //var ctrls = controls.Value<IEnumerable<ControlDefinitionDTO>>();
-            //var workspaces = ctrls.FirstOrDefault(x => x.Name.Equals("WorkspacesList")) as DropDownList;
-            //workspaces.selectedKey = workspaces.ListItems[0].Key;
+            responseDTO = Mapper.Map<ActivityDTO>(payload);
+            
+            var tokenDTO = Mapper.Map<AuthorizationTokenDTO>(token);
+            responseDTO.AuthToken = tokenDTO;
 
-
-            dataDTO.ActivityDTO.AuthToken = new AuthorizationTokenDTO()
+            var dataDTO = new Fr8DataDTO
             {
-                Token = token.Token,
-                ExpiresAt = token.ExpiresAt,
-                ExternalAccountId = token.ExternalAccountId,
-                ExternalAccountName = "Asana Fr8 Dev"
+                ActivityDTO = responseDTO,
             };
-
-            //nothing should change on followup
+            
             responseDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
+
+            // we should get at least one project if test account not empty.
+            payload = Mapper.Map<ActivityPayload>(responseDTO);
+            crates = payload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
+            ddlb = crates.Controls.Find(x => x.Name.Equals("ProjectsList")) as DropDownList;
+            Assert.IsTrue(ddlb.ListItems.Count > 0);
+
             AssertInitialConfigurationResponse(responseDTO);
         }
 
-        
+
+        /// <summary>
+        /// Validate correct crate-storage structure in followup configuration response.
+        /// </summary>
+        [Test]
+        public async Task Get_Taks_v1_Run_Should_Return_List_Of_Tasks()
+        {
+            // it is integration test so it will be oooho loooong.
+            var configureUrl = GetTerminalConfigureUrl();
+            var token = Fixtures.FixtureData.SampleAuthorizationToken();
+
+            var responseDTO = await CompleteInitialConfiguration();
+
+            var payload = Mapper.Map<ActivityPayload>(responseDTO);
+            var crates = payload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
+            var ddlb = crates.Controls.Find(x => x.Name.Equals("WorkspacesList")) as DropDownList;
+            ddlb.Value = ddlb.ListItems[0].Value;
+
+            responseDTO = Mapper.Map<ActivityDTO>(payload);
+
+            var tokenDTO = Mapper.Map<AuthorizationTokenDTO>(token);
+            responseDTO.AuthToken = tokenDTO;
+
+            var dataDTO = new Fr8DataDTO
+            {
+                ActivityDTO = responseDTO,
+            };
+
+            responseDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
+
+            payload = Mapper.Map<ActivityPayload>(responseDTO);
+            crates = payload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
+            var workspaces = crates.Controls.Find(x => x.Name.Equals("WorkspacesList")) as DropDownList;
+            var users = crates.Controls.Find(x => x.Name.Equals("UsersList")) as DropDownList;
+
+            workspaces.Value = workspaces.ListItems[0].Value;
+            users.Value = users.ListItems[0].Value;
+
+            responseDTO = Mapper.Map<ActivityDTO>(payload);
+            responseDTO.AuthToken = tokenDTO;
+
+            dataDTO = new Fr8DataDTO
+            {
+                ActivityDTO = responseDTO,
+            };
+
+
+            var runUrl = GetTerminalRunUrl();
+            responseDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(runUrl, dataDTO);
+
+            // we should get at least one project if test account not empty.
+            payload = Mapper.Map<ActivityPayload>(responseDTO);
+            crates = payload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
+            
+            
+
+            AssertInitialConfigurationResponse(responseDTO);
+        }
+
     }
 }
