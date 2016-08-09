@@ -2,7 +2,7 @@ namespace Data.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
-    
+
     public partial class ConvertObjectIdToGuidAndCreateIndexOnOPR : DbMigration
     {
         private const string CreateObjectRolePermissionsTableQuery = @"CREATE TABLE [dbo].[ObjectRolePermissions](

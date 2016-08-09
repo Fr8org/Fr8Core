@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class ConvertedTerminalIdToGuid : IMigrationMetadata
+    public sealed partial class ConvertMtDataIdToGuid : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(ConvertedTerminalIdToGuid));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(ConvertMtDataIdToGuid));
         
         string IMigrationMetadata.Id
         {
-            get { return "201608082335080_ConvertedTerminalIdToGuid"; }
+            get { return "201608091310148_ConvertMtDataIdToGuid"; }
         }
         
         string IMigrationMetadata.Source

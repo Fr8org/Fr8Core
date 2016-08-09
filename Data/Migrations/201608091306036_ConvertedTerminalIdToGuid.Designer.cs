@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class ConvertObjectIdToGuidAndCreateIndexOnOPR : IMigrationMetadata
+    public sealed partial class ConvertedTerminalIdToGuid : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(ConvertObjectIdToGuidAndCreateIndexOnOPR));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(ConvertedTerminalIdToGuid));
         
         string IMigrationMetadata.Id
         {
-            get { return "201608090008584_ConvertObjectIdToGuidAndCreateIndexOnOPR"; }
+            get { return "201608091306036_ConvertedTerminalIdToGuid"; }
         }
         
         string IMigrationMetadata.Source
