@@ -95,7 +95,7 @@ namespace Data.Infrastructure.StructureMap
             var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
             var permissionSets = securityStorageProvider.GetObjectBasedPermissionSetForObject(curObjectId, curObjectType, Guid.Empty);
 
-            var modifyAllData = permissionSets.FirstOrDefault(x => x == (int) PermissionType.ModifyAllObjects);
+            var modifyAllData = permissionSets.FirstOrDefault(x => x == (int) PermissionType.EditAllObjects);
             var viewAllData = permissionSets.FirstOrDefault(x => x == (int) PermissionType.ViewAllObjects);
 
             if (viewAllData != 0 && permissionName == PermissionType.ReadObject) return true;

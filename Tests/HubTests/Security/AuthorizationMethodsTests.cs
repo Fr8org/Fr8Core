@@ -49,7 +49,8 @@ namespace HubTests.Security
                     TerminalStatus = 1,
                     Endpoint = "localhost:39504",
                     AuthenticationType = authType,
-                    Secret = Guid.NewGuid().ToString()
+                    Secret = Guid.NewGuid().ToString(),
+                    ParticipationState = ParticipationState.Approved
                 };
 
                 uow.TerminalRepository.Add(terminalDO);
@@ -150,7 +151,7 @@ namespace HubTests.Security
                     Id = FixtureData.GetTestGuidById(23),
                     Description = "HealthDemo Integration Test",
                     Name = "StandardEventTesting",
-                    PlanState = PlanState.Running,
+                    PlanState = PlanState.Executing,
                     Fr8Account = uow.UserRepository.GetByKey(tokenDO.UserID)
                 };
                 uow.PlanRepository.Add(planDO);
@@ -205,7 +206,7 @@ namespace HubTests.Security
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Running,
+                    PlanState = PlanState.Executing,
                     ChildNodes = { activityDO }
                 });
 
@@ -302,7 +303,7 @@ namespace HubTests.Security
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Running,
+                    PlanState = PlanState.Executing,
                     ChildNodes = { activityDO }
                 });
                 uow.SaveChanges();
@@ -360,7 +361,7 @@ namespace HubTests.Security
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Running,
+                    PlanState = PlanState.Executing,
                     ChildNodes = { activityDO }
                 });
 
@@ -397,7 +398,7 @@ namespace HubTests.Security
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Running,
+                    PlanState = PlanState.Executing,
                     ChildNodes = { activityDO }
                 });
 

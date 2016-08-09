@@ -47,7 +47,8 @@ namespace Fr8.Testing.Unit.Fixtures
                     Version = "1",
                     Endpoint = "",
                     TerminalStatus = TerminalStatus.Active,
-                    Secret = Guid.NewGuid().ToString()
+                    Secret = Guid.NewGuid().ToString(),
+                    ParticipationState = ParticipationState.Approved
                 },
 
                 Version = "1"
@@ -414,7 +415,7 @@ namespace Fr8.Testing.Unit.Fixtures
                 Id = GetTestGuidById(1),
                 Name = "A",
                 Description = "B",
-                PlanState = PlanState.Running
+                PlanState = PlanState.Executing
             };
 
             var containerDO = new ContainerDO()
@@ -479,7 +480,7 @@ namespace Fr8.Testing.Unit.Fixtures
                 Id = GetTestGuidById(1),
                 Description = "descr 1",
                 Name = "template1",
-                PlanState = PlanState.Running,
+                PlanState = PlanState.Executing,
                 Fr8Account = FixtureData.TestDockyardAccount1()
             };
 

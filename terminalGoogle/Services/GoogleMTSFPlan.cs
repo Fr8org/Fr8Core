@@ -39,7 +39,7 @@ namespace terminalGoogle.Services
             await InitialPlanConfiguration();
             await CreateAndConfigureGoogle("ga_admin@fr8.co");
             await CreateAndConfigureJiraMessages();
-            await CreateAndConfigureSaveToJiraActivity("Fr8");
+            await CreateAndConfigureSaveToJiraActivity("fr8test");
             await CreateAndConfigureSlackMessage("Created new jira issue for terminal submission: [jira issue key],  [jira domain]/browse/[jira issue key]");
             foreach (var channel in _slackChannels)
             {
@@ -53,7 +53,7 @@ namespace terminalGoogle.Services
             {
                 Name = "MonitorSubmissionTerminalForm",
                 Description = "MonitorSubmissionTerminalForm",
-                PlanState = PlanState.Running,
+                PlanState = "Active",
                 Visibility = new PlanVisibilityDTO() { Hidden = true }
             };
 

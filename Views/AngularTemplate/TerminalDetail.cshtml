@@ -24,7 +24,7 @@
                 <div class="portlet-body">
                     <!-- PROCESS FORM -->
                     <div class="tab-pane active" id="tab_1_1">
-                        <form role="form" ng-submit="submit(form.$valid)" name="form" novalidate>
+                        <form role="form" ng-submit="submit($event, form.$valid)" name="form" novalidate>
                             <div class="alert alert-danger" ng-show="form.$submitted && !form.$valid">
                                 Some fields do not contain correct data. Please check below.
                             </div>
@@ -32,24 +32,65 @@
                                 {{errorMessage}}
                             </div>
                             <div class="form-group">
-                                <label class="control-label">Name</label>
-                                <input type="text" placeholder="" disabled="disabled" maxlength="100" class="form-control" ng-model="terminal.label"/>
+                                <md-checkbox ng-model="terminal.isFr8OwnTerminal" ng-show="canEditAllTerminals" aria-label="This is a Fr8 own terminal">
+                                    This is a Fr8 own C# terminal or is deployed along with those
+                                </md-checkbox>
                             </div>
                             <div class="form-group">
-                                <label class="control-label">Endpoint</label>
-                                <input type="text" placeholder="" disabled="disabled" maxlength="100" class="form-control" ng-model="terminal.endpoint" />
+                                <label class="control-label">Name</label>
+                                <input type="text" placeholder="" disabled="disabled" class="form-control" ng-model="terminal.label" />
                             </div>
-                            <div class="margiv-top-10">
-                                <button type="button" ng-click="openPermissionsSetterModal(terminal)" class="btn green-haze">
+                            <div ng-class="(form.devUrl.$error.required && form.$submitted) ? 'has-error' : ''" class="form-group">
+                                <label class="control-label">Development URL</label>
+                                <div class="input-icon right">
+                                    <i class="fa fa-warning" ng-show="form.devUrl.$error.required && form.$submitted"></i>
+                                    <input type="text" name="devUrl" auto-focus required="required" placeholder="{{terminal.isFr8OwnTerminal ? 'Example: http://localhost:xxxx' : 'https://'}}" maxlength="255" class="form-control" ng-model="terminal.devUrl" />
+                                </div>
+                            </div>
+                            <div ng-class="(form.prodUrl.$error.required && form.$submitted) ? 'has-error' : ''" class="form-group">
+                                <label class="control-label">Production URL</label>
+                                <div class="input-icon right">
+                                    <i class="fa fa-warning" ng-show="form.prodUrl.$error.required && form.$submitted"></i>
+                                    <input type="text" name="prodUrl" ng-required="approved && canEditAllTerminals" placeholder="https://" ng-disabled="!canEditAllTerminals" ng-keyup="prodUrlChanged(terminal)" maxlength="255" class="form-control" ng-model="terminal.prodUrl" />
+                                </div>
+                                <span ng-show="!canEditAllTerminals">Please contact Support to get the Production URL updated.</span>
+                            </div>
+                            <div ng-show="terminal.isFr8OwnTerminal && canEditAllTerminals" class="margin-bottom-10">
+                                If you run the terminal on the <b>local machine</b>, specify the local URL e.g. <code>http://localhost:12345</code>
+                                in <b>both</b> Production URL and Development URL textboxes. If you add the terminal on the shared <b>Development</b> instance,
+                                specify the Development URL e.g. <code>http://dev-terminals.fr8.co:12345</code>in <b>both</b> textboxes. On the <b>Production</b> environment, specify the development and production URLs,
+                                respectively.
+                            </div>
+                            <div class="form-group">
+                                <md-checkbox ng-model="approved" ng-show="canEditAllTerminals" aria-label="Approve terminal">
+                                    Approve terminal (the current state is <strong>{{participationStateText}}</strong>)
+                                </md-checkbox>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Current URL<sup ng-show="canEditAllTerminals">*</sup></label>
+                                <input type="text" disabled="disabled" class="form-control" ng-model="terminal.endpoint" />
+                            </div>
+                            <div class="margin-top-10">
+                                <button type="submit" class="btn green-haze">Save</button>
+                                <a ui-sref="terminals" class="btn default">Return</a>
+                            </div>
+                            <div class="margin-top-10">You can also
+                                <a href="#" ng-click="openPermissionsSetterModal(terminal)" class="btn btn-link">
                                     Set Permissions
-                                </button>
-                                <a ng-click="cancel()" class="btn default">
-                                    Cancel
+                                </a> |
+                                <a href="#" ng-click="showPublishTerminalModal()" class="btn btn-link">
+                                    Publish Terminal
                                 </a>
+                            </div>
+                            <div ng-show="canEditAllTerminals" class="margin-bottom-20">
+                                <sup>*</sup> This is the URL which is used by the Hub to access the terminal at this moment.
+                                It can be equal to the Production URL or the Development URL or some other URL depending on terminal participation state
+                                and deployment status.
                             </div>
                         </form>
                     </div>
                     <!-- END PROCESS FORM -->
+
                 </div>
             </div>
             <!-- END PORTLET-->

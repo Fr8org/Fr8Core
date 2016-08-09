@@ -228,7 +228,7 @@ namespace terminalDocuSign.Services
             {
                 Name = "MonitorAllDocuSignEvents",
                 Description = "MonitorAllDocuSignEvents",
-                PlanState = PlanState.Running,
+                PlanState = "Active",
                 Visibility = new PlanVisibilityDTO() { Hidden = true }
             };
 

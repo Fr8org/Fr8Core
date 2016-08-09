@@ -13,6 +13,7 @@ using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Infrastructure.Data.Managers;
 using Fr8.Infrastructure.Data.Manifests;
 using Fr8.Infrastructure.Utilities.Logging;
+using Fr8.Infrastructure.Data.States;
 
 namespace Hub.Services
 {
@@ -151,7 +152,7 @@ namespace Hub.Services
         {
             //find this Account's Plans
             var initialPlansList = uow.PlanRepository.GetPlanQueryUncached()
-                .Where(pt => pt.Fr8AccountId == curDockyardAccountId && pt.PlanState == PlanState.Running).ToList();
+                .Where(pt => pt.Fr8AccountId == curDockyardAccountId && (pt.PlanState == PlanState.Executing || pt.PlanState == PlanState.Active)).ToList();
             var subscribingPlans = _plan.MatchEvents(initialPlansList, eventReportMS);
 
             Logger.GetLogger().Info($"Upon receiving event for account '{eventReportMS.ExternalAccountId}' {subscribingPlans.Count} of {initialPlansList.Count} will be notified");
