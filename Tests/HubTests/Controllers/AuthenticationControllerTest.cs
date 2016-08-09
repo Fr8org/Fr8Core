@@ -58,6 +58,7 @@ namespace HubTests.Controllers
                     TerminalStatus = 1,
                     Endpoint = "localhost:39504",
                     Secret = Guid.NewGuid().ToString(),
+                    OperationalState = OperationalState.Active,
                     ParticipationState = ParticipationState.Approved
                 };
 

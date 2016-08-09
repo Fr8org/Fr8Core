@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Rename_DockyardAccount_To_Fr8Account_Migration : DbMigration
+    public partial class Rename_DockyardAccount_To_Fr8Account_Migration : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {

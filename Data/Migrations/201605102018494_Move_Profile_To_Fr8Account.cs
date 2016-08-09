@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Move_Profile_To_Fr8Account : DbMigration
+    public partial class Move_Profile_To_Fr8Account : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubWeb", "HubWeb.csproj", "{F7BD7117-4F1D-4215-B338-61EBDD0D0BFE}"
 EndProject
@@ -65,12 +65,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalPapertrail", "terminalPapertrail\terminalPapertrail.csproj", "{74D9BDC7-7B46-456F-B3C5-A4CDB5D74D7B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalIntegrationTests", "Tests\terminalIntegrationTests\terminalIntegrationTests.csproj", "{579BA25F-1DF5-474A-8A3E-0447FF75711C}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildUtils", "BuildUtils", "{932981E0-0644-4BED-84A9-FEF0664F6296}"
-	ProjectSection(SolutionItems) = preProject
-		BuildUtils\Handle.exe = BuildUtils\Handle.exe
-		BuildUtils\xcopy.exe = BuildUtils\xcopy.exe
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthMonitor", "Tests\HealthMonitor\HealthMonitor.csproj", "{83231577-13A5-419F-8269-02AE59D8951A}"
 EndProject

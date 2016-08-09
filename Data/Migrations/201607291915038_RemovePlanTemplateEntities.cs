@@ -2,7 +2,7 @@ namespace Data.Migrations
 {
     using System.Data.Entity.Migrations;
     
-    public partial class RemovePlanTemplateEntities : DbMigration
+    public partial class RemovePlanTemplateEntities : System.Data.Entity.Migrations.DbMigration
     {
         public override void Up()
         {
