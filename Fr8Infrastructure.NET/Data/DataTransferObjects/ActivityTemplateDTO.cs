@@ -67,5 +67,8 @@ namespace Fr8.Infrastructure.Data.DataTransferObjects
 
         [JsonProperty("showDocumentation")]
         public ActivityResponseDTO ShowDocumentation { get; set; }
+
+        [JsonProperty("description")]
+        public string Description { get; set; }
     }
 }
