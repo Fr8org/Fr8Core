@@ -782,6 +782,10 @@
     <Compile Include="Migrations\201608071558594_DiscoveryRefactoring.Designer.cs">
       <DependentUpon>201608071558594_DiscoveryRefactoring.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201608090032216_OperationalState.cs" />
+    <Compile Include="Migrations\201608090032216_OperationalState.Designer.cs">
+      <DependentUpon>201608090032216_OperationalState.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -892,6 +896,7 @@
     <Compile Include="Repositories\Utilization\MockedUtilizationDataProvider.cs" />
     <Compile Include="Repositories\Utilization\SqlUtilizationDataProvider.cs" />
     <Compile Include="Repositories\WebServiceRepository.cs" />
+    <Compile Include="States\OperationalState.cs" />
     <Compile Include="States\ParticipationState.cs" />
     <Compile Include="States\ActivationState.cs" />
     <Compile Include="States\ActivityTemplateState.cs" />
@@ -937,6 +942,7 @@
     <Compile Include="States\AccessLevel.cs" />
     <Compile Include="States\PermissionType.cs" />
     <Compile Include="States\SubscriptionState.cs" />
+    <Compile Include="States\Templates\_OperationalStateTemplate.cs" />
     <Compile Include="States\Templates\_ParticipationStateTemplate.cs" />
     <Compile Include="States\Templates\_PermissionTypeTemplate.cs" />
     <Compile Include="States\Templates\_SubscriptionStateTemplate.cs" />
@@ -1440,6 +1446,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201608071558594_DiscoveryRefactoring.resx">
       <DependentUpon>201608071558594_DiscoveryRefactoring.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608090032216_OperationalState.resx">
+      <DependentUpon>201608090032216_OperationalState.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

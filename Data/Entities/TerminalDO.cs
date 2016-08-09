@@ -64,5 +64,11 @@ namespace Data.Entities
         [ForeignKey("ParticipationStateTemplate")]
         public int ParticipationState { get; set; }
         public virtual _ParticipationStateTemplate ParticipationStateTemplate { get; set; }
+
+        [Required]
+        [ForeignKey("OperationalStateTemplate")]
+        public int OperationalState { get; set; }
+        public virtual _OperationalStateTemplate OperationalStateTemplate { get; set; }
+
     }
 }
