@@ -8,6 +8,7 @@ using NUnit.Framework;
 namespace HubTests.Integration
 {
     [Explicit]
+    [SkipLocal]
     public class SwaggerTests : BaseHubIntegrationTest
     {
         public override string TerminalName => "Hub";
