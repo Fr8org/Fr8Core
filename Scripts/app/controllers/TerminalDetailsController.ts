@@ -149,15 +149,19 @@ module dockyard.controllers {
                 this.$state.go('terminals');
             })
                 .catch((e) => {
+                    debugger;
                     switch (e.status) {
-                        case 404:
-                            that.$scope.errorMessage = that.StringService.terminal["error404"];
-                            break;
                         case 400:
                             that.$scope.errorMessage = that.StringService.terminal["error400"];
                             if (e.data.message) {
                                 that.$scope.errorMessage += " Additional information: " + e.data.message;
                             }
+                            break;
+                        case 404:
+                            that.$scope.errorMessage = that.StringService.terminal["error404"];
+                            break;
+                        case 409:
+                            that.$scope.errorMessage = that.StringService.terminal["error409"];
                             break;
                         default:
                             that.$scope.errorMessage = that.StringService.terminal["error"];

@@ -17,6 +17,7 @@ using System;
 using log4net;
 using Microsoft.AspNet.Identity;
 using System.Threading;
+using Hub.Exceptions;
 
 namespace HubWeb.Controllers
 {
@@ -126,6 +127,10 @@ namespace HubWeb.Controllers
             catch (InvalidOperationException)
             {
                 return BadRequest("Terminal URL cannot contain the string 'localhost'. Please correct your terminal URL and try again.");
+            }
+            catch (ConflictException)
+            {
+                return Conflict();
             }
             catch (Exception ex)
             {
