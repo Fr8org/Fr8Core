@@ -103,8 +103,8 @@ namespace terminalSalesforceTests.Intergration
         {
             //get required activity templates
             var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(_baseUrl + "activity_templates");
-            var atSave = activityTemplates.Single(at => at.Name.Equals("Forward")).Activities.Single(a => a.Name.Equals("Save_To_SalesforceDotCom"));
-            var atGet = activityTemplates.Single(at => at.Name.Equals("Get")).Activities.Single(a => a.Name.Equals("Get_Data"));
+            var atSave = activityTemplates.Single(at => at.Name.Equals(ActivityCategories.Forward.Name)).Activities.Single(a => a.Name.Equals("Save_To_SalesforceDotCom"));
+            var atGet = activityTemplates.Single(at => at.Name.Equals(ActivityCategories.Receive.Name)).Activities.Single(a => a.Name.Equals("Get_Data"));
             Assert.IsNotNull(atSave, "Save to Salesforce.com activity is not available");
             Assert.IsNotNull(atGet, "Get Salesforce Data activity is not available");
             Debug.WriteLine("Got required activity templates.");
