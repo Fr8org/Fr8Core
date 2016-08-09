@@ -26,16 +26,14 @@ namespace terminalFacebook.Activities
             Id = new Guid("860b8347-0e5a-41c3-9be7-73057eeca676"),
             Name = "Monitor_Feed_Posts",
             Label = "Monitor Feed Posts",
-            Category = ActivityCategory.Monitors,
             Version = "1",
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             Categories = new[]
             {
                 ActivityCategories.Monitor,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

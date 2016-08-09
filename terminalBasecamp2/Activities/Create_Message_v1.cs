@@ -24,16 +24,14 @@ namespace terminalBasecamp2.Activities
             Id = new Guid("E6633D9B-5159-46BD-A367-E2A5497E5F56"),
             Name = "Create_Message",
             Label = "Create Message",
-            Category = ActivityCategory.Forwarders,
             Version = "1",
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
             Categories = new[]
             {
                 ActivityCategories.Forward,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
 

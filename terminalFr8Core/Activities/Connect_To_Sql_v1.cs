@@ -20,15 +20,13 @@ namespace terminalFr8Core.Activities
             Id = new Guid("bb019231-435a-49c3-96db-ab4ae9e7fb23"),
             Name = "Connect_To_Sql",
             Label = "Connect To SQL",
-            Category = ActivityCategory.Processors,
             Version = "1",
             Tags = Tags.Internal,
             Terminal = TerminalData.TerminalDTO,
-            WebService = TerminalData.WebServiceDTO,
             Categories = new[]
             {
                 ActivityCategories.Process,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

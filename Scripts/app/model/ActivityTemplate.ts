@@ -13,32 +13,42 @@
         label: string;
         version: string;
         defaultEndPoint: string;
-        category: string;
+        // TODO: FR-4943, remove this.
+        // category: string;
         type: string;
         tags: string;
         minPaneWidth: number;
         terminal: TerminalDTO;
         needsAuthentication: boolean;
-        webService: WebServiceDTO; 
-        showDocumentation : ActivityResponseDTO;
+        // TODO: FR-4943, remove this.
+        // webService: WebServiceDTO; 
+        categories: Array<ActivityCategoryDTO>;
+        showDocumentation: ActivityResponseDTO;
+
         constructor(
             id: string,
             name: string,
             version: string,
-            category: string,
+            // TODO: FR-4943, remove this.
+            // category: string,
             label?: string,
             minPaneWidth?: number,
             type?: string,
-            webService?: WebServiceDTO,
+            // TODO: FR-4943, remove this.
+            // webService?: WebServiceDTO,
+            categories?: Array<ActivityCategoryDTO>,
             showDocumentation? : ActivityResponseDTO) {
 
             this.id = id;
             this.name = name;
             this.label = label;
             this.version = version;
-            this.category = category;
+            // TODO: FR-4943, remove this.
+            // this.category = category;
             this.type = type;
-            this.webService = webService;
+            // TODO: FR-4943, remove this.
+            // this.webService = webService;
+            this.categories = categories;
             this.showDocumentation = showDocumentation;
             //this.parentPluginRegistration = parentPluginRegistration;  the client shouldn't know anything about plugins
         }
@@ -49,12 +59,15 @@
                 this.name,
                 this.label,
                 this.version,
-                this.category,
+                // TODO: FR-4943, remove this.
+                // this.category,
                 this.minPaneWidth,
                 this.type,
-                this.webService,
+                // TODO: FR-4943, remove this.
+                // this.webService,
+                this.categories,
                 this.showDocumentation
-            // this.parentPluginRegistration
+                // this.parentPluginRegistration
                 );
 
             return result;

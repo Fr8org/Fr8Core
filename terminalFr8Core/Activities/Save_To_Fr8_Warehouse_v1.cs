@@ -23,15 +23,13 @@ namespace terminalFr8Core.Activities
             Id = new Guid("005e5050-91f9-489a-ae9f-c1a182b6cffa"),
             Name = "Save_To_Fr8_Warehouse",
             Label = "Save To Fr8 Warehouse",
-            Category = ActivityCategory.Processors,
             Version = "1",
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Process,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
 

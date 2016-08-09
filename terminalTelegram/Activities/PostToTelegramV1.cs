@@ -20,16 +20,14 @@ namespace terminalTelegram.Activities
             Name = "Post_To_Telegram",
             Label = "Post To Telegram",
             Tags = "Notifier",
-            Category = ActivityCategory.Forwarders,
             Terminal = TerminalData.TerminalDTO,
             Version = "1",
-            WebService = TerminalData.WebServiceDTO,
             MinPaneWidth = 330,
             NeedsAuthentication = true,
             Categories = new[]
             {
                 ActivityCategories.Forward,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
 
