@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -910,7 +910,7 @@
     <Compile Include="Repositories\TerminalSubscriptionRepository.cs" />
     <Compile Include="Repositories\Utilization\MockedUtilizationDataProvider.cs" />
     <Compile Include="Repositories\Utilization\SqlUtilizationDataProvider.cs" />
-	  <Compile Include="States\OperationalState.cs" />
+    <Compile Include="States\OperationalState.cs" />
     <Compile Include="States\ParticipationState.cs" />
     <Compile Include="States\ActivationState.cs" />
     <Compile Include="States\ActivityTemplateState.cs" />
@@ -1475,12 +1475,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.resx">
       <DependentUpon>201608091313044_ConvertObjectIdToGuidAndCreateIndexOnOPR.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201608090032216_OperationalState.resx">
-      <DependentUpon>201608090032216_OperationalState.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201608091448300_Rename_The_Main_Bucket_Categories.resx">
-      <DependentUpon>201608091448300_Rename_The_Main_Bucket_Categories.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201608090032216_OperationalState.resx">
       <DependentUpon>201608090032216_OperationalState.cs</DependentUpon>
