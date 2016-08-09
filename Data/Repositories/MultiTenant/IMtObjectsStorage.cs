@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Data.Repositories.MultiTenant.Ast;
 using Data.Repositories.SqlBased;
 
@@ -13,6 +14,6 @@ namespace Data.Repositories.MultiTenant
         int QueryScalar (ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode where);
         int Delete(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode where);
 
-        int? GetObjectId(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode where);
+        Guid? GetObjectId(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode where);
     }
 }

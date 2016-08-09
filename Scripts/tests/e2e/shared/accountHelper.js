@@ -1,14 +1,14 @@
 ﻿var LoginPage = require('../pages/login.page.js');
 //var ContactPage = require('../pages/contact.page.js');
 var PlansPage = require('../pages/plans.page.js');
-//var RegistrationPage = require('../pages/registration.page.js');
+var RegistrationPage = require('../pages/registration.page.js');
 var UIHelpers = require('../shared/uiHelpers.js');
 
 var AccountHelper = function () {
 
     var loginPage = new LoginPage();
     var plansPage = new PlansPage();
-    //var registrationPage = new RegistrationPage();
+    var registrationPage = new RegistrationPage();
     var uiHelpers = new UIHelpers();
     //var contactPage = new ContactPage();
 
