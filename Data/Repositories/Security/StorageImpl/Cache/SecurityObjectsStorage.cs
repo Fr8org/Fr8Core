@@ -144,7 +144,7 @@ namespace Data.Repositories.Security.StorageImpl.Cache
 
             InvokeCacheUpdate(dataObjectId, dataObjectType);
         }
-
+        
         public RolePermission GetRolePermission(string roleName, Guid permissionSetId)
         {
             return _securityObjectStorageProvider.GetRolePermission(roleName, permissionSetId);

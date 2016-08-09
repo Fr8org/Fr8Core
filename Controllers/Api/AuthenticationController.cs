@@ -8,20 +8,18 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
-using Newtonsoft.Json.Linq;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Infrastructure.StructureMap;
 using Fr8.Infrastructure.Data.DataTransferObjects;
-using Fr8.Infrastructure.Interfaces;
 using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;
 using System.Web.Http.Description;
 using Fr8.Infrastructure;
-using Hub.Services;
+using Fr8.Infrastructure.Utilities.Logging;
 using Newtonsoft.Json;
 using Swashbuckle.Swagger.Annotations;
 
@@ -80,6 +78,7 @@ namespace HubWeb.Controllers
                 Error = response.Error
             });
         }
+
         /// <summary>
         /// Retrieves URL used as auhtorization url in OAuth authorization scenario
         /// </summary>
@@ -114,6 +113,38 @@ namespace HubWeb.Controllers
             var externalAuthUrlDTO = await _authorization.GetOAuthInitiationURL(account, terminal);
             return Ok(new UrlResponseDTO { Url = externalAuthUrlDTO.Url });
         }
+
+        /// <summary>
+        /// Returns demo account information for given terminal if system is in Debug or Dev. Otherwise returns null
+        /// </summary>
+        /// <param name="terminal">Terminal name</param>
+        /// <remarks>Fr8 authentication headers must be provided</remarks>
+        /// <response code="200">Receieved demo account information request</response>
+        [HttpGet]
+        [Fr8ApiAuthorize]
+        [ActionName("demoAccountInfo")]
+        [ResponseType(typeof(InternalDemoAccountDTO))]
+        public async Task<IHttpActionResult> GetDemoCredentials([FromUri(Name = "terminal")] string terminalName)
+        {
+#if DEBUG
+            var demoUsername = CloudConfigurationManager.GetSetting(terminalName + ".DemoAccountUsername");
+            var demoPassword = CloudConfigurationManager.GetSetting(terminalName + ".DemoAccountPassword");
+            var docuSignAuthTokenDTO = new InternalDemoAccountDTO()
+            {
+                Username = demoUsername,
+                Password = demoPassword,
+                Domain = CloudConfigurationManager.GetSetting(terminalName + ".DemoAccountDomain"),
+                HasDemoAccount = (!String.IsNullOrEmpty(demoUsername) && !String.IsNullOrEmpty(demoPassword))
+            };
+#else
+            var docuSignAuthTokenDTO = new InternalDemoAccountDTO()
+            {
+                HasDemoAccount = false
+            };
+#endif
+            return Ok(docuSignAuthTokenDTO);
+        }
+
         /// <summary>
         /// Perform cookie-based authentication on Fr8 Hub. HTTP response will contain authentication cookies
         /// </summary>
@@ -127,6 +158,7 @@ namespace HubWeb.Controllers
         {
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
+                Logger.GetLogger().Warn($"Username or password is not specified");
                 return BadRequest("Username or password is not specified");
             }
 
@@ -151,28 +183,10 @@ namespace HubWeb.Controllers
                     }
                 }
             }
+            Logger.GetLogger().Warn($"Loging failed for {username}");
             return StatusCode(HttpStatusCode.Forbidden);
         }
 
-
-        //Used internally to pass existing authentication to PlanDirectory. Doesn't show up in API listing
-
-        /// <summary>
-        /// Passes existing authentication to PlanDirectory
-        /// </summary>
-        /// <remarks>Fr8 authentication headers must be provided</remarks>
-        /// <response code="200">Authorization token</response>
-        /// <response code="403">Unauthorized request</response>
-        [HttpPost]
-        [Fr8ApiAuthorize]
-        [Fr8TerminalAuthentication]
-        [ResponseType(typeof(TokenWrapper))]
-        public async Task<IHttpActionResult> AuthenticatePlanDirectory()
-        {
-            var userId = User.Identity.GetUserId();
-            var token = await _planDirectoryService.GetToken(userId);
-            return Ok(new TokenWrapper { Token = token });
-        }
 
         /// <summary>
         /// Updates existing authorization token with new values provided

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using Data.Entities;
+using Data.States;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Hub.Interfaces;
 using HubWeb.ViewModels;
@@ -20,6 +21,7 @@ namespace HubWeb.App_Start
             _terminal = terminal;
             _activityTemplate = activityTemplate;
         }
+        
 
         public void ConfigureAutoMapper()
         {
@@ -28,7 +30,7 @@ namespace HubWeb.App_Start
                 .ForMember(a => a.Description, opts => opts.ResolveUsing(ad => ad.Description))
                 .ForMember(a => a.LastUpdated, opts => opts.ResolveUsing(ad => ad.LastUpdated))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
-                .ForMember(a => a.PlanState, opts => opts.ResolveUsing(ad => ad.PlanState))
+                .ForMember(a => a.PlanState, opts => opts.ResolveUsing(ad => PlanState.IntToString(ad.PlanState)))
                 .ForMember(a => a.StartingSubPlanId, opts => opts.ResolveUsing(ad => ad.StartingSubPlanId))
                 .ForMember(a => a.Tag, opts => opts.ResolveUsing(ad => ad.Tag))
                 .ForMember(a => a.Visibility, opts => opts.ResolveUsing(ad => new PlanVisibilityDTO() { Hidden = ad.Visibility.BooleanValue() }));
@@ -38,7 +40,7 @@ namespace HubWeb.App_Start
                 .ForMember(a => a.Description, opts => opts.ResolveUsing(ad => ad.Description))
                 .ForMember(a => a.LastUpdated, opts => opts.ResolveUsing(ad => ad.LastUpdated))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
-                .ForMember(a => a.PlanState, opts => opts.ResolveUsing(ad => ad.PlanState))
+                .ForMember(a => a.PlanState, opts => opts.ResolveUsing(ad => PlanState.StringToInt(ad.PlanState)))
                 .ForMember(a => a.StartingSubPlanId, opts => opts.ResolveUsing(ad => ad.StartingSubPlanId))
                 .ForMember(a => a.Tag, opts => opts.ResolveUsing(ad => ad.Tag))
                 .ForMember(a => a.Visibility, opts => opts.ResolveUsing(ad => ad.Visibility?.PlanVisibilityValue()));
