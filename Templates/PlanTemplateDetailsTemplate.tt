@@ -3,6 +3,7 @@
 <#@ assembly name="$(ProjectDir)\bin\HubWeb.dll" #>
 <#@ import namespace="HubWeb.ViewModels" #>
 <#@ parameter name="planTemplate" type="Fr8.Infrastructure.Data.DataTransferObjects.PublishPlanTemplateDTO" #>
+<#@ parameter name="planCreateUrl" type="System.String" #>
 <!DOCTYPE html>
 <html>
 
@@ -91,7 +92,9 @@
                     <!-- SEARCH RESULTS-->
                     <div class="result-container">
                         <div class="item">
-                            <button class="btn green create-plan-btn">Create</button>                            
+                            <a href="<#=planCreateUrl#>" style="text-decoration: none;color: #FFFFFF;">
+							<button class="btn green create-plan-btn">Create</button>                            
+							</a>
                             <div class="info-row first">
                                 <div class="label">Name:</div> <#=planTemplate.Name#>
                             </div>                           

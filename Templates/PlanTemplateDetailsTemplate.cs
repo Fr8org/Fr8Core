@@ -46,7 +46,7 @@ namespace HubWeb.Templates
     <title>Fr8 - Plan Template Details -
         ");
             
-            #line 24 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 25 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(planTemplate.Name));
             
             #line default
@@ -66,7 +66,7 @@ namespace HubWeb.Templates
                     <div class=""navbar-header"">
                         <a href=""");
             
-            #line 37 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 38 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(NavLinks.BaseUrl));
             
             #line default
@@ -84,7 +84,7 @@ namespace HubWeb.Templates
                             <!--How It Works-->
                             <li><a href=""");
             
-            #line 48 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 49 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(NavLinks.BaseUrl));
             
             #line default
@@ -96,7 +96,7 @@ namespace HubWeb.Templates
                                 <ul class=""dropdown-menu"">
                                     <li><a href=""");
             
-            #line 53 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 54 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(NavLinks.BaseUrl));
             
             #line default
@@ -104,7 +104,7 @@ namespace HubWeb.Templates
             this.Write("/Services/DocuSign\">DocuSign</a></li>\r\n                                    <li><a" +
                     " href=\"");
             
-            #line 54 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 55 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(NavLinks.BaseUrl));
             
             #line default
@@ -112,7 +112,7 @@ namespace HubWeb.Templates
             this.Write("/Services/Salesforce\">Salesforce.com</a></li>\r\n                                  " +
                     "  <li><a href=\"");
             
-            #line 55 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 56 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(NavLinks.PlanDirectory));
             
             #line default
@@ -128,7 +128,7 @@ namespace HubWeb.Templates
                                 <ul class=""dropdown-menu"">
                                     <li data-scroll=""scrolling""><a href=""");
             
-            #line 64 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 65 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(NavLinks.BaseUrl));
             
             #line default
@@ -136,7 +136,7 @@ namespace HubWeb.Templates
             this.Write("/Company/#vision\">Vision</a></li>\r\n                                    <li data-s" +
                     "croll=\"scrolling\"><a href=\"");
             
-            #line 65 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 66 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(NavLinks.BaseUrl));
             
             #line default
@@ -144,7 +144,7 @@ namespace HubWeb.Templates
             this.Write("/Company/#team\">Team</a></li>\r\n                                    <li data-scrol" +
                     "l=\"scrolling\"><a href=\"");
             
-            #line 66 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 67 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(NavLinks.BaseUrl));
             
             #line default
@@ -152,7 +152,7 @@ namespace HubWeb.Templates
             this.Write("/Company/#press\">Press Releases</a></li>\r\n                                    <li" +
                     " data-scroll=\"scrolling\"><a href=\"");
             
-            #line 67 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 68 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(NavLinks.BaseUrl));
             
             #line default
@@ -160,7 +160,7 @@ namespace HubWeb.Templates
             this.Write("/Company/#location\">Location</a></li>\r\n                                    <li da" +
                     "ta-scroll=\"scrolling\"><a href=\"");
             
-            #line 68 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 69 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(NavLinks.BaseUrl));
             
             #line default
@@ -169,7 +169,7 @@ namespace HubWeb.Templates
                     "                 </li>\r\n                            <!--Contact-->\r\n            " +
                     "                <li><a href=\"");
             
-            #line 72 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 73 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(NavLinks.BaseUrl));
             
             #line default
@@ -177,7 +177,7 @@ namespace HubWeb.Templates
             this.Write("/Support\" title=\"Contact\">Contact</a></li>\r\n                            <!--Blog-" +
                     "->\r\n                            <li><a href=\"");
             
-            #line 74 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 75 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(NavLinks.Blog));
             
             #line default
@@ -197,7 +197,7 @@ namespace HubWeb.Templates
                         <div>
                             <h2 style=""width:100%"">Details - <em>");
             
-            #line 87 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 88 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(planTemplate.Name));
             
             #line default
@@ -209,11 +209,20 @@ namespace HubWeb.Templates
                     <!-- SEARCH RESULTS-->
                     <div class=""result-container"">
                         <div class=""item"">
-                            <button class=""btn green create-plan-btn"">Create</button>                            
+                            <a href=""");
+            
+            #line 95 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(planCreateUrl));
+            
+            #line default
+            #line hidden
+            this.Write(@""" style=""text-decoration: none;color: #FFFFFF;"">
+							<button class=""btn green create-plan-btn"">Create</button>                            
+							</a>
                             <div class=""info-row first"">
                                 <div class=""label"">Name:</div> ");
             
-            #line 96 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 99 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(planTemplate.Name));
             
             #line default
@@ -222,7 +231,7 @@ namespace HubWeb.Templates
                     "            <div class=\"info-row\">\r\n                                <div class=\"" +
                     "label\">Description:</div>\r\n                                <div class=\"value\">");
             
-            #line 100 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 103 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(planTemplate.Description));
             
             #line default
@@ -242,7 +251,7 @@ namespace HubWeb.Templates
             <p class=""copyright"">
                 ");
             
-            #line 113 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
+            #line 116 "d:\Dev\Fr8Core\Templates\PlanTemplateDetailsTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(DateTime.Now.Year));
             
             #line default
@@ -267,6 +276,19 @@ private global::Fr8.Infrastructure.Data.DataTransferObjects.PublishPlanTemplateD
     }
 }
 
+private string _planCreateUrlField;
+
+/// <summary>
+/// Access the planCreateUrl parameter of the template.
+/// </summary>
+private string planCreateUrl
+{
+    get
+    {
+        return this._planCreateUrlField;
+    }
+}
+
 
 /// <summary>
 /// Initialize the template
@@ -287,6 +309,20 @@ if ((planTemplateValueAcquired == false))
     if ((data != null))
     {
         this._planTemplateField = ((global::Fr8.Infrastructure.Data.DataTransferObjects.PublishPlanTemplateDTO)(data));
+    }
+}
+bool planCreateUrlValueAcquired = false;
+if (this.Session.ContainsKey("planCreateUrl"))
+{
+    this._planCreateUrlField = ((string)(this.Session["planCreateUrl"]));
+    planCreateUrlValueAcquired = true;
+}
+if ((planCreateUrlValueAcquired == false))
+{
+    object data = global::System.Runtime.Remoting.Messaging.CallContext.LogicalGetData("planCreateUrl");
+    if ((data != null))
+    {
+        this._planCreateUrlField = ((string)(data));
     }
 }
 

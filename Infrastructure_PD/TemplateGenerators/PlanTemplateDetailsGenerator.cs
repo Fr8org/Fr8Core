@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fr8.Infrastructure.Data.DataTransferObjects;
+using Fr8.Infrastructure.Utilities.Configuration;
 using Hub.Interfaces;
 using HubWeb.Templates;
 
@@ -23,10 +24,12 @@ namespace HubWeb.Infrastructure_PD.TemplateGenerators
         {
             var pageName = publishPlanTemplateDto.Name + "-" + publishPlanTemplateDto.ParentPlanId + ".html";
             if (publishPlanTemplateDto.Description == null)
-                publishPlanTemplateDto.Description = publishPlanTemplateDto.Name;
+                publishPlanTemplateDto.Description = "";
             await _templateGenerator.Generate(new PlanTemplateDetailsTemplate(), pageName, new Dictionary<string, object>
             {
-                ["planTemplate"] = publishPlanTemplateDto
+                ["planTemplate"] = publishPlanTemplateDto,
+                ["planCreateUrl"] = CloudConfigurationManager.GetSetting("HubApiUrl").Replace("/api/v1/", "")
+                        + "/dashboard/plans/" + publishPlanTemplateDto.ParentPlanId + "/builder?viewMode=plan"
             });
         }
     }
