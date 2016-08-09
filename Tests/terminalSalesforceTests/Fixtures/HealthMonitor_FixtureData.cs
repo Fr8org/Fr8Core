@@ -11,6 +11,7 @@ using Fr8.Infrastructure.Data.Manifests;
 using Fr8.TerminalBase.Interfaces;
 using Moq;
 using Newtonsoft.Json;
+using System.Configuration;
 
 namespace terminalSalesforceTests.Fixtures
 {
@@ -20,15 +21,10 @@ namespace terminalSalesforceTests.Fixtures
         public static async Task<AuthorizationTokenDTO> Salesforce_AuthToken()
         {
             var auth = new AuthenticationClient();
-            await auth.UsernamePasswordAsync(
-                "3MVG9KI2HHAq33RzZO3sQ8KU8JPwmpiZBpe_fka3XktlR5qbCWstH3vbAG.kLmaldx8L1V9OhqoAYUedWAO_e",
-                "611998545425677937",
-                "alex@dockyard.company",
-                "thales@123");
+
 
             return new AuthorizationTokenDTO()
             {
-                ExternalAccountId = "611998545425677937",
                 Token = JsonConvert.SerializeObject(new { AccessToken = auth.AccessToken }),
                 AdditionalAttributes = string.Format("instance_url={0};api_version={1}", auth.InstanceUrl, auth.ApiVersion)
             };                                                                                                                            

@@ -77,7 +77,7 @@ namespace terminalSalesforceTests.Intergration
         public async Task Post_To_Chatter_Run_With_ValidParameter_Check_PayloadDto_OperationalState()
         {
             //Arrange
-            var authToken = HealthMonitor_FixtureData.Salesforce_AuthToken().Result;
+            var authToken = terminalIntegrationTests.Fixtures.HealthMonitor_FixtureData.Salesforce_AuthToken().Result;
             var initialConfigActionDto = await PerformInitialConfiguration();
             initialConfigActionDto.AuthToken = authToken;
             var dataDTO = new Fr8DataDTO { ActivityDTO = initialConfigActionDto };

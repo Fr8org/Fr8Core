@@ -9,6 +9,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Fr8.Infrastructure.Data.DataTransferObjects;
 using Fr8.Testing.Integration;
+using System.Configuration;
 
 namespace terminalIntegrationTests.Integration
 {
