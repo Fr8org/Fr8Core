@@ -20,7 +20,6 @@ using HubWeb.Filters;
 namespace HubWeb.Controllers
 {
     [DockyardAuthorize]
-    [RedirecLogedUser]
     public class DockyardAccountController : Controller
     {
         private readonly Fr8Account _account;
@@ -34,6 +33,7 @@ namespace HubWeb.Controllers
             _planDirectory = ObjectFactory.GetInstance<PlanDirectoryService>();
         }
 
+        [RedirecLogedUser]
         [AllowAnonymous]
         public ActionResult InterceptLogin(string returnUrl, string urlReferrer)
         {
@@ -44,6 +44,7 @@ namespace HubWeb.Controllers
             return View("Index");
         }
 
+        [RedirecLogedUser]
         [AllowAnonymous]
         public ActionResult AccessDenied(string errorMessage)
         {
@@ -52,6 +53,7 @@ namespace HubWeb.Controllers
             return View();
         }
 
+        [RedirecLogedUser]
         [AllowAnonymous]
         public ActionResult Index(string returnUrl)
         {
@@ -59,6 +61,7 @@ namespace HubWeb.Controllers
             return View();
         }
 
+        [RedirecLogedUser]
         [AllowAnonymous]
         public ActionResult Register()
         {
@@ -66,6 +69,7 @@ namespace HubWeb.Controllers
             return View();
         }
 
+        [RedirecLogedUser]
         [AllowAnonymous]
         public ActionResult RegistrationSuccessful()
         {
@@ -78,13 +82,15 @@ namespace HubWeb.Controllers
             this.Logout();
             return RedirectToAction("Index");
         }
-       
+
+        [RedirecLogedUser]
         [AllowAnonymous]
         public ActionResult Confirm(RegistrationVM model)
         {
             return View(model);
         }
 
+        [RedirecLogedUser]
         [HttpPost]
         [AllowAnonymous]
 #if !DEBUG
@@ -149,6 +155,7 @@ namespace HubWeb.Controllers
             return View("Register");
         }
 
+        [RedirecLogedUser]
         [HttpPost]
         [AllowAnonymous]
 #if !DEBUG
@@ -213,7 +220,7 @@ Please register first.");
             return View("Index", model);
         }
 
-
+        [RedirecLogedUser]
         [HttpGet]
         [AllowAnonymous]
         public ActionResult ConfirmEmail(string userId, string code)
@@ -239,6 +246,7 @@ Please register first.");
             return RedirectToAction("Index", "Welcome");
         }
 
+        [RedirecLogedUser]
         [System.Web.Http.HttpPost]
         public ActionResult Edit(UserVM usersAdminVM)
         {
@@ -265,6 +273,7 @@ Please register first.");
             }
         }
 
+        [RedirecLogedUser]
         [HttpGet]
         [AllowAnonymous]
         public ActionResult ForgotPassword()
@@ -272,6 +281,7 @@ Please register first.");
             return View();
         }
 
+        [RedirecLogedUser]
         [HttpPost]
         [AllowAnonymous]
         public async Task<ActionResult> ForgotPassword(ForgotPasswordVM model)
@@ -295,6 +305,7 @@ Please register first.");
             return View(model);
         }
 
+        [RedirecLogedUser]
         [HttpGet]
         [AllowAnonymous]
         public ActionResult ResetPassword(string userId, string code)
@@ -314,6 +325,7 @@ Please register first.");
             }
         }
 
+        [RedirecLogedUser]
         [HttpPost]
         [AllowAnonymous]
         public async Task<ActionResult> ResetPassword(ResetPasswordVM viewModel)
@@ -348,6 +360,7 @@ Please register first.");
             return View(viewModel);
         }
 
+        [RedirecLogedUser]
         public RedirectToRouteResult RegisterGuestUser()
         {
             TempData["tempEmail"] = User.Identity.Name;
@@ -355,6 +368,7 @@ Please register first.");
             return RedirectToAction("Register");
         }
 
+        [RedirecLogedUser]
         [AllowAnonymous]
         public async Task<ActionResult> ProcessGuestUserMode()
         {
