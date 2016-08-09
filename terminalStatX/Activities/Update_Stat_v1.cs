@@ -226,13 +226,13 @@ namespace terminalStatX.Activities
                 #region Refresh Stat Items to Track for Changes in app
 
                 //check for changes in statValue Array
-                var statToCheck = stats.FirstOrDefault(x => x.Id == ActivityUI.ExistingGroupStats.Value);
+                var statToCheck = stats.FirstOrDefault(x => x.Id == SelectedStat);
                 if (statToCheck != null)
                 {
                     var statDTO = statToCheck as GeneralStatWithItemsDTO;
                     if (statDTO != null && statDTO.Items.Any())
                     {
-                        var oldStatNames = ActivityUI.StatValues.Select(x => x.Name);
+                        var oldStatNames = ActivityUI.StatValues.Select(x => x.Name).ToList();
                         var newStatNames = new List<string>();
 
                         if (statDTO.VisualType != StatTypes.PickList)
@@ -243,11 +243,6 @@ namespace terminalStatX.Activities
                             var newItems = newStatNames.Where(x => !oldStatNames.Contains(x)).ToList();
                             var oldItemsToDelete = oldStatNames.Where(x => !newStatNames.Contains(x)).ToList();
 
-                            foreach (var item in newItems)
-                            {
-                                ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(item, item, requestUpstream: true, groupLabelText: "Available Stat Properties"));
-                            }
-
                             foreach (var item in oldItemsToDelete.ToList())
                             {
                                 var itemToDelete = ActivityUI.StatValues.FirstOrDefault(x => x.Name == item);
@@ -255,6 +250,11 @@ namespace terminalStatX.Activities
                                 {
                                     ActivityUI.StatValues.Remove(itemToDelete);
                                 }
+                            }
+
+                            foreach (var item in newItems)
+                            {
+                                ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(item, item, requestUpstream: true, groupLabelText: "Available Stat Properties"));
                             }
                         }
                     }
@@ -265,7 +265,7 @@ namespace terminalStatX.Activities
                         {
                             ActivityUI.StatValues?.Clear();
                             ActivityUI.StatValues.Add(UiBuilder.CreateSpecificOrUpstreamValueChooser(string.IsNullOrEmpty(statToCheck.Title) ? statToCheck.Id : statToCheck.Title, string.IsNullOrEmpty(statToCheck.Title) ? statToCheck.Id : statToCheck.Title, requestUpstream: true, groupLabelText: "Available Stat Properties"));
-                       }
+                        }
                     }
                 }
 
