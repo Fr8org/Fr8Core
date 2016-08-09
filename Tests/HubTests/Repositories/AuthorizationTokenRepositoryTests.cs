@@ -10,6 +10,7 @@ using Hub.StructureMap;
 using NUnit.Framework;
 using StructureMap;
 using Fr8.Testing.Unit;
+using Fr8.Testing.Unit.Fixtures;
 using Data.States;
 
 namespace HubTests.Repositories
@@ -92,7 +93,7 @@ namespace HubTests.Repositories
                 uow.TerminalRepository.Add(new TerminalDO
                 {
                     TerminalStatus = TerminalStatus.Active,
-                    Id = 1,
+                    Id = FixtureData.GetTestGuidById(1),
                     Version = "v1",
                     Name = "Test terminal",
                     Label = "Test",
@@ -113,7 +114,7 @@ namespace HubTests.Repositories
             {
                 Id = id,
                 Token = securePart,
-                TerminalID  = 1,
+                TerminalID  = FixtureData.GetTestGuidById(1)
             };
 
             uow.AuthorizationTokenRepository.Add(token);
@@ -243,7 +244,7 @@ namespace HubTests.Repositories
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var tFound = uow.AuthorizationTokenRepository.FindToken("user1", 1, null);
+                var tFound = uow.AuthorizationTokenRepository.FindToken("user1", FixtureData.GetTestGuidById(1), null);
 
                 Assert.AreEqual(0, tester.AddedTokens.Count);
                 Assert.AreEqual(0, tester.UpdatedTokens.Count);

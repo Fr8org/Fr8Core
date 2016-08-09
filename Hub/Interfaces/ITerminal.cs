@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Data.Entities;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ namespace Hub.Interfaces
     {
         IEnumerable<TerminalDO> GetAll();
         Task<IList<ActivityTemplateDO>> GetAvailableActivities(string uri);
-        TerminalDO GetByKey(int terminalId);
+        TerminalDO GetByKey(Guid terminalId);
         TerminalDO GetByNameAndVersion(string name, string version);
         TerminalDO RegisterOrUpdate(TerminalDO terminalDo, bool isDiscovery);
         Dictionary<string, string> GetRequestHeaders(TerminalDO terminal, string userId);
