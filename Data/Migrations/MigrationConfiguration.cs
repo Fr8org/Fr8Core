@@ -530,7 +530,7 @@ namespace Data.Migrations
                         ActivityTemplate = assignedActivityTemplate
                     });
                 } 
-            }
+            } 
 
             uow.SaveChanges();
         }
