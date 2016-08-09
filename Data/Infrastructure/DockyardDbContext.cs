@@ -266,7 +266,6 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ActivityTemplateDO>().ToTable("ActivityTemplate");
             modelBuilder.Entity<ActivityCategoryDO>().ToTable("ActivityCategory");
             modelBuilder.Entity<ActivityCategorySetDO>().ToTable("ActivityCategorySet");
-            modelBuilder.Entity<WebServiceDO>().ToTable("WebServices");
             modelBuilder.Entity<TerminalSubscriptionDO>().ToTable("TerminalSubscription");
             modelBuilder.Entity<EncryptedAuthorizationData>().ToTable("EncryptedAuthorizationData");
             modelBuilder.Entity<TagDO>().ToTable("Tags");
@@ -344,12 +343,6 @@ namespace Data.Infrastructure
                 .WithMany()
                 .HasForeignKey(x => x.TerminalId)
 
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<ActivityTemplateDO>()
-                .HasOptional(x => x.WebService) // was HasRequired. In reality this relationship looks like to be optional.
-                .WithMany()
-                .HasForeignKey(x => x.WebServiceId)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<OrganizationDO>().ToTable("Organizations")

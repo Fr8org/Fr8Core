@@ -368,7 +368,7 @@ namespace Hub.Services
                     }
                 }
 
-                _activityTemplateService.RemoveInactiveActivities(activityTemplates);
+                _activityTemplateService.RemoveInactiveActivities(terminalDo, activityTemplates);
             }
             catch (Exception ex)
             {

@@ -4,9 +4,9 @@ namespace HubTests.Fixtures
 {
     public partial class FixtureData
     {
-        public static WebServiceDTO BasicWebServiceDTOWithoutId()
+        public static ActivityCategoryDTO BasicWebServiceDTOWithoutId()
         {
-            var webServiceDTO = new WebServiceDTO { Name = "IntegrationTestWebService", IconPath = "IntegrationTestIconPath" };
+            var webServiceDTO = new ActivityCategoryDTO { Name = "IntegrationTestWebService", IconPath = "IntegrationTestIconPath" };
 
             return webServiceDTO;
         }

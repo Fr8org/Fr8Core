@@ -29,16 +29,14 @@ namespace terminalDocuSign.Actions
             Version = "2",
             Name = "Send_DocuSign_Envelope",
             Label = "Send DocuSign Envelope",
-            Category = ActivityCategory.Forwarders,
             Tags = string.Join(",", Tags.EmailDeliverer),
             NeedsAuthentication = true,
             MinPaneWidth = 330,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Forward,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

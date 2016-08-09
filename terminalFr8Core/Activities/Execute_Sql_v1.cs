@@ -22,15 +22,13 @@ namespace terminalFr8Core.Activities
             Id = new Guid("23e0576e-7c51-42a6-89f2-e954c8499ca5"),
             Name = "Execute_Sql",
             Label = "Execute Sql Query",
-            Category = ActivityCategory.Processors,
             Version = "1",
             Tags = Tags.Internal,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Process,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
