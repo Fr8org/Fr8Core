@@ -21,10 +21,10 @@ namespace Data.Infrastructure.StructureMap
         void Logout();
         ClaimsIdentity GetIdentity(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO);
         Task<ClaimsIdentity> GetIdentityAsync(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO);
-        bool AuthorizeActivity(PermissionType permissionType, string curObjectId, string curObjectType, string propertyName = null);
+        bool AuthorizeActivity(PermissionType permissionType, Guid curObjectId, string curObjectType, string propertyName = null);
         bool UserHasPermission(PermissionType permissionType, string objectType);
-        void SetDefaultRecordBasedSecurityForObject(string roleName, string dataObjectId, string dataObjectType, List<PermissionType> customPermissions = null);
+        void SetDefaultRecordBasedSecurityForObject(string roleName, Guid dataObjectId, string dataObjectType, List<PermissionType> customPermissions = null);
         IEnumerable<TerminalDO> GetAllowedTerminalsByUser(IEnumerable<TerminalDO> terminals);
-        List<string> GetAllowedUserRolesForSecuredObject(string objectId, string objectType);
+        List<string> GetAllowedUserRolesForSecuredObject(Guid objectId, string objectType);
     }
 }

@@ -311,8 +311,7 @@ namespace HubTests.Controllers
                 curPlanDO.Fr8Account = FixtureData.TestDeveloperAccount();
                 uow.ActivityTemplateRepository.Add(new ActivityTemplateDO
                 {
-                    TerminalId = 1,
-
+                    TerminalId = FixtureData.GetTestGuidById(1),
                     Id = FixtureData.GetTestGuidById(1),
                     Name = "New template",
                 });
@@ -320,7 +319,7 @@ namespace HubTests.Controllers
 
                 uow.TerminalRepository.Add(new TerminalDO()
                 {
-                    Id = 1,
+                    Id = FixtureData.GetTestGuidById(1),
                     TerminalStatus = TerminalStatus.Active,
                     Name = "terminal",
                     Label = "term",

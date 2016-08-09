@@ -94,7 +94,7 @@ namespace Hub.Services
             }
             else
             {
-                if (terminal.InternalId == 0)
+                if (terminal.InternalId == Guid.Empty)
                 {
                     // For new terminals the value is 0 (Unapproved)
                     safeParticipationState = ParticipationState.Unapproved;
@@ -167,7 +167,7 @@ namespace Hub.Services
             terminalDo.Endpoint = terminal.Endpoint = curEndpoint;
 
             //Check whether we save an existing terminal or register a new one
-            if (terminal.InternalId == 0)
+            if (terminal.InternalId == Guid.Empty)
             {
                 // New terminal
                 if (IsExistingTerminal(curEndpoint))

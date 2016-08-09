@@ -20,7 +20,7 @@ namespace Data.Entities
         public virtual Fr8AccountDO DockyardAccount { get; set; }
 
         [ForeignKey("Terminal")]
-        public int TerminalId { get; set; }
+        public Guid TerminalId { get; set; }
         public virtual TerminalDO Terminal { get; set; }
 
         [ForeignKey("AccessLevelTemplate")]
