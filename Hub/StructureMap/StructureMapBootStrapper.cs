@@ -273,7 +273,7 @@ namespace Hub.StructureMap
                 return _terminal.RegisterOrUpdate(terminalDo, isUserInitiated);
             }
 
-            public TerminalDO GetByKey(int terminalId)
+            public TerminalDO GetByKey(Guid terminalId)
             {
                 return _terminal.GetByKey(terminalId);
             }

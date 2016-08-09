@@ -81,7 +81,7 @@ namespace Fr8.Testing.Unit.Fixtures
         {
             return new TerminalDO
             {
-                Id = 1,
+                Id = FixtureData.GetTestGuidById(1),
                 Name = "DocuSign",
                 Label = "DocuSign",
                 Endpoint = "http://localhost",
@@ -96,7 +96,7 @@ namespace Fr8.Testing.Unit.Fixtures
         {
             return new TerminalDO
             {
-                Id = 1,
+                Id = FixtureData.GetTestGuidById(1),
                 Name = "terminalDocuSign",
                 Label = "DocuSign",
                 Endpoint = "localhost",
