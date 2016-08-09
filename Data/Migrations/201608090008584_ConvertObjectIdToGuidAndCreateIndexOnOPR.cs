@@ -62,5 +62,6 @@ namespace Data.Migrations
         {
             DropIndex("dbo.ObjectRolePermissions", new[] { "ObjectId" });
         }
+
     }
 }
