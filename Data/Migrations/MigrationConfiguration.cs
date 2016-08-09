@@ -23,7 +23,7 @@ namespace Data.Migrations
         public MigrationConfiguration()
         {
             //Do not ever turn this on! It will break database upgrades
-            AutomaticMigrationsEnabled = true;
+            AutomaticMigrationsEnabled = false;
 
             CommandTimeout = 60 * 15;
 
