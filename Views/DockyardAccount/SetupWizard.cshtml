@@ -1,0 +1,130 @@
+﻿@using Data.Infrastructure.StructureMap
+@using StructureMap
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Dockyard</title>
+    <link rel='shortcut icon' type='image/x-icon' href='/Content/img/favicon.ico' />
+    @Styles.Render("~/bundles/css/bootstrap30")
+    @Styles.Render("~/bundles/css/backendcss")
+    @Styles.Render("~/bundles/css/colorbox")
+
+    @RenderSection("styles", required: false)
+    @Scripts.Render("~/bundles/js/jquery")
+    @Scripts.Render("~/bundles/js/cookies")
+
+    @RenderSection("immediateScripts", required: false)
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:400,800,700,300,600,400italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+    <link href="@Url.Content("~/Content/css/additionalcss/font-awesome/css/font-awesome.css")" rel="stylesheet" type="text/css" />
+    <!--[if lt IE 9]>
+        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <script src="Content/js/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+    <!--[if lt IE 7]>
+        <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+    <ul id="ajaxErrors" style="display:none;"></ul>
+    <div id="main-container">
+        <header class="navbar navbar-static-top site-header">
+            <div class="site-header-wrap">
+                <div class="site-header-inner">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <h3 class="brand goTop">
+                                <a href="#"><img class="floating" src="@Url.Content("~/")Content/img/site/PLACEHOLDER.png" alt="Fr8" title="Fr8" /></a>
+                            </h3>
+                            <section id="login">
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="logotext text">
+                <h1>Fr8</h1>
+            </div>
+        </header>
+        <div class="container body-content">
+            @RenderBody()
+        </div>
+        <div class="footer-clear">&nbsp;</div>
+    </div>
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy;@DateTime.Now.Year © The Fr8 Company. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    @Scripts.Render("~/bundles/js/modernizr")
+    @Scripts.Render("~/bundles/js/bootstrap31")
+    @Scripts.Render("~/bundles/js/customjs")
+    @RenderSection("scripts", required: false)
+
+    <script type="text/javascript">
+        registerPolling(); //Defined in QueuePollingScript.cshtml
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="container-fluid">
+        <div class="row-fluid">
+            <div class="modal-dialog">
+                <div class="register-container">
+                    <h2 class="hero-heading">
+                        
+                    </h2>
+
+                    @using (Html.BeginForm("CreateMasterAdmin", "DockyardAccount", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary()
+                        <div class="form-body">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Email, new { @class = "col-md-3 control-label" })
+                                <div class="col-md-4">
+                                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Password, new {@class = "col-md-3 control-label"})
+                                <div class="col-md-4">
+                                    @Html.PasswordFor(m => m.Password, new {@class = "form-control"})
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-3 control-label" })
+                                <div class="col-md-4">
+                                    @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-offset-3 col-md-9">
+                                    <button type="submit" class="btn green">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+

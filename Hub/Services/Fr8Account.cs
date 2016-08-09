@@ -571,7 +571,7 @@ namespace Hub.Services
                 //get the roles to check if the account has admin role
                 var curAccountRoles = curAccount.Roles;
                 //get the role id
-                var adminRoleId = uow.AspNetRolesRepository.GetQuery().Single(r => r.Name == "Admin").Id;
+                var adminRoleId = uow.AspNetRolesRepository.GetQuery().Single(r => r.Name == Roles.Admin).Id;
                 //provide all facts if the user has admin role
                 if (curAccountRoles.Any(x => x.RoleId == adminRoleId))
                 {
@@ -581,5 +581,49 @@ namespace Hub.Services
 
             return isAdmin;
         }
+
+        /// <summary>
+        /// Check if there is in existence any Admin user account
+        /// </summary>
+        /// <returns></returns>
+        public bool CheckForExistingAdminUsers()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return uow.AspNetUserRolesRepository.GetQuery().Any(x=>x.Roles.Select(l=>l.Name).Contains(Roles.Admin));
+            }
+        }
+
+        /// <summary>
+        /// Create new Admin Account 
+        /// </summary>
+        /// <param name="userEmail"></param>
+        /// <param name="curPassword"></param>
+        /// <returns></returns>
+        public Fr8AccountDO CreateAdminAccount(string userEmail, string curPassword)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var newFr8Account = uow.UserRepository.GetOrCreateUser(userEmail);
+                uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, newFr8Account.Id);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.StandardUser, newFr8Account.Id);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.OwnerOfCurrentObject, newFr8Account.Id);
+
+                if (newFr8Account != null)
+                {
+                    AssignProfileToUser(uow, newFr8Account, DefaultProfiles.Fr8Administrator);
+                }
+
+                uow.SaveChanges();
+
+                if (newFr8Account != null)
+                {
+                    EventManager.UserRegistration(newFr8Account);
+                }
+                
+                return newFr8Account;
+            }
+        } 
     }
 }

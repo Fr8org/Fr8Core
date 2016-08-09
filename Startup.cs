@@ -30,6 +30,7 @@ using HubWeb.App_Start;
 using GlobalConfiguration = Hangfire.GlobalConfiguration;
 using System.Globalization;
 using System.Threading;
+using System.Web.Routing;
 using PlanDirectory.Infrastructure;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
@@ -89,6 +90,14 @@ namespace HubWeb
             }
 
             ConfigureHangfire(app, "Fr8LocalDB");
+
+#if DEBUG
+            var fr8Account = ObjectFactory.GetInstance<IFr8Account>();
+            if (!fr8Account.CheckForExistingAdminUsers())
+            {
+                RouteConfig.RegisterSetupWizardAsDefaultRoute(RouteTable.Routes);
+            }
+#endif
 
 #pragma warning disable 4014
             RegisterTerminalActions(selfHostMode);

@@ -20,6 +20,8 @@ using Segment;
 using Microsoft.ApplicationInsights.Extensibility;
 using Logger = Fr8.Infrastructure.Utilities.Logging.Logger;
 using System.Globalization;
+using Hub.Interfaces;
+using StructureMap;
 
 namespace HubWeb
 {

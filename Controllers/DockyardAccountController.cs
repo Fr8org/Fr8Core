@@ -76,7 +76,7 @@ namespace HubWeb.Controllers
             this.Logout();
             return RedirectToAction("Index");
         }
-       
+
         [AllowAnonymous]
         public ActionResult Confirm(RegistrationVM model)
         {
@@ -103,7 +103,8 @@ namespace HubWeb.Controllers
                         //check for organizations 
                         if (submittedRegData.HasOrganization && !string.IsNullOrEmpty(submittedRegData.OrganizationName))
                         {
-                            organizationDO = _organization.GetOrCreateOrganization(uow, submittedRegData.OrganizationName, out isNewOrganization);
+                            organizationDO = _organization.GetOrCreateOrganization(uow,
+                                submittedRegData.OrganizationName, out isNewOrganization);
                         }
 
                         if (!String.IsNullOrWhiteSpace(submittedRegData.GuestUserTempEmail))
@@ -114,7 +115,9 @@ namespace HubWeb.Controllers
                         }
                         else
                         {
-                            curRegStatus = _account.ProcessRegistrationRequest(uow, submittedRegData.Email.Trim(), submittedRegData.Password.Trim(), organizationDO, isNewOrganization, submittedRegData.AnonimousId);
+                            curRegStatus = _account.ProcessRegistrationRequest(uow, submittedRegData.Email.Trim(),
+                                submittedRegData.Password.Trim(), organizationDO, isNewOrganization,
+                                submittedRegData.AnonimousId);
                         }
 
                         uow.SaveChanges();
@@ -320,7 +323,8 @@ Please register first.");
             {
                 try
                 {
-                    var token = viewModel.Code.Replace(" ", "+"); // since html replaces '+' with space, we should fix it.
+                    var token = viewModel.Code.Replace(" ", "+");
+                        // since html replaces '+' with space, we should fix it.
                     var result = await _account.ResetPasswordAsync(viewModel.UserId, token, viewModel.Password);
                     if (result.Succeeded)
                     {
@@ -330,14 +334,17 @@ Please register first.");
                     {
                         // http://forums.asp.net/t/1934149.aspx?Password+Reset+Token+Expiration
                         // Refer above link for checking the reset password is link expired or not
-                        ModelState.AddModelError("", "Reset password link has been expired. Please generate the new link.");
+                        ModelState.AddModelError("",
+                            "Reset password link has been expired. Please generate the new link.");
                         Array.ForEach(result.Errors.ToArray(), e => ModelState.AddModelError("", e));
                     }
                 }
                 catch (Exception ex)
                 {
                     //Logger.GetLogger().Error("ResetPassword failed.", ex);
-                    Logger.GetLogger().Error($"ResetPassword failed. Email = {viewModel.Email}; UserId = {viewModel.UserId} Exception = {ex}");
+                    Logger.GetLogger()
+                        .Error(
+                            $"ResetPassword failed. Email = {viewModel.Email}; UserId = {viewModel.UserId} Exception = {ex}");
                     ModelState.AddModelError("", ex);
                 }
             }
@@ -360,6 +367,45 @@ Please register first.");
             TempData["guestUserId"] = resultTuple.Item2;
             TempData["mode"] = "guestUser";
             return RedirectToAction("Index", "Welcome");
+        }
+
+
+        /// <summary>
+        /// Page shown to users when they first start the solution locally. Used to create a master administrator account for the developer local db
+        /// </summary>
+        /// <returns></returns>
+        [AllowAnonymous]
+        public ActionResult SetupWizard()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<ActionResult> CreateMasterAdmin(RegistrationVM submittedRegData)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                     _account.CreateAdminAccount( submittedRegData.Email.Trim(), submittedRegData.Password.Trim());
+                }
+            }
+            catch (ApplicationException appEx)
+            {
+                ModelState.AddModelError("", appEx.Message);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+
+            return this.Login(new LoginVM
+            {
+                Email = submittedRegData.Email.Trim(),
+                Password = submittedRegData.Password.Trim(),
+                RememberMe = false
+            }, string.Empty).Result;
         }
     }
 

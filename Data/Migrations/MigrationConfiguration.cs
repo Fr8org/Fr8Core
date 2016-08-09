@@ -392,6 +392,7 @@ namespace Data.Migrations
             uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
             uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, user.Id);
             uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.StandardUser, user.Id);
+            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.OwnerOfCurrentObject, user.Id);
             user.TestAccount = true;
         }
 
@@ -407,6 +408,7 @@ namespace Data.Migrations
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
             uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
             uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.StandardUser, user.Id);
+            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.OwnerOfCurrentObject, user.Id);
             user.TestAccount = true;
             return user;
         }
