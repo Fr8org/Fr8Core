@@ -720,7 +720,10 @@
     <Content Include="Scripts\PlanDirectoryApp.js" />
     <Content Include="Scripts\PlanDirectoryMain.js" />
     <Content Include="Scripts\templateCache.js" />
+    <Content Include="Scripts\tests\e2e\authorizationPathways\docusign.spec.js" />
     <Content Include="Scripts\tests\e2e\authorizationPathways\google.spec.js" />
+    <Content Include="Scripts\tests\e2e\authorizationPathways\salesforce.spec.js" />
+    <Content Include="Scripts\tests\e2e\authorizationPathways\slack.spec.js" />
     <Content Include="Scripts\tests\e2e\conf.js" />
     <Content Include="Scripts\tests\e2e\login\login.spec.js" />
     <Content Include="Scripts\tests\e2e\pages\myAccount.page.js" />
