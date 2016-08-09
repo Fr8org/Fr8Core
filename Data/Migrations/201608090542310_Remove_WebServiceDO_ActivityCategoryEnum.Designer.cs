@@ -13,7 +13,7 @@ namespace Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201608050903514_Remove_WebServiceDO_ActivityCategoryEnum"; }
+            get { return "201608090542310_Remove_WebServiceDO_ActivityCategoryEnum"; }
         }
         
         string IMigrationMetadata.Source
