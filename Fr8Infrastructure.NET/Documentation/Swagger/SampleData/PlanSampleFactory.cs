@@ -1,4 +1,5 @@
-﻿using Fr8.Infrastructure.Data.DataTransferObjects;
+﻿using System;
+using Fr8.Infrastructure.Data.DataTransferObjects;
 
 namespace Fr8.Infrastructure.Documentation.Swagger
 {

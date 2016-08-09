@@ -332,6 +332,7 @@
     <Compile Include="Documentation\Swagger\OperationFilters\RemoveParameterModelNameOperationFilter.cs" />
     <Compile Include="Documentation\Swagger\SampleData\ActivitySampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\ActivityTemplateSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\ActivityTemplateSummarySampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\AuthenticationTokenGrantSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\AuthenticationTokenSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\AuthenticationTokenTerminalSampleFactory.cs" />
@@ -358,7 +359,6 @@
     <Compile Include="Documentation\Swagger\SampleData\PhoneNumberCredentialsSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PhoneNumberVerificationSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanEmptySampleFactory.cs" />
-    <Compile Include="Documentation\Swagger\SampleData\PlanFullSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanQuerySampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanResultSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\PlanSampleFactory.cs" />
@@ -369,6 +369,7 @@
     <Compile Include="Documentation\Swagger\SampleData\SubplanSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\TerminalNotificationSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\TerminalSampleFactory.cs" />
+    <Compile Include="Documentation\Swagger\SampleData\TerminalSummarySampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\TokenResponseSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\UrlResponseSampleFactory.cs" />
     <Compile Include="Documentation\Swagger\SampleData\UserSampleFactory.cs" />
