@@ -262,7 +262,6 @@
     <Compile Include="Entities\PermissionSetDO.cs" />
     <Compile Include="Entities\PlanNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
-    <Compile Include="Entities\TerminalRegistrationDO.cs" />
     <Compile Include="Entities\TerminalSubscriptionDO.cs" />
     <Compile Include="Entities\WebServiceDO.cs" />
     <Compile Include="Expressions\ConversionMethods.cs" />
@@ -747,6 +746,10 @@
     <Compile Include="Migrations\201607271152557_FixManifestDescriptionTypos.Designer.cs">
       <DependentUpon>201607271152557_FixManifestDescriptionTypos.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201607241524205_Terminals_Standard_Permissions.cs" />
+    <Compile Include="Migrations\201607241524205_Terminals_Standard_Permissions.Designer.cs">
+      <DependentUpon>201607241524205_Terminals_Standard_Permissions.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201607291915038_RemovePlanTemplateEntities.cs" />
     <Compile Include="Migrations\201607291915038_RemovePlanTemplateEntities.Designer.cs">
       <DependentUpon>201607291915038_RemovePlanTemplateEntities.cs</DependentUpon>
@@ -778,6 +781,10 @@
     <Compile Include="Migrations\201608050903514_Remove_WebServiceDO_ActivityCategoryEnum.cs" />
     <Compile Include="Migrations\201608050903514_Remove_WebServiceDO_ActivityCategoryEnum.Designer.cs">
       <DependentUpon>201608050903514_Remove_WebServiceDO_ActivityCategoryEnum.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608071558594_DiscoveryRefactoring.cs" />
+    <Compile Include="Migrations\201608071558594_DiscoveryRefactoring.Designer.cs">
+      <DependentUpon>201608071558594_DiscoveryRefactoring.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -883,13 +890,13 @@
     <Compile Include="Repositories\SqlBased\SqlConnectionProvider.cs" />
     <Compile Include="Repositories\Security\StorageImpl\SqlBased\SqlSecurityObjectsStorageProvider.cs" />
     <Compile Include="Repositories\TagRepository.cs" />
-    <Compile Include="Repositories\TerminalRegistrationRepository.cs" />
     <Compile Include="Repositories\TerminalRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="Repositories\TerminalSubscriptionRepository.cs" />
     <Compile Include="Repositories\Utilization\MockedUtilizationDataProvider.cs" />
     <Compile Include="Repositories\Utilization\SqlUtilizationDataProvider.cs" />
     <Compile Include="Repositories\WebServiceRepository.cs" />
+    <Compile Include="States\ParticipationState.cs" />
     <Compile Include="States\ActivationState.cs" />
     <Compile Include="States\ActivityTemplateState.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
@@ -934,6 +941,7 @@
     <Compile Include="States\AccessLevel.cs" />
     <Compile Include="States\PermissionType.cs" />
     <Compile Include="States\SubscriptionState.cs" />
+    <Compile Include="States\Templates\_ParticipationStateTemplate.cs" />
     <Compile Include="States\Templates\_PermissionTypeTemplate.cs" />
     <Compile Include="States\Templates\_SubscriptionStateTemplate.cs" />
     <Compile Include="States\ContainerState.cs" />
@@ -1410,6 +1418,9 @@
     <EmbeddedResource Include="Migrations\201607271152557_FixManifestDescriptionTypos.resx">
       <DependentUpon>201607271152557_FixManifestDescriptionTypos.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607241524205_Terminals_Standard_Permissions.resx">
+      <DependentUpon>201607241524205_Terminals_Standard_Permissions.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201607291915038_RemovePlanTemplateEntities.resx">
       <DependentUpon>201607291915038_RemovePlanTemplateEntities.cs</DependentUpon>
     </EmbeddedResource>
@@ -1433,6 +1444,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201608050903514_Remove_WebServiceDO_ActivityCategoryEnum.resx">
       <DependentUpon>201608050903514_Remove_WebServiceDO_ActivityCategoryEnum.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608071558594_DiscoveryRefactoring.resx">
+      <DependentUpon>201608071558594_DiscoveryRefactoring.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -11,6 +11,7 @@ using NUnit.Framework;
 using StructureMap;
 using Fr8.Testing.Unit;
 using Fr8.Testing.Unit.Fixtures;
+using Data.States;
 
 namespace HubTests.Services
 {
@@ -168,6 +169,7 @@ namespace HubTests.Services
                 Label = prefix + "Label" + id,
                 Version = prefix + "Ver" + id,
                 TerminalStatus = 1,
+                ParticipationState = ParticipationState.Approved
             };
         }
 
@@ -321,7 +323,7 @@ namespace HubTests.Services
             // template.WebServiceId = -2344;
 
             var terminalService = ObjectFactory.GetInstance<Terminal>();
-            template.Terminal = terminalService.RegisterOrUpdate(template.Terminal);
+            template.Terminal = terminalService.RegisterOrUpdate(template.Terminal, false);
             template.TerminalId = template.Terminal.Id;
 
             var service = ObjectFactory.GetInstance<ActivityTemplate>();
@@ -358,7 +360,7 @@ namespace HubTests.Services
             template.Id  = Guid.NewGuid();
 
             var terminalService = ObjectFactory.GetInstance<Terminal>();
-            template.Terminal = terminalService.RegisterOrUpdate(template.Terminal);
+            template.Terminal = terminalService.RegisterOrUpdate(template.Terminal, false);
             template.TerminalId = template.Terminal.Id;
 
             var service = ObjectFactory.GetInstance<ActivityTemplate>();

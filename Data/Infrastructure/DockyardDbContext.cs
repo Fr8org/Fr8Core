@@ -363,7 +363,6 @@ namespace Data.Infrastructure
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PageDefinitionDO>().ToTable("PageDefinitions");
-            modelBuilder.Entity<TerminalRegistrationDO>().ToTable("TerminalRegistration");
 
             base.OnModelCreating(modelBuilder);
         }
