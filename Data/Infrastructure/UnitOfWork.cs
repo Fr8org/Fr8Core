@@ -403,16 +403,6 @@ namespace Data.Infrastructure
             }
         }
 
-	    private WebServiceRepository _webServiceRepository;
-
-        public IWebServiceRepository WebServiceRepository
-	    {
-		    get
-		    {
-			    return _webServiceRepository ?? (_webServiceRepository = new WebServiceRepository(this));
-		    }
-	    }
-
         private TagRepository _tagRepository;
 
         public ITagRepository TagRepository

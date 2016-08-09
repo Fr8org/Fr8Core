@@ -4,6 +4,7 @@ module dockyard.directives {
     'use strict';
 
     import psa = dockyard.directives.paneSelectAction;
+    import m = dockyard.model;
     import designHeaderEvents = dockyard.Fr8Events.DesignerHeader;
 
     export interface IActionPickerScope extends ng.IScope {
@@ -141,7 +142,7 @@ module dockyard.directives {
                     var _reload = () => {
                         ActivityTemplateHelperService.getAvailableActivityTemplatesByCategory()
                             .then((res: Array<interfaces.IActivityCategoryDTO>) => {
-                                $scope.categories = res.filter((x) => { return x.name !== 'Solution'; });
+                                $scope.categories = res.filter((x) => { return !m.ActivityCategories.isPredefinedCategory(x.id); });
                             });
                     };
 

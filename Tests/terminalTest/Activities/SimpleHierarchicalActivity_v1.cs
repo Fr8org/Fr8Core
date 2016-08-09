@@ -16,9 +16,7 @@ namespace terminalTest.Actions
         {
             Name = "SimpleHierarchicalActivity",
             Label = "SimpleHierarchicalActivity",
-            Category = ActivityCategory.Processors,
             Version = "1",
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

@@ -8,11 +8,9 @@ namespace HubWeb.Documentation.Swagger.SampleData
     {
         private readonly ISwaggerSampleFactory<TerminalDTO> _terminalSampleFactory;
 
-        private readonly ISwaggerSampleFactory<WebServiceDTO> _webServiceSampleFactory;
-        public ActivityTemplateSampleFactory(ISwaggerSampleFactory<TerminalDTO> terminalSampleFactory, ISwaggerSampleFactory<WebServiceDTO> webServiceSampleFactory)
+        public ActivityTemplateSampleFactory(ISwaggerSampleFactory<TerminalDTO> terminalSampleFactory)
         {
             _terminalSampleFactory = terminalSampleFactory;
-            _webServiceSampleFactory = webServiceSampleFactory;
         }
 
         public ActivityTemplateDTO GetSampleData()
@@ -22,10 +20,8 @@ namespace HubWeb.Documentation.Swagger.SampleData
                 Id = Guid.Parse("D64F823D-E127-41E5-A3E5-0D48BA2750DB"),
                 Name = "Build_Message",
                 Label = "Build a Message",
-                Category = ActivityCategory.Processors,
                 Version = "1",
                 MinPaneWidth = 330,
-                WebService = _webServiceSampleFactory.GetSampleData(),
                 Terminal = _terminalSampleFactory.GetSampleData(),
                 Tags = string.Empty
             };

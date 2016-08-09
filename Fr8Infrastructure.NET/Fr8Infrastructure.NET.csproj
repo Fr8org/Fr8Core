@@ -199,6 +199,7 @@
     <Compile Include="Data\DataTransferObjects\Helpers\ActivityResponseHelper.cs" />
     <Compile Include="Data\DataTransferObjects\HistoryItemDTO.cs" />
     <Compile Include="Data\DataTransferObjects\IncomingCratesDTO.cs" />
+    <Compile Include="Data\DataTransferObjects\InternalDemoAccountDTO.cs" />
     <Compile Include="Data\DataTransferObjects\KeyValueDTO.cs" />
     <Compile Include="Data\DataTransferObjects\LoggingDataCM.cs" />
     <Compile Include="Data\DataTransferObjects\LogItemDTO.cs" />
@@ -237,7 +238,6 @@
     <Compile Include="Data\DataTransferObjects\ValidationErrorsDTO.cs" />
     <Compile Include="Data\DataTransferObjects\ValidationResultDTO.cs" />
     <Compile Include="Data\DataTransferObjects\WebServiceActivitySetDTO.cs" />
-    <Compile Include="Data\DataTransferObjects\WebServiceDTO.cs" />
     <Compile Include="Data\Helpers\FieldMemberAccessor.cs" />
     <Compile Include="Data\Helpers\Fr8ApiHelper.cs" />
     <Compile Include="Data\Helpers\Fr8ReflectionHelper.cs" />
@@ -248,7 +248,6 @@
     <Compile Include="Data\Convertors\JsonNet\AvailabilityConverter.cs" />
     <Compile Include="Data\Convertors\JsonNet\CreateTimeConverter.cs" />
     <Compile Include="Data\Convertors\JsonNet\TerminalActivityTemplateConverter.cs" />
-    <Compile Include="Data\Convertors\JsonNet\WebServiceConverter.cs" />
     <Compile Include="Data\Convertors\StringToCrateStorageDTOConverter.cs" />
     <Compile Include="Data\Managers\CrateManager.cs" />
     <Compile Include="Data\Managers\CrateManager.StorageUpdater.cs" />
@@ -305,7 +304,6 @@
     <Compile Include="Data\Manifests\StandardTableDataCM.cs" />
     <Compile Include="Data\Manifests\StatXItemCM.cs" />
     <Compile Include="Data\Manifests\ValidationResultsCM.cs" />
-    <Compile Include="Data\States\ActivityCategory.cs" />
     <Compile Include="Data\States\ActivityType.cs" />
     <Compile Include="Data\States\AuthenticationType.cs" />
     <Compile Include="Data\States\AvailabilityType.cs" />

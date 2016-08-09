@@ -35,7 +35,7 @@ namespace Fr8.Testing.Integration.Tools.Activities
             var activityName = "Build_Message";
             var buildMessageActivityDTO = FixtureData.Build_Message_v1_InitialConfiguration();
 
-            var activityCategoryParam = (int)ActivityCategory.Processors;
+            var activityCategoryParam = ActivityCategories.ProcessId.ToString();
             var activityTemplates = await _baseHubITest.HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseHubITest.GetHubApiBaseUrl() + "webservices?id=" + activityCategoryParam);
             var apmActivityTemplate = activityTemplates
                 .SelectMany(a => a.Activities)
@@ -113,7 +113,7 @@ namespace Fr8.Testing.Integration.Tools.Activities
         {
             var activityName = "Save_To_Fr8_Warehouse";
             var saveToFr8WarehouseActivity = FixtureData.Save_To_Fr8_Warehouse_InitialConfiguration();
-            var activityCategoryParam = (int)ActivityCategory.Processors;
+            var activityCategoryParam = ActivityCategories.ProcessId.ToString();
             var activityTemplates = await _baseHubITest.HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseHubITest.GetHubApiBaseUrl() + "webservices?id=" + activityCategoryParam);
             var apmActivityTemplate = activityTemplates
                 .SelectMany(a => a.Activities)
