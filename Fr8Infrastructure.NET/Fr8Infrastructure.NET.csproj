@@ -231,7 +231,6 @@
     <Compile Include="Data\DataTransferObjects\TerminalDiscoveryDTO.cs" />
     <Compile Include="Data\DataTransferObjects\TerminalDTO.cs" />
     <Compile Include="Data\DataTransferObjects\NotificationMessageDTO.cs" />
-    <Compile Include="Data\DataTransferObjects\TerminalRegistrationDTO.cs" />
     <Compile Include="Data\DataTransferObjects\TerminalSummaryDTO.cs" />
     <Compile Include="Data\DataTransferObjects\TokenResponseDTO.cs" />
     <Compile Include="Data\DataTransferObjects\UrlResponseDTO.cs" />
@@ -368,7 +367,6 @@
     <Compile Include="Utilities\Serializers\Json\JsonSerializer.cs" />
     <Compile Include="Utilities\Server.cs" />
     <Compile Include="Utilities\StopwordsRemover.cs" />
-    <Compile Include="Utilities\TypeSafeEnum.cs" />
     <Compile Include="Utilities\UAParser\UAParser.cs" />
   </ItemGroup>
   <ItemGroup>
