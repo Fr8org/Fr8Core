@@ -362,10 +362,6 @@
       <Project>{bba91af2-7636-41b6-87c4-c1575ae8b04b}</Project>
       <Name>Fr8Infrastructure.NET</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalAsana\terminalAsana.csproj">
-      <Project>{0dcd9aae-f141-4fad-8e87-1c610f0582db}</Project>
-      <Name>terminalAsana</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\terminalFacebook\terminalFacebook.csproj">
       <Project>{c982a6fe-6fd4-47fa-a69d-91ffa80fedaa}</Project>
       <Name>terminalFacebook</Name>
@@ -401,10 +397,6 @@
     <ProjectReference Include="..\..\terminalDocuSign\terminalDocuSign.csproj">
       <Project>{4e04feb2-b452-4739-8336-ea2cefb18d87}</Project>
       <Name>terminalDocuSign</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\terminalAsanaTests\terminalAsanaTests.csproj">
-      <Project>{3b0a3d34-d926-4356-be31-809055fe835a}</Project>
-      <Name>terminalAsanaTests</Name>
     </ProjectReference>
     <ProjectReference Include="..\terminalAtlassianTests\terminalAtlassianTests.csproj">
       <Project>{f39ea7be-25c2-45ed-91ac-29647effad2b}</Project>
@@ -556,7 +548,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Fr8.PrivateSettings.1.2016.221.3\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Fr8.PrivateSettings.1.2016.221.3\build\net40\Fr8.PrivateSettings.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Fr8.PrivateSettings.1.2016.221.5\build\net40\Fr8.PrivateSettings.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Fr8.PrivateSettings.1.2016.221.5\build\net40\Fr8.PrivateSettings.targets'))" />
   </Target>
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
   <Import Project="..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
@@ -570,7 +562,7 @@
   <Target Name="BeforeBuild">
     <RestoreSettingsTask SolutionDir="$(SolutionDir)" ProjectDir="$(ProjectDir)" ProjectName="$(ProjectName)" />
   </Target>
-  <Import Project="..\..\packages\Fr8.PrivateSettings.1.2016.221.3\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('..\..\packages\Fr8.PrivateSettings.1.2016.221.3\build\net40\Fr8.PrivateSettings.targets')" />
+  <Import Project="..\..\packages\Fr8.PrivateSettings.1.2016.221.5\build\net40\Fr8.PrivateSettings.targets" Condition="Exists('..\..\packages\Fr8.PrivateSettings.1.2016.221.5\build\net40\Fr8.PrivateSettings.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
