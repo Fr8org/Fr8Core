@@ -435,7 +435,8 @@ gulp.task('update-web-driver', function (done) {
 gulp.task('protractor-run', function (done) {
     gutil.log('Using base url: ' + argv.baseUrl);
     gutil.log('Testing with user: ' + argv.username);
-    var result = child_process.spawnSync(getProtractorBinary('protractor'), ['--baseUrl=' + argv.baseUrl, '--params.username='+argv.username, '--params.password='+argv.password, 'Scripts\\tests\\e2e\\conf.js'], {
+    var result = child_process.spawnSync(getProtractorBinary('protractor'), ['--baseUrl=' + argv.baseUrl, '--params.username=' + argv.username, '--params.password=' + argv.password,
+        '--params.registerUsername=' + argv.registerUsername, '--params.registerPassword=' + argv.registerPassword, 'Scripts\\tests\\e2e\\conf.js'], {
         stdio: 'inherit'
     });
 
