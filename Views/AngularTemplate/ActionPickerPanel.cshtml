@@ -29,7 +29,7 @@
         <div class="activity-template-list" ng-if="selectedCategory">
             <ul>
                 <li ng-repeat="at in selectedCategory.activities | orderBy: 'label'">
-                    <a href ng-click="selectActivityTemplate(at)">
+                    <a href ng-click="selectActivityTemplate(at)" data-toggle="tooltip" title="{{at.description}}">
                         <i class="fa fa-cogs" aria-hidden="true"></i>
                         <span>{{at.label}}</span>
                     </a>

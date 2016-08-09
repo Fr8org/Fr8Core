@@ -238,7 +238,7 @@ module dockyard.controllers {
 
             };
             $scope.state = $state.current.name;
-            this.processState($state);
+            this.processState($state);            
         }
 
         private handleBackButton(event, toState, toParams, fromState, fromParams, options) {
@@ -424,7 +424,7 @@ module dockyard.controllers {
         private reloadFirstActions() {
             this.$timeout(() => {
                 var currentPlan = this.$scope.current.plan;
-                if (currentPlan.planState != dockyard.model.PlanState.Executing || currentPlan.planState != dockyard.model.PlanState.Active) {
+                if (currentPlan.planState !== dockyard.model.PlanState.Executing || currentPlan.planState !== dockyard.model.PlanState.Active) {
                     currentPlan.subPlans.forEach(
                         plan => {
                             if (plan.activities.length > 0) {
@@ -487,7 +487,7 @@ module dockyard.controllers {
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ExecutePlan], () => this.PaneConfigureAction_ExecutePlan());
 
             this.$scope.$on(<any>designHeaderEvents.PLAN_EXECUTION_FAILED, () => {
-                this.$scope.current.plan.planState = 1;
+                this.$scope.current.plan.planState = model.PlanState.Inactive;
                 this.reloadFirstActions();
             });
 
@@ -534,6 +534,8 @@ module dockyard.controllers {
                 var actionGroups = this.LayoutService.placeActions(activities, subPlan.id);
                 this.$scope.processedSubPlans.push({ subPlan: subPlan, actionGroups: actionGroups });
             }
+
+            this.$scope.$emit('onKioskModalLoad');
         }
 
         private renderActions(activitiesCollection: model.ActivityDTO[]) {
@@ -541,7 +543,7 @@ module dockyard.controllers {
             if (activitiesCollection != null && activitiesCollection.length !== 0) {
                 this.$scope.actionGroups = this.LayoutService.placeActions(activitiesCollection,
                     this.$scope.current.plan.startingSubPlanId);
-            }
+            }            
         }
 
         // If action updated, notify interested parties and update $scope.current.action

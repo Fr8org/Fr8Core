@@ -21,7 +21,7 @@ namespace Data.Migrations
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                MigrationConfiguration.CreateDockyardAccount(email, password, uow);
+                MigrationConfiguration.CreateFr8Account(email, password, uow);
             }
             
             //var passwordHasher = new PasswordHasher();

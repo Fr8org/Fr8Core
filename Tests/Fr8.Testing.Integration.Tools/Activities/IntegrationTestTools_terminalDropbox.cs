@@ -29,7 +29,7 @@ namespace Fr8.Testing.Integration.Tools.Activities
             var dropboxGetFileListActivityDto = FixtureData.Get_File_List_v1_InitialConfiguration();
 
             var activityName = "Get_File_List";
-            var activityCategoryParam = (int)ActivityCategory.Receivers;
+            var activityCategoryParam = ActivityCategories.ReceiveId.ToString();
             var activityTemplates = await _baseHubITest
                 .HttpGetAsync<List<WebServiceActivitySetDTO>>(
                 _baseHubITest.GetHubApiBaseUrl() + "webservices?id=" + activityCategoryParam);
