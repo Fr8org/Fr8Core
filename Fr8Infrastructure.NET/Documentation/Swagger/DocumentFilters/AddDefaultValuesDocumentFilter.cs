@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Linq;
 using System.Linq;
 using System.Web.Http.Description;
 using StructureMap;
@@ -28,7 +29,7 @@ namespace Fr8.Infrastructure.Documentation.Swagger
             var thisAssembly = GetType().Assembly;
             var defaultValueFactories = thisAssembly.GetTypes()
                 .Where(x => x.IsClass)
-                .Select(x => new {Type = x, Interface = x.GetInterface("ISwaggerSampleFactory`1")})
+                .Select(x => new { Type = x, Interface = x.GetInterface("ISwaggerSampleFactory`1") })
                 .Where(x => x.Interface != null)
                 .ToArray();
             _container.Configure(x =>
@@ -40,7 +41,12 @@ namespace Fr8.Infrastructure.Documentation.Swagger
             });
             foreach (var defaultValueFactory in defaultValueFactories)
             {
-                _defaultFactoriesByTypeName.Add(GetSwaggerTypeName(defaultValueFactory.Interface), defaultValueFactory.Interface);
+                var swaggerTypeName = GetSwaggerTypeName(defaultValueFactory.Interface);
+                if (_defaultFactoriesByTypeName.ContainsKey(swaggerTypeName))
+                {
+                    throw new DuplicateKeyException(swaggerTypeName, $"There is already a sample data factory associated with {swaggerTypeName} type");
+                }
+                _defaultFactoriesByTypeName.Add(swaggerTypeName, defaultValueFactory.Interface);
             }
         }
 

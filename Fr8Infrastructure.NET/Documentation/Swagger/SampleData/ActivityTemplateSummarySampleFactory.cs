@@ -1,6 +1,6 @@
 ﻿using Fr8.Infrastructure.Data.DataTransferObjects;
 
-namespace HubWeb.Documentation.Swagger.SampleData
+namespace Fr8.Infrastructure.Documentation.Swagger
 {
     public class ActivityTemplateSummarySampleFactory : ISwaggerSampleFactory<ActivityTemplateSummaryDTO>
     {
