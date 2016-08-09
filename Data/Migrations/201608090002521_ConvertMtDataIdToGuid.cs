@@ -6,7 +6,7 @@ namespace Data.Migrations
     public partial class ConvertMtDataIdToGuid : DbMigration
     {
         private const string CreateMTDataTableQuery = @"CREATE TABLE [dbo].[MtData](
-	[Id] [uniqueidentifier] NOT NULL,
+	[Id] [uniqueidentifier] NOT NULL DEFAULT(newid()),
 	[Type] [uniqueidentifier] NOT NULL,
 	[CreatedAt] [datetime] NOT NULL,
 	[UpdatedAt] [datetime] NOT NULL,
