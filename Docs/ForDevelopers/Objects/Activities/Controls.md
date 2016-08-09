@@ -63,23 +63,9 @@ The FilePicker control generates a form element for choosing a file from the use
 
 The FilterPane control generates a form for applying conditions which can create a subset of data.
 
-*[Generic](Controls/Generic.md)*
-
-The Gnereic control is a TextBox.
-
-*[ManagerRoute](Controls/ManagerRoute.md)*
-
-*[MappingPane](Controls/MappingPane.md)*
-
-The MappingPane control is a composite control which generates a form with two select dropdown HTML elements. The first select element represents a set of meta data that can be assigned to a set of target metadata in the second select element.
-
 *[QueryBuilder](Controls/QueryBuilder.md)*
 
 The QueryBuilder control is a composite control which generates a form to apply conditional operators to a set of data. The form can have many queries using "and" and "or" operators.
-
-*[Routing](Controls/Routing.md)*
-
-This control is used at design time to specify what should happen if a related filter evaluates True or False. This allows the easy creation of branching logic.
 
 *[RadioButtonGroup](Controls/RadioButtonGroup.md)*
 
@@ -88,10 +74,6 @@ The RadioButtonGroup control is a metadata container control which is designed t
 *[RadioButtonOption](Controls/RadioButtonOption.md)*
 
 The RadioButtonOption control renders an HTML radio button element. This control is generally used in groups and is assigned to a RadioButtonControl object.
-
-*[RunRouteButton](Controls/RunRouteButton.md)*
-
- This control renders "Run now" button. When the button is clicked route is being executed.
 
 *[SelectData](Controls/SelectData.md)*
 
@@ -116,10 +98,6 @@ The TextBoxBig control renders a textarea tag.
 *[TextSource](Controls/TextSource.md)*
 
 The TextSource control renders a text-aource tag.
-
-*[UpstreamCrateChooser](Controls/UpstreamCrateChooser.md)*
-
-The UpstreamCrateChooser is a composite control which allows a user to select a crate from an upstream activity.
 
 *[UpstreamDataChooser](Controls/UpstreamDataChooser.md)*
 
@@ -153,7 +131,6 @@ Duration | "Duration"
 RunPlanButton | "RunPlanButton"
 UpstreamDataChooser | "UpstreamDataChooser"
 UpstreamFieldChooser | "UpstreamFieldChooser"
-UpstreamCrateChooser | "UpstreamCrateChooser"
 DatePicker | "DatePicker"
 CrateChooser | "CrateChooser"
 ContainerTransition | "ContainerTransition"
