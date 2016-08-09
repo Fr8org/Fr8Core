@@ -199,8 +199,6 @@ namespace terminalStatX.Activities
                     if (currentStat != null)
                     {
                         ActivityUI.ClearDynamicFields();
-                        ActivityUI.StatTitle.TextValue = currentStat.Title;
-                        ActivityUI.StatNotes.TextValue = currentStat.Notes;
                         var statDTO = currentStat as GeneralStatWithItemsDTO;
                         if (statDTO != null && statDTO.Items.Any())
                         {
