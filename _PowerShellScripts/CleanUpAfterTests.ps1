@@ -82,7 +82,7 @@ WITH TestUser (UserId) AS (
 	WHERE Users.EmailAddressID IN (	
 		SELECT EmailAddresses.Id
 		FROM EmailAddresses
-		WHERE EmailAddresses.Address LIKE 'testuser_%@fr8.co')
+		WHERE EmailAddresses.Address LIKE 'testuser_registration@fr8.co')
 )
 SELECT DISTINCT (TestUser.UserId) INTO #TempUsers FROM TestUser;
 
