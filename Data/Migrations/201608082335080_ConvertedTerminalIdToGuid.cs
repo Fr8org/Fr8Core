@@ -125,10 +125,10 @@ namespace Data.Migrations
 
             //Modify ObjectRolePermission ObjectId for terminals
             Sql(@"UPDATE o SET o.ObjectId = t.Id
-                    FROM ObjectRolePermissions o
-                    INNER JOIN Terminals t ON
-                    o.ObjectId = t.OldId
-		            WHERE o.Type = 'TerminalDO'");
+                     FROM Terminals t
+                     INNER JOIN ObjectRolePermissions o ON
+                     o.ObjectId = t.OldId
+                     WHERE o.Type = 'TerminalDO'");
 
             //Remove leftovers
             DropColumn("dbo.Terminals", "OldId");
