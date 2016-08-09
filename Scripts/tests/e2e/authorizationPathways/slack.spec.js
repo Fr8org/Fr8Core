@@ -5,7 +5,7 @@ var MyAccountPage = require('../pages/myAccount.page.js');
 var UIHelpers = require('../shared/uiHelpers.js');
 //var RegistrationPage = require('../pages/registration.page.js');
 
-describe('Google Authorization pathway test', function () {
+describe('SalesForce Authorization pathway test', function () {
     var plansPage = new PlansPage();
     var manageAuthTokens = new ManageAuthTokens();
     var accountHelper = new AccountHelper();
@@ -30,7 +30,7 @@ describe('Google Authorization pathway test', function () {
 
     it('should go to myAccount page', function () {
         return myAccountPage.get();
-            expect(browser.getCurrentUrl()).toEqual('http://dev.fr8.co/dashboard/myaccount');
+        expect(browser.getCurrentUrl()).toEqual('http://dev.fr8.co/dashboard/myaccount');
     });
 
     it('should add plan', function () {
@@ -39,24 +39,11 @@ describe('Google Authorization pathway test', function () {
         });
     });
 
-    it('should add google activity', function () {
-        return plansPage.addGoogleActivity().then(function () {
-            return plansPage.getGoogleSheetActivity();
+    it('should add Slack activity', function () {
+        return plansPage.addSlackActivity().then(function () {
+            return plansPage.getSlackMonitorActivity();
         });
     });
-
-    //it('should add account', function () {
-    //    //var elm = element(by.className('.auth-link-account'));
-    //    //return uiHelpers.waitReady(elm).then(function () {
-    //    //    googlePage.addAccount().then(function () {
-    //    //        return googlePage.getAllow();
-    //    //    });
-    //    //});
-
-    //    return googlePage.addAccount().then(function () {
-    //        return googlePage.getAllow();
-    //    });
-    //});
 
     //describe('should logout', function () {
 
@@ -68,5 +55,4 @@ describe('Google Authorization pathway test', function () {
     //        });
     //    });
     // });
-
 });
