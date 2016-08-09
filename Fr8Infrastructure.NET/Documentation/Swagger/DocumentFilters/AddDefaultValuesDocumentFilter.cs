@@ -15,21 +15,23 @@ namespace Fr8.Infrastructure.Documentation.Swagger
     //But make sure first that such class doesn't already exist. See examples in Documentation/Swagger/SampleData folder
     public class AddDefaultValuesDocumentFilter : IDocumentFilter
     {
-        private static readonly IContainer _container;
+        protected readonly IContainer _container;
 
-        private static readonly Dictionary<string, Type> _defaultFactoriesByTypeName;
+        protected readonly Dictionary<string, Type> _defaultFactoriesByTypeName;
 
-        static AddDefaultValuesDocumentFilter()
+        public AddDefaultValuesDocumentFilter()
         {
             _container = new Container();
             _defaultFactoriesByTypeName = new Dictionary<string, Type>();
+            AddDefaultFactoriesFromTypeAssembly(typeof(AddDefaultValuesDocumentFilter));
         }
-        public AddDefaultValuesDocumentFilter()
+
+        protected void AddDefaultFactoriesFromTypeAssembly(Type type)
         {
-            var thisAssembly = GetType().Assembly;
+            var thisAssembly = type.Assembly;
             var defaultValueFactories = thisAssembly.GetTypes()
                 .Where(x => x.IsClass)
-                .Select(x => new { Type = x, Interface = x.GetInterface("ISwaggerSampleFactory`1") })
+                .Select(x => new {Type = x, Interface = x.GetInterface("ISwaggerSampleFactory`1")})
                 .Where(x => x.Interface != null)
                 .ToArray();
             _container.Configure(x =>
