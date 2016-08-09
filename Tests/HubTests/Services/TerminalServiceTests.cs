@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
@@ -11,6 +12,7 @@ using StructureMap;
 
 using Fr8.Testing.Unit;
 using Data.States;
+using Fr8.Testing.Unit.Fixtures;
 
 namespace HubTests.Services
 {
@@ -60,7 +62,7 @@ namespace HubTests.Services
             {
                 yield return new TerminalDO
                 {
-                    Id = nullifyIds ? 0: i,
+                    Id = nullifyIds ? Guid.Empty : FixtureData.GetTestGuidById(i),
                     AuthenticationType =1,
                     Endpoint = prefix+"ep" + i,
                     Description = prefix + "desc" + i,
@@ -147,11 +149,11 @@ namespace HubTests.Services
             var terminalService = new Terminal(_configRepository, _securityServices);
             var t = GenerateTerminals(1).First();
 
-            t.Id = 0;
+            t.Id = Guid.Empty;
 
             var terminal = terminalService.RegisterOrUpdate(t, false);
 
-            Assert.IsTrue(terminal.Id > 0);
+            Assert.IsTrue(terminal.Id != Guid.Empty);
             
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

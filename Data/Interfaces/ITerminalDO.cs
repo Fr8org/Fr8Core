@@ -4,7 +4,7 @@ namespace Data.Interfaces
 {
     public interface ITerminalDO : IBaseDO
     {
-        int Id { get; set; }
+        Guid Id { get; set; }
         string Name { get; set; }
         string Label { get; set; }
         int TerminalStatus { get; set; }

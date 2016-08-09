@@ -92,14 +92,14 @@ namespace HubTests.Repositories.Encryption
                         Id = NewGuid(1),
                         ActivityTemplate = new ActivityTemplateDO
                         {
-                            TerminalId = 1,
+                            TerminalId = FixtureData.GetTestGuidById(2),
                             Id = FixtureData.GetTestGuidById(1),
                             Name = "New template",
                         },
                         ActivityTemplateId = FixtureData.GetTestGuidById(1),
                         AuthorizationToken = new AuthorizationTokenDO
                         {
-                             TerminalID = 1,
+                             TerminalID = FixtureData.GetTestGuidById(2),
                             Id = NewGuid(34),
                         },
                         AuthorizationTokenId = NewGuid(34),
@@ -118,7 +118,7 @@ namespace HubTests.Repositories.Encryption
                             {
                                 ActivityTemplate = new ActivityTemplateDO
                                 {
-                                    TerminalId = 1,
+                                    TerminalId = FixtureData.GetTestGuidById(2),
                                     Id = FixtureData.GetTestGuidById(1),
                                     Name = "New template",
                                 },
@@ -137,7 +137,7 @@ namespace HubTests.Repositories.Encryption
                             {
                                 ActivityTemplate = new ActivityTemplateDO
                                 {
-                                    TerminalId = 1,
+                                    TerminalId = FixtureData.GetTestGuidById(2),
                                     Id = FixtureData.GetTestGuidById(1),
                                     Name = "New template",
                                 },
@@ -172,7 +172,7 @@ namespace HubTests.Repositories.Encryption
             {
                 uow.ActivityTemplateRepository.Add(new ActivityTemplateDO
                 {
-                    TerminalId = 1,
+                    TerminalId = FixtureData.GetTestGuidById(1),
 
                     Id = FixtureData.GetTestGuidById(1),
                     Name = "New template",
@@ -186,7 +186,7 @@ namespace HubTests.Repositories.Encryption
 
                 uow.TerminalRepository.Add(new TerminalDO()
                 {
-                    Id = 1,
+                    Id = FixtureData.GetTestGuidById(1),
                     TerminalStatus = TerminalStatus.Active,
                     Name = "terminal",
                     Label = "term",
@@ -198,7 +198,7 @@ namespace HubTests.Repositories.Encryption
 
                 uow.AuthorizationTokenRepository.Add(new AuthorizationTokenDO
                 {
-                    TerminalID = 1,
+                    TerminalID = FixtureData.GetTestGuidById(1),
                     Id = NewGuid(34),
                 });
 
@@ -207,7 +207,7 @@ namespace HubTests.Repositories.Encryption
                     Name = "asdfasdf",
                     Label = "asdf",
                     Version = "1",
-                    Id = 1,
+                    Id = FixtureData.GetTestGuidById(1),
                     TerminalStatus = 1,
                     OperationalState = OperationalState.Active,
                     ParticipationState = ParticipationState.Approved,

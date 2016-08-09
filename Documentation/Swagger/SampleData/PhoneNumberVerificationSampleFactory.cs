@@ -14,7 +14,7 @@ namespace HubWeb.Documentation.Swagger
                 ClientName = "Your Name",
                 Message = "Hey here is your code",
                 ClientId = "8FAB9D02-B731-424B-AE06-56B2C90BAA0A",
-                TerminalId = 1,
+                TerminalId = Guid.Parse("2757F870-A508-429E-A706-9EE826D92237"),
                 TerminalName = "terminalFr8Core"
             };
         }

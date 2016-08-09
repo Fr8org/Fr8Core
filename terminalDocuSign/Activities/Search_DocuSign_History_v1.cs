@@ -36,16 +36,14 @@ namespace terminalDocuSign.Activities
             Name = "Search_DocuSign_History",
             Label = "Search DocuSign History",
             Version = "1",
-            Category = ActivityCategory.Receivers,
             NeedsAuthentication = true,
             MinPaneWidth = 380,
             Tags = Tags.Internal,
-            WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO,
             Categories = new[]
             {
                 ActivityCategories.Receive,
-                new ActivityCategoryDTO(TerminalData.WebServiceDTO.Name, TerminalData.WebServiceDTO.IconPath)
+                TerminalData.ActivityCategoryDTO
             }
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;

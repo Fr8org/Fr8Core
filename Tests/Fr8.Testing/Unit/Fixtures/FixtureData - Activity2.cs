@@ -49,6 +49,7 @@ namespace Fr8.Testing.Unit.Fixtures
                     TerminalStatus = TerminalStatus.Active,
                     Secret = Guid.NewGuid().ToString(),
                     OperationalState = OperationalState.Active,
+                    Id = FixtureData.GetTestGuidById(1),
                     ParticipationState = ParticipationState.Approved
                 },
 
@@ -456,7 +457,7 @@ namespace Fr8.Testing.Unit.Fixtures
         {
             TerminalDO curTerminalDO = new TerminalDO()
             {
-                Id = 1,
+                Id = FixtureData.GetTestGuidById(1),
                 Name = "AzureSqlServer",
                 Label = "AzureSqlServer",
                 TerminalStatus = 1,
@@ -472,7 +473,7 @@ namespace Fr8.Testing.Unit.Fixtures
                 //ParentPluginRegistration = "pluginAzureSqlServer",
                 Version = "v1",
                 Terminal = curTerminalDO,
-                TerminalId = 1,
+                TerminalId = FixtureData.GetTestGuidById(1),
             };
 
 
