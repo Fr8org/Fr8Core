@@ -142,6 +142,7 @@ namespace Data.Migrations
                 return;
             }
 
+            terminalRegistration.Id = Guid.NewGuid();
             terminalRegistration.Endpoint = terminalEndpoint;
             terminalRegistration.DevUrl = terminalEndpoint;
             terminalRegistration.IsFr8OwnTerminal = true;
