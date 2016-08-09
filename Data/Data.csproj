@@ -782,6 +782,18 @@
     <Compile Include="Migrations\201608071558594_DiscoveryRefactoring.Designer.cs">
       <DependentUpon>201608071558594_DiscoveryRefactoring.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201608082335080_ConvertedTerminalIdToGuid.cs" />
+    <Compile Include="Migrations\201608082335080_ConvertedTerminalIdToGuid.Designer.cs">
+      <DependentUpon>201608082335080_ConvertedTerminalIdToGuid.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608090002521_ConvertMtDataIdToGuid.cs" />
+    <Compile Include="Migrations\201608090002521_ConvertMtDataIdToGuid.Designer.cs">
+      <DependentUpon>201608090002521_ConvertMtDataIdToGuid.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608090008584_ConvertObjectIdToGuidAndCreateIndexOnOPR.cs" />
+    <Compile Include="Migrations\201608090008584_ConvertObjectIdToGuidAndCreateIndexOnOPR.Designer.cs">
+      <DependentUpon>201608090008584_ConvertObjectIdToGuidAndCreateIndexOnOPR.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\ActivityCategory\ActivityCategoryRepository.cs" />
@@ -1440,6 +1452,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201608071558594_DiscoveryRefactoring.resx">
       <DependentUpon>201608071558594_DiscoveryRefactoring.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608082335080_ConvertedTerminalIdToGuid.resx">
+      <DependentUpon>201608082335080_ConvertedTerminalIdToGuid.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608090002521_ConvertMtDataIdToGuid.resx">
+      <DependentUpon>201608090002521_ConvertMtDataIdToGuid.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608090008584_ConvertObjectIdToGuidAndCreateIndexOnOPR.resx">
+      <DependentUpon>201608090008584_ConvertObjectIdToGuidAndCreateIndexOnOPR.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
