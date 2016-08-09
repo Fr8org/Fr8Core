@@ -24,7 +24,7 @@
         // webService: WebServiceDTO; 
         categories: Array<ActivityCategoryDTO>;
         showDocumentation: ActivityResponseDTO;
-
+        description: string;
         constructor(
             id: string,
             name: string,
@@ -37,7 +37,8 @@
             // TODO: FR-4943, remove this.
             // webService?: WebServiceDTO,
             categories?: Array<ActivityCategoryDTO>,
-            showDocumentation? : ActivityResponseDTO) {
+            showDocumentation?: ActivityResponseDTO,
+            description?: string) {
 
             this.id = id;
             this.name = name;
@@ -50,6 +51,7 @@
             // this.webService = webService;
             this.categories = categories;
             this.showDocumentation = showDocumentation;
+            this.description = description;
             //this.parentPluginRegistration = parentPluginRegistration;  the client shouldn't know anything about plugins
         }
 
@@ -66,8 +68,9 @@
                 // TODO: FR-4943, remove this.
                 // this.webService,
                 this.categories,
-                this.showDocumentation
-                // this.parentPluginRegistration
+                this.showDocumentation,
+                this.description
+            // this.parentPluginRegistration
                 );
 
             return result;
