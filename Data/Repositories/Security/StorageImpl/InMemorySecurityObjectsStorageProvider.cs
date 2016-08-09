@@ -25,7 +25,7 @@ namespace Data.Repositories.Security.StorageImpl
             editRolePrivilegeID = Guid.Parse("7cb466dc-8fed-4791-a1ba-09f9135416db");
         }
 
-        public int InsertObjectRolePermission(string currentUserId, string dataObjectId, Guid rolePrivilegeId, string dataObjectType,
+        public int InsertObjectRolePermission(string currentUserId, Guid dataObjectId, Guid rolePrivilegeId, string dataObjectType,
             string propertyName = null)
         {
             lock (ObjectRolePermissions)
@@ -58,7 +58,7 @@ namespace Data.Repositories.Security.StorageImpl
             throw new NotImplementedException();
         }
 
-        public int RemoveObjectRolePermission(string dataObjectId, Guid rolePrivilegeId, string propertyName = null)
+        public int RemoveObjectRolePermission(Guid dataObjectId, Guid rolePrivilegeId, string propertyName = null)
         {
             throw new NotImplementedException();
         }
@@ -72,12 +72,12 @@ namespace Data.Repositories.Security.StorageImpl
             throw new NotImplementedException();
         }
 
-        public List<int> GetObjectBasedPermissionSetForObject(string dataObjectId, string dataObjectType, Guid profileId)
+        public List<int> GetObjectBasedPermissionSetForObject(Guid dataObjectId, string dataObjectType, Guid profileId)
         {
             return new List<int>();
         }
 
-        public void SetDefaultRecordBasedSecurityForObject(string currentUserId, string roleName, string dataObjectId,
+        public void SetDefaultRecordBasedSecurityForObject(string currentUserId, string roleName, Guid dataObjectId,
             string dataObjectType, Guid rolePermissionId, int? organizationId, List<PermissionType> permissionTypes = null)
         {
             //refactor in security unit tests rework
@@ -88,12 +88,12 @@ namespace Data.Repositories.Security.StorageImpl
             throw new NotImplementedException();
         }
 
-        public List<string> GetAllowedUserRolesForSecuredObject(string objectId, string objectType)
+        public List<string> GetAllowedUserRolesForSecuredObject(Guid objectId, string objectType)
         {
             return new List<string>();
         }
 
-        public ObjectRolePermissionsWrapper GetRecordBasedPermissionSetForObject(string dataObjectId, string dataObjectType)
+        public ObjectRolePermissionsWrapper GetRecordBasedPermissionSetForObject(Guid dataObjectId, string dataObjectType)
         {
             lock (ObjectRolePermissions)
             {

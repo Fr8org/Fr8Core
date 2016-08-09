@@ -36,7 +36,7 @@ namespace Hub.Interfaces
 
         void RevokeToken(string accountId, Guid authTokenId);
 
-        bool TryAssignAuthToken(IUnitOfWork uow, string userId, int terminalId, ActivityDO activityDO,
+        bool TryAssignAuthToken(IUnitOfWork uow, string userId, Guid terminalId, ActivityDO activityDO,
             out AuthorizationTokenDO curAuthToken);     
 
         /// <summary>

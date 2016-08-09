@@ -74,20 +74,20 @@ namespace Hub.Security
         {
             foreach (var parameter in MapParameters(invocation.Arguments, invocation.Method.GetParameters(), authorizeAttribute.ParamType))
             {
-                string objectId;
+                Guid objectId;
                 if (parameter is Guid)
                 {
-                    objectId = parameter.ToString();
+                    objectId = (Guid)parameter;
                 }
                 else if (parameter is string)
                 {
-                    objectId = (string) parameter;
+                    objectId = Guid.Parse((string)parameter);
                 }
                 else
                 {
                     //todo: in case of requirement for objects not inherited from BaseObject, create a new property inside AuthorizeActivityAttribute that will set object inner propertyName in case of this "Id"  
                     var property = parameter.GetType().GetProperty("Id");
-                    objectId = property.GetValue(parameter).ToString();
+                    objectId = Guid.Parse(property.GetValue(parameter).ToString());
                 }
 
                 if (_securityServices.AuthorizeActivity(authorizeAttribute.Permission, objectId, authorizeAttribute.TargetType.Name))
@@ -115,14 +115,15 @@ namespace Hub.Security
                 invocation.Proceed();
             }
 
-            Guid result;
+            Guid result = Guid.Empty;
             if (Guid.TryParse(objectId, out result))
             {
-                if(result == Guid.Empty)
-                invocation.Proceed();
+                if(result == Guid.Empty) { 
+                    invocation.Proceed();
+                }
             }
 
-            if (_securityServices.AuthorizeActivity(authorizeAttribute.Permission, objectId, authorizeAttribute.TargetType.Name))
+            if (_securityServices.AuthorizeActivity(authorizeAttribute.Permission, result, authorizeAttribute.TargetType.Name))
             {
                 invocation.Proceed();
                 return;

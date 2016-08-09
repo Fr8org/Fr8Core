@@ -23,7 +23,7 @@ namespace Data.Migrations
         public MigrationConfiguration()
         {
             //Do not ever turn this on! It will break database upgrades
-            AutomaticMigrationsEnabled = true;
+            AutomaticMigrationsEnabled = false;
 
             CommandTimeout = 60 * 15;
 
@@ -142,6 +142,7 @@ namespace Data.Migrations
                 return;
             }
 
+            terminalRegistration.Id = Guid.NewGuid();
             terminalRegistration.Endpoint = terminalEndpoint;
             terminalRegistration.DevUrl = terminalEndpoint;
             terminalRegistration.IsFr8OwnTerminal = true;
