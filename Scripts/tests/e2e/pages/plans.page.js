@@ -32,7 +32,6 @@ var PlansPage = function () {
     var slackActivityButton = element(by.xpath('/html/body/div[2]/div[2]/div/div/div/div/div[1]/div[1]/div[1]/action-picker-panel/div/div[2]/div/div[17]/div[1]/img'));
     var slackMonitorActivityButton = element(by.xpath('/html/body/div[2]/div[2]/div/div/div/div/div[1]/div[1]/div[1]/action-picker-panel/div/div[2]/div/ul/li[1]/a/span'));
 
-
     this.get = function () {
         browser.ignoreSynchronization = true;
         browser.get(browser.baseUrl + '/dashboard/myaccount');

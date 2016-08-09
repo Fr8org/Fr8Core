@@ -16,7 +16,7 @@
     },
     framework: 'jasmine',
     specs: ['**/registration.spec.js',
-            '**/google.spec.js'
+            '**/*.spec.js'
     ],
     jasmineNodeOpts: {
         defaultTimeoutInterval: 50000
